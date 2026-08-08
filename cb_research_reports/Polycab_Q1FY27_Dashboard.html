@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polycab India – Q1 FY27 Dashboard · Raw Material Focus</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd6;--text:#1a1714;--muted:#6b6660;
+  --polycab:#c84b31;--copper:#b87333;--alum:#5b7c99;--pvc:#7c3aed;--wc:#c84b31;--fmeg:#f97316;--epc:#94a3b8;
+  --accent:#c84b31;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+
+/* HEADER */
+.hdr{background:#1a1714;padding:24px 36px 18px;display:flex;justify-content:space-between;align-items:flex-end}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;letter-spacing:2px;line-height:1}
+.hdr p{color:#aaa;font-size:0.75rem;font-family:'DM Mono',monospace;margin-top:4px;letter-spacing:1px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bdg{padding:3px 9px;border-radius:3px;font-size:0.68rem;font-family:'DM Mono',monospace}
+.bdg-r{background:var(--accent);color:#fff}
+.bdg-g{background:#333;color:#bbb;border:1px solid #555}
+
+/* TABS */
+.tabs{background:#111;padding:0 36px;display:flex;border-bottom:2px solid var(--accent);overflow-x:auto}
+.tab{padding:12px 20px;cursor:pointer;font-size:0.8rem;font-weight:500;color:#777;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.4px}
+.tab:hover{color:#ccc}
+.tab.on{color:#fff;border-bottom-color:var(--accent)}
+
+/* MAIN */
+.main{padding:24px 36px;max-width:1440px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+
+/* SECTION TITLE */
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1.5px;margin:0 0 14px;padding-bottom:6px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.st .sq{width:9px;height:9px;border-radius:2px;background:var(--accent)}
+
+/* KPI GRID */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--polycab)}
+.kpi[data-c=copper]::before{background:var(--copper)}
+.kpi[data-c=alum]::before{background:var(--alum)}
+.kpi[data-c=pvc]::before{background:var(--pvc)}
+.kpi[data-c=fmeg]::before{background:var(--fmeg)}
+.kpi-co{font-size:.65rem;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;line-height:1}
+.kpi-lbl{font-size:.62rem;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.kpi-yoy{margin-top:7px;font-size:.7rem;font-weight:600;padding:2px 6px;border-radius:3px;display:inline-block}
+.up{background:#dcfce7;color:#15803d}.dn{background:#fee2e2;color:#b91c1c}.flat{background:#f3f4f6;color:#6b7280}
+.kpi-sub{font-size:.65rem;color:var(--muted);margin-top:5px}
+
+/* CHART GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:24px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:24px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+.ct{font-size:.72rem;font-weight:600;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.cw{position:relative;height:240px}
+.cw-lg{position:relative;height:300px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl th{background:#1a1714;color:#fff;padding:9px 12px;text-align:left;font-size:.68rem;letter-spacing:.8px;font-family:'DM Mono',monospace;font-weight:400;white-space:nowrap}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#faf9f6}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
+.mono{font-family:'DM Mono',monospace;font-size:.78rem}
+.tag{padding:2px 7px;border-radius:3px;font-size:.65rem;font-weight:600;font-family:'DM Mono',monospace}
+.buy{background:#dcfce7;color:#15803d}.hold{background:#fef9c3;color:#854d0e}.neutral{background:#f3f4f6;color:#6b7280}.red{background:#fee2e2;color:#b91c1c}
+
+/* PROFILE / MITIGATION CARDS */
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:-10px;right:-10px;width:70px;height:70px;border-radius:50%;opacity:.06;background:var(--polycab)}
+.pc[data-c=copper]::after{background:var(--copper)}
+.pc[data-c=alum]::after{background:var(--alum)}
+.pc[data-c=pvc]::after{background:var(--pvc)}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px}
+.ptype{font-size:.63rem;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:500}
+.pure{background:#e0f2fe;color:#0369a1}.hybrid{background:#fef3c7;color:#92400e}.spec{background:#ede9fe;color:#5b21b6}
+.sb{margin-bottom:6px}
+.sl{display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:2px;color:var(--muted)}
+.st2{height:5px;background:#f0ede8;border-radius:3px;overflow:hidden}
+.sf{height:100%;border-radius:3px}
+.pdiv{border:none;border-top:1px solid var(--border);margin:10px 0}
+.pi{font-size:.74rem;color:var(--muted);line-height:1.5}
+.pi strong{color:var(--text)}
+
+/* ANALYST CARDS */
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.ac-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;margin-bottom:8px}
+.ac-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ac-lbl{font-size:.7rem;color:var(--muted)}
+.ac-val{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500}
+.ac-view{font-size:.73rem;color:var(--muted);line-height:1.5;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+
+/* RISK */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.rc-title{font-weight:600;font-size:.78rem;margin-bottom:9px}
+.ri{display:flex;gap:7px;align-items:flex-start;font-size:.74rem;color:var(--muted);margin-bottom:5px;line-height:1.5}
+
+/* FOOTNOTE */
+.fn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;margin-top:20px}
+.wm{text-align:center;padding:10px;font-size:.66rem;color:#ccc;font-family:'DM Mono',monospace;letter-spacing:1px}
+
+/* MARKET PRICE ROW */
+.mp-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.mp{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.mp-co{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.mp-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem}
+.mp-chg{font-size:.68rem;font-family:'DM Mono',monospace;margin-top:3px}
+.mp-hi{font-size:.62rem;color:var(--muted);margin-top:3px}
+.mp-pe{font-size:.7rem;font-weight:600;margin-top:4px;font-family:'DM Mono',monospace}
+
+/* RM TIMELINE */
+.tl{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:24px}
+.tl-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--border)}
+.tl-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.tl-when{font-family:'DM Mono',monospace;font-size:.68rem;font-weight:500;color:var(--accent);min-width:110px;padding-top:2px}
+.tl-what{font-size:.76rem;color:var(--muted);line-height:1.55}
+.tl-what strong{color:var(--text)}
+
+@media(max-width:900px){
+  .main{padding:12px}
+  .hdr{padding:14px;flex-direction:column;gap:8px}
+  .kpi-row,.mp-row{grid-template-columns:repeat(2,1fr)}
+  .g2,.g3,.g21,.pg,.ag,.rg{grid-template-columns:1fr}
+  .tl-row{flex-direction:column;gap:4px}
+}
+
+/* ══ CB ASSIST ══ */
+.cba-wrap{max-width:900px;margin:0 auto;}
+.cba-head{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:12px;border-bottom:3px solid var(--accent);}
+.cba-logo{width:46px;height:46px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;flex-shrink:0;letter-spacing:1px;}
+.cba-head-text h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;margin-bottom:2px;}
+.cba-head-text p{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;}
+.cba-qlbl{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding:6px 0 6px 10px;border-left:3px solid var(--accent);}
+.qa-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.qa-q{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;cursor:pointer;transition:background .15s;}
+.qa-q:hover{background:#faf9f6;}
+.qa-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--border);line-height:1;flex-shrink:0;width:30px;}
+.qa-qtxt .qen{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:3px;}
+.qa-qtxt .qta{font-size:.78rem;color:var(--accent);font-weight:500;}
+.qa-toggle{margin-left:auto;font-size:.8rem;color:var(--muted);flex-shrink:0;transition:transform .2s;padding-top:2px;}
+.qa-card.open .qa-toggle{transform:rotate(180deg);}
+.qa-ans{display:none;padding:0 16px 16px 58px;border-top:1px solid var(--border);}
+.qa-card.open .qa-ans{display:block;}
+.ans-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-top:12px;margin-bottom:4px;}
+.ans-en{font-size:.8rem;color:var(--text);line-height:1.75;}
+.ans-ta{font-size:.78rem;color:var(--muted);line-height:1.75;font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+/* live chat */
+.cba-chat{background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:18px 20px;margin-top:22px;}
+.cba-chat-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.cba-chat-title .live-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+.chat-msgs{min-height:100px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.cmsg{padding:9px 13px;border-radius:8px;font-size:.8rem;max-width:88%;line-height:1.55;}
+.cmsg.u{background:#1a1714;color:#fff;align-self:flex-end;border-radius:8px 8px 2px 8px;}
+.cmsg.b{background:#f5f4f0;border:1px solid var(--border);align-self:flex-start;border-radius:8px 8px 8px 2px;}
+.cmsg.b strong{color:var(--accent);}
+.chat-row{display:flex;gap:8px;}
+.chat-in{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:.8rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-in:focus{border-color:var(--accent);}
+.chat-btn{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:.78rem;font-family:'DM Mono',monospace;letter-spacing:.5px;cursor:pointer;transition:opacity .18s;}
+.chat-btn:hover{opacity:.85;}
+.chat-btn:disabled{opacity:.45;cursor:not-allowed;}
+.typing{display:none;align-items:center;gap:5px;padding:6px 12px;}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:tdot 1.1s infinite;}
+.typing span:nth-child(2){animation-delay:.18s;}.typing span:nth-child(3){animation-delay:.36s;}
+@keyframes tdot{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>Polycab India · Q1 FY27</h1>
+    <p>BUSINESS &amp; INVESTMENT ANALYSIS · RAW MATERIAL FOCUS: COPPER · ALUMINIUM · PVC RESIN · BSE FILING 16 JUL 2026 · UPDATED 17 JUL 2026</p>
+  </div>
+  <div class="badges">
+    <span class="bdg bdg-r">Q1 FY27 ACTUALS</span>
+    <span class="bdg bdg-g">NSE: POLYCAB · BSE: 542652</span>
+    <span class="bdg bdg-g">₹ Cr · Consolidated · Official Filings + Concall</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="sw('ov')">Overview</div>
+  <div class="tab" onclick="sw('rm')">🔥 Raw Material Deep-Dive</div>
+  <div class="tab" onclick="sw('perf')">Performance &amp; Charts</div>
+  <div class="tab" onclick="sw('seg')">Business Segments</div>
+  <div class="tab" onclick="sw('an')">Analyst View · Risks</div>
+  <div class="tab" style="color:#c84b31;font-weight:700;" onclick="sw('cbassist')">🤖 CB Assist</div>
+</div>
+
+<div class="main">
+
+<!-- ══ TAB 1: OVERVIEW ══ -->
+<div id="pov" class="pane on">
+
+  <div class="st"><div class="sq"></div> MARKET SNAPSHOT (NSE · Post Q1 FY27 Results, 16–17 Jul 2026)</div>
+  <div class="mp-row">
+    <div class="mp">
+      <div class="mp-co">CMP</div>
+      <div class="mp-price" style="color:var(--polycab)">₹9,245</div>
+      <div class="mp-chg dn">▼ ~0.9–1.1% post results</div>
+      <div class="mp-hi">52W: ₹6,620–₹10,126</div>
+      <div class="mp-pe">~8.7% below 52W high</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Q1 Revenue</div>
+      <div class="mp-price">₹8,210</div>
+      <div class="mp-chg up">▲ +39% YoY</div>
+      <div class="mp-hi">Highest-ever Q1</div>
+      <div class="mp-pe">−7.4% QoQ (seasonal)</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Q1 PAT</div>
+      <div class="mp-price">₹797</div>
+      <div class="mp-chg up">▲ +33% YoY · RECORD</div>
+      <div class="mp-hi">Highest-ever quarterly PAT</div>
+      <div class="mp-pe">EPS ₹51.94 vs ₹39.21</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">EBITDA Margin</div>
+      <div class="mp-price">13.8%</div>
+      <div class="mp-chg up">▲ +70 bps QoQ</div>
+      <div class="mp-hi">EBITDA ₹1,136 Cr (+32%)</div>
+      <div class="mp-pe">Despite RM volatility</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Net Cash</div>
+      <div class="mp-price">₹3,990</div>
+      <div class="mp-chg up">▲ Fortress B/S</div>
+      <div class="mp-hi">WC cycle 15 days (temp.)</div>
+      <div class="mp-pe">Capex ₹320 Cr in Q1</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Dividend</div>
+      <div class="mp-price">₹47</div>
+      <div class="mp-chg flat">◆ Final FY26, paid 30 Jun</div>
+      <div class="mp-hi">Total payout ₹708 Cr</div>
+      <div class="mp-pe">8 yrs of dividend growth</div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> Q1 FY27 KPI SNAPSHOT — THE HEADLINE STORY (₹ Cr · Quarter Ended 30 Jun 2026)</div>
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-co">Consolidated Revenue</div>
+      <div class="kpi-val">₹8,210</div>
+      <div class="kpi-lbl">vs ₹5,906 Q1 FY26</div>
+      <span class="kpi-yoy up">+39% YoY</span>
+      <div class="kpi-sub">But volume only low-to-mid single digit — the gap is commodity inflation</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-co">Wires &amp; Cables</div>
+      <div class="kpi-val">₹7,202</div>
+      <div class="kpi-lbl">SEGMENT REVENUE · +37.7% YoY</div>
+      <span class="kpi-yoy up">Dom. +43%</span>
+      <div class="kpi-sub">EBIT 13.3% · Wires outpaced cables · Channel &gt; institutional</div>
+    </div>
+    <div class="kpi" data-c="fmeg">
+      <div class="kpi-co">FMEG</div>
+      <div class="kpi-val">~₹700</div>
+      <div class="kpi-lbl">SEGMENT REVENUE · RECORD</div>
+      <span class="kpi-yoy up">+71% YoY</span>
+      <div class="kpi-sub">EBIT 8% · Solar #1 (&gt;2x) · 10th straight qtr of industry outperformance</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-co">EPC</div>
+      <div class="kpi-val">₹308</div>
+      <div class="kpi-lbl">SEGMENT REVENUE</div>
+      <span class="kpi-yoy dn">−11% YoY</span>
+      <div class="kpi-sub">Milestone timing · EBIT 11% · BharatNet+RDSS order book ₹10,900 Cr</div>
+    </div>
+    <div class="kpi" data-c="copper">
+      <div class="kpi-co">Raw Material Shock</div>
+      <div class="kpi-val">Cu ▲▼</div>
+      <div class="kpi-lbl">COPPER SPIKE THEN JUNE CRASH</div>
+      <span class="kpi-yoy dn">Al −18–20% in June</span>
+      <div class="kpi-sub">Mgmt: copper peaked near ~14,000 levels, corrected to ~13,100–13,200</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-co">Exports</div>
+      <div class="kpi-val">−13%</div>
+      <div class="kpi-lbl">INTERNATIONAL REVENUE YoY</div>
+      <span class="kpi-yoy dn">Middle East drag</span>
+      <div class="kpi-sub">US ~50% of export mix · Healthy order book · Recovery guided</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Quarterly Revenue Trend (₹ Cr) — 5 Quarters</div>
+      <div class="cw"><canvas id="c_rev"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Value Growth vs Volume Growth — The Commodity Wedge (Q1 FY27, YoY %)</div>
+      <div class="cw"><canvas id="c_wedge"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> THE ONE-PARAGRAPH THESIS</div>
+  <div class="tl">
+    <div class="tl-row">
+      <div class="tl-when">CB READ</div>
+      <div class="tl-what"><strong>Q1 FY27 was a raw-material stress test — and Polycab passed it.</strong> Copper and aluminium whipsawed violently during the quarter (Strait of Hormuz / US–Iran escalation drove an April spike; June saw aluminium plunge 18–20% point-to-point and copper correct sharply). A pass-through business should bleed margin in that environment. Instead, EBITDA margin <strong>expanded</strong> 70 bps QoQ to 13.8%, W&amp;C EBIT hit 13.3%, and PAT set an all-time quarterly record of ₹797 Cr. The mitigation machinery — cost-plus pricing, backward integration, LC-financed procurement, mix management — worked. The flip side: 39% revenue growth flatters; underlying volume grew only low-to-mid single digits on a 26% base, June destocking hit channel offtake as dealers anticipated price cuts, and Polycab cut prices 3–4% in early July. Q2 realizations will be softer. The demand story (T&amp;D, solar, data centres) is intact; the near-term optics will be noisier.</div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> COMPARATIVE FINANCIALS — Q1 FY27 vs PRIOR PERIODS</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>YoY %</th><th>Q4 FY26</th><th>QoQ %</th><th>FY26 Full Year</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Revenue (₹ Cr)</td><td class="mono">8,210</td><td class="mono">5,906</td><td><span class="tag buy">+39.0%</span></td><td class="mono">8,864</td><td><span class="tag red">−7.4%</span></td><td class="mono">28,884</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>EBITDA (₹ Cr)</td><td class="mono">1,136</td><td class="mono">~861</td><td><span class="tag buy">+32%</span></td><td class="mono">~1,161</td><td><span class="tag hold">−2%</span></td><td class="mono">~4,015</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>EBITDA Margin %</td><td class="mono">13.8%</td><td class="mono">~14.6%</td><td><span class="tag hold">−80 bps</span></td><td class="mono">13.1%</td><td><span class="tag buy">+70 bps</span></td><td class="mono">13.9%</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>PAT (₹ Cr)</td><td class="mono">797 ★</td><td class="mono">600</td><td><span class="tag buy">+33%</span></td><td class="mono">~786</td><td><span class="tag buy">+1.4%</span></td><td class="mono">2,708</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>PAT Margin %</td><td class="mono">9.7%</td><td class="mono">10.2%</td><td><span class="tag hold">−50 bps</span></td><td class="mono">8.9%</td><td><span class="tag buy">+80 bps</span></td><td class="mono">9.4%</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Total Expenses (₹ Cr)</td><td class="mono">7,256</td><td class="mono">5,185</td><td><span class="tag red">+39.9%</span></td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>EPS (₹, diluted)</td><td class="mono">51.94</td><td class="mono">39.21</td><td><span class="tag buy">+32%</span></td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div style="font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace">★ Highest-ever quarterly PAT. Expenses grew 39.9% — marginally faster than revenue (39.0%) — the direct footprint of copper/aluminium input inflation, absorbed via pass-through pricing. Q4 FY26 comparatives per company disclosure are balancing figures between audited annual and 9M results. ~ denotes CB Research estimates derived from disclosed margins.</div>
+</div><!-- /pov -->
+
+<!-- ══ TAB 2: RAW MATERIAL DEEP-DIVE ══ -->
+<div id="prm" class="pane">
+
+  <div class="st"><div class="sq"></div> WHY RAW MATERIALS ARE THE WHOLE GAME — COST STRUCTURE ANATOMY</div>
+  <div class="kpi-row">
+    <div class="kpi" data-c="copper">
+      <div class="kpi-co">Copper</div>
+      <div class="kpi-val">~55–60%</div>
+      <div class="kpi-lbl">OF RAW MATERIAL BASKET (est.)</div>
+      <span class="kpi-yoy dn">Peak → June correction</span>
+      <div class="kpi-sub">Conductor for wires, power &amp; control cables. Single biggest cost driver.</div>
+    </div>
+    <div class="kpi" data-c="alum">
+      <div class="kpi-co">Aluminium</div>
+      <div class="kpi-val">~15–20%</div>
+      <div class="kpi-lbl">OF RAW MATERIAL BASKET (est.)</div>
+      <span class="kpi-yoy dn">−18–20% in June alone</span>
+      <div class="kpi-sub">LT power cables, overhead conductors, aerial bunched cables.</div>
+    </div>
+    <div class="kpi" data-c="pvc">
+      <div class="kpi-co">PVC Resin &amp; Compounds</div>
+      <div class="kpi-val">~10–15%</div>
+      <div class="kpi-lbl">OF RAW MATERIAL BASKET (est.)</div>
+      <span class="kpi-yoy flat">◆ Softening into July</span>
+      <div class="kpi-sub">Insulation &amp; sheathing + FMEG pipes/conduits. India is import-dependent.</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-co">RM as % of Revenue</div>
+      <div class="kpi-val">~73–75%</div>
+      <div class="kpi-lbl">MATERIAL INTENSITY (est.)</div>
+      <span class="kpi-yoy flat">◆ Structural</span>
+      <div class="kpi-sub">A 5% metal move ≈ ~370 bps of revenue-equivalent cost swing if unhedged.</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-co">Optical Fibre</div>
+      <div class="kpi-val">Locked</div>
+      <div class="kpi-lbl">BHARATNET INPUT · 2–3 YEARS</div>
+      <span class="kpi-yoy up">Secured pre-spike</span>
+      <div class="kpi-sub">Fibre prices on uptick; Polycab pre-contracted supply → margin protected.</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-co">Pass-Through Lag</div>
+      <div class="kpi-val">~0–4 wks</div>
+      <div class="kpi-lbl">PRICING RESPONSE SPEED</div>
+      <span class="kpi-yoy up">Cost-plus model</span>
+      <div class="kpi-sub">"Whatever is the cost, we'll pass it on" — mgmt on Q1 FY27 concall.</div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> THE Q1 FY27 COMMODITY TIMELINE — WHAT ACTUALLY HAPPENED (APR–JUL 2026)</div>
+  <div class="tl">
+    <div class="tl-row">
+      <div class="tl-when">APR 2026</div>
+      <div class="tl-what"><strong>The escalation spike.</strong> Strait of Hormuz disruption and the US–Iran conflict pushed oil to its peak; energy-driven inflation cascaded into metals. Copper and aluminium ran up hard. For a cable maker this means: input cost per km of cable surges, but revenue per km surges too (cost-plus pricing). Channel dealers, seeing prices rising, <strong>stocked aggressively</strong> — rising-price quarters normally pull demand forward.</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-when">APR–MAY 2026</div>
+      <div class="tl-what"><strong>Elevated plateau.</strong> Polycab's realizations stayed "commodity-linked favourable" — management explicitly credited favourable commodity-linked realizations for part of the 43% domestic W&amp;C value growth. Volume grew only low-to-mid single digits (on a brutal 26% volume base from Q1 FY26). Roughly speaking, of the 39% consolidated value growth, the majority was <strong>price (metal inflation) and mix, not tonnage</strong>.</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-when">JUN 2026</div>
+      <div class="tl-what"><strong>The crash.</strong> Point-to-point (1 Jun → 30 Jun), aluminium plunged <strong>18–20%</strong>. Copper, which management said had run to roughly ~14,000 levels, corrected to ~13,100–13,200. The channel flipped instantly from stocking to <strong>destocking</strong> — dealers stopped buying, anticipating price cuts. Management confirmed quarter-end stocking was "below expectation." This is the classic pass-through paradox: falling input prices are a near-term revenue headwind.</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-when">EARLY JUL 2026</div>
+      <div class="tl-what"><strong>The reset.</strong> Polycab took a <strong>3–4% price revision (cut)</strong> in the first fortnight of July, passing the metal deflation to the market. This restarts channel buying (dealers restock once they believe prices have bottomed) but compresses Q2 FY27 revenue realization per unit. PVC resin simultaneously softened through late June–early July as monsoon slowed construction offtake — a mild tailwind for insulation and FMEG conduit costs.</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Copper &amp; Aluminium — Indexed Price Path Through Q1 FY27 (Apr = 100, illustrative per mgmt commentary)</div>
+      <div class="cw-lg"><canvas id="c_metal"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Estimated Raw Material Basket Mix (% of RM Cost)</div>
+      <div class="cw-lg"><canvas id="c_rmmix"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> HOW EACH INPUT HIT THE P&amp;L — AND HOW POLYCAB NEUTRALISED IT</div>
+  <div class="pg">
+    <div class="pc" data-c="copper">
+      <div class="pc-top"><div class="pc-name" style="color:var(--copper)">COPPER</div><span class="ptype hybrid">Spike → Correction</span></div>
+      <div class="sb"><div class="sl"><span>P&amp;L exposure severity</span><span>Very High</span></div><div class="st2"><div class="sf" style="width:92%;background:var(--copper)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Mitigation effectiveness in Q1</span><span>High</span></div><div class="st2"><div class="sf" style="width:82%;background:#22c55e"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>Impact:</strong> Total expenses +39.9% YoY (₹7,256 Cr) — copper is the biggest reason. Revenue inflated in tandem (+39%), masking single-digit volumes. June's sharp correction triggered channel destocking, denting quarter-end offtake.<br><br><strong>Mitigation:</strong> (1) Cost-plus pricing — hikes passed within weeks during the run-up; (2) In-house copper rod drawing (backward integration) captures conversion margin and smooths spot exposure; (3) LC-based procurement stretched payables (~80–90 days vs inventory ~100–110 days), letting suppliers' credit finance the costlier metal; (4) order-backed purchasing aligns metal buys to confirmed institutional orders.</div>
+    </div>
+    <div class="pc" data-c="alum">
+      <div class="pc-top"><div class="pc-name" style="color:var(--alum)">ALUMINIUM</div><span class="ptype red" style="background:#fee2e2;color:#b91c1c">−18–20% in June</span></div>
+      <div class="sb"><div class="sl"><span>P&amp;L exposure severity</span><span>High</span></div><div class="st2"><div class="sf" style="width:65%;background:var(--alum)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Mitigation effectiveness in Q1</span><span>High</span></div><div class="st2"><div class="sf" style="width:80%;background:#22c55e"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>Impact:</strong> The single most violent move of the quarter — an 18–20% point-to-point collapse within June. Aluminium-heavy products (LT power cables, ABC conductors) faced inventory mark-down risk: metal bought in May was suddenly worth far less as finished-goods pricing reset.<br><br><strong>Mitigation:</strong> (1) The July 3–4% price cut was calibrated — smaller than the metal fall because copper fell less than aluminium and blended RM cost matters; (2) high inventory turns in cables limit the stale-inventory window; (3) institutional/EPC contracts typically carry price-variation clauses tied to metal indices, transferring the deflation symmetrically; (4) FIFO consumption of pre-crash inventory was cushioned by the wires-heavy, channel-heavy mix which carries better gross margins.</div>
+    </div>
+    <div class="pc" data-c="pvc">
+      <div class="pc-top"><div class="pc-name" style="color:var(--pvc)">PVC RESIN</div><span class="ptype spec">Quiet Tailwind</span></div>
+      <div class="sb"><div class="sl"><span>P&amp;L exposure severity</span><span>Moderate</span></div><div class="st2"><div class="sf" style="width:40%;background:var(--pvc)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Mitigation effectiveness</span><span>Structural</span></div><div class="st2"><div class="sf" style="width:88%;background:#22c55e"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>Impact:</strong> PVC is the insulation/sheathing workhorse and feeds FMEG pipes &amp; conduits (a top-3 FMEG category this quarter). India remains structurally import-dependent (domestic capacity ~1.8 mtpa vs ~4.7 mtpa demand), so anti-dumping duties on suspension resin have narrowed the import-domestic gap and firmed the floor price. Through late June–early July 2026, resin prices softened as monsoon slowed construction — a modest cost tailwind entering Q2.<br><br><strong>Mitigation:</strong> (1) In-house PVC/FR/FRLS/XLPE compounding — Polycab manufactures its own compounds rather than buying finished compound, capturing spread and controlling quality; (2) diversified resin sourcing across domestic and import channels; (3) FMEG conduit pricing adjusts with resin, same pass-through logic as metals.</div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> THE MITIGATION PLAYBOOK — SIX LEVERS, RANKED BY Q1 FY27 CONTRIBUTION</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>#</th><th>Lever</th><th>Mechanism</th><th>Q1 FY27 Evidence</th><th>Effectiveness</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td><strong>Cost-plus pass-through pricing</strong></td><td>Prices revised with metal moves, both directions. "Whatever is the cost, we'll pass it on."</td><td class="mono">Hikes through Apr–May run-up; 3–4% cut early July after the crash</td><td><span class="tag buy">CORE</span></td></tr>
+      <tr><td class="mono">2</td><td><strong>Favourable mix shift</strong></td><td>Wires &gt; cables; channel &gt; institutional — both are higher-margin, cushioning RM pressure</td><td class="mono">Wires high-single-digit volume vs cables low-mid; margins +70 bps QoQ</td><td><span class="tag buy">HIGH</span></td></tr>
+      <tr><td class="mono">3</td><td><strong>LC-financed procurement</strong></td><td>Letters of credit stretch payables to ~80–90 days against ~100–110 days inventory — supplier credit funds costly metal</td><td class="mono">Working capital collapsed to 15 days (vs 45–50 normal) in Q1</td><td><span class="tag buy">HIGH</span></td></tr>
+      <tr><td class="mono">4</td><td><strong>Backward integration</strong></td><td>In-house copper rod drawing + own PVC/XLPE compound manufacturing captures conversion spread</td><td class="mono">Structural — supports 13.3% W&amp;C EBIT through the volatility</td><td><span class="tag buy">STRUCTURAL</span></td></tr>
+      <tr><td class="mono">5</td><td><strong>Input pre-contracting</strong></td><td>Lock critical inputs ahead of execution when prices are favourable</td><td class="mono">BharatNet optical fibre secured for full 2–3 yr execution before the fibre price uptick</td><td><span class="tag buy">TARGETED</span></td></tr>
+      <tr><td class="mono">6</td><td><strong>Operating leverage + premiumization</strong></td><td>Scale absorbs fixed costs; FMEG premium mix (25% overall, fans 33%, lighting 38%) lifts gross margin above input inflation</td><td class="mono">FMEG EBIT reached 8% — the FY30 target band — 4 years early on quarterly basis</td><td><span class="tag buy">RISING</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="rg">
+    <div class="rc"><div class="rc-title">✅ What Worked — The Proof Points</div>
+      <div class="ri"><span>🎯</span><span><strong>Margins expanded into the storm:</strong> EBITDA 13.8% (+70 bps QoQ), W&amp;C EBIT 13.3% — at the top of the 11–13% Project Spring guidance band — during the most volatile metal quarter in recent memory.</span></div>
+      <div class="ri"><span>💰</span><span><strong>Record PAT ₹797 Cr:</strong> input inflation of ~40% on the expense line was fully monetized on the revenue line. The pass-through engine has near-zero leakage.</span></div>
+      <div class="ri"><span>🏦</span><span><strong>Balance sheet got stronger, not weaker:</strong> net cash ₹3,990 Cr and WC at 15 days even while carrying costlier inventory — the LC strategy did exactly what it was designed to do.</span></div>
+      <div class="ri"><span>🧵</span><span><strong>Fibre lock-in:</strong> the BharatNet fibre pre-buy is a textbook procurement hedge — high-single-digit EPC margins protected for 2–3 years regardless of fibre spot prices.</span></div>
+    </div>
+    <div class="rc"><div class="rc-title">⚠️ What To Watch — The Honest Caveats</div>
+      <div class="ri"><span>📉</span><span><strong>Q2 realization headwind:</strong> the 3–4% July price cut plus lower metal prices mechanically deflate revenue per km. Value growth will look weaker even if volumes recover.</span></div>
+      <div class="ri"><span>📦</span><span><strong>Destocking overhang:</strong> channel stocking was "below expectation" in June. If dealers wait for further cuts, Q2 volume could stay soft before the restock kicks in.</span></div>
+      <div class="ri"><span>🔄</span><span><strong>WC normalization:</strong> the 15-day working capital is temporary (LC payables). Reversion to 45–50 days will consume cash flow in coming quarters — don't extrapolate Q1 FCF.</span></div>
+      <div class="ri"><span>🧪</span><span><strong>Volume vs value honesty:</strong> low-to-mid single-digit volume growth is the real demand signal. The 39% headline is a commodity artifact. Watch H2 volume prints on softer bases.</span></div>
+      <div class="ri"><span>🛢️</span><span><strong>PVC duty floor:</strong> anti-dumping duties protect Indian resin makers but set a firmer cost floor for converters like Polycab if global resin stays weak.</span></div>
+    </div>
+  </div>
+</div><!-- /rm -->
+
+<!-- ══ TAB 3: PERFORMANCE & CHARTS ══ -->
+<div id="pperf" class="pane">
+
+  <div class="st"><div class="sq"></div> PROFITABILITY THROUGH THE COMMODITY CYCLE</div>
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Revenue vs PAT — 5-Quarter Trend (₹ Cr)</div>
+      <div class="cw-lg"><canvas id="c_revpat"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">EBITDA Margin % Trend</div>
+      <div class="cw-lg"><canvas id="c_ebitdatrend"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> SEGMENT ENGINE ROOM</div>
+  <div class="g3">
+    <div class="cc">
+      <div class="ct">Segment Revenue — Q1 FY27 (₹ Cr)</div>
+      <div class="cw"><canvas id="c_segrev"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Segment EBIT Margin % — Q1 FY27</div>
+      <div class="cw"><canvas id="c_segmargin"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Segment Revenue Growth YoY %</div>
+      <div class="cw"><canvas id="c_seggrowth"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> EXPORT MIX &amp; DEMAND GEOGRAPHY</div>
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Export Revenue Mix — Q1 FY27 (% of International Sales, per Concall)</div>
+      <div class="cw"><canvas id="c_export"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">FMEG Premium Mix % — Category-Wise (Q1 FY27)</div>
+      <div class="cw"><canvas id="c_premium"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> CAPITAL ALLOCATION &amp; BALANCE SHEET</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead>
+      <tr><th>Item</th><th>Q1 FY27 Position</th><th>Context / CB Note</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Net Cash</td><td class="mono">₹3,990 Cr</td><td>Down from ₹4,190 Cr at FY26-end after ₹708 Cr dividend outflow (30 Jun) — still a fortress</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Working Capital</td><td class="mono">15 days (vs 45–50 normal)</td><td>Temporary — LC payables against costly RM inventory. Expect reversion; a cash-flow drag ahead</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Capex (Q1)</td><td class="mono">₹320 Cr</td><td>Part of ₹1,200–1,600 Cr/yr and ₹6,000–8,000 Cr 5-yr Project Spring commitment</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Finance Cost / Other Income</td><td class="mono">₹80 Cr / ₹105 Cr</td><td>Other income exceeds finance cost — cash pile earns its keep</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Dividend</td><td class="mono">₹47/share final FY26 (paid)</td><td>8 consecutive years of dividend increases; ~27% payout on FY26 PAT</td></tr>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>EPC Order Book</td><td class="mono">₹10,900 Cr (BharatNet + RDSS)</td><td>~₹800 Cr each expected to convert to revenue in FY27; fibre input already secured</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="st"><div class="sq"></div> FY27 GUIDANCE SCORECARD</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Guidance Item</th><th>Target</th><th>Q1 FY27 Status</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>W&amp;C growth vs market</td><td class="mono">1.5x market growth</td><td class="mono">+39% value; low-mid single-digit volume on 26% base</td><td><span class="tag buy">ON TRACK</span></td></tr>
+      <tr><td>W&amp;C EBIT margin (Project Spring)</td><td class="mono">11–13% medium-term</td><td class="mono">13.3% — above band top</td><td><span class="tag buy">AHEAD</span></td></tr>
+      <tr><td>FMEG growth</td><td class="mono">1.5–2x industry</td><td class="mono">+71% YoY, 10th straight qtr of outperformance</td><td><span class="tag buy">AHEAD</span></td></tr>
+      <tr><td>FMEG EBITDA margin</td><td class="mono">8–10% by FY30</td><td class="mono">EBIT already 8% this quarter (seasonality-aided)</td><td><span class="tag buy">EARLY</span></td></tr>
+      <tr><td>Exports share of revenue</td><td class="mono">&gt;10% by FY30</td><td class="mono">−13% YoY this qtr; US setup complete, order book healthy</td><td><span class="tag hold">BEHIND</span></td></tr>
+      <tr><td>EPC (BharatNet + RDSS)</td><td class="mono">~₹1,600 Cr in FY27</td><td class="mono">₹308 Cr in Q1 (timing); margins 11%</td><td><span class="tag hold">TIMING</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /perf -->
+
+
+<!-- ══ TAB 4: BUSINESS SEGMENTS ══ -->
+<div id="pseg" class="pane">
+
+  <div class="st"><div class="sq"></div> BUSINESS ARCHITECTURE — WHERE THE RAW MATERIAL EXPOSURE LIVES</div>
+  <div class="pg">
+    <div class="pc">
+      <div class="pc-top"><div class="pc-name" style="color:var(--wc)">WIRES &amp; CABLES</div><span class="ptype pure">~88% of Revenue</span></div>
+      <div class="sb"><div class="sl"><span>Revenue share Q1 FY27</span><span>88%</span></div><div class="st2"><div class="sf" style="width:88%;background:var(--wc)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Copper/Al exposure</span><span>Very High</span></div><div class="st2"><div class="sf" style="width:92%;background:var(--copper)"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>₹7,202 Cr, +37.7% YoY; domestic +43%.</strong> EBIT 13.3%. Wires (retail, channel-sold, copper-intensive) outgrew cables — a margin-positive mix. West strongest region, then North, South, East. This is where the entire copper/aluminium pass-through machinery operates. India's #1 with 30–31% organised share, gained 3–4 pts in FY26.</div>
+    </div>
+    <div class="pc" data-c="fmeg">
+      <div class="pc-top"><div class="pc-name" style="color:var(--fmeg)">FMEG</div><span class="ptype hybrid">~8.5% of Revenue</span></div>
+      <div class="sb"><div class="sl"><span>Revenue share Q1 FY27</span><span>8.5%</span></div><div class="st2"><div class="sf" style="width:8.5%;background:var(--fmeg)"></div></div></div>
+      <div class="sb"><div class="sl"><span>PVC/commodity exposure</span><span>Moderate</span></div><div class="st2"><div class="sf" style="width:45%;background:var(--pvc)"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>~₹700 Cr, +71% YoY — record quarter.</strong> EBIT 8%. Category order by size: Solar (&gt;2x growth, PM Surya Ghar tailwind) → Fans → Pipes &amp; Conduits (PVC-linked) → Lights → Switchgear/Switches. Premium mix 25% overall (fans 33%, lighting 38%). Turned profitable Q4 FY25; now compounding. Extended summer aided fans; new BEE norms cut fan prices ~4.5% industry-wide.</div>
+    </div>
+    <div class="pc">
+      <div class="pc-top"><div class="pc-name" style="color:var(--epc)">EPC</div><span class="ptype spec">~3.7% of Revenue</span></div>
+      <div class="sb"><div class="sl"><span>Revenue share Q1 FY27</span><span>3.7%</span></div><div class="st2"><div class="sf" style="width:3.7%;background:var(--epc)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Fibre/input exposure</span><span>Hedged</span></div><div class="st2"><div class="sf" style="width:85%;background:#22c55e"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>₹308 Cr, −11% YoY (milestone timing), EBIT 11%.</strong> BharatNet ₹8,000 Cr order (₹4,500 Cr new-build over 3 yrs) + RDSS ₹3,250 Cr → combined book ₹10,900 Cr. ~₹800 Cr each to convert in FY27. Fibre secured for the full execution window — the standout procurement hedge of the quarter. Long-term margin guidance: high single digits.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> DEMAND ARCHITECTURE — WHERE THE NEXT ₹10,000 CR COMES FROM</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Demand Driver</th><th>Scale / Data Point (per Concall)</th><th>Cable Intensity</th><th>CB Take</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#22c55e"></span>Power T&amp;D</td><td class="mono">Avg 20–21k ckm/yr FY26–30E vs 15k historic; 17k ckm expected FY27; 2k ckm done Apr–May alone</td><td class="mono">~15% of T&amp;D spend → cables</td><td>The core structural driver — execution now visible, not just planned</td></tr>
+      <tr><td><span class="dot" style="background:#f59e0b"></span>Renewables</td><td class="mono">55–56 GW added FY26; solar 150 GW → 500+ GW by FY36 (1,120 GW total target)</td><td class="mono">High — intra-plant + evacuation</td><td>Feeds both cables and FMEG solar (largest FMEG category)</td></tr>
+      <tr><td><span class="dot" style="background:#0ea5e9"></span>Data Centres</td><td class="mono">1.6 GW installed → 8–18 GW potential; 1 MW ≈ ₹3.5 Cr of cables (50–60% conventional, rest OFC)</td><td class="mono">₹20,000–25,000 Cr TAM over 6–8 yrs</td><td>Real but slow-burn — management honest that timing is the unknown</td></tr>
+      <tr><td><span class="dot" style="background:#7c3aed"></span>Private Capex</td><td class="mono">BSE-500 ex-BFSI committed ~₹11.6 lakh Cr over 12–18 months</td><td class="mono">Broad-based via 90% channel model</td><td>Distribution reach aggregates tier 2–4 demand better than peers</td></tr>
+      <tr><td><span class="dot" style="background:#c84b31"></span>Mobility &amp; Infra</td><td class="mono">10,000 km/yr highways; 800 Vande Bharats by 2030; airports, ports</td><td class="mono">10–12% of cable demand</td><td>Steady annuity-like demand layer</td></tr>
+      <tr><td><span class="dot" style="background:#64748b"></span>Exports</td><td class="mono">94 countries; 10 new geographies added FY26; US market-rep setup complete</td><td class="mono">Target &gt;10% of revenue by FY30</td><td>The FY27 swing factor — ME normalisation + US pickup could surprise</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /seg -->
+
+<!-- ══ TAB 5: ANALYST VIEW · RISKS ══ -->
+<div id="pan" class="pane">
+
+  <div class="st"><div class="sq"></div> INVESTMENT CASE — Q1 FY27 SCORECARD</div>
+  <div class="ag">
+    <div class="ac"><div class="ac-name" style="color:var(--polycab)">The Bull Case</div>
+      <div class="ac-row"><span class="ac-lbl">Record PAT</span><span class="ac-val">₹797 Cr — highest ever</span></div>
+      <div class="ac-row"><span class="ac-lbl">Margin discipline</span><span class="ac-val">13.8% EBITDA amid RM chaos</span></div>
+      <div class="ac-row"><span class="ac-lbl">FMEG inflection</span><span class="ac-val">+71% · EBIT 8% already</span></div>
+      <div class="ac-row"><span class="ac-lbl">Balance sheet</span><span class="ac-val">Net cash ₹3,990 Cr</span></div>
+      <div class="ac-view">The quarter proved the pass-through model works in BOTH directions of a commodity shock. Market-share leader (30–31%) compounding at 1.5x market with margins at the top of the guided band, plus an FMEG business hitting FY30 profitability milestones in FY27. T&amp;D supercycle execution is now measurable, not aspirational.</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:#854d0e">The Bear Case</div>
+      <div class="ac-row"><span class="ac-lbl">Real volume growth</span><span class="ac-val">Low-mid single digit</span></div>
+      <div class="ac-row"><span class="ac-lbl">July price cut</span><span class="ac-val">−3–4% → Q2 realization hit</span></div>
+      <div class="ac-row"><span class="ac-lbl">Exports</span><span class="ac-val">−13% YoY, ME still fragile</span></div>
+      <div class="ac-row"><span class="ac-lbl">Valuation</span><span class="ac-val">Rich — near 52W high zone</span></div>
+      <div class="ac-view">Strip out metal inflation and this was a mid-single-digit volume quarter on a high base. Deflating commodities now flip from revenue tailwind to headwind: destocking, price cuts, and optically weak H1 FY27 value growth. WC at 15 days reverses. At a premium multiple, the stock needs volume — not commodity pass-through — to justify itself. Competition is piling into the sector precisely because the demand story is well known.</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:#0369a1">The Watchlist</div>
+      <div class="ac-row"><span class="ac-lbl">Q2 FY27 volume</span><span class="ac-val">Restock post price-cut?</span></div>
+      <div class="ac-row"><span class="ac-lbl">Export recovery</span><span class="ac-val">US order book conversion</span></div>
+      <div class="ac-row"><span class="ac-lbl">Metal stability</span><span class="ac-val">Cu/Al range-bound = ideal</span></div>
+      <div class="ac-row"><span class="ac-lbl">FMEG seasonality</span><span class="ac-val">Can 8% EBIT hold ex-summer?</span></div>
+      <div class="ac-view">Three prints decide the FY27 narrative: (1) whether channel restocking materialises in Aug–Sep after the July price reset; (2) whether US exports convert the "healthy inquiry bank" into revenue; (3) whether FMEG margin holds once fan/cooling seasonality fades. Stable — even boring — metal prices are the best-case backdrop: volumes become visible again and destocking noise disappears.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> RISKS — RANKED</div>
+  <div class="rg">
+    <div class="rc"><div class="rc-title">🔴 Raw Material &amp; Macro Risks</div>
+      <div class="ri"><span>🪙</span><span><strong>Commodity whiplash (recurring):</strong> A second spike-crash cycle in copper/aluminium repeats the Q1 pattern — inflated revenue, destocking air-pockets, price-revision churn. Pass-through protects margin %, not volume visibility.</span></div>
+      <div class="ri"><span>⚓</span><span><strong>Strait of Hormuz / US–Iran:</strong> Tensions resurfaced in the week before results. Direct hit to Middle East exports (was 20–24% of export mix via Oman/Saudi/UAE) and indirect hit via oil-led metal inflation.</span></div>
+      <div class="ri"><span>🛢️</span><span><strong>PVC duty regime:</strong> Anti-dumping duties on resin imports firm the cost floor for a structurally import-dependent input (India: ~1.8 mtpa capacity vs ~4.7 mtpa demand) — a slow cost creep until domestic capacity (RIL ~1.5 mtpa by 2027) lands.</span></div>
+      <div class="ri"><span>📈</span><span><strong>Rate environment:</strong> RBI on hold at 5.25% but flagging INR volatility; a hawkish global turn slows real estate — the bedrock of retail wire demand.</span></div>
+    </div>
+    <div class="rc"><div class="rc-title">🏢 Company-Specific Risks</div>
+      <div class="ri"><span>🔵</span><span><strong>Volume optics:</strong> Two more quarters of single-digit volume (even on high bases) would test the premium multiple regardless of value growth.</span></div>
+      <div class="ri"><span>🟠</span><span><strong>Capex execution:</strong> ₹6,000–8,000 Cr over 5 years under Project Spring — return discipline must hold as capacity lands into a more competitive market.</span></div>
+      <div class="ri"><span>🟣</span><span><strong>FMEG margin sustainability:</strong> Q1's 8% EBIT was seasonality-aided (extended summer). Structural target remains 8–10% by FY30 — expect quarterly wobble.</span></div>
+      <div class="ri"><span>🟢</span><span><strong>Rising competition:</strong> New entrants attracted by the sector's visible demand; pricing discipline in wires is the industry-wide watch item.</span></div>
+      <div class="ri"><span>🔷</span><span><strong>WC reversion:</strong> 15 days → 45–50 days normalization will absorb operating cash flow across FY27 — model it, don't be surprised by it.</span></div>
+    </div>
+  </div>
+
+  <div class="fn">DATA SOURCES: Polycab India Q1 FY27 — BSE/NSE filing &amp; earnings presentation, 16 Jul 2026 (consolidated: revenue ₹8,209.73 Cr +39% YoY; EBITDA ₹1,136.2 Cr, 13.8%; PAT ₹796.65 Cr +32.85%, record; EPS ₹51.94; W&amp;C segment ₹7,201.79 Cr +37.7%; EPC ₹307.7 Cr −11%, EBIT 11%; net cash ₹3,990 Cr; WC 15 days; capex ₹320 Cr). Q1 FY27 earnings concall, 16 Jul 2026 (volume low-to-mid single digit on 26% base; wires high-single-digit volume; aluminium −18–20% point-to-point in June; copper ~14,000 → ~13,100–13,200 per mgmt; 3–4% price revision first fortnight of July; channel stocking below expectation; LC-based RM procurement; BharatNet fibre secured 2–3 yrs; export mix US ~50%/ME 20–24%/Europe 18–20%; FMEG premium mix 25%, fans 33%, lighting 38%; T&amp;D 17,000 ckm CEA FY27E, 2,000 ckm added Apr–May; data centre TAM ₹20,000–25,000 Cr over 6–8 yrs). PVC context: industry price reports Jun–Jul 2026 (resin softening on monsoon; ADD on suspension resin; India import dependence ~1.8 vs 4.7 mtpa). RM basket %, EBITDA absolutes for prior quarters, and FMEG segment revenue are CB Research estimates derived from disclosed margins and segment data. Market price ~₹9,245 (16–17 Jul 2026), 52W ₹6,620–₹10,126. All figures ₹ crore, consolidated unless stated. Dashboard updated 17 Jul 2026. FOR EDUCATIONAL PURPOSES ONLY — NOT INVESTMENT ADVICE. CB Research is not SEBI-registered.</div>
+</div><!-- /an -->
+
+<!-- ══ TAB 6: CB ASSIST ══ -->
+<div id="pcbassist" class="pane">
+<div class="cba-wrap">
+
+  <div class="cba-head">
+    <div class="cba-logo">CB</div>
+    <div class="cba-head-text">
+      <h2>CB Assist</h2>
+      <p>Vanakam · வணக்கம் · Cauvery Business · Polycab Q1 FY27 Intelligence · English &amp; Tamil</p>
+    </div>
+  </div>
+
+  <div class="cba-qlbl">📚 Curated Research Questions — Raw Material Focus — Click Any to Expand</div>
+
+  <!-- Q1 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">01</div>
+      <div class="qa-qtxt">
+        <div class="qen">Polycab's revenue grew 39% but volume grew only low-to-mid single digits. How much of Q1 FY27 was "real" growth versus copper and aluminium inflation — and does the distinction matter?</div>
+        <div class="qta">Revenue 39% வளர்ந்தும் volume வெறும் single digit தான். இதில் எவ்வளவு "real" growth, எவ்வளவு copper/aluminium inflation? இந்த வேறுபாடு முக்கியமா?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">Decompose the 39%: domestic W&C grew 43% in value while W&C volume grew only low-to-mid single digits (wires high-single-digit, cables low-to-mid). That means roughly 35+ percentage points of the domestic W&C growth came from price — i.e., commodity-linked realizations — plus mix. Management was transparent about this, crediting "favourable commodity-linked realizations." Does it matter? Yes and no. NO, in the sense that in a cost-plus business, metal inflation flows through both revenue AND cost, so gross profit per km of cable is roughly preserved — the 33% PAT growth is genuine profit, not an accounting illusion. YES, in the sense that volume is the only honest measure of demand and market share. The mitigating context: Q1 FY26's base was a 26% volume growth quarter — among the toughest comps in the company's history. Management's own framing is correct: judge volume over 10–12 months, not 3. FY26 delivered 18% full-year volume growth. If FY27 lands anywhere near double digits on that base, the demand thesis is intact. If volume stays single-digit for 2–3 more quarters as bases ease, the premium multiple has a problem.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">39%-ஐ பிரித்துப் பார்ப்போம்: Domestic W&C value 43% வளர்ந்தது, ஆனால் volume low-to-mid single digit மட்டுமே. அதாவது ~35+ percentage points விலை (commodity-linked realization) + mix-ல் இருந்து வந்தது. இது முக்கியமா? Cost-plus business-ல் metal inflation revenue-லும் cost-லும் ஒரே மாதிரி பாயும் — எனவே PAT +33% உண்மையான லாபம் தான், illusion இல்லை. ஆனால் demand-இன் உண்மையான அளவுகோல் volume மட்டுமே. Context: Q1 FY26 base 26% volume growth — மிகக் கடினமான comp. FY26 முழு வருடம் 18% volume. FY27-ல் double digit வந்தால் thesis intact; 2–3 quarters தொடர்ந்து single digit என்றால் premium valuation-க்கு சிக்கல்.</div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">02</div>
+      <div class="qa-qtxt">
+        <div class="qen">Aluminium crashed 18–20% inside June and copper corrected sharply, yet EBITDA margin EXPANDED 70 bps QoQ to 13.8%. Mechanically, how did Polycab pull that off?</div>
+        <div class="qta">June-ல் aluminium 18–20% சரிந்தது, copper-ும் correct ஆனது. ஆனால் EBITDA margin 70 bps உயர்ந்து 13.8% ஆனது. இது எப்படி சாத்தியம்?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">Four gears turned together, per management's own framework on the concall. (1) MIX — WIRES OVER CABLES: wires are the higher-margin, retail-channel, copper-intensive product; they grew high-single-digit in volume while cables grew low-to-mid. A richer wires mix mechanically lifts blended margin. (2) MIX — CHANNEL OVER INSTITUTIONAL: channel/dealer sales outpaced institutional; dealer sales carry better pricing than tender-driven institutional business. (3) TIMING OF THE PASS-THROUGH: price hikes during the April–May run-up were in force through most of the quarter, while the June metal crash hit COSTS faster than PRICES — the 3–4% price cut only came in July. For a few weeks, Polycab sold at spike-era prices while newer metal purchases got cheaper. That's a transient positive spread — the mirror image of the squeeze that pass-through businesses suffer when prices rise faster than they can reprice. (4) OPERATING LEVERAGE: 39% revenue growth over a largely fixed overhead base. The caveat: gears (3) reverses in Q2 — the July price cut applies immediately while some higher-cost inventory (100–110 days of it) still flows through COGS. Expect Q2 margin to give back some of the 70 bps. The structural anchor remains the 11–13% Project Spring band, and 13.3% W&C EBIT sits at its ceiling.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">நான்கு gears ஒன்றாக வேலை செய்தன: (1) Wires > Cables mix — wires அதிக margin, retail channel product; volume high-single-digit வளர்ந்தது. (2) Channel > Institutional — dealer sales-க்கு better pricing. (3) Pass-through timing — Apr–May hike prices quarter முழுவதும் அமலில்; June metal crash cost-ஐ முதலில் குறைத்தது, price cut July-ல் தான் வந்தது. சில வாரங்கள் spike-era prices-ல் விற்று cheaper metal வாங்கினர் — transient positive spread. (4) Operating leverage — 39% revenue growth, fixed overheads. எச்சரிக்கை: Gear (3) Q2-ல் reverse ஆகும் — July price cut உடனே அமலாகும், ஆனால் 100–110 நாட்கள் costly inventory இன்னும் COGS வழியாக வரும். Q2 margin கொஞ்சம் இறங்கலாம். Structural anchor: Project Spring 11–13% band; W&C EBIT 13.3% அதன் உச்சியில்.</div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">03</div>
+      <div class="qa-qtxt">
+        <div class="qen">Management cut prices 3–4% in early July and admitted channel stocking was "below expectation" in June. Is a Q2 FY27 revenue air-pocket coming — and how should a researcher model it?</div>
+        <div class="qta">July-ல் 3–4% price cut; June-ல் channel stocking "below expectation". Q2 FY27-ல் revenue air-pocket வருமா? எப்படி model செய்வது?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">The mechanics of a dealer channel in a falling-metal environment are predictable: dealers stop buying when they expect prices to fall (June destocking, confirmed), then restock once they believe the bottom is in (the July cut is designed to trigger exactly this). So Q2 has two opposing forces. HEADWIND: realization per km is down 3–4% versus June, and any residual wait-and-watch dealer behaviour extends the volume soft patch into July–August. TAILWIND: pent-up channel replenishment — Polycab's healthy channel stocking norm is ~20–25 days and it entered Q2 below that, so there is a mechanical restock volume waiting to be released, plus normal festive-season build in September. Modelling approach: assume Q2 value growth visibly below Q1's 39% (price deflation alone shaves several points), but watch VOLUME, not value — a restock-driven volume acceleration with lower realizations would be a HEALTHY print that the market may initially misread as a slowdown. The risk case is metals falling further: another leg down restarts the wait-and-watch cycle and delays the restock. The stabilization of copper/aluminium in a range is genuinely the best thing that can happen to this stock in H1 FY27 — boring metals mean visible volumes.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">Falling-metal சூழலில் dealer channel-இன் இயக்கம் predictable: விலை இறங்கும் என எதிர்பார்த்தால் dealers வாங்குவதை நிறுத்துவர் (June destocking), bottom வந்துவிட்டது என நம்பியதும் restock செய்வர் (July cut இதற்காகவே). Q2-ல் இரண்டு எதிர் சக்திகள்: Headwind — realization/km 3–4% குறைவு; wait-and-watch நீடித்தால் volume soft patch தொடரும். Tailwind — normal channel stocking ~20–25 நாட்கள்; அதற்கு கீழே Q2-ஐ தொடங்கியதால் mechanical restock volume காத்திருக்கிறது + September festive build. Model செய்யும் முறை: Q2 value growth 39%-ஐ விட கணிசமாக குறையும், ஆனால் VOLUME-ஐ பாருங்கள் — restock-driven volume acceleration + lower realization = உண்மையில் HEALTHY print; market தவறாக slowdown என படிக்கலாம். Risk: metals மேலும் இறங்கினால் restock delay ஆகும். Copper/Aluminium ஒரு range-ல் stable ஆவதே H1 FY27-க்கு best case.</div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">04</div>
+      <div class="qa-qtxt">
+        <div class="qen">Working capital collapsed to 15 days versus a 45–50 day norm, driven by LC-based raw material procurement. Is this financial engineering, smart treasury, or a red flag?</div>
+        <div class="qta">Working capital 15 நாட்களாக குறைந்தது (normal 45–50). LC-based RM procurement காரணம். இது financial engineering-ஆ, smart treasury-ஆ, அல்லது red flag-ஆ?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">It is smart treasury with a transparency bonus — management flagged it unprompted and told investors NOT to extrapolate it. The mechanics: Polycab runs high inventory (~100–110 days — deliberate, to guarantee availability, a competitive weapon in the dealer channel) and low receivables (20–30 days, because 90% of sales flow through channel-financed dealers). Normally payables partially offset inventory, netting to 45–50 days. In Q1, with metal prices spiking, Polycab used letters of credit for raw material purchases — LC terms push payables out to ~80–90 days. Net effect: suppliers' banks financed the expensive copper sitting in Polycab's warehouses, and reported working capital compressed to 15 days. Why it's smart: during a price spike, the cash cost of carrying inventory balloons; LCs transfer that carry to the cheapest available credit. Why it's not a red flag: (a) disclosed proactively with reversion guidance; (b) acceptances are trade finance against real goods in transit, not disguised borrowing for operations; (c) net cash of ₹3,990 Cr means there is no solvency angle whatsoever. The one thing to genuinely check in the annual report: whether LC/acceptance interest is booked in finance costs or netted into COGS — an analyst on the call asked exactly this, and it affects EBITDA comparability by a small amount.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">இது smart treasury — management தானாகவே flag செய்து extrapolate செய்ய வேண்டாம் என்றது transparency bonus. Mechanics: Polycab inventory ~100–110 நாட்கள் (availability guarantee — dealer channel-ல் competitive weapon), receivables 20–30 நாட்கள் (90% channel-financed dealers). Normal net 45–50 நாட்கள். Q1-ல் metal spike சமயத்தில் LC மூலம் RM வாங்கியதால் payables ~80–90 நாட்களுக்கு நீண்டது → WC 15 நாட்கள். ஏன் smart: price spike-ல் inventory carry cost அதிகம்; LC அதை cheapest credit-க்கு மாற்றுகிறது. ஏன் red flag இல்லை: (a) proactive disclosure + reversion guidance; (b) acceptances என்பது உண்மையான goods-க்கான trade finance, மறைமுக கடன் இல்லை; (c) Net cash ₹3,990 Cr — solvency கேள்வியே இல்லை. Annual report-ல் ஒன்று மட்டும் சரிபார்க்கவும்: LC interest finance cost-ல் வருகிறதா அல்லது COGS-ல் net ஆகிறதா — EBITDA comparability-ஐ சிறிது பாதிக்கும்.</div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">05</div>
+      <div class="qa-qtxt">
+        <div class="qen">PVC resin gets far less attention than copper. What is Polycab's actual PVC exposure, and how do India's anti-dumping duties and import dependence change the calculus?</div>
+        <div class="qta">Copper அளவுக்கு PVC resin கவனம் பெறுவதில்லை. Polycab-இன் உண்மையான PVC exposure என்ன? Anti-dumping duty + import dependence எப்படி மாற்றுகிறது?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">PVC touches Polycab in two places. FIRST, insulation and sheathing: virtually every building wire and LT cable is sheathed in PVC or specialty compounds (FR, FRLS, HR). Polycab's mitigation here is structural — it manufactures its own PVC and XLPE compounds in-house rather than buying finished compound, which captures the compounding spread and de-risks quality. SECOND, FMEG pipes and conduits — this quarter the third-largest FMEG category by revenue — where resin IS the product cost. The macro setup: India is structurally short PVC (~1.8 mtpa domestic capacity vs ~4.7 mtpa demand), forcing import reliance. Anti-dumping duties on suspension resin from China, Korea, Japan and others narrow the imported-vs-domestic price gap — good for resin makers, but a firmer cost FLOOR for converters like Polycab even when global resin is weak. The current picture is benign: resin softened through late June–early July 2026 as monsoon slowed construction offtake — a modest Q2 cost tailwind for both sheathing and conduits. The medium-term wildcard is supply-side: Reliance's ~1.5 mtpa PVC/CPVC capacity slated around 2027 would structurally deflate Indian resin economics and reduce import exposure. Net: PVC is a manageable, partially self-hedged ~10–15% of the RM basket — it will never break a quarter the way copper can, but it quietly shapes FMEG conduit margins.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">PVC இரண்டு இடங்களில் Polycab-ஐ தொடுகிறது. ஒன்று: insulation/sheathing — ஒவ்வொரு building wire-ும் PVC அல்லது specialty compound (FR, FRLS)-ல் sheath ஆகிறது. Mitigation structural: Polycab தன் PVC/XLPE compounds-ஐ in-house தயாரிக்கிறது — compounding spread capture + quality control. இரண்டு: FMEG pipes & conduits — இந்த quarter-ல் FMEG-இன் #3 category — இங்கு resin தான் product cost. Macro: India structurally short (~1.8 mtpa capacity vs ~4.7 mtpa demand) → import dependence. Anti-dumping duty resin makers-க்கு நல்லது, ஆனால் Polycab போன்ற converters-க்கு cost FLOOR-ஐ உயர்த்துகிறது. தற்போதைய நிலை benign: monsoon-ல் construction மந்தமானதால் June–July-ல் resin மென்மையானது — Q2-க்கு சிறு cost tailwind. Medium-term wildcard: Reliance ~1.5 mtpa PVC capacity 2027 வாக்கில் — Indian resin economics-ஐ deflate செய்யும். Net: PVC என்பது manageable, partially self-hedged ~10–15% RM basket — copper போல quarter-ஐ உடைக்காது, ஆனால் FMEG conduit margin-ஐ அமைதியாக வடிவமைக்கும்.</div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">06</div>
+      <div class="qa-qtxt">
+        <div class="qen">The BharatNet fibre lock-in: management says it secured optical fibre for the entire 2–3 year execution window before fibre prices spiked. How significant is this, and what does it reveal about procurement as a competitive weapon?</div>
+        <div class="qta">BharatNet fibre lock-in: fibre விலை உயரும் முன்பே 2–3 வருட execution-க்கான fibre-ஐ secure செய்துவிட்டதாக management கூறுகிறது. இது எவ்வளவு முக்கியம்? Procurement ஒரு competitive weapon என்பதை இது எப்படி காட்டுகிறது?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">This is the cleanest single illustration of Polycab's raw-material philosophy in the whole quarter. The setup: BharatNet is an ₹8,000 Cr contract with a ₹4,500 Cr new-infrastructure execution piece over ~3 years; supply (of which fibre is the core) is roughly 30% of contract value. Fibre prices are currently on a global uptick (AI/data-centre demand pulling optical fibre). A fixed-price EPC contract with a rising input is precisely how infrastructure companies destroy margins — Indian EPC history is a graveyard of exactly this mistake. Polycab's answer: pre-contract the fibre for the full execution window. Result, in management's words — "we've secured our fiber, hence we are not exposed and not impacted." The guided high-single-digit EPC margin (11% actually delivered this quarter) is now substantially de-risked on the input side; remaining risk is execution and milestone timing, not commodities. The broader lesson for the CB framework: Polycab treats procurement as an offensive capability, not a back-office function — in-house copper rod, in-house compounds, LC-financed metal, and now term-contracted fibre. In a sector where ~75% of revenue is raw material, procurement excellence IS the moat, arguably as much as the brand or the 30–31% market share. Peers with weaker balance sheets cannot pre-buy 3 years of fibre; the ₹3,990 Cr net cash makes the hedge possible. Balance sheet strength converts directly into margin insurance.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">இந்த quarter-இன் மிகத் தெளிவான raw-material philosophy உதாரணம் இது. Setup: BharatNet ₹8,000 Cr contract; ₹4,500 Cr new-infra execution ~3 வருடங்கள்; supply (fibre core) ~30% contract value. Fibre விலை global uptick-ல் (AI/data-centre demand). Fixed-price EPC + rising input = margin அழிவு — Indian EPC வரலாறு இதற்கு சாட்சி. Polycab-இன் பதில்: முழு execution window-க்கும் fibre-ஐ pre-contract. Management வார்த்தையில்: "fiber secure செய்துவிட்டோம், exposed இல்லை, impact இல்லை." High-single-digit EPC margin guidance (இந்த quarter 11% delivered) input-side-ல் de-risked; மீதி risk execution timing மட்டுமே. CB framework-க்கான பாடம்: Polycab procurement-ஐ offensive capability-ஆக நடத்துகிறது — in-house copper rod, in-house compounds, LC-financed metal, term-contracted fibre. Revenue-ல் ~75% raw material உள்ள துறையில், procurement excellence தான் moat — brand மற்றும் 30–31% market share அளவுக்கு. Weak balance sheet peers 3 வருட fibre pre-buy செய்ய முடியாது; ₹3,990 Cr net cash தான் இந்த hedge-ஐ சாத்தியமாக்குகிறது. Balance sheet strength நேரடியாக margin insurance ஆக மாறுகிறது.</div>
+    </div>
+  </div>
+
+  <!-- Live CB Assist Chat -->
+  <div class="cba-chat">
+    <div class="cba-chat-title"><span class="live-dot"></span> CB Assist Live — Ask Your Question (English or Tamil)</div>
+    <div class="chat-msgs" id="cbaMsgs">
+      <div class="cmsg b">Vanakam · வணக்கம்! Welcome to <strong>CB Assist</strong> — Cauvery Business Polycab Q1 FY27 Intelligence. Ask any analytical question about Polycab's results, raw material dynamics (copper, aluminium, PVC), segments, or strategy. I answer in both <strong>English and Tamil</strong>.<br><br>Polycab Q1 FY27 results, copper/aluminium/PVC raw material impact, segments, strategy பற்றிய கேள்விகளை English அல்லது Tamil-ல் கேளுங்கள்.</div>
+    </div>
+    <div class="typing" id="cbaTyping">
+      <span></span><span></span><span></span>
+      <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-left:4px;">CB Assist is analysing...</span>
+    </div>
+    <div class="chat-row">
+      <input class="chat-in" id="cbaInput" type="text" placeholder="Ask about raw materials, margins, volumes, strategy, risks..." onkeydown="if(event.key==='Enter')sendCBA()"/>
+      <button class="chat-btn" id="cbaSendBtn" onclick="sendCBA()">SEND</button>
+    </div>
+  </div>
+
+</div>
+</div><!-- /cbassist -->
+
+</div><!-- main -->
+<div class="wm">CAUVERY BUSINESS · Polycab India · Q1 FY27 · Raw Material Focus · v1 · 17 Jul 2026 · CB Assist Enabled</div>
+
+<script>
+Chart.register(ChartDataLabels);
+const CL={pc:'#c84b31',cu:'#b87333',al:'#5b7c99',pvc:'#7c3aed',fmeg:'#f97316',epc:'#94a3b8',green:'#22c55e'};
+
+const OPTS=(suffix='',showLegend=false,horizontal=false)=>({
+  responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
+  plugins:{
+    legend:{display:showLegend,labels:{font:{family:'DM Sans',size:11},color:'#1a1714'}},
+    datalabels:{
+      anchor:'end',align:'top',color:'#1a1714',
+      font:{family:'DM Mono',size:10,weight:'500'},
+      formatter:v=>v===null||v===undefined?'N/A':(typeof v==='number'?v.toLocaleString('en-IN')+suffix:v)
+    }
+  },
+  scales:{
+    x:{ticks:{font:{family:'DM Sans',size:10},color:'#6b6660'},grid:{display:false}},
+    y:{ticks:{font:{family:'DM Mono',size:10},color:'#6b6660',callback:v=>typeof v==='number'?v.toLocaleString('en-IN')+suffix:v},grid:{color:'#f0ede8'}}
+  },
+  layout:{padding:{top:28}}
+});
+
+function bar(id,labels,data,suffix='',clrs=null,showLegend=false){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:clrs||labels.map(()=>CL.pc),borderRadius:6,borderSkipped:false}]},options:OPTS(suffix,showLegend)});
+}
+function line(id,labels,datasets,suffix=''){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:datasets.map(d=>({...d,tension:0.35,pointRadius:5,pointHoverRadius:7}))},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{font:{family:'DM Sans',size:11},color:'#1a1714',boxWidth:12}},datalabels:{display:false}},
+      scales:{
+        x:{ticks:{font:{family:'DM Sans',size:10},color:'#6b6660'},grid:{display:false}},
+        y:{ticks:{font:{family:'DM Mono',size:10},color:'#6b6660',callback:v=>v.toLocaleString('en-IN')+suffix},grid:{color:'#f0ede8'}}
+      }
+    }
+  });
+}
+function doughnut(id,labels,data,clrs){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:clrs,borderColor:'#fff',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{family:'DM Sans',size:10},color:'#1a1714',boxWidth:11}},
+      datalabels:{color:'#fff',font:{family:'DM Mono',size:10,weight:'500'},formatter:v=>v+'%'}}}});
+}
+
+const QTR=['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'];
+
+// — Overview tab —
+bar('c_rev', QTR, [5906,6900,7620,8864,8210], ' Cr',
+  ['rgba(200,75,49,.35)','rgba(200,75,49,.45)','rgba(200,75,49,.6)','rgba(200,75,49,.8)',CL.pc]);
+
+// Growth wedge — value vs volume
+bar('c_wedge', ['Consol Revenue (Value)','Domestic W&C (Value)','W&C Volume (approx)','Wires Volume (approx)'], [39,43,4,8], '%',
+  [CL.pc,CL.pc,CL.cu,CL.cu]);
+
+// — Raw material tab —
+// Indexed metal path per mgmt commentary (illustrative)
+line('c_metal',['Apr 1','Apr Peak','May','Jun 1','Jun 30','Jul (post cut)'],[
+  {label:'Copper (indexed)',data:[100,110,108,107,100,99],borderColor:CL.cu,backgroundColor:'transparent'},
+  {label:'Aluminium (indexed)',data:[100,112,109,108,88,88],borderColor:CL.al,backgroundColor:'transparent'},
+  {label:'Polycab realization proxy',data:[100,106,107,107,106,103],borderColor:CL.pc,backgroundColor:'transparent',borderDash:[6,4]}
+],'');
+
+doughnut('c_rmmix',['Copper ~57%','Aluminium ~18%','PVC & Polymers ~13%','Other (steel, packing, etc.) ~12%'],
+  [57,18,13,12],[CL.cu,CL.al,CL.pvc,'#d1cdc4']);
+
+// — Performance tab —
+line('c_revpat',QTR,[
+  {label:'Revenue (₹ Cr)',data:[5906,6900,7620,8864,8210],borderColor:CL.pc,backgroundColor:'transparent',yAxisID:'y'},
+  {label:'PAT (₹ Cr)',data:[600,660,725,786,797],borderColor:CL.green,backgroundColor:'transparent',yAxisID:'y1'}
+],' Cr');
+// give revpat a second axis
+(function(){const c=Chart.getChart('c_revpat');if(c){c.options.scales.y1={position:'right',ticks:{font:{family:'DM Mono',size:10},color:'#15803d'},grid:{display:false}};c.update();}})();
+
+bar('c_ebitdatrend',['Q1 FY26','Q4 FY26','Q1 FY27','FY26 Full Yr'],[14.6,13.1,13.8,13.9],'%',
+  ['rgba(200,75,49,.4)','rgba(200,75,49,.6)',CL.pc,'#d1cdc4']);
+
+bar('c_segrev',['Wires & Cables','FMEG (est.)','EPC'],[7202,700,308],' Cr',[CL.pc,CL.fmeg,CL.epc]);
+bar('c_segmargin',['W&C EBIT','FMEG EBIT','EPC EBIT'],[13.3,8.0,11.0],'%',[CL.pc,CL.fmeg,CL.epc]);
+bar('c_seggrowth',['W&C','Dom. W&C','FMEG','EPC'],[37.7,43,71,-11],'%',[CL.pc,CL.pc,CL.fmeg,CL.epc]);
+
+doughnut('c_export',['North America ~48%','Middle East ~22%','Europe ~19%','Rest of World ~11%'],
+  [48,22,19,11],['#1a1714',CL.pc,CL.al,'#d1cdc4']);
+
+bar('c_premium',['FMEG Overall','Fans','Lighting'],[25,33,38],'%',[CL.fmeg,CL.fmeg,CL.fmeg]);
+
+function sw(t){
+  const ids=['ov','rm','perf','seg','an','cbassist'];
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('on',ids[i]===t);
+  });
+  document.querySelectorAll('.pane').forEach(p=>{
+    p.classList.toggle('on',p.id==='p'+t);
+  });
+}
+
+function toggleQA(card){card.classList.toggle('open');}
+
+async function sendCBA(){
+  const input=document.getElementById('cbaInput');
+  const msgs=document.getElementById('cbaMsgs');
+  const btn=document.getElementById('cbaSendBtn');
+  const typing=document.getElementById('cbaTyping');
+  const q=input.value.trim();
+  if(!q)return;
+  const uMsg=document.createElement('div');
+  uMsg.className='cmsg u';uMsg.textContent=q;
+  msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';
+  msgs.scrollTop=msgs.scrollHeight;
+
+  const sys=`You are CB Assist, an expert financial research assistant for Cauvery Business (EIL Research). You specialise in Polycab India and the Indian Cables & Wires sector, with deep focus on raw material dynamics.
+
+MANDATORY: Always answer in BOTH English AND Tamil. Format: full English answer first, then a "---" separator line, then Tamil answer starting with "தமிழில்:".
+
+Polycab Q1 FY27 actuals (quarter ended 30 Jun 2026, filed 16 Jul 2026, consolidated):
+- Revenue ₹8,209.73 Cr (+39% YoY vs ₹5,906 Cr; -7.4% QoQ). Total expenses ₹7,256 Cr (+39.9%)
+- EBITDA ₹1,136.2 Cr (+32%), margin 13.8% (+70 bps QoQ). PAT ₹796.65 Cr (+33%) — highest-ever quarterly PAT. PAT margin 9.7%. EPS ₹51.94
+- W&C segment ₹7,201.79 Cr (+37.7%); domestic W&C +43% value; W&C EBIT 13.3%; volume only LOW-TO-MID SINGLE DIGIT on a 26% volume base (wires high-single-digit, cables low-mid); wires > cables, channel > institutional; West strongest region
+- FMEG ~₹700 Cr (+71% YoY, 10th straight qtr of industry outperformance), EBIT 8%; solar largest category (>2x growth, PM Surya Ghar); premium mix 25% (fans 33%, lighting 38%); category order: solar > fans > pipes & conduits > lights > switchgear
+- EPC ₹307.7 Cr (-11%, milestone timing), EBIT 11%; BharatNet+RDSS order book ₹10,900 Cr; ~₹800 Cr each in FY27; BharatNet fibre SECURED for 2-3 yr execution before fibre price uptick
+- Exports -13% YoY (Middle East weak); export mix: North America ~50%, ME 20-24% (Oman/Saudi/UAE), Europe 18-20%; US market-rep setup complete; target >10% of revenue by FY30; 94 countries
+- Net cash ₹3,990 Cr; working capital 15 days (temporary, LC payables; normal 45-50 days; inventory ~100-110 days, payables ~80-90 via LC, receivables 20-30); Capex ₹320 Cr; finance cost ₹80 Cr; other income ₹105 Cr; FY26 final dividend ₹47/sh paid 30 Jun (₹708 Cr)
+
+RAW MATERIAL FACTS (Q1 FY27):
+- Apr 2026: Strait of Hormuz / US-Iran conflict spiked oil and metals; inflationary H1 2026
+- June 2026: aluminium fell 18-20% point-to-point (1 Jun to 30 Jun); copper corrected from ~14,000 levels to ~13,100-13,200 per mgmt
+- Channel behaviour: rising prices → stocking; falling prices → destocking. Q1 quarter-end stocking was "below expectation"
+- Polycab cut prices 3-4% in first fortnight of July 2026 (cost-plus pass-through: "whatever is the cost, we'll pass it on")
+- Mitigation levers: cost-plus pricing, wires/channel mix, LC-financed procurement, backward integration (in-house copper rod + PVC/XLPE compounds), fibre pre-contracting, operating leverage + FMEG premiumization
+- PVC: India import-dependent (~1.8 mtpa capacity vs ~4.7 mtpa demand); anti-dumping duties firm the cost floor; resin softened late Jun-early Jul 2026 on monsoon; Reliance ~1.5 mtpa capacity ~2027
+- RM ~73-75% of revenue (est.); basket est.: copper ~55-60%, aluminium ~15-20%, PVC/polymers ~10-15%
+
+Guidance: W&C 1.5x market growth; W&C EBIT 11-13% (Project Spring); FMEG 1.5-2x industry, EBITDA 8-10% by FY30; data centre TAM ₹20,000-25,000 Cr over 6-8 yrs (1 MW ≈ ₹3.5 Cr cables); T&D 17,000 ckm CEA FY27E vs 15k historic avg, 2,000 ckm added Apr-May 2026. Stock ~₹9,245, 52W ₹6,620-₹10,126.
+
+Be rigorous, analytical, and non-elementary. Address raw material dynamics, strategy, risks, valuation, and competitive dynamics. Never give investment advice — provide analysis.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1000,
+        system:sys,
+        messages:[{role:"user",content:q}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:"Unable to process response.";
+    typing.style.display='none';
+    const bMsg=document.createElement('div');
+    bMsg.className='cmsg b';
+    const fmt=text
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/---/g,'<hr style="border:none;border-top:1px dashed var(--border);margin:8px 0;">')
+      .replace(/\n/g,'<br>');
+    bMsg.innerHTML=fmt;
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');
+    eMsg.className='cmsg b';
+    eMsg.textContent='CB Assist is temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

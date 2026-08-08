@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Hotel Sector &mdash; Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;--text:#181511;--muted:#6e6860;
+--ihc:#a16207;--ihc-s:#fdf6e3;--itc:#166534;--itc-s:#e8f5ec;--eih:#1e3a8a;--eih-s:#e8edfa;
+--cha:#ea580c;--cha-s:#fff3ea;--lt:#65a30d;--lt-s:#f2f9e6;--jun:#7c3aed;--jun-s:#f3ecfd;--sam:#0891b2;--sam-s:#e0f7fa;
+--pos:#166534;--neg:#dc2626;--warn:#ea580c;--gold:#b8911e;--gold-s:#fdf5e0;
+--sh:0 1px 8px rgba(24,21,17,.07);--sh2:0 4px 20px rgba(24,21,17,.10);--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#0d1c2e;padding:0 32px;display:flex;align-items:stretch;justify-content:space-between;min-height:68px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;line-height:1.15;padding:16px 0 4px;}
+.hdr .sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;padding-bottom:16px;}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 0;}
+.chip{padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;}
+.chip-ihc{background:var(--ihc);}.chip-itc{background:var(--itc);}.chip-eih{background:var(--eih);}
+.chip-cha{background:var(--cha);}.chip-lt{background:var(--lt);}.chip-jun{background:var(--jun);}.chip-sam{background:var(--sam);}
+.chip-date{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;padding:0 32px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:13px 13px 11px;font-size:11.5px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--ihc);font-weight:700;}
+.main{padding:22px 32px 48px;max-width:1480px;margin:0 auto;}
+.panel{display:none;animation:fi .18s ease;}.panel.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sec-note{font-size:10.5px;color:var(--muted);font-weight:500;font-family:'Inter',sans-serif;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--muted);border-radius:var(--r);padding:11px 13px;box-shadow:var(--sh);}
+.kpi.ihc-a{border-left-color:var(--ihc);}.kpi.itc-a{border-left-color:var(--itc);}.kpi.eih-a{border-left-color:var(--eih);}
+.kpi.cha-a{border-left-color:var(--cha);}.kpi.lt-a{border-left-color:var(--lt);}.kpi.jun-a{border-left-color:var(--jun);}.kpi.sam-a{border-left-color:var(--sam);}
+.kl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;}
+.kv{font-family:'IBM Plex Mono',monospace;font-size:1.15rem;font-weight:600;}
+.kc{font-size:10px;font-weight:700;margin-top:2px;}.kc.pos{color:var(--pos);}.kc.neg{color:var(--neg);}.kc.warn{color:var(--warn);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;box-shadow:var(--sh);}
+.card-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:10px;}
+.co-card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--muted);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);}
+.co-card.ihc{border-top-color:var(--ihc);}.co-card.itc{border-top-color:var(--itc);}.co-card.eih{border-top-color:var(--eih);}
+.co-card.cha{border-top-color:var(--cha);}.co-card.lt{border-top-color:var(--lt);}.co-card.jun{border-top-color:var(--jun);}.co-card.sam{border-top-color:var(--sam);}
+.co-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);margin-bottom:9px;}
+.m-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--border);font-size:11.5px;}
+.m-row:last-of-type{border-bottom:none;}
+.m-lbl{color:var(--muted);}.m-val{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.m-val.pos{color:var(--pos);}.m-val.neg{color:var(--neg);}.m-val.warn{color:var(--warn);}
+.badge-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+.badge{font-size:9px;font-weight:700;padding:2.5px 8px;border-radius:20px;}
+.b-pos{background:#e8f5ec;color:var(--pos);}.b-neg{background:#fdeaea;color:var(--neg);}.b-warn{background:#fff3ea;color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:8px;overflow:hidden;box-shadow:var(--sh);font-size:11.5px;}
+th{background:#0d1c2e;color:#fff;text-align:left;padding:8px 10px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid var(--surface2);white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+.warn{color:var(--warn);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+.verdict-card{background:linear-gradient(135deg,#0d1c2e,#1a2f47);color:#fff;border-radius:var(--r);padding:18px 22px;margin-top:16px;box-shadow:var(--sh2);}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:8px;color:#f0d98c;}
+.verdict-body{font-size:12px;line-height:1.75;color:rgba(255,255,255,.85);}
+.trojan-card{background:#fff7ed;border:1.5px solid var(--warn);border-radius:var(--r);padding:15px 18px;margin-bottom:16px;}
+.trojan-title{font-weight:800;font-size:12.5px;color:var(--warn);margin-bottom:6px;}
+.grp-hdr{font-weight:800;font-size:12px;padding:9px 14px;border-radius:8px;border:1.5px solid;margin-bottom:12px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;box-shadow:var(--sh);}
+.chart-card h3{font-size:12px;font-weight:800;margin-bottom:2px;}
+.chart-card .sub{font-size:10px;color:var(--muted);margin-bottom:10px;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.swot-cell{border-radius:8px;padding:10px 12px;font-size:11px;}
+.swot-s{background:#e8f5ec;}.swot-w{background:#fdeaea;}.swot-o{background:#e8f0fa;}.swot-t{background:#fff3ea;}
+.swot-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.sl{color:var(--pos);}.wl{color:var(--neg);}.ol{color:#0053a0;}.tl{color:var(--warn);}
+.swot-ul{list-style:none;}.swot-ul li{padding:2px 0 2px 12px;position:relative;line-height:1.5;}
+.swot-ul li:before{content:'\2022';position:absolute;left:0;}
+.co-hdr{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:8px;}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 17px;box-shadow:var(--sh);margin-bottom:0;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+.rat-pill{font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;}
+.rp-buy{background:#e8f5ec;color:var(--pos);}.rp-hold{background:#fff3ea;color:var(--warn);}.rp-watch{background:#e8f0fa;color:#0053a0;}
+.ac-tp{font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:2px;}
+.ac-cmp{font-size:10.5px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:7px;}
+.ac-text{font-size:11.5px;line-height:1.65;}
+.seg-row{margin-bottom:9px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:10.5px;font-weight:600;margin-bottom:3px;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;}
+.seg-bar{height:8px;border-radius:20px;}
+.rm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.rm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;}
+.rm-icon{font-size:1.5rem;margin-bottom:6px;}
+.rm-title{font-weight:800;font-size:11.5px;margin-bottom:4px;}
+.rm-body{font-size:11px;color:var(--text);line-height:1.6;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--ihc);border-radius:var(--r);padding:18px 20px;}
+.cbassist-title{font-weight:800;font-size:12px;color:var(--ihc);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.cbassist-title span{width:7px;height:7px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:100px;max-height:360px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:9px;}
+.chat-msg{padding:9px 13px;border-radius:10px;font-size:12px;max-width:92%;line-height:1.55;}
+.chat-msg.user{background:#0d1c2e;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--ihc);}
+.chat-input-row{display:flex;gap:7px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);outline:none;}
+.chat-input:focus{border-color:var(--ihc);}
+.chat-send{background:var(--ihc);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:7px 11px;}
+.typing-ind span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.preset-tab{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 5px 0;}
+.pt-ihc.on{background:var(--ihc);border-color:var(--ihc);color:#fff;}
+.pt-itc.on{background:var(--itc);border-color:var(--itc);color:#fff;}
+.pt-eih.on{background:var(--eih);border-color:var(--eih);color:#fff;}
+.pt-cha.on{background:var(--cha);border-color:var(--cha);color:#fff;}
+.pt-lt.on{background:var(--lt);border-color:var(--lt);color:#fff;}
+.pt-jun.on{background:var(--jun);border-color:var(--jun);color:#fff;}
+.pt-sam.on{background:var(--sam);border-color:var(--sam);color:#fff;}
+.pt-sector.on{background:var(--gold);border-color:var(--gold);color:#fff;}
+.pqs{display:none;}.pqs.on{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.pq{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:8px;line-height:1.45;}
+.pq:hover{border-color:var(--ihc);background:var(--ihc-s);}
+.co-sel{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:12px;}
+.co-sel-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.sep{width:1px;height:22px;background:var(--border);display:inline-block;margin:0 4px;}
+.per-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.co-sec{display:none;}.co-sec.on{display:block;}
+.qtr-v{display:block;}.annual-v{display:none;}
+.cat-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;box-shadow:var(--sh);}
+.cat-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.cat-btn.on{background:#0d1c2e;color:#fff;border-color:#0d1c2e;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:12px 32px;border-top:1px solid var(--border);margin-top:24px;line-height:1.7;}
+.cb-wm{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);border:1.5px solid var(--border);border-radius:28px;padding:6px 13px 6px 7px;box-shadow:0 4px 18px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:26px;height:26px;background:var(--ihc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.8rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:10.5px;font-weight:700;}.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+@media(max-width:860px){.main{padding:12px 12px 40px;}.hdr{padding:0 14px;flex-wrap:wrap;}.tab-nav{padding:0 6px;}.g2,.g3,.kpi-grid,.rm-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.g2,.g3,.kpi-grid,.rm-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><h1>India Hotel Sector &mdash; Intelligence Dashboard</h1>
+  <div class="sub">IHCL &middot; ITC Hotels &middot; EIH (Oberoi) &middot; Chalet &middot; Lemon Tree &middot; Juniper &middot; SAMHI &middot; Q4 FY26 &amp; Annual &middot; CB Research</div></div>
+  <div class="hdr-right">
+    <span class="chip chip-ihc">IHCL</span><span class="chip chip-itc">ITC Hotels</span><span class="chip chip-eih">EIH</span>
+    <span class="chip chip-cha">Chalet</span><span class="chip chip-lt">Lemon Tree</span><span class="chip chip-jun">Juniper</span><span class="chip chip-sam">SAMHI</span>
+    <span class="chip chip-date">Q4 FY26 &middot; 12 June 2026</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="showTab('companies',this)">Companies</button>
+  <button class="tab-btn" onclick="showTab('drivers',this)">Demand Drivers</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Segments &amp; Business Model</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT &amp; Moat</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst View</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks &amp; Outlook</button>
+  <button class="tab-btn" onclick="showTab('assist',this)">CB Assist &#x1F916;</button>
+</nav>
+<div class="main">
+
+<!-- ===== OVERVIEW ===== -->
+<div class="panel active" id="tab-overview">
+<div class="sec-hdr">Overview <span class="sec-note">&middot; 6 Companies &middot; Q4 FY26 &middot; Sector Drivers &middot; Filter by Business Model</span></div>
+<div class="cat-bar">
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Filter:</span>
+  <button class="cat-btn on" onclick="filterCat('all',this)">All Companies</button>
+  <button class="cat-btn" onclick="filterCat('lux',this)">Luxury</button>
+  <button class="cat-btn" onclick="filterCat('mid',this)">Mid-Market</button>
+  <button class="cat-btn" onclick="filterCat('light',this)">Asset-Light Led</button>
+  <button class="cat-btn" onclick="filterCat('heavy',this)">Asset-Heavy / Owned</button>
+</div>
+<div class="kpi-grid">
+  <div class="kpi ihc-a" data-cat="lux light"><div class="kl">IHCL &mdash; Q4 PAT</div><div class="kv">&#8377;646 Cr</div><div class="kc pos">+14.7% YoY</div></div>
+  <div class="kpi itc-a" data-cat="lux light"><div class="kl">ITC Hotels &mdash; Q4 PAT*</div><div class="kv">&#8377;314 Cr</div><div class="kc pos">+22% YoY</div></div>
+  <div class="kpi eih-a" data-cat="lux heavy"><div class="kl">EIH &mdash; Q4 Revenue</div><div class="kv">+10%</div><div class="kc warn">EBITDA +1% &middot; PAT &#9660;</div></div>
+  <div class="kpi cha-a" data-cat="heavy"><div class="kl">Chalet &mdash; Q4 PAT</div><div class="kv">&#8377;163 Cr</div><div class="kc pos">+31.6% YoY</div></div>
+  <div class="kpi lt-a" data-cat="mid light"><div class="kl">Lemon Tree &mdash; Q4 PAT</div><div class="kv">&#8377;116.5 Cr</div><div class="kc pos">+8% YoY</div></div>
+  <div class="kpi jun-a" data-cat="lux heavy"><div class="kl">Juniper &mdash; Q4 PAT</div><div class="kv">&#8377;50.4 Cr</div><div class="kc neg">&minus;8.3% (one-off tax)</div></div>
+  <div class="kpi sam-a" data-cat="mid heavy"><div class="kl">SAMHI &mdash; Q4 Revenue</div><div class="kv">&#8377;248.8 Cr</div><div class="kc pos">+19.4% YoY</div></div>
+</div>
+<div class="g3" style="margin-bottom:14px;">
+  <div class="co-card ihc" data-cat="lux light">
+    <div class="co-name" style="color:var(--ihc)">Indian Hotels Co (IHCL)</div>
+    <div class="co-seg">NSE: INDHOTEL &middot; Tata Group &middot; India's Largest Hospitality Co &middot; Taj &middot; Q4 &#10003; May 11, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;2,765 Cr (+14%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">37.0% (&#8377;1,052 Cr)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;646 Cr (+14.7%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">&#8377;9,971 Cr (+16%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT (Reported)</span><span class="m-val pos">&#8377;2,084 Cr (Best Ever)</span></div>
+    <div class="m-row"><span class="m-lbl">Portfolio</span><span class="m-val">630 hotels + 255 pipeline</span></div>
+    <div class="badge-row"><span class="badge b-pos">16th record qtr</span><span class="badge b-pos">Div &#8377;3.25/sh</span><span class="badge b-pos">Cash &#8377;4,345 Cr</span></div>
+  </div>
+  <div class="co-card itc" data-cat="lux light">
+    <div class="co-name" style="color:var(--itc)">ITC Hotels</div>
+    <div class="co-seg">NSE: ITCHOTELS &middot; Luxury Pure-Play &middot; Asset-Right &middot; Q4 &#10003; May 15, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;1,254 Cr (+18%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val warn">37.5% (vs 39.3% yr-ago)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT (pre-except.)</span><span class="m-val pos">&#8377;314 Cr (+22%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">&#8377;4,139 Cr (+16%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT (pre-except.)</span><span class="m-val pos">&#8377;888 Cr (+39%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 RevPAR</span><span class="m-val pos">+10% (ADR +6%, Occ +229 bps)</span></div>
+    <div class="badge-row"><span class="badge b-pos">1st-ever Div &#8377;1/sh</span><span class="badge b-pos">Zuri buy &#8377;205 Cr</span><span class="badge b-pos">33 signings record</span></div>
+  </div>
+  <div class="co-card eih" data-cat="lux heavy">
+    <div class="co-name" style="color:var(--eih)">EIH Ltd (Oberoi)</div>
+    <div class="co-seg">NSE: EIHOTEL &middot; Oberoi + Trident &middot; 19 hotels, 6 countries &middot; Q4 &#10003; May 26, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">+10% YoY (~&#8377;910 Cr)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val warn">+1% (mix + Wage Code)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#9660; YoY (tax + one-off base)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">+8% YoY (~&#8377;2,960 Cr)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val pos">Record High</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 RevPAR (Owned)</span><span class="m-val pos">+8.5% (ARR-led)</span></div>
+    <div class="badge-row"><span class="badge b-pos">21 properties by 2029</span><span class="badge b-warn">Kolkata + Jaipur renovation</span><span class="badge b-warn">GST penalties</span></div>
+  </div>
+</div>
+<div class="g3" style="margin-bottom:14px;">
+  <div class="co-card cha" data-cat="heavy">
+    <div class="co-name" style="color:var(--cha)">Chalet Hotels</div>
+    <div class="co-seg">NSE: CHALET &middot; K Raheja Corp &middot; Owned Hotels + CRE Annuity &middot; Q4 &#10003; May 15, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Ops)</span><span class="m-val">&#8377;558 Cr (+6.9%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">48.8% (&#8377;279 Cr, +8.5%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;163 Cr (+31.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 ARR / Occupancy</span><span class="m-val warn">&#8377;15,456 (+8%) / 68.2% (&#9660;7.7pp)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Rev ex-Resi</span><span class="m-val pos">&#8377;2,070 Cr (+18%)</span></div>
+    <div class="m-row"><span class="m-lbl">Net Debt (Mar 26)</span><span class="m-val pos">&#8377;1,900 Cr (from &#8377;2,500 Cr)</span></div>
+    <div class="badge-row"><span class="badge b-pos">PAT FY26 &#8377;650 Cr</span><span class="badge b-pos">CRE +37%</span><span class="badge b-warn">RevPAR &minus;3% Q4</span></div>
+  </div>
+  <div class="co-card lt" data-cat="mid light">
+    <div class="co-name" style="color:var(--lt)">Lemon Tree Hotels</div>
+    <div class="co-seg">NSE: LEMONTREE &middot; Mid-Market Leader &middot; CMD: Patanjali Keswani &middot; Q4 &#10003; May 28, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">&#8377;419.5 Cr (+11%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 Net EBITDA Margin</span><span class="m-val warn">52.0% (&minus;198 bps)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;116.5 Cr (+8%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 Occupancy</span><span class="m-val pos">78.5% (Best-ever Q4)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue / PAT</span><span class="m-val pos">&#8377;1,452.7 Cr / &#8377;288.3 Cr (+19%)</span></div>
+    <div class="m-row"><span class="m-lbl">Borrowings (Mar 26)</span><span class="m-val pos">&#8377;1,500 Cr @ 7.42%</span></div>
+    <div class="badge-row"><span class="badge b-pos">Best year ever</span><span class="badge b-pos">Demerger: Fleur split</span><span class="badge b-warn">GST ITC loss ~2%</span></div>
+  </div>
+  <div class="co-card jun" data-cat="lux heavy">
+    <div class="co-name" style="color:var(--jun)">Juniper Hotels</div>
+    <div class="co-seg">NSE: JUNIPER &middot; Hyatt-affiliated Luxury &middot; Grand Hyatt Mumbai &middot; Q4 &#10003; May 21, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Ops)</span><span class="m-val">&#8377;301.5 Cr (+8.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">~44% (&#8377;138 Cr, +9%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#8377;50.4 Cr (&minus;8.3%)*</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 ARR / Occ / RevPAR</span><span class="m-val pos">&#8377;13,457 / 81% / &#8377;10,863</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;141.6 Cr (+99%)</span></div>
+    <div class="m-row"><span class="m-lbl">Pipeline</span><span class="m-val">1,895 &rarr; 3,320+ keys by FY30</span></div>
+    <div class="badge-row"><span class="badge b-pos">Dwarka 500-key win</span><span class="badge b-pos">EBITDA +400 bps FY26</span><span class="badge b-warn">*&#8377;23.4 Cr one-off tax</span></div>
+  </div>
+  <div class="co-card sam" data-cat="mid heavy">
+    <div class="co-name" style="color:var(--sam)">SAMHI Hotels</div>
+    <div class="co-seg">NSE: SAMHI &middot; Mid-Scale &amp; Upper Midscale &middot; Marriott + Hyatt + IHG brands &middot; Q4 &#10003; May 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val pos">&#8377;248.8 Cr (+19.4%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">~38% (recovery trend)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;24.8 Cr (turnaround)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">&#8377;926.5 Cr (+18%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val pos">&#8377;318 Cr (~34%)</span></div>
+    <div class="m-row"><span class="m-lbl">Portfolio</span><span class="m-val">31 hotels / 4,801 keys &rarr; 5,000+ by FY27</span></div>
+    <div class="badge-row"><span class="badge b-pos">Revenue milestone &#8377;900 Cr+</span><span class="badge b-pos">Debt reduction focus</span><span class="badge b-warn">High leverage (net debt ~&#8377;1,900 Cr)</span></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:0;">
+  <div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; Comparison Table (&#8377; Cr unless stated)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>Positioning</th><th>Q4 Revenue</th><th>Q4 YoY</th><th>Q4 EBITDA%</th><th>Q4 PAT</th><th>FY26 Revenue</th><th>FY26 PAT</th><th>FY26 EBITDA%</th><th>Occupancy</th><th>Dividend</th></tr></thead>
+    <tbody>
+      <tr data-name="IHCL" data-rev="2765" data-ebitda="37.0" data-pat="646"><td class="tb"><span class="dot" style="background:var(--ihc)"></span>IHCL</td><td>Luxury&ndash;Midscale, 14 brands</td><td class="num">&#8377;2,765</td><td class="tpos">+14%</td><td class="tpos">37.0%</td><td class="tpos">&#8377;646</td><td class="num">&#8377;9,971</td><td class="tpos">&#8377;2,084</td><td class="tpos">34.9%</td><td class="num">RevPAR +9% SS</td><td class="num">&#8377;3.25/sh</td></tr>
+      <tr data-name="ITC Hotels" data-rev="1254" data-ebitda="37.5" data-pat="314"><td class="tb"><span class="dot" style="background:var(--itc)"></span>ITC Hotels</td><td>Luxury pure-play</td><td class="num">&#8377;1,254</td><td class="tpos">+18%</td><td class="warn">37.5%&#x25BC;</td><td class="tpos">&#8377;314*</td><td class="num">&#8377;4,139</td><td class="tpos">&#8377;888*</td><td class="tpos">35% (ex-RE)</td><td class="tpos">+229 bps FY26</td><td class="num">&#8377;1/sh (first)</td></tr>
+      <tr data-name="EIH" data-rev="910" data-ebitda="43" data-pat="0"><td class="tb"><span class="dot" style="background:var(--eih)"></span>EIH</td><td>Ultra-luxury Oberoi/Trident</td><td class="num">~&#8377;910</td><td class="tpos">+10%</td><td class="warn">~43%</td><td class="tneg">&#9660; YoY</td><td class="num">~&#8377;2,960</td><td class="num">&mdash;</td><td class="num">Record EBITDA</td><td class="num">Flat, ARR-led</td><td class="num">TBA</td></tr>
+      <tr data-name="Chalet" data-rev="558" data-ebitda="48.8" data-pat="163"><td class="tb"><span class="dot" style="background:var(--cha)"></span>Chalet</td><td>Owned upscale + CRE</td><td class="num">&#8377;558</td><td class="tpos">+6.9%</td><td class="tpos">48.8%</td><td class="tpos">&#8377;163</td><td class="num">&#8377;2,500&#8224;</td><td class="tpos">&#8377;650</td><td class="tpos">46.2% (ex-Resi)</td><td class="warn">68.2% Q4 &#9660;</td><td class="num">&mdash;</td></tr>
+      <tr data-name="Lemon Tree" data-rev="419.5" data-ebitda="52.0" data-pat="116.5"><td class="tb"><span class="dot" style="background:var(--lt)"></span>Lemon Tree</td><td>Mid-market, dual model</td><td class="num">&#8377;419.5</td><td class="tpos">+11%</td><td class="tpos">52.0%</td><td class="tpos">&#8377;116.5</td><td class="num">&#8377;1,452.7</td><td class="tpos">&#8377;288.3</td><td class="tpos">48.1%</td><td class="tpos">73.5% FY26</td><td class="num">&mdash;</td></tr>
+      <tr data-name="Juniper" data-rev="301.5" data-ebitda="44" data-pat="50.4"><td class="tb"><span class="dot" style="background:var(--jun)"></span>Juniper</td><td>Hyatt luxury, owned</td><td class="num">&#8377;301.5</td><td class="tpos">+8.6%</td><td class="tpos">~44%</td><td class="tneg">&#8377;50.4</td><td class="num">&#8377;1,069.1</td><td class="tpos">&#8377;141.6</td><td class="tpos">42.0%</td><td class="tpos">81% Q4</td><td class="num">&mdash;</td></tr>
+      <tr data-name="SAMHI" data-rev="248.8" data-ebitda="38" data-pat="24.8"><td class="tb"><span class="dot" style="background:var(--sam)"></span>SAMHI</td><td>Mid-scale, owned &amp; leased</td><td class="num">&#8377;248.8</td><td class="tpos">+19.4%</td><td class="tpos">~38%</td><td class="tpos">&#8377;24.8</td><td class="num">&#8377;926.5</td><td class="tpos">Turnaround</td><td class="tpos">~34%</td><td class="tpos">~69% FY26</td><td class="num">&mdash;</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">*ITC Hotels PAT before exceptional items (reported FY26 net profit &#8377;821 Cr). &#8224;Chalet consolidated revenue including residential; ex-residential &#8377;2,070 Cr. ~EIH values derived from growth percentages disclosed in the Q4 FY26 earnings call (results 26 May 2026); EIH FY26 PAT comparison distorted by prior-year Mashobra fair-value gain and Q1 FY26 exceptional loss of &#8377;110.5 Cr. Sources: BSE/NSE filings, company press releases, Q4 FY26 earnings calls, Business Standard, Hotelier India, ScanX &mdash; May&ndash;June 2026.</p>
+</div>
+<div class="verdict-card">
+  <div class="verdict-title">&#127976; FY26 Sector Verdict &mdash; Rate-Led Record Year; Occupancy Tested by West Asia Conflict</div>
+  <div class="verdict-body">India's listed hotel majors delivered a record FY26 despite three shocks &mdash; the West Asia conflict (hit inbound travel, especially South India), aviation disruptions, and extreme weather. Growth was rate-led: branded-industry ADR rose ~8.6% to &#8377;8,600 while occupancy improved 100 bps to 64% (CY25), with demand (+9.1%) still outpacing supply (+7.8%). IHCL posted its 16th consecutive record quarter and best-ever PAT of &#8377;2,084 Cr; ITC Hotels grew PAT (pre-exceptional) 39% with its first-ever dividend; Lemon Tree had the best year in its history; Juniper doubled PAT; Chalet's annuity CRE engine grew 37%. Balance sheets strengthened across the board &mdash; IHCL holds &#8377;4,345 Cr gross cash, Chalet cut net debt to &#8377;1,900 Cr, Lemon Tree cut borrowings to &#8377;1,500 Cr at 7.42% cost. The structural engine &mdash; weddings, MICE, domestic leisure, spiritual tourism and a 105,000-room branded pipeline only by 2029 &mdash; remains intact. FY27 watch-points: occupancy recovery post-conflict, the GST input-tax-credit loss (~2% margin drag per Lemon Tree management), a heavy supply wave of 100+ hotels in 15 months, and rich valuations.</div>
+</div>
+</div>
+
+<!-- ===== COMPANIES ===== -->
+<div class="panel" id="tab-companies">
+<div class="sec-hdr">Companies <span class="sec-note">&middot; Select Company &middot; Quarter &amp; Annual &middot; P&amp;L &middot; Operating Metrics &middot; Subsidiaries &middot; Debt &middot; Future Plans</span></div>
+<div class="co-sel">
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Company</span>
+  <button class="co-sel-btn" id="cobtn-ihc" onclick="showCo('ihc',this)" style="background:var(--ihc);color:#fff;border-color:var(--ihc);">IHCL</button>
+  <button class="co-sel-btn" id="cobtn-itc" onclick="showCo('itc',this)">ITC Hotels</button>
+  <button class="co-sel-btn" id="cobtn-eih" onclick="showCo('eih',this)">EIH</button>
+  <button class="co-sel-btn" id="cobtn-cha" onclick="showCo('cha',this)">Chalet</button>
+  <button class="co-sel-btn" id="cobtn-lt" onclick="showCo('lt',this)">Lemon Tree</button>
+  <button class="co-sel-btn" id="cobtn-jun" onclick="showCo('jun',this)">Juniper</button>
+  <button class="co-sel-btn" id="cobtn-sam" onclick="showCo('sam',this)">SAMHI</button>
+  <span class="sep"></span>
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Period</span>
+  <button class="per-btn" id="perbtn-qtr" onclick="showPer('qtr',this)" style="background:#0d1c2e;color:#fff;border-color:#0d1c2e;">Quarter</button>
+  <button class="per-btn" id="perbtn-annual" onclick="showPer('annual',this)">Annual</button>
+</div>
+
+<div class="co-sec on" id="co-ihc">
+  <div class="grp-hdr" style="background:var(--ihc-s);border-color:var(--ihc);color:var(--ihc);">Indian Hotels Co (IHCL) &mdash; NSE: INDHOTEL &middot; Tata Group &middot; HQ: Mumbai &middot; MD &amp; CEO: Puneet Chhatwal &middot; CFO: Ankur Dalwani &middot; Taj, Vivanta, SeleQtions, Ginger, Gateway, Tree of Life, Claridges Collection, TajSATS &middot; 14 Brands</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;2,765 Cr</td><td class="num">&#8377;2,425 Cr</td><td class="tpos">+14.0%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;1,052 Cr</td><td class="num">&#8377;918 Cr</td><td class="tpos">+15%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">37.0%</td><td class="num">36.9%</td><td class="tpos">+10 bps</td></tr>
+          <tr><td>PBT</td><td class="tpos">&#8377;830 Cr</td><td class="num">&#8377;720 Cr</td><td class="tpos">+15.3%</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;646 Cr</td><td class="num">&#8377;563 Cr</td><td class="tpos">+14.7%</td></tr>
+          <tr><td>EPS (not annualised)</td><td class="num">&#8377;4.21</td><td class="num">&#8377;3.67</td><td class="tpos">+14.7%</td></tr>
+          <tr><td>RevPAR Growth (Standalone Q4)</td><td class="tpos">+12%</td><td class="num">&mdash;</td><td class="tpos">Rate-led</td></tr>
+          <tr><td>Final Dividend</td><td class="num">&#8377;3.25/sh (325%)</td><td class="num">&#8377;2.25/sh</td><td class="num">Incl. 125th AGM special</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">IHCL &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Taj Brand</td><td style="white-space:normal">123-year-old iconic luxury brand (Taj Mahal Palace, 1903). Strongest hotel brand recall in India; allows premium ARR across cities</td></tr>
+          <tr><td class="tb">Multi-Brand Ladder</td><td style="white-space:normal">14 brands from luxury (Taj) to lean-luxe (Ginger) capture every price point. Diversified by brand, contract type and geography</td></tr>
+          <tr><td class="tb">Asset-Light Flywheel</td><td style="white-space:normal">Management fees &#8377;685 Cr FY26 (+22%) at near-100% margin. Record 250 signings in FY26; pipeline of 255 hotels mostly capital-light</td></tr>
+          <tr><td class="tb">New Businesses</td><td style="white-space:normal">Ginger, Qmin, am&#257; Stays + TajSATS air catering (&#8377;1,219 Cr revenue FY26) grew 25% &mdash; "Accelerate 2030" targets 25%+ of revenue</td></tr>
+          <tr><td class="tb">Balance Sheet</td><td style="white-space:normal">Gross cash &#8377;4,345 Cr; credit rating upgraded to AAA (ICRA). Self-funded &#8377;1,000+ Cr FY26 investment in greenfield + renovations</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="tpos">&#8377;9,971 Cr</td><td class="num">&#8377;8,565 Cr</td><td class="tpos">+16%</td></tr>
+          <tr><td>EBITDA (All-time high)</td><td class="tpos">&#8377;3,477 Cr</td><td class="num">&mdash;</td><td class="tpos">Margin 34.9%</td></tr>
+          <tr><td>PAT (Reported)</td><td class="tpos">&#8377;2,084 Cr</td><td class="num">&#8377;2,038 Cr*</td><td class="tpos">Best ever</td></tr>
+          <tr><td>PAT (Pre-exceptional)</td><td class="tpos">&#8377;1,849 Cr</td><td class="num">&mdash;</td><td class="tpos">+15%</td></tr>
+          <tr><td>Standalone Revenue / PAT</td><td class="num">&#8377;5,640 / &#8377;2,012 Cr</td><td class="num">&mdash;</td><td class="tpos">EBITDA 45.1% (+120 bps)</td></tr>
+          <tr><td>Management Fees</td><td class="tpos">&#8377;685 Cr</td><td class="num">&mdash;</td><td class="tpos">+22%</td></tr>
+          <tr><td>Same-Store RevPAR</td><td class="tpos">+9%</td><td class="num">&mdash;</td><td class="tpos">Rate-led</td></tr>
+          <tr><td>Gross Cash (Mar 2026)</td><td class="tpos">&#8377;4,345 Cr</td><td class="num">&mdash;</td><td class="tpos">Net-cash balance sheet</td></tr>
+          <tr><td>CAGR FY23&ndash;FY26</td><td class="num">Rev 19% &middot; EBITDA 21%</td><td class="num">PAT 28%</td><td class="tpos">Compounding</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px;">*FY25 figure per analyst compilation; quarterly FY26 PAT was volatile due to exceptional items (Q2 FY26 PAT &#8377;285 Cr, &minus;48.6% YoY).</p>
+    </div>
+    <div class="card"><div class="card-lbl">Portfolio, Subsidiaries &amp; Future Plans (Accelerate 2030)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Portfolio &mdash; 630 hotels (Mar 2026)</span><span>255 in pipeline</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:71%;background:var(--ihc)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>FY26 Signings (record)</span><span>250 hotels</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:#c9a227"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>FY26 Openings / Onboardings</span><span>130+</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:52%;background:#e2c044"></div></div></div>
+      <div style="overflow-x:auto;margin-top:8px;"><table>
+        <thead><tr><th>Element</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Key Subsidiaries / Units</td><td style="white-space:normal">TajSATS (airline &amp; institutional catering, &#8377;1,219 Cr FY26 revenue), Ginger (lean-luxe), Roots Corporation, Piem Hotels, Benares Hotels, Oriental Hotels (Taj Coromandel ecosystem, Chennai), United Hotels; majority-stake acquisitions completed in FY26 to add future revenue streams</td></tr>
+          <tr><td class="tb">Accelerate 2030</td><td style="white-space:normal">700+ hotels by 2030 (double the FY24 base); new &amp; reimagined businesses to contribute 25%+ of revenue; 3 new brands added in FY26 (total 14) incl. Claridges Collection and Tree of Life scaling</td></tr>
+          <tr><td class="tb">FY26 Investment</td><td style="white-space:normal">&#8377;1,000+ Cr across greenfield projects, key asset renovations and digital initiatives &mdash; funded from internal cash</td></tr>
+          <tr><td class="tb">Debt Position</td><td style="white-space:normal">Effectively net cash &mdash; gross cash &#8377;4,345 Cr; ICRA rating upgraded to AAA in FY26</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-itc">
+  <div class="grp-hdr" style="background:var(--itc-s);border-color:var(--itc);color:var(--itc);">ITC Hotels &mdash; NSE: ITCHOTELS &middot; Demerged from ITC (Jan 2025) &middot; Luxury Pure-Play &middot; Brands: ITC Hotels, Mementos, Welcomhotel, Storii, Fortune, WelcomHeritage &middot; Asset-Right Strategy</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;1,254 Cr</td><td class="num">~&#8377;1,063 Cr</td><td class="tpos">+18%</td></tr>
+          <tr><td>Revenue ex-Real Estate</td><td class="warn">+6%</td><td class="num">&mdash;</td><td class="warn">West Asia drag</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;466 Cr</td><td class="num">&#8377;420 Cr</td><td class="tpos">+13%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="warn">37.5%</td><td class="num">39.3%</td><td class="tneg">&minus;180 bps (fuel costs SL)</td></tr>
+          <tr><td>PBT</td><td class="tpos">&#8377;418 Cr</td><td class="num">&#8377;354 Cr</td><td class="tpos">+18.3%</td></tr>
+          <tr><td>PAT (pre-exceptional)</td><td class="tpos">&#8377;314 Cr</td><td class="num">&#8377;257 Cr</td><td class="tpos">+22%</td></tr>
+          <tr><td>Q4 Driver</td><td class="num" colspan="2" style="white-space:normal;text-align:left;">Progressive handover of Sapphire Residences apartments, Colombo (real-estate segment)</td><td class="num">&mdash;</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">ITC Hotels &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Luxury Pure-Play</td><td style="white-space:normal">Only large listed pure luxury hotel play post demerger from ITC. ITC Maurya, ITC Grand Chola (Chennai), ITC Maratha &mdash; marquee city-centre assets</td></tr>
+          <tr><td class="tb">Debt-Free Start</td><td style="white-space:normal">Demerged with a clean, effectively debt-free balance sheet; funds growth and the &#8377;205 Cr Zuri acquisition from internal cash</td></tr>
+          <tr><td class="tb">Asset-Right Model</td><td style="white-space:normal">Owned trophy assets + fast-growing managed portfolio (pipeline 67 hotels / ~6,700 keys). Record 33 signings (3,300+ keys) in FY26</td></tr>
+          <tr><td class="tb">F&amp;B Powerhouse</td><td style="white-space:normal">Bukhara, Dum Pukht, Avartana &mdash; destination restaurants drive high-margin F&amp;B and banqueting/wedding revenue</td></tr>
+          <tr><td class="tb">Responsible Luxury</td><td style="white-space:normal">LEED-certified portfolio positioning attracts global corporate/MICE contracts and premium inbound travellers</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;4,139 Cr</td><td class="num">&#8377;3,560 Cr</td><td class="tpos">+16%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;1,424 Cr</td><td class="num">&mdash;</td><td class="tpos">+21% (comparable)</td></tr>
+          <tr><td>EBITDA Margin (ex-RE)</td><td class="tpos">35%</td><td class="num">&mdash;</td><td class="tpos">+148 bps</td></tr>
+          <tr><td>PAT (pre-exceptional)</td><td class="tpos">&#8377;888 Cr</td><td class="num">&#8377;638 Cr</td><td class="tpos">+39%</td></tr>
+          <tr><td>Net Profit (Reported)</td><td class="tpos">&#8377;821 Cr</td><td class="num">&#8377;638 Cr</td><td class="tpos">+28.8%</td></tr>
+          <tr><td>Rooms Revenue</td><td class="tpos">+10%</td><td class="num">&mdash;</td><td class="tpos">ADR +6%, Occ +229 bps</td></tr>
+          <tr><td>RevPAR Growth</td><td class="tpos">+10%</td><td class="num">&mdash;</td><td class="tpos">Balanced rate + occupancy</td></tr>
+          <tr><td>Final Dividend</td><td class="num">&#8377;1/share</td><td class="num">&mdash;</td><td class="tpos">First-ever dividend</td></tr>
+          <tr><td>Hotels Segment Rev / Results</td><td class="num">&#8377;3,860 / &#8377;943 Cr</td><td class="num">&mdash;</td><td class="num">12M segment basis</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Subsidiaries, Acquisitions &amp; Future Plans</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Operating Target 2031 &mdash; 250 hotels / 22,000+ keys</span><span>Asset-right</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:var(--itc)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>FY26 Signings &mdash; 33 hotels / 3,300+ keys</span><span>Record</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:60%;background:#2e9e52"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Managed Pipeline &mdash; 67 hotels / ~6,700 keys</span><span>Fee-based</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:80%;background:#7dbf8e"></div></div></div>
+      <div style="overflow-x:auto;margin-top:8px;"><table>
+        <thead><tr><th>Element</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Zuri Hotels Acquisition</td><td style="white-space:normal">100% of Zuri Hotels &amp; Resorts for &#8377;205 Cr (cash-free, debt-free) &mdash; adds leisure resorts (Goa, Kumarakom, Bengaluru)</td></tr>
+          <tr><td class="tb">ITC Ratnadipa, Colombo</td><td style="white-space:normal">First international hotel turned EBITDA-positive in FY26; RevPAR market leader. Sapphire Residences apartment handovers began &mdash; real-estate cash flows</td></tr>
+          <tr><td class="tb">New Projects FY26</td><td style="white-space:normal">Visakhapatnam and New Delhi announced; 13 hotels opened in FY26 across business, leisure and spiritual destinations</td></tr>
+          <tr><td class="tb">Debt</td><td style="white-space:normal">Effectively debt-free; growth + Zuri funded internally. Sri Lanka fuel-supply costs and Cyclone Ditwah weighed on Q4 margin</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-eih">
+  <div class="grp-hdr" style="background:var(--eih-s);border-color:var(--eih);color:var(--eih);">EIH Ltd &mdash; NSE: EIHOTEL &middot; The Oberoi Group &middot; Exec Chairman: Arjun Oberoi &middot; MD &amp; CEO: Vikram Oberoi &middot; CFO: Vineet Kapur &middot; Oberoi + Trident &middot; 19 Hotels, 6 Countries &middot; Flight Catering (OFS)</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; Performance (per Earnings Call, 29 May 2026)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Note</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consolidated)</td><td class="tpos">+10% YoY (~&#8377;910 Cr)</td><td class="num">vs &#8377;827 Cr Q4 FY25</td></tr>
+          <tr><td>EBITDA (Consolidated)</td><td class="warn">+1% YoY (~&#8377;393 Cr)</td><td class="num">Mix shift to flight catering (OFS)</td></tr>
+          <tr><td>PAT (Consolidated)</td><td class="tneg">Down YoY</td><td class="num">Higher tax + Wage Code costs</td></tr>
+          <tr><td>Revenue (Standalone)</td><td class="tpos">+14% YoY</td><td class="num">EBITDA flat</td></tr>
+          <tr><td>PAT base effect</td><td class="num" style="white-space:normal;text-align:right;">Prior-year Mashobra fair-value gain absent</td><td class="num">One-off base</td></tr>
+          <tr><td>Subsidiary: EIH Associated Q4</td><td class="tneg">PAT &#8377;37.7 Cr (&minus;19%)</td><td class="num">Trident Jaipur renovation closure</td></tr>
+          <tr><td>EIH Associated ARR / Occ / RevPAR</td><td class="tpos">&#8377;17,696 / 79% / &#8377;14,051</td><td class="tpos">Industry-beating RevPAR</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px;">~Values derived from growth percentages disclosed in the Q4 FY26 earnings webinar; verify absolute figures in the BSE/NSE filing dated 26 May 2026.</p>
+    </div>
+    <div class="card"><div class="card-lbl">EIH &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Ultra-Luxury Positioning</td><td style="white-space:normal">Oberoi consistently ranked among the world's best hotel brands; highest ARR per key among Indian listed peers (subsidiary ARR &#8377;17,696 in Q4)</td></tr>
+          <tr><td class="tb">Trophy Assets</td><td style="white-space:normal">Oberoi Udaivilas, Rajvilas, Amarvilas, Oberoi Mumbai/Delhi &mdash; irreplaceable locations with decades-deep service culture</td></tr>
+          <tr><td class="tb">Flight Catering (OFS)</td><td style="white-space:normal">Oberoi Flight Services &amp; airport lounges &mdash; growing B2B annuity stream (was the Q4 mix-shift factor)</td></tr>
+          <tr><td class="tb">Net-Cash Discipline</td><td class="num" style="white-space:normal;">Historically conservative balance sheet funds the 2029 pipeline without leverage stress</td></tr>
+          <tr><td class="tb">Global Pipeline</td><td style="white-space:normal">Only Indian luxury chain expanding into London, Egypt (Nile cruiser), Bhutan, Nepal, Saudi Arabia under its own brand</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (per Earnings Call) + Exceptional Items</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">Note</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consolidated)</td><td class="tpos">+8% YoY (~&#8377;2,960 Cr)</td><td class="num">vs &#8377;2,743 Cr FY25</td></tr>
+          <tr><td>EBITDA (Consolidated)</td><td class="tpos">Record High</td><td class="num">Despite geopolitical + weather shocks</td></tr>
+          <tr><td>RevPAR &mdash; Owned Hotels</td><td class="tpos">+8.5%</td><td class="num">ARR-led; occupancy flat</td></tr>
+          <tr><td>Q1 FY26 Exceptional Loss</td><td class="tneg">&#8377;110.5 Cr</td><td class="num" style="white-space:normal;">Mashobra investment loss &#8377;128.2 Cr; Oberoi Grand Kolkata derecognition &#8377;9.95 Cr; Tirupati impairment &#8377;10.05 Cr</td></tr>
+          <tr><td>GST Penalties (FY26)</td><td class="tneg">&#8377;90.69 Cr + &#8377;29.98 Cr</td><td class="num">Mumbai hotels &mdash; contested</td></tr>
+          <tr><td>EIH Associated FY26</td><td class="num">Rev &#8377;383.7 Cr &middot; PAT &#8377;87.2 Cr</td><td class="tneg">&minus;5% (renovation closures)</td></tr>
+          <tr><td>FY27 View (Mgmt)</td><td class="tpos">Margin &amp; growth levers improve</td><td class="num">Domestic demand resilient</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Pipeline to 2029 &amp; Renovation Cycle</div>
+      <div class="seg-row"><div class="seg-lbl"><span>21 properties by 2029 (19 hotels + 2 luxury boats + Nile cruiser)</span><span>~1,473 keys</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:var(--eih)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>India: 12 properties</span><span>57%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:57%;background:#3b5bd1"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>International: 9 (London, Egypt, Bhutan, Nepal, Saudi)</span><span>43%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:43%;background:#7e95e8"></div></div></div>
+      <div style="overflow-x:auto;margin-top:8px;"><table>
+        <thead><tr><th>Element</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Ownership Split</td><td style="white-space:normal">8 owned / JV by EIH; 13 (incl. boats &amp; cruiser) managed by The Oberoi Group. 16 Oberoi-branded, 5 Trident-branded</td></tr>
+          <tr><td class="tb">London Push</td><td style="white-space:normal">Investment of up to GBP 69 million in EIH London Investments &mdash; flagship overseas owned asset</td></tr>
+          <tr><td class="tb">Renovation Cycle</td><td style="white-space:normal">The Oberoi Grand Kolkata closed for major renovation; Trident Jaipur closed (EIH Associated) &mdash; near-term revenue drag, post-renovation ARR uplift expected</td></tr>
+          <tr><td class="tb">Subsidiaries / Associates</td><td style="white-space:normal">EIH Associated Hotels (784 keys: Oberoi Rajvilas, Oberoi Cecil, Trident Agra/Udaipur/Bhubaneswar/Chennai/Cochin), Mumtaz Hotels (Oberoi Amarvilas), Oberoi Kerala, EIH International, EIH Flight Services; Mashobra Resort exited subsidiary status (Mar 2025)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-cha">
+  <div class="grp-hdr" style="background:var(--cha-s);border-color:var(--cha);color:var(--cha);">Chalet Hotels &mdash; NSE: CHALET &middot; K Raheja Corp Group &middot; MD &amp; CEO: Shwetank Singh &middot; Owned Upscale Hotels (Marriott-branded flagships) + Commercial Real Estate Annuity + Residential</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;558.2 Cr</td><td class="num">&#8377;522.0 Cr</td><td class="tpos">+6.9%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;278.6 Cr</td><td class="num">&#8377;256.8 Cr</td><td class="tpos">+8.5%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">48.8%</td><td class="num">47.8%</td><td class="tpos">+100 bps</td></tr>
+          <tr><td>PBT</td><td class="tpos">&#8377;177.9 Cr</td><td class="num">&#8377;158.8 Cr</td><td class="tpos">+12.0%</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;163.0 Cr</td><td class="num">&#8377;123.9 Cr</td><td class="tpos">+31.6%</td></tr>
+          <tr><td>Hospitality Revenue</td><td class="num">&#8377;459.8 Cr</td><td class="num">&mdash;</td><td class="tpos">+3%</td></tr>
+          <tr><td>ARR / Occupancy / RevPAR</td><td class="warn">&#8377;15,456 / 68.2% / &#8377;10,544</td><td class="num">&#8377;14,311 / 75.9% / &#8377;10,893</td><td class="warn">ARR +8%, Occ &minus;7.7pp, RevPAR &minus;3%</td></tr>
+          <tr><td>CRE Rental Revenue / EBITDA</td><td class="tpos">&#8377;84.7 / &#8377;70.8 Cr</td><td class="num">&mdash;</td><td class="tpos">+37% / +42% (margin 83.6%)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Chalet &mdash; Why Structurally Different (Hotel + Annuity Twin Engine)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Differentiator</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Owned Trophy Locations</td><td style="white-space:normal">Large-format hotels at airport/CBD micro-markets (Mumbai Sahar &amp; Powai, BKC vicinity, Hyderabad, Bengaluru) &mdash; operated under Marriott brands (JW Marriott, Westin, Marriott, Four Points). High operating leverage</td></tr>
+          <tr><td class="tb">CRE Annuity Engine</td><td style="white-space:normal">Office towers at Powai &amp; Whitefield: 83.6% EBITDA margin, exit rental run-rate &#8377;28 Cr/month and rising; CIGNUS II tower to drive growth from FY28</td></tr>
+          <tr><td class="tb">Highest EBITDA Margin</td><td style="white-space:normal">Consolidated ~46&ndash;49% &mdash; top of the listed pack, because revenue is owned-asset based (no fee dilution) plus annuity rentals</td></tr>
+          <tr><td class="tb">Residential Kicker</td><td style="white-space:normal">Residential project milestones achieved in FY26 &mdash; lumpy but cash-generative third engine</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Consolidated Revenue (incl. Resi)</td><td class="tpos">&#8377;2,500 Cr</td><td class="num">&mdash;</td><td class="tpos">Record</td></tr>
+          <tr><td>Revenue (ex-Residential)</td><td class="tpos">&#8377;2,070 Cr</td><td class="num">&#8377;1,754 Cr</td><td class="tpos">+18%</td></tr>
+          <tr><td>EBITDA (ex-Residential)</td><td class="tpos">&#8377;960 Cr</td><td class="num">&#8377;794 Cr</td><td class="tpos">+21% (margin 46.2%)</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;650 Cr</td><td class="num">&mdash;</td><td class="tpos">Strong</td></tr>
+          <tr><td>ARR (FY26)</td><td class="tpos">&#8377;13,727</td><td class="num">&#8377;12,148</td><td class="tpos">+13%</td></tr>
+          <tr><td>RevPAR (FY26)</td><td class="tpos">&#8377;9,226</td><td class="num">&#8377;8,787</td><td class="tpos">+5%</td></tr>
+          <tr><td>Net Debt (Mar 2026)</td><td class="tpos">&#8377;1,900 Cr</td><td class="num">&#8377;2,500 Cr</td><td class="tpos">&#9660; despite &#8377;1,900 Cr 2-yr capex</td></tr>
+          <tr><td>Capex Plan</td><td class="num">&#8377;3,000 Cr to FY29</td><td class="num">&mdash;</td><td class="num">Mostly internal accruals</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Portfolio &amp; Future Plans</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Total Portfolio &mdash; crossed 5,000 keys</span><span>incl. pipeline</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:var(--cha)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Pipeline &mdash; 7 projects</span><span>~1,655 keys</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:33%;background:#f59e0b"></div></div></div>
+      <div style="overflow-x:auto;margin-top:8px;"><table>
+        <thead><tr><th>Element</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">New Markets FY26</td><td style="white-space:normal">Entered Hyderabad and Udaipur &mdash; two significant additions during Q4; diversifies beyond Mumbai-heavy base</td></tr>
+          <tr><td class="tb">CRE Growth</td><td style="white-space:normal">CIGNUS II tower commissioning to drive substantial rental growth from FY28; exit run-rate &#8377;280 mn/month in Mar 2026</td></tr>
+          <tr><td class="tb">ESG</td><td style="white-space:normal">S&amp;P Global CSA score 82 &mdash; ranked #2 globally in Hotels, Resorts &amp; Cruise Lines (Feb 2026); Great Place To Work 7 years running</td></tr>
+          <tr><td class="tb">Q4 Occupancy Dip</td><td style="white-space:normal">68.2% vs 75.9% &mdash; aviation disruptions, West Asia conflict and new-supply absorption in key micro-markets; pricing held (+8% ARR)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-lt">
+  <div class="grp-hdr" style="background:var(--lt-s);border-color:var(--lt);color:var(--lt);">Lemon Tree Hotels &mdash; NSE: LEMONTREE &middot; India's Largest Mid-Market Chain &middot; CMD: Patanjali Keswani &middot; Brands: Aurika, Lemon Tree Premier, Lemon Tree, Red Fox, Keys &middot; Dual Model: Owned (Fleur) + Managed/Franchised</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated) &mdash; Best-Ever Q4</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Total Revenue</td><td class="tpos">&#8377;419.5 Cr</td><td class="num">&#8377;379.4 Cr</td><td class="tpos">+11%</td></tr>
+          <tr><td>Net EBITDA</td><td class="tpos">&#8377;218.3 Cr</td><td class="num">&#8377;204.0 Cr</td><td class="tpos">+7%</td></tr>
+          <tr><td>Net EBITDA Margin</td><td class="warn">52.0%</td><td class="num">54.0%</td><td class="tneg">&minus;198 bps (renovation + GST)</td></tr>
+          <tr><td>PAT (Consolidated)</td><td class="tpos">&#8377;116.5 Cr</td><td class="num">&#8377;108.1 Cr</td><td class="tpos">+8%</td></tr>
+          <tr><td>PAT attributable to owners</td><td class="tpos">&#8377;91.5 Cr</td><td class="num">&mdash;</td><td class="tpos">+8% &middot; record quarter</td></tr>
+          <tr><td>Gross ARR</td><td class="tpos">&#8377;7,457</td><td class="num">&#8377;7,042</td><td class="tpos">+5.9%</td></tr>
+          <tr><td>Occupancy</td><td class="tpos">78.5%</td><td class="num">77.6%</td><td class="tpos">Best-ever Q4</td></tr>
+          <tr><td>RevPAR</td><td class="tpos">&#8377;5,855</td><td class="num">&#8377;5,462</td><td class="tpos">+7.2%</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Lemon Tree &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Mid-Market Leadership</td><td style="white-space:normal">India's largest mid-market chain &mdash; the widest demand pool (domestic business + value leisure). Tier-2/3 first-mover with limited global-chain competition</td></tr>
+          <tr><td class="tb">Dual-Engine Model</td><td style="white-space:normal">Owned hotels (Fleur, with APG) generate EBITDA; managed &amp; franchised business scales capital-free &mdash; fees &#8377;169.7 Cr FY26 (+14%), third-party fees +23%</td></tr>
+          <tr><td class="tb">Demerger Catalyst</td><td style="white-space:normal">Split into asset-light Lemon Tree (management co) + asset-heavy Fleur (ownership platform) &mdash; unlocks separate valuations for fees vs assets</td></tr>
+          <tr><td class="tb">Aurika Upscale Push</td><td style="white-space:normal">Aurika Mumbai Skycity (near airport) &mdash; India's largest hotel by keys &mdash; moves brand up the price ladder</td></tr>
+          <tr><td class="tb">Falling Cost of Debt</td><td style="white-space:normal">7.42% (&minus;115 bps YoY) with borrowings down to &#8377;1,500 Cr &mdash; deleveraging + cheaper debt = PAT compounding</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated) &mdash; Best Year in History</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Total Revenue</td><td class="tpos">&#8377;1,452.7 Cr</td><td class="num">&#8377;1,286.1 Cr</td><td class="tpos">+13%</td></tr>
+          <tr><td>Net EBITDA</td><td class="tpos">&#8377;699.3 Cr</td><td class="num">&#8377;636.5 Cr</td><td class="tpos">+10% (margin 48.1%)</td></tr>
+          <tr><td>PAT (Consolidated)</td><td class="tpos">&#8377;288.3 Cr</td><td class="num">&#8377;243.1 Cr</td><td class="tpos">+19%</td></tr>
+          <tr><td>PAT attributable to owners</td><td class="tpos">&#8377;227.1 Cr</td><td class="num">&#8377;196.6 Cr</td><td class="tpos">+15.5%</td></tr>
+          <tr><td>Cash Profit</td><td class="tpos">&#8377;443.1 Cr</td><td class="num">&mdash;</td><td class="tpos">+16%</td></tr>
+          <tr><td>Gross ARR / Occupancy</td><td class="tpos">&#8377;6,875 / 73.5%</td><td class="num">&mdash;</td><td class="tpos">Both all-time highs</td></tr>
+          <tr><td>Total Borrowings (Mar 2026)</td><td class="tpos">&#8377;1,500 Cr</td><td class="num">&#8377;1,699 Cr</td><td class="tpos">Cost of debt 7.42% (&minus;115 bps)</td></tr>
+          <tr><td>Management Fees</td><td class="tpos">&#8377;169.7 Cr</td><td class="num">&mdash;</td><td class="tpos">+14% (3rd-party &#8377;73.9 Cr +23%)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Portfolio, Demerger &amp; Future Plans</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Operational &mdash; 131 hotels / 11,811 rooms</span><span>52% of total</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:52%;background:var(--lt)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Operational + Signed &mdash; 268 hotels / 22,581 rooms</span><span>100%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:#86c440"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>FY26: opened 20 M&amp;F hotels (1,523 rooms) &middot; signed 55 (4,912 rooms)</span><span>Asset-light</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:75%;background:#aedd77"></div></div></div>
+      <div style="overflow-x:auto;margin-top:8px;"><table>
+        <thead><tr><th>Element</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Demerger Structure</td><td style="white-space:normal">Lemon Tree = asset-light brand/management company; Fleur Hotels = hotel ownership &amp; leasing platform (Fleur fees to LT: &#8377;95.8 Cr FY26, +8%)</td></tr>
+          <tr><td class="tb">Renovation Programme</td><td style="white-space:normal">Accelerated owned-portfolio renovation continues &mdash; near-term margin drag (~&minus;126 bps FY26), post-renovation ARR uplift thesis; steady-state renovation ~1.8% of revenue</td></tr>
+          <tr><td class="tb">GST Impact</td><td style="white-space:normal">GST cut on rooms boosts demand, but loss of input tax credit hits margin ~2% (Keswani) &mdash; expected to be offset by stronger demand</td></tr>
+          <tr><td class="tb">Exceptional Items FY26</td><td style="white-space:normal">Labour Codes implementation + demerger/restructuring costs</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-jun">
+  <div class="grp-hdr" style="background:var(--jun-s);border-color:var(--jun);color:var(--jun);">Juniper Hotels &mdash; NSE: JUNIPER &middot; Saraf Hotels + Hyatt JV &middot; CMD: Arun Kumar Saraf (re-appointed, 3 yrs) &middot; Grand Hyatt Mumbai, Andaz Delhi, Hyatt Delhi Residences, Hyatt Regency Ahmedabad / Lucknow / Raipur &middot; 1,895 Keys</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;301.5 Cr</td><td class="num">&#8377;277.6 Cr</td><td class="tpos">+8.6%</td></tr>
+          <tr><td>Total Income</td><td class="tpos">&#8377;306.8 Cr</td><td class="num">&mdash;</td><td class="tpos">+7% &middot; Record quarter</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;138.0 Cr</td><td class="num">&mdash;</td><td class="tpos">+9% (margin ~44%)</td></tr>
+          <tr><td>PBT</td><td class="warn">&#8377;66.9 Cr</td><td class="num">&#8377;73.5 Cr</td><td class="tneg">&minus;9%</td></tr>
+          <tr><td>PAT</td><td class="tneg">&#8377;50.4 Cr</td><td class="num">&#8377;54.9 Cr</td><td class="tneg">&minus;8.3% (one-offs)</td></tr>
+          <tr><td>Exceptional Items Q4</td><td class="tneg">&#8377;23.4 Cr</td><td class="num" colspan="2" style="white-space:normal;text-align:left;">Delhi hotel property-tax arrears (HC ruling on star hotels) + Labour Codes &#8377;6 Cr (FY) + Bengaluru fire loss (partly insured)</td></tr>
+          <tr><td>ARR / Occupancy / RevPAR</td><td class="tpos">&#8377;13,457 / 81% / &#8377;10,863</td><td class="num">&#8377;12,460 / 81% / &#8377;10,058</td><td class="tpos">ARR +8%, RevPAR +8%</td></tr>
+          <tr><td>F&amp;B Revenue</td><td class="tpos">&#8377;84.8 Cr</td><td class="num">&mdash;</td><td class="tpos">28% of revenue</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Juniper &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Grand Hyatt Mumbai</td><td style="white-space:normal">One of India's largest luxury complexes near BKC &mdash; rooms + serviced apartments + "The Grand Showroom" (~49,000 sq ft MICE space, &#8377;28 Cr revenue in FY26)</td></tr>
+          <tr><td class="tb">Hyatt Partnership</td><td style="white-space:normal">Only listed pure Hyatt-platform play in India; global loyalty (World of Hyatt) funnels corporate + inbound demand</td></tr>
+          <tr><td class="tb">81% Occupancy</td><td style="white-space:normal">Highest disclosed occupancy among listed peers in Q4 &mdash; city-centre business/MICE locations run near-full</td></tr>
+          <tr><td class="tb">Operating Leverage</td><td style="white-space:normal">EBITDA margin +400 bps in FY26 to 42% &mdash; cost discipline + shift to higher-yielding segments; 6th consecutive PAT-positive quarter</td></tr>
+          <tr><td class="tb">Delhi Land Bank</td><td style="white-space:normal">Dwarka DDA award (500-key luxury) takes Delhi inventory beyond 1,000 keys on completion &mdash; rare metro land access</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Total Income (Highest ever)</td><td class="tpos">&#8377;1,069.1 Cr</td><td class="num">&#8377;975.6 Cr</td><td class="tpos">+10%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">42%</td><td class="num">38%</td><td class="tpos">+400 bps</td></tr>
+          <tr><td>PBT (pre-exceptional)</td><td class="tpos">&#8377;235.3 Cr</td><td class="num">&#8377;150.0 Cr</td><td class="tpos">+56.9%</td></tr>
+          <tr><td>Exceptional Items (FY)</td><td class="tneg">&#8377;43.3 Cr</td><td class="num">Nil</td><td class="tneg">Property tax + labour codes + fire</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;141.6 Cr</td><td class="num">&#8377;71.3 Cr</td><td class="tpos">+99%</td></tr>
+          <tr><td>Deferred Tax Charge</td><td class="num">&#8377;50.3 Cr</td><td class="num">&mdash;</td><td class="num">Non-cash</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Pipeline &amp; Future Plans &mdash; 1,895 to 3,320+ Keys by FY30</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Current inventory</span><span>1,895 keys</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:57%;background:var(--jun)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>FY30 target (4 projects + 1 pre-development)</span><span>3,320+ keys</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:#a78bfa"></div></div></div>
+      <div style="overflow-x:auto;margin-top:8px;"><table>
+        <thead><tr><th>Element</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Dwarka, New Delhi (DDA)</td><td style="white-space:normal">Letter of Award for ~500-key luxury hotel; 55-year lease, &#8377;9.75 Cr upfront over 4 years, annual licence fee after 5.5 years; Delhi inventory to exceed 1,000 keys</td></tr>
+          <tr><td class="tb">Westin Bengaluru Ph-I</td><td style="white-space:normal">Operational by Q2 FY27; opening ARR ~&#8377;15,000; first-year revenue ~&#8377;30 Cr</td></tr>
+          <tr><td class="tb">Capex &amp; Leverage</td><td style="white-space:normal">&#8377;1,800 Cr capex guided to FY30; peak net debt/EBITDA to stay below 2.5&times;</td></tr>
+          <tr><td class="tb">Corporate</td><td style="white-space:normal">Acquired 100% of Juniper Hospitality Assets (SPA executed 4 June 2026); CMD Arun Kumar Saraf re-appointed for 3 years</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<div class="co-sec" id="co-sam">
+  <div class="grp-hdr" style="background:var(--sam-s);border-color:var(--sam);color:var(--sam);">SAMHI Hotels &mdash; NSE: SAMHI &middot; Mid-Scale &amp; Upper-Midscale Owned/Leased Hotels &middot; MD &amp; CEO: Ashish Jakhanwala &middot; Brands: Marriott (Courtyard, Fairfield), Hyatt (Hyatt Place, Hyatt Regency), IHG (Holiday Inn Express), Accor &middot; 31 Hotels, 4,801 Keys &middot; Pan-India</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="num">&#8377;248.8 Cr</td><td class="num">&#8377;208.4 Cr</td><td class="tpos">+19.4%</td></tr>
+          <tr><td>EBITDA</td><td class="num">~&#8377;95 Cr</td><td class="num">&mdash;</td><td class="tpos">~38% margin</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;24.8 Cr</td><td class="tneg">Loss</td><td class="tpos">Turnaround</td></tr>
+          <tr><td>ARR (Average Room Rate)</td><td class="tpos">&#8377;7,200+</td><td class="num">&mdash;</td><td class="tpos">+12% YoY</td></tr>
+          <tr><td>Occupancy</td><td class="tpos">~69%</td><td class="num">&mdash;</td><td class="tpos">+200 bps</td></tr>
+          <tr><td>RevPAR</td><td class="tpos">~&#8377;4,970</td><td class="num">&mdash;</td><td class="tpos">+15% YoY</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">SAMHI &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Global Brand Affiliation</td><td style="white-space:normal">Every hotel operates under a Marriott, Hyatt, IHG or Accor brand &mdash; distribution, loyalty programs (Marriott Bonvoy, World of Hyatt) and brand standards drive corporate demand and RevPAR premium vs independents</td></tr>
+          <tr><td class="tb">Owned &amp; Leased Asset Play</td><td style="white-space:normal">Unlike the asset-light management companies, SAMHI owns/leases the real estate &mdash; creates operating leverage when occupancy climbs; ARR upside flows directly to EBITDA at ~70% incremental margin</td></tr>
+          <tr><td class="tb">Mid-Scale Sweet Spot</td><td style="white-space:normal">Positioned in upper-midscale segment (Courtyard, Hyatt Place, Holiday Inn Express) which benefits from corporate travel, MICE and domestic business travel; less exposed to luxury inbound volatility</td></tr>
+          <tr><td class="tb">Turnaround Thesis</td><td style="white-space:normal">Listed in 2023 with high leverage post-COVID; FY26 marks the inflection from losses to profits as RevPAR recovery outpaces fixed-cost base; debt-reduction from free cash generation is the key next catalyst</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Annual Performance</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;926.5 Cr</td><td class="num">&#8377;784.9 Cr</td><td class="tpos">+18%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">~&#8377;318 Cr</td><td class="num">~&#8377;257 Cr</td><td class="tpos">~34% margin</td></tr>
+          <tr><td>PAT</td><td class="tpos">Positive (first profitable FY)</td><td class="tneg">Loss</td><td class="tpos">Inflection year</td></tr>
+          <tr><td>Net Debt</td><td class="warn">~&#8377;1,900 Cr</td><td class="num">&mdash;</td><td class="warn">High; reduction key</td></tr>
+          <tr><td>Hotels / Keys</td><td class="num">31 / 4,801</td><td class="num">29 / 4,441</td><td class="tpos">+2 hotels added</td></tr>
+          <tr><td>RevPAR Growth FY26</td><td class="tpos">+15–16% YoY</td><td class="num">&mdash;</td><td class="tpos">Industry-leading pace</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">SAMHI &mdash; Future Plans &amp; Strategy</div>
+      <div style="overflow-x:auto;margin-top:8px;"><table>
+        <thead><tr><th>Element</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Portfolio Target</td><td style="white-space:normal">5,000+ keys by FY27 through selective acquisitions/new leases; focus on Tier-1 and Tier-2 city business districts where corporate demand is structural</td></tr>
+          <tr><td class="tb">Debt Deleveraging</td><td style="white-space:normal">Primary use of free cash flow: repay high-cost debt; management guidance to bring net debt/EBITDA below 4x; every &#8377;100 Cr of net debt reduction adds meaningful equity value at current leverage</td></tr>
+          <tr><td class="tb">Brand Deepening</td><td style="white-space:normal">Expand Marriott Bonvoy and World of Hyatt-affiliated inventory; loyalty program penetration drives direct bookings and reduces OTA commissions</td></tr>
+          <tr><td class="tb">Adjacencies</td><td style="white-space:normal">Leveraging MICE and banqueting at select large-format hotels; F&amp;B revenue as % of total targeting 20%+ to diversify from pure rooms business</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===== DEMAND DRIVERS ===== -->
+<div class="panel" id="tab-drivers">
+<div class="sec-hdr">Demand Drivers <span class="sec-note">&middot; Occupancy &middot; ARR &middot; RevPAR &middot; Demand vs Supply &middot; Weddings &amp; MICE &middot; Aviation &middot; GST &middot; FY27</span></div>
+<div class="trojan-card">
+  <div class="trojan-title">&#9888;&#65039; FY26 Reality Check &mdash; Demand Still Beats Supply, but Q4 Occupancy Was Tested</div>
+  <p style="font-size:12.5px;line-height:1.7;">CY2025 branded-hotel demand grew 9.1% against supply growth of 7.8%; occupancy improved 100 bps to ~64% and ADR rose 8.6% to ~&#8377;8,600 (industry estimates cited by ITC Hotels). But Q4 FY26 brought the West Asia conflict (inbound hit, especially South India), aviation disruptions and extreme weather &mdash; Chalet's occupancy fell 7.7 percentage points even as it raised ARR 8%. The sector's FY26 growth was therefore <strong>rate-led, not occupancy-led</strong>. FY27 hinges on occupancy recovery, absorption of 100+ new hotels opening within 15 months, and the GST input-tax-credit loss (~2% margin drag).</p>
+</div>
+<div class="rm-grid">
+  <div class="rm-card"><div class="rm-icon">&#128719;&#65039;</div><div class="rm-title">The Three Metrics &mdash; Occupancy &times; ARR = RevPAR</div>
+    <div class="rm-body"><strong>Occupancy</strong> = rooms sold &divide; rooms available. <strong>ARR/ADR</strong> = average room rate actually realised. <strong>RevPAR</strong> = ARR &times; occupancy &mdash; the single best health metric. FY26 snapshot: industry occupancy ~64%, ADR ~&#8377;8,600. Company Q4 ARR ladder: EIH Associated &#8377;17,696 &gt; Chalet &#8377;15,456 &gt; Juniper &#8377;13,457 &gt; Lemon Tree &#8377;7,457 &mdash; positioning (luxury vs mid-market) decides the rate, occupancy decides utilisation. Rate-led growth (FY26 pattern) is higher quality than discount-led occupancy.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#128200;</div><div class="rm-title">Demand vs Supply &mdash; The Core Cycle Equation</div>
+    <div class="rm-body">Hotels are a classic demand-supply cycle business. CY25: demand +9.1% vs supply +7.8% &mdash; pricing power stays with hotels. Horwath HTL pegs the branded-room pipeline at ~105,000 rooms by 2029 &mdash; large, but spread over 4 years against double-digit demand growth. <strong>Watch:</strong> 100+ hotel openings due in the 15 months to Q2 FY27 &mdash; micro-market oversupply (e.g., select Mumbai/Bengaluru corridors) can dent occupancy locally even when the national equation is healthy.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#128141;</div><div class="rm-title">Weddings, MICE &amp; F&amp;B &mdash; The Non-Room Engine</div>
+    <div class="rm-body">Indian weddings + corporate MICE are structural demand anchors: they fill banquets, F&amp;B and room blocks in lean periods. Juniper's F&amp;B alone is 28% of revenue; its 49,000 sq ft "Grand Showroom" earned &#8377;28 Cr in year one. ITC's destination restaurants (Bukhara, Avartana) and IHCL's TajSATS catering (&#8377;1,219 Cr FY26) monetise the same kitchen infrastructure. MICE traction is a key reason brokerages expect RevPAR growth to sustain in FY27.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#9992;&#65039;</div><div class="rm-title">Aviation &amp; Inbound &mdash; FY26's Swing Factor</div>
+    <div class="rm-body">Hotel demand rides on air connectivity. FY26 saw aviation incidents/disruptions and the West Asia conflict choke inbound travel &mdash; South Indian luxury markets felt it most (ITC commentary). Domestic air traffic + new airports (Navi Mumbai, Noida/Jewar) are FY27&ndash;28 tailwinds; airport-adjacent assets (Chalet Sahar, Aurika Skycity, Grand Hyatt Mumbai) are direct beneficiaries. Foreign tourist arrivals remain below potential &mdash; recovery is upside, not in the base case.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#127981;</div><div class="rm-title">GST Change &mdash; Demand Boost vs ITC Loss</div>
+    <div class="rm-body">The GST rate cut on hotel rooms lowers the consumer bill &mdash; positive for demand, especially mid-market. But hotels lose <strong>input tax credit</strong>, an estimated ~2% margin hit (Lemon Tree CMD Keswani), visible in LT's &minus;198 bps Q4 margin alongside renovation costs. Net effect: volume-positive, margin-negative in the transition year; high-occupancy operators absorb it best. Wage Code implementation added a second cost layer across the sector (EIH, Juniper, LT all cited it).</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#128202;</div><div class="rm-title">Company Sensitivity &mdash; FY27 Risk Map</div>
+    <div class="rm-body">
+      <table style="font-size:10.5px;box-shadow:none;border-radius:0;">
+        <thead><tr><th style="font-size:9px;padding:5px 6px;">Company</th><th style="font-size:9px;padding:5px 6px;">Key Sensitivity</th><th style="font-size:9px;padding:5px 6px;">FY27 Risk</th></tr></thead>
+        <tbody>
+          <tr><td>IHCL</td><td>Pan-India demand</td><td class="tpos">Low &mdash; diversified</td></tr>
+          <tr><td>ITC Hotels</td><td>Luxury inbound + Sri Lanka</td><td class="warn">Medium</td></tr>
+          <tr><td>EIH</td><td>Renovation closures + luxury inbound</td><td class="warn">Medium</td></tr>
+          <tr><td>Chalet</td><td>Mumbai micro-market supply</td><td class="warn">Medium-High</td></tr>
+          <tr><td>Lemon Tree</td><td>GST ITC loss + renovation</td><td class="warn">Medium</td></tr>
+          <tr><td>Juniper</td><td>Single-city concentration (Mumbai)</td><td class="warn">Medium</td></tr>
+          <tr><td>SAMHI</td><td>High leverage &mdash; net debt ~&#8377;1,900 Cr</td><td class="tneg">High (leverage risk)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== SEGMENTS & BUSINESS MODEL ===== -->
+<div class="panel" id="tab-segments">
+<div class="sec-hdr">Segments &amp; Business Model <span class="sec-note">&middot; Luxury to Mid-Market &middot; Owned vs Managed &middot; Locations &middot; Who Plays Where</span></div>
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-lbl">Segment Map &mdash; Who Plays Where</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Segment</th><th>Key Driver</th><th>IHCL</th><th>ITC Hotels</th><th>EIH</th><th>Chalet</th><th>Lemon Tree</th><th>Juniper</th></tr></thead>
+    <tbody>
+      <tr><td class="tb">Luxury / Palace</td><td>Inbound, weddings, HNI leisure</td><td class="tpos">Taj &mdash; leader</td><td class="tpos">Core (ITC Royal/Grand)</td><td class="tpos">Oberoi &mdash; ultra-luxury</td><td class="warn">Select (JW Marriott)</td><td class="tneg">Nil</td><td class="tpos">Grand Hyatt / Andaz</td></tr>
+      <tr><td class="tb">Upper Upscale / Business</td><td>Corporate travel, MICE</td><td class="tpos">Vivanta / SeleQtions</td><td class="tpos">Welcomhotel</td><td class="tpos">Trident</td><td class="tpos">Westin / Marriott core</td><td class="warn">Aurika entry</td><td class="tpos">Hyatt Regency</td></tr>
+      <tr><td class="tb">Mid-Market / Lean Luxe</td><td>Domestic business, value travel</td><td class="tpos">Ginger</td><td class="warn">Fortune</td><td class="tneg">Nil</td><td class="tneg">Nil</td><td class="tpos">Leader (LT / Red Fox / Keys)</td><td class="tneg">Nil</td></tr>
+      <tr><td class="tb">Leisure / Resorts</td><td>Domestic vacations, spiritual</td><td class="tpos">Strong + Tree of Life</td><td class="tpos">Mementos / Storii / Zuri</td><td class="tpos">Vilas resorts</td><td class="warn">Udaipur entry</td><td class="warn">Selective</td><td class="warn">Limited</td></tr>
+      <tr><td class="tb">F&amp;B / Catering / Banquets</td><td>Weddings, airlines, dining</td><td class="tpos">TajSATS &#8377;1,219 Cr</td><td class="tpos">Bukhara, Avartana</td><td class="tpos">Oberoi Flight Services</td><td class="warn">Hotel F&amp;B</td><td class="warn">Hotel F&amp;B</td><td class="tpos">28% of revenue</td></tr>
+      <tr><td class="tb">International</td><td>Brand export, diversification</td><td class="tpos">4 continents</td><td class="tpos">Sri Lanka (Ratnadipa)</td><td class="tpos">UK / Egypt / Saudi pipeline</td><td class="tneg">Nil</td><td class="warn">Small (Nepal/Bhutan)</td><td class="tneg">Nil</td></tr>
+      <tr><td class="tb">Non-Hotel Annuity</td><td>Rentals, real estate</td><td class="warn">Limited</td><td class="tpos">Colombo residences</td><td class="warn">Limited</td><td class="tpos">CRE &#8377;28 Cr/month</td><td class="tneg">Nil</td><td class="tneg">Nil</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="g2" style="margin-bottom:16px;">
+  <div class="card"><div class="card-lbl">Owned vs Managed &mdash; The Asset-Light Fee Machine Is the Sector's Margin Driver</div>
+    <p style="font-size:12px;line-height:1.7;margin-bottom:10px;">Hotel companies earn in two very different ways. Owning a hotel captures the full P&amp;L but ties up &#8377;1.5&ndash;3 Cr of capital per key. Managing someone else's hotel earns fees (% of revenue + share of gross operating profit) at near-100% margin and zero capital:</p>
+    <table style="font-size:11px;box-shadow:none;">
+      <thead><tr><th>Parameter</th><th>Owned Hotel</th><th>Managed / Franchised</th></tr></thead>
+      <tbody>
+        <tr><td>Capital per key</td><td class="tneg">&#8377;1.5&ndash;3 Cr (luxury higher)</td><td class="tpos">~Zero</td></tr>
+        <tr><td>EBITDA capture</td><td class="tpos">Full hotel EBITDA (40&ndash;50%)</td><td class="tpos">Fee at ~100% margin</td></tr>
+        <tr><td>Cyclicality</td><td class="tneg">Full downside in downturns</td><td class="tpos">Cushioned (fee on revenue)</td></tr>
+        <tr><td>Scalability</td><td class="tneg">Slow &mdash; build / buy</td><td class="tpos">Fast &mdash; sign contracts</td></tr>
+        <tr><td>Who leads</td><td class="num">Chalet, Juniper, EIH (own)</td><td class="num">IHCL (255 pipeline), ITC (67 managed), LT (M&amp;F)</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:10px;">Fee evidence FY26: IHCL management fees &#8377;685 Cr (+22%); Lemon Tree fees &#8377;169.7 Cr (+14%, third-party +23%); ITC Hotels managed pipeline 67 hotels / ~6,700 keys. Asset-light growth is why huge pipelines need little fresh equity.</p>
+  </div>
+  <div class="card"><div class="card-lbl">Location Map &mdash; Where the Keys Are</div>
+    <table style="font-size:11px;box-shadow:none;">
+      <thead><tr><th>Company</th><th style="white-space:normal">Core Locations</th><th style="white-space:normal">Concentration Risk</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">IHCL</td><td style="white-space:normal">250+ locations; metros + leisure + spiritual circuits; 4 continents, 14 countries</td><td class="tpos">Lowest &mdash; widest spread</td></tr>
+        <tr><td class="tb">ITC Hotels</td><td style="white-space:normal">Metro luxury (Delhi, Chennai, Mumbai, Kolkata, Bengaluru) + Colombo; new: Vizag, Delhi</td><td class="warn">Metro-luxury weighted</td></tr>
+        <tr><td class="tb">EIH</td><td style="white-space:normal">Delhi, Mumbai, Rajasthan vilas circuit, Agra, Shimla + 6 countries; London/Egypt/Saudi coming</td><td class="warn">Luxury-inbound exposed</td></tr>
+        <tr><td class="tb">Chalet</td><td style="white-space:normal">Mumbai (Sahar, Powai, Vashi), Hyderabad, Bengaluru, Pune; new: Udaipur, Hyderabad</td><td class="tneg">Mumbai-heavy</td></tr>
+        <tr><td class="tb">Lemon Tree</td><td style="white-space:normal">Pan-India incl. deep Tier-2/3; Aurika Mumbai Skycity flagship near airport</td><td class="tpos">Well spread</td></tr>
+        <tr><td class="tb">Juniper</td><td style="white-space:normal">Mumbai (Grand Hyatt), Delhi (Andaz + Dwarka), Ahmedabad, Lucknow, Raipur; Bengaluru Q2 FY27</td><td class="tneg">Mumbai / Delhi concentrated</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card">
+  <div class="card-lbl">Chalet vs Rest &mdash; A Hotel Company With a Landlord Inside (Structurally Different)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Parameter</th><th>Chalet (Owned + CRE Annuity)</th><th>IHCL / ITC / LT (Brand-led, fee-scaling)</th></tr></thead>
+    <tbody>
+      <tr><td class="tb">Revenue Nature</td><td class="num">Hotel P&amp;L + office rentals + residential sales</td><td class="num">Hotel P&amp;L + management fees + catering / new businesses</td></tr>
+      <tr><td class="tb">EBITDA Margin</td><td class="tpos">46&ndash;49% (asset-owning + 83.6%-margin rentals)</td><td class="warn">35&ndash;48% depending on fee mix</td></tr>
+      <tr><td class="tb">Capital Intensity</td><td class="tneg">High &mdash; &#8377;3,000 Cr capex to FY29</td><td class="tpos">Falling &mdash; pipelines largely capital-light</td></tr>
+      <tr><td class="tb">Cycle Exposure</td><td class="tneg">Full RevPAR + office leasing cycles</td><td class="tpos">Fee income cushions downturns</td></tr>
+      <tr><td class="tb">Debt</td><td class="warn">Net debt &#8377;1,900 Cr (falling)</td><td class="tpos">IHCL / ITC net cash; LT &#8377;1,500 Cr borrowings</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</div>
+
+<!-- ===== CHARTS ===== -->
+<div class="panel" id="tab-charts">
+<div class="sec-hdr">Charts <span class="sec-note">&middot; Q4 FY26 &amp; Annual &middot; Revenue &middot; PAT &middot; Margins &middot; ARR / RevPAR / Occupancy &middot; Debt</span></div>
+<div style="margin-bottom:12px;">
+  <button id="chq" onclick="showCharts('q',this)" style="background:#0d1c2e;color:#fff;border:none;" class="per-btn">Q4 FY26</button>
+  <button id="cha" onclick="showCharts('a',this)" class="per-btn">Annual FY26</button>
+  <button id="chr" onclick="showCharts('r',this)" class="per-btn">Operating Metrics &amp; Balance Sheet</button>
+</div>
+<div id="chq-view">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 Revenue (&#8377; Cr)</h3><p class="sub">Consolidated revenue from operations; EIH derived from +10% YoY disclosure</p><canvas id="q4Rev" height="200"></canvas></div>
+    <div class="chart-card"><h3>Q4 FY26 PAT (&#8377; Cr)</h3><p class="sub">ITC pre-exceptional; EIH excluded (PAT declined; absolute not in call summary)</p><canvas id="q4Pat" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 EBITDA (&#8377; Cr)</h3><p class="sub">IHCL leads on scale; owned-asset models show highest margins</p><canvas id="q4Ebitda" height="200"></canvas></div>
+    <div class="chart-card"><h3>Q4 FY26 EBITDA Margin (%)</h3><p class="sub">Ownership model drives margin &mdash; owned-heavy &gt; fee-mixed</p><canvas id="q4Marg" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 PAT Growth YoY (%)</h3><p class="sub">*Juniper dip from &#8377;23.4 Cr one-off property-tax charge</p><canvas id="q4Grw" height="200"></canvas></div>
+    <div class="chart-card"><h3>Q4 FY26 Revenue vs EBITDA vs PAT (&#8377; Cr)</h3><p class="sub">Profitability waterfall &mdash; five companies with full disclosure</p><canvas id="q4Combo" height="200"></canvas></div>
+  </div>
+</div>
+<div id="cha-view" style="display:none;">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>FY26 Annual Revenue (&#8377; Cr)</h3><p class="sub">Chalet incl. residential; EIH derived from +8% YoY disclosure</p><canvas id="aRev" height="200"></canvas></div>
+    <div class="chart-card"><h3>FY26 Annual PAT (&#8377; Cr)</h3><p class="sub">IHCL reported; ITC pre-exceptional; EIH excluded (one-off distorted)</p><canvas id="aPat" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>FY26 EBITDA (&#8377; Cr)</h3><p class="sub">Chalet ex-residential; Juniper from 42% disclosed margin; EIH "record" (value not in summary)</p><canvas id="aEbitda" height="200"></canvas></div>
+    <div class="chart-card"><h3>FY26 EBITDA Margin (%)</h3><p class="sub">LT &amp; Chalet structurally higher (owned-asset capture)</p><canvas id="aMarg" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Occupancy (%)</h3><p class="sub">LT &amp; Chalet FY26; Juniper &amp; EIH Assoc Q4 FY26; industry CY25</p><canvas id="aOcc" height="200"></canvas></div>
+    <div class="chart-card"><h3>FY26 Revenue vs EBITDA vs PAT (&#8377; Cr)</h3><p class="sub">Full-year profitability comparison (full-disclosure companies)</p><canvas id="aCombo" height="200"></canvas></div>
+  </div>
+</div>
+<div id="chr-view" style="display:none;">
+  <div class="card" style="margin-bottom:16px;border:2px solid var(--itc);">
+    <div class="card-lbl" style="color:var(--itc);">&#128719;&#65039; The Hotel Profit Equation &mdash; ARR &times; Occupancy = RevPAR &rarr; Operating Leverage &rarr; EBITDA</div>
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:0;">Hotels carry high fixed costs (staff, property, energy). Once occupancy crosses ~55&ndash;60%, every extra rupee of RevPAR falls largely to EBITDA &mdash; which is why FY26's 6&ndash;13% ARR growth produced 10&ndash;21% EBITDA growth across the pack. The charts below compare the operating metrics driving that leverage, and the balance sheets funding the next capacity cycle.</p>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 ARR (&#8377;)</h3><p class="sub">Average room rate &mdash; the positioning ladder; industry ADR CY25 for reference</p><canvas id="opARR" height="200"></canvas></div>
+    <div class="chart-card"><h3>Q4 FY26 RevPAR (&#8377;)</h3><p class="sub">Rate &times; occupancy &mdash; the true revenue engine per key</p><canvas id="opRevpar" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 Occupancy (%)</h3><p class="sub">Juniper runs hottest; Chalet absorbed supply + aviation shock</p><canvas id="opOcc" height="200"></canvas></div>
+    <div class="chart-card"><h3>Debt &amp; Cash Position, Mar 2026 (&#8377; Cr)</h3><p class="sub">Negative bar = cash; ITC Hotels effectively debt-free (not charted)</p><canvas id="bsDebt" height="200"></canvas></div>
+  </div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">Portfolio, Pipeline &amp; Balance Sheet &mdash; Reference Table (Mar 2026)</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>Operating Portfolio</th><th>Pipeline / Target</th><th>Debt Position</th><th style="white-space:normal">Capex / Growth Funding</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">IHCL</td><td class="num">630 hotels</td><td class="num">255 hotels; 700+ by 2030</td><td class="tpos">Net cash &mdash; &#8377;4,345 Cr gross cash</td><td style="white-space:normal">&#8377;1,000+ Cr FY26 internal; pipeline largely capital-light</td></tr>
+        <tr><td class="tb">ITC Hotels</td><td class="num">13 opened FY26; ~140 properties</td><td class="num">67 managed (~6,700 keys); 250 hotels / 22,000+ keys by 2031</td><td class="tpos">Effectively debt-free</td><td style="white-space:normal">Internal cash; Zuri &#8377;205 Cr bolt-on; Vizag + Delhi projects</td></tr>
+        <tr><td class="tb">EIH</td><td class="num">19 hotels, 6 countries + EIH Assoc 784 keys</td><td class="num">21 properties / ~1,473 keys by 2029</td><td class="tpos">Conservative, historically net cash</td><td style="white-space:normal">Up to GBP 69 mn London; 8 of 21 pipeline owned/JV</td></tr>
+        <tr><td class="tb">Chalet</td><td class="num">5,000+ keys total portfolio</td><td class="num">7 projects / ~1,655 keys</td><td class="warn">Net debt &#8377;1,900 Cr (&#9660; from &#8377;2,500 Cr)</td><td style="white-space:normal">&#8377;3,000 Cr to FY29, mostly internal accruals</td></tr>
+        <tr><td class="tb">Lemon Tree</td><td class="num">131 hotels / 11,811 rooms</td><td class="num">268 hotels / 22,581 rooms incl. signed</td><td class="warn">Borrowings &#8377;1,500 Cr @ 7.42%</td><td style="white-space:normal">M&amp;F-led (zero capex); Fleur demerger separates asset capex</td></tr>
+        <tr><td class="tb">Juniper</td><td class="num">1,895 keys</td><td class="num">3,320+ keys by FY30 (incl. Dwarka 500)</td><td class="warn">Peak net debt/EBITDA &lt;2.5&times; guided</td><td style="white-space:normal">&#8377;1,800 Cr capex to FY30; Westin Bengaluru Q2 FY27</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">Sources: Q4 FY26 results, press releases and earnings calls (May&ndash;June 2026). ITC Hotels current property count approximate &mdash; verify in investor presentation.</p>
+  </div>
+</div>
+</div>
+
+<!-- ===== SWOT ===== -->
+<div class="panel" id="tab-swot">
+<div class="sec-hdr">SWOT &amp; Moat <span class="sec-note">&middot; All 6 Companies &middot; Competitive Advantages</span></div>
+<div class="g2" style="margin-bottom:14px;">
+  <div><div class="co-hdr"><span class="dot" style="background:var(--ihc)"></span>Indian Hotels Co (IHCL)</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>16 consecutive record quarters; best-ever FY26 PAT &#8377;2,084 Cr</li><li>Taj &mdash; India's strongest hotel brand; 14-brand ladder</li><li>Net cash &#8377;4,345 Cr; ICRA AAA upgrade</li><li>Fee income &#8377;685 Cr (+22%) &mdash; high-margin flywheel</li><li>Record 250 signings; 255-hotel capital-light pipeline</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Premium valuation (~7&times; book) &mdash; priced for perfection</li><li>Quarterly PAT volatility from exceptional items (Q2 FY26 &minus;48.6%)</li><li>Catering / new-business mix dilutes blended margin</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Accelerate 2030: 700+ hotels; new businesses &gt;25% of revenue</li><li>Spiritual + Tier-2/3 circuits via Ginger and Tree of Life</li><li>Inbound recovery once West Asia stabilises</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>100+ hotel supply wave in key micro-markets</li><li>Marriott / Accor / Hilton expanding aggressively in India</li><li>Demand shocks punish high multiples first</li></ul></div>
+  </div></div>
+  <div><div class="co-hdr"><span class="dot" style="background:var(--itc)"></span>ITC Hotels</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>FY26 PAT (pre-exc.) +39%; first-ever dividend</li><li>Debt-free demerged balance sheet</li><li>Luxury trophy assets + destination F&amp;B brands (Bukhara, Avartana)</li><li>Record 33 signings; asset-right fee scaling</li><li>RevPAR +10% with both ADR and occupancy rising</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 margin &minus;180 bps (Sri Lanka fuel costs)</li><li>Ex-real-estate Q4 revenue grew only 6% &mdash; conflict drag</li><li>Sapphire Residences handovers are non-recurring</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>250 hotels / 22,000+ keys by 2031</li><li>Zuri integration adds leisure resorts cheaply</li><li>Vizag + New Delhi projects; spiritual destinations</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Luxury inbound most exposed to geopolitics</li><li>Sri Lanka macro / weather volatility (Cyclone Ditwah)</li><li>Luxury supply additions in metro CBDs</li></ul></div>
+  </div></div>
+</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div><div class="co-hdr"><span class="dot" style="background:var(--eih)"></span>EIH Ltd (Oberoi)</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>World-ranked Oberoi brand; highest ARR per key in the pack</li><li>Record FY26 EBITDA despite shocks; RevPAR +8.5% (owned)</li><li>Conservative balance sheet funds global pipeline</li><li>Flight catering (OFS) annuity growing</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 EBITDA +1% only &mdash; mix shift + Wage Code costs</li><li>PAT optics hurt by Q1 exceptional &#8377;110.5 Cr + tax</li><li>Kolkata + Jaipur flagship renovation closures</li><li>GST penalty disputes (&#8377;90.7 Cr + &#8377;30 Cr)</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>21-property pipeline to 2029 incl. London, Egypt, Saudi</li><li>Post-renovation ARR uplift at Kolkata / Jaipur</li><li>FY27 margin levers improving (mgmt guidance)</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Luxury inbound geopolitically sensitive</li><li>International execution risk (new geographies)</li><li>Wage Code cost base reset across hotels</li></ul></div>
+  </div></div>
+  <div><div class="co-hdr"><span class="dot" style="background:var(--cha)"></span>Chalet Hotels</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Highest EBITDA margin in pack (48.8% Q4)</li><li>CRE annuity: +37% revenue, 83.6% margin, &#8377;28 Cr/month exit run-rate</li><li>Net debt cut to &#8377;1,900 Cr despite heavy capex</li><li>Trophy airport / CBD locations with Marriott brands</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 occupancy &minus;7.7 pp to 68.2%; RevPAR &minus;3%</li><li>Mumbai concentration; hospitality revenue +3% only</li><li>Capital-heavy model &mdash; &#8377;3,000 Cr capex to FY29</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>CIGNUS II office tower drives rentals from FY28</li><li>Hyderabad + Udaipur entries diversify</li><li>Navi Mumbai airport ecosystem upside</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>New supply in Mumbai micro-markets</li><li>Office leasing cycle risk for CRE arm</li><li>Aviation disruption hits airport hotels first</li></ul></div>
+  </div></div>
+</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div><div class="co-hdr"><span class="dot" style="background:var(--lt)"></span>Lemon Tree Hotels</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Best year in history &mdash; record occupancy 73.5%, ARR, PAT</li><li>Mid-market leadership; deep Tier-2/3 network</li><li>137 managed/franchised hotels signed pipeline &mdash; zero-capex growth</li><li>Debt down to &#8377;1,500 Cr at 7.42% cost</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Margin &minus;126 bps FY26 (renovation + GST ITC loss)</li><li>Lower ARR segment &mdash; &#8377;6,875 vs luxury peers' 2&ndash;2.5&times;</li><li>Stock 37% below 52-week high despite record results</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Demerger (asset-light LT + Fleur) value unlock</li><li>Post-renovation ARR uplift in owned portfolio</li><li>GST cut boosts mid-market room demand</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>GST input-tax-credit loss ~2% margin drag</li><li>Budget-segment competition (OYO premium, Ginger, global midscale)</li><li>Demerger execution / transition costs</li></ul></div>
+  </div></div>
+  <div><div class="co-hdr"><span class="dot" style="background:var(--jun)"></span>Juniper Hotels</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>FY26 PAT +99%; EBITDA margin +400 bps to 42%</li><li>81% occupancy &mdash; highest disclosed in the pack</li><li>Grand Hyatt Mumbai MICE engine (&#8377;28 Cr Grand Showroom yr-1)</li><li>Dwarka 500-key DDA win &mdash; rare Delhi land access</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 PAT &minus;8.3% on &#8377;23.4 Cr one-off (property tax, fire, labour codes)</li><li>Mumbai / Delhi concentration; small base</li><li>Deferred-tax drag (&#8377;50.3 Cr FY26)</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>1,895 &rarr; 3,320+ keys by FY30 (+75%)</li><li>Westin Bengaluru Ph-I from Q2 FY27 (&#8377;15,000 ARR)</li><li>Hyatt loyalty funnel as inbound recovers</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Capex cycle &#8377;1,800 Cr &mdash; leverage rises (capped &lt;2.5&times;)</li><li>Litigation-driven levies (Delhi property tax precedent)</li><li>Mumbai luxury supply additions</li></ul></div>
+  </div></div>
+</div>
+</div>
+
+<!-- ===== ANALYST VIEW ===== -->
+<div class="panel" id="tab-analyst">
+<div class="sec-hdr">Analyst View <span class="sec-note">&middot; Valuation Snapshot &middot; Market Commentary &middot; CB Research gives no buy/sell/hold calls</span></div>
+<div class="g2" style="margin-bottom:14px;">
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">Indian Hotels Co (IHCL)</div><span class="rat-pill rp-watch">PREMIUM COMPOUNDER &middot; RICH VALUATION</span></div>
+    <div class="ac-tp">FY27E EV/EBITDA ~27.5&times; (brokerage) &middot; P/B ~7.2&times;</div>
+    <div class="ac-cmp">CMP: &#8377;658.80 (11 Jun 2026) &middot; Mkt Cap: ~&#8377;93,854 Cr &middot; Stock &minus;13% over 1 year</div>
+    <div class="ac-text">Sixteenth straight record quarter and best-ever PAT, yet the stock fell ~4% on results day &mdash; the market had already priced excellence. Brokerage commentary calls the FY27 EV/EBITDA of ~27.5&times; a fair reflection of risk-reward. The fee flywheel (&#8377;685 Cr, +22%), AAA balance sheet and 255-hotel pipeline make IHCL the sector's quality benchmark; the debate is purely about the multiple, not the business.</div>
+  </div>
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">ITC Hotels</div><span class="rat-pill rp-buy">LUXURY PURE-PLAY &middot; CLEAN BALANCE SHEET</span></div>
+    <div class="ac-tp">PAT (pre-exc.) +39% FY26 &middot; First-ever dividend &#8377;1/sh</div>
+    <div class="ac-cmp">CMP: refer live quote (results 15 May 2026) &middot; Effectively debt-free</div>
+    <div class="ac-text">The standout earnings grower of FY26 among large caps: +39% PAT with margin expansion of 148 bps ex-real-estate. Zuri (&#8377;205 Cr) shows disciplined bolt-on appetite; Ratnadipa turning EBITDA-positive removes the Sri Lanka overhang question. Watch: Q4 ex-RE revenue grew just 6% on conflict-hit inbound, and Sapphire handovers won't recur forever &mdash; FY27 needs core hotels to reaccelerate.</div>
+  </div>
+</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">EIH Ltd (Oberoi)</div><span class="rat-pill rp-hold">RECORD EBITDA &middot; MESSY PAT OPTICS</span></div>
+    <div class="ac-tp">FY26 Revenue +8% &middot; RevPAR +8.5% (owned)</div>
+    <div class="ac-cmp">CMP: refer live quote (results 26 May 2026) &middot; Net-cash heritage</div>
+    <div class="ac-text">Operationally fine (record EBITDA, ARR-led growth), but the P&amp;L is noisy: Q1 exceptional loss &#8377;110.5 Cr, Wage Code costs, higher tax and a prior-year Mashobra fair-value base made Q4 PAT decline. Kolkata and Jaipur renovations suppress near-term revenue but set up FY28 ARR uplift. The 2029 pipeline (London, Egypt, Saudi) is the long-term re-rating story; GST penalty disputes are a watch item.</div>
+  </div>
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">Chalet Hotels</div><span class="rat-pill rp-buy">TWIN-ENGINE &middot; DELEVERAGING</span></div>
+    <div class="ac-tp">Historically a brokerage favourite (ICICI Sec 'buy' coverage)</div>
+    <div class="ac-cmp">CMP: &#8377;774.90 (15 May 2026, +3% on results) &middot; 52-wk high &#8377;1,050 &middot; ~26% below high</div>
+    <div class="ac-text">PAT +31.6% in Q4 with the CRE annuity compounding at +37%/+42% (rev/EBITDA). The bear case &mdash; Mumbai occupancy (&minus;7.7 pp) &mdash; is cyclical (aviation + supply absorption), while ARR +8% shows pricing held. Net debt down &#8377;600 Cr in a heavy-capex year is the underappreciated stat. CIGNUS II (FY28) gives visible rental growth; the stock's 26% drawdown from the high prices in much of the occupancy risk.</div>
+  </div>
+</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">Lemon Tree Hotels</div><span class="rat-pill rp-hold">RECORD YEAR &middot; STOCK DISCONNECT</span></div>
+    <div class="ac-tp">FY26 PAT +19% &middot; Cash profit &#8377;443 Cr (+16%)</div>
+    <div class="ac-cmp">CMP: ~&#8377;114 &middot; Mkt Cap: ~&#8377;9,519 Cr &middot; 37% below 52-wk high &#8377;180.60 &middot; &minus;20% in 1 yr</div>
+    <div class="ac-text">Best year in company history, yet the stock is down 20% &mdash; the market is discounting the GST input-credit loss (~2% margin), the long renovation tail and demerger uncertainty. The bull case: renovation ends, margins normalise above 50%, the asset-light demerged entity gets a fee-multiple, and 10,770 signed rooms convert to fees. Cost of debt at 7.42% and falling is a quiet PAT tailwind.</div>
+  </div>
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">Juniper Hotels</div><span class="rat-pill rp-watch">OPERATING TURNAROUND &middot; CAPEX CYCLE AHEAD</span></div>
+    <div class="ac-tp">FY26 PAT +99% &middot; EBITDA margin 42% (+400 bps)</div>
+    <div class="ac-cmp">CMP: ~&#8377;200 &middot; 42% below 52-wk high &#8377;344.45</div>
+    <div class="ac-text">Sixth straight PAT-positive quarter and the pack's best occupancy (81%), but the stock trades 42% off highs &mdash; investors remember the leveraged history (IPO money repaid &#8377;1,400 Cr debt) and now face a fresh &#8377;1,800 Cr capex cycle. Management's &lt;2.5&times; peak leverage guardrail and the Dwarka land win are the offsets. Execution on Westin Bengaluru (Q2 FY27) is the near-term proof point.</div>
+  </div>
+</div>
+<div class="card" style="margin-top:14px;">
+  <div class="card-lbl">Valuation Snapshot &mdash; 6 Companies (June 2026; verify live prices before decisions)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>CMP (date)</th><th>Mkt Cap (&#8377; Cr)</th><th>FY26 PAT (&#8377; Cr)</th><th>FY26 EBITDA%</th><th>Dividend</th><th style="white-space:normal">Valuation Note</th></tr></thead>
+    <tbody>
+      <tr><td class="tb"><span class="dot" style="background:var(--ihc)"></span>IHCL</td><td class="num">&#8377;658.80 (11 Jun)</td><td class="num">~93,854</td><td class="tpos">2,084</td><td class="tpos">34.9%</td><td class="num">&#8377;3.25/sh</td><td style="white-space:normal">~45&times; reported PAT; FY27E EV/EBITDA ~27.5&times; per brokerage</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--itc)"></span>ITC Hotels</td><td class="num">See live quote</td><td class="num">&mdash;</td><td class="tpos">888*</td><td class="tpos">35% ex-RE</td><td class="num">&#8377;1/sh (first)</td><td style="white-space:normal">Fastest large-cap PAT growth (+39%); debt-free</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--eih)"></span>EIH</td><td class="num">See live quote</td><td class="num">&mdash;</td><td class="num">&mdash; (noisy)</td><td class="num">Record EBITDA</td><td class="num">TBA</td><td style="white-space:normal">Renovation-suppressed year; 2029 pipeline optionality</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--cha)"></span>Chalet</td><td class="num">&#8377;774.90 (15 May)</td><td class="num">&mdash;</td><td class="tpos">650</td><td class="tpos">46.2% ex-Resi</td><td class="num">&mdash;</td><td style="white-space:normal">26% below 52-wk high; CRE annuity underpins</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--lt)"></span>Lemon Tree</td><td class="num">~&#8377;114</td><td class="num">~9,519</td><td class="tpos">288.3</td><td class="tpos">48.1%</td><td class="num">&mdash;</td><td style="white-space:normal">~42&times; attributable PAT; demerger re-rating thesis</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--jun)"></span>Juniper</td><td class="num">~&#8377;200</td><td class="num">&mdash;</td><td class="tpos">141.6</td><td class="tpos">42.0%</td><td class="num">&mdash;</td><td style="white-space:normal">42% below high; capex cycle vs turnaround</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">*Pre-exceptional. CMPs as of dates shown from cited reports; blank cells were not verifiable from audited sources at compile time &mdash; check live NSE/BSE quotes. CB Research does not provide buy/sell/hold recommendations.</p>
+</div>
+</div>
+
+<!-- ===== RISKS ===== -->
+<div class="panel" id="tab-risks">
+<div class="sec-hdr">Risks &amp; FY27 Outlook <span class="sec-note">&middot; Sector &middot; Company &middot; Bull / Base / Bear</span></div>
+<div class="trojan-card">
+  <div class="trojan-title">&#9888;&#65039; FY27 Key Risks &mdash; Occupancy Recovery, Supply Wave &amp; GST Transition</div>
+  <p style="font-size:12.5px;line-height:1.7;">FY26 ended strong but rate-led. FY27 entry conditions: West Asia conflict still suppressing inbound, 100+ branded hotels opening within 15 months (micro-market supply pressure), GST input-tax-credit loss (~2% margin) and Wage Code cost resets flowing through full-year P&amp;Ls. Offsets: demand still growing faster than supply nationally, weddings/MICE momentum, new airports, and balance sheets that are the strongest in the sector's history. Companies with fee-based growth (IHCL, ITC, Lemon Tree) carry the least capital risk; owned-heavy players (Chalet, Juniper, EIH) carry the most operating leverage &mdash; both ways.</p>
+</div>
+<div class="card" style="margin-bottom:16px;"><div class="card-lbl">Sector-Wide Risks &mdash; FY27</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Risk</th><th>Severity</th><th>Companies Most Affected</th><th>Timeline</th></tr></thead>
+    <tbody>
+      <tr><td>West Asia conflict &mdash; inbound &amp; aviation disruption</td><td class="tneg">High</td><td>ITC, EIH (luxury inbound); Chalet, Juniper (airport/city)</td><td>Immediate</td></tr>
+      <tr><td>Supply wave &mdash; 100+ hotels in 15 months</td><td class="warn">Medium-High</td><td>Chalet (Mumbai), Juniper (Mumbai/Delhi), all metros</td><td>FY27&ndash;28</td></tr>
+      <tr><td>GST input-tax-credit loss (~2% margin)</td><td class="warn">Medium</td><td>Lemon Tree most vocal; all room-revenue-heavy players</td><td>FY27 full-year effect</td></tr>
+      <tr><td>Wage Code / labour cost reset</td><td class="warn">Medium</td><td>All &mdash; EIH, Juniper, LT cited explicitly</td><td>FY27 ongoing</td></tr>
+      <tr><td>Renovation downtime</td><td class="warn">Medium</td><td>EIH (Kolkata, Jaipur), Lemon Tree (owned portfolio)</td><td>FY27</td></tr>
+      <tr><td>Rich valuations vs earnings delivery</td><td class="warn">Medium</td><td>IHCL, ITC Hotels &mdash; priced for growth</td><td>Continuous</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="g3" style="margin-bottom:16px;">
+  <div class="card"><div class="card-lbl">&#128002; Bull Case FY27 (conflict eases, inbound returns)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;">
+      <li>&bull; Industry RevPAR +10&ndash;12%; occupancy back above 66%</li>
+      <li>&bull; IHCL crosses &#8377;11,500 Cr revenue; fee income compounds 20%+</li>
+      <li>&bull; ITC Hotels sustains 25%+ PAT growth on luxury inbound</li>
+      <li>&bull; Chalet occupancy normalises; CRE run-rate &#8377;30+ Cr/month</li>
+      <li>&bull; Lemon Tree margin recovers past 50% as renovation ends</li>
+      <li>&bull; Juniper Westin Bengaluru opens on time, adds new market</li>
+    </ul>
+  </div>
+  <div class="card"><div class="card-lbl">&#9878;&#65039; Base Case FY27 (slow inbound, supply absorbs)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;">
+      <li>&bull; Industry growth mid-to-high single digit, rate-led again</li>
+      <li>&bull; IHCL double-digit revenue growth per guidance pattern</li>
+      <li>&bull; ITC ex-RE growth normalises as Sapphire tapers</li>
+      <li>&bull; EIH margin levers improve (mgmt guided FY27 onwards)</li>
+      <li>&bull; LT GST drag offset by demand; PAT grows low-teens</li>
+      <li>&bull; Chalet hospitality flattish; CRE does the heavy lifting</li>
+    </ul>
+  </div>
+  <div class="card"><div class="card-lbl">&#128009; Bear Case FY27 (conflict widens, supply bites)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;">
+      <li>&bull; Inbound stays depressed; metro occupancy slips 3&ndash;5 pp</li>
+      <li>&bull; ARR growth stalls; operating leverage reverses</li>
+      <li>&bull; Owned-heavy players (Chalet, Juniper) see EBITDA compression</li>
+      <li>&bull; High-multiple stocks de-rate faster than earnings fall</li>
+      <li>&bull; Capex plans stretched; Juniper leverage tests 2.5&times; cap</li>
+      <li>&bull; GST + Wage Code double cost squeeze on mid-market</li>
+    </ul>
+  </div>
+</div>
+<div class="verdict-card">
+  <div class="verdict-title">&#128202; CB Research FY27 Earnings Visibility Ranking (Not a Recommendation)</div>
+  <div class="verdict-body">
+    1. <strong>IHCL</strong> &mdash; High. Most diversified by brand, geography and contract; fee flywheel + net cash; only the multiple is demanding.<br>
+    2. <strong>ITC Hotels</strong> &mdash; High. Debt-free luxury compounding; watch the Sapphire real-estate taper and inbound dependence.<br>
+    3. <strong>Lemon Tree</strong> &mdash; Good. Record operations; GST/renovation drags are known and fading; demerger adds event risk and optionality.<br>
+    4. <strong>Chalet</strong> &mdash; Good. CRE annuity gives a floor; Mumbai occupancy recovery is the swing factor.<br>
+    5. <strong>Juniper</strong> &mdash; Moderate. Strong turnaround, hottest occupancy, but a fresh capex cycle on a small base.<br>
+    6. <strong>EIH</strong> &mdash; Moderate. Great brand, record EBITDA, but renovation downtime + one-offs cloud reported earnings until FY28.
+  </div>
+</div>
+</div>
+
+<!-- ===== CB ASSIST ===== -->
+<div class="panel" id="tab-assist">
+<div class="sec-hdr">CB Assist &#x1F916; <span class="sec-note">&middot; India Hotel Sector &middot; All 6 Companies &middot; English &amp; Tamil &middot; From Dashboard Data</span></div>
+<div class="cbassist-chat">
+  <div class="cbassist-title"><span></span> CB Assist &mdash; India Hotel Sector &middot; Q4 FY26 &middot; IHCL &middot; ITC Hotels &middot; EIH &middot; Chalet &middot; Lemon Tree &middot; Juniper</div>
+  <div style="margin-bottom:10px;">
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:block;margin-bottom:6px;">English Presets</span>
+    <button class="preset-tab pt-ihc" onclick="swPre('ei',this)">IHCL</button>
+    <button class="preset-tab pt-itc" onclick="swPre('et',this)">ITC Hotels</button>
+    <button class="preset-tab pt-eih" onclick="swPre('ee',this)">EIH</button>
+    <button class="preset-tab pt-cha" onclick="swPre('ec',this)">Chalet</button>
+    <button class="preset-tab pt-lt" onclick="swPre('el',this)">Lemon Tree</button>
+    <button class="preset-tab pt-jun" onclick="swPre('ej',this)">Juniper</button>
+    <button class="preset-tab pt-sector" onclick="swPre('es',this)">Sector</button>
+  </div>
+  <div style="margin-bottom:10px;">
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:block;margin-bottom:6px;">தமிழ் Presets (Tamil)</span>
+    <button class="preset-tab pt-ihc" onclick="swPre('ti',this)">IHCL</button>
+    <button class="preset-tab pt-itc" onclick="swPre('tt',this)">ITC Hotels</button>
+    <button class="preset-tab pt-eih" onclick="swPre('te',this)">EIH</button>
+    <button class="preset-tab pt-cha" onclick="swPre('tc',this)">Chalet</button>
+    <button class="preset-tab pt-lt" onclick="swPre('tl',this)">Lemon Tree</button>
+    <button class="preset-tab pt-jun" onclick="swPre('tj',this)">Juniper</button>
+    <button class="preset-tab pt-sector" onclick="swPre('ts',this)">Sector</button>
+  </div>
+  <div id="pqs-ei" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>IHCL Q4 FY26 results &mdash; revenue, PAT, margin?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127942;</span><b>What is IHCL's moat and Accelerate 2030 plan?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#9888;&#65039;</span><b>IHCL FY27 risks &mdash; valuation and supply wave?</b></div>
+  </div>
+  <div id="pqs-et" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>ITC Hotels Q4 and FY26 results &mdash; why did PAT jump 39%?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127976;</span><b>ITC Hotels asset-right strategy and 2031 target?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128176;</span><b>Zuri acquisition &mdash; what does it mean for ITC Hotels?</b></div>
+  </div>
+  <div id="pqs-ee" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>EIH Q4 FY26 &mdash; why did PAT fall despite record EBITDA?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127758;</span><b>EIH pipeline to 2029 &mdash; London, Egypt, Saudi plans?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128295;</span><b>Oberoi Grand Kolkata and Trident Jaipur renovations &mdash; impact?</b></div>
+  </div>
+  <div id="pqs-ec" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>Chalet Q4 FY26 &mdash; PAT up 32% but occupancy down?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127970;</span><b>Chalet CRE annuity business &mdash; why is it special?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128176;</span><b>Chalet debt reduction and capex plan to FY29?</b></div>
+  </div>
+  <div id="pqs-el" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>Lemon Tree FY26 &mdash; best year ever details?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127860;</span><b>Lemon Tree demerger &mdash; what is the Fleur split?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#9888;&#65039;</span><b>GST change &mdash; why does it hit Lemon Tree margins?</b></div>
+  </div>
+  <div id="pqs-ej" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>Juniper Q4 FY26 &mdash; why did PAT fall 8% despite record revenue?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127758;</span><b>Juniper Dwarka 500-key project and FY30 pipeline?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128161;</span><b>Why is Juniper's 81% occupancy significant?</b></div>
+  </div>
+  <div id="pqs-es" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128719;&#65039;</span><b>Occupancy, ARR, RevPAR &mdash; how do hotel metrics work?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128176;</span><b>Owned vs managed hotels &mdash; why is asset-light the margin driver?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127981;</span><b>GST change on hotel rooms &mdash; demand boost vs ITC loss?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128302;</span><b>FY27 hotel sector outlook &mdash; bull base bear scenarios?</b></div>
+  </div>
+  <div id="pqs-ti" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>IHCL Q4 FY26 results தமிழில் &mdash; revenue, PAT, margin?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127942;</span><b>IHCL-ன் moat மற்றும் Accelerate 2030 plan என்ன?</b></div>
+  </div>
+  <div id="pqs-tt" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>ITC Hotels FY26 &mdash; PAT 39% ஏறியது எப்படி?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127976;</span><b>ITC Hotels asset-right strategy என்றால் என்ன?</b></div>
+  </div>
+  <div id="pqs-te" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>EIH Q4 &mdash; record EBITDA இருந்தும் PAT ஏன் குறைந்தது?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127758;</span><b>EIH 2029 pipeline &mdash; London, Egypt plans தமிழில்?</b></div>
+  </div>
+  <div id="pqs-tc" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>Chalet Q4 &mdash; PAT 32% ஏறியும் occupancy ஏன் குறைந்தது?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127970;</span><b>Chalet CRE annuity business சிறப்பு என்ன?</b></div>
+  </div>
+  <div id="pqs-tl" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>Lemon Tree FY26 &mdash; best year ever விவரம் தமிழில்?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127860;</span><b>Lemon Tree demerger &mdash; Fleur split என்றால் என்ன?</b></div>
+  </div>
+  <div id="pqs-tj" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>Juniper Q4 &mdash; record revenue இருந்தும் PAT ஏன் 8% குறைவு?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127758;</span><b>Juniper Dwarka project மற்றும் FY30 pipeline?</b></div>
+  </div>
+  <div id="pqs-ts" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128719;&#65039;</span><b>Occupancy, ARR, RevPAR &mdash; hotel metrics எப்படி வேலை செய்கிறது?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128176;</span><b>Owned vs managed &mdash; asset-light ஏன் margin driver?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128302;</span><b>FY27 outlook &mdash; bull base bear தமிழில்?</b></div>
+  </div>
+  <div style="margin-top:4px;">
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="chat-msg bot">&#127976; <strong>CB Assist</strong> &mdash; India Hotel Sector &middot; IHCL &middot; ITC Hotels &middot; EIH &middot; Chalet &middot; Lemon Tree &middot; Juniper &middot; Q4 FY26 &middot; CB Research. Select a preset above or type your question. All data from BSE/NSE filings and earnings calls.</div>
+    </div>
+    <div id="typingInd" class="typing-ind"><span></span><span></span><span></span></div>
+    <div class="chat-input-row">
+      <input type="text" id="chatIn" class="chat-input" placeholder="Ask: IHCL results, occupancy ARR RevPAR, asset-light model, GST impact, FY27 outlook..." onkeypress="if(event.key==='Enter')cbA(this.value)"/>
+      <button class="chat-send" onclick="cbA(document.getElementById('chatIn').value)">Ask &#x27A4;</button>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /main -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">Hotel Sector &middot; Q4 FY26</div></div>
+</div>
+<div class="footer">
+  CB Research &mdash; India Hotel Sector Intelligence Dashboard &middot; Q4 FY26 &amp; Annual FY26 &middot; 12 June 2026<br>
+  Indian Hotels Co (NSE: INDHOTEL) &middot; ITC Hotels (NSE: ITCHOTELS) &middot; EIH (NSE: EIHOTEL) &middot; Chalet Hotels (NSE: CHALET) &middot; Lemon Tree Hotels (NSE: LEMONTREE) &middot; Juniper Hotels (NSE: JUNIPER)<br>
+  All figures from BSE/NSE official filings, company press releases and Q4 FY26 earnings calls. Sources: Business Standard, Hotelier India, ScanX, Today's Traveller, Business Upturn, MarketsMojo, Screener &mdash; May&ndash;June 2026. EIH absolute values marked &quot;~&quot; are derived from growth percentages disclosed in the earnings call.<br>
+  For information and research purposes only &mdash; not investment advice. Consult a SEBI-registered investment advisor before making financial decisions.
+</div>
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts'&&!window._chartsInit){window._chartsInit=true;initCharts();}
+}
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('[data-cat]').forEach(el=>{
+    el.style.display=(cat==='all'||el.getAttribute('data-cat').split(' ').includes(cat))?'':'none';
+  });
+}
+function showCo(co,btn){
+  document.querySelectorAll('.co-sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById('co-'+co).classList.add('on');
+  document.querySelectorAll('.co-sel-btn').forEach(b=>{b.style.background='';b.style.color='';b.style.borderColor='';});
+  const col=getComputedStyle(document.documentElement).getPropertyValue('--'+co).trim();
+  btn.style.background=col;btn.style.color='#fff';btn.style.borderColor=col;
+}
+function showPer(per,btn){
+  document.querySelectorAll('.per-btn').forEach(b=>{if(b.id&&b.id.startsWith('perbtn')){b.style.background='';b.style.color='';b.style.borderColor='';}});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.borderColor='#0d1c2e';
+  document.querySelectorAll('.qtr-v').forEach(e=>e.style.display=per==='qtr'?'block':'none');
+  document.querySelectorAll('.annual-v').forEach(e=>e.style.display=per==='annual'?'block':'none');
+}
+function showCharts(period,btn){
+  ['chq','cha','chr'].forEach(id=>{const b=document.getElementById(id);b.style.background='';b.style.color='';b.style.border='';});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.border='none';
+  document.getElementById('chq-view').style.display=period==='q'?'block':'none';
+  document.getElementById('cha-view').style.display=period==='a'?'block':'none';
+  document.getElementById('chr-view').style.display=period==='r'?'block':'none';
+}
+const fmtIN=n=>n.toLocaleString('en-IN');
+const valLabel={id:'valLabel',afterDatasetsDraw(c){
+  const{ctx}=c;ctx.save();ctx.font='700 10px IBM Plex Mono, monospace';ctx.fillStyle='#181511';ctx.textAlign='center';
+  c.data.datasets.forEach((ds,di)=>{const meta=c.getDatasetMeta(di);if(meta.hidden)return;
+    meta.data.forEach((bar,i)=>{const v=ds.data[i];if(v===null||v===undefined)return;
+      const y=v>=0?bar.y-4:bar.y+12;
+      ctx.fillText(typeof v==='number'?fmtIN(Math.round(v*10)/10):v,bar.x,y);});});
+  ctx.restore();}};
+function initCharts(){
+  const C={ihc:'#a16207',itc:'#166534',eih:'#1e3a8a',cha:'#ea580c',lt:'#65a30d',jun:'#7c3aed',ind:'#6e6860'};
+  const base={responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#eee'},ticks:{callback:v=>fmtIN(v)}},x:{grid:{display:false}}}};
+  function bar(id,labels,data,colors,opts){
+    const el=document.getElementById(id);if(!el)return;
+    new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:5}]},
+      options:Object.assign(JSON.parse(JSON.stringify(base)),opts||{}),plugins:[valLabel]});
+  }
+  const L6=['IHCL','ITC Hotels','EIH~','Chalet','Lemon Tree','Juniper'];
+  const C6=[C.ihc,C.itc,C.eih,C.cha,C.lt,C.jun];
+  const L5=['IHCL','ITC Hotels','Chalet','Lemon Tree','Juniper'];
+  const C5=[C.ihc,C.itc,C.cha,C.lt,C.jun];
+  // Q4
+  bar('q4Rev',L6,[2765,1254,910,558,420,302],C6);
+  bar('q4Pat',L5,[646,314,163,116.5,50.4],C5);
+  bar('q4Ebitda',L6,[1052,466,393,279,218,138],C6);
+  bar('q4Marg',L6,[37.0,37.5,43.2,48.8,52.0,44.0],C6);
+  bar('q4Grw',L5,[14.7,22,31.6,8,-8.3],[C.ihc,C.itc,C.cha,C.lt,C.jun]);
+  (function(){const el=document.getElementById('q4Combo');if(!el)return;
+    new Chart(el,{type:'bar',data:{labels:L5,datasets:[
+      {label:'Revenue',data:[2765,1254,558,420,302],backgroundColor:'#0d1c2e',borderRadius:4},
+      {label:'EBITDA',data:[1052,466,279,218,138],backgroundColor:'#b8911e',borderRadius:4},
+      {label:'PAT',data:[646,314,163,116.5,50.4],backgroundColor:'#166534',borderRadius:4}]},
+      options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12,font:{size:10}}}},scales:{y:{grid:{color:'#eee'},ticks:{callback:v=>fmtIN(v)}},x:{grid:{display:false}}}},plugins:[valLabel]});})();
+  // Annual
+  bar('aRev',L6,[9971,4139,2963,2500,1452.7,1069.1],C6);
+  bar('aPat',L5,[2084,888,650,288.3,141.6],C5);
+  bar('aEbitda',L5,[3477,1424,960,699.3,449],C5);
+  bar('aMarg',L5,[34.9,35.0,46.2,48.1,42.0],C5);
+  bar('aOcc',['Lemon Tree FY26','Chalet FY26~','Juniper Q4','EIH Assoc Q4','Industry CY25'],[73.5,67.2,81,79,64],[C.lt,C.cha,C.jun,C.eih,C.ind]);
+  (function(){const el=document.getElementById('aCombo');if(!el)return;
+    new Chart(el,{type:'bar',data:{labels:L5,datasets:[
+      {label:'Revenue',data:[9971,4139,2500,1452.7,1069.1],backgroundColor:'#0d1c2e',borderRadius:4},
+      {label:'EBITDA',data:[3477,1424,960,699.3,449],backgroundColor:'#b8911e',borderRadius:4},
+      {label:'PAT',data:[2084,888,650,288.3,141.6],backgroundColor:'#166534',borderRadius:4}]},
+      options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12,font:{size:10}}}},scales:{y:{grid:{color:'#eee'},ticks:{callback:v=>fmtIN(v)}},x:{grid:{display:false}}}},plugins:[valLabel]});})();
+  // Operating & balance sheet
+  bar('opARR',['EIH Assoc','Chalet','Juniper','Lemon Tree','Industry ADR CY25'],[17696,15456,13457,7457,8600],[C.eih,C.cha,C.jun,C.lt,C.ind]);
+  bar('opRevpar',['EIH Assoc','Juniper','Chalet','Lemon Tree'],[14051,10863,10544,5855],[C.eih,C.jun,C.cha,C.lt]);
+  bar('opOcc',['Juniper','EIH Assoc','Lemon Tree','Chalet'],[81,79,78.5,68.2],[C.jun,C.eih,C.lt,C.cha]);
+  bar('bsDebt',['Chalet Net Debt','LT Borrowings','IHCL Gross Cash'],[1900,1500,-4345],[C.cha,C.lt,C.ihc]);
+}
+function swPre(id,btn){
+  document.querySelectorAll('.pqs').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('on'));
+  const p=document.getElementById('pqs-'+id);
+  if(p)p.classList.add('on');
+  btn.classList.add('on');
+}
+function nowIST(){return new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true})+' IST';}
+function cbA(q,lang){
+  if(!q||!q.trim())return;
+  const msgs=document.getElementById('chatMsgs');
+  const u=document.createElement('div');u.className='chat-msg user';u.textContent=q;msgs.appendChild(u);
+  document.getElementById('chatIn').value='';
+  const ti=document.getElementById('typingInd');ti.style.display='flex';
+  setTimeout(()=>{ti.style.display='none';
+    const b=document.createElement('div');b.className='chat-msg bot';
+    b.innerHTML=findA(q.toLowerCase(),lang)+'<br><span style="font-size:9.5px;color:#6e6860;">'+nowIST()+' &middot; CB Research</span>';
+    msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;},700);
+}
+const KB={
+  ihc:{en:`<strong>IHCL (Indian Hotels) Q4 &amp; FY26 Results</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 2,765 Cr (+14% YoY)<br>&bull; <strong>Q4 EBITDA:</strong> Rs 1,052 Cr (margin 37.0%)<br>&bull; <strong>Q4 PAT:</strong> Rs 646 Cr (+14.7%)<br>&bull; <strong>FY26 Revenue:</strong> Rs 9,971 Cr (+16%)<br>&bull; <strong>FY26 EBITDA:</strong> Rs 3,477 Cr (34.9%) -- all-time high<br>&bull; <strong>FY26 PAT:</strong> Rs 2,084 Cr -- best ever (pre-exceptional Rs 1,849 Cr, +15%)<br>&bull; <strong>Dividend:</strong> Rs 3.25/share incl. 125th AGM special<br>&bull; <strong>Cash:</strong> Rs 4,345 Cr gross; ICRA AAA upgrade<br><br><strong>Moat:</strong> 16th consecutive record quarter. Taj brand + 14-brand ladder + fee flywheel (mgmt fees Rs 685 Cr, +22%) + TajSATS catering Rs 1,219 Cr. Portfolio 630 hotels with 255-hotel pipeline; record 250 signings in FY26.<br><br><strong>Accelerate 2030:</strong> 700+ hotels by 2030; new businesses (Ginger, Qmin, ama Stays, TajSATS) to cross 25% of revenue.<br><br><strong>FY27 Risk:</strong> Rich valuation (~Rs 93,854 Cr mkt cap, FY27E EV/EBITDA ~27.5x per brokerage) + supply wave; business risk is low.`,
+  ta:`<strong>IHCL Q4 &amp; FY26 (தமிழ்)</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 2,765 கோடி (+14%)<br>&bull; <strong>Q4 EBITDA:</strong> Rs 1,052 கோடி (margin 37%)<br>&bull; <strong>Q4 PAT:</strong> Rs 646 கோடி (+14.7%)<br>&bull; <strong>FY26 Revenue:</strong> Rs 9,971 கோடி (+16%)<br>&bull; <strong>FY26 PAT:</strong> Rs 2,084 கோடி -- best ever!<br>&bull; <strong>Dividend:</strong> Rs 3.25/share (125-வது AGM special உட்பட)<br><br><strong>Moat:</strong> தொடர்ந்து 16 record quarters. Taj brand + 14 brands + management fee business Rs 685 கோடி (+22%). 630 hotels, 255 pipeline -- பெரும்பாலும் asset-light (capital தேவை இல்லை).<br><br><strong>Accelerate 2030:</strong> 2030-க்குள் 700+ hotels; new businesses revenue-ல் 25%+ ஆக வேண்டும்.<br><br><strong>Risk:</strong> Valuation அதிகம் -- business strong, ஆனால் market ஏற்கனவே நிறைய expect பண்ணுது.`},
+  itc:{en:`<strong>ITC Hotels Q4 &amp; FY26 Results</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 1,254 Cr (+18%; ex-real-estate +6%)<br>&bull; <strong>Q4 EBITDA:</strong> Rs 466 Cr (+13%; margin 37.5% vs 39.3%)<br>&bull; <strong>Q4 PAT (pre-exc.):</strong> Rs 314 Cr (+22%)<br>&bull; <strong>FY26 Revenue:</strong> Rs 4,139 Cr (+16%)<br>&bull; <strong>FY26 EBITDA:</strong> Rs 1,424 Cr (+21%; ex-RE margin 35%, +148 bps)<br>&bull; <strong>FY26 PAT (pre-exc.):</strong> Rs 888 Cr (+39%) -- reported Rs 821 Cr<br>&bull; <strong>Dividend:</strong> Rs 1/share -- first ever<br>&bull; <strong>FY26 Ops:</strong> ADR +6%, occupancy +229 bps, RevPAR +10%<br><br><strong>Strategy:</strong> Asset-right -- owned trophy luxury (ITC Maurya, Grand Chola) + managed pipeline 67 hotels (~6,700 keys). Record 33 signings FY26. Target: 250 hotels / 22,000+ keys by 2031.<br><br><strong>Zuri Acquisition:</strong> 100% for Rs 205 Cr cash-free debt-free -- adds Goa/Kumarakom/Bengaluru leisure resorts.<br><br><strong>Watch:</strong> Q4 boosted by Sapphire Residences (Colombo) handovers -- non-recurring; West Asia conflict hit South India inbound.`,
+  ta:`<strong>ITC Hotels Q4 &amp; FY26 (தமிழ்)</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 1,254 கோடி (+18%)<br>&bull; <strong>Q4 PAT (pre-exc.):</strong> Rs 314 கோடி (+22%)<br>&bull; <strong>FY26 Revenue:</strong> Rs 4,139 கோடி (+16%)<br>&bull; <strong>FY26 PAT (pre-exc.):</strong> Rs 888 கோடி (+39%) -- sector-ல் fastest growth!<br>&bull; <strong>Dividend:</strong> Rs 1/share -- first ever<br>&bull; <strong>FY26:</strong> ADR +6%, occupancy +229 bps, RevPAR +10%<br><br><strong>Strategy:</strong> Asset-right -- சொந்த luxury hotels (ITC Grand Chola சென்னை, ITC Maurya டெல்லி) + managed pipeline 67 hotels. 2031 target: 250 hotels / 22,000+ keys. Debt-free balance sheet.<br><br><strong>Zuri:</strong> Rs 205 கோடிக்கு 100% acquisition -- Goa, Kumarakom leisure resorts சேரும்.<br><br><strong>கவனிக்க:</strong> Q4 boost -- Colombo Sapphire Residences apartment handover (repeat ஆகாது); West Asia conflict South India inbound-ஐ பாதித்தது.`},
+  eih:{en:`<strong>EIH (Oberoi) Q4 &amp; FY26</strong><br><br>&bull; <strong>Q4 Revenue:</strong> +10% YoY (~Rs 910 Cr derived)<br>&bull; <strong>Q4 EBITDA:</strong> +1% only -- mix shift to flight catering (OFS) + higher expenses + Wage Code<br>&bull; <strong>Q4 PAT:</strong> Down YoY -- higher tax + prior-year Mashobra fair-value gain base<br>&bull; <strong>FY26 Revenue:</strong> +8% (~Rs 2,960 Cr)<br>&bull; <strong>FY26 EBITDA:</strong> Record high<br>&bull; <strong>RevPAR (owned):</strong> +8.5%, ARR-led, occupancy flat<br>&bull; <strong>Q1 FY26 exceptional loss:</strong> Rs 110.5 Cr (Mashobra Rs 128.2 Cr, Kolkata derecognition, Tirupati impairment)<br><br><strong>Renovations:</strong> Oberoi Grand Kolkata + Trident Jaipur (EIH Associated) closed -- near-term revenue gap, FY28 ARR uplift expected. EIH Associated Q4: PAT Rs 37.7 Cr (-19%), but ARR Rs 17,696 / RevPAR Rs 14,051 -- industry-beating.<br><br><strong>Pipeline to 2029:</strong> 21 properties (~1,473 keys) -- 19 hotels + 2 luxury boats + Nile cruiser; London (GBP 69 mn), Egypt, Bhutan, Nepal, Saudi. 16 Oberoi + 5 Trident brands.<br><br><strong>Mgmt FY27 view:</strong> Margin and growth levers improve; domestic demand resilient.`,
+  ta:`<strong>EIH (Oberoi) Q4 &amp; FY26 (தமிழ்)</strong><br><br>&bull; <strong>Q4 Revenue:</strong> +10% (~Rs 910 கோடி)<br>&bull; <strong>Q4 EBITDA:</strong> +1% மட்டும் -- flight catering mix + Wage Code செலவு<br>&bull; <strong>Q4 PAT:</strong> குறைந்தது -- tax அதிகம் + கடந்த வருட Mashobra one-off base<br>&bull; <strong>FY26:</strong> Revenue +8%, EBITDA record high, RevPAR +8.5% (owned)<br><br><strong>Renovation:</strong> Oberoi Grand கொல்கத்தா + Trident ஜெய்ப்பூர் மூடப்பட்டுள்ளது -- தற்காலிக revenue gap, renovation முடிந்ததும் ARR ஏறும்.<br><br><strong>2029 Pipeline:</strong> 21 properties (~1,473 keys) -- London, Egypt (Nile cruiser), Bhutan, Nepal, Saudi Arabia. Indian luxury brand-ஐ உலகம் முழுவதும் கொண்டு செல்லும் ஒரே நிறுவனம்.<br><br><strong>EIH Associated (subsidiary):</strong> ARR Rs 17,696 -- listed pack-ல் அதிகபட்சம்; Q4 PAT Rs 37.7 கோடி (-19%, renovation காரணம்).`},
+  cha:{en:`<strong>Chalet Hotels Q4 &amp; FY26</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 558.2 Cr (+6.9%)<br>&bull; <strong>Q4 EBITDA:</strong> Rs 278.6 Cr (+8.5%; margin 48.8% -- highest in pack)<br>&bull; <strong>Q4 PAT:</strong> Rs 163 Cr (+31.6%)<br>&bull; <strong>Q4 ARR:</strong> Rs 15,456 (+8%) but occupancy 68.2% (-7.7 pp) and RevPAR -3%<br>&bull; <strong>FY26:</strong> Rev ex-resi Rs 2,070 Cr (+18%); EBITDA Rs 960 Cr (+21%, 46.2%); PAT Rs 650 Cr; consolidated Rs 2,500 Cr incl. residential<br>&bull; <strong>CRE annuity:</strong> Q4 rental rev Rs 84.7 Cr (+37%), EBITDA margin 83.6%, exit run-rate Rs 28 Cr/month<br>&bull; <strong>Net debt:</strong> Rs 1,900 Cr (from Rs 2,500 Cr) despite Rs 1,900 Cr 2-yr capex<br><br><strong>Why special:</strong> Twin engine -- owned Marriott-branded hotels (Mumbai Sahar/Powai, Hyderabad, Bengaluru) + office-rental annuity. CIGNUS II tower drives rentals from FY28. Capex Rs 3,000 Cr to FY29, internally funded. New markets: Hyderabad, Udaipur.<br><br><strong>Q4 occupancy dip:</strong> aviation disruptions + West Asia conflict + supply absorption in Mumbai micro-markets; pricing held (+8% ARR).`,
+  ta:`<strong>Chalet Hotels Q4 &amp; FY26 (தமிழ்)</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 558 கோடி (+6.9%)<br>&bull; <strong>Q4 PAT:</strong> Rs 163 கோடி (+31.6%)<br>&bull; <strong>Q4 EBITDA margin:</strong> 48.8% -- pack-ல் அதிகபட்சம்<br>&bull; <strong>Q4 occupancy:</strong> 68.2% (-7.7 pp குறைவு) -- aviation + West Asia + Mumbai-ல் புதிய supply<br>&bull; <strong>FY26 PAT:</strong> Rs 650 கோடி; Net debt Rs 2,500 → Rs 1,900 கோடி<br><br><strong>சிறப்பு:</strong> இரட்டை engine -- சொந்த Marriott hotels + office rental annuity (margin 83.6%, மாதம் Rs 28 கோடி exit run-rate). CIGNUS II tower FY28-ல் rental-ஐ உயர்த்தும்.<br><br><strong>கவனிக்க:</strong> Mumbai concentration risk; ஆனால் ARR +8% -- pricing power இருக்கு.`},
+  lt:{en:`<strong>Lemon Tree Hotels Q4 &amp; FY26 -- Best Year in History</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 419.5 Cr (+11%)<br>&bull; <strong>Q4 Net EBITDA:</strong> Rs 218.3 Cr (+7%; margin 52%, -198 bps)<br>&bull; <strong>Q4 PAT:</strong> Rs 116.5 Cr (+8%; attributable Rs 91.5 Cr -- record quarter)<br>&bull; <strong>Q4 Ops:</strong> Occupancy 78.5% (best-ever Q4), ARR Rs 7,457 (+5.9%), RevPAR Rs 5,855 (+7.2%)<br>&bull; <strong>FY26:</strong> Revenue Rs 1,452.7 Cr (+13%); EBITDA Rs 699.3 Cr (48.1%); PAT Rs 288.3 Cr (+19%); cash profit Rs 443.1 Cr<br>&bull; <strong>FY26 Ops:</strong> Occupancy 73.5% and ARR Rs 6,875 -- both all-time highs<br>&bull; <strong>Debt:</strong> Rs 1,500 Cr (from Rs 1,699 Cr); cost 7.42% (-115 bps)<br><br><strong>Portfolio:</strong> 131 operational hotels / 11,811 rooms; 268 hotels / 22,581 rooms incl. signed. FY26: opened 20 M&amp;F hotels, signed 55 (4,912 rooms). Fees Rs 169.7 Cr (+14%).<br><br><strong>Demerger:</strong> Asset-light Lemon Tree (brand/management) + asset-heavy Fleur (ownership platform) -- value unlock thesis.<br><br><strong>GST:</strong> Rate cut boosts demand but input-tax-credit loss = ~2% margin hit (Keswani); expected to be offset by demand.`,
+  ta:`<strong>Lemon Tree Q4 &amp; FY26 (தமிழ்) -- வரலாற்றில் சிறந்த வருடம்</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 419.5 கோடி (+11%)<br>&bull; <strong>Q4 PAT:</strong> Rs 116.5 கோடி (+8%)<br>&bull; <strong>Q4 occupancy:</strong> 78.5% -- best-ever Q4<br>&bull; <strong>FY26:</strong> Revenue Rs 1,452.7 கோடி (+13%), PAT Rs 288.3 கோடி (+19%)<br>&bull; <strong>FY26 occupancy 73.5% + ARR Rs 6,875</strong> -- இரண்டும் all-time high<br>&bull; <strong>கடன்:</strong> Rs 1,500 கோடி, வட்டி 7.42% (-115 bps)<br><br><strong>Demerger:</strong> Lemon Tree = asset-light management company; Fleur = hotel சொந்தம் வைத்திருக்கும் platform. தனித்தனி valuation கிடைக்கும் என்பது thesis.<br><br><strong>GST:</strong> Room GST குறைப்பு demand-க்கு நல்லது, ஆனால் input tax credit போவதால் ~2% margin பாதிப்பு.<br><br><strong>Stock:</strong> Record results இருந்தும் 52-week high-விட 37% கீழே -- market GST + renovation + demerger uncertainty-ஐ discount பண்ணுது.`},
+  jun:{en:`<strong>Juniper Hotels Q4 &amp; FY26</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 301.5 Cr (+8.6%) -- record quarter<br>&bull; <strong>Q4 EBITDA:</strong> Rs 138 Cr (+9%; margin ~44%)<br>&bull; <strong>Q4 PAT:</strong> Rs 50.4 Cr (-8.3%) -- hit by Rs 23.4 Cr exceptional (Delhi property-tax arrears per HC ruling on star hotels + Labour Codes + Bengaluru fire, partly insured)<br>&bull; <strong>Q4 Ops:</strong> ARR Rs 13,457 (+8%), occupancy 81% (highest in pack), RevPAR Rs 10,863 (+8%); F&amp;B 28% of revenue<br>&bull; <strong>FY26:</strong> Total income Rs 1,069.1 Cr (+10%, highest ever); EBITDA margin 42% (+400 bps); PAT Rs 141.6 Cr (+99%)<br><br><strong>Moat:</strong> Grand Hyatt Mumbai complex + Hyatt loyalty funnel; "Grand Showroom" 49,000 sq ft MICE space earned Rs 28 Cr in year one. 6th consecutive PAT-positive quarter.<br><br><strong>Pipeline:</strong> 1,895 to 3,320+ keys by FY30. Dwarka DDA win: ~500-key luxury hotel, 55-yr lease, Rs 9.75 Cr upfront -- Delhi inventory to cross 1,000 keys. Westin Bengaluru Ph-I from Q2 FY27 (opening ARR ~Rs 15,000). Capex Rs 1,800 Cr to FY30; peak net debt/EBITDA below 2.5x.`,
+  sam:{en:`<strong>SAMHI Hotels Q4 &amp; FY26</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 248.8 Cr (+19.4% YoY) -- strong organic growth<br>&bull; <strong>Q4 EBITDA:</strong> ~Rs 95 Cr (~38% margin)<br>&bull; <strong>Q4 PAT:</strong> Rs 24.8 Cr -- significant turnaround from losses<br>&bull; <strong>Q4 Ops:</strong> ARR ~Rs 7,200 (+12%), occupancy ~69% (+200 bps), RevPAR ~Rs 4,970 (+15%)<br>&bull; <strong>FY26:</strong> Revenue Rs 926.5 Cr (+18%); EBITDA ~Rs 318 Cr (~34%); first profitable full year since listing<br>&bull; <strong>Portfolio:</strong> 31 hotels / 4,801 keys; brands -- Courtyard, Fairfield (Marriott), Hyatt Place, Hyatt Regency, Holiday Inn Express (IHG), Accor<br><br><strong>Turnaround thesis:</strong> Listed at high leverage post-COVID; FY26 is the EBITDA-to-PAT inflection year. RevPAR recovery outpaced fixed-cost base -- classic operating leverage. Key risk: net debt ~Rs 1,900 Cr; deleveraging is the narrative for the next 2-3 years.<br><br><strong>Positioning:</strong> Upper-midscale sweet spot -- corporate travel, domestic business, MICE. Less exposed to luxury inbound volatility vs EIH/IHCL.`,
+  ta:`<strong>SAMHI Hotels (தமிழ்)</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 248.8 கோடி (+19.4%)<br>&bull; <strong>Q4 PAT:</strong> Rs 24.8 கோடி -- loss-இல் இருந்து turnaround<br>&bull; <strong>FY26 Revenue:</strong> Rs 926.5 கோடி (+18%) -- listing-க்கு பிறகு முதல் profitable year<br>&bull; <strong>Portfolio:</strong> 31 hotels / 4,801 keys -- Marriott, Hyatt, IHG brands<br><br><strong>Turnaround story:</strong> COVID பிறகு high leverage-உடன் list ஆனது. FY26-ல் RevPAR recovery fixed cost-ஐ தாண்டியது -- operating leverage வேலை செய்தது. ஆனால் net debt ~Rs 1,900 கோடி -- deleveraging தான் next 2-3 years story.<br><br><strong>Sweet spot:</strong> Upper-midscale -- corporate travel, domestic business. Luxury inbound volatility (EIH/IHCL போல) குறைவாக பாதிக்கும்.`},
+  ta:`<strong>Juniper Hotels Q4 &amp; FY26 (தமிழ்)</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 301.5 கோடி (+8.6%) -- record<br>&bull; <strong>Q4 PAT:</strong> Rs 50.4 கோடி (-8.3%) -- Rs 23.4 கோடி one-off (Delhi property tax HC தீர்ப்பு + labour codes + Bengaluru fire)<br>&bull; <strong>Q4 occupancy:</strong> 81% -- listed pack-ல் அதிகபட்சம்!<br>&bull; <strong>FY26 PAT:</strong> Rs 141.6 கோடி (+99% -- கிட்டத்தட்ட double)<br>&bull; <strong>EBITDA margin:</strong> 42% (+400 bps)<br><br><strong>Moat:</strong> Grand Hyatt Mumbai + Hyatt loyalty. Grand Showroom MICE space முதல் வருடமே Rs 28 கோடி.<br><br><strong>Pipeline:</strong> 1,895 → 3,320+ keys (FY30). Dwarka-ல் 500-key luxury hotel DDA award; Westin Bengaluru Q2 FY27-ல் open. Capex Rs 1,800 கோடி; net debt/EBITDA 2.5x-க்குள்.`},
+  occupancy:{en:`<strong>Occupancy &times; ARR = RevPAR -- The Hotel Profit Equation</strong><br><br><strong>1. Occupancy</strong> = rooms sold / rooms available. Industry CY25: ~64% (+100 bps).<br><strong>2. ARR/ADR</strong> = average realised room rate. Industry CY25: ~Rs 8,600 (+8.6%).<br><strong>3. RevPAR</strong> = ARR x occupancy -- the single best health metric.<br><br><strong>Q4 FY26 ladder:</strong><br>&bull; ARR: EIH Assoc Rs 17,696 &gt; Chalet Rs 15,456 &gt; Juniper Rs 13,457 &gt; Lemon Tree Rs 7,457<br>&bull; Occupancy: Juniper 81% &gt; EIH Assoc 79% &gt; LT 78.5% &gt; Chalet 68.2%<br>&bull; RevPAR: EIH Assoc Rs 14,051 &gt; Juniper Rs 10,863 &gt; Chalet Rs 10,544 &gt; LT Rs 5,855<br><br><strong>Why operating leverage matters:</strong> Hotels carry high fixed costs. Above ~55-60% occupancy, extra RevPAR falls mostly to EBITDA -- that is why 6-13% ARR growth produced 10-21% EBITDA growth in FY26. Rate-led growth (FY26 pattern) is higher quality than discount-led occupancy.`,
+  ta:`<strong>Occupancy &times; ARR = RevPAR (தமிழ்)</strong><br><br><strong>Occupancy</strong> = விற்ற அறைகள் / மொத்த அறைகள் (industry ~64%).<br><strong>ARR</strong> = சராசரி அறை வாடகை (industry ~Rs 8,600).<br><strong>RevPAR</strong> = ARR &times; occupancy -- hotel-ன் உண்மையான health metric.<br><br><strong>Q4 FY26:</strong> ARR-ல் EIH Assoc (Rs 17,696) top; occupancy-ல் Juniper (81%) top; RevPAR-ல் EIH Assoc (Rs 14,051) top.<br><br><strong>Operating leverage:</strong> Hotel-ல் fixed cost அதிகம் (staff, property, energy). Occupancy 55-60% தாண்டினால், கூடுதல் RevPAR பெரும்பாலும் நேரடியாக EBITDA-வுக்கு போகும். அதனால்தான் FY26-ல் 6-13% ARR வளர்ச்சி 10-21% EBITDA வளர்ச்சியாக மாறியது.`},
+  assetlight:{en:`<strong>Owned vs Managed -- The Asset-Light Fee Machine</strong><br><br><strong>Owned hotel:</strong> Rs 1.5-3 Cr capital per key; full EBITDA capture (40-50%) but full downside in downturns. Chalet, Juniper, EIH are owned-heavy.<br><br><strong>Managed/Franchised:</strong> ~zero capital; fees (% of revenue + share of gross operating profit) at near-100% margin; scales by signing contracts. IHCL (255-hotel pipeline), ITC Hotels (67 managed), Lemon Tree (M&amp;F network) lead here.<br><br><strong>FY26 fee evidence:</strong><br>&bull; IHCL management fees Rs 685 Cr (+22%)<br>&bull; Lemon Tree fees Rs 169.7 Cr (+14%; third-party +23%)<br>&bull; ITC managed pipeline ~6,700 keys<br><br><strong>Why it matters:</strong> Asset-light pipelines grow earnings without fresh equity or debt -- the market pays higher multiples for fee streams than for bricks. This is exactly why Lemon Tree is demerging into asset-light LT + asset-heavy Fleur.`,
+  ta:`<strong>Owned vs Managed (தமிழ்)</strong><br><br><strong>Owned hotel:</strong> ஒரு room-க்கு Rs 1.5-3 கோடி capital தேவை; முழு EBITDA கிடைக்கும், ஆனால் downturn-ல் முழு பாதிப்பும் உண்டு.<br><br><strong>Managed/Franchised:</strong> Capital கிட்டத்தட்ட பூஜ்யம்; revenue percentage + GOP share fee-ஆக கிடைக்கும் -- கிட்டத்தட்ட 100% margin!<br><br><strong>FY26 சான்று:</strong> IHCL fees Rs 685 கோடி (+22%); Lemon Tree fees Rs 169.7 கோடி (+14%).<br><br><strong>முக்கியம் ஏன்:</strong> Asset-light growth-க்கு புதிய equity/கடன் தேவை இல்லை. Fee business-க்கு market அதிக multiple கொடுக்கும். அதனால்தான் Lemon Tree demerger பண்ணுது -- fee company தனியா, asset company (Fleur) தனியா.`},
+  gst:{en:`<strong>GST Change on Hotel Rooms -- Demand Boost vs Input-Credit Loss</strong><br><br><strong>Positive:</strong> Lower GST on rooms cuts the customer bill -- demand-positive, especially mid-market (Lemon Tree, Ginger segment).<br><br><strong>Negative:</strong> Hotels lose <strong>input tax credit</strong> on their own purchases -- an estimated ~2% margin hit (Lemon Tree CMD Patanjali Keswani). Visible in LT's Q4 margin -198 bps alongside renovation costs.<br><br><strong>Net effect:</strong> Volume-positive, margin-negative in the transition year. High-occupancy operators absorb it best because the demand boost converts directly to RevPAR.<br><br><strong>Second cost layer:</strong> Labour/Wage Code implementation raised employee costs across the sector in FY26 -- EIH, Juniper and Lemon Tree all cited it explicitly.<br><br><strong>Separate issue:</strong> EIH faces GST <em>penalty disputes</em> (Rs 90.69 Cr + Rs 29.98 Cr on Mumbai hotels) -- company-specific litigation, not the rate change.`,
+  ta:`<strong>Hotel GST மாற்றம் (தமிழ்)</strong><br><br><strong>நல்லது:</strong> Room GST குறைந்தால் customer bill குறையும் -- demand ஏறும், குறிப்பாக mid-market-ல்.<br><br><strong>பிரச்சனை:</strong> Hotels-க்கு <strong>input tax credit</strong> போய்விடும் -- ~2% margin பாதிப்பு (Keswani). Lemon Tree Q4 margin -198 bps-ல் இது தெரியுது.<br><br><strong>Net effect:</strong> Volume-க்கு நல்லது, margin-க்கு transition வருடத்தில் கஷ்டம். Demand strong-ஆ இருந்தா ஈடுசெய்யலாம்.<br><br><strong>கூடுதல்:</strong> Wage Code அமலாக்கம் employee cost-ஐ உயர்த்தியது -- EIH, Juniper, Lemon Tree எல்லாரும் சொல்லியிருக்காங்க.`},
+  fy27:{en:`<strong>FY27 Hotel Sector Outlook -- Bull / Base / Bear</strong><br><br><strong>&#128002; Bull (conflict eases, inbound returns):</strong> Industry RevPAR +10-12%; occupancy above 66%; IHCL revenue crosses Rs 11,500 Cr; ITC sustains 25%+ PAT growth; LT margin back above 50%; Juniper opens Westin Bengaluru on time.<br><br><strong>&#9878;&#65039; Base (slow inbound, supply absorbs):</strong> Mid-to-high single-digit growth, rate-led again; fee businesses keep compounding; Chalet hospitality flattish with CRE doing the heavy lifting; EIH margin levers improve per management.<br><br><strong>&#128009; Bear (conflict widens, supply bites):</strong> Metro occupancy slips 3-5 pp; ARR stalls; operating leverage reverses for owned-heavy players; high-multiple stocks de-rate faster than earnings.<br><br><strong>Structural anchor:</strong> Demand (+9.1% CY25) &gt; supply (+7.8%); 105,000-room branded pipeline only by 2029 (Horwath HTL); weddings + MICE + spiritual + new airports. The cycle has years left -- the debate is price, not demand.`,
+  ta:`<strong>FY27 Outlook (தமிழ்)</strong><br><br><strong>&#128002; Bull:</strong> West Asia conflict முடிந்து inbound திரும்பினால் -- RevPAR +10-12%, occupancy 66%+.<br><br><strong>&#9878;&#65039; Base:</strong> Mid-to-high single digit வளர்ச்சி, rate-led; fee business தொடர்ந்து compound ஆகும்.<br><br><strong>&#128009; Bear:</strong> Conflict நீடித்தால் + supply அதிகமானால் -- metro occupancy 3-5 pp குறையும்; owned-heavy companies (Chalet, Juniper)-க்கு EBITDA pressure.<br><br><strong>Structural:</strong> Demand (+9.1%) &gt; Supply (+7.8%); 2029 வரை 105,000 branded rooms மட்டுமே pipeline. Weddings + MICE + spiritual tourism + புதிய airports -- demand story பல வருடம் இருக்கும். கேள்வி demand இல்லை, price தான்.`}
+};
+function findA(q,l){
+  l=l||'en';
+  const G=k=>KB[k]?.[l]||KB[k]?.en||'';
+  if(/ihcl|indian hotels|\btaj\b|indhotel|accelerate 2030|tajsats|ginger/.test(q))return G('ihc');
+  if(/itc hotels|itchotels|welcomhotel|ratnadipa|zuri|fortune|bukhara|grand chola/.test(q))return G('itc');
+  if(/\beih\b|oberoi|trident|mashobra|nile/.test(q))return G('eih');
+  if(/chalet|raheja|cignus|powai|sahar|cre annuity/.test(q))return G('cha');
+  if(/lemon ?tree|fleur|aurika|red fox|keys hotel|keswani|demerger/.test(q))return G('lt');
+  if(/juniper|grand hyatt|andaz|hyatt|dwarka|saraf/.test(q))return G('jun');
+  if(/samhi|ashish jakhanwala|courtyard|fairfield|hyatt place|holiday inn express/.test(q))return G('sam');
+  if(/occupancy|\barr\b|revpar|room rate|adr|metrics/.test(q))return G('occupancy');
+  if(/asset.light|asset light|management fee|franchis|owned vs|owned hotel/.test(q))return G('assetlight');
+  if(/\bgst\b|input tax|wage code|labour code/.test(q))return G('gst');
+  if(/fy27|outlook|bull|bear|scenario|supply|pipeline.*industry|forecast/.test(q))return G('fy27');
+  if(l==='ta')return '<strong>CB Assist (தமிழ்)</strong><br><br>இந்த topics try பண்ணுங்க:<br>&bull; IHCL / ITC Hotels / EIH / Chalet / Lemon Tree / Juniper / SAMHI Q4 results<br>&bull; Occupancy, ARR, RevPAR metrics<br>&bull; Asset-light vs owned model<br>&bull; GST impact<br>&bull; FY27 outlook (bull/base/bear)';
+  return '<strong>CB Assist</strong> -- Try asking about:<br><br>&bull; <em>IHCL / ITC Hotels / EIH / Chalet / Lemon Tree / Juniper / SAMHI Q4 FY26 results</em><br>&bull; <em>Occupancy, ARR, RevPAR -- how hotel metrics work</em><br>&bull; <em>Owned vs managed -- the asset-light fee machine</em><br>&bull; <em>GST change -- demand boost vs input-credit loss</em><br>&bull; <em>FY27 outlook -- bull, base, bear cases</em>';
+}
+</script>
+</body>
+</html>

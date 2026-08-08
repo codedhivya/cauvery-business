@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recycling & Circular Economy — Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --gravita:#1d6b3a;--gravita-soft:#edfbf3;
+  --ganecos:#7c3aed;--ganecos-soft:#f5f3ff;
+  --pondy:#d97706;--pondy-soft:#fffbeb;
+  --nile:#0e7490;--nile-soft:#ecfeff;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --accent:#1d6b3a;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#0f1e13;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.5rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 10px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-gr{background:var(--gravita);color:#fff;}
+.chip-gc{background:var(--ganecos);color:#fff;}
+.chip-po{background:var(--pondy);color:#fff;}
+.chip-ni{background:var(--nile);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 14px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--gravita);font-weight:700;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.tab-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gap-top{margin-top:22px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.gravita::before{background:var(--gravita);}
+.co-card.ganecos::before{background:var(--ganecos);}
+.co-card.pondy::before{background:var(--pondy);}
+.co-card.nile::before{background:var(--nile);}
+.co-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center;}
+.m-lbl{font-size:11px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;}
+.badge-row{margin-top:10px;display:flex;gap:4px;flex-wrap:wrap;}
+.badge{font-size:9.5px;padding:2px 7px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}.b-spec{background:#f3f4f6;color:#4b5563;}
+.b-watch{background:#fff7ed;color:#c2410c;}.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}.b-pend{background:#e0f2fe;color:#0369a1;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);}
+.kpi.gr-a{border-left:4px solid var(--gravita);}
+.kpi.gc-a{border-left:4px solid var(--ganecos);}
+.kpi.po-a{border-left:4px solid var(--pondy);}
+.kpi.ni-a{border-left:4px solid var(--nile);}
+.kpi .kl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:9.5px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#0f1e13;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:10px 12px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:12px 14px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:10.5px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-wrap{height:280px;position:relative;}
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+.rat-pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef9c3;color:#a16207;}
+.rp-avoid{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.1rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+.note-box{background:#fef3c7;border:1.5px solid #f59e0b;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:14px;}
+.eco-note{background:#edfbf3;border:1.5px solid var(--gravita);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#0f1e13;margin-bottom:14px;}
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+.val-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;}
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.moat-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.moat-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.moat-body{font-size:10.5px;color:var(--muted);line-height:1.55;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
+.seg-bar{height:10px;border-radius:20px;}
+.seg-row{margin-bottom:12px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+/* CB Assist */
+.cba-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.cba-lang-header{padding:10px 16px;font-weight:800;font-size:12px;}
+.preset-tabs{display:flex;gap:6px;padding:10px 12px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+.pt{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;}
+.pt.active,.pt:hover{background:#0f1e13;color:#fff;border-color:#0f1e13;}
+.tpq-panel{display:none;padding:10px 12px;flex-direction:column;gap:5px;}
+.tpq-panel.active{display:flex;}
+.pq-btn{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;line-height:1.45;}
+.pq-btn:hover{border-color:#0f1e13;background:#edfbf3;}
+.pq-en{display:block;font-weight:600;color:var(--text);}
+.pq-ta{display:block;font-size:10.5px;color:var(--muted);}
+.cba-chat-wrap{background:var(--surface);border:1.5px solid var(--gravita);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.cba-chat-header{background:#0f1e13;color:#fff;padding:10px 16px;font-weight:700;font-size:12px;display:flex;align-items:center;gap:8px;}
+.dot-live{width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.cba-chat-output{min-height:150px;max-height:380px;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.cba-welcome{text-align:center;padding:20px;color:var(--muted);}
+.chat-user{background:#0f1e13;color:#fff;align-self:flex-end;padding:10px 14px;border-radius:10px 10px 2px 10px;font-size:12px;line-height:1.55;max-width:80%;}
+.chat-bot{background:var(--gravita-soft);border:1px solid var(--border);align-self:flex-start;padding:10px 14px;border-radius:10px 10px 10px 2px;font-size:12px;line-height:1.6;max-width:90%;}
+.chat-bot.loading{color:var(--muted);font-style:italic;}
+.cba-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface2);}
+.cba-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;}
+.cba-input:focus{border-color:var(--gravita);}
+.cba-send-btn{background:var(--gravita);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.cb-wm{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid var(--border);border-radius:30px;padding:7px 14px 7px 8px;box-shadow:0 4px 20px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:28px;height:28px;background:var(--gravita);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:11px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:14px 40px;border-top:1px solid var(--border);margin-top:28px;line-height:1.7;}
+@media(max-width:900px){
+  .main{padding:12px 14px 40px;}.hdr{padding:0 14px;flex-wrap:wrap;}
+  .tab-nav{padding:0 8px;}
+  .g2,.g3,.g4,.kpi-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<!-- WATERMARK -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">♻</div>
+  <div><div class="cb-wm-name">Cauvery Business</div><div class="cb-wm-sub">EIL Research · Q4 FY26</div></div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Recycling & Circular Economy — Intelligence Dashboard</h1>
+      <div class="sub">2 Companies · Gravita India · Ganesha Ecosphere · EIL Research · Q4 FY26</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-gr">Gravita India</span>
+    <span class="chip chip-gc">Ganesha Ecosphere</span>
+    <span class="chip chip-date">25 May 2026 · EIL Research</span>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">Financials</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Business Segments</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT Analysis</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">Moats & USPs</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:var(--gold);font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('school',this)" style="color:#0e7490;font-weight:800;">🎓 School</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--gravita);font-weight:800;">🤖 CB Assist</button>
+</nav>
+
+<div class="main">
+
+<!-- ============ DASHBOARD TAB ============ -->
+<div id="tab-dashboard" class="tab-content active">
+  <div class="tab-title">Recycling & Circular Economy — Q4 FY26 Overview <span class="sec-note">Declared results only · EIL Research · 25 May 2026</span></div>
+
+  <div class="eco-note">♻ India's formal recycling sector is at an inflection point — EPR mandates, EV battery waste regulation, and mandatory rPET usage in packaging are creating structural tailwinds. The four companies in this dashboard span Lead, Aluminium, Plastic (RPSF/rPET), and Rubber recycling verticals.</div>
+
+  <!-- KPI ROW: Gravita -->
+  <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--gravita);margin-bottom:8px;padding-left:2px;">◆ Gravita India — Q4 FY26 KPIs</div>
+  <div class="kpi-row">
+    <div class="kpi gr-a"><div class="kl">Q4 Revenue</div><div class="kv">₹1,173 Cr</div><div class="kc pos">▲ +13.1% YoY</div></div>
+    <div class="kpi gr-a"><div class="kl">Q4 PAT</div><div class="kv">₹91.9 Cr</div><div class="kc neg">▼ −3.4% YoY</div></div>
+    <div class="kpi gr-a"><div class="kl">Q4 EBITDA%</div><div class="kv">9.6%</div><div class="kc neg">▼ from 10.5% (Q4FY25)</div></div>
+    <div class="kpi gr-a"><div class="kl">FY26 PAT</div><div class="kv">₹378 Cr</div><div class="kc pos">▲ +21% YoY</div></div>
+  </div>
+
+  <!-- KPI ROW: Ganesha -->
+  <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--ganecos);margin-bottom:8px;padding-left:2px;">◆ Ganesha Ecosphere — Q4 FY26 KPIs</div>
+  <div class="kpi-row">
+    <div class="kpi gc-a"><div class="kl">Q4 Revenue</div><div class="kv">₹424 Cr</div><div class="kc pos">▲ +23.1% YoY</div></div>
+    <div class="kpi gc-a"><div class="kl">Q4 PAT</div><div class="kv">₹23.2 Cr</div><div class="kc neg">▼ −2.3% YoY</div></div>
+    <div class="kpi gc-a"><div class="kl">Q4 EBITDA%</div><div class="kv">12.4%</div><div class="kc neg">▼ from 14.8% (Q4FY25)</div></div>
+    <div class="kpi gc-a"><div class="kl">FY26 Revenue</div><div class="kv">₹1,482 Cr</div><div class="kc pos">▲ +1.1% YoY</div></div>
+  </div>
+
+  <!-- CO CARDS -->
+  <div class="g2 gap-top">
+    <div class="co-card gravita">
+      <div class="co-name" style="color:var(--gravita)">Gravita India Ltd</div>
+      <div class="co-seg">BSE: 533282 · Lead / Aluminium / Plastic / Copper Recycling</div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue (Consol)</span><span class="m-val">₹4,265 Cr (+10% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Adj. EBITDA</span><span class="m-val pos">₹452 Cr (+12% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (Consol)</span><span class="m-val pos">₹378 Cr (+21% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val warn">~10% (elevated RM costs)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Lead Revenue</span><span class="m-val pos">+10% YoY</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Plastics Revenue</span><span class="m-val pos">+34% YoY 🚀</span></div>
+      <div class="m-row"><span class="m-lbl">CapEx Guidance FY27–29</span><span class="m-val warn">~₹1,700 Cr (₹17 Bn)</span></div>
+      <div class="m-row"><span class="m-lbl">Copper Plant (Mandvi)</span><span class="m-val">29,400 MTPA · ₹160 Cr capex</span></div>
+      <div class="m-row"><span class="m-lbl">ROE / ROCE</span><span class="m-val pos">~22% / ~21%</span></div>
+      <div class="m-row"><span class="m-lbl">P/E vs 5-yr Avg</span><span class="m-val warn">31.5x vs 26.7x avg</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (6-month trend)</span><span class="m-val">~₹1,670 · NSE · ▼ from highs</span></div>
+      <div class="badge-row">
+        <span class="badge b-buy">STRONG BUY</span>
+        <span class="badge b-pos">Copper Entry (RMIL)</span>
+        <span class="badge b-pos">Plastics +34% Q4</span>
+        <span class="badge b-watch">P/E Premium to Avg</span>
+        <span class="badge b-watch">Heavy Capex Phase</span>
+      </div>
+    </div>
+    <div class="co-card ganecos">
+      <div class="co-name" style="color:var(--ganecos)">Ganesha Ecosphere Ltd</div>
+      <div class="co-seg">NSE: GANECOS · rPET / RPSF / Spun Yarn Recycling</div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue (Consol)</span><span class="m-val">₹1,482 Cr (+1.1% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (Consol)</span><span class="m-val neg">₹38.2 Cr (▼36.6% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹52.4 Cr (+70% QoQ)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val warn">12.4% (vs 14.8% prior yr)</span></div>
+      <div class="m-row"><span class="m-lbl">Standalone Capacity</span><span class="m-val pos">105% utilisation Q4</span></div>
+      <div class="m-row"><span class="m-lbl">Promoter Pledge</span><span class="m-val warn">31.9% pledged</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (approx)</span><span class="m-val">₹1,057 (▼39% in 1yr)</span></div>
+      <div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val">₹3.50/share</span></div>
+      <div class="badge-row">
+        <span class="badge b-hold">BUY (select houses)</span>
+        <span class="badge b-pos">rPET Mandate</span>
+        <span class="badge b-pos">Warangal Expansion</span>
+        <span class="badge b-watch">PAT Decline FY26</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT STATUS TABLE -->
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">Result Status — Q4 FY26</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Company</th><th>Q4 FY26 Status</th><th style="text-align:right">Revenue (₹Cr)</th><th style="text-align:right">PAT (₹Cr)</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--gravita)">Gravita India</td><td><span class="badge b-buy">✅ Declared (7 May)</span></td><td class="num tpos">1,173</td><td class="num tneg">91.9 (▼3.4%)</td></tr>
+          <tr><td class="tb" style="color:var(--ganecos)">Ganesha Ecosphere</td><td><span class="badge b-buy">✅ Declared (21 May)</span></td><td class="num tpos">424</td><td class="num tneg">23.2 (▼2.3%)</td></tr>
+          <tr><td class="tb" style="color:var(--pondy)">Pondy Oxides & Chemicals</td><td><span class="badge b-pend">⏳ Results Awaited</span></td><td class="num warn">~260 (est.)</td><td class="num warn">~10 (est.)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Sector Quick Snapshot — Indian Recycling FY26</div>
+      <table><thead><tr><th>Metric</th><th>Value</th><th>Context</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Best Revenue Growth FY26</td><td class="num tpos">Gravita +10%</td><td>Volume + mix</td></tr>
+        <tr><td class="tb">Best PAT Growth FY26</td><td class="num tpos">Gravita +21%</td><td>Scale + cost efficiency</td></tr>
+        <tr><td class="tb">Biggest PAT Decline FY26</td><td class="num tneg">Ganesha ▼37%</td><td>New Labour Code cost</td></tr>
+        <tr><td class="tb">Best 5-yr Revenue CAGR</td><td class="num tpos">Gravita ~25%</td><td>Multi-vertical growth</td></tr>
+        <tr><td class="tb">EPR Mandate Impact</td><td class="num tpos">Positive</td><td>Drives formal recycling</td></tr>
+        <tr><td class="tb">rPET Mandatory Use</td><td class="num tpos">FY2025 onward</td><td>Ganesha key beneficiary</td></tr>
+        <tr><td class="tb">Gravita Copper Entry</td><td class="num tpos">RMIL Acquired</td><td>₹559 Cr deal, Jan 2026</td></tr>
+        <tr><td class="tb">Gravita Q4 Plastics Rev</td><td class="num tpos">+34% YoY</td><td>Fastest growing vertical</td></tr>
+        <tr><td class="tb">Gravita CapEx FY27–29</td><td class="num warn">~₹1,700 Cr guided</td><td>Existing + new verticals</td></tr>
+        <tr><td class="tb">Gravita P/E vs 5-yr Avg</td><td class="num warn">31.5x vs 26.7x</td><td>Mild premium; watch</td></tr>
+        <tr><td class="tb">Ganesha Warangal</td><td class="num tpos">22,500 MT added</td><td>Brownfield expansion</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FINANCIALS TAB ============ -->
+<div id="tab-financials" class="tab-content">
+  <div class="tab-title">Financials — Q4 FY26 & Annual</div>
+  <div class="note-box">📌 Dashboard covers Gravita India and Ganesha Ecosphere — India's two leading listed recycling companies with declared Q4 FY26 results.</div>
+
+  <div style="overflow-x:auto;" class="gap-top">
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th style="text-align:right">Q4 Rev (₹Cr)</th>
+          <th style="text-align:right">Q4 YoY</th>
+          <th style="text-align:right">Q4 PAT (₹Cr)</th>
+          <th style="text-align:right">PAT YoY</th>
+          <th style="text-align:right">Q4 EBITDA%</th>
+          <th style="text-align:right">FY26 Rev (₹Cr)</th>
+          <th style="text-align:right">FY26 PAT (₹Cr)</th>
+          <th style="text-align:right">FY26 EBITDA%</th>
+          <th>Declared</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tb" style="color:var(--gravita)"><span class="dot" style="background:var(--gravita)"></span>Gravita India</td>
+          <td class="num tpos">1,173</td>
+          <td class="num tpos">+13.1%</td>
+          <td class="num tneg">91.9</td>
+          <td class="num tneg">▼3.4%</td>
+          <td class="num warn">9.6%</td>
+          <td class="num tpos">4,265</td>
+          <td class="num tpos">378</td>
+          <td class="num">10.6%</td>
+          <td><span class="badge b-buy">✅ 7 May</span></td>
+        </tr>
+        <tr>
+          <td class="tb" style="color:var(--ganecos)"><span class="dot" style="background:var(--ganecos)"></span>Ganesha Ecosphere</td>
+          <td class="num tpos">424</td>
+          <td class="num tpos">+23.1%</td>
+          <td class="num tneg">23.2</td>
+          <td class="num tneg">▼2.3%</td>
+          <td class="num warn">12.4%</td>
+          <td class="num">1,482</td>
+          <td class="num tneg">38.2</td>
+          <td class="num warn">12.2%</td>
+          <td><span class="badge b-buy">✅ 21 May</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">Gravita India — Quarterly Trend</div>
+      <table>
+        <thead><tr><th>Quarter</th><th style="text-align:right">Revenue (₹Cr)</th><th style="text-align:right">PAT (₹Cr)</th><th style="text-align:right">EBITDA%</th></tr></thead>
+        <tbody>
+          <tr><td>Q1 FY26</td><td class="num">1,035</td><td class="num">96</td><td class="num">10.8%</td></tr>
+          <tr><td>Q2 FY26</td><td class="num">1,035</td><td class="num">98</td><td class="num">10.8%</td></tr>
+          <tr><td>Q3 FY26</td><td class="num">1,017</td><td class="num">92</td><td class="num">11.4%</td></tr>
+          <tr><td class="tb">Q4 FY26</td><td class="num tpos">1,173</td><td class="num tneg">92</td><td class="num warn">9.6%</td></tr>
+          <tr><td class="tb" style="background:#edfbf3">FY26 Full Year</td><td class="num tpos">4,265</td><td class="num tpos">378</td><td class="num">10.6%</td></tr>
+          <tr><td>FY25 Full Year</td><td class="num">3,869</td><td class="num">312</td><td class="num">10.4%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Ganesha Ecosphere — Quarterly Trend</div>
+      <table>
+        <thead><tr><th>Quarter</th><th style="text-align:right">Revenue (₹Cr)</th><th style="text-align:right">PAT (₹Cr)</th><th style="text-align:right">EBITDA%</th></tr></thead>
+        <tbody>
+          <tr><td>Q1 FY26</td><td class="num">344</td><td class="num">12</td><td class="num">12.5%</td></tr>
+          <tr><td>Q2 FY26</td><td class="num">357</td><td class="num">3.5</td><td class="num">10.8%</td></tr>
+          <tr><td>Q3 FY26</td><td class="num">357</td><td class="num">4.7</td><td class="num">8.6%</td></tr>
+          <tr><td class="tb">Q4 FY26</td><td class="num tpos">424</td><td class="num tpos">23.2</td><td class="num">12.4%</td></tr>
+          <tr><td class="tb" style="background:#f5f3ff">FY26 Full Year</td><td class="num">1,482</td><td class="num tneg">38.2</td><td class="num warn">12.2%</td></tr>
+          <tr><td>FY25 Full Year</td><td class="num">1,464</td><td class="num">60.2</td><td class="num">13.5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CHARTS TAB ============ -->
+<div id="tab-charts" class="tab-content">
+  <div class="tab-title">Charts — Revenue, PAT & Margin Comparison</div>
+  <div class="g2">
+    <div class="chart-card">
+      <h3>Q4 FY26 Revenue (₹ Crore)</h3>
+      <p style="font-size:10.5px;color:var(--muted);margin-bottom:12px;">Declared results only · Gravita India & Ganesha Ecosphere</p>
+      <div class="chart-wrap"><canvas id="ch-rev"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Q4 FY26 PAT (₹ Crore)</h3>
+      <p style="font-size:10.5px;color:var(--muted);margin-bottom:12px;">Declared results only</p>
+      <div class="chart-wrap"><canvas id="ch-pat"></canvas></div>
+    </div>
+  </div>
+  <div class="g2 gap-top">
+    <div class="chart-card">
+      <h3>FY26 Full Year Revenue vs FY25 (₹ Crore)</h3>
+      <div class="chart-wrap"><canvas id="ch-fyrev"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>EBITDA Margin % — Q4 FY26 vs Q4 FY25</h3>
+      <div class="chart-wrap"><canvas id="ch-ebitda"></canvas></div>
+    </div>
+  </div>
+  <div class="gap-top">
+    <div class="chart-card">
+      <h3>Gravita India — Quarterly Revenue Trend (FY26)</h3>
+      <div style="height:220px;position:relative;"><canvas id="ch-gravtrend"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VALUATIONS TAB ============ -->
+<div id="tab-valuation" class="tab-content">
+  <div class="tab-title">Valuations — Q4 FY26 Snapshot</div>
+  <div class="note-box">⚠ Valuation data from publicly available analyst reports and screeners. For investment decisions, always verify with latest filings. EIL Research is not a SEBI-registered adviser.</div>
+  <div class="g2 gap-top">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--gravita)">◆ Gravita India (GRAVITA)</div>
+      <div class="val-row"><span class="val-lbl">CMP (approx.)</span><span class="val-num">₹1,670</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹12,233 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">TTM P/E</span><span class="val-num warn">31.5x</span></div>
+      <div class="val-row"><span class="val-lbl">5-Year Avg P/E</span><span class="val-num">26.7x (current at premium)</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num warn">~5.9x</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num warn">~24x</span></div>
+      <div class="val-row"><span class="val-lbl">ROE (FY26)</span><span class="val-num tpos">~22%</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE (FY26)</span><span class="val-num tpos">~21%</span></div>
+      <div class="val-row"><span class="val-lbl">EPS FY26</span><span class="val-num">~₹51</span></div>
+      <div class="val-row"><span class="val-lbl">CapEx Guidance FY27–29</span><span class="val-num warn">~₹1,700 Cr (₹17 Bn)</span></div>
+      <div class="val-row"><span class="val-lbl">Q4 Lead Rev Growth</span><span class="val-num tpos">+10% YoY</span></div>
+      <div class="val-row"><span class="val-lbl">Q4 Plastics Rev Growth</span><span class="val-num tpos">+34% YoY</span></div>
+      <div class="val-row"><span class="val-lbl">Avg. Analyst TP</span><span class="val-num tpos">₹2,263 (avg 10 analysts)</span></div>
+      <div class="val-row"><span class="val-lbl">Stock (6-month, NSE)</span><span class="val-num warn">▼ from highs (correction phase)</span></div>
+      <div style="margin-top:10px;padding:8px 10px;background:var(--gravita-soft);border-radius:8px;font-size:11px;">
+        <b>Valuation View:</b> Trades at 31.5x P/E vs 26.7x 5-year average — a ~18% premium to historical norm. This is justified by the copper entry re-rating potential and accelerating plastic growth (+34% Q4). The ₹17 Bn capex plan signals aggressive scale-up. Key watch: whether FY27–29 capex delivers EBITDA expansion beyond 10%, which would de-rate the multiple meaningfully.
+      </div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--ganecos)">◆ Ganesha Ecosphere (GANECOS)</div>
+      <div class="val-row"><span class="val-lbl">CMP (approx.)</span><span class="val-num">₹1,057</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹2,561 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">TTM P/E</span><span class="val-num warn">~67x (depressed PAT)</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num warn">~3.8x</span></div>
+      <div class="val-row"><span class="val-lbl">ROE (3-yr avg)</span><span class="val-num warn">5.7% (low)</span></div>
+      <div class="val-row"><span class="val-lbl">Promoter Pledge</span><span class="val-num neg">31.9%</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num neg">₹38 Cr (▼37%)</span></div>
+      <div class="val-row"><span class="val-lbl">Analyst TP (1 house)</span><span class="val-num">₹2,680</span></div>
+      <div class="val-row"><span class="val-lbl">Stock (52-wk)</span><span class="val-num neg">▼39% from peak</span></div>
+      <div class="val-row"><span class="val-lbl">Capacity Utilisation</span><span class="val-num tpos">105% (Q4 standalone)</span></div>
+      <div style="margin-top:10px;padding:8px 10px;background:var(--ganecos-soft);border-radius:8px;font-size:11px;">
+        <b>Valuation View:</b> FY26 is a transition year hit by new Labour Code past-service costs and subsidiary investment ramp. Q4 sequential recovery (PAT +390% QoQ) is encouraging. Mandatory rPET usage and 1-lakh-ton capacity target by FY27 are re-rating catalysts. But high promoter pledge is a risk flag.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SEGMENTS TAB ============ -->
+<div id="tab-segments" class="tab-content">
+  <div class="tab-title">Business Segments — Gravita India & Ganesha Ecosphere</div>
+
+  <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:12px;color:var(--gravita);">Gravita India — Revenue by Vertical (FY26)</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Gravita — Revenue Segment Mix (approx. FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Lead Recycling (Flagship)</span><span>~60%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:60%;background:var(--gravita)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Aluminium Recycling</span><span>~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:var(--pondy)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Plastic Recycling</span><span>~10%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:10%;background:var(--nile)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Rubber / Other</span><span>~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:#94a3b8"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Turnkey Projects</span><span>~3%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:3%;background:#cbd5e1"></div></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;">Copper (via RMIL) to be new vertical from FY27. Gujarat greenfield plant: 29,400 MTPA capacity, ₹160 Cr capex.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Gravita — Geography Mix (FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>India (Domestic)</span><span>~45%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:45%;background:var(--gravita)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Africa (Ghana, Senegal etc.)</span><span>~30%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--pondy)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Rest of World</span><span>~25%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:25%;background:var(--nile)"></div></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;">Africa plants provide arbitrage advantage — Gravita ships material from African ops to India to optimise margins. Global presence in 40+ countries for scrap procurement.</div>
+    </div>
+  </div>
+
+  <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-top:22px;margin-bottom:12px;color:var(--ganecos);">Ganesha Ecosphere — Product & Capacity</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Ganesha — Product Mix (FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Recycled Polyester Staple Fibre (RPSF)</span><span>~55%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:55%;background:var(--ganecos)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>rPET Granules</span><span>~25%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:25%;background:#a855f7"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Spun Yarn / Dyed Texturised Yarn</span><span>~15%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:15%;background:#c084fc"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Other / Value-Added</span><span>~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:#e9d5ff"></div></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;">Target: 65% revenue from high-margin value-added products by FY27. Warangal rPET brownfield expansion of 22,500 T commissioned Q4. Total capacity target: 1 lakh ton by end-FY27.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Ganesha — Key Capacity Metrics</div>
+      <table>
+        <thead><tr><th>Metric</th><th>FY26</th><th>FY27 Target</th></tr></thead>
+        <tbody>
+          <tr><td>Total Installed Capacity</td><td class="num">~75,000 MT</td><td class="num tpos">~1,00,000 MT</td></tr>
+          <tr><td>Standalone Utilisation (Q4)</td><td class="num tpos">105%</td><td class="num">—</td></tr>
+          <tr><td>PET Bottles Recycled (India share)</td><td class="num tpos">16–18%</td><td class="num tpos">Growing</td></tr>
+          <tr><td>Value-Added Revenue %</td><td class="num warn">~40%</td><td class="num tpos">65% target</td></tr>
+          <tr><td>rPET Granule Capacity (Warangal)</td><td class="num tpos">22,500 T added</td><td class="num tpos">Ramp Q2FY27</td></tr>
+          <tr><td>Subsidiary Investment (FY26)</td><td class="num">₹409 Cr</td><td class="num warn">Watch leverage</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SWOT TAB ============ -->
+<div id="tab-swot" class="tab-content">
+  <div class="tab-title">SWOT Analysis — Gravita India & Ganesha Ecosphere</div>
+  <div class="g2">
+    <div>
+      <div class="co-hdr-swot" style="color:var(--gravita)">◆ Gravita India — SWOT</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">S — Strengths</div><ul class="swot-ul">
+          <li>Near debt-free balance sheet, strong FCF generation</li>
+          <li>Multi-vertical: Lead, Aluminium, Plastic, Rubber, Copper (new)</li>
+          <li>Global procurement network: 40+ countries; Africa arbitrage</li>
+          <li>ROE ~22%, ROCE ~21% — sector-best capital efficiency</li>
+          <li>25% 5-year revenue CAGR; consistent execution</li>
+          <li>Largest organised lead recycler in India</li>
+        </ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">W — Weaknesses</div><ul class="swot-ul">
+          <li>Low EBITDA margin (9–11%) vs. other quality compounders</li>
+          <li>Q4 FY26 margin compression to 9.6% — cost pressure</li>
+          <li>Employee costs surged +41% YoY in Q4 FY26</li>
+          <li>RM costs sensitive to global metal commodity cycles</li>
+          <li>High P/E (~35x) limits downside protection</li>
+        </ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">O — Opportunities</div><ul class="swot-ul">
+          <li>EV boom → massive lead-acid and Li-ion battery recycling wave</li>
+          <li>RMIL copper acquisition → new ₹4,000+ Cr market by FY28</li>
+          <li>EPR (Extended Producer Responsibility) mandates formalising sector</li>
+          <li>Plastic recycling growth: mandatory use of recycled plastic in packaging</li>
+          <li>Vision 2030 target: >7 lakh MT/yr capacity (vs 3.4L MT now)</li>
+          <li>Global ELV (end-of-life vehicle) recycling regulation</li>
+        </ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">T — Threats</div><ul class="swot-ul">
+          <li>LME metal price volatility compresses spreads</li>
+          <li>Scrap supply disruption (Africa sourcing risk)</li>
+          <li>Informal recycling sector competition on price</li>
+          <li>Large CapEx plan (₹1,225 Cr through FY28) — execution risk</li>
+          <li>Currency risk on imports and Africa operations</li>
+        </ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="co-hdr-swot" style="color:var(--ganecos)">◆ Ganesha Ecosphere — SWOT</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">S — Strengths</div><ul class="swot-ul">
+          <li>India's largest PET bottle recycler — 16–18% of national waste</li>
+          <li>Q4 capacity utilisation 105% (standalone) — peak demand</li>
+          <li>Warangal brownfield expansion commissioned Q4 FY26</li>
+          <li>Strong regulatory tailwind: mandatory rPET usage since FY25</li>
+          <li>Diversified product: RPSF + rPET + yarn</li>
+        </ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">W — Weaknesses</div><ul class="swot-ul">
+          <li>Promoter pledge at 31.9% — governance risk</li>
+          <li>FY26 PAT declined 37% — one-time Labour Code costs + investment phase</li>
+          <li>Low 3-yr average ROE of 5.7%</li>
+          <li>Revenue growth near-flat FY26 (+1.1%) — volume addition lagged</li>
+          <li>Heavy subsidiary investment phase (₹409 Cr in FY26) → leverage risk</li>
+        </ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">O — Opportunities</div><ul class="swot-ul">
+          <li>Mandatory rPET in packaging creating structural demand floor</li>
+          <li>1 lakh MT total capacity by FY27 end — operating leverage kicker</li>
+          <li>Value-added product mix target of 65% — margin expansion</li>
+          <li>EPR credits monetisation from recycling quota compliance</li>
+          <li>Export market for RPSF (Europe sustainability mandates)</li>
+        </ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">T — Threats</div><ul class="swot-ul">
+          <li>Virgin polyester pricing pressure can compress RPSF spreads</li>
+          <li>PET scrap availability and pricing volatility</li>
+          <li>Odisha project dropped — capital allocation question marks</li>
+          <li>High promoter pledge — forced selling risk in downturn</li>
+          <li>New Labour Code cost impacts recurring (not one-time)</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ANALYST RATINGS TAB ============ -->
+<div id="tab-analyst" class="tab-content">
+  <div class="tab-title">Analyst Ratings — Q4 FY26</div>
+  <div class="note-box">⚠ Target prices and ratings sourced from publicly available analyst reports (Motilal Oswal, Axis Securities, TradingView consensus). EIL Research is not a SEBI-registered adviser. This is educational content only.</div>
+
+  <div class="g2 gap-top">
+    <div class="analyst-card">
+      <div class="ac-head">
+        <div class="ac-name" style="color:var(--gravita)">Gravita India</div>
+        <span class="rat-pill rp-buy">STRONG BUY</span>
+      </div>
+      <div class="ac-tp">Avg. TP: ₹2,263 <span style="font-size:12px;font-weight:400;color:var(--muted)">(range ₹1,761 – ₹2,658)</span></div>
+      <div class="ac-cmp">CMP ~₹1,670 · Implied upside ~35% · 10 analysts covering</div>
+      <table style="margin-top:10px;">
+        <thead><tr><th>Analyst / House</th><th>Rating</th><th style="text-align:right">Target Price</th><th>Key Thesis</th></tr></thead>
+        <tbody>
+          <tr><td>Motilal Oswal</td><td><span class="badge b-buy">BUY</span></td><td class="num tpos">₹2,045</td><td>Vision 2030 capacity ramp, multi-vertical</td></tr>
+          <tr><td>Axis Securities</td><td><span class="badge b-buy">BUY</span></td><td class="num tpos">₹2,200+</td><td>~40% upside, copper entry re-rating catalyst</td></tr>
+          <tr><td>TradingView Consensus</td><td><span class="badge b-buy">STRONG BUY</span></td><td class="num tpos">₹2,327</td><td>7 analysts; max ₹2,658</td></tr>
+          <tr><td>Investing.com Consensus</td><td><span class="badge b-buy">STRONG BUY</span></td><td class="num tpos">₹2,097</td><td>10 analysts; 0 hold, 0 sell</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;" class="ac-text">
+        <b>Bull Case:</b> Gravita is the best-positioned recycling compounder in India. RMIL copper acquisition opens a new ₹4,000 Cr+ market. Vision 2030 capacity of 7L MT/yr vs. 3.4L MT today means revenue can double from here. Zero debt + high ROE makes this a rare combination. The Q4 margin dip is temporary — driven by one-time employee cost surge, not structural deterioration.<br><br>
+        <b>Bear Case:</b> Commodity cycle downturn could compress spreads to single-digit EBITDA. Africa sourcing disruption is a tail risk. CapEx execution risk on ₹1,225 Cr plan.
+      </div>
+    </div>
+    <div class="analyst-card">
+      <div class="ac-head">
+        <div class="ac-name" style="color:var(--ganecos)">Ganesha Ecosphere</div>
+        <span class="rat-pill rp-buy">BUY (select)</span>
+      </div>
+      <div class="ac-tp">TP (Simply Wall St): ₹2,680 <span style="font-size:12px;font-weight:400;color:var(--muted)">(1 formal analyst)</span></div>
+      <div class="ac-cmp">CMP ~₹1,057 · Implied upside ~153% on TP · 52-wk high ₹2,484</div>
+      <table style="margin-top:10px;">
+        <thead><tr><th>Analyst / Source</th><th>Rating</th><th style="text-align:right">Target Price</th><th>Key Thesis</th></tr></thead>
+        <tbody>
+          <tr><td>Simply Wall St</td><td><span class="badge b-buy">BUY</span></td><td class="num tpos">₹2,680</td><td>FY27 revenue forecast ₹1,940 Cr (+36% YoY)</td></tr>
+          <tr><td>TradingView (2 analysts)</td><td><span class="badge b-buy">BUY</span></td><td class="num tpos">₹2,208</td><td>Range ₹2,080 – ₹2,335</td></tr>
+          <tr><td>Technical (Breakout call)</td><td><span class="badge b-buy">BUY</span></td><td class="num">₹1,388 / ₹1,699</td><td>Trendline breakout, 3–6 months view</td></tr>
+          <tr><td>EIL Research View</td><td><span class="badge b-hold">WATCH</span></td><td class="num warn">Accumulate dips</td><td>PAT recovery + capacity ramp needed first</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;" class="ac-text">
+        <b>Bull Case:</b> Mandatory rPET usage creates a structural floor for demand. Running at 105% capacity utilisation means every new capacity addition flows to revenue. Target of 1 lakh MT capacity by FY27 with 65% value-added mix could drive significant PAT re-rating. Stock is down 39% from peak with a genuine recovery story.<br><br>
+        <b>Bear Case:</b> 31.9% promoter pledge is a serious governance overhang. FY26 PAT down 37% even before capex depreciation hits. New Labour Code costs are recurring, not one-time. Recovery highly dependent on FY27 rPET mandate enforcement.
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison table -->
+  <div class="gap-top">
+    <div class="card">
+      <div class="card-lbl">Peer Comparison — Recycling Sector Q4 FY26</div>
+      <table>
+        <thead><tr><th>Company</th><th>Segment</th><th style="text-align:right">FY26 Rev</th><th style="text-align:right">FY26 PAT</th><th style="text-align:right">EBITDA%</th><th style="text-align:right">ROE</th><th style="text-align:right">P/E</th><th>Rating</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--gravita)">Gravita India</td><td>Multi-vertical</td><td class="num tpos">₹4,265 Cr</td><td class="num tpos">₹378 Cr</td><td class="num">~10.6%</td><td class="num tpos">~22%</td><td class="num warn">~35x</td><td><span class="badge b-buy">STRONG BUY</span></td></tr>
+          <tr><td class="tb" style="color:var(--ganecos)">Ganesha Ecosphere</td><td>rPET/RPSF</td><td class="num">₹1,482 Cr</td><td class="num tneg">₹38 Cr</td><td class="num warn">~12.2%</td><td class="num warn">~5.7%</td><td class="num neg">~67x</td><td><span class="badge b-hold">WATCH/BUY</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MOATS TAB ============ -->
+<div id="tab-moats" class="tab-content">
+  <div class="tab-title">Moats & USPs — Structural Competitive Advantages</div>
+  <div class="g2 gap-top">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--gravita)">Gravita India</div>
+      <div class="moat-title">♻ Multi-Vertical Recycling Platform</div>
+      <div class="moat-body">Only Indian listed recycler with scale across Lead + Aluminium + Plastic + Rubber + Copper (new). This vertical diversification creates revenue resilience when one commodity cycle turns.</div>
+      <div style="margin-top:8px;padding:6px 10px;background:var(--gravita-soft);border-radius:6px;font-size:11px;"><b>Scale:</b> 3.4 lakh MT installed capacity → 7L MT target by FY28</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--gravita)">Gravita India</div>
+      <div class="moat-title">🌍 Africa Arbitrage & Global Scrap Network</div>
+      <div class="moat-body">Unique global scrap procurement network spanning 40+ countries with own plants in Ghana, Senegal and other Africa markets. Ships material to India for processing — creating a price arbitrage advantage unavailable to domestic-only players.</div>
+      <div style="margin-top:8px;padding:6px 10px;background:var(--gravita-soft);border-radius:6px;font-size:11px;"><b>Moat Type:</b> Cost advantage + Procurement barrier</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--gravita)">Gravita India</div>
+      <div class="moat-title">🔋 EV Battery Recycling Positioning</div>
+      <div class="moat-body">As EV penetration rises, end-of-life lead-acid batteries (and eventually Li-ion) create a growing, captive scrap feedstock stream. Gravita's existing battery dismantling infrastructure gives it first-mover advantage in formal EV battery recycling.</div>
+      <div style="margin-top:8px;padding:6px 10px;background:var(--gravita-soft);border-radius:6px;font-size:11px;"><b>Regulatory Tailwind:</b> BIS battery recycling norms, EPR mandate</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--ganecos)">Ganesha Ecosphere</div>
+      <div class="moat-title">♻ India's #1 PET Bottle Recycler</div>
+      <div class="moat-body">Recycles 16–18% of India's entire PET bottle waste. This market leadership means it is the default partner for FMCG and beverage companies needing mandatory rPET certificates for regulatory compliance. The mandate creates captive buyers.</div>
+      <div style="margin-top:8px;padding:6px 10px;background:var(--ganecos-soft);border-radius:6px;font-size:11px;"><b>Regulatory Moat:</b> Mandatory rPET usage in packaging (CPCB)</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--ganecos)">Ganesha Ecosphere</div>
+      <div class="moat-title">🏭 Operating Leverage at Scale</div>
+      <div class="moat-body">Running at 105% utilisation in standalone. Each new capacity tonne added flows almost entirely to incremental margin. With 1L MT target by FY27-end (from ~75K MT now), PAT could re-rate sharply — particularly if value-added mix improves to 65%.</div>
+      <div style="margin-top:8px;padding:6px 10px;background:var(--ganecos-soft);border-radius:6px;font-size:11px;"><b>FY27 Trigger:</b> Warangal rPET ramp, debottlenecking</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--gravita)">Sector-Wide</div>
+      <div class="moat-title">📋 EPR & Regulatory Formalisation</div>
+      <div class="moat-body">Extended Producer Responsibility (EPR) mandates now require FMCG, auto, and electronics companies to ensure their packaging/products are recycled. This funnels scrap away from the informal sector into organised recyclers like Gravita and Ganesha — permanently expanding their addressable feedstock.</div>
+      <div style="margin-top:8px;padding:6px 10px;background:#fef9c3;border-radius:6px;font-size:11px;"><b>Structural Shift:</b> Informal → Formal recycling sector migration</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VERDICT TAB ============ -->
+<div id="tab-verdict" class="tab-content">
+  <div class="tab-title" style="color:var(--gold);">🏆 Verdict — Recycling Sector Q4 FY26 Rankings</div>
+  <div class="eco-note">This verdict is for educational/research purposes. EIL Research is not a SEBI-registered investment adviser. Always consult a SEBI-RA before investing.</div>
+
+  <div class="g2 gap-top">
+    <div class="card" style="border-left:4px solid var(--gravita);">
+      <div style="font-size:1.1rem;font-family:'Playfair Display',serif;font-weight:700;margin-bottom:8px;">🥇 #1 — Gravita India</div>
+      <div style="display:inline-block;padding:3px 12px;border-radius:20px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;margin-bottom:12px;">STRONG BUY · TP ₹2,263 avg</div>
+      <div style="font-size:12px;line-height:1.7;">
+        <b>Why #1?</b> Gravita is the undisputed leader in India's organised recycling sector. FY26 PAT grew 21% to ₹378 Cr despite commodity cycle headwinds — a testament to execution quality. The operational quality is broad-based: Lead revenue grew 10% in Q4, and the Plastics vertical grew an impressive 34% in Q4. Zero debt + 22% ROE + 25% revenue CAGR is a rare combination. The RMIL copper acquisition (January 2026) opens a fifth vertical with management guiding for meaningful EBITDA-per-kg improvement as backward integration matures. The company has guided for ~₹1,700 Cr of capex between FY27 and FY29 — a sign of conviction in its growth runway, though it brings execution risk. The stock currently trades at 31.5x P/E vs its 5-year average of 26.7x — a mild premium that is defensible if copper and plastics scale up as planned. Watch Q1 FY27 EBITDA margins to confirm recovery from the Q4 9.6% dip.
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--muted);background:var(--surface2);padding:8px 10px;border-radius:8px;">
+        📊 Key Metrics: Rev ₹4,265 Cr (+10%) | PAT ₹378 Cr (+21%) | ROCE 21% | Debt-Free | P/E 31.5x vs 26.7x avg | CapEx ₹1,700 Cr guided FY27–29
+      </div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--ganecos);">
+      <div style="font-size:1.1rem;font-family:'Playfair Display',serif;font-weight:700;margin-bottom:8px;">🥈 #2 — Ganesha Ecosphere</div>
+      <div style="display:inline-block;padding:3px 12px;border-radius:20px;background:#fef9c3;color:#a16207;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;margin-bottom:12px;">WATCH · BUY on Dips · Recovery Play</div>
+      <div style="font-size:12px;line-height:1.7;">
+        <b>Why #2?</b> FY26 is a difficult year — PAT down 37%, revenue near-flat. But beneath the surface, there is a genuine recovery story: Q4 sequential PAT surged 390%, capacity utilisation hit 105%, Warangal rPET expansion commissioned. The rPET mandatory use regulation creates a structural demand floor that few other companies can claim. However, 31.9% promoter pledge is a serious governance risk that prevents a strong buy call. Accumulate at dips — but track pledge reduction and PAT recovery in Q1 FY27.
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--muted);background:var(--surface2);padding:8px 10px;border-radius:8px;">
+        📊 Key Metrics: Rev ₹1,482 Cr (+1%) | PAT ₹38 Cr (▼37%) | ROE 5.7% | Pledge 31.9% | CMP ₹1,057 | Stock ▼39% in 52wks
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Summary Table -->
+  <div class="gap-top">
+    <div class="card">
+      <div class="card-lbl">Final Rankings — Recycling Sector Q4 FY26 · EIL Research</div>
+      <table>
+        <thead><tr><th>Rank</th><th>Company</th><th>Rating</th><th style="text-align:right">FY26 PAT</th><th style="text-align:right">ROE</th><th style="text-align:right">P/E</th><th>Key Catalyst</th><th>Key Risk</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--gold)">🥇 1</td><td class="tb" style="color:var(--gravita)">Gravita India</td><td><span class="badge b-buy">STRONG BUY</span></td><td class="num tpos">₹378 Cr (+21%)</td><td class="num tpos">~22%</td><td class="num warn">31.5x (avg 26.7x)</td><td>Copper entry, Plastics +34%</td><td>Capex ₹1,700 Cr, margin</td></tr>
+          <tr><td class="tb">🥈 2</td><td class="tb" style="color:var(--ganecos)">Ganesha Ecosphere</td><td><span class="badge b-hold">WATCH</span></td><td class="num tneg">₹38 Cr (▼37%)</td><td class="num warn">~5.7%</td><td class="num neg">~67x</td><td>rPET mandate, capacity</td><td>Promoter pledge</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;">EIL Research | 25 May 2026. Not SEBI investment advice.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CB ASSIST TAB ============ -->
+<div id="tab-cbassist" class="tab-content">
+  <div class="tab-title">🤖 CB Assist — Recycling Sector AI Analyst</div>
+  <div class="eco-note">CB Assist is trained on Q4 FY26 actual data for Gravita India and Ganesha Ecosphere. Ask in English or Tamil. For investment decisions, always consult a SEBI-registered adviser.</div>
+
+  <div class="g2 gap-top">
+    <!-- Preset Questions -->
+    <div class="cba-section">
+      <div class="cba-lang-header" style="background:var(--gravita-soft);color:var(--gravita);">🇬🇧 English — Preset Questions</div>
+      <div class="preset-tabs">
+        <button class="pt" onclick="switchPreset('gravita','en')">Gravita India</button>
+        <button class="pt" onclick="switchPreset('ganecos','en')">Ganesha Ecosphere</button>
+        <button class="pt" onclick="switchPreset('sector','en')">Sector</button>
+      </div>
+      <div id="preset-en-gravita" class="tpq-panel active">
+        <button class="pq-btn" onclick="askRC('Why did Gravita India Q4 margins compress to 9.6% despite record revenue?')"><span class="pq-en">Why did Gravita Q4 FY26 margins compress to ~10%?</span></button>
+        <button class="pq-btn" onclick="askRC('What is the significance of Gravita acquiring RMIL for copper recycling and what is the management guidance on copper profitability?')"><span class="pq-en">What does the RMIL copper acquisition mean?</span></button>
+        <button class="pq-btn" onclick="askRC('Gravita India is guiding for Rs 1700 crore capex between FY27 and FY29. Is this a risk or opportunity? How does it affect valuation?')"><span class="pq-en">Is Gravita's ₹1,700 Cr capex a risk or opportunity?</span></button>
+        <button class="pq-btn" onclick="askRC('Gravita India trades at 31.5x PE versus its 5-year average of 26.7x. Is the stock expensive?')"><span class="pq-en">Gravita P/E 31.5x vs 5-yr avg 26.7x — expensive?</span></button>
+        <button class="pq-btn" onclick="askRC('Is Gravita India a good long-term investment given its Vision 2030 targets?')"><span class="pq-en">Is Gravita India a good long-term investment?</span></button>
+        <button class="pq-btn" onclick="askRC('How does Gravita India compare to Ganesha Ecosphere as a recycling investment?')"><span class="pq-en">Gravita vs Ganesha — which is the better pick?</span></button>
+      </div>
+      <div id="preset-en-ganecos" class="tpq-panel">
+        <button class="pq-btn" onclick="askRC('Why did Ganesha Ecosphere FY26 PAT fall 37% despite being Indias largest PET recycler?')"><span class="pq-en">Why did Ganesha Ecosphere PAT fall 37% in FY26?</span></button>
+        <button class="pq-btn" onclick="askRC('What is the mandatory rPET regulation and how does it benefit Ganesha Ecosphere?')"><span class="pq-en">How does the rPET mandate benefit Ganesha?</span></button>
+        <button class="pq-btn" onclick="askRC('What is the risk of 31.9% promoter pledge in Ganesha Ecosphere?')"><span class="pq-en">Is Ganesha Ecosphere promoter pledge a red flag?</span></button>
+        <button class="pq-btn" onclick="askRC('What is Ganesha Ecosphere 1 lakh MT capacity target and when will PAT recover?')"><span class="pq-en">When will Ganesha Ecosphere PAT recover?</span></button>
+      </div>
+      <div id="preset-en-sector" class="tpq-panel">
+        <button class="pq-btn" onclick="askRC('What is EPR Extended Producer Responsibility and how does it benefit Indian recycling companies?')"><span class="pq-en">What is EPR and its impact on recycling stocks?</span></button>
+        <button class="pq-btn" onclick="askRC('How does EV adoption create a recycling opportunity in India for companies like Gravita?')"><span class="pq-en">How does EV growth help recycling companies?</span></button>
+        <button class="pq-btn" onclick="askRC('Which Indian recycling company has the best moat — Gravita India or Ganesha Ecosphere?')"><span class="pq-en">Which recycling company has the best moat?</span></button>
+      </div>
+
+      <div class="cba-lang-header" style="background:#fdf2f8;color:#be185d;margin-top:14px;">🇮🇳 தமிழ் — Preset Questions</div>
+      <div class="preset-tabs">
+        <button class="pt" onclick="askRC('Gravita India Q4 FY26 முடிவுகள் பற்றி தமிழில் விளக்கு - revenue, PAT, margin')">Gravita - தமிழ்</button>
+        <button class="pt" onclick="askRC('Ganesha Ecosphere FY26 PAT ஏன் 37% குறைந்தது? தமிழில் விளக்கு')">Ganesha - தமிழ்</button>
+        <button class="pt" onclick="askRC('EPR மற்றும் rPET mandate என்றால் என்ன? இந்திய recycling தொழிலுக்கு எப்படி பயன் தரும்? தமிழில் சொல்')">Sector - தமிழ்</button>
+      </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div>
+      <div class="cba-chat-wrap">
+        <div class="cba-chat-header">
+          <span class="dot-live"></span>
+          CB Assist — Recycling & Circular Economy Analyst | Q4 FY26
+        </div>
+        <div class="cba-chat-output" id="rc-chat-output">
+          <div class="cba-welcome">
+            <div style="font-size:24px;margin-bottom:8px;">♻</div>
+            <div style="font-weight:700;margin-bottom:4px;">CB Assist — Recycling Sector</div>
+            <div style="font-size:11px;">Ask about Gravita India, Ganesha Ecosphere, EPR regulations, EV battery recycling, or Q4 FY26 results. Tamil questions welcome.</div>
+          </div>
+        </div>
+        <div class="cba-input-row">
+          <input class="cba-input" id="rc-input" type="text" placeholder="Ask about Gravita, Ganesha Ecosphere, rPET, EPR, EV recycling..." onkeydown="if(event.key==='Enter')sendRC()">
+          <button class="cba-send-btn" onclick="sendRC()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCHOOL TAB ============ -->
+<div id="tab-school" class="tab-content">
+  <div class="tab-title">🎓 Recycling Sector School <span class="sec-note">How the industry works · Why it matters · India's opportunity · EIL Research</span></div>
+
+  <!-- SECTION 1: WHAT IS RECYCLING / CIRCULAR ECONOMY -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gravita);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">🔄 Section 1 — What Is the Recycling & Circular Economy Sector?</div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);">
+      <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;">The Simple Analogy</div>
+      <div style="background:#edfbf3;border-left:4px solid var(--gravita);padding:12px 14px;border-radius:0 8px 8px 0;font-size:12px;line-height:1.7;margin-bottom:12px;">
+        🏦 <b>Think of recycling companies as "urban mines."</b> Just as a gold mine extracts value from ore in the earth, a recycler extracts metal, fibre, or chemical value from waste that society has already discarded. The "ore" is old batteries, used plastic bottles, and scrap aluminium — and unlike a gold mine, this ore replenishes itself every year as more products reach end-of-life.
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;">
+        A <b>linear economy</b> works like this: <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#dc2626;">Make → Use → Throw Away</span>. A <b>circular economy</b> replaces the "Throw Away" with "Recycle → Reuse → Remake." Recycling companies are the infrastructure that makes this circular loop possible — converting post-consumer or post-industrial waste back into usable raw material.
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);">
+      <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;">How a Recycler Makes Money</div>
+      <div style="font-size:12px;line-height:1.8;color:var(--text);">
+        The business model is fundamentally a <b>spread business</b>:
+      </div>
+      <div style="margin:10px 0;display:flex;align-items:center;gap:8px;font-size:12px;">
+        <div style="background:#edfbf3;border:1.5px solid var(--gravita);border-radius:8px;padding:8px 12px;flex:1;text-align:center;font-weight:700;">Scrap Purchase Price<br><span style="font-size:10px;font-weight:400;color:var(--muted)">(Raw material cost)</span></div>
+        <div style="font-size:20px;color:var(--muted);">→</div>
+        <div style="background:#fff7ed;border:1.5px solid #f59e0b;border-radius:8px;padding:8px 12px;flex:1;text-align:center;font-weight:700;">Processing + Refining<br><span style="font-size:10px;font-weight:400;color:var(--muted)">(Energy + labour + capex)</span></div>
+        <div style="font-size:20px;color:var(--muted);">→</div>
+        <div style="background:#dcfce7;border:1.5px solid #16a34a;border-radius:8px;padding:8px 12px;flex:1;text-align:center;font-weight:700;">Refined Metal / Fibre<br><span style="font-size:10px;font-weight:400;color:var(--muted)">(Sale at LME / market price)</span></div>
+      </div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:8px;padding:8px 10px;background:var(--surface2);border-radius:6px;">
+        <b>EBITDA per kg</b> = Realisable price of refined output − scrap cost − processing cost. Gravita's Lead segment earns ~₹14,000–18,000 EBITDA per tonne. The richer and more complex the scrap stream, the wider the spread.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: THE FOUR RECYCLING VERTICALS -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gravita);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">⚙️ Section 2 — The Four Key Recycling Verticals in India</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;">
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--gravita);">
+      <div style="font-weight:800;font-size:12px;color:var(--gravita);margin-bottom:6px;">🔋 Lead Recycling</div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-bottom:10px;">India generates ~6 lakh tonnes of lead scrap annually — mostly from end-of-life lead-acid batteries used in vehicles, inverters, and telecom towers. Secondary lead (from recycling) is 30–40% cheaper to produce than primary lead (from ore mining). Global secondary lead share: ~60% of total supply.</div>
+      <table style="font-size:11px;">
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Input</td><td style="font-weight:700;">Used lead-acid batteries (LAB)</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Output</td><td style="font-weight:700;">Refined Lead, Lead Alloys, Lead Oxide</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Use</td><td style="font-weight:700;">New batteries, radiation shielding, cables</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">India Market</td><td style="font-weight:700;">~₹15,000–18,000 Cr/yr</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Player</td><td style="font-weight:700;color:var(--gravita)">Gravita India (largest)</td></tr>
+      </table>
+      <div style="margin-top:10px;background:#edfbf3;border-radius:6px;padding:6px 10px;font-size:10.5px;color:var(--gravita);font-weight:600;">EV Tailwind: More EVs = More battery replacement cycles = More LAB scrap</div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--pondy);">
+      <div style="font-weight:800;font-size:12px;color:var(--pondy);margin-bottom:6px;">🛠️ Aluminium Recycling</div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-bottom:10px;">Recycling aluminium requires only 5% of the energy needed to produce primary aluminium from bauxite — making it one of the most energy-efficient and carbon-saving recycling processes globally. India's automotive and packaging industries drive scrap generation.</div>
+      <table style="font-size:11px;">
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Input</td><td style="font-weight:700;">Aluminium scrap (auto, cable, packaging)</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Output</td><td style="font-weight:700;">Aluminium alloys, ingots, billets</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Energy Saving</td><td style="font-weight:700;color:var(--gravita)">95% less energy vs primary</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">India Scrap Growth</td><td style="font-weight:700;">~8–10% per year</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Player</td><td style="font-weight:700;color:var(--gravita)">Gravita India (~22% of revenue)</td></tr>
+      </table>
+      <div style="margin-top:10px;background:#fffbeb;border-radius:6px;padding:6px 10px;font-size:10.5px;color:var(--pondy);font-weight:600;">Gravita Q4 FY26: Aluminium was second-fastest growing vertical after plastics</div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--ganecos);">
+      <div style="font-weight:800;font-size:12px;color:var(--ganecos);margin-bottom:6px;">♻ Plastic / rPET Recycling</div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-bottom:10px;">India generates ~35 lakh tonnes of plastic waste annually — of which PET (Polyethylene Terephthalate) from bottles and packaging is the most recyclable. Crushed PET bottles → rPET chips → RPSF (Recycled Polyester Staple Fibre) used in pillows, carpets, and garments. Mandatory rPET use in packaging from FY25 creates structural demand.</div>
+      <table style="font-size:11px;">
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Input</td><td style="font-weight:700;">Post-consumer PET bottles (baled)</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Output</td><td style="font-weight:700;">RPSF, rPET granules, polyester yarn</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">CPCB Mandate</td><td style="font-weight:700;color:var(--gravita)">Mandatory rPET % in packaging</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">India Market Size</td><td style="font-weight:700;">~₹8,000–10,000 Cr/yr (growing)</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Player</td><td style="font-weight:700;color:var(--ganecos)">Ganesha Ecosphere (India #1)</td></tr>
+      </table>
+      <div style="margin-top:10px;background:var(--ganecos-soft);border-radius:6px;padding:6px 10px;font-size:10.5px;color:var(--ganecos);font-weight:600;">Ganesha recycles 16–18% of India's entire PET bottle waste stream</div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--nile);">
+      <div style="font-weight:800;font-size:12px;color:var(--nile);margin-bottom:6px;">🔩 Copper Recycling (Emerging)</div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-bottom:10px;">Copper is called "the metal of electrification" — EV motors, solar wiring, grid upgrades, and data centres all need copper. Secondary copper from cable scrap and industrial waste is economically attractive. India currently imports ~50% of its copper needs — building domestic recycling capacity reduces this dependency. Gravita's RMIL acquisition marks its entry into this high-growth vertical.</div>
+      <table style="font-size:11px;">
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Input</td><td style="font-weight:700;">Cable scrap, copper alloy waste</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Key Output</td><td style="font-weight:700;">Refined copper, copper alloys</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">India Import Dependency</td><td style="font-weight:700;color:#dc2626)">~50% of copper demand imported</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">New Player</td><td style="font-weight:700;color:var(--gravita)">Gravita (via RMIL, Jan 2026)</td></tr>
+        <tr><td style="padding:3px 6px 3px 0;color:var(--muted);">Capacity (new plant)</td><td style="font-weight:700;">29,400 MTPA · Mandvi, Gujarat</td></tr>
+      </table>
+      <div style="margin-top:10px;background:var(--nile-soft);border-radius:6px;padding:6px 10px;font-size:10.5px;color:var(--nile);font-weight:600;">EV + Solar + Grid = structural copper demand growth for decades</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: EPR — THE GAME CHANGER -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gravita);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">📋 Section 3 — EPR: The Regulation That Is Reshaping the Sector</div>
+
+  <div style="background:var(--surface);border:1.5px solid var(--gravita);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;box-shadow:var(--shadow-md);">
+    <div style="font-weight:800;font-size:13px;color:var(--gravita);margin-bottom:10px;">What Is EPR (Extended Producer Responsibility)?</div>
+    <div style="font-size:12px;color:var(--text);line-height:1.75;margin-bottom:14px;">
+      Traditionally, waste management was the responsibility of municipal corporations — they collected and disposed of garbage. EPR flips this: <b>the company that produces a product is now legally responsible for ensuring that product is recycled at end-of-life.</b> A plastic bottle maker must ensure a minimum % of its bottles are recycled. A battery manufacturer must fund battery collection and recycling. This shifts the cost and responsibility from government to producer.
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div style="background:#edfbf3;border-radius:8px;padding:12px 14px;">
+        <div style="font-weight:800;font-size:11px;color:var(--gravita);margin-bottom:6px;text-transform:uppercase;">🔋 Battery EPR (2022)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.65;">Battery manufacturers/importers must collect and recycle a rising % of batteries sold. Targets: 25% in FY23 → 70%+ by FY27. Forces formal recyclers like Gravita to the front of the supply chain.</div>
+      </div>
+      <div style="background:var(--ganecos-soft);border-radius:8px;padding:12px 14px;">
+        <div style="font-weight:800;font-size:11px;color:var(--ganecos);margin-bottom:6px;text-transform:uppercase;">♻ Plastic EPR (2022)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.65;">FMCG and packaging companies must buy EPR certificates from registered recyclers to prove their plastic was recycled. Creates a captive market for Ganesha Ecosphere. CPCB enforces mandatory rPET inclusion in packaging.</div>
+      </div>
+      <div style="background:#fff7ed;border-radius:8px;padding:12px 14px;">
+        <div style="font-weight:800;font-size:11px;color:var(--pondy);margin-bottom:6px;text-transform:uppercase;">🚗 E-Waste EPR (2023)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.65;">Electronics manufacturers must ensure e-waste (mobiles, computers, appliances) is recycled formally. Dismantling recovers copper, aluminium, gold, and rare earth metals — a growing opportunity for organised recyclers.</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;background:#0f1e13;color:#fff;border-radius:8px;padding:12px 16px;font-size:12px;">
+      <b>The Big Picture Effect:</b> Before EPR, ~90% of India's recycling was handled by the informal sector (kabadiwallas, small unorganised smelters). EPR is systematically shifting this flow toward formal, listed companies like Gravita and Ganesha — <b>expanding their addressable market without them spending a rupee on advertising.</b>
+    </div>
+  </div>
+
+  <!-- SECTION 4: INDIA'S RECYCLING OPPORTUNITY — NUMBERS -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gravita);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">📊 Section 4 — India's Recycling Opportunity — The Numbers</div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);">
+      <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:14px;">India's Annual Waste Generation (Recyclable)</div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="font-weight:700;color:var(--gravita);">Lead-Acid Battery Scrap</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--gravita);">~6 lakh MT/yr</span></div>
+        <div style="background:#e5e7eb;border-radius:20px;height:10px;"><div style="width:60%;background:var(--gravita);border-radius:20px;height:10px;"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="font-weight:700;color:var(--pondy);">Aluminium Scrap</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--pondy);">~8–10 lakh MT/yr</span></div>
+        <div style="background:#e5e7eb;border-radius:20px;height:10px;"><div style="width:75%;background:var(--pondy);border-radius:20px;height:10px;"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="font-weight:700;color:var(--ganecos);">Plastic Waste (total)</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--ganecos);">~35 lakh MT/yr</span></div>
+        <div style="background:#e5e7eb;border-radius:20px;height:10px;"><div style="width:90%;background:var(--ganecos);border-radius:20px;height:10px;"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="font-weight:700;color:var(--nile);">Copper/Cable Scrap</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--nile);">~3–4 lakh MT/yr</span></div>
+        <div style="background:#e5e7eb;border-radius:20px;height:10px;"><div style="width:45%;background:var(--nile);border-radius:20px;height:10px;"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="font-weight:700;color:#64748b;">E-Waste</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:#64748b;">~16 lakh MT/yr</span></div>
+        <div style="background:#e5e7eb;border-radius:20px;height:10px;"><div style="width:65%;background:#64748b;border-radius:20px;height:10px;"></div></div>
+      </div>
+      <div style="margin-top:12px;background:#edfbf3;border-radius:6px;padding:8px 10px;font-size:10.5px;color:var(--gravita);font-weight:600;">
+        Only ~30–40% of recyclable waste is formally processed today. The rest goes to the informal sector or landfills. This gap = the addressable market for organised recyclers.
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);">
+      <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:14px;">India vs World — Formal Recycling Rate (%)</div>
+      <table>
+        <thead><tr><th>Material</th><th style="text-align:right">India (Formal)</th><th style="text-align:right">Germany</th><th style="text-align:right">Japan</th><th>Gap</th></tr></thead>
+        <tbody>
+          <tr><td>Lead (batteries)</td><td class="num warn">~55%</td><td class="num tpos">95%+</td><td class="num tpos">90%+</td><td style="color:#dc2626;font-size:11px;">~40% informal still</td></tr>
+          <tr><td>Aluminium</td><td class="num warn">~40%</td><td class="num tpos">80%+</td><td class="num tpos">85%+</td><td style="color:#dc2626;font-size:11px;">Huge informal sector</td></tr>
+          <tr><td>PET Plastic</td><td class="num warn">~30%</td><td class="num tpos">70%+</td><td class="num tpos">80%+</td><td style="color:#dc2626;font-size:11px;">Mandate driving change</td></tr>
+          <tr><td>Copper</td><td class="num tneg">~20%</td><td class="num tpos">75%+</td><td class="num tpos">80%+</td><td style="color:#dc2626;font-size:11px;">Nascent formal sector</td></tr>
+          <tr><td>E-Waste</td><td class="num tneg">~22%</td><td class="num tpos">45%+</td><td class="num tpos">50%+</td><td style="color:#dc2626;font-size:11px;">EPR rules new (2023)</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;background:#fef9c3;border-radius:6px;padding:8px 10px;font-size:10.5px;color:#a16207;font-weight:600;">
+        India's formal recycling gap is the investment thesis. As formalisation rises from 30–40% today toward 70–80% over the next decade, the organised sector grows 2–3x without needing the waste stream to grow at all.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: WHY DOES THIS MATTER — 6 STRUCTURAL REASONS -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#92400e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">🌍 Section 5 — Why India's Recycling Sector Matters — 6 Structural Reasons</div>
+  <div style="margin-bottom:22px;">
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start;">
+      <div style="min-width:36px;height:36px;background:var(--gravita);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;">1</div>
+      <div>
+        <div style="font-weight:800;font-size:13px;color:var(--text);margin-bottom:5px;">Import Substitution — Every Tonne Recycled = One Less Tonne Imported</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">India is a net importer of metals — Lead, Copper, Aluminium, and Zinc all require significant imports to meet demand. Each tonne of secondary metal produced domestically replaces one tonne of costly import, saving precious foreign exchange. India's current account deficit is partially driven by metal imports. Recycling is a structural fix — not just environmental, but economically strategic.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🇮🇳 Reduces import bill</span>
+          <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">💰 Saves forex</span>
+          <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">⚡ Supports Make in India</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start;">
+      <div style="min-width:36px;height:36px;background:#0369a1;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;">2</div>
+      <div>
+        <div style="font-weight:800;font-size:13px;color:var(--text);margin-bottom:5px;">Energy Efficiency — Recycling Uses a Fraction of Primary Production Energy</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">Secondary metal production is dramatically more energy-efficient than mining and smelting primary ore. Aluminium recycling uses 95% less energy than primary. Lead recycling uses 65–70% less energy. For a country like India that pays a high energy cost premium and faces an energy transition, recycling is both economically and strategically rational. Lower energy use also means lower carbon emissions — a growing ESG consideration for Indian manufacturing.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🔋 Aluminium: 95% energy saving</span>
+          <span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">⚡ Lead: 65–70% energy saving</span>
+          <span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🌿 Lower CO2 per tonne</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start;">
+      <div style="min-width:36px;height:36px;background:var(--ganecos);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;">3</div>
+      <div>
+        <div style="font-weight:800;font-size:13px;color:var(--text);margin-bottom:5px;">The EV Revolution Creates a Perpetual Recycling Feedstock Machine</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">India had ~55 million electric two-wheelers and three-wheelers on road by 2025. Each uses a lead-acid or Li-ion battery with a 3–5 year life. As these reach end-of-life, they create a predictable, growing, and geographically distributed scrap supply. Unlike mining (where ore location is fixed), battery scrap comes from where people live and drive — the entire country. This "urban mine" grows automatically as EV penetration rises, without any new exploration capex for recyclers.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:var(--ganecos-soft);color:var(--ganecos);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🚗 55M+ EVs by 2025</span>
+          <span style="background:var(--ganecos-soft);color:var(--ganecos);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🔋 3–5 yr battery life cycle</span>
+          <span style="background:var(--ganecos-soft);color:var(--ganecos);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">♻ Automatic scrap growth</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start;">
+      <div style="min-width:36px;height:36px;background:var(--pondy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;">4</div>
+      <div>
+        <div style="font-weight:800;font-size:13px;color:var(--text);margin-bottom:5px;">Plastic Pollution Crisis Drives Regulatory Tailwind Globally</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">India generates ~35 lakh tonnes of plastic waste annually — and is one of the world's top 5 plastic polluters. Government, NGO, and corporate pressure is converging on a single solution: increase plastic recycling. The CPCB's mandatory rPET rule requires brands to include recycled PET in packaging. Major MNCs (Unilever, Coca-Cola, Nestlé) have global pledges to use 25–50% recycled packaging material by 2025–2030 — and must source this from recyclers like Ganesha Ecosphere. Global plastic recycling market is expected to grow from $47 Bn (2023) to $90+ Bn by 2030.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:var(--pondy-soft);color:var(--pondy);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🌊 India: 35L MT plastic waste/yr</span>
+          <span style="background:var(--pondy-soft);color:var(--pondy);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">📦 MNC packaging pledges</span>
+          <span style="background:var(--pondy-soft);color:var(--pondy);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">📋 CPCB rPET mandate enforced</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start;">
+      <div style="min-width:36px;height:36px;background:var(--nile);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;">5</div>
+      <div>
+        <div style="font-weight:800;font-size:13px;color:var(--text);margin-bottom:5px;">Copper Is the Metal of the Energy Transition — India Has Almost None</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">A single EV uses ~83 kg of copper (vs ~23 kg in an ICE vehicle). A solar panel installation uses ~5–6 tonnes of copper per MW. India's grid upgrade under the National Electricity Plan requires enormous copper volumes. Yet India holds minimal primary copper reserves and imports ~50% of its need. Secondary copper from cable scrap, transformer waste, and electronics will be critical to bridge this gap. Gravita's RMIL entry is timed precisely for this structural demand wave.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:var(--nile-soft);color:var(--nile);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">⚡ EV: 83 kg copper/vehicle</span>
+          <span style="background:var(--nile-soft);color:var(--nile);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">☀ Solar: 5–6 T/MW</span>
+          <span style="background:var(--nile-soft);color:var(--nile);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🇮🇳 India: 50% copper import dependent</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start;">
+      <div style="min-width:36px;height:36px;background:#166534;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;">6</div>
+      <div>
+        <div style="font-weight:800;font-size:13px;color:var(--text);margin-bottom:5px;">Job Creation & Formalisation — A Policy-Aligned Sector</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">India's recycling sector employs ~15–20 lakh people (mostly informal). Formalisation creates structured employment, better safety standards, and taxable income. The government's EPR framework explicitly aims to transition informal workers into organised recycling facilities. This gives the sector strong political will behind it — rare for any manufacturing segment. For investors, this means <b>policy continuity</b> is highly likely across governments — making it a structural, not cyclical, play.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">👷 15–20 lakh workers (informal)</span>
+          <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">🏛️ Policy continuity likely</span>
+          <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;">📊 Structural not cyclical</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: KEY TERMS GLOSSARY -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gravita);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">📖 Section 6 — Key Terms Every Recycling Sector Investor Must Know</div>
+  <div style="overflow-x:auto;margin-bottom:22px;">
+    <table>
+      <thead><tr><th>Term</th><th>Full Form / Meaning</th><th>Why It Matters to Investors</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">EPR</td><td>Extended Producer Responsibility</td><td>Forces FMCG/auto/electronics cos to fund recycling → creates captive demand for organised recyclers</td></tr>
+        <tr><td class="tb">rPET</td><td>Recycled Polyethylene Terephthalate</td><td>Ganesha Ecosphere's core product — mandatory in packaging drives structural demand floor</td></tr>
+        <tr><td class="tb">RPSF</td><td>Recycled Polyester Staple Fibre</td><td>Made from crushed PET bottles; used in pillows, carpets, garments; Ganesha's largest revenue product</td></tr>
+        <tr><td class="tb">LAB</td><td>Lead-Acid Battery</td><td>Primary scrap feedstock for Gravita; growing with every vehicle on Indian roads</td></tr>
+        <tr><td class="tb">LME</td><td>London Metal Exchange</td><td>Sets benchmark price for Lead, Aluminium, Copper — directly impacts recycler realisations and margins</td></tr>
+        <tr><td class="tb">EBITDA/kg</td><td>Operating profit per kilogram of output</td><td>Key efficiency metric for recyclers — higher = better scrap sourcing + processing + realisations</td></tr>
+        <tr><td class="tb">Secondary Metal</td><td>Metal produced from recycled scrap (vs primary = mined)</td><td>30–40% cheaper to produce; same quality for most industrial uses; growing global preference</td></tr>
+        <tr><td class="tb">Urban Mining</td><td>Extracting metals/materials from discarded urban waste</td><td>Conceptual framing — India's cities are a growing "mine" of scrap, unlike geological mines that deplete</td></tr>
+        <tr><td class="tb">Scrap Spread</td><td>Difference between scrap purchase price and refined output sale price</td><td>The core margin driver — compressed when metal prices fall or scrap competition rises</td></tr>
+        <tr><td class="tb">CPCB</td><td>Central Pollution Control Board</td><td>Issues EPR guidelines and rPET mandates in India — directly shapes Ganesha's market</td></tr>
+        <tr><td class="tb">Formal Recycling Rate</td><td>% of waste processed by organised, registered entities</td><td>India at 30–40%; developed world at 70–80%; the gap = the investment opportunity</td></tr>
+        <tr><td class="tb">Vision 2030 (Gravita)</td><td>Internal target: 7+ lakh MT/yr capacity by 2030</td><td>CapEx of ₹1,700 Cr FY27–29; if achieved, revenue could 2x from FY26 levels</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 7: RISKS -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#b91c1c;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">⚠️ Section 7 — Key Risks Every Recycling Sector Investor Must Track</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:22px;">
+    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:var(--radius);padding:14px;">
+      <div style="font-weight:800;font-size:11px;color:#dc2626;margin-bottom:8px;text-transform:uppercase;">📉 LME Metal Price Volatility</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.65;">Recyclers sell output at LME-linked prices. A sharp fall in Lead/Aluminium/Copper LME prices compresses the scrap spread — even if procurement cost also falls, realisations drop faster. Q4 FY26's margin compression at Gravita was partly driven by this dynamic.</div>
+    </div>
+    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:var(--radius);padding:14px;">
+      <div style="font-weight:800;font-size:11px;color:#dc2626;margin-bottom:8px;text-transform:uppercase;">🏚️ Informal Sector Competition</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.65;">Unorganised smelters and kabadiwallas don't pay GST, PF, or regulatory compliance costs — giving them a price advantage on scrap procurement. While EPR is slowly reducing this, the informal sector still handles 60–70% of India's recycling. Price wars for scrap can compress organised player margins.</div>
+    </div>
+    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:var(--radius);padding:14px;">
+      <div style="font-weight:800;font-size:11px;color:#dc2626;margin-bottom:8px;text-transform:uppercase;">🏗️ CapEx Execution Risk</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.65;">Gravita's ₹1,700 Cr capex plan (FY27–29) is ambitious — the most it has ever committed. Delays, cost overruns, or slower-than-expected volume ramp at new plants (especially copper at Mandvi) can weigh on returns and increase debt. Monitor quarterly CapEx updates closely.</div>
+    </div>
+    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:var(--radius);padding:14px;">
+      <div style="font-weight:800;font-size:11px;color:#dc2626;margin-bottom:8px;text-transform:uppercase;">📦 Scrap Availability & Quality</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.65;">Recycling companies are raw material dependent on waste streams — which can fluctuate with economic activity, monsoon (rural scrap collection), and global scrap trade flows. Africa-sourced scrap for Gravita faces logistics and geopolitical risks. PET bottle availability for Ganesha depends on urban waste collection infrastructure.</div>
+    </div>
+    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:var(--radius);padding:14px;">
+      <div style="font-weight:800;font-size:11px;color:#dc2626;margin-bottom:8px;text-transform:uppercase;">🏛️ Regulatory Enforcement Risk</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.65;">EPR and rPET mandates only create value for formal recyclers if they are actually enforced. Delayed or lax CPCB enforcement has historically allowed non-compliant companies to avoid EPR certificate purchases — reducing demand for Ganesha's recycled output. Enforcement quality is a key variable to track.</div>
+    </div>
+    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:var(--radius);padding:14px;">
+      <div style="font-weight:800;font-size:11px;color:#dc2626;margin-bottom:8px;text-transform:uppercase;">🏦 Promoter Pledge (Ganesha)</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.65;">Ganesha Ecosphere's 31.9% promoter pledge is a specific governance risk. In a market downturn or if pledged shares breach margin thresholds, lenders can force-sell promoter shares — causing sudden stock price drops unrelated to fundamentals. This overhang limits institutional confidence and capping re-rating potential.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: HOW TO ANALYSE A RECYCLING COMPANY -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gravita);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">🔬 Section 8 — How to Analyse a Recycling Company (Investor Checklist)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);">
+      <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;">✅ Green Flags — Signs of a Quality Recycler</div>
+      <ul style="list-style:none;font-size:11.5px;line-height:1.85;color:var(--text);">
+        <li>✅ <b>EBITDA per tonne growing</b> — shows pricing power and efficiency gain</li>
+        <li>✅ <b>Multiple scrap verticals</b> — reduces single-commodity risk</li>
+        <li>✅ <b>Global scrap procurement network</b> — access to cheaper or better quality scrap</li>
+        <li>✅ <b>Low / zero debt</b> — spread business doesn't need leverage to compound</li>
+        <li>✅ <b>Volume growth ahead of industry</b> — market share capture</li>
+        <li>✅ <b>Value-added product mix increasing</b> — higher realisation, better margin</li>
+        <li>✅ <b>Formal regulatory compliance</b> — EPR registration, CPCB certificates</li>
+        <li>✅ <b>Return on capital (ROCE) above 18%</b> — capital efficient even in capex phase</li>
+      </ul>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);">
+      <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;">🚩 Red Flags — Warning Signs to Watch</div>
+      <ul style="list-style:none;font-size:11.5px;line-height:1.85;color:var(--text);">
+        <li>🚩 <b>EBITDA margin below 8%</b> — commodity pricing with no differentiation</li>
+        <li>🚩 <b>Single metal/vertical dependency</b> — any one commodity cycle can hurt badly</li>
+        <li>🚩 <b>High promoter pledge (>25%)</b> — governance and price stability risk</li>
+        <li>🚩 <b>CapEx without clear return timeline</b> — destroys FCF and may need debt</li>
+        <li>🚩 <b>Scrap procurement concentration</b> — one geography or supplier = risk</li>
+        <li>🚩 <b>PAT declining despite revenue growth</b> — cost structure losing control</li>
+        <li>🚩 <b>Employee cost surging faster than revenue</b> — Gravita Q4 FY26 flag: +41% YoY</li>
+        <li>🚩 <b>P/E well above 5-yr average without new catalyst</b> — limited margin of safety</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="background:#0f1e13;color:#fff;border-radius:var(--radius);padding:18px 24px;margin-bottom:8px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;">💡 The One-Line Investment Thesis for India's Recycling Sector</div>
+    <div style="font-size:13px;line-height:1.75;color:rgba(255,255,255,.85);">
+      India generates millions of tonnes of recyclable waste every year — but most of it goes to the informal sector or landfill. As EPR regulations tighten, EV penetration rises, and brands commit to recycled content in packaging, <b>formal organised recyclers will capture a structurally expanding share of this waste stream.</b> The best companies in this space are urban mine operators with global procurement, zero debt, multi-vertical diversification, and a regulatory moat. <b>Gravita India is the clearest expression of this thesis today.</b>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer class="footer">
+  Recycling & Circular Economy Intelligence Dashboard · Q4 FY26 · EIL Research / Cauvery Business<br>
+  Data sourced from BSE/NSE filings, company press releases, and public analyst reports · Not SEBI investment advice<br>
+  Build: 20260525-1430 IST · Elango Industries Limited Research
+</footer>
+
+<script>
+// ====== TAB NAVIGATION ======
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('tab-' + id);
+  if (el) el.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'charts') setTimeout(initCharts, 50);
+}
+
+// ====== PRESET SWITCHER ======
+function switchPreset(co, lang) {
+  ['gravita','ganecos','sector'].forEach(c => {
+    const p = document.getElementById('preset-' + lang + '-' + c);
+    if (p) p.classList.remove('active');
+  });
+  const target = document.getElementById('preset-' + lang + '-' + co);
+  if (target) target.classList.add('active');
+}
+
+// ====== CB ASSIST SEND ======
+async function sendRC() {
+  const input = document.getElementById('rc-input');
+  const output = document.getElementById('rc-chat-output');
+  const userText = (input.value || '').trim();
+  if (!userText) return;
+
+  const tamilPattern = /[\u0B80-\u0BFF]/;
+  const isTamil = tamilPattern.test(userText);
+
+  output.innerHTML = '';
+  const ub = document.createElement('div');
+  ub.className = 'chat-user';
+  ub.textContent = userText;
+  output.appendChild(ub);
+
+  const lb = document.createElement('div');
+  lb.className = 'chat-bot loading';
+  lb.textContent = isTamil ? '♻ யோசிக்கிறேன்...' : '♻ Analysing recycling sector data…';
+  output.appendChild(lb);
+  output.scrollTop = output.scrollHeight;
+  input.value = '';
+
+  const systemPrompt = `You are CB Assist, an expert Indian stock market analyst for Cauvery Business / EIL Research, specialising in the Indian Recycling & Circular Economy Sector for Q4 FY26.
+
+DATA — Q4 FY26 ACTUALS:
+
+GRAVITA INDIA (BSE: 533282):
+• Q4 FY26: Revenue ₹1,173 Cr (+13.1% YoY), PAT ₹91.9 Cr (▼3.4% YoY), EBITDA ₹112.9 Cr, EBITDA margin 9.63% (compressed from 10.46% in Q4 FY25, and from 11.78% in Q3 FY26 — 219bps QoQ drop)
+• FY26 Full Year: Revenue ₹4,265 Cr (+10% YoY), EBITDA ₹452 Cr (+12%), PAT ₹378 Cr (+21%), Standalone Rev ₹3,481 Cr, Standalone PAT ₹297 Cr
+• Volume growth: +5% YoY in FY26; Q4 employee costs surged +41% YoY to ₹51.7 Cr — key margin drag
+• Q4 FY26 segment performance: Lead revenue +10% YoY; Plastics revenue +34% YoY (fastest growing vertical)
+• FY26 quality: Higher realisations, better scale, and growing value-added product contribution supported profitability
+• Balance sheet: Near debt-free (net cash positive), ROE ~22%, ROCE ~21%
+• RMIL acquisition: January 2026 — acquired controlling stake in Rashtriya Metal Industries Limited (copper) for ₹559 Cr — entry into copper and copper alloy recycling
+• Copper business outlook: Management believes copper EBITDA per kg can rise meaningfully after backward integration and recycling operations scale up
+• Copper plant (new): Mandvi, Gujarat — 29,400 MTPA, ₹160 Cr capex, within 12 months
+• CapEx guidance: ~₹17 Bn (₹1,700 Cr) between FY27 and FY29 across existing + new verticals — most aggressive investment phase ever
+• Verticals: Lead (~60% rev), Aluminium (~22%), Plastic (~10%), Rubber/Other (~5%), Copper (new from FY27)
+• Africa plants: Ghana, Senegal — provide scrap procurement arbitrage
+• Valuation: CMP ~₹1,670; P/E 31.5x; 5-year average P/E 26.7x — trading at ~18% premium to historical norm; P/BV ~5.9x
+• Stock: 6-month trend declining from highs per NSE data; Mkt Cap ~₹12,233 Cr
+• Analyst ratings: STRONG BUY consensus; avg TP ₹2,263 (range ₹1,761–₹2,658); 10 analysts
+
+GANESHA ECOSPHERE (NSE: GANECOS):
+• Q4 FY26: Revenue ₹423.9 Cr (+23.1% YoY; +18.7% QoQ), PAT ₹23.2 Cr (▼2.3% YoY; +390% QoQ), EBITDA ₹52.4 Cr (+70% QoQ), EBITDA margin 12.4% (vs 14.8% Q4 FY25)
+• FY26 Full Year: Consolidated Rev ₹1,482 Cr (+1.1% YoY), PAT ₹38.2 Cr (▼36.6% YoY). Standalone Rev ₹1,014 Cr, PAT ₹47.8 Cr
+• Standalone Q4: Revenue ₹260.3 Cr, PAT ₹15.9 Cr; capacity utilisation 105%
+• Subsidiary investment in FY26: ₹320 Cr in Ganesha Ecopet Pvt Ltd + ₹90 Cr in Ganesha Ecotech Pvt Ltd — investment phase dragging consolidated PAT
+• Products: RPSF (Recycled Polyester Staple Fibre) ~55%, rPET granules ~25%, Spun/Texturised Yarn ~15%
+• Expansion: Warangal brownfield 22,500 T rPET commissioned Q4 FY26; total capacity target 1 lakh MT by FY27 end
+• Odisha project: DROPPED — capital reallocation to Warangal
+• Regulatory moat: India's largest PET bottle recycler — 16–18% national share; mandatory rPET usage in packaging (CPCB mandate)
+• Promoter pledge: 31.9% — significant governance risk
+• CMP ~₹1,057; Mkt Cap ~₹2,561 Cr; TTM P/E ~67x (depressed PAT); 52-wk range ₹1,245–₹2,484; stock ▼39% from peak
+• Analyst TP: Simply Wall St ₹2,680 (based on FY27 rev forecast ₹1,940 Cr); TradingView 2 analysts TP ₹2,208
+• Dividend: ₹3.50/share (35%) recommended for FY26
+• 3-yr avg ROE: 5.7% (low due to investment phase)
+
+KEY SECTOR THEMES:
+• EPR (Extended Producer Responsibility): Mandates companies to ensure their products/packaging are recycled formally — channels scrap to organised players like Gravita and Ganesha
+• Mandatory rPET: CPCB mandates use of minimum % recycled PET in packaging — Ganesha is the direct beneficiary as India's #1 PET recycler
+• EV Boom: Growing EV fleet = growing end-of-life lead-acid and Li-ion battery waste → directly expands Gravita's feedstock pool
+• PLI Scheme: Some benefits possible for formalised recycling infra
+• Informal to formal shift: EPR is forcing scrap away from unorganised sector toward listed players
+
+RANKINGS: 1. Gravita India (STRONG BUY), 2. Ganesha Ecosphere (WATCH/BUY on dips)
+
+RESPONSE STYLE — CRITICAL: Keep answers SHORT and PUNCHY. Max 4–5 sentences. No long paragraphs. Lead with the direct answer in the first line. Use 2–3 bullet points if listing facts — each bullet max 8 words. No preamble, no "Great question", no lengthy conclusions.
+
+LANGUAGE: ${isTamil ? 'RESPOND IN TAMIL ONLY. Simple Tamil. Technical terms (PAT, EBITDA, EPR, rPET) stay in English. Max 4–5 sentences total.' : 'RESPOND IN ENGLISH ONLY. Short, direct, punchy. No verbose paragraphs.'}
+
+Always give direct recommendations with reasoning. Be honest about risks.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userText }]
+      })
+    });
+    const data = await response.json();
+    const reply = data.content?.map(c => c.text || '').join('') || 'Error fetching response.';
+    lb.className = 'chat-bot';
+    lb.innerHTML = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>');
+  } catch (err) {
+    lb.className = 'chat-bot';
+    lb.textContent = 'Connection error. Please try again.';
+  }
+  output.scrollTop = output.scrollHeight;
+}
+
+function askRC(q) {
+  document.getElementById('rc-input').value = q;
+  sendRC();
+  showTab('cbassist', document.querySelectorAll('.tab-btn')[9]);
+}
+
+// ====== CHARTS ======
+let chartsInit = false;
+function initCharts() {
+  if (chartsInit) return;
+  chartsInit = true;
+
+  const companies = ['Gravita India', 'Ganesha Ecosphere'];
+  const colors = ['#1d6b3a', '#7c3aed'];
+  const colorsAlpha = ['rgba(29,107,58,0.7)', 'rgba(124,58,237,0.7)'];
+
+  // Q4 Revenue
+  new Chart(document.getElementById('ch-rev'), {
+    type: 'bar',
+    data: {
+      labels: companies,
+      datasets: [{ label: 'Q4 FY26 Revenue (₹Cr)', data: [1173, 424], backgroundColor: colorsAlpha, borderColor: colors, borderWidth: 2 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '₹' + c.raw + ' Cr' } } }, scales: { y: { ticks: { color: '#666', font: { size: 10 }, callback: v => '₹' + v }, grid: { color: '#eee' } }, x: { ticks: { color: '#555', font: { size: 10 } } } } }
+  });
+
+  // Q4 PAT
+  new Chart(document.getElementById('ch-pat'), {
+    type: 'bar',
+    data: {
+      labels: companies,
+      datasets: [{ label: 'Q4 FY26 PAT (₹Cr)', data: [91.9, 23.2], backgroundColor: colorsAlpha, borderColor: colors, borderWidth: 2 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '₹' + c.raw + ' Cr' } } }, scales: { y: { ticks: { color: '#666', font: { size: 10 }, callback: v => '₹' + v }, grid: { color: '#eee' } }, x: { ticks: { color: '#555', font: { size: 10 } } } } }
+  });
+
+  // FY26 Revenue vs FY25
+  new Chart(document.getElementById('ch-fyrev'), {
+    type: 'bar',
+    data: {
+      labels: ['Gravita India', 'Ganesha Ecosphere'],
+      datasets: [
+        { label: 'FY25', data: [3869, 1464], backgroundColor: 'rgba(100,116,139,0.5)', borderColor: '#64748b', borderWidth: 2 },
+        { label: 'FY26', data: [4265, 1482], backgroundColor: ['rgba(29,107,58,0.7)', 'rgba(124,58,237,0.7)'], borderColor: ['#1d6b3a', '#7c3aed'], borderWidth: 2 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 10 } } } }, scales: { y: { ticks: { color: '#666', font: { size: 10 }, callback: v => '₹' + v }, grid: { color: '#eee' } }, x: { ticks: { color: '#555', font: { size: 10 } } } } }
+  });
+
+  // EBITDA Margins
+  new Chart(document.getElementById('ch-ebitda'), {
+    type: 'bar',
+    data: {
+      labels: ['Gravita India', 'Ganesha Ecosphere'],
+      datasets: [
+        { label: 'Q4 FY25', data: [10.5, 14.8], backgroundColor: 'rgba(100,116,139,0.5)', borderColor: '#64748b', borderWidth: 2 },
+        { label: 'Q4 FY26', data: [9.6, 12.4], backgroundColor: ['rgba(29,107,58,0.7)', 'rgba(124,58,237,0.7)'], borderColor: ['#1d6b3a', '#7c3aed'], borderWidth: 2 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + c.raw + '%' } } }, scales: { y: { ticks: { color: '#666', font: { size: 10 }, callback: v => v + '%' }, grid: { color: '#eee' }, min: 0, max: 20 }, x: { ticks: { color: '#555', font: { size: 10 } } } } }
+  });
+
+  // Gravita Quarterly Trend
+  new Chart(document.getElementById('ch-gravtrend'), {
+    type: 'line',
+    data: {
+      labels: ['Q1 FY26', 'Q2 FY26', 'Q3 FY26', 'Q4 FY26'],
+      datasets: [
+        { label: 'Revenue (₹Cr)', data: [1035, 1035, 1017, 1173], borderColor: '#1d6b3a', backgroundColor: 'rgba(29,107,58,0.08)', borderWidth: 2.5, tension: 0.3, yAxisID: 'y' },
+        { label: 'PAT (₹Cr)', data: [96, 98, 92, 91.9], borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,0.08)', borderWidth: 2.5, tension: 0.3, yAxisID: 'y1' }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 10 } } } }, scales: { y: { type: 'linear', position: 'left', ticks: { color: '#1d6b3a', font: { size: 10 }, callback: v => '₹' + v }, grid: { color: '#eee' } }, y1: { type: 'linear', position: 'right', ticks: { color: '#7c3aed', font: { size: 10 }, callback: v => '₹' + v }, grid: { drawOnChartArea: false } }, x: { ticks: { color: '#555', font: { size: 10 } } } } }
+  });
+}
+
+// Init
+showTab('dashboard', document.querySelector('.tab-btn'));
+</script>
+</body>
+</html>

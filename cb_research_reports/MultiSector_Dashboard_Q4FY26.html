@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Sector Intelligence Dashboard | Q4 FY26 | CB Research</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --tcom:#0f4c81;--tcom-soft:#e8f0fb;
+  --nweb:#6d28d9;--nweb-soft:#f5f0ff;
+  --azad:#b45309;--azad-soft:#fef3e2;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+
+  --vbl:#16803a;--vbl-soft:#dcfce7;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.55rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-tcom{background:var(--tcom);color:#fff;}
+.chip-nweb{background:var(--nweb);color:#fff;}
+.chip-azad{background:var(--azad);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.chip-vbl{background:#16803a;color:#fff;}
+
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--tcom);font-weight:700;}
+
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gap-top{margin-top:22px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.tcom::before{background:var(--tcom);}
+.co-card.nweb::before{background:var(--nweb);}
+.co-card.azad::before{background:var(--azad);}
+.co-card.vbl::before{background:var(--vbl);}
+.co-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;gap:8px;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;text-align:right;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}
+.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+.b-warn{background:#fff7ed;color:#c2410c;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.tcom-a{border-left:4px solid var(--tcom);}
+.kpi.nweb-a{border-left:4px solid var(--nweb);}
+.kpi.azad-a{border-left:4px solid var(--azad);}
+.kpi.vbl-a{border-left:4px solid var(--vbl);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.val-co{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);gap:8px;}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11.5px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;text-align:right;}
+
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}
+.rp-hold{background:#fef9c3;color:#a16207;}
+.rp-sell{background:#fee2e2;color:#b91c1c;}
+.rp-spec{background:#f3f4f6;color:#4b5563;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-bar{background:var(--surface2);border-radius:20px;height:6px;overflow:hidden;margin-bottom:10px;}
+.ac-fill{height:6px;border-radius:20px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.moat-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.moat-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.moat-body{font-size:11px;color:var(--muted);line-height:1.55;}
+.moat-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verdict-body{font-size:13px;line-height:1.7;color:var(--text);}
+
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--tcom);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--tcom);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--tcom);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--tcom);}
+.chat-send{background:var(--tcom);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+.preset-tab{padding:5px 12px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted);}
+.preset-tab.active{background:#181511;color:#fff;border-color:#181511;}
+.presets-panel{display:none;}.presets-panel.active{display:block;}
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.preset-q{padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:9px;line-height:1.45;}
+.preset-q:hover{border-color:var(--tcom);background:var(--tcom-soft);}
+.pq-en{font-weight:600;color:var(--text);}
+
+.grp-hdr{margin-bottom:8px;padding:7px 14px;border-left:4px solid;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
+.seg-bar{height:10px;border-radius:20px;}
+.seg-row{margin-bottom:14px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+
+.cb-wm{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid var(--border);border-radius:30px;padding:7px 14px 7px 8px;box-shadow:0 4px 20px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:28px;height:28px;background:var(--tcom);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:11px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:14px 40px;border-top:1px solid var(--border);margin-top:28px;line-height:1.7;}
+@media(max-width:860px){
+  .main{padding:14px 16px 40px;}.hdr{padding:0 16px;flex-wrap:wrap;}
+  .tab-nav{padding:0 8px;}
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .m-row{flex-wrap:nowrap;}
+  .m-val{text-align:right;margin-left:auto;}
+  .val-num{text-align:right;}
+  td.num,td.tpos,td.tneg{text-align:right !important;}
+  th{white-space:nowrap;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Multi-Sector Intelligence Dashboard</h1>
+      <div class="sub">Tata Communications · Netweb Technologies · Azad Engineering · Q4 FY26 Actuals ✅ · CB Research</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-tcom">Tata Comm</span>
+    <span class="chip chip-nweb">Netweb Tech</span>
+    <span class="chip chip-azad">Azad Engg</span>
+    <span class="chip chip-vbl">Varun Bev</span>
+    <span class="chip chip-date">27 May 2026 · Cauvery Business</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('business',this)">Business Profiles</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">Financials</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Business Segments</button>
+  <button class="tab-btn" onclick="showTab('bizanalysis',this)">SWOT Analysis</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">Moats &amp; USPs</button>
+  <button class="tab-btn" onclick="showTab('varun',this)" style="color:#16803a;font-weight:700;">🥤 Varun Bev</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--tcom);font-weight:800;">🤖 CB Assist</button>
+</nav>
+
+<div class="main">
+
+<!-- ══ TAB 1 · DASHBOARD ══ -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">· 3 companies · Q4 FY26 Actuals ✅ · Cauvery Business Research</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi tcom-a"><div class="kl">Tata Comm Q4 Revenue ✅</div><div class="kv">₹6,554 Cr</div><div class="kc pos">▲ 9.4% YoY</div></div>
+    <div class="kpi nweb-a"><div class="kl">Netweb Q4 Revenue ✅</div><div class="kv">₹773.7 Cr</div><div class="kc pos">▲ 86.6% YoY</div></div>
+    <div class="kpi azad-a"><div class="kl">Azad Engineering Q4 Revenue ✅</div><div class="kv">₹161.5 Cr</div><div class="kc pos">▲ 27.3% YoY</div></div>
+    <div class="kpi vbl-a"><div class="kl">Varun Beverages Q4 Revenue ✅</div><div class="kv">₹5,565 Cr</div><div class="kc pos">▲ 5.8% YoY</div></div>
+  </div>
+
+  <div class="g4" style="margin-bottom:22px;">
+    <div class="co-card tcom">
+      <div class="co-name" style="color:var(--tcom)">Tata Communications</div>
+      <div class="co-seg">Global Digital Infrastructure · Telecom · BSE: 500483 · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val neg">₹263 Cr (−74.7% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹1,284 Cr (+14.4% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val">19.6%</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹24,803 Cr (+7.3%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">₹1,044 Cr (−35.8%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹1,527 / ₹43,427 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">Digital +16.7% ✅</span>
+        <span class="badge b-pos">FCF 4× FY25</span>
+        <span class="badge b-neg">PAT −74.7% Q4</span>
+      </div>
+    </div>
+    <div class="co-card nweb">
+      <div class="co-name" style="color:var(--nweb)">Netweb Technologies</div>
+      <div class="co-seg">AI Infrastructure · HPC · Sovereign Computing · BSE: 543945 · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val pos">₹70.6 Cr (+65.6% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹101.8 Cr (+71.8% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val">13.2%</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹2,183.6 Cr (+90% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹205.8 Cr (+80.9%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹3,284 / ₹18,700 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">AI +459% FY26 ✅</span>
+        <span class="badge b-pos">Debt-Free</span>
+        <span class="badge b-pos">ROCE 37.5%</span>
+      </div>
+    </div>
+    <div class="co-card vbl">
+      <div class="co-name" style="color:var(--vbl)">Varun Beverages</div>
+      <div class="co-seg">FMCG / Beverages · PepsiCo Bottler · BSE: 554160 · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val pos">₹492 Cr (+15.7% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹1,140 Cr (+8.5% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val">20.5%</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹21,257 Cr (+20.9%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹2,153 Cr (+25.1%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹474 / ₹86,390 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">Africa High-Growth ✅</span>
+        <span class="badge b-pos">Volume +10.5% FY26</span>
+        <span class="badge b-warn">P/E 40×</span>
+      </div>
+    </div>
+    <div class="co-card azad">
+      <div class="co-name" style="color:var(--azad)">Azad Engineering</div>
+      <div class="co-seg">Precision Forged Components · Aerospace · Energy · BSE: 544120 · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (consol) ✅</span><span class="m-val pos">₹36.8 Cr (+48.4% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹61.3 Cr (+38.0% margin)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val">38.0%</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue (consol)</span><span class="m-val">₹603 Cr (+31.8%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (consol)</span><span class="m-val pos">₹133.6 Cr (+54.4%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹2,101 / ₹13,950 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">Highest-Ever FY26 ✅</span>
+        <span class="badge b-pos">37%+ EBITDA Margin</span>
+        <span class="badge b-warn">P/E 121×</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Snapshot Comparison — Q4 FY26 Actuals</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th><th>Sector</th><th style="text-align:right">Q4 Revenue</th><th style="text-align:right">Q4 EBITDA</th><th style="text-align:right">Q4 EBITDA %</th><th style="text-align:right">Q4 PAT</th><th style="text-align:right">FY26 Revenue</th><th style="text-align:right">FY26 PAT</th><th style="text-align:right">Mkt Cap</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--tcom)"></span>Tata Communications</td>
+          <td>Global Telecom / Digital</td>
+          <td class="num">₹6,554 Cr</td>
+          <td class="num">₹1,284 Cr</td>
+          <td class="num">19.6%</td>
+          <td class="tneg">₹263 Cr</td>
+          <td class="num">₹24,803 Cr</td>
+          <td class="tneg">₹1,044 Cr</td>
+          <td class="num">₹43,427 Cr</td>
+        </tr>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--nweb)"></span>Netweb Technologies</td>
+          <td>AI Infra / HPC</td>
+          <td class="num">₹773.7 Cr</td>
+          <td class="num">₹101.8 Cr</td>
+          <td class="num">13.2%</td>
+          <td class="tpos">₹70.6 Cr</td>
+          <td class="num">₹2,183.6 Cr</td>
+          <td class="tpos">₹205.8 Cr</td>
+          <td class="num">₹18,700 Cr</td>
+        </tr>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--azad)"></span>Azad Engineering</td>
+          <td>Precision Engg / Defence</td>
+          <td class="num">₹161.5 Cr</td>
+          <td class="num">₹61.3 Cr</td>
+          <td class="num">38.0%</td>
+          <td class="tpos">₹36.8 Cr</td>
+          <td class="num">₹603 Cr</td>
+          <td class="tpos">₹133.6 Cr</td>
+          <td class="num">₹13,950 Cr</td>
+        </tr>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--vbl)"></span>Varun Beverages</td>
+          <td>FMCG / Beverages</td>
+          <td class="num">₹5,565 Cr</td>
+          <td class="num">₹1,140 Cr</td>
+          <td class="num">20.5%</td>
+          <td class="tpos">₹492 Cr</td>
+          <td class="num">₹21,257 Cr</td>
+          <td class="tpos">₹2,153 Cr</td>
+          <td class="num">₹86,390 Cr</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ TAB 2 · BUSINESS PROFILES ══ -->
+<div class="panel" id="tab-business">
+  <div class="sec-hdr">Business Profiles <span class="sec-note">· What each company does · Revenue model · Key inputs</span></div>
+
+  <!-- Tata Communications -->
+  <div class="grp-hdr" style="background:var(--tcom-soft);border-color:var(--tcom);color:var(--tcom);margin-bottom:14px;">Tata Communications Limited — Global Digital Infrastructure · Tata Group · BSE: 500483</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Tata Communications</strong> is a Mumbai-headquartered global digital infrastructure and services company, part of the Tata Group. It is one of the world's largest subsea cable network operators, enabling global connectivity for enterprises across 200+ countries.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Core Data Services (87% of revenue):</strong> Global connectivity (MPLS, SD-WAN, Cloud Networking), CPaaS (Communication Platform as a Service), IoT, Cyber Security, Cloud, and Media services. Data revenue crossed ₹21,000 Cr mark in FY26, up 9.4% YoY to ₹21,352 Cr.<br><br><strong>Digital Portfolio (≥50% of revenue):</strong> Products like Commotion (network transformation), Vayu Cloud (multi-cloud), MOVE (IoT), Kaleyra (CPaaS), and enterprise AI platforms. Digital revenue grew 16.7% YoY to ₹10,621 Cr in FY26. Next-gen connectivity the fastest-growing sub-segment at +24% YoY.<br><br><strong>Voice &amp; Other:</strong> Legacy voice services declining gradually. The company is actively migrating customers to data and digital. Voice contributes ~12% of revenue.<br><br><strong>GCC &amp; Enterprise AI:</strong> Significant deal wins in FY26 around network transformation, multi-cloud connectivity, and employee interaction capabilities for Global Capability Centres (GCCs) — a key India-anchored growth driver.<br><br><strong>Leadership transition:</strong> Ganesh Lakshminarayanan appointed MD &amp; CEO-Designate. Focus on digital breakeven acceleration, stronger sales, and better execution.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹6,554 Cr</td><td class="num">₹5,990 Cr</td><td class="tpos">+9.4%</td></tr>
+          <tr><td>Data Revenue</td><td class="num">₹5,684 Cr</td><td class="num">—</td><td class="tpos">+11.5%</td></tr>
+          <tr><td>EBITDA</td><td class="num">₹1,284 Cr</td><td class="num">₹1,122 Cr</td><td class="tpos">+14.4%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="num">19.6%</td><td class="num">18.7%</td><td class="tpos">+86 bps YoY</td></tr>
+          <tr><td>PAT</td><td class="num">₹263 Cr</td><td class="num">₹1,040 Cr</td><td class="tneg">−74.7%</td></tr>
+          <tr><td>Net Debt</td><td class="num">₹9,601 Cr</td><td class="num">—</td><td class="tpos">Improving</td></tr>
+          <tr><td>Net Debt/EBITDA</td><td class="num">1.99×</td><td class="num">~2.45×</td><td class="tpos">↓ Below 2×</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">⚠ Q4 PAT −75% YoY due to absence of prior-year exceptional gains in foreign jurisdictions + higher tax rates. Operational EBITDA healthy. MD &amp; CEO: Ganesh Lakshminarayanan. CMP ~₹1,527. Dividend ₹17.5/share declared.</p>
+    </div>
+  </div>
+
+  <!-- Netweb Technologies -->
+  <div class="grp-hdr" style="background:var(--nweb-soft);border-color:var(--nweb);color:var(--nweb);margin-bottom:14px;">Netweb Technologies India Limited — AI Infrastructure & HPC · BSE: 543945 · Sanjay Lodha, CMD</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Netweb Technologies</strong> is India's leading high-end computing solutions (HCS) provider, with fully integrated in-house design and manufacturing capabilities. It serves AI infrastructure, high-performance computing (HPC), private cloud, and data centre markets — primarily for government and large enterprises in India.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>AI Systems (43.4% of revenue, ↑ from 15% in FY25):</strong> Custom AI servers, GPU clusters, AI-optimised rack systems. FY26 AI segment grew a stunning 459.6% YoY — India AI Mission and sovereign compute projects are the primary drivers. Partnership with Vertiv for advanced AI data centre rack solutions announced in Feb 2026.<br><br><strong>High Performance Computing (HPC):</strong> 600+ installed HPC systems across defence, research labs, academic institutions. Government's supercomputing mission (NSM) a major demand driver.<br><br><strong>Private Cloud &amp; HCI:</strong> Hyper-converged infrastructure for enterprise private cloud workloads. Contributes to recurring deployments.<br><br><strong>Data Centre Servers:</strong> Standard servers and HPS solutions for large-scale workloads — enterprise and PSU segment.<br><br><strong>Make in India advantage:</strong> 100% in-house design and manufacturing. Aligned with India AI Mission and National Supercomputing Mission — positions Netweb as a sovereign compute champion. Order book ₹4,724 Mn as of March 31, 2026 (confirmed). Extended pipeline ₹44,315 Mn. Debt-free balance sheet. Dividend ₹3/share declared for FY26.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹773.7 Cr</td><td class="num">₹414.7 Cr</td><td class="tpos">+86.6%</td></tr>
+          <tr><td>Adj. EBITDA</td><td class="num">₹101.8 Cr</td><td class="num">₹59.3 Cr</td><td class="tpos">+71.8%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="num">13.2%</td><td class="num">14.3%</td><td class="tneg">−110 bps</td></tr>
+          <tr><td>PAT</td><td class="num">₹70.6 Cr</td><td class="num">₹43.0 Cr</td><td class="tpos">+65.6%</td></tr>
+          <tr><td>PAT Margin</td><td class="num">9.1%</td><td class="num">10.4%</td><td class="tneg">−130 bps</td></tr>
+          <tr><td>ROCE (FY26)</td><td class="num">37.5%</td><td class="num">—</td><td class="tpos">Excellent</td></tr>
+          <tr><td>ROE (FY26)</td><td class="num">32.9%</td><td class="num">—</td><td class="tpos">Strong</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">FY26 Revenue ₹2,183.6 Cr (+90% YoY). FY26 PAT ₹205.8 Cr (+80.9%). Debt-free. Government 42.8% / Non-Govt 57.2% revenue mix. CMP ~₹3,284. Market Cap ~₹18,700 Cr. PE ~106×.</p>
+    </div>
+  </div>
+
+  <!-- Azad Engineering -->
+  <div class="grp-hdr" style="background:var(--azad-soft);border-color:var(--azad);color:var(--azad);margin-bottom:14px;">Azad Engineering Limited — Precision Forged &amp; Machined Components · BSE: 544120 · Rakesh Chopdar, Chairman &amp; CEO</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Azad Engineering</strong> is a Hyderabad-based manufacturer of highly complex precision forged and machined components for mission-critical applications — clean energy (gas turbines), aerospace, defence, and oil &amp; gas. It supplies directly to global OEMs under long-term agreements.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Energy &amp; Oil and Gas (81.5% of revenue):</strong> High-precision turbine blades, vanes, casings, and impellers for gas turbines used in power generation and LNG. Customers: GE Vernova (USD 112 Mn + USD 53.5 Mn contracts), Siemens Energy (USD 90 Mn), Baker Hughes/Nuovo Pignone (multi-year contracts), Mitsubishi Heavy Industries (USD 83 Mn). Energy segment grew 34.2% in FY26.<br><br><strong>Aerospace &amp; Defence (17.2% of revenue):</strong> Safety-critical structural components for aero-engines, including ATGG engine program with MHI (20 engines to be delivered from FY27). Revenue grew 25.4% in FY26. A key long-cycle, import-substitution story under India's Aatmanirbhar Bharat push.<br><br><strong>Manufacturing Moat:</strong> Four dedicated lean manufacturing facilities commissioned since listing, including two in FY26 and one (Baker Hughes) in April 2026. Each facility is customer-dedicated — reduces execution risk and deepens OEM lock-in.<br><br><strong>Export-Led:</strong> 81.5% of revenue is exports — direct USD/EUR revenue, natural hedge against INR. Low domestic dependence reduces regulatory/DISCOM risk.<br><br><strong>Long-cycle order book:</strong> ~₹6,500+ Cr — equivalent to over 10× book-to-bill. Provides revenue visibility through FY28–FY30.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Standalone)</td><td class="num">₹157.4 Cr</td><td class="num">₹124.5 Cr</td><td class="tpos">+26.4%</td></tr>
+          <tr><td>Revenue (Consol)</td><td class="num">₹161.5 Cr</td><td class="num">₹126.9 Cr</td><td class="tpos">+27.3%</td></tr>
+          <tr><td>EBITDA (Standalone)</td><td class="num">₹57.8 Cr</td><td class="num">₹45.4 Cr</td><td class="tpos">+27.1%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="num">36.7%</td><td class="num">35.5%</td><td class="tpos">+120 bps</td></tr>
+          <tr><td>PAT (Standalone)</td><td class="num">₹35.1 Cr</td><td class="num">₹26.0 Cr</td><td class="tpos">+35.0%</td></tr>
+          <tr><td>PAT Margin Q4</td><td class="num">22.8%</td><td class="num">19.6%</td><td class="tpos">Highest ever</td></tr>
+          <tr><td>Order Book</td><td class="num">₹6,500+ Cr</td><td class="num">—</td><td class="tpos">10.8× Book-Bill</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">FY26 Consol PAT ₹133.6 Cr (+54.4%). EBITDA Margin 37.4% — among highest in precision engineering globally. Listed Dec 2023 (NSE/BSE). CMP ~₹2,101. Mkt Cap ~₹13,950 Cr. </p>
+    </div>
+  </div>
+
+  <!-- Varun Beverages -->
+  <div class="grp-hdr" style="background:var(--vbl-soft);border-color:var(--vbl);color:var(--vbl);margin-bottom:14px;">Varun Beverages Limited — India's Largest PepsiCo Franchisee · BSE: 554160 · Ravi Jaipuria, Chairman</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Varun Beverages Limited (VBL)</strong> is the second-largest PepsiCo franchisee globally and India's largest, headquartered in Gurugram. It manufactures and distributes PepsiCo's carbonated soft drinks, juices, energy drinks, and packaged water across India, Africa, and other international geographies.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>India Operations (≈78% of volume):</strong> Holds PepsiCo franchise rights across 27 states + 7 UTs covering virtually all of India. Portfolio: Pepsi, 7UP, Mountain Dew, Mirinda, Tropicana, Slice, Sting, Aquafina. India volumes grew 8.3% in FY26. Sting energy drink is a high-realization, fast-growing SKU.<br><br>
+      <strong>International (Africa-led, ≈22% of volume):</strong> Operations in Zimbabwe, Zambia, Morocco, South Africa, Nepal, Sri Lanka, and Mozambique. Africa grew volume 26.3% YoY in FY26 — the highest growth engine. South Africa JV is a near-term consolidation play.<br><br>
+      <strong>Beverage Mix:</strong> CSD (carbonated) dominates. Sting energy drink outperforms category — priced at ₹20/can, mass-premium positioning, rapid rural/tier-2 penetration. Packaged water (Aquafina) growing with distribution strength.<br><br>
+      <strong>Distribution Moat:</strong> 3,000+ direct distributors, 5 mn+ retail touch points, 130+ production lines across 44 plants. Cold-chain infra (coolers) placed with retailers creates strong shelf presence and brand lock-in.<br><br>
+      <strong>Leadership:</strong> Ravi Jaipuria (Chairman) — one of India's most respected FMCG operators. VBL has grown revenue at 25%+ CAGR over 5 years.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Q4 FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹5,565 Cr</td><td class="num">₹5,261 Cr</td><td class="tpos">+5.8%</td></tr>
+          <tr><td>EBITDA</td><td class="num">₹1,140 Cr</td><td class="num">₹1,051 Cr</td><td class="tpos">+8.5%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="num">20.5%</td><td class="num">20.0%</td><td class="tpos">+50 bps</td></tr>
+          <tr><td>PAT</td><td class="num">₹492 Cr</td><td class="num">₹425 Cr</td><td class="tpos">+15.7%</td></tr>
+          <tr><td>PAT Margin</td><td class="num">8.8%</td><td class="num">8.1%</td><td class="tpos">+70 bps</td></tr>
+          <tr><td>Volume (mn cases)</td><td class="num">244.5</td><td class="num">225.3</td><td class="tpos">+8.5%</td></tr>
+          <tr><td>Realisation/case</td><td class="num">₹228</td><td class="num">₹233</td><td class="tneg">−2.0%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">FY26 Revenue ₹21,257 Cr (+20.9% YoY). FY26 PAT ₹2,153 Cr (+25.1%). FY26 EBITDA ₹4,627 Cr. Volume FY26 +10.5% YoY. CMP ~₹474. Mkt Cap ~₹86,390 Cr. D/E ~0.7×.</p>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 3 · FINANCIALS ══ -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Quarterly Financials <span class="sec-note">· Q4 FY26 · Q3 FY26 · Q4 FY25 · Three-Quarter Comparison</span></div>
+
+  <div class="grp-hdr" style="background:var(--tcom-soft);border-color:var(--tcom);color:var(--tcom);margin-bottom:14px;">Tata Communications — Consolidated P&amp;L (₹ Crore)</div>
+  <div class="card" style="margin-bottom:20px;">
+    <table>
+      <thead>
+        <tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">QoQ %</th><th style="text-align:right">YoY %</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="num">₹6,554</td><td class="num">₹6,188</td><td class="num">₹5,990</td><td class="tpos">+5.9%</td><td class="tpos">+9.4%</td></tr>
+        <tr><td>Data Revenue</td><td class="num">₹5,684</td><td class="num">₹5,358</td><td class="num">—</td><td class="tpos">+6.1%</td><td class="tpos">+11.5%</td></tr>
+        <tr><td>Digital Portfolio Revenue</td><td class="num">₹2,909</td><td class="num">₹2,521</td><td class="num">₹2,441</td><td class="tpos">+15.4%</td><td class="tpos">+19.2%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="num">₹1,284</td><td class="num">₹1,229</td><td class="num">₹1,122</td><td class="tpos">+4.5%</td><td class="tpos">+14.4%</td></tr>
+        <tr><td>EBITDA Margin</td><td class="num">19.6%</td><td class="num">19.9%</td><td class="num">18.7%</td><td class="tneg">−25 bps QoQ</td><td class="tpos">+90 bps YoY</td></tr>
+        <tr><td>Employee Cost</td><td class="num">₹1,240</td><td class="num">—</td><td class="num">₹1,136</td><td class="num">—</td><td class="tneg">+9.2%</td></tr>
+        <tr><td class="tb">PAT (Reported)</td><td class="num">₹263</td><td class="num">₹365</td><td class="num">₹1,040</td><td class="tneg">−28%</td><td class="tneg">−74.7%</td></tr>
+        <tr><td>Free Cash Flow</td><td class="num">₹828</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="tpos">Strong</td></tr>
+        <tr><td>Net Debt</td><td class="num">₹9,601</td><td class="num">—</td><td class="num">—</td><td class="tpos">↓ Improving</td><td class="num">—</td></tr>
+        <tr><td>ROCE</td><td class="num">14.9%</td><td class="num">14.4%</td><td class="num">—</td><td class="tpos">+51 bps</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">⚠ Q4 PAT decline driven by: (1) absence of exceptional gains (FY25 Q4 had large tax reversals in foreign jurisdictions), (2) higher effective tax rate, (3) prior-period items. Operational EBITDA +14.4% YoY shows underlying business health. FY26 Full-Year FCF ₹1,474 Cr — nearly 4× FY25 levels, a major positive. </p>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--nweb-soft);border-color:var(--nweb);color:var(--nweb);margin-bottom:14px;">Netweb Technologies — Standalone P&amp;L (₹ Crore / Mn)</div>
+  <div class="card" style="margin-bottom:20px;">
+    <table>
+      <thead>
+        <tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">QoQ %</th><th style="text-align:right">YoY %</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="num">₹773.7 Cr</td><td class="num">₹804.9 Cr</td><td class="num">₹414.7 Cr</td><td class="tneg">−3.9%</td><td class="tpos">+86.6%</td></tr>
+        <tr><td>AI Systems Revenue</td><td class="num">43.4% mix</td><td class="num">—</td><td class="num">15% mix</td><td class="num">—</td><td class="tpos">+459.6% YoY</td></tr>
+        <tr><td class="tb">Operating EBITDA</td><td class="num">₹96.6 Cr</td><td class="num">—</td><td class="num">₹59.8 Cr</td><td class="num">—</td><td class="tpos">+61.5%</td></tr>
+        <tr><td>Adj. Operating EBITDA</td><td class="num">₹101.8 Cr</td><td class="num">—</td><td class="num">₹59.3 Cr</td><td class="num">—</td><td class="tpos">+71.8%</td></tr>
+        <tr><td>EBITDA Margin (Adj.)</td><td class="num">13.2%</td><td class="num">—</td><td class="num">14.3%</td><td class="num">—</td><td class="tneg">−110 bps</td></tr>
+        <tr><td class="tb">PAT</td><td class="num">₹70.6 Cr</td><td class="num">₹73.3 Cr</td><td class="num">₹43.0 Cr</td><td class="tneg">−3.7%</td><td class="tpos">+65.6%</td></tr>
+        <tr><td>PAT Margin</td><td class="num">9.1%</td><td class="num">9.1%</td><td class="num">10.4%</td><td class="num">Stable</td><td class="tneg">−130 bps</td></tr>
+        <tr><td>ROCE (FY26 Annual)</td><td class="num">37.5%</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="tpos">Excellent</td></tr>
+        <tr><td>Order Book (Confirmed)</td><td class="num">₹472.4 Cr</td><td class="num">—</td><td class="num">₹325.2 Cr</td><td class="num">—</td><td class="tpos">+45%</td></tr>
+        <tr><td>Net Debt</td><td class="num">Debt-Free</td><td class="num">Debt-Free</td><td class="num">Net Debt</td><td class="tpos">✅ Cleared</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">QoQ revenue decline of 3.9% — normalisation after exceptional Q3 FY26 which surged +165% QoQ. Not a structural concern. Government 42.8% / Non-Govt 57.2% FY26 revenue mix. </p>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--azad-soft);border-color:var(--azad);color:var(--azad);margin-bottom:14px;">Azad Engineering — Consolidated P&amp;L (₹ Crore)</div>
+  <div class="card" style="margin-bottom:20px;">
+    <table>
+      <thead>
+        <tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">QoQ %</th><th style="text-align:right">YoY %</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue (Consol)</td><td class="num">₹161.5 Cr</td><td class="num">₹158.7 Cr</td><td class="num">₹126.9 Cr</td><td class="tpos">+1.8%</td><td class="tpos">+27.3%</td></tr>
+        <tr><td>Revenue (Standalone)</td><td class="num">₹157.4 Cr</td><td class="num">—</td><td class="num">₹124.5 Cr</td><td class="num">—</td><td class="tpos">+26.4%</td></tr>
+        <tr><td class="tb">EBITDA (Standalone)</td><td class="num">₹57.8 Cr</td><td class="num">—</td><td class="num">₹45.4 Cr</td><td class="num">—</td><td class="tpos">+27.1%</td></tr>
+        <tr><td>Operating Profit (Consol, ex-OI)</td><td class="num">₹61.3 Cr</td><td class="num">₹62.2 Cr</td><td class="num">₹45.6 Cr</td><td class="tneg">−1.4%</td><td class="tpos">+34.4%</td></tr>
+        <tr><td>EBITDA Margin (Consol)</td><td class="num">38.0%</td><td class="num">39.2%</td><td class="num">35.9%</td><td class="tneg">−120 bps</td><td class="tpos">+210 bps</td></tr>
+        <tr><td>PBT (Consol)</td><td class="num">₹51.2 Cr</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="tpos">Strong</td></tr>
+        <tr><td class="tb">PAT (Consol)</td><td class="num">₹36.8 Cr</td><td class="num">₹35.3 Cr</td><td class="num">₹24.8 Cr</td><td class="tpos">+4.3%</td><td class="tpos">+48.4%</td></tr>
+        <tr><td>PAT Margin (Consol)</td><td class="num">22.8%</td><td class="num">21.9%</td><td class="num">19.6%</td><td class="tpos">+90 bps</td><td class="tpos">Highest-ever</td></tr>
+        <tr><td>FII Holding</td><td class="num">14.75%</td><td class="num">15.33%</td><td class="num">16.15%</td><td class="tneg">−58 bps</td><td class="tneg">Trimming</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">FY26 Consol Revenue ₹603 Cr (+31.8%). PAT ₹133.6 Cr (+54.4%). EBITDA margin 37.4% — sector-leading. Exports 81.5% of revenue. FY26 described by management as "year of consolidation and stabilization." FY27 = steady-state; FY28 = peak utilisation. </p>
+  </div>
+  <div class="grp-hdr" style="background:var(--vbl-soft);border-color:var(--vbl);color:var(--vbl);margin-bottom:14px;">Varun Beverages — Consolidated P&amp;L (₹ Crore)</div>
+  <div class="card" style="margin-bottom:20px;">
+    <table>
+      <thead>
+        <tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">QoQ %</th><th style="text-align:right">YoY %</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="num">₹5,565 Cr</td><td class="num">₹7,938 Cr</td><td class="num">₹5,261 Cr</td><td class="tneg">−29.9%</td><td class="tpos">+5.8%</td></tr>
+        <tr><td>Volume (mn cases)</td><td class="num">244.5</td><td class="num">376.4</td><td class="num">225.3</td><td class="tneg">−35.1%</td><td class="tpos">+8.5%</td></tr>
+        <tr><td>Realisation / case (₹)</td><td class="num">₹228</td><td class="num">₹211</td><td class="num">₹233</td><td class="tpos">+8.1%</td><td class="tneg">−2.0%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="num">₹1,140 Cr</td><td class="num">₹1,920 Cr</td><td class="num">₹1,051 Cr</td><td class="tneg">−40.6%</td><td class="tpos">+8.5%</td></tr>
+        <tr><td>EBITDA Margin</td><td class="num">20.5%</td><td class="num">24.2%</td><td class="num">20.0%</td><td class="tneg">−370 bps</td><td class="tpos">+50 bps</td></tr>
+        <tr><td>Depreciation</td><td class="num">₹385 Cr</td><td class="num">₹362 Cr</td><td class="num">₹328 Cr</td><td class="tneg">+6.4%</td><td class="tneg">+17.4%</td></tr>
+        <tr><td class="tb">PAT</td><td class="num">₹492 Cr</td><td class="num">₹1,027 Cr</td><td class="num">₹425 Cr</td><td class="tneg">−52.1%</td><td class="tpos">+15.7%</td></tr>
+        <tr><td>PAT Margin</td><td class="num">8.8%</td><td class="num">12.9%</td><td class="num">8.1%</td><td class="tneg">−410 bps</td><td class="tpos">+70 bps</td></tr>
+        <tr><td>Net Debt (Mar 26)</td><td class="num">₹5,820 Cr</td><td class="num">—</td><td class="num">₹4,920 Cr</td><td class="num">—</td><td class="tneg">Capex-led</td></tr>
+        <tr><td>D/E Ratio</td><td class="num">~0.7×</td><td class="num">—</td><td class="num">~0.6×</td><td class="num">—</td><td class="num">Manageable</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">⚠ Q4 is seasonally weaker quarter (post-summer peak). Q3 (Apr–Jun) is the peak season. QoQ decline is structural seasonality, not a concern. FY26 Full-Year: Revenue ₹21,257 Cr (+20.9%), EBITDA ₹4,627 Cr (+21.4%), PAT ₹2,153 Cr (+25.1%). Volume FY26: 1,051 mn cases (+10.5%). Africa volumes up 26.3% YoY. Capex ₹3,200 Cr FY26 — new plants in South Africa, Morocco, and India expansion.</p>
+  </div>
+
+</div>
+
+<!-- ══ TAB 4 · CHARTS ══ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Visual Analytics <span class="sec-note">· Q4 FY26 &amp; FY26 Annual comparison charts</span></div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>Q4 FY26 — Revenue (₹ Crore)</h3>
+      <p class="sub">Consolidated quarterly revenue — Q4 FY26</p>
+      <canvas id="revenueChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Q4 FY26 — EBITDA Margin (%)</h3>
+      <p class="sub">Operating margin comparison — reflects business model differences</p>
+      <canvas id="ebitdaMarginChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>Q4 FY26 — PAT (₹ Crore)</h3>
+      <p class="sub">Net profit — quarterly</p>
+      <canvas id="patChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>FY26 Annual Revenue YoY Growth (%)</h3>
+      <p class="sub">Full-year revenue growth rate — all three companies</p>
+      <canvas id="revGrowthChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>FY26 Annual PAT (₹ Crore)</h3>
+      <p class="sub">Full year profitability — FY26</p>
+      <canvas id="annualPatChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>FY26 EBITDA Margin vs PAT Margin (%)</h3>
+      <p class="sub">Margin waterfall — from EBITDA to PAT — FY26 full year</p>
+      <canvas id="marginCompChart" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 5 · VALUATIONS ══ -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuations <span class="sec-note">· P/E · EV/EBITDA · P/BV · Return Ratios</span></div>
+
+  <div class="g4" style="margin-bottom:18px;">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--tcom)">Tata Communications · BSE: 500483</div>
+      <div class="val-row"><span class="val-lbl">CMP (Result Day)</span><span class="val-num">~₹1,527</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹43,427 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">52-Week High</span><span class="val-num">₹2,004</span></div>
+      <div class="val-row"><span class="val-lbl">Net Debt</span><span class="val-num">₹9,601 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">Net Debt / EBITDA</span><span class="val-num">1.99×</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 EBITDA</span><span class="val-num">₹4,822 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV / EBITDA (FY26)</span><span class="val-num">~11.0×</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26 PAT ₹1,044 Cr)</span><span class="val-num">~41.6×</span></div>
+      <div class="val-row"><span class="val-lbl">D/E Ratio</span><span class="val-num">&gt;2.5× (long-term)</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend FY26</span><span class="val-num">₹17.50 / share</span></div>
+      <div class="val-row"><span class="val-lbl">1-Yr Stock Return</span><span class="val-num neg">~−23%</span></div>
+      <div style="margin-top:10px"><span class="badge b-warn">PAT compression; digital transition premium</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--nweb)">Netweb Technologies · BSE: 543945</div>
+      <div class="val-row"><span class="val-lbl">CMP (~Apr 30, 2026)</span><span class="val-num">~₹4,065</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹23,080 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">52-Week High / Low</span><span class="val-num">₹4,479 / ₹1,252</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26 PAT ₹205.8 Cr)</span><span class="val-num">~106–112×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~71×</span></div>
+      <div class="val-row"><span class="val-lbl">P/Sales (FY26)</span><span class="val-num">~10×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~30×</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE</span><span class="val-num pos">37.5%</span></div>
+      <div class="val-row"><span class="val-lbl">ROE</span><span class="val-num pos">32.9%</span></div>
+      <div class="val-row"><span class="val-lbl">1-Yr Stock Return</span><span class="val-num pos">+188%</span></div>
+      <div style="margin-top:10px"><span class="badge b-warn">Premium valuation; growth must sustain 90%+ CAGR to justify</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--vbl)">Varun Beverages · BSE: 554160</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 2026)</span><span class="val-num">~₹474</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹86,390 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">52-Week High / Low</span><span class="val-num">₹682 / ₹422</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26 PAT ₹2,153 Cr)</span><span class="val-num">~40×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~20×</span></div>
+      <div class="val-row"><span class="val-lbl">P/Sales (FY26)</span><span class="val-num">~4.1×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~8.5×</span></div>
+      <div class="val-row"><span class="val-lbl">Net Debt</span><span class="val-num">₹5,820 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">D/E Ratio</span><span class="val-num">~0.7×</span></div>
+      <div class="val-row"><span class="val-lbl">ROE (FY26)</span><span class="val-num pos">~22%</span></div>
+      <div class="val-row"><span class="val-lbl">1-Yr Stock Return</span><span class="val-num neg">~−25%</span></div>
+      <div style="margin-top:10px"><span class="badge b-warn">Attractive vs 5-yr avg PE ~55×; earnings growth 25%+</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--azad)">Azad Engineering · BSE: 544120</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 15, 2026)</span><span class="val-num">~₹2,101</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹13,950 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">52-Week High / Low</span><span class="val-num">₹2,400 / ₹1,200</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (Trailing)</span><span class="val-num">~121×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~63×</span></div>
+      <div class="val-row"><span class="val-lbl">P/Sales (FY26)</span><span class="val-num">~26.6×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~10.1×</span></div>
+      <div class="val-row"><span class="val-lbl">PAT Margin (Q4)</span><span class="val-num pos">22.8% (Highest ever)</span></div>
+      <div class="val-row"><span class="val-lbl">D/E Ratio</span><span class="val-num">~0.21× (Low)</span></div>
+      <div class="val-row"><span class="val-lbl">1-Yr Stock Return</span><span class="val-num pos">+15.6%</span></div>
+      <div style="margin-top:10px"><span class="badge b-warn">Premium; justified by long-cycle OEM contracts and 37%+ margins</span></div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Comparative Valuation Matrix — FY26</div>
+    <table>
+      <thead>
+        <tr><th>Company</th><th style="text-align:right">Mkt Cap</th><th style="text-align:right">FY26 Revenue</th><th style="text-align:right">FY26 PAT</th><th style="text-align:right">P/E</th><th style="text-align:right">EV/EBITDA</th><th style="text-align:right">P/Sales</th><th style="text-align:right">Net Debt</th><th>Rating Consensus</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--tcom)"></span>Tata Communications</td>
+          <td class="num">₹43,427 Cr</td><td class="num">₹24,803 Cr</td><td class="num">₹1,044 Cr</td>
+          <td class="num">~41×</td><td class="num">~11×</td><td class="num">~1.7×</td>
+          <td class="num neg">₹9,601 Cr</td>
+          <td><span class="badge b-hold">Hold / Mixed</span></td>
+        </tr>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--nweb)"></span>Netweb Technologies</td>
+          <td class="num">₹23,080 Cr</td><td class="num">₹2,184 Cr</td><td class="num">₹206 Cr</td>
+          <td class="num">~106×</td><td class="num">~71×</td><td class="num">~10×</td>
+          <td class="num pos">Debt-Free</td>
+          <td><span class="badge b-buy">Buy (selective)</span></td>
+        </tr>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--azad)"></span>Azad Engineering</td>
+          <td class="num">₹13,950 Cr</td><td class="num">₹603 Cr</td><td class="num">₹134 Cr</td>
+          <td class="num">~121×</td><td class="num">~63×</td><td class="num">~26×</td>
+          <td class="num pos">Low (D/E 0.21×)</td>
+          <td><span class="badge b-buy">Buy (Goldman)</span></td>
+        </tr>
+        <tr>
+          <td class="tb"><span class="dot" style="background:var(--vbl)"></span>Varun Beverages</td>
+          <td class="num">₹86,390 Cr</td><td class="num">₹21,257 Cr</td><td class="num">₹2,153 Cr</td>
+          <td class="num">~40×</td><td class="num">~20×</td><td class="num">~4.1×</td>
+          <td class="num neg">₹5,820 Cr</td>
+          <td><span class="badge b-buy">Buy Consensus</span></td>
+        </tr>
+      </tbody>
+    </table>
+    
+  </div>
+</div>
+
+<!-- ══ TAB 6 · SEGMENTS ══ -->
+<div class="panel" id="tab-segments">
+  <div class="sec-hdr">Business Segments <span class="sec-note">· Revenue mix · Segment growth · FY26</span></div>
+
+  <!-- Tata Comm Segments -->
+  <div class="grp-hdr" style="background:var(--tcom-soft);border-color:var(--tcom);color:var(--tcom);margin-bottom:14px;">Tata Communications — Revenue Mix FY26</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segments — FY26</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Data Services (Core)</span><span style="font-weight:700">~86.5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:86.5%;background:var(--tcom)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>— of which: Digital Portfolio</span><span style="font-weight:700">~42.8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:42.8%;background:var(--tcom);opacity:.6"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>— of which: Next-Gen Connectivity</span><span style="font-weight:700">~24% growth sub-seg</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--tcom);opacity:.4"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Voice &amp; Other Services</span><span style="font-weight:700">~13.5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:13.5%;background:#94a3b8"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:10px;">Key milestone: More than 50% of revenue now comes from non-connectivity (platform/digital) products. Data revenue FY26 ₹21,352 Cr (+9.4%). Digital portfolio ₹10,621 Cr (+16.7%). Campaign Registry and Voice Solutions provide steady but declining contribution.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Services — FY26</div>
+      <table>
+        <thead><tr><th>Product / Platform</th><th>Category</th><th style="text-align:right">FY26 Growth</th></tr></thead>
+        <tbody>
+          <tr><td>Commotion (Network Transform)</td><td>Digital Platform</td><td class="tpos">High</td></tr>
+          <tr><td>Vayu Cloud (Multi-Cloud)</td><td>Cloud Services</td><td class="tpos">Growing</td></tr>
+          <tr><td>MOVE (IoT)</td><td>IoT / Connectivity</td><td class="tpos">+24%+</td></tr>
+          <tr><td>Kaleyra (CPaaS)</td><td>Communications</td><td class="tpos">Post-integration</td></tr>
+          <tr><td>Managed SD-WAN / SASE</td><td>Network Security</td><td class="tpos">Strong</td></tr>
+          <tr><td>Global Network (MPLS/IP)</td><td>Core Connectivity</td><td>Stable</td></tr>
+          <tr><td>Voice Solutions</td><td>Legacy</td><td class="tneg">Declining</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Netweb Segments -->
+  <div class="grp-hdr" style="background:var(--nweb-soft);border-color:var(--nweb);color:var(--nweb);margin-bottom:14px;">Netweb Technologies — Revenue Mix FY26 (Major Transformation Year)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segments — FY26</div>
+      <div class="seg-row"><div class="seg-lbl"><span>AI Systems (GPU/AI Clusters)</span><span style="font-weight:700">43.4% (↑ from 15%)</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:43.4%;background:var(--nweb)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>High Performance Computing (HPC)</span><span style="font-weight:700">~30%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--nweb);opacity:.7"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Private Cloud &amp; HCI</span><span style="font-weight:700">~15%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:15%;background:var(--nweb);opacity:.5"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Data Centre Servers / HPS</span><span style="font-weight:700">~11.6%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:11.6%;background:var(--nweb);opacity:.35"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:10px;">The AI segment's jump from 15% to 43.4% of revenue in one year is the defining story of FY26. Government 42.8% vs Non-Govt 57.2% mix indicates healthy diversification — government provides stable large orders, enterprise provides recurring demand.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">AI Segment — Scale of Transformation</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">Growth</th></tr></thead>
+        <tbody>
+          <tr><td>AI Systems Revenue Mix</td><td class="num">43.4%</td><td class="num">15%</td><td class="tpos">+2.9× share</td></tr>
+          <tr><td>AI Segment YoY Growth</td><td class="num">459.6%</td><td class="num">112%</td><td class="tpos">Accelerating</td></tr>
+          <tr><td>Total Revenue YoY</td><td class="num">+90%</td><td class="num">+58.7%</td><td class="tpos">Accelerating</td></tr>
+          <tr><td>AI Installations (cumulative)</td><td class="num">7,000+</td><td class="num">—</td><td class="tpos">Scale</td></tr>
+          <tr><td>HPC Installations (cumulative)</td><td class="num">600+</td><td class="num">—</td><td>Established</td></tr>
+          <tr><td>Order Pipeline</td><td class="num">₹4,431.5 Cr</td><td class="num">₹414.2 Cr</td><td class="tpos">+970%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Azad Segments -->
+  <div class="grp-hdr" style="background:var(--azad-soft);border-color:var(--azad);color:var(--azad);margin-bottom:14px;">Azad Engineering — Revenue Mix FY26 (Standalone)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segments — FY26 Standalone</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Energy &amp; Oil and Gas</span><span style="font-weight:700">81.5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:81.5%;background:var(--azad)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Aerospace &amp; Defence</span><span style="font-weight:700">17.2%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:17.2%;background:var(--azad);opacity:.6"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Others</span><span style="font-weight:700">1.3%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:1.3%;background:#94a3b8"></div></div></div>
+      <div class="seg-row" style="margin-top:10px;"><div class="seg-lbl"><span style="font-weight:700">Exports</span><span style="font-weight:700;color:var(--pos)">81.5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:81.5%;background:#166534"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Domestic</span><span style="font-weight:700">17.2%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:17.2%;background:#4b5563"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:10px;">Export-dominated revenue mix = natural USD/EUR hedge. Energy growth 34.2% in FY26. Aerospace grew 25.4%. MHI ATGG engine program (20 engines from FY27) to drive A&D share upward.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key OEM Contracts — Long-Cycle Backlog</div>
+      <table>
+        <thead><tr><th>OEM Customer</th><th>Component Type</th><th style="text-align:right">Contract Value</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>GE Vernova (Phase 1)</td><td>Gas turbine components</td><td class="num">USD 112 Mn</td><td><span class="badge b-pos">Active</span></td></tr>
+          <tr><td>GE Vernova (Phase 2)</td><td>Gas turbine components</td><td class="num">USD 53.5 Mn</td><td><span class="badge b-pos">Active</span></td></tr>
+          <tr><td>Siemens Energy</td><td>Turbine blades/vanes</td><td class="num">USD 90 Mn</td><td><span class="badge b-pos">Active</span></td></tr>
+          <tr><td>Mitsubishi Heavy Ind.</td><td>Aero-engine/turbine parts</td><td class="num">USD 83 Mn</td><td><span class="badge b-pos">Active</span></td></tr>
+          <tr><td>Baker Hughes/NP Srl</td><td>High-complexity components</td><td class="num">Multi-year</td><td><span class="badge b-pos">Facility Live Apr'26</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">Book-to-bill ratio 10.8× — multi-year revenue visibility through FY28–FY30. No speculative capex — all capacity backed by firm contracts.</p>
+    </div>
+  </div>
+  <!-- VBL Segments -->
+  <div class="grp-hdr" style="background:var(--vbl-soft);border-color:var(--vbl);color:var(--vbl);margin-bottom:14px;">Varun Beverages — Revenue Mix FY26 (Volume & Geography)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Geography Mix — FY26 Volume</div>
+      <div class="seg-row"><div class="seg-lbl"><span>India</span><span style="font-weight:700">~78%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:78%;background:var(--vbl)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Africa (Zimbabwe, Zambia, SA, Morocco)</span><span style="font-weight:700">~17%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:17%;background:var(--vbl);opacity:.65"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>South Asia (Nepal, Sri Lanka)</span><span style="font-weight:700">~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:var(--vbl);opacity:.4"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:10px;">Africa volume grew 26.3% YoY in FY26 — fastest-growing geography. South Africa JV (Pepsi franchise) coming under VBL's full consolidation, adding substantial new territory. India remains primary revenue engine with 27 states + 7 UTs coverage.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Product Portfolio — Revenue Mix</div>
+      <table>
+        <thead><tr><th>Category</th><th>Key Brands</th><th style="text-align:right">Mix (Vol %)</th><th style="text-align:right">Trend</th></tr></thead>
+        <tbody>
+          <tr><td>CSD (Carbonated Soft Drinks)</td><td>Pepsi, 7UP, Mirinda, Mountain Dew</td><td class="num">~62%</td><td class="tpos">Stable</td></tr>
+          <tr><td>Energy Drinks</td><td>Sting</td><td class="num">~12%</td><td class="tpos">Fast Growing</td></tr>
+          <tr><td>Packaged Water</td><td>Aquafina</td><td class="num">~14%</td><td class="tpos">Growing</td></tr>
+          <tr><td>Juices / Nectars</td><td>Tropicana, Slice</td><td class="num">~12%</td><td>Stable</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">Sting energy drink is the fastest-growing SKU — ₹20 price point, penetrating rural and tier-2 markets. Revenue realisation per case rising as Sting and higher-value SKUs gain volume share. Market share gains from local and regional beverages players.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ TAB 7 · SWOT ══ -->
+<div class="panel" id="tab-bizanalysis">
+  <div class="sec-hdr">Business Analysis — SWOT <span class="sec-note">· Q4 FY26 lens · All 4 companies</span></div>
+
+  <!-- Tata Comm SWOT -->
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span class="badge" style="background:var(--tcom-soft);color:var(--tcom);padding:2px 9px;font-size:9px;">TATA COMMUNICATIONS</span> Tata Communications — Global Digital Infrastructure</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+        <li>World's largest subsea cable network — irreplaceable global infrastructure moat</li>
+        <li>Digital portfolio at 42.8% of FY26 revenue — business model transformation underway</li>
+        <li>Q4 FY26 EBITDA +14.4% YoY — operational engine healthy despite PAT noise</li>
+        <li>FCF ₹1,474 Cr FY26 — 4× FY25 levels; balance sheet strengthening below 2× Net D/EBITDA</li>
+        <li>NPS of 83 globally / 95 India — exceptional customer satisfaction for a global telco</li>
+        <li>GCC (Global Capability Centre) deal wins — sticky, growing enterprise segment</li>
+      </ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+        <li>PAT collapsed 74.7% YoY in Q4 FY26 — even adjusting for base effects, profitability is thin</li>
+        <li>FY26 PAT ₹1,044 Cr (−35.8%) — well below the revenue growth rate of 7.3%</li>
+        <li>EBITDA margin 19.6% — far below the long-term management guidance of 23–25%</li>
+        <li>Debt load ₹9,601 Cr — meaningful leverage for a company with thin PAT margins</li>
+        <li>Digital portfolio yet to reach breakeven — new CEO admits this is a near-term priority</li>
+        <li>Revenue growth 7.3% — below expectations even after adjusting for currency effects</li>
+      </ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+        <li>Enterprise AI infrastructure: Commotion + Vayu Cloud + multi-cloud = AI-era platform play</li>
+        <li>GCC boom in India — Tata Comm uniquely positioned with connectivity + cloud + security</li>
+        <li>Digital breakeven could be a step-change margin catalyst — new CEO's #1 priority</li>
+        <li>Next-gen connectivity growing at 24% — fastest-growing sub-segment to carry overall growth</li>
+        <li>IoT/MOVE platform: 5G + connected devices supercycle globally</li>
+        <li>Debt reduction roadmap: every 0.5× reduction in D/EBITDA frees significant cash for returns</li>
+      </ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+        <li>West Asia geopolitical tension — direct impact on demand and cost structures</li>
+        <li>Intense competition from global hyperscalers (AWS, Azure) in cloud connectivity</li>
+        <li>Currency dependence: FY26 EBITDA partly supported by INR depreciation, not pure operations</li>
+        <li>Two major brokerages (ICICI Securities, Nuvama) cut price targets post results</li>
+        <li>Kaleyra/Switch integration — acquired businesses took time to turn EBITDA-positive</li>
+        <li>Regulatory risk in multiple geographies — telecom licensing, data localisation</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- Netweb SWOT -->
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span class="badge" style="background:var(--nweb-soft);color:var(--nweb);padding:2px 9px;font-size:9px;">NETWEB TECHNOLOGIES</span> Netweb Technologies — India's AI &amp; HPC Champion</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+        <li>Revenue +90% YoY FY26 — fastest growth in Indian listed hardware/HPC universe</li>
+        <li>AI Systems: 459.6% YoY growth and now 43.4% of revenue — dominant structural shift</li>
+        <li>ROCE 37.5%, ROE 32.9% — exceptional capital efficiency for a hardware company</li>
+        <li>Debt-free balance sheet post FY26 — financial flexibility for FY27 expansion</li>
+        <li>In-house design and manufacture: unique in India, aligns with Make in India and sovereign compute</li>
+        <li>Order pipeline ₹44,315 Mn — extraordinary visibility for a ₹2,184 Cr revenue company</li>
+      </ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+        <li>EBITDA margin 13.2% in Q4 — below 14% guidance; AI mix shift compresses unit margins</li>
+        <li>QoQ revenue decline 3.9% in Q4 — even if normalisation, raises execution timing concerns</li>
+        <li>High government revenue concentration (42.8%) — government budget cycles create lumpiness</li>
+        <li>PE 106× — any miss in high-growth trajectory can cause severe re-rating downside</li>
+        <li>Small scale: ₹2,184 Cr revenue vs large domestic and global competitors</li>
+        <li>Execution risk: managing rapid scale-up (90% revenue growth) while maintaining quality</li>
+      </ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+        <li>India AI Mission (₹10,300 Cr government fund) — direct pipeline for sovereign GPU infrastructure</li>
+        <li>National Supercomputing Mission (NSM Phase 2) — HPC expansion in research/defence</li>
+        <li>Private enterprise AI adoption: data centres, GCCs, financial services deploying on-prem AI</li>
+        <li>International expansion: US investor roadshow in March 2026 signals global ambitions</li>
+        <li>Vertiv partnership: validated rack-scale AI systems — expands addressable market upward</li>
+        <li>ESG score 69 from NSE — growing institutional investor eligibility</li>
+      </ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+        <li>Global AI hardware giants (NVIDIA, Dell, HPE) entering India — margin and competition pressure</li>
+        <li>Commodity GPU supply chain risk — Netweb assembles/designs but depends on GPU availability</li>
+        <li>Government policy risk: changes in India AI Mission spend priorities or election cycle</li>
+        <li>PE 106× leaves no room for execution slip — even one soft quarter = significant stock decline</li>
+        <li>Technology cycle risk: AI hardware generation shifts require rapid design refresh capability</li>
+        <li>Working capital intensity: large government orders require upfront procurement funding</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- Azad SWOT -->
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span class="badge" style="background:var(--azad-soft);color:var(--azad);padding:2px 9px;font-size:9px;">AZAD ENGINEERING</span> Azad Engineering — Precision Forged Components for Global OEMs</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+        <li>EBITDA margin 38.0% Q4 / 37.4% FY26 — extraordinary for a manufacturing company</li>
+        <li>PAT margin 22.8% Q4 FY26 — highest ever; pricing power is structurally embedded</li>
+        <li>Long-cycle OEM contracts: GE Vernova, Siemens Energy, MHI, Baker Hughes — sticky revenue</li>
+        <li>Order book 10.8× book-to-bill — multi-year revenue visibility through FY28–30</li>
+        <li>Export-led (81.5%) — USD/EUR revenues, natural currency hedge, global demand exposure</li>
+        <li>Four dedicated manufacturing facilities — customer-specific lean cells deepen OEM lock-in</li>
+      </ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+        <li>Small scale: ₹603 Cr FY26 revenue — one order delay can move the numbers materially</li>
+        <li>Q4 FY26 slightly below analyst estimates despite strong absolute performance</li>
+        <li>FIIs trimming: from 16.15% (Jun '25) to 14.75% (Mar '26) — profit-booking signal</li>
+        <li>Capex-heavy path to FY28 utilisation peak — cash consumed before cash generated</li>
+        <li>PE 121× — leaves very little room for operational stumbles</li>
+        <li>Single-industry concentration in energy turbines — energy transition risk in long-run</li>
+      </ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+        <li>Global energy transition: gas turbines critical for grid stability alongside renewables — long demand runway</li>
+        <li>ATGG program with MHI: 20 aero-engines beginning FY27 — aerospace revenue to accelerate</li>
+        <li>India defence manufacturing: Aatmanirbhar Bharat creates domestic demand + global export</li>
+        <li>Baker Hughes Nuovo Pignone dedicated facility (Apr 2026): new revenue stream from FY27</li>
+        <li>OEM qualification cycles: each new approval locks in 10–15 year supplier relationship</li>
+        <li>FY28 peak utilisation = significant operating leverage — margins could expand further</li>
+      </ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+        <li>Energy transition long-term risk: if gas turbines lose share to battery storage/hydrogen by 2035+</li>
+        <li>OEM concentration risk: top 4 customers likely represent 90%+ of revenue</li>
+        <li>Execution risk during capacity ramp: quality failures in safety-critical components = OEM termination</li>
+        <li>Geopolitical risk: Russia-Ukraine/West Asia conflicts affect OEM order cycles</li>
+        <li>Skilled labour scarcity: precision machining requires rare technical expertise</li>
+        <li>New OEM qualification timelines can slip — delaying revenue ramp from new programmes</li>
+      </ul></div>
+    </div>
+  </div>
+  <!-- VBL SWOT -->
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span class="badge" style="background:var(--vbl-soft);color:var(--vbl);padding:2px 9px;font-size:9px;">VARUN BEVERAGES</span> Varun Beverages — India's Largest PepsiCo Bottler &amp; Distributor</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+        <li>Exclusive PepsiCo franchisee for 27 states + 7 UTs — near-total India coverage; no domestic competitor</li>
+        <li>44 manufacturing plants, 130+ production lines — unmatched distribution backbone in FMCG beverages</li>
+        <li>FY26 PAT ₹2,153 Cr (+25.1%) — consistent, high-quality earnings growth over 5+ years</li>
+        <li>Sting energy drink — mass-premium positioning at ₹20/can; rapid rural penetration driving realisation uplift</li>
+        <li>Africa high-growth engine: volumes +26.3% YoY in FY26 — international revenues de-risk India seasonality</li>
+        <li>5 mn+ retail touchpoints with proprietary cold-chain (cooler) placement — shelf presence moat</li>
+      </ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+        <li>Inherently seasonal — Q3 (summer) contributes 35–40% of annual revenue; Q4 is soft</li>
+        <li>Franchisee, not brand owner — PepsiCo sets product pricing, portfolio strategy, and advertising; VBL executes</li>
+        <li>High capex intensity (₹3,200 Cr FY26) — Africa expansion, new India plants; FCF generation constrained near-term</li>
+        <li>Realisation per case declining: ₹233 Q4 FY25 → ₹228 Q4 FY26 — mix/pricing pressure from CSD</li>
+        <li>Net Debt ₹5,820 Cr — D/E 0.7× and rising with capex cycle; interest cost headwind</li>
+        <li>International markets (Africa) carry currency and political risk — Zimbabwe hyperinflation history</li>
+      </ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+        <li>India per-capita beverage consumption still very low vs global peers — 10× headroom vs USA; demographic tailwind</li>
+        <li>Energy drinks: Sting is growing faster than the category — global energy drink penetration curve is early-stage in India</li>
+        <li>South Africa PepsiCo franchise full consolidation — significant territory, large economy, new production assets</li>
+        <li>Morocco, Mozambique geography: Africa's emerging middle class = long-term volume engine beyond Zimbabwe/Zambia</li>
+        <li>Premiumisation: introducing premium SKUs (larger packs, flavour extensions) to drive realisation per case</li>
+        <li>Rural India distribution expansion — VBL's logistics network is a national asset extending to tier-3/4 markets</li>
+      </ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+        <li>PepsiCo franchise renewal risk (long-term) — concentration on a single brand owner's portfolio strategy</li>
+        <li>Health consciousness: anti-sugar/anti-CSD movement in urban India could structurally reduce demand</li>
+        <li>Rising sugar, PET, and aluminium prices — raw material cost headwind to EBITDA margin</li>
+        <li>Africa currency risk: Zimbabwe USD peg and Zambia/Morocco forex exposure on repatriation</li>
+        <li>Regulatory risk: Sugar tax, GST changes, or packaged food labelling mandates can impact volumes</li>
+        <li>Competition: Coca-Cola (HCCB), local players (Paper Boat, B Natural), and new energy drink entrants (Monster, Red Bull)</li>
+      </ul></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ TAB 8 · ANALYST RATINGS ══ -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Ratings <span class="sec-note">· Post Q4 FY26 · Broker views · Price targets</span></div>
+
+  <!-- Tata Comm -->
+  <div class="grp-hdr" style="background:var(--tcom-soft);border-color:var(--tcom);color:var(--tcom);margin-bottom:14px;">Tata Communications — Analyst Consensus</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">ICICI Securities</div>
+          <span class="rat-pill rp-buy">BUY (Downgraded TP)</span>
+        </div>
+        <div class="ac-tp">₹2,100 <span style="font-size:12px;font-weight:400;color:var(--muted)">(Revised from ₹2,250)</span></div>
+        <div class="ac-cmp">CMP ~₹1,527 · Implied upside ~37%</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:68%;background:var(--tcom)"></div></div>
+        <div class="ac-text">Post Q4 FY26 results, ICICI cut target citing margin disappointment and PAT compression. Digital portfolio growth of 16.7% remains the long-term thesis anchor. Management transition to new CEO factored in.</div>
+      </div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">Nuvama</div>
+          <span class="rat-pill rp-buy">BUY (Target Trimmed)</span>
+        </div>
+        <div class="ac-tp">₹2,000 <span style="font-size:12px;font-weight:400;color:var(--muted)">(Revised from ₹2,100)</span></div>
+        <div class="ac-cmp">CMP ~₹1,527 · Implied upside ~31%</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:60%;background:var(--tcom)"></div></div>
+        <div class="ac-text">Maintained Buy but noted "margin showing has left a lot to be desired." Flagged dependence on currency movements rather than organic EBITDA improvement. Digital breakeven timeline is the key re-rating watch.</div>
+      </div>
+    </div>
+    <div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">Consensus Range</div>
+          <span class="rat-pill rp-hold">MIXED — Buy/Hold</span>
+        </div>
+        <div class="ac-tp">₹2,012 – ₹2,312</div>
+        <div class="ac-cmp">CMP ~₹1,527 · Consensus implies 21–51% upside</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:55%;background:var(--tcom)"></div></div>
+        <div class="ac-text">Brokers broadly agree on the long-term digital transformation story but are divided on timing of PAT recovery. Revenue growth below 9% after currency adjustment is a key concern. New CEO Ganesh Lakshminarayanan's execution in H1 FY27 will be the acid test. FCF improvement (4× FY25) is seen as a structural positive often overlooked amid PAT noise.</div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Key Monitorables — FY27</div>
+        <ul style="list-style:none;font-size:12px;line-height:1.85;">
+          <li>• Digital portfolio breakeven timeline and contribution margin improvement</li>
+          <li>• Organic revenue growth ex-currency — target ≥10% underlying</li>
+          <li>• Net Debt/EBITDA below 1.5× (from current 1.99×) — a key re-rating trigger</li>
+          <li>• New CEO FY27 strategic direction and sales execution uplift</li>
+          <li>• West Asia demand impact on GCC and enterprise connectivity</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Netweb -->
+  <div class="grp-hdr" style="background:var(--nweb-soft);border-color:var(--nweb);color:var(--nweb);margin-bottom:14px;">Netweb Technologies — Analyst Consensus</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">Consensus (3 Analysts)</div>
+          <span class="rat-pill rp-buy">BUY</span>
+        </div>
+        <div class="ac-tp">₹3,863 <span style="font-size:12px;font-weight:400;color:var(--muted)">(Average TP)</span></div>
+        <div class="ac-cmp">CMP ~₹3,284 · Implied upside ~17.6%</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:60%;background:var(--nweb)"></div></div>
+        <div class="ac-text">Analysts maintain Buy but acknowledge the valuation is stretched at 106× PE. Target range: ₹3,629 (Low) to ₹4,150 (High). Bull case rests on India AI Mission order materialisation and continued 30–40% revenue CAGR in FY27–28.</div>
+      </div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">MOFSL / JM Financial / YES Securities</div>
+          <span class="rat-pill rp-buy">COVERAGE: BUY / POSITIVE</span>
+        </div>
+        <div class="ac-tp">₹4,150 (High) — ₹3,629 (Low)</div>
+        <div class="ac-cmp">CMP ~₹3,284 · 188% 1-year return already delivered</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:55%;background:var(--nweb)"></div></div>
+        <div class="ac-text">Analysts highlight AI segment at 43.4% revenue as a structural inflection — not cyclical. Strong execution track record (77% revenue CAGR over extended period). Debt-free balance sheet + strong return ratios cited as quality anchors. Key risk: government order luminess and single-quarter execution gaps.</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-lbl">Valuation Check — Simply Wall St Analysis</div>
+        <table>
+          <thead><tr><th>Metric</th><th style="text-align:right">Current</th><th style="text-align:right">Fair / Estimate</th><th>Signal</th></tr></thead>
+          <tbody>
+            <tr><td>Current P/E</td><td class="num">102.9×</td><td class="num">65.2× (fair)</td><td><span class="badge b-warn">Elevated</span></td></tr>
+            <tr><td>DCF Fair Value</td><td class="num">₹3,284</td><td class="num">₹700 (DCF)</td><td><span class="badge b-neg">Premium to DCF</span></td></tr>
+            <tr><td>Future Growth Score</td><td class="num">6/6</td><td class="num">—</td><td><span class="badge b-pos">Excellent</span></td></tr>
+            <tr><td>Financial Health</td><td class="num">6/6</td><td class="num">—</td><td><span class="badge b-pos">Excellent</span></td></tr>
+            <tr><td>Valuation Score</td><td class="num">0/6</td><td class="num">—</td><td><span class="badge b-neg">Expensive</span></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:10px;color:var(--muted);margin-top:8px;">The tension: excellent business fundamentals + expensive valuation. Price reflects high-growth expectations baked in.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Azad -->
+  <div class="grp-hdr" style="background:var(--azad-soft);border-color:var(--azad);color:var(--azad);margin-bottom:14px;">Azad Engineering — Analyst Consensus</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">Goldman Sachs</div>
+          <span class="rat-pill rp-buy">BUY (Maintained)</span>
+        </div>
+        <div class="ac-tp">₹2,460</div>
+        <div class="ac-cmp">CMP ~₹2,101 · Implied upside ~17%</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:60%;background:var(--azad)"></div></div>
+        <div class="ac-text">Goldman maintained Buy post Q4 results despite slight below-estimate performance. Highlighted: (1) FY26 revenue +32% YoY and EBITDA margin 37.4% exceeding company guidance; (2) 10.8× book-to-bill ratio as evidence of strong demand visibility; (3) commencement of MHI hot engine component supplies; (4) 20 ATGG engines beginning FY27 as medium-term catalyst.</div>
+      </div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">Consensus — Analyst Range</div>
+          <span class="rat-pill rp-buy">BUY CONSENSUS</span>
+        </div>
+        <div class="ac-tp">₹1,675 (Low) — ₹2,200 (High) — ₹1,962 (Avg)</div>
+        <div class="ac-cmp">CMP ~₹2,101 · Near consensus upper range</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:55%;background:var(--azad)"></div></div>
+        <div class="ac-text">Yahoo Finance consensus shows Strong Buy / Buy. FII trimming from 16.15% to 14.75% reflects some profit-booking at elevated valuations. Institutional holding of 26.46% remains healthy. Key debate: can FY27 deliver 25–30% PAT growth to justify 121× P/E?</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-lbl">Key Monitorables — FY27</div>
+        <ul style="list-style:none;font-size:12px;line-height:1.85;">
+          <li>• MHI ATGG engine deliveries (20 units): commencement and revenue recognition</li>
+          <li>• Baker Hughes facility (Apr 2026): ramp-up speed and margin profile</li>
+          <li>• Margin trajectory: can 37%+ EBITDA margins be sustained at higher scale?</li>
+          <li>• New OEM qualifications: each approval = 10–15 yr supplier relationship</li>
+          <li>• FY27 guidance confirmation: management targeting ≥25–30% revenue growth</li>
+          <li>• FII holding stabilisation after Q4 FY26 trimming</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- VBL Analyst Ratings -->
+  <div class="grp-hdr" style="background:var(--vbl-soft);border-color:var(--vbl);color:var(--vbl);margin-bottom:14px;">Varun Beverages — Analyst Consensus</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">Kotak Securities</div>
+          <span class="rat-pill rp-buy">BUY</span>
+        </div>
+        <div class="ac-tp">₹600 <span style="font-size:12px;font-weight:400;color:var(--muted)">(12-month target)</span></div>
+        <div class="ac-cmp">CMP ~₹474 · Implied upside ~26.6%</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:65%;background:var(--vbl)"></div></div>
+        <div class="ac-text">Volume-led growth thesis intact. FY26 earnings growth 25%+ exceeds sector peers. Africa ramp and Sting expansion are key incremental drivers. Capex intensity near peak — FY28 should see strong FCF improvement. Valuation at 40× PE attractive vs historical average of 55×.</div>
+      </div>
+      <div class="analyst-card">
+        <div class="ac-head">
+          <div class="ac-name">Motilal Oswal / ICICI / Nuvama</div>
+          <span class="rat-pill rp-buy">BUY CONSENSUS</span>
+        </div>
+        <div class="ac-tp">₹550 – ₹640 <span style="font-size:12px;font-weight:400;color:var(--muted)">(Target range)</span></div>
+        <div class="ac-cmp">CMP ~₹474 · Stock down ~25% from 52W high of ₹682</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:60%;background:var(--vbl)"></div></div>
+        <div class="ac-text">Consensus view: VBL is a quality compounder now available at a meaningful discount to its historical valuation range. Africa is under-appreciated by the Street — consolidation of South Africa franchise a significant catalyst. Key risk to monitor: raw material (sugar/PET/Al) cost trajectory and pace of capex normalisation.</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-lbl">Key Monitorables — FY27</div>
+        <ul style="list-style:none;font-size:12px;line-height:1.85;">
+          <li>• Africa volume trajectory — can 26%+ growth sustain into FY27?</li>
+          <li>• Sting energy drink market share in India — pricing power at ₹20/can</li>
+          <li>• South Africa franchise consolidation timeline and revenue contribution</li>
+          <li>• Capex normalisation — peak expected FY26–FY27; FCF improvement from FY28</li>
+          <li>• Realisation per case trend — mix improvement via Sting and premium SKUs</li>
+          <li>• Sugar and PET cost trends — key margin determinants in H1 FY27 (peak season)</li>
+        </ul>
+      </div>
+      <div class="card gap-top">
+        <div class="card-lbl">VBL Valuation Context</div>
+        <table>
+          <thead><tr><th>Metric</th><th style="text-align:right">Current</th><th style="text-align:right">5-Yr Avg</th><th>Signal</th></tr></thead>
+          <tbody>
+            <tr><td>Trailing P/E</td><td class="num">~40×</td><td class="num">~55×</td><td><span class="badge b-pos">Below Avg</span></td></tr>
+            <tr><td>EV/EBITDA</td><td class="num">~20×</td><td class="num">~28×</td><td><span class="badge b-pos">Attractive</span></td></tr>
+            <tr><td>FY26 PAT Growth</td><td class="num tpos">+25.1%</td><td class="num">~20%</td><td><span class="badge b-pos">Above Avg</span></td></tr>
+            <tr><td>Volume CAGR (5Y)</td><td class="num tpos">~15%</td><td class="num">—</td><td><span class="badge b-pos">Strong</span></td></tr>
+            <tr><td>1-Yr Return</td><td class="num tneg">~−25%</td><td class="num">—</td><td><span class="badge b-warn">Underperformed</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ TAB 9 · MOATS ══ -->
+<div class="panel" id="tab-moats">
+  <div class="sec-hdr">Moats &amp; USPs <span class="sec-note">· Competitive advantages · What protects each business</span></div>
+
+  <!-- Tata Comm Moats -->
+  <div class="grp-hdr" style="background:var(--tcom-soft);border-color:var(--tcom);color:var(--tcom);margin-bottom:14px;">Tata Communications</div>
+  <div class="g3" style="margin-bottom:20px;">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--tcom)">Tata Comm</div>
+      <div class="moat-title">🌊 Subsea Cable Infrastructure</div>
+      <div class="moat-body">One of the world's largest subsea cable network owners — physical infrastructure laid over decades, costing billions, spanning 200+ countries. Near-impossible to replicate from scratch. Provides the backbone for inter-continental internet traffic routing.</div>
+      <span class="moat-tag" style="background:var(--tcom-soft);color:var(--tcom)">Infrastructure Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--tcom)">Tata Comm</div>
+      <div class="moat-title">🤝 Enterprise Relationship Lock-In</div>
+      <div class="moat-body">Global enterprise clients on multi-year managed connectivity contracts. Network transformation, SD-WAN, and SASE integrations are deeply embedded — switching costs are high. NPS of 83 globally / 95 in India reflects this stickiness.</div>
+      <span class="moat-tag" style="background:var(--tcom-soft);color:var(--tcom)">Switching Cost Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--tcom)">Tata Comm</div>
+      <div class="moat-title">🏆 Gartner Magic Quadrant — 13 Years</div>
+      <div class="moat-body">Leader in Global WAN Services for 13 consecutive years — signals consistent service quality, global reach, and enterprise trust. Institutional endorsement helps win and retain Fortune 500 clients who use analyst evaluations for vendor selection.</div>
+      <span class="moat-tag" style="background:var(--tcom-soft);color:var(--tcom)">Brand / Quality Moat</span>
+    </div>
+  </div>
+
+  <!-- Netweb Moats -->
+  <div class="grp-hdr" style="background:var(--nweb-soft);border-color:var(--nweb);color:var(--nweb);margin-bottom:14px;">Netweb Technologies</div>
+  <div class="g3" style="margin-bottom:20px;">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--nweb)">Netweb</div>
+      <div class="moat-title">🏭 In-House Design &amp; Manufacture</div>
+      <div class="moat-body">Unlike pure-play assemblers/resellers, Netweb designs and manufactures high-end computing systems in-house. This allows full customisation, faster delivery, and better margins than box-pushing competitors. A rare capability in India's IT hardware landscape.</div>
+      <span class="moat-tag" style="background:var(--nweb-soft);color:var(--nweb)">Technology Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--nweb)">Netweb</div>
+      <div class="moat-title">🇮🇳 Sovereign Compute Positioning</div>
+      <div class="moat-body">India AI Mission (₹10,300 Cr), National Supercomputing Mission — both mandate Indian-made, locally-controlled compute infrastructure. Netweb is the only scaled Indian player with end-to-end HCS capability. Government procurement preference is a structural tailwind.</div>
+      <span class="moat-tag" style="background:var(--nweb-soft);color:var(--nweb)">Policy Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--nweb)">Netweb</div>
+      <div class="moat-title">📦 Order Pipeline ₹44,315 Mn</div>
+      <div class="moat-body">Extended pipeline of ₹44,315 Mn (20× Q4 quarterly revenue) represents multi-year customer intent. High-end computing systems require 8–12 week delivery cycles — Netweb's pipeline is a visibility moat that most hardware players lack entirely.</div>
+      <span class="moat-tag" style="background:var(--nweb-soft);color:var(--nweb)">Order Backlog Moat</span>
+    </div>
+  </div>
+
+  <!-- Azad Moats -->
+  <div class="grp-hdr" style="background:var(--azad-soft);border-color:var(--azad);color:var(--azad);margin-bottom:14px;">Azad Engineering</div>
+  <div class="g3" style="margin-bottom:20px;">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--azad)">Azad Engg</div>
+      <div class="moat-title">🔧 OEM Qualification Barriers</div>
+      <div class="moat-body">Qualifying as a Tier-1 supplier to GE Vernova, Siemens Energy, MHI, and Baker Hughes takes 3–7 years of rigorous quality audits, process validation, and trial orders. Once qualified, OEMs rarely switch suppliers — inertia of safety-critical component sourcing is extreme.</div>
+      <span class="moat-tag" style="background:var(--azad-soft);color:var(--azad)">Qualification Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--azad)">Azad Engg</div>
+      <div class="moat-title">🏗 Dedicated Lean Facilities</div>
+      <div class="moat-body">Each of Azad's four dedicated lean manufacturing facilities is built for a single customer, with layouts and workflows designed to meet that OEM's exact specifications. This is a physical lock-in — the customer's IP is embedded in the factory. Switching requires building a new factory.</div>
+      <span class="moat-tag" style="background:var(--azad-soft);color:var(--azad)">Asset Lock-In Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--azad)">Azad Engg</div>
+      <div class="moat-title">📋 Long-Cycle Contract Backlog</div>
+      <div class="moat-body">10.8× book-to-bill, with contracts extending through FY28–30. No speculative capex — all expansion backed by firm, signed agreements. This protects against demand cycle risk that affects most capital goods companies. Revenue visibility is structurally built-in, not estimated.</div>
+      <span class="moat-tag" style="background:var(--azad-soft);color:var(--azad)">Revenue Visibility Moat</span>
+    </div>
+  </div>
+  <!-- VBL Moats -->
+  <div class="grp-hdr" style="background:var(--vbl-soft);border-color:var(--vbl);color:var(--vbl);margin-bottom:14px;">Varun Beverages</div>
+  <div class="g3" style="margin-bottom:20px;">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--vbl)">Varun Beverages</div>
+      <div class="moat-title">🍹 Exclusive PepsiCo Franchise — India</div>
+      <div class="moat-body">VBL holds exclusive PepsiCo bottling and distribution rights for 27 states + 7 UTs in India — effectively the entire country. No other Indian company can bottle or distribute Pepsi products in these territories. The franchise agreement is a permanent structural moat; replacing VBL would require PepsiCo to build a competing network from scratch.</div>
+      <span class="moat-tag" style="background:var(--vbl-soft);color:var(--vbl)">Franchise / Exclusivity Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--vbl)">Varun Beverages</div>
+      <div class="moat-title">🏭 Distribution Infrastructure</div>
+      <div class="moat-body">44 manufacturing plants, 3,000+ direct distributors, and 5 mn+ retail touchpoints built over 30 years. Cold-chain assets (company-owned coolers placed at retailers) create physical shelf presence that is nearly impossible for new entrants to replicate at speed or at comparable cost. Last-mile reach in tier-3/4 India is rare.</div>
+      <span class="moat-tag" style="background:var(--vbl-soft);color:var(--vbl)">Infrastructure / Distribution Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--vbl)">Varun Beverages</div>
+      <div class="moat-title">⚡ Sting Energy Positioning</div>
+      <div class="moat-body">Sting energy drink at ₹20 targets a price-sensitive mass market segment that Monster (₹110+) and Red Bull (₹120+) cannot profitably serve. VBL's manufacturing scale and PepsiCo brand equity allow Sting to grow margins per case above CSD even at mass pricing. This is a new category creation story within an existing distribution machine.</div>
+      <span class="moat-tag" style="background:var(--vbl-soft);color:var(--vbl)">Category Creation Moat</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ VARUN BEVERAGES TAB ══ -->
+<div class="panel" id="tab-varun">
+  <div class="sec-hdr">🥤 Varun Beverages <span class="sec-note">· Q4 FY26 Actuals ✅ · FMCG / Beverages · PepsiCo India Franchisee</span></div>
+
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);">
+    <div class="kpi vbl-a"><div class="kl">Q4 FY26 Revenue ✅</div><div class="kv">₹5,565 Cr</div><div class="kc pos">▲ 5.8% YoY</div></div>
+    <div class="kpi vbl-a"><div class="kl">FY26 Annual Revenue ✅</div><div class="kv">₹21,257 Cr</div><div class="kc pos">▲ 20.9% YoY</div></div>
+    <div class="kpi vbl-a"><div class="kl">FY26 PAT ✅</div><div class="kv">₹2,153 Cr</div><div class="kc pos">▲ 25.1% YoY</div></div>
+    <div class="kpi vbl-a"><div class="kl">Market Cap</div><div class="kv">₹86,390 Cr</div><div class="kc warn">PE ~40×</div></div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--vbl-soft);border-color:var(--vbl);color:var(--vbl);margin-bottom:14px;">Varun Beverages Limited — Business &amp; Investment Overview · BSE: 554160 · Ravi Jaipuria, Chairman</div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Company Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Varun Beverages Limited (VBL)</strong> is the second-largest PepsiCo franchisee globally and India's largest, with exclusive rights to bottle and distribute PepsiCo products across virtually all of India (27 states + 7 UTs). The company was founded by Ravi Jaipuria and listed on BSE/NSE in 2016.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)">
+        <strong>Core Business:</strong> Manufacturing and distributing PepsiCo's portfolio — Pepsi, 7UP, Mountain Dew, Mirinda, Sting, Tropicana, Slice, Aquafina — across India. VBL is the operational engine behind PepsiCo's India presence; PepsiCo handles brand and marketing, VBL handles production, logistics, and last-mile distribution.<br><br>
+        <strong>Scale:</strong> 44 manufacturing plants, 130+ production lines, 3,000+ direct distributors, 5 mn+ retail touchpoints. Cold-chain assets (company-owned coolers) placed at key retail outlets create permanent shelf presence and retailer stickiness.<br><br>
+        <strong>International:</strong> Operations in Zimbabwe, Zambia, Morocco, South Africa, Nepal, Sri Lanka, and Mozambique. Africa revenues growing fastest — 26.3% volume growth in FY26. South Africa franchise consolidation adds large territory under VBL's balance sheet.<br><br>
+        <strong>Sting Engine:</strong> PepsiCo's Sting energy drink, distributed exclusively by VBL in India, is the highest-growth SKU. Mass-premium pricing at ₹20/can makes it accessible to rural and tier-2 markets — a category-creation play inside an existing distribution machine.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Q4 FY26 &amp; FY26 Annual — Financial Summary</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue (₹ Cr)</td><td class="num">₹5,565</td><td class="num">₹5,261</td><td class="num">₹21,257</td><td class="num">₹17,587</td></tr>
+          <tr><td>Revenue Growth</td><td class="tpos">+5.8%</td><td class="num">—</td><td class="tpos">+20.9%</td><td class="tpos">+22.5%</td></tr>
+          <tr><td class="tb">EBITDA (₹ Cr)</td><td class="num">₹1,140</td><td class="num">₹1,051</td><td class="num">₹4,627</td><td class="num">₹3,810</td></tr>
+          <tr><td>EBITDA Margin</td><td class="num">20.5%</td><td class="num">20.0%</td><td class="num">21.8%</td><td class="num">21.7%</td></tr>
+          <tr><td class="tb">PAT (₹ Cr)</td><td class="num">₹492</td><td class="num">₹425</td><td class="num">₹2,153</td><td class="num">₹1,721</td></tr>
+          <tr><td>PAT Margin</td><td class="num">8.8%</td><td class="num">8.1%</td><td class="num">10.1%</td><td class="num">9.8%</td></tr>
+          <tr><td>Volume (mn cases)</td><td class="num">244.5</td><td class="num">225.3</td><td class="num">1,051</td><td class="num">952</td></tr>
+          <tr><td>Volume Growth</td><td class="tpos">+8.5%</td><td class="num">—</td><td class="tpos">+10.5%</td><td class="tpos">+14.8%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">Q4 is always the seasonally weakest quarter (post-summer). Q3 (Apr–Jun) is the peak — revenue ₹7,938 Cr in Q3 FY26. Full-year metrics are the correct lens for VBL.</p>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Investment Thesis — Three Pillars</div>
+      <table>
+        <thead><tr><th>Pillar</th><th>Detail</th><th style="text-align:right">Outlook</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">1. India Consumption Runway</td><td>Per-capita beverage consumption far below global peers; demographic dividend unfolding</td><td class="tpos">Long Runway</td></tr>
+          <tr><td class="tb">2. Africa High-Growth Engine</td><td>Volume +26.3% FY26; South Africa franchise expanding territory significantly</td><td class="tpos">Accelerating</td></tr>
+          <tr><td class="tb">3. Sting Energy Momentum</td><td>₹20 price point disrupts premium segment; Sting now ~12% of volume with rising realisation</td><td class="tpos">Category Creation</td></tr>
+          <tr><td class="tb">4. Franchise Exclusivity Moat</td><td>PepsiCo exclusive rights across all India; no domestic competitor possible</td><td class="tpos">Permanent</td></tr>
+          <tr><td class="tb">5. Capex Cycle Peaking</td><td>FY26 capex ₹3,200 Cr near peak; FCF generation to improve from FY28 onward</td><td class="tpos">FY28 Catalyst</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Valuation &amp; Market Position</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 2026)</span><span class="val-num">~₹474</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹86,390 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">52-Week High / Low</span><span class="val-num">₹682 / ₹422</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num pos">~40× (vs 5-yr avg 55×)</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~20× (vs 5-yr avg 28×)</span></div>
+      <div class="val-row"><span class="val-lbl">P/Sales (FY26)</span><span class="val-num">~4.1×</span></div>
+      <div class="val-row"><span class="val-lbl">Net Debt</span><span class="val-num neg">₹5,820 Cr (D/E ~0.7×)</span></div>
+      <div class="val-row"><span class="val-lbl">ROE (FY26)</span><span class="val-num pos">~22%</span></div>
+      <div class="val-row"><span class="val-lbl">1-Yr Stock Return</span><span class="val-num neg">~−25%</span></div>
+      <div style="margin-top:12px"><span class="badge b-pos">Below historical avg valuation</span> <span class="badge b-warn">Capex cycle headwind</span></div>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl" style="color:var(--vbl)">Analyst Consensus</div>
+      <div class="analyst-card" style="margin-bottom:0;padding:14px;">
+        <div class="ac-head">
+          <div class="ac-name">Street Consensus</div>
+          <span class="rat-pill rp-buy">BUY</span>
+        </div>
+        <div class="ac-tp">₹550 – ₹640</div>
+        <div class="ac-cmp">CMP ~₹474 · Upside ~16–35%</div>
+        <div class="ac-bar"><div class="ac-fill" style="width:65%;background:var(--vbl)"></div></div>
+        <div class="ac-text">Multiple brokers maintain Buy with targets of ₹550–640. Stock correction seen as valuation opportunity. Africa volume and Sting momentum cited as near-term catalysts.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--pos)">✅ What Worked — FY26</div>
+      <ul style="list-style:none;font-size:12px;line-height:1.85;">
+        <li>• FY26 PAT ₹2,153 Cr — 25.1% growth; consistent compounder</li>
+        <li>• Africa volumes +26.3% YoY — fastest geography</li>
+        <li>• Sting energy drink — high realisation, rapid penetration</li>
+        <li>• EBITDA margin steady at 21.8% FY26</li>
+        <li>• Volume 1,051 mn cases — milestone crossed</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--neg)">⚠ Watch Items</div>
+      <ul style="list-style:none;font-size:12px;line-height:1.85;">
+        <li>• Capex drag (₹3,200 Cr FY26) — FCF pressure</li>
+        <li>• Sugar/PET input cost inflation</li>
+        <li>• Realisation per case under pressure (₹228 vs ₹233 last yr)</li>
+        <li>• Net Debt rising to ₹5,820 Cr</li>
+        <li>• Africa currency risk (Zimbabwe, Zambia)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 10 · VERDICT ══ -->
+<div class="panel" id="tab-verdict">
+  <div class="sec-hdr">🏆 Verdict <span class="sec-note">· CB Research · Q4 FY26 · All 4 companies</span></div>
+
+  <div class="verdict-card" style="border-color:var(--tcom)">
+    <div class="verdict-title" style="color:var(--tcom)">📡 Tata Communications — The Transformation in Progress</div>
+    <div class="verdict-body">
+      Tata Communications delivered its highest-ever quarterly revenue of ₹6,554 Cr in Q4 FY26, capping a ₹24,803 Cr FY26 — a 7.3% revenue growth year. The headline looks stable. The sub-headline is more nuanced.<br><br>
+      <strong>The PAT collapse (−74.7% Q4 YoY) is a distortion, not a deterioration.</strong> FY25 Q4 had large exceptional gains from tax reversals in foreign jurisdictions — stripping that out, the operational picture is healthier. EBITDA +14.4% YoY in Q4 and FCF nearly 4× FY25 levels are the metrics that reflect the real engine.<br><br>
+      The central challenge remains the gap between aspiration and delivery. Management has guided 23–25% EBITDA margins for years; FY26 delivered 19.4%. The digital portfolio is growing (16.7%), is now &gt;50% of revenue, but has not yet reached breakeven — that is the new CEO's most important assignment.<br><br>
+      <strong>What validates the long-term thesis:</strong> 13 consecutive years as Gartner WAN Services leader; NPS 95 in India; deal wins in GCC/AI infrastructure; subsea cable network nobody can replicate; and a strengthening balance sheet. The question is patience — how many more quarters before digital breakeven translates to PAT recovery?
+    </div>
+  </div>
+
+  <div class="verdict-card" style="border-color:var(--nweb)">
+    <div class="verdict-title" style="color:var(--nweb)">🖥 Netweb Technologies — India's AI Infrastructure Champion</div>
+    <div class="verdict-body">
+      Netweb's FY26 is a landmark year that will be referenced for years. Revenue +90% to ₹2,184 Cr. AI Systems: +459.6%, now 43.4% of revenue. PAT +80.9%. Debt cleared. ROCE 37.5%. Extended order pipeline ₹44,315 Mn.<br><br>
+      <strong>This is not normal hardware company performance — this is a business catching the most important infrastructure wave in a generation.</strong> India's sovereign AI compute ambitions, the NSM supercomputing mission, and private enterprise AI adoption have all converged to create extraordinary demand, and Netweb is the only scaled Indian player with end-to-end design and manufacturing capability.<br><br>
+      The risks are clear and should not be dismissed: the stock trades at 106× PE and 71× EV/EBITDA. At these multiples, the market has priced in perfection — years of 30–40% CAGR with stable margins. Any execution gap, government order delay, or AI hardware competitive disruption can cause sharp de-rating.<br><br>
+      <strong>The QoQ revenue decline in Q4 (−3.9%) is a normalisation</strong>, not a structural break — Q3 FY26 had surged +165% QoQ. The business remains exceptional. The valuation demands exceptional-plus.
+    </div>
+  </div>
+
+  <div class="verdict-card" style="border-color:var(--vbl)">
+    <div class="verdict-title" style="color:var(--vbl)">🥤 Varun Beverages — The Quiet Compounder at a Discount</div>
+    <div class="verdict-body">
+      Varun Beverages delivered FY26 revenue of ₹21,257 Cr (+20.9%) and PAT of ₹2,153 Cr (+25.1%) — consistent with its multi-year track record of compounding earnings at 20–25%+ annually. Q4 FY26, as always, is the seasonally weak quarter; the operating picture must be read on a full-year basis.<br><br>
+      <strong>The investment case for VBL rests on three structurally sound pillars.</strong> First, India's per-capita beverage consumption remains well below global peers — the runway for volume growth is measured in decades, not years. Second, VBL's exclusive PepsiCo franchise across all of India means it participates in India's consumption story without bearing brand-creation risk. Third, Africa is a hidden growth engine — 26.3% volume growth in FY26 from a geography that many investors have yet to fully price in.<br><br>
+      The stock corrected ~25% from its 52-week high of ₹682 to ₹474 — compressing the PE from ~55× historical average to ~40×. This creates an entry opportunity in a quality compounder that has rarely been available below 45× PE. Capex is near its peak cycle (FY26: ₹3,200 Cr); FCF generation should improve materially from FY28.<br><br>
+      <strong>The watch items are real:</strong> PET resin and sugar costs are structural margin headwinds. The franchise dependency on PepsiCo is an irreducible strategic risk. Africa currency (especially Zimbabwe) requires monitoring. But the quality of the business — franchise exclusivity, distribution depth, Sting's momentum — remains undiminished.
+    </div>
+  </div>
+
+  <div class="verdict-card" style="border-color:var(--azad)">
+    <div class="verdict-title" style="color:var(--azad)">⚙ Azad Engineering — Precision, Patience, and Long-Cycle Power</div>
+    <div class="verdict-body">
+      Azad Engineering delivered its highest-ever quarterly and annual performance in FY26. Consolidated revenue ₹603 Cr (+31.8%), PAT ₹133.6 Cr (+54.4%), EBITDA margin 37.4%, Q4 PAT margin 22.8% — highest ever. The numbers are unambiguous.<br><br>
+      <strong>What makes Azad exceptional is not just the numbers but the structure behind them.</strong> OEM qualification barriers, dedicated lean manufacturing cells, 10.8× book-to-bill, and long-cycle contracts with GE Vernova, Siemens Energy, MHI, and Baker Hughes create a business that is fundamentally different from typical capital goods companies. Revenue is not won quarter to quarter — it is earned through years of qualification and then locked in for a decade.<br><br>
+      FY26 was deliberately a year of "consolidation and stabilisation" — management's words. The real ramp is FY27 (steady-state) and FY28 (peak utilisation). The Baker Hughes dedicated facility activated in April 2026. MHI ATGG engine deliveries beginning FY27. These are catalysts already in the order book, not aspirations.<br><br>
+      <strong>The valuation at 121× PE demands a leap of faith</strong> — specifically, that the current order book translates to 25–30%+ PAT growth for 3+ consecutive years. Goldman Sachs's maintained Buy at ₹2,460 post Q4 suggests institutional confidence in that pathway remains intact.
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-lbl" style="color:var(--pos)">✅ What Worked — Q4 FY26</div>
+      <ul style="list-style:none;font-size:12px;line-height:1.85;">
+        <li>• Tata Comm: EBITDA +14.4% YoY, FCF 4× FY25, Digital +19.2% Q4</li>
+        <li>• Netweb: AI revenue 459% FY26, debt-free, ROCE 37.5%, order pipeline ₹4,431 Cr</li>
+        <li>• Azad: Highest-ever PAT margin 22.8%, 10.8× book-to-bill, OEM new facility</li>
+        <li>• Varun Bev: FY26 PAT +25.1%, Africa +26.3% volumes, Sting momentum</li>
+        <li>• All four: Year-on-year revenue growth maintained across sectors</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--neg)">⚠ What Needs Watching</div>
+      <ul style="list-style:none;font-size:12px;line-height:1.85;">
+        <li>• Tata Comm: PAT −75% Q4, EBITDA margin still far below 23–25% guidance</li>
+        <li>• Netweb: PE 106×, QoQ revenue normalisation in Q4, margin below guidance</li>
+        <li>• Azad: PE 121×, FII trimming, Q4 slightly missed estimates</li>
+        <li>• Varun Bev: Capex drag, PET/sugar costs, stock −25% from 52W high</li>
+        <li>• All four: Premium valuations leave no room for execution misses</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--tcom)">🔭 Key FY27 Catalysts</div>
+      <ul style="list-style:none;font-size:12px;line-height:1.85;">
+        <li>• Tata Comm: Digital breakeven, new CEO execution, Net D/EBITDA below 1.5×</li>
+        <li>• Netweb: India AI Mission orders, FY27 revenue guidance, margin stabilisation at 13–14%</li>
+        <li>• Azad: ATGG engine deliveries, Baker Hughes ramp, FY27 revenue guidance ≥25%</li>
+        <li>• Varun Bev: Africa consolidation (South Africa), Sting share gain, capex normalisation</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 11 · CB ASSIST ══ -->
+<div class="panel" id="tab-cbassist">
+  <div class="sec-hdr">🤖 CB Assist — Multi-Sector AI Analyst <span class="sec-note">· CB Research · Powered by Claude</span></div>
+
+  <div class="g2">
+    <div>
+      <div class="cbassist-chat">
+        <div class="cbassist-title"><span></span> CB Assist — Q4 FY26 Research</div>
+
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+          <button class="preset-tab active" onclick="switchPreset('tcom',this)" style="border-color:var(--tcom);color:var(--tcom)">Tata Comm</button>
+          <button class="preset-tab" onclick="switchPreset('nweb',this)" style="border-color:var(--nweb);color:var(--nweb)">Netweb</button>
+          <button class="preset-tab" onclick="switchPreset('azad',this)" style="border-color:var(--azad);color:var(--azad)">Azad Engg</button>
+          <button class="preset-tab" onclick="switchPreset('vbl',this)" style="border-color:var(--vbl);color:var(--vbl)">Varun Bev</button>
+          <button class="preset-tab" onclick="switchPreset('sector',this)">Cross-Sector</button>
+        </div>
+
+        <div class="presets-panel active" id="pn-tcom">
+          <div class="preset-qs">
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Tata Communications PAT fell 75% in Q4 FY26 but EBITDA grew 14.4%. Explain the disconnect and whether this signals business deterioration or just accounting noise.</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Tata Communications targets 23-25% EBITDA margin but has delivered only 19.4% in FY26. What structural changes are needed and is the gap closable in FY27?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Tata Communications claims 50%+ of revenue from digital/non-connectivity. But margins haven't improved. Why do digital revenue gains not flow to the bottom line?</div></div>
+          </div>
+        </div>
+        <div class="presets-panel" id="pn-nweb">
+          <div class="preset-qs">
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Netweb Technologies grew AI segment 459% in FY26. Is this demand secular or is it a one-time government surge that will normalise in FY27-28?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Netweb trades at PE 106x with EBITDA margin of only 13.2%. How does one justify this valuation and what is the path for margin expansion?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Netweb's order pipeline is Rs 44,315 million vs confirmed orders of Rs 16,252 million. What is the conversion risk and what metrics should investors track to assess pipeline quality?</div></div>
+          </div>
+        </div>
+        <div class="presets-panel" id="pn-azad">
+          <div class="preset-qs">
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Azad Engineering maintains 37-38% EBITDA margins in precision manufacturing — far above typical engineering companies at 10-15%. What creates and sustains this margin differential?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Azad Engineering has a 10.8x book-to-bill ratio. Explain what this means for revenue visibility and what could cause the order book not to translate to revenue as expected.</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Azad's revenue is 81.5% exports and 81.5% energy/oil-gas. How should investors think about the long-term risk if the energy transition accelerates beyond gas turbines by 2035?</div></div>
+          </div>
+        </div>
+        <div class="presets-panel" id="pn-vbl">
+          <div class="preset-qs">
+            <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><div class="pq-en">Varun Beverages grew FY26 PAT 25.1% yet the stock is down 25% from its high. Is this a valuation opportunity or a sign of structural concerns in the business?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><div class="pq-en">Varun Beverages Africa volumes grew 26.3% in FY26. How significant is the Africa opportunity and what risks come with this geography for VBL investors?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><div class="pq-en">Sting energy drink is growing rapidly for VBL at a mass price point of Rs 20. Can Sting sustain this growth and what does it mean for VBL's realisation per case and margins over the next 3 years?</div></div>
+          </div>
+        </div>
+        <div class="presets-panel" id="pn-sector">
+          <div class="preset-qs">
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Compare the three companies — Tata Comm, Netweb, Azad — on the quality of their business models. Which has the most durable competitive moat and why?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">All three stocks trade at high valuations. Netweb at PE 106x, Azad at 121x, Tata Comm at 41x. What are the earnings growth assumptions embedded in each valuation and which has the highest risk of disappointment?</div></div>
+            <div class="preset-q" onclick="askPreset(this.querySelector(\'.pq-en\').textContent)"><div class="pq-en">Tata Communications is legacy infra being digitally transformed. Netweb is a hardware play on India AI. Azad is precision manufacturing for global OEMs. Which megatrend has the strongest multi-year tailwind and why?</div></div>
+          </div>
+        </div>
+
+        <div class="chat-msgs" id="chatMsgs">
+          <div class="chat-msg bot"><strong>CB Assist:</strong> Hello! I'm your Q4 FY26 research assistant for Tata Communications, Netweb Technologies, Azad Engineering, and Varun Beverages. Select a company above or ask me anything about their business, financials, strategy, or valuations.</div>
+        </div>
+        <div class="typing-ind" id="typingInd"><span></span><span></span><span></span></div>
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Ask about Tata Comm, Netweb, Azad Engineering, or Varun Beverages..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="chat-send" id="chatSend" onclick="sendChat()">Ask</button>
+        </div>
+      </div>
+    </div>
+    <div>
+
+      <div class="card gap-top">
+        <div class="card-lbl">Three-Company Quick Compare</div>
+        <table>
+          <thead><tr><th>Parameter</th><th>Tata Comm</th><th>Netweb</th><th>Azad Engg</th><th>Varun Bev</th></tr></thead>
+          <tbody>
+            <tr><td>Q4 Rev Growth YoY</td><td class="tpos">+9.4%</td><td class="tpos">+86.6%</td><td class="tpos">+27.3%</td><td class="tpos">+5.8%</td></tr>
+            <tr><td>Q4 EBITDA Margin</td><td>19.6%</td><td>13.2%</td><td class="tpos">38.0%</td><td>20.5%</td></tr>
+            <tr><td>Q4 PAT Growth YoY</td><td class="tneg">−74.7%</td><td class="tpos">+65.6%</td><td class="tpos">+48.4%</td><td class="tpos">+15.7%</td></tr>
+            <tr><td>FY26 Rev Growth</td><td class="tpos">+7.3%</td><td class="tpos">+90%</td><td class="tpos">+31.8%</td><td class="tpos">+20.9%</td></tr>
+            <tr><td>FY26 PAT Growth</td><td class="tneg">−35.8%</td><td class="tpos">+80.9%</td><td class="tpos">+54.4%</td><td class="tpos">+25.1%</td></tr>
+            <tr><td>Trailing P/E</td><td>~41×</td><td>~106×</td><td>~121×</td><td>~40×</td></tr>
+            <tr><td>Debt Position</td><td class="tneg">₹9,601 Cr</td><td class="tpos">Debt-Free</td><td class="tpos">Low (0.21×)</td><td>₹5,820 Cr</td></tr>
+            <tr><td>Dividend FY26</td><td class="tpos">₹17.5/share</td><td class="tpos">₹3/share</td><td>—</td><td>₹2/share</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<div class="cb-wm">
+  <div class="cb-wm-logo">C</div>
+  <div><div class="cb-wm-name">Cauvery Business</div><div class="cb-wm-sub">CB Research · Q4 FY26</div></div>
+</div>
+
+<div class="footer">
+  CB Research · Cauvery Business · Multi-Sector Dashboard Q4 FY26 · Tata Communications · Netweb Technologies · Azad Engineering<br>
+  Data sourced from BSE/NSE official filings and company press releases only. For educational and research purposes. Not investment advice.
+</div>
+
+<script>
+// TAB SWITCHING
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  renderCharts();
+}
+
+// PRESET TABS
+function switchPreset(id, btn) {
+  document.querySelectorAll('.presets-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.preset-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('pn-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// CHAT
+const systemPrompt = `You are CB Assist, the CB Research AI analyst for the Cauvery Business channel. You are an expert on Tata Communications, Netweb Technologies, and Azad Engineering — their Q4 FY26 and FY26 annual results.
+
+Key facts for your answers:
+
+TATA COMMUNICATIONS (BSE: 500483):
+- Q4 FY26 Revenue: ₹6,554 Cr (+9.4% YoY, +5.9% QoQ) — highest-ever quarterly
+- Q4 FY26 EBITDA: ₹1,284 Cr (+14.4% YoY), margin 19.6%
+- Q4 FY26 PAT: ₹263 Cr (-74.7% YoY) — due to absence of exceptional gains in prior year
+- FY26 Revenue: ₹24,803 Cr (+7.3%). EBITDA: ₹4,822 Cr (+5.5%). PAT: ₹1,044 Cr (-35.8%)
+- Data Revenue FY26: ₹21,352 Cr (+9.4%). Digital Portfolio: ₹10,621 Cr (+16.7%)
+- FCF FY26: ₹1,474 Cr (nearly 4x FY25). Net Debt: ₹9,601 Cr. Net Debt/EBITDA: 1.99x (below 2x)
+- CapEx: ₹2,433 Cr (9-10% of sales). ROCE: 14.9%. Dividend: ₹17.5/share
+- CMP: ~₹1,527. Market Cap: ~₹43,427 Cr
+- New CEO: Ganesh Lakshminarayanan. 13 consecutive years Gartner WAN Services Leader
+- Analyst targets: ICICI Securities Buy ₹2,100 (from ₹2,250), Nuvama Buy ₹2,000 (from ₹2,100)
+
+NETWEB TECHNOLOGIES (BSE: 543945):
+- Q4 FY26 Revenue: ₹773.7 Cr (+86.6% YoY, -3.9% QoQ normalisation)
+- Q4 FY26 EBITDA (Adj): ₹101.8 Cr (+71.8%), margin 13.2%
+- Q4 FY26 PAT: ₹70.6 Cr (+65.6% YoY)
+- FY26 Revenue: ₹2,183.6 Cr (+90% YoY). EBITDA margin: 13.0-13.3%. PAT: ₹205.8 Cr (+80.9%)
+- AI Systems: FY26 grew 459.6% YoY, now 43.4% of revenue (from 15% in FY25)
+- ROCE: 37.5%. ROE: 32.9%. Debt-free. Confirmed order book: ₹4,724 Mn. Pipeline: ₹44,315 Mn
+- Government 42.8%, Non-Govt 57.2% revenue mix. Dividend: ₹3/share
+- CMP: ~₹3,284-4,065. Market Cap: ~₹18,700-23,080 Cr. PE: ~106-112x
+- Vertiv partnership for AI rack solutions. ESG score 69 from NSE
+
+AZAD ENGINEERING (BSE: 544120):
+- Q4 FY26 Revenue (Consol): ₹161.5 Cr (+27.3% YoY)
+- Q4 FY26 EBITDA margin (Consol): 38.0%
+- Q4 FY26 PAT (Consol): ₹36.8 Cr (+48.4% YoY). PAT Margin: 22.8% (highest ever)
+- FY26 Revenue (Consol): ₹603 Cr (+31.8%). EBITDA margin: 37.4%. PAT: ₹133.6 Cr (+54.4%)
+- Order book: ₹6,500+ Cr. Book-to-bill: 10.8x
+- Key contracts: GE Vernova (USD 112Mn + USD 53.5Mn), Siemens Energy (USD 90Mn), MHI (USD 83Mn), Baker Hughes (multi-year)
+- Exports: 81.5% of revenue. Energy/Oil&Gas: 81.5%. Aerospace & Defence: 17.2%
+- 4 dedicated manufacturing facilities since listing. Baker Hughes facility opened Apr 2026
+- MHI ATGG engine deliveries beginning FY27 (20 engines)
+- CMP: ~₹2,101. Market Cap: ~₹13,950 Cr. PE: ~121x. D/E: 0.21x
+- Goldman Sachs: Buy, TP ₹2,460
+
+
+VARUN BEVERAGES (BSE: 554160):
+- Q4 FY26 Revenue: Rs 5,565 Cr (+5.8% YoY). Q4 EBITDA: Rs 1,140 Cr (+8.5%), margin 20.5%. Q4 PAT: Rs 492 Cr (+15.7%)
+- FY26 Revenue: Rs 21,257 Cr (+20.9%). EBITDA: Rs 4,627 Cr (+21.4%), margin 21.8%. PAT: Rs 2,153 Cr (+25.1%)
+- FY26 Volume: 1,051 mn cases (+10.5%). India volume +8.3%, Africa +26.3%
+- Net Debt: Rs 5,820 Cr. D/E ~0.7x. Capex FY26: Rs 3,200 Cr (near peak)
+- India: PepsiCo exclusive franchisee for 27 states + 7 UTs. 44 plants, 5mn+ retail touchpoints
+- Sting energy drink: ~12% of volume, Rs 20 price point, fastest growing SKU
+- International: Zimbabwe, Zambia, Morocco, South Africa (consolidating), Nepal, Sri Lanka, Mozambique
+- CMP ~Rs 474. Market Cap ~Rs 86,390 Cr. PE ~40x (vs 5-yr avg 55x). 52-week high Rs 682
+- Chairman: Ravi Jaipuria. Listed BSE/NSE. Second-largest PepsiCo franchisee globally
+- Analyst consensus: Buy, targets Rs 550-640 from multiple brokers
+
+RULES: Keep answers concise (3-5 sentences per point). Use Indian number formats. Be analytical and factual. Do not make buy/sell recommendations. Use data to support insights. Reference company-specific facts.`;
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msgs = document.getElementById('chatMsgs');
+  const btn = document.getElementById('chatSend');
+  const q = input.value.trim();
+  if (!q) return;
+
+  msgs.innerHTML += `<div class="chat-msg user">${q}</div>`;
+  input.value = '';
+  btn.disabled = true;
+  document.getElementById('typingInd').style.display = 'flex';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: q }]
+      })
+    });
+    const data = await res.json();
+    const answer = data.content?.[0]?.text || 'Unable to get a response. Please try again.';
+    document.getElementById('typingInd').style.display = 'none';
+    msgs.innerHTML += `<div class="chat-msg bot"><strong>CB Assist:</strong> ${answer.replace(/\n/g, '<br>')}</div>`;
+  } catch (e) {
+    document.getElementById('typingInd').style.display = 'none';
+    msgs.innerHTML += `<div class="chat-msg bot"><strong>CB Assist:</strong> Network error — please check connection and try again.</div>`;
+  }
+  btn.disabled = false;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function askPreset(text) {
+  document.getElementById('chatInput').value = text;
+  showTab('cbassist', document.querySelector('[onclick="showTab(\'cbassist\',this)"]'));
+  sendChat();
+}
+
+// CHARTS
+let chartsRendered = false;
+function renderCharts() {
+  if (chartsRendered) return;
+  chartsRendered = true;
+
+  const colors = {
+    tcom: '#0f4c81',
+    nweb: '#6d28d9',
+    azad: '#b45309',
+    vbl: '#16803a'
+  };
+  const labels = ['Tata Comm', 'Netweb Tech', 'Azad Engg', 'Varun Bev'];
+  const bgAlpha = (hex) => hex + 'CC';
+
+  // Q4 Revenue
+  new Chart(document.getElementById('revenueChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Q4 FY26 Revenue (₹ Cr)',
+        data: [6554, 773.7, 161.5, 5565],
+        backgroundColor: [colors.tcom, colors.nweb, colors.azad, colors.vbl],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `₹${ctx.raw.toLocaleString('en-IN')} Cr` } },
+        datalabels: { display: false }
+      },
+      scales: {
+        y: { ticks: { callback: v => '₹'+v.toLocaleString('en-IN') } }
+      }
+    }
+  });
+
+  // EBITDA Margin
+  new Chart(document.getElementById('ebitdaMarginChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Q4 EBITDA Margin %',
+        data: [19.6, 13.2, 38.0, 20.5],
+        backgroundColor: [colors.tcom, colors.nweb, colors.azad, colors.vbl],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.raw + '%' } }
+      },
+      scales: {
+        y: { ticks: { callback: v => v + '%' }, max: 50 }
+      }
+    }
+  });
+
+  // Q4 PAT
+  new Chart(document.getElementById('patChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Q4 FY26 PAT (₹ Cr)',
+        data: [263, 70.6, 36.8, 492],
+        backgroundColor: [colors.tcom, colors.nweb, colors.azad, colors.vbl],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `₹${ctx.raw.toLocaleString('en-IN')} Cr` } }
+      },
+      scales: {
+        y: { ticks: { callback: v => '₹'+v.toLocaleString('en-IN') } }
+      }
+    }
+  });
+
+  // FY26 Revenue Growth %
+  new Chart(document.getElementById('revGrowthChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'FY26 Revenue Growth %',
+        data: [7.3, 90.0, 31.8, 20.9],
+        backgroundColor: [colors.tcom, colors.nweb, colors.azad, colors.vbl],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => '+' + ctx.raw + '%' } }
+      },
+      scales: {
+        y: { ticks: { callback: v => v + '%' } }
+      }
+    }
+  });
+
+  // FY26 Annual PAT
+  new Chart(document.getElementById('annualPatChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'FY26 Annual PAT (₹ Cr)',
+        data: [1044, 205.8, 133.6, 2153],
+        backgroundColor: [colors.tcom, colors.nweb, colors.azad, colors.vbl],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `₹${ctx.raw.toLocaleString('en-IN')} Cr` } }
+      },
+      scales: {
+        y: { ticks: { callback: v => '₹'+v.toLocaleString('en-IN') } }
+      }
+    }
+  });
+
+  // Margin Comparison
+  new Chart(document.getElementById('marginCompChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'EBITDA Margin %',
+          data: [19.4, 13.0, 37.4, 21.8],
+          backgroundColor: [colors.tcom+'99', colors.nweb+'99', colors.azad+'99', colors.vbl+'99'],
+          borderRadius: 4
+        },
+        {
+          label: 'PAT Margin %',
+          data: [4.2, 9.3, 22.1, 10.1],
+          backgroundColor: [colors.tcom, colors.nweb, colors.azad, colors.vbl],
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw + '%' } }
+      },
+      scales: {
+        y: { ticks: { callback: v => v + '%' } }
+      }
+    }
+  });
+}
+
+// Render charts on first load for charts tab
+document.addEventListener('DOMContentLoaded', function() {
+  // Don't render until tab is clicked — lazy
+});
+</script>
+</body>
+</html>

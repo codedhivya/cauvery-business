@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UltraTech Cement — Q1 FY27 Intelligence Dashboard | Cauvery Business Research</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --utc:#1d4ed8;--utc-soft:#eff6ff;
+  --fuel:#ea580c;--fuel-soft:#fff7ed;
+  --freight:#0e7490;--freight-soft:#ecfeff;
+  --rawmat:#7c3aed;--rawmat-soft:#f5f3ff;
+  --pack:#166534;--pack-soft:#f0fdf4;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;flex-wrap:wrap;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-utc{background:var(--utc);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.chip-pos{background:#14532d;color:#bbf7d0;}
+
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--utc);font-weight:700;}
+
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gap-top{margin-top:22px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border-left:4px solid var(--utc);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}
+.b-hold{background:#fef9c3;color:#a16207;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+.b-warn{background:#fff7ed;color:#c2410c;}
+.b-spec{background:#f3f4f6;color:#4b5563;}
+
+.cc-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.cc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.cc-card.fuel::before{background:var(--fuel);}
+.cc-card.freight::before{background:var(--freight);}
+.cc-card.rawmat::before{background:var(--rawmat);}
+.cc-card.pack::before{background:var(--pack);}
+.cc-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:2px;}
+.cc-sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.cc-body{font-size:11.5px;color:var(--text);line-height:1.65;margin-top:10px;}
+
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11.5px;line-height:1.7;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}
+.rp-acc{background:#e0f2fe;color:#075985;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-bar{background:var(--surface2);border-radius:20px;height:6px;overflow:hidden;margin-bottom:10px;}
+.ac-fill{height:6px;border-radius:20px;background:var(--utc);}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.moat-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.moat-body{font-size:11.5px;color:var(--muted);line-height:1.6;}
+.moat-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;background:var(--utc-soft);color:var(--utc);}
+
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verdict-body{font-size:13px;line-height:1.75;color:var(--text);}
+
+.info-box{background:var(--utc-soft);border:1.5px solid var(--utc);border-radius:var(--radius);padding:16px 20px;font-size:12px;line-height:1.7;color:var(--text);margin-bottom:20px;}
+.crisis-box{background:var(--fuel-soft);border:1.5px solid var(--fuel);border-radius:var(--radius);padding:16px 20px;font-size:12px;line-height:1.7;color:var(--text);margin-bottom:20px;}
+.grp-hdr{background:var(--utc-soft);border:1px solid var(--utc);color:var(--utc);border-radius:8px;padding:9px 16px;font-weight:800;font-size:12.5px;letter-spacing:.02em;}
+
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px 8px;box-shadow:var(--shadow);}
+.chart-box canvas{max-height:300px;}
+
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--utc);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--utc);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--utc);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;}
+.chat-input:focus{border-color:var(--utc);}
+.chat-send{background:var(--utc);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.preset-tab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);margin:2px 2px 6px 0;}
+.preset-tab:hover{border-color:var(--utc);color:var(--utc);}
+
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
+.seg-bar{height:10px;border-radius:20px;}
+.seg-row{margin-bottom:14px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:4px;}
+.geo-note{background:var(--gold-soft);border:1px solid var(--gold);border-radius:8px;padding:10px 16px;font-size:11.5px;color:var(--text);margin-bottom:18px;line-height:1.6;}
+
+.quiz-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.quiz-q{font-size:12.5px;font-weight:700;margin-bottom:12px;line-height:1.6;}
+.quiz-opt{display:block;width:100%;text-align:left;padding:9px 14px;margin-bottom:7px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);font-size:12px;cursor:pointer;transition:all .15s;color:var(--text);}
+.quiz-opt:hover{border-color:var(--utc);}
+.quiz-opt.correct{border-color:var(--pos);background:#f0fdf4;color:var(--pos);font-weight:700;}
+.quiz-opt.wrong{border-color:var(--neg);background:#fef2f2;color:var(--neg);font-weight:700;}
+.quiz-opt.disabled{pointer-events:none;opacity:.7;}
+.quiz-explain{display:none;font-size:11.5px;line-height:1.7;color:var(--muted);background:var(--surface2);border-radius:8px;padding:10px 14px;margin-top:8px;border-left:3px solid var(--utc);}
+.quiz-explain.show{display:block;}
+
+.socrates-banner{background:linear-gradient(135deg,#7c3aed 0%,#1d4ed8 100%);border-radius:var(--radius);padding:20px 26px;margin-bottom:20px;color:#fff;}
+.socrates-chat{background:var(--surface);border:1.5px solid #7c3aed;border-radius:var(--radius);padding:20px 22px;}
+.socrates-title{font-weight:800;font-size:12.5px;color:#7c3aed;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.socrates-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+
+.watermark{text-align:center;font-size:10px;color:var(--muted);padding:20px 0 6px;}
+.footnote{font-size:10px;color:var(--muted);margin-top:8px;line-height:1.6;}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr;}.kpi-row{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>UltraTech Cement — Q1 FY27</h1>
+      <div class="sub">Business &amp; Investment Analysis · BSE 532538 · NSE ULTRACEMCO</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-utc">Aditya Birla Group</span>
+    <span class="chip chip-pos">PAT +16.8% YoY</span>
+    <span class="chip chip-date">Quarter Ended 30 Jun 2026 · Results 20 Jul 2026</span>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('business',this)">Business Profile</button>
+  <button class="tab-btn" onclick="showTab('geographic',this)">Geographic Mix</button>
+  <button class="tab-btn" onclick="showTab('results',this)">Q1 FY27 Results</button>
+  <button class="tab-btn" onclick="showTab('costcentres',this)" style="color:var(--fuel);font-weight:800;">⚙ 4 Cost Centres</button>
+  <button class="tab-btn" onclick="showTab('middleeast',this)" style="color:var(--fuel);font-weight:800;">🌍 West Asia Crisis</button>
+  <button class="tab-btn" onclick="showTab('acquisitions',this)">Acquisitions Tracker</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuation</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">Moats</button>
+  <button class="tab-btn" onclick="showTab('school',this)" style="color:#0e7490;font-weight:800;">🎓 Cement School</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--utc);font-weight:800;">🤖 CB Assist</button>
+  <button class="tab-btn" onclick="showTab('socrates',this)" style="color:#7c3aed;font-weight:800;">🧠 Cauvery Socrates</button>
+</div>
+
+<div class="main">
+
+<!-- ══ TAB 1 · DASHBOARD ══ -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">· Q1 FY27 (Apr–Jun 2026) Actuals ✅ · Cauvery Business Research</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kl">Revenue</div><div class="kv">₹24,648 Cr</div><div class="kc pos">▲ +15.9% YoY</div></div>
+    <div class="kpi"><div class="kl">EBITDA</div><div class="kv">₹5,146 Cr</div><div class="kc pos">▲ +12.1% YoY</div></div>
+    <div class="kpi"><div class="kl">PAT (Owners)</div><div class="kv">₹2,599 Cr</div><div class="kc pos">▲ +16.8% YoY</div></div>
+    <div class="kpi"><div class="kl">EBITDA/Tonne</div><div class="kv">₹1,214</div><div class="kc pos">▲ +1.3% YoY</div></div>
+    <div class="kpi"><div class="kl">Volume (Consol.)</div><div class="kv">41.31 MT</div><div class="kc pos">▲ +12.2% YoY</div></div>
+    <div class="kpi"><div class="kl">Capacity Utilisation</div><div class="kv">81%</div><div class="kc pos">▲ from 76%</div></div>
+  </div>
+
+  <div class="info-box">
+    <strong>The one-line story:</strong> UltraTech delivered its <strong>best-ever Q1</strong> across revenue, volume and EBITDA — even as petcoke and coal prices spiked 26–43% YoY sector-wide on the back of the West Asia (Middle East) conflict. Scale, a favourable fuel-mix shift toward domestic coal, freight-lead-distance optimisation, and a faster-than-guided turnaround at acquired India Cements and Kesoram assets let UltraTech convert a sector-wide cost shock into market-share gains rather than margin collapse. Management flags a further ₹130–140/tonne cost headwind for Q2 FY27 as the West Asia effect fully flows through — see the <strong>West Asia Crisis</strong> and <strong>4 Cost Centres</strong> tabs for the mechanics.
+  </div>
+
+  <div class="g4 gap-top">
+    <div class="card">
+      <div class="card-lbl">Grey Cement Realisation</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:800;">₹5,218/T</div>
+      <div class="footnote pos" style="margin-top:2px;">+3.7% YoY — industry took 2.5–3% price hikes in Q1</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Net Debt / EBITDA</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:800;">0.87×</div>
+      <div class="footnote pos" style="margin-top:2px;">Improved from 0.94× at start of FY27</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Consolidated Capacity</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:800;">205.5 MTPA</div>
+      <div class="footnote" style="margin-top:2px;color:var(--muted);">8.7 MT commissioned in Q1 alone</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">CMP / Market Cap</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:800;">₹12,040 / ₹3.55L Cr</div>
+      <div class="footnote" style="margin-top:2px;color:var(--muted);">21 Jul 2026, post-results trade</div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Q1 FY27 vs Q1 FY26 — Quick Metrics at a Glance</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>YoY</th><th>Driver</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="num">₹24,648.20 Cr</td><td class="num">₹21,455.68 Cr</td><td class="tpos">+14.9%</td><td>Volume + realisation</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="num">₹5,146 Cr</td><td class="num">₹4,591 Cr</td><td class="tpos">+12.1%</td><td>Volume-led, margin flat</td></tr>
+        <tr><td class="tb">PAT (Consolidated)</td><td class="num">₹2,603.72 Cr</td><td class="num">₹2,220.91 Cr</td><td class="tpos">+17.2%</td><td>Operating leverage</td></tr>
+        <tr><td class="tb">Consolidated Volume</td><td class="num">41.31 MT</td><td class="num">36.83 MT</td><td class="tpos">+12.2%</td><td>Organic + ICL/Kesoram ramp-up</td></tr>
+        <tr><td class="tb">Domestic Grey Volume</td><td class="num">39.17 MT</td><td class="num">34.64 MT</td><td class="tpos">+13.1%</td><td>Market-share gains</td></tr>
+        <tr><td class="tb">EBITDA / Tonne</td><td class="num">₹1,214</td><td class="num">₹1,198*</td><td class="tpos">+1.3%</td><td>Fuel gain offset by realisation</td></tr>
+        <tr><td class="tb">Fuel Cost / Tonne</td><td class="num tneg">₹915</td><td class="num">₹874</td><td class="tneg">+4.7%</td><td>West Asia petcoke/coal spike</td></tr>
+        <tr><td class="tb">Net Debt/EBITDA</td><td class="num">0.87×</td><td class="num">~1.1×</td><td class="tpos">Improved</td><td>Strong FCF, disciplined capex</td></tr>
+      </tbody>
+    </table>
+    <p class="footnote">*EBITDA/tonne for Q1 FY26 as separately reported was ₹1,248; the ₹1,198 marker reflects the sequential base before Q4 FY26 peak. Figures from BSE/NSE filings, company press release, and earnings-call transcript, 20 Jul 2026.</p>
+  </div>
+</div>
+
+<!-- ══ TAB 2 · BUSINESS PROFILE ══ -->
+<div class="panel" id="tab-business">
+  <div class="sec-hdr">Business Profile <span class="sec-note">· What UltraTech does · Plants · Products · Brand architecture</span></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Company Overview</div>
+      <p style="font-size:12.5px;line-height:1.75;margin-bottom:10px;"><strong>UltraTech Cement Limited</strong> is India's largest cement manufacturer and the world's third-largest outside China. Headquartered in Mumbai, it is the flagship cement business of the <strong>Aditya Birla Group</strong>. Product range: Ordinary Portland Cement (OPC), Portland Pozzolana Cement (PPC), Portland Slag Cement (PSC), Ready-Mix Concrete (RMC), White Cement, and Dry Mortars — plus a new Cables &amp; Wires business launching Q3 FY27.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted)">Consolidated grey cement capacity stood at <strong>205.5 MTPA</strong> as of 30 Jun 2026 (domestic 200.1 MTPA), spanning integrated clinker plants and grinding units pan-India, with a growing footprint in the UAE, Sri Lanka and Bahrain. The company operates under a multi-brand architecture — the flagship <strong>UltraTech</strong> brand plus recently-converted <strong>India Cements</strong> and <strong>Kesoram</strong> regional brands in the South.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Q1 FY27 Operating Footprint</div>
+      <div class="m-row"><span class="m-lbl">Domestic Capacity</span><span class="m-val">200.1 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">Consolidated Capacity</span><span class="m-val">205.5 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">Capacity Added in Q1</span><span class="m-val">8.7 MT (Shahjahanpur, Vizag, Patratu)</span></div>
+      <div class="m-row"><span class="m-lbl">Capacity Utilisation</span><span class="m-val">81% (vs 76% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">UBS Retail Outlets</span><span class="m-val">5,802 (+21% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Average Lead Distance</span><span class="m-val">360 km (−9 km YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">RMC Plants / Cities</span><span class="m-val">477 plants / 170 cities</span></div>
+      <div class="m-row"><span class="m-lbl">RMC Revenue (Q1)</span><span class="m-val">₹2,235 Cr (+22% YoY)</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">#1 in India</span>
+        <span class="badge b-pos">#3 Globally ex-China</span>
+        <span class="badge b-warn">Cables &amp; Wires — Q3 FY27 launch</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">FY26 Annual Financial Base (for context)</div>
+    <table>
+      <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue</td><td class="num">₹87,384 Cr</td><td class="num">₹74,731 Cr (est.)</td><td class="tpos">+17%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="num">₹17,598 Cr</td><td class="num">₹13,332 Cr (est.)</td><td class="tpos">+32%</td></tr>
+        <tr><td class="tb">PAT</td><td class="num">₹8,305 Cr</td><td class="num">₹6,107 Cr (est.)</td><td class="tpos">+36%</td></tr>
+        <tr><td class="tb">Volume (India Grey)</td><td class="num">145 MT</td><td class="num">~132 MT</td><td class="tpos">Record</td></tr>
+        <tr><td class="tb">Capex Deployed</td><td class="num">₹9,500 Cr</td><td class="num">₹10,000 Cr (budgeted)</td><td class="tb">—</td></tr>
+      </tbody>
+    </table>
+    <p class="footnote">FY25 figures are approximated for YoY context. Source: company annual report, BSE filings.</p>
+  </div>
+</div>
+
+<!-- ══ TAB · GEOGRAPHIC SALES MIX ══ -->
+<div class="panel" id="tab-geographic">
+  <div class="sec-hdr">Geographic Sales Mix <span class="sec-note">· Regional presence · Volume-based estimates · FY26 / Q1 FY27</span></div>
+
+  <div class="geo-note">⚠ Note: UltraTech does not report exact state/zone-wise revenue splits in its quarterly filings. The regional breakdown below is estimated from capacity locations, investor presentations, and management commentary — not direct revenue figures unless stated.</div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Domestic Volume Mix by Zone (Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>North India (Rajasthan, Punjab, UP, Delhi)</span><span style="font-weight:700">~27%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:27%;background:var(--utc)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>West India (Gujarat, Maharashtra)</span><span style="font-weight:700">~21%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:21%;background:var(--utc);opacity:.85"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>South India (AP, TN, Karnataka, Kerala, Telangana)</span><span style="font-weight:700">~27%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:27%;background:var(--utc);opacity:.70"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>East India (WB, Odisha, Bihar, Jharkhand)</span><span style="font-weight:700">~16%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:16%;background:var(--utc);opacity:.55"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Central India (MP, Chhattisgarh)</span><span style="font-weight:700">~9%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:9%;background:#94a3b8"></div></div></div>
+      <p class="footnote">South India's share has risen from ~22–23% pre-acquisition to ~27% post India Cements + Kesoram integration — the single biggest geographic shift in the company's mix over the last 18 months.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">International Footprint</div>
+      <div class="m-row"><span class="m-lbl">UAE</span><span class="m-val">Grinding/RMC presence</span></div>
+      <div class="m-row"><span class="m-lbl">Sri Lanka</span><span class="m-val">Integrated operations</span></div>
+      <div class="m-row"><span class="m-lbl">Bahrain</span><span class="m-val">RMC/grinding presence</span></div>
+      <div class="m-row"><span class="m-lbl">Consolidated vs Domestic Capacity</span><span class="m-val">205.5 MTPA vs 200.1 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">Overseas Contribution</span><span class="m-val">~5.4 MTPA of consolidated capacity</span></div>
+      <p class="footnote" style="margin-top:10px;">International operations remain a small, non-core sliver of the group (~2–3% of volumes) — the investment case is almost entirely a domestic India infrastructure/housing story.</p>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Regional Watch-Point — Q1 FY27 Management Commentary</div>
+    <p style="font-size:12.5px;line-height:1.8;">Management flagged the <strong>East region as a laggard</strong> in Q1 FY27, attributing softness to state elections and labour-availability disruptions rather than any structural demand issue. CFO Atul Daga specifically called out "multiple states which have gone through elections" and pending land-reform changes in one eastern state as near-term drags. This is a region where UltraTech is comparatively under-weight (~16% of volume mix) relative to peers like Shree Cement and ACC — a swing factor to watch as election-cycle disruption normalises through FY27.</p>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Geographic Summary Table</div>
+    <table>
+      <thead><tr><th>Zone</th><th>UltraTech Position</th><th>Key Driver</th><th>Trend</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">North</td><td>Strong, established</td><td>Legacy Rajasthan/Gujarat clinker hubs</td><td><span class="badge b-spec">Stable</span></td></tr>
+        <tr><td class="tb">West</td><td>Strong, established</td><td>Home turf — Aditya Birla Group heritage</td><td><span class="badge b-spec">Stable</span></td></tr>
+        <tr><td class="tb">South</td><td>Rapidly strengthening</td><td>India Cements (TN) + Kesoram (Karnataka/Telangana)</td><td><span class="badge b-pos">Rising sharply</span></td></tr>
+        <tr><td class="tb">East</td><td>Under-weight, soft in Q1</td><td>Election disruption, labour availability</td><td><span class="badge b-warn">Watch item</span></td></tr>
+        <tr><td class="tb">Central</td><td>Modest presence</td><td>MP/Chhattisgarh clinker feed to other zones</td><td><span class="badge b-spec">Stable</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ TAB 3 · Q1 FY27 RESULTS DEEP-DIVE ══ -->
+<div class="panel" id="tab-results">
+  <div class="sec-hdr">Q1 FY27 Results — Deep Dive <span class="sec-note">· Reported 20 Jul 2026 · Consolidated, ₹ Crore unless stated</span></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Profit &amp; Loss Snapshot</div>
+      <table>
+        <thead><tr><th>Line Item</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue from Operations</td><td class="num">24,648.20</td><td class="num">21,455.68</td><td class="tpos">+14.9%</td></tr>
+          <tr><td class="tb">Total Income</td><td class="num">24,778.47</td><td class="num">21,455.68</td><td class="tpos">+15.5%</td></tr>
+          <tr><td class="tb">Total Expenses</td><td class="num">21,286.19</td><td class="num">18,405.19</td><td class="tneg">+15.7%</td></tr>
+          <tr><td class="tb">EBITDA</td><td class="num">5,146.00</td><td class="num">4,591.00</td><td class="tpos">+12.1%</td></tr>
+          <tr><td class="tb">Depreciation &amp; Amortisation</td><td class="num">1,200.51</td><td class="num">1,106.78</td><td class="tneg">+8.5%</td></tr>
+          <tr><td class="tb">Finance Costs</td><td class="num">452.93</td><td class="num">433.30</td><td class="tneg">+4.5%</td></tr>
+          <tr><td class="tb">Profit Before Tax</td><td class="num">3,480.43</td><td class="num">3,008.06</td><td class="tpos">+15.7%</td></tr>
+          <tr><td class="tb">PAT (Consolidated)</td><td class="num">2,603.72</td><td class="num">2,220.91</td><td class="tpos">+17.2%</td></tr>
+          <tr><td class="tb">PAT (Owners)</td><td class="num">2,599.28</td><td class="num">2,225.90</td><td class="tpos">+16.8%</td></tr>
+          <tr><td class="tb">Basic EPS (₹)</td><td class="num">88.36</td><td class="num">75.67</td><td class="tpos">+16.8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Balance Sheet &amp; Ratios</div>
+      <div class="m-row"><span class="m-lbl">Net Worth</span><span class="m-val">₹83,431.66 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Debt-Equity Ratio</span><span class="m-val">0.27× (vs 0.30× YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Debt/EBITDA</span><span class="m-val">0.87× (vs 0.94× start FY27)</span></div>
+      <div class="m-row"><span class="m-lbl">Interest Coverage (ISCR)</span><span class="m-val">8.45×</span></div>
+      <div class="m-row"><span class="m-lbl">Debt Service Coverage (DSCR)</span><span class="m-val">6.97×</span></div>
+      <div class="m-row"><span class="m-lbl">Operating Margin</span><span class="m-val">21% (flat YoY; 22% in Q4 FY26)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Profit Margin</span><span class="m-val">11% (flat YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">RMC Business ROCE</span><span class="m-val">35%</span></div>
+      <div style="font-size:12px;line-height:1.7;margin-top:12px;color:var(--muted);">Balance sheet stayed disciplined even through a heavy capex and acquisition-integration cycle — deleveraging continued sequentially despite ₹17,000 Cr of committed capex over the next 2–2.5 years and Cables &amp; Wires investment ramp-up.</div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Management Commentary — Earnings Call, 20 Jul 2026</div>
+    <p style="font-size:12.5px;line-height:1.8;">CFO <strong>Atul Daga</strong> called Q1 FY27 the <strong>strongest-ever first quarter</strong> across volume, revenue and EBITDA, crediting demand strength and disciplined execution: "If the demand is good, everything falls in line." He reiterated that UltraTech treats cement as a <strong>branded, not purely commoditised</strong>, product — premium positioning is delivering pricing power even as acquired-brand volumes convert to the UltraTech badge. On the West Asia-led cost shock, Daga flagged a further <strong>₹130–140/tonne sequential cost headwind</strong> for Q2 FY27 from fuel, packaging and monsoon seasonality, with some relief expected only as elevated-cost fuel inventory works through the system. Management guided to <strong>double-digit volume growth</strong> for FY27 and reaffirmed the capacity roadmap to ~212.7 MTPA (grey, domestic) by end-FY27 and ~242 MTPA consolidated by FY28.</p>
+  </div>
+
+  <div class="g3 gap-top">
+    <div class="card">
+      <div class="card-lbl">Management/Board</div>
+      <div style="font-size:12px;line-height:1.8;">
+        <strong>Chairman:</strong> Kumar Mangalam Birla (Aditya Birla Group)<br>
+        <strong>MD &amp; CEO:</strong> K.C. Jhanwar<br>
+        <strong>CFO:</strong> Atul Daga<br>
+        Board composition weighted toward independent directors per SEBI norms; audit and integration committees oversee India Cements/Kesoram merger process.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Segment Watch — RMC</div>
+      <div class="m-row"><span class="m-lbl">Volume</span><span class="m-val">4.62 mn cu.m (+18%)</span></div>
+      <div class="m-row"><span class="m-lbl">Revenue</span><span class="m-val">₹2,235 Cr (+22%)</span></div>
+      <div class="m-row"><span class="m-lbl">Cement Consumed</span><span class="m-val">1.34 MT (3.4% of volume)</span></div>
+      <div class="m-row"><span class="m-lbl">ROCE</span><span class="m-val">35%</span></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Segment Watch — Cables &amp; Wires</div>
+      <div class="m-row"><span class="m-lbl">Planned Investment</span><span class="m-val">₹1,800 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Spent to Date</span><span class="m-val">₹888 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Launch Timeline</span><span class="m-val">Q3 FY27</span></div>
+      <div class="m-row"><span class="m-lbl">Status</span><span class="m-val">Regulatory certs, warehousing, ERP/CRM live</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 4 · 4 COST CENTRES (SPECIFIC ASK) ══ -->
+<div class="panel" id="tab-costcentres">
+  <div class="sec-hdr">The 4 Cost Centres of a Cement Company — How UltraTech Manages Each <span class="sec-note">· ~84% of total Q1 FY27 expenses sit in these four lines</span></div>
+
+  <div class="crisis-box">
+    Every integrated cement manufacturer's cost structure is dominated by four line items: <strong>(1) Power &amp; Fuel</strong>, <strong>(2) Freight &amp; Forwarding</strong> (logistics), <strong>(3) Raw Materials</strong> (limestone, gypsum, fly ash/slag), and <strong>(4) Packaging &amp; Other Overheads</strong>. Together these accounted for roughly <strong>₹17,952 Cr of UltraTech's ₹21,286 Cr</strong> total Q1 FY27 consolidated expenses (~84%). The company's Q1 FY27 outperformance versus peers is explained almost entirely by how it manages the first two of these four — scale, fuel-mix flexibility and logistics density are UltraTech's biggest structural edges.
+  </div>
+
+  <div class="g2">
+    <div class="cc-card fuel">
+      <div class="cc-title" style="color:var(--fuel)">① Power &amp; Fuel</div>
+      <div class="cc-sub">~35–40% of Industry Cost · Largest, Most Volatile Line</div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 Expense</span><span class="m-val">₹5,418.65 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">YoY Growth</span><span class="m-val tneg">+11.45%</span></div>
+      <div class="m-row"><span class="m-lbl">Fuel Cost/Tonne</span><span class="m-val">₹915 (vs ₹874 YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Est. Cost/Tonne (Consol.)</span><span class="m-val">~₹1,312</span></div>
+      <div class="cc-body"><strong>How UltraTech manages it:</strong> Continuously rebalances the coal-vs-petcoke fuel mix as relative prices move — shifted more heavily toward <strong>domestic coal</strong> in Q1 FY27 as petcoke became relatively costlier post West Asia disruption. Waste Heat Recovery Systems (WHRS) are being scaled toward a <strong>511 MW</strong> group target by FY27 (450 MW at UltraTech standalone), cutting purchased-power dependence. Renewable/green power capacity has crossed the <strong>1 GW</strong> mark. Alternative Fuels &amp; Raw materials (AFR) co-processing in kilns is being scaled to substitute costlier fossil fuel.</div>
+      <div class="badge-row"><span class="badge b-warn">Highest sensitivity to West Asia crisis</span></div>
+    </div>
+    <div class="cc-card freight">
+      <div class="cc-title" style="color:var(--freight)">② Freight &amp; Forwarding</div>
+      <div class="cc-sub">~18–24% of Industry Cost · Logistics &amp; Distribution</div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 Expense</span><span class="m-val">₹5,210.61 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">YoY Growth</span><span class="m-val tneg">+12.08%</span></div>
+      <div class="m-row"><span class="m-lbl">Average Lead Distance</span><span class="m-val pos">360 km (−9 km YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Est. Cost/Tonne (Consol.)</span><span class="m-val">~₹1,261</span></div>
+      <div class="cc-body"><strong>How UltraTech manages it:</strong> UltraTech's biggest structural moat here is <strong>plant density</strong> — 22+ integrated units and 27+ grinding units let it serve markets from the nearest node rather than hauling clinker or cement long distances. Newly-integrated <strong>India Cements (South) and Kesoram (Karnataka/Telangana)</strong> plants shrink the average lead distance further in southern markets. Rail-coefficient optimisation, coastal/multimodal shipping and route rationalisation are ongoing cost-saving levers, cited by management as a direct source of the sequential lead-distance improvement.</div>
+      <div class="badge-row"><span class="badge b-pos">Lead distance improving despite scale-up</span></div>
+    </div>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="cc-card rawmat">
+      <div class="cc-title" style="color:var(--rawmat)">③ Raw Materials</div>
+      <div class="cc-sub">~15–20% of Industry Cost · Limestone, Gypsum, Fly Ash/Slag</div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 Expense</span><span class="m-val">₹4,129.36 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">YoY Growth</span><span class="m-val tneg">+20.29%</span></div>
+      <div class="m-row"><span class="m-lbl">Est. Cost/Tonne (Consol.)</span><span class="m-val">~₹1,000</span></div>
+      <div class="cc-body"><strong>How UltraTech manages it:</strong> Owns captive limestone reserves adjacent to most integrated plants, insulating the single largest raw input (~80% of clinker mix) from open-market pricing. Growth of blended cement (PPC/PSC/composite) mix reduces the <strong>clinker factor</strong> — the ratio of clinker to finished cement — lowering both raw-material intensity and embedded carbon. Fly ash and slag sourcing tie-ups with thermal/steel plants secure supplementary cementitious material (SCM) at stable cost. The steepest YoY rise here is volume-driven (12%+ growth) rather than a per-unit cost blowout.</div>
+      <div class="badge-row"><span class="badge b-spec">Volume-led rise, not price-led</span></div>
+    </div>
+    <div class="cc-card pack">
+      <div class="cc-title" style="color:var(--pack)">④ Packaging &amp; Other Overheads</div>
+      <div class="cc-sub">~12–15% of Industry Cost · Bags, Admin, Employee, Marketing</div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 Expense</span><span class="m-val">₹3,193.09 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">YoY Growth</span><span class="m-val tneg">+24.60%</span></div>
+      <div class="m-row"><span class="m-lbl">Bag Cost</span><span class="m-val tneg">₹12/bag (vs ₹9 YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Est. Cost/Tonne (Consol.)</span><span class="m-val">~₹773</span></div>
+      <div class="cc-body"><strong>How UltraTech manages it:</strong> Polypropylene bag prices jumped ~33% as the West Asia conflict disrupted PP resin supply chains, adding an estimated <strong>₹20/tonne</strong>. Mitigation levers include growing the <strong>bulk cement</strong> (bag-free) share to institutional/RMC customers, multi-vendor bag sourcing to avoid single-point exposure, and plant automation/digitisation to hold employee-cost growth below volume growth. This is the smallest of the four levers in absolute terms but the fastest-growing on a percentage basis this quarter.</div>
+      <div class="badge-row"><span class="badge b-warn">Fastest %YoY growth of the 4</span></div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Combined View — Q1 FY27 Cost Centre Split (Estimated ₹/Tonne, Consolidated)</div>
+    <div class="chart-box"><canvas id="costCentreChart"></canvas></div>
+    <p class="footnote">Per-tonne splits for Freight, Raw Material and Packaging/Other are CB Research estimates derived by dividing disclosed P&amp;L line items by consolidated Q1 FY27 volume (41.31 MT); they are directionally indicative, not company-published per-tonne splits. Fuel cost/tonne of ₹915 is the company-disclosed, domestic grey-cement-specific figure from the earnings call. Source: BSE filing, earnings-call transcript, 20 Jul 2026.</p>
+  </div>
+</div>
+
+<!-- ══ TAB 5 · WEST ASIA / MIDDLE EAST CRISIS (SPECIFIC ASK) ══ -->
+<div class="panel" id="tab-middleeast">
+  <div class="sec-hdr">West Asia Crisis — How UltraTech Held Up on Fuel Costs <span class="sec-note">· Sector-wide input shock, company-specific resilience</span></div>
+
+  <div class="crisis-box">
+    <strong>The shock:</strong> Geopolitical tensions in West Asia through H1 CY2026 pushed up prices of <strong>petcoke, imported coal, shipping freight and polypropylene packaging resin</strong> — all inputs the Indian cement industry sources partly through Middle East-linked supply chains. Brokerage estimates (JM Financial) put the YoY rise in coal and petcoke costs at <strong>26–43%</strong> for the sector in Q1 FY27, with average industry EBITDA margin seen contracting ~1.7 percentage points YoY to ~15.7%. Industry executives estimated a combined <strong>₹250–300/tonne</strong> cost impact across H1 FY27 from fuel, freight and packaging-bag inflation.
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">What Went Up, and By How Much</div>
+      <table>
+        <thead><tr><th>Input</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">Change</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Fuel Cost / Tonne</td><td class="num">₹915</td><td class="num">₹874</td><td class="tneg">+4.7%</td></tr>
+          <tr><td class="tb">Sector Coal/Petcoke Cost</td><td class="num" colspan="2" style="text-align:center">—</td><td class="tneg">+26% to +43% YoY</td></tr>
+          <tr><td class="tb">Packaging Bag Cost</td><td class="num">₹12/bag</td><td class="num">₹9/bag</td><td class="tneg">+33%</td></tr>
+          <tr><td class="tb">Q2 FY27 Guided Headwind</td><td class="num" colspan="3" style="text-align:center">₹130–140/tonne (management guidance)</td></tr>
+        </tbody>
+      </table>
+      <p class="footnote">Sector estimates per JM Financial brokerage note (Jul 2026). Company-specific figures per UltraTech earnings-call transcript, 20 Jul 2026.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Why UltraTech Outperformed Peers Anyway</div>
+      <ul class="swot-ul" style="line-height:1.85;">
+        <li><strong>Scale &amp; sourcing power:</strong> as India's largest buyer of kiln fuel, UltraTech has more contract/spot flexibility than mid-sized peers to time purchases and diversify origin countries.</li>
+        <li><strong>Fuel-mix agility:</strong> actively rotated toward cheaper domestic coal as petcoke's relative price advantage narrowed — a lever smaller players with less blending flexibility in their kiln design cannot always pull.</li>
+        <li><strong>Realisation growth absorbed cost:</strong> grey cement realisation rose 3.7% YoY to ₹5,218/tonne, with the industry taking 2.5–3% price hikes in the quarter, partially offsetting fuel inflation.</li>
+        <li><strong>WHRS &amp; renewables:</strong> waste-heat recovery and >1 GW green power reduce grid/thermal power dependence, a structural (not one-quarter) offset to fossil-fuel cost inflation.</li>
+        <li><strong>Volume leverage:</strong> 12.2% consolidated volume growth spread fixed costs over a larger base, protecting EBITDA/tonne even as per-unit fuel cost rose.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">Outlook — Is the Worst Over?</div>
+      <p style="font-size:12.5px;line-height:1.8;">Industry trackers (Whalesbook, Jul 2026) note petcoke and coal prices have already <strong>receded 10–16% from their recent peaks</strong> as the acute phase of the West Asia disruption eases, though the benefit will show up with a lag as older, higher-cost fuel inventory is worked through. Management's own Q2 FY27 guidance (₹130–140/tonne further headwind) suggests the pass-through is <strong>not yet complete</strong> — H1 FY27 will likely remain the toughest cost window, with a margin recovery more visible in H2 FY27 if fuel prices stay lower and the industry sustains recent price hikes.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Sector Comparison — Q1 FY27 Cost Pressure</div>
+      <div class="m-row"><span class="m-lbl">Sector avg. EBITDA margin</span><span class="m-val">~15.7% (−1.7pp YoY, JM Fin. est.)</span></div>
+      <div class="m-row"><span class="m-lbl">Sector avg. APAT growth (est.)</span><span class="m-val">−10.8% YoY (JM Fin. est.)</span></div>
+      <div class="m-row"><span class="m-lbl">UltraTech APAT growth (actual)</span><span class="m-val pos">+16.8%–17.2% YoY</span></div>
+      <div class="m-row"><span class="m-lbl">UltraTech EBITDA/tonne</span><span class="m-val pos">+1.3% YoY (vs sector decline)</span></div>
+      <p class="footnote" style="margin-top:10px;">Sector estimates are ex-ante brokerage projections (JM Financial, pre-results); UltraTech figures are actuals reported 20 Jul 2026. The gap illustrates the scale/diversification advantage this tab describes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 6 · ACQUISITIONS TRACKER ══ -->
+<div class="panel" id="tab-acquisitions">
+  <div class="sec-hdr">Acquisitions Integration Tracker <span class="sec-note">· India Cements · Kesoram · Star Cement · Progress vs Plan</span></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">India Cements Limited (ICL) — South India</div>
+      <div class="m-row"><span class="m-lbl">Deal Structure</span><span class="m-val">Open offer, stake raised to 55.49% (Dec 2024)</span></div>
+      <div class="m-row"><span class="m-lbl">Capacity Added</span><span class="m-val">14.45 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 Standalone Profit</span><span class="m-val pos">₹26.62 Cr (vs −₹7.53 Cr YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 Revenue</span><span class="m-val">₹1,019.42 Cr (~flat YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Ex-Factory Revenue Growth</span><span class="m-val pos">+21% YoY (like-for-like)</span></div>
+      <div class="m-row"><span class="m-lbl">Ex-Factory Volume Growth</span><span class="m-val pos">+19% YoY (like-for-like)</span></div>
+      <div class="m-row"><span class="m-lbl">Utilisation (Dec 2025 qtr)</span><span class="m-val">~57%, improving</span></div>
+      <div class="cc-body" style="margin-top:8px;"><strong>Status:</strong> Turned <strong>PAT-positive</strong> from a loss a year ago — the clearest evidence yet that management's "turnaround, not just a bolt-on" thesis is playing out. Full legal integration (merger into UltraTech standalone) is deferred until capex completion, non-core asset sales and operating alignment are done — management guided this could land by <strong>Q4 FY28 or earlier</strong>.</div>
+      <div class="badge-row"><span class="badge b-pos">Turned profitable</span><span class="badge b-warn">Utilisation still sub-scale</span></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Kesoram Industries (Cement Business) — Karnataka/Telangana</div>
+      <div class="m-row"><span class="m-lbl">Deal Structure</span><span class="m-val">Demerger into UltraTech, effective 1 Mar 2025</span></div>
+      <div class="m-row"><span class="m-lbl">Capacity Added</span><span class="m-val">10.75 MTPA (Sedam + Basantnagar)</span></div>
+      <div class="m-row"><span class="m-lbl">Clinker-Backed Capacity</span><span class="m-val">8.50 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">Surplus Grinding Capacity</span><span class="m-val">2.25 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">Packing Plant</span><span class="m-val">0.66 MTPA, Solapur (Maharashtra)</span></div>
+      <div class="cc-body" style="margin-top:8px;"><strong>Status:</strong> Brand migration of Kesoram (alongside India Cements) to the UltraTech badge was completed a <strong>quarter ahead of the guided schedule</strong>. Strategic rationale was southern-market density and logistics/manufacturing synergy — reinforcing the freight-cost advantage discussed in the Cost Centres tab.</div>
+      <div class="badge-row"><span class="badge b-pos">Brand migration done early</span></div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Brand Conversion Payoff</div>
+    <p style="font-size:12.5px;line-height:1.8;">Management confirmed that converted volumes from India Cements and Kesoram are now trading under the flagship <strong>UltraTech</strong> brand without losing share in lower-end/economy categories in the South. The UltraTech brand itself posted <strong>21.3% YoY growth</strong> in the quarter — read by management as evidence that customers are trading up to the premium brand once distribution and marketing support kicks in, validating the core thesis that "the customer does not shop for the cheapest bag; they reach for the brand they trust" (CFO Atul Daga).</p>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Other Inorganic / Adjacent Bets</div>
+    <table>
+      <thead><tr><th>Initiative</th><th>Rationale</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Star Cement stake (Northeast India)</td><td>Entry into high-growth, high-realisation Northeastern market</td><td><span class="badge b-spec">Strategic stake held</span></td></tr>
+        <tr><td class="tb">Century Textiles cement assets (legacy)</td><td>Earlier integration — railway freight synergy still cited</td><td><span class="badge b-pos">Fully integrated</span></td></tr>
+        <tr><td class="tb">Cables &amp; Wires (organic, adjacent)</td><td>Diversification into a categorically adjacent, high-growth B2C/B2B electricals market</td><td><span class="badge b-warn">Launch Q3 FY27</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ TAB 7 · CHARTS ══ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Visual Analytics <span class="sec-note">· Growth, cost mix, and capacity trajectory</span></div>
+  <div class="g2">
+    <div class="chart-box"><div class="card-lbl">Revenue / EBITDA / PAT — ₹ Crore</div><canvas id="trendChart"></canvas></div>
+    <div class="chart-box"><div class="card-lbl">Volume (MT) &amp; Capacity Utilisation (%)</div><canvas id="volChart"></canvas></div>
+  </div>
+  <div class="g2 gap-top">
+    <div class="chart-box"><div class="card-lbl">Capacity Roadmap — Consolidated Grey Cement MTPA</div><canvas id="capChart"></canvas></div>
+    <div class="chart-box"><div class="card-lbl">Fuel &amp; Packaging Cost Inflation — Q1 FY27 vs Q1 FY26</div><canvas id="fuelChart"></canvas></div>
+  </div>
+</div>
+
+<!-- ══ TAB 8 · VALUATION ══ -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuation <span class="sec-note">· EV/EBITDA context · Broker target-price triangulation</span></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Current Trading Snapshot</div>
+      <div class="m-row"><span class="m-lbl">CMP (21 Jul 2026)</span><span class="m-val">₹12,040</span></div>
+      <div class="m-row"><span class="m-lbl">Market Cap</span><span class="m-val">~₹3,54,646 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Trading Multiple</span><span class="m-val">~18x FY27E / ~15x FY28E EV/EBITDA (MOFSL est.)</span></div>
+      <div class="m-row"><span class="m-lbl">Basic EPS (Q1 FY27 annualised, illustrative)</span><span class="m-val">~₹353</span></div>
+      <div class="m-row"><span class="m-lbl">Net Debt/EBITDA</span><span class="m-val">0.87×</span></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Broker Target-Price Spread (Post Q1 FY27)</div>
+      <div class="chart-box" style="padding:10px;"><canvas id="tpChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-lbl">Valuation Approach by Brokerage</div>
+    <table>
+      <thead><tr><th>Brokerage</th><th>Method</th><th style="text-align:right">Target Price</th><th style="text-align:right">Implied Upside*</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Morgan Stanley</td><td>DCF / EV-EBITDA (Overweight)</td><td class="num">₹14,700</td><td class="tpos">+22.1%</td></tr>
+        <tr><td class="tb">JM Financial</td><td>19x Jun'28E EV/EBITDA</td><td class="num">₹14,500</td><td class="tpos">+20.4%</td></tr>
+        <tr><td class="tb">Jefferies</td><td>EV/EBITDA (Buy)</td><td class="num">₹14,065</td><td class="tpos">+16.8%</td></tr>
+        <tr><td class="tb">Motilal Oswal (MOFSL)</td><td>18x FY28E EV/EBITDA</td><td class="num">₹13,800</td><td class="tpos">+14.6%</td></tr>
+        <tr><td class="tb">JP Morgan</td><td>EV/EBITDA (Overweight)</td><td class="num">₹13,300</td><td class="tpos">+10.5%</td></tr>
+      </tbody>
+    </table>
+    <p class="footnote">*Upside calculated against CMP ₹12,040 (21 Jul 2026). These are third-party broker views, not a CB Research recommendation — see Analyst Ratings tab. Sources: brokerage notes cited on BusinessToday, Zeebiz, 21 Jul 2026.</p>
+  </div>
+</div>
+
+<!-- ══ TAB 9 · SWOT ══ -->
+<div class="panel" id="tab-swot">
+  <div class="sec-hdr">Business Analysis — SWOT <span class="sec-note">· Q1 FY27 lens</span></div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+      <li>#1 scale in India (205.5 MTPA) gives sourcing, logistics and pricing power peers can't match</li>
+      <li>Best-in-class EBITDA/tonne resilience through the West Asia cost shock</li>
+      <li>Deleveraging balance sheet (0.87× Net Debt/EBITDA) even amid heavy capex</li>
+      <li>Premium brand pricing power validated by 21.3% brand growth post-acquisition conversion</li>
+    </ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+      <li>India Cements utilisation still sub-scale (~57%), a multi-year turnaround, not instant accretion</li>
+      <li>Packaging &amp; other overheads grew fastest (+24.6% YoY) of the four cost centres</li>
+      <li>East region volumes lagged in Q1 on election-related and labour disruptions</li>
+      <li>Cables &amp; Wires is an unproven new category needing execution discipline</li>
+    </ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+      <li>H2 FY27 margin recovery as petcoke/coal prices ease 10–16% from West Asia peaks</li>
+      <li>Continued market-share gains from peers who are sacrificing volume to protect margin</li>
+      <li>RMC and Cables &amp; Wires diversify revenue beyond pure-play cement cyclicality</li>
+      <li>Infrastructure and housing capex cycle in India remains structurally supportive</li>
+    </ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+      <li>Further escalation in West Asia geopolitics could reverse the nascent fuel-price relief</li>
+      <li>Q2 FY27 guided ₹130–140/tonne further cost headwind — monsoon seasonality compounds it</li>
+      <li>Aggressive capacity build industry-wide (~57 MTPA FY27 additions) risks pricing discipline breaking</li>
+      <li>Execution risk on large capex programme and new Cables &amp; Wires launch timeline</li>
+    </ul></div>
+  </div>
+</div>
+
+<!-- ══ TAB 10 · ANALYST RATINGS ══ -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Ratings &amp; Consensus <span class="sec-note">· Target prices · Research only · Not investment advice</span></div>
+
+  <div class="g2">
+    <div class="analyst-card">
+      <div class="ac-head"><div class="ac-name">Morgan Stanley</div><span class="rat-pill rp-buy">Overweight</span></div>
+      <div class="ac-tp">₹14,700</div>
+      <div class="ac-cmp">vs CMP ₹12,040 · +22.1% upside · raised from ₹14,600</div>
+      <div class="ac-bar"><div class="ac-fill" style="width:82%"></div></div>
+      <div class="ac-text">Retained Overweight after Q1 FY27, citing continued market-share gains and cost discipline that outpaced sector peers despite the West Asia fuel shock.</div>
+    </div>
+    <div class="analyst-card">
+      <div class="ac-head"><div class="ac-name">JM Financial</div><span class="rat-pill rp-buy">Buy</span></div>
+      <div class="ac-tp">₹14,500</div>
+      <div class="ac-cmp">vs CMP ₹12,040 · +20.4% upside · raised from ₹13,850</div>
+      <div class="ac-bar"><div class="ac-fill" style="width:80%"></div></div>
+      <div class="ac-text">Raised FY27–28E EBITDA by 1–3% and introduced FY29E estimates; reiterated UltraTech as its "top pick" in the cement sector, citing cost control in a challenging environment.</div>
+    </div>
+  </div>
+  <div class="g2 gap-top">
+    <div class="analyst-card">
+      <div class="ac-head"><div class="ac-name">Jefferies</div><span class="rat-pill rp-buy">Buy</span></div>
+      <div class="ac-tp">₹14,065</div>
+      <div class="ac-cmp">vs CMP ₹12,040 · +16.8% upside</div>
+      <div class="ac-bar"><div class="ac-fill" style="width:75%"></div></div>
+      <div class="ac-text">Called out "another quarter of strong execution," driven by double-digit volume growth and improved realisations even as costs rose.</div>
+    </div>
+    <div class="analyst-card">
+      <div class="ac-head"><div class="ac-name">Motilal Oswal (MOFSL)</div><span class="rat-pill rp-buy">Buy</span></div>
+      <div class="ac-tp">₹13,800</div>
+      <div class="ac-cmp">vs CMP ₹12,040 · +14.6% upside · 18x FY28E EV/EBITDA</div>
+      <div class="ac-bar"><div class="ac-fill" style="width:70%"></div></div>
+      <div class="ac-text">Called Q1 FY27 operating performance "broadly in line" with estimates; largely maintained FY27/28E earnings.</div>
+    </div>
+  </div>
+  <div class="g2 gap-top">
+    <div class="analyst-card">
+      <div class="ac-head"><div class="ac-name">JP Morgan</div><span class="rat-pill rp-buy">Overweight</span></div>
+      <div class="ac-tp">₹13,300</div>
+      <div class="ac-cmp">vs CMP ₹12,040 · +10.5% upside</div>
+      <div class="ac-bar"><div class="ac-fill" style="width:60%"></div></div>
+      <div class="ac-text">Said earnings slightly beat estimates, led mainly by stronger-than-expected volumes; views UltraTech as better-positioned than peers on scale.</div>
+    </div>
+    <div class="analyst-card">
+      <div class="ac-head"><div class="ac-name">Nuvama Institutional Equities</div><span class="rat-pill rp-acc">Positive (TP under review)</span></div>
+      <div class="ac-tp">Not disclosed in this note</div>
+      <div class="ac-cmp">Reiterated bullish stance post Q1 FY27</div>
+      <div class="ac-bar"><div class="ac-fill" style="width:55%"></div></div>
+      <div class="ac-text">"UltraTech Cement is consistently gaining market share while exhibiting exemplary cost control despite a challenging operating environment." Flagged fuel-cost trajectory as the key swing factor for stock performance ahead.</div>
+    </div>
+  </div>
+  <p class="footnote" style="margin-top:6px;">All ratings and target prices are third-party broker views published after the 20 Jul 2026 results, attributed individually. Cauvery Business Research does not issue its own buy/sell/hold recommendation.</p>
+</div>
+
+<!-- ══ TAB 11 · MOATS ══ -->
+<div class="panel" id="tab-moats">
+  <div class="sec-hdr">Moats &amp; Competitive Advantages <span class="sec-note">· What creates a sustainable edge</span></div>
+  <div class="g3">
+    <div class="moat-card">
+      <div class="moat-title">Scale &amp; Density</div>
+      <div class="moat-body">205.5 MTPA consolidated capacity across 20+ integrated units and 27+ grinding units gives UltraTech the lowest-cost logistics network and greatest fuel-sourcing bargaining power in Indian cement.</div>
+      <span class="moat-tag">Structural</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-title">Brand Pricing Power</div>
+      <div class="moat-body">21.3% growth in the flagship UltraTech brand post-acquisition conversion shows customers pay up for trust — a genuine differentiator in a category often assumed to be a pure commodity.</div>
+      <span class="moat-tag">Brand</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-title">Fuel-Mix Flexibility</div>
+      <div class="moat-body">Ability to swing between domestic coal, imported coal and petcoke in response to relative pricing — smaller single-fuel-dependent players cannot replicate this agility as easily.</div>
+      <span class="moat-tag">Operational</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-title">Balance-Sheet Headroom</div>
+      <div class="moat-body">0.87× Net Debt/EBITDA and improving ISCR/DSCR let UltraTech keep investing in capacity and new categories (Cables &amp; Wires) through the cycle while capital-constrained peers pull back.</div>
+      <span class="moat-tag">Financial</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-title">M&amp;A Integration Playbook</div>
+      <div class="moat-body">India Cements turned PAT-positive within roughly a year of control; Kesoram/India Cements brand migration completed a quarter early — a repeatable, disciplined post-merger integration process.</div>
+      <span class="moat-tag">Execution</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-title">Distribution Reach</div>
+      <div class="moat-body">5,802 UltraTech Building Solutions outlets (+21% YoY) plus RMC presence in 170 cities give UltraTech a retail and institutional distribution footprint that is difficult and slow to replicate.</div>
+      <span class="moat-tag">Distribution</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB · CEMENT SCHOOL ══ -->
+<div class="panel" id="tab-school">
+  <div class="sec-hdr">🎓 Cement School <span class="sec-note">· Everything you need to know about the cement industry, through UltraTech's lens · EIL Research</span></div>
+
+  <div class="socrates-banner">
+    <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;margin-bottom:8px;">Why Cement Matters More Than You Think</div>
+    <div style="font-size:13px;line-height:1.8;opacity:.92;">Cement is not a commodity — it is the backbone of every road, bridge, dam, home, and factory in India. Every ₹1 lakh crore spent on infrastructure requires roughly 0.8–1 MT of cement. India consumes ~420 MT per year, second only to China. As the sector's largest player, UltraTech's cost structure and scale decisions are effectively a proxy for how the whole industry is run — understanding UltraTech is understanding the industry.</div>
+  </div>
+
+  <div style="border-left:5px solid #0e7490;padding-left:18px;margin-bottom:24px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#0e7490;margin-bottom:4px;">Chapter 1 — Clinker: The Heart of Cement</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">The Most Critical Asset in the Entire Value Chain</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">What Is Clinker?</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:12px;">Clinker is the intermediate product formed when limestone, clay, iron ore, and silica are blended and burned at <strong>1,450°C in a rotary kiln</strong>. It emerges as dark grey pellets — the actual "binding agent" that gives cement its strength.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">Think of clinker as <strong>baked dough</strong> and cement as the <strong>finished bread</strong>. You bake at one location (integrated plant), transport the dough, and finish the bread near the customer (grinding unit). That logic is exactly how UltraTech's 20+ integrated plants and 27+ grinding units work together.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">UltraTech's Clinker Position</div>
+      <div class="m-row"><span class="m-lbl">Clinker Capacity (est.)</span><span class="m-val">~140 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">Integrated Plants</span><span class="m-val">20+ across India</span></div>
+      <div class="m-row"><span class="m-lbl">Grinding Units</span><span class="m-val">27+</span></div>
+      <div class="m-row"><span class="m-lbl">Clinker Factor (est.)</span><span class="m-val">~65%</span></div>
+      <p class="footnote" style="margin-top:8px;"><strong>Clinker factor</strong> = clinker used per tonne of cement produced. Lower is better — more fly ash/slag blending means cheaper cement and better margins. Best-in-class peers run closer to 51–55%; UltraTech's blended-cement push (PPC/PSC growth) is a direct lever on this Raw Materials cost centre.</p>
+    </div>
+  </div>
+
+  <div style="border-left:5px solid #7c3aed;padding-left:18px;margin-bottom:24px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#7c3aed;margin-bottom:4px;">Chapter 2 — Grinding Units &amp; the Freight Math</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">Getting Cement to the Customer Cheaply Is Half the Battle</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">The Freight Math</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">Cement sells at roughly ₹5,000–5,200/tonne. Road freight costs <strong>₹0.8–1.2 per tonne per km</strong>. Moving cement 300 km eats ₹240–360/T — 5–8% of revenue, gone just in transport. This is why cement is almost always sold within 250–350 km of the plant.</p>
+      <table>
+        <thead><tr><th>Distance</th><th style="text-align:right">Freight Cost</th><th style="text-align:right">% of Revenue</th></tr></thead>
+        <tbody>
+          <tr><td>100 km (local)</td><td class="num">₹80–120/T</td><td class="tpos">~2%</td></tr>
+          <tr><td>300 km (regional)</td><td class="num">₹240–360/T</td><td class="warn">~6%</td></tr>
+          <tr><td>500 km (long haul)</td><td class="num">₹400–600/T</td><td class="tneg">~10%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">How UltraTech Wins This Game</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">27+ grinding units placed near demand centres convert UltraTech into a "local supplier" in almost every major Indian city — a structural freight advantage few peers can match at scale. That density is exactly why UltraTech's average lead distance <strong>fell to 360 km (−9 km YoY) in Q1 FY27</strong> even as volumes grew 12%+.</p>
+      <div style="background:#f5f3ff;border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.7;border-left:3px solid #7c3aed;">
+        <strong>Key Insight:</strong> The India Cements and Kesoram acquisitions weren't just about adding capacity — they slot new plants directly into South India's demand geography, shrinking lead distances in a region UltraTech was previously under-weight in.
+      </div>
+    </div>
+  </div>
+
+  <div style="border-left:5px solid #ea580c;padding-left:18px;margin-bottom:24px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#ea580c;margin-bottom:4px;">Chapter 3 — Power &amp; Fuel: The Volatile Giant</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">Why a Middle East Conflict Can Move a Cement Company's Profit</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">Energy Intensity of Cement</div>
+      <table>
+        <thead><tr><th>Stage</th><th>Energy Used</th><th>Fuel Type</th></tr></thead>
+        <tbody>
+          <tr><td>Kiln (clinker burning)</td><td class="num">700–800 kcal/kg</td><td>Coal / Pet Coke</td></tr>
+          <tr><td>Cement grinding</td><td class="num">~25–35 kWh/T</td><td>Electricity</td></tr>
+          <tr><td>Total electrical energy</td><td class="num">~80–110 kWh/T</td><td>Captive preferred</td></tr>
+        </tbody>
+      </table>
+      <p class="footnote" style="margin-top:8px;">Coal and petcoke together typically make up 35–40% of a cement company's total cost — the single largest, and most volatile, line item. This is exactly the input the West Asia conflict disrupted in FY27.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">The WHRS &amp; Green Power Race</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;"><strong>Waste Heat Recovery Systems (WHRS)</strong> capture hot gases exiting the kiln and pre-heater and convert them to near-zero-marginal-cost electricity. UltraTech is scaling WHRS toward a <strong>511 MW</strong> group target by FY27, alongside &gt;1 GW of renewable power capacity already installed.</p>
+      <div style="background:#fff7ed;padding:10px 12px;border-radius:6px;margin-top:6px;font-size:11.5px;line-height:1.65;border-left:3px solid var(--fuel);">
+        <strong>Pet Coke vs Coal:</strong> Pet coke is usually cheaper but became relatively costlier than coal in Q1 FY27 as West Asia disruption hit petcoke supply specifically — UltraTech's kilns can burn either, letting it swing the mix and blunt the impact. Not every kiln design allows this flexibility.
+      </div>
+    </div>
+  </div>
+
+  <div style="border-left:5px solid #1d4ed8;padding-left:18px;margin-bottom:24px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#1d4ed8;margin-bottom:4px;">Chapter 4 — Why Size Matters Enormously</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">Cement Is a Fixed-Cost Business — Bigger Is Almost Always Better</div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Why Cement Rewards Scale</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">A cement plant's biggest costs — kiln depreciation, captive power, mines, WHRS, management — are largely <strong>fixed</strong>. The more you produce, the lower the cost per tonne. Scale also brings <strong>brand pricing power</strong>: UltraTech's realisation of ₹5,218/tonne in Q1 FY27 (+3.7% YoY) reflects a premium over many regional brands — pure margin, no extra production cost.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">Scale also enables <strong>cross-subsidisation</strong> — a large player can compete hard in one region while profits from other regions cushion the impact. A small regional player has no such buffer, which is exactly why the West Asia cost shock hit sector peers harder than it hit UltraTech.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">The Capacity Land Grab</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">India's cement demand is projected to reach <strong>600–700 MT by 2030</strong> from ~420 MT today. Whoever builds capacity now, at today's costs, becomes the lowest-cost producer when that demand arrives. UltraTech's ₹17,000 Cr committed capex over the next 2–2.5 years, targeting 212.7 MTPA domestic by end-FY27 and ~242 MTPA consolidated by FY28, is a direct bet on this logic.</p>
+      <p class="footnote">Building a new integrated plant today costs ~₹600–800 Cr per MTPA — in 5 years, likely ₹900–1,100 Cr with inflation. The incentive is to build ahead of the curve.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 12 · VERDICT ══ -->
+<div class="panel" id="tab-verdict">
+  <div class="sec-hdr">🏆 Verdict <span class="sec-note">· Investment thesis · Q1 FY27</span></div>
+  <div class="verdict-card">
+    <div class="verdict-title">🏆 Star Performer of Cement Sector Q1 FY27</div>
+    <div class="verdict-body">UltraTech turned a sector-wide fuel-cost shock into a market-share opportunity. While brokerages had modelled the broader cement universe to see EBITDA/APAT declines on West Asia-driven petcoke and coal inflation, UltraTech posted its <strong>strongest-ever first quarter</strong> — revenue, EBITDA and PAT all grew double digits YoY, EBITDA/tonne actually improved, and net debt continued to fall even through heavy capex. The mechanics are traceable: scale-driven fuel-sourcing flexibility, a logistics network dense enough to cut lead distance even while volumes grew 12%+, and two acquisitions (India Cements, Kesoram) that are ahead of their integration schedule rather than a drag. The near-term risk is real and management has been transparent about it — a further ₹130–140/tonne cost headwind is guided for Q2 FY27 — but the structural advantages behind this quarter's outperformance (scale, brand, balance sheet) are durable, not one-off.</div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Business Scorecard</div>
+      <div class="m-row"><span class="m-lbl">Volume Growth Momentum</span><span class="m-val pos">★★★★★</span></div>
+      <div class="m-row"><span class="m-lbl">Cost Discipline vs Sector</span><span class="m-val pos">★★★★★</span></div>
+      <div class="m-row"><span class="m-lbl">M&amp;A Integration Execution</span><span class="m-val pos">★★★★☆</span></div>
+      <div class="m-row"><span class="m-lbl">Balance Sheet Strength</span><span class="m-val pos">★★★★★</span></div>
+      <div class="m-row"><span class="m-lbl">Near-Term Cost Visibility</span><span class="m-val warn">★★★☆☆</span></div>
+      <div class="m-row"><span class="m-lbl">Valuation Comfort</span><span class="m-val warn">★★★☆☆</span></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Watch-Items for Q2 FY27</div>
+      <ul class="swot-ul" style="line-height:1.9;">
+        <li>Does the guided ₹130–140/tonne cost headwind materialise as flagged, or does easing petcoke/coal spot pricing soften it?</li>
+        <li>India Cements utilisation trajectory beyond 57% — the clearest proof point of integration success</li>
+        <li>Cables &amp; Wires Q3 FY27 launch readiness and early monetisation signals</li>
+        <li>Whether industry-wide capacity additions (~57 MTPA FY27) start pressuring pricing discipline</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 13 · CB ASSIST ══ -->
+<div class="panel" id="tab-cbassist">
+  <div class="sec-hdr">🤖 CB Assist — UltraTech Cement AI Analyst <span class="sec-note">· EIL Research · Powered by Claude</span></div>
+  <div style="margin-bottom:14px;">
+    <button class="preset-tab" onclick="askPreset('How exactly did UltraTech protect EBITDA per tonne despite the West Asia fuel shock?')">West Asia fuel resilience?</button>
+    <button class="preset-tab" onclick="askPreset('Which of the 4 cost centres is the biggest risk into Q2 FY27?')">Which cost centre is riskiest?</button>
+    <button class="preset-tab" onclick="askPreset('Is the India Cements turnaround real or just a base-effect number?')">India Cements — real turnaround?</button>
+    <button class="preset-tab" onclick="askPreset('Is UltraTech expensive at current valuation given the target prices?')">Is UltraTech expensive here?</button>
+  </div>
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist is online — ask about UltraTech's Q1 FY27 results, cost structure, or acquisitions</div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="typing-ind" id="typing"><span></span><span></span><span></span></div>
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Ask CB Assist about UltraTech's Q1 FY27 performance..." onkeypress="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" id="chatSend" onclick="sendChat()">Ask</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB · CAUVERY SOCRATES ══ -->
+<div class="panel" id="tab-socrates">
+  <div class="sec-hdr">🧠 Cauvery Socrates <span class="sec-note">· Test what you've learned · MCQs + Socratic reasoning · EIL Research</span></div>
+
+  <div class="socrates-banner">
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;margin-bottom:8px;">Learn by Being Questioned, Not Just Told</div>
+    <div style="font-size:12.5px;line-height:1.8;opacity:.92;">Cauvery Socrates doesn't just hand you answers — it checks your understanding with quick multiple-choice questions on UltraTech's Q1 FY27 story, then lets you reason through open questions with a Socratic tutor that responds with guiding questions rather than straight answers, the way a good analyst-mentor would.</div>
+  </div>
+
+  <div class="card-lbl" style="margin-bottom:10px;">Quick Check — 6 MCQs on UltraTech Q1 FY27</div>
+  <div id="quizContainer"></div>
+
+  <div class="card gap-top" style="margin-bottom:18px;">
+    <div class="card-lbl">Your Score</div>
+    <div id="quizScore" style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;">0 / 6 answered</div>
+  </div>
+
+  <div class="socrates-chat">
+    <div class="socrates-title"><span></span>Socratic Mode — ask a question, get guided to the answer, not given it</div>
+    <div style="margin-bottom:12px;">
+      <button class="preset-tab" onclick="askSocrates('Why did UltraTech\'s EBITDA per tonne barely move even though fuel cost per tonne rose?')">Why did EBITDA/tonne barely move?</button>
+      <button class="preset-tab" onclick="askSocrates('Is UltraTech\'s scale really a moat, or just a temporary advantage?')">Is scale really a moat?</button>
+      <button class="preset-tab" onclick="askSocrates('Should I be worried about the Q2 FY27 cost guidance?')">Should I worry about Q2 guidance?</button>
+    </div>
+    <div class="chat-msgs" id="socMsgs"></div>
+    <div class="typing-ind" id="socTyping"><span></span><span></span><span></span></div>
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="socInput" placeholder="Ask Cauvery Socrates to help you reason through UltraTech's numbers..." onkeypress="if(event.key==='Enter')sendSocrates()">
+      <button class="chat-send" id="socSend" onclick="sendSocrates()">Ask</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="watermark">Cauvery Business Research (CB Research) · EIL Research · Data from BSE/NSE filings, company press releases and earnings-call transcripts, 20–21 Jul 2026 · Not investment advice</div>
+
+<script>
+function showTab(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const optsBase = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } };
+
+// Trend chart — Revenue/EBITDA/PAT
+new Chart(document.getElementById('trendChart'), {
+  type:'bar',
+  data:{
+    labels:['Q1 FY26','Q4 FY26','Q1 FY27'],
+    datasets:[
+      { label:'Revenue (₹ Cr)', data:[21455.68, 25467, 24648.20], backgroundColor:'#1d4ed855', borderRadius:4 },
+      { label:'EBITDA (₹ Cr)', data:[4591, 5688, 5146], backgroundColor:'#1d4ed8', borderRadius:4 },
+      { label:'PAT (₹ Cr)', data:[2220.91, 3000.02, 2603.72], backgroundColor:'#166534', borderRadius:4 }
+    ]
+  },
+  options:{ ...optsBase, scales:{ y:{ ticks:{ callback:v=>'₹'+v.toLocaleString('en-IN') } } } }
+});
+
+// Volume & Utilisation
+new Chart(document.getElementById('volChart'), {
+  type:'bar',
+  data:{
+    labels:['Q1 FY26','Q4 FY26','Q1 FY27'],
+    datasets:[
+      { label:'Consol. Volume (MT)', data:[36.83, 42.41, 41.31], backgroundColor:'#0e749055', borderRadius:4, yAxisID:'y' },
+      { label:'Capacity Utilisation (%)', data:[76, 89, 81], type:'line', borderColor:'#ea580c', backgroundColor:'#ea580c', yAxisID:'y1', tension:.3 }
+    ]
+  },
+  options:{ ...optsBase, scales:{ y:{ position:'left', title:{ display:true, text:'MT' } }, y1:{ position:'right', min:0, max:100, grid:{ drawOnChartArea:false }, title:{ display:true, text:'%' } } } }
+});
+
+// Capacity roadmap
+new Chart(document.getElementById('capChart'), {
+  type:'bar',
+  data:{
+    labels:['Q1 FY26','Q1 FY27 (Actual)','End FY27 (Guided)','FY28 (Guided)'],
+    datasets:[{ label:'Consolidated Grey Cement Capacity (MTPA)', data:[192.26, 205.5, 212.7, 242], backgroundColor:['#1d4ed855','#1d4ed8','#7c3aed','#b8911e'], borderRadius:4 }]
+  },
+  options:{ ...optsBase, plugins:{ legend:{ display:false } }, scales:{ y:{ ticks:{ callback:v=>v+' MTPA' } } } }
+});
+
+// Fuel & packaging inflation
+new Chart(document.getElementById('fuelChart'), {
+  type:'bar',
+  data:{
+    labels:['Fuel Cost/Tonne (₹)','Packaging Bag Cost (₹/bag)'],
+    datasets:[
+      { label:'Q1 FY26', data:[874, 9], backgroundColor:'#6e686055', borderRadius:4 },
+      { label:'Q1 FY27', data:[915, 12], backgroundColor:'#ea580c', borderRadius:4 }
+    ]
+  },
+  options:{ ...optsBase }
+});
+
+// Cost centre pie
+new Chart(document.getElementById('costCentreChart'), {
+  type:'doughnut',
+  data:{
+    labels:['① Power & Fuel','② Freight & Forwarding','③ Raw Materials','④ Packaging & Other'],
+    datasets:[{ data:[5418.65, 5210.61, 4129.36, 3193.09], backgroundColor:['#ea580c','#0e7490','#7c3aed','#166534'] }]
+  },
+  options:{ ...optsBase, plugins:{ legend:{ position:'right', labels:{ font:{ size:11 } } }, tooltip:{ callbacks:{ label:c=>c.label+': ₹'+c.parsed.toLocaleString('en-IN')+' Cr' } } } }
+});
+
+// Target price chart
+new Chart(document.getElementById('tpChart'), {
+  type:'bar',
+  data:{
+    labels:['JP Morgan','MOFSL','Jefferies','JM Financial','Morgan Stanley'],
+    datasets:[{ label:'Target Price (₹)', data:[13300, 13800, 14065, 14500, 14700], backgroundColor:'#1d4ed8', borderRadius:4 }]
+  },
+  options:{ ...optsBase, indexAxis:'y', plugins:{ legend:{ display:false } }, scales:{ x:{ min:11000, ticks:{ callback:v=>'₹'+v.toLocaleString('en-IN') } } } }
+});
+
+function askPreset(q){
+  document.getElementById('chatInput').value = q;
+  sendChat();
+}
+
+// ═══ CAUVERY SOCRATES — QUIZ ═══
+const quizData = [
+  { q:'UltraTech\'s fuel cost per tonne rose from ₹874 to ₹915 in Q1 FY27. What was the primary external cause?', opts:['RBI interest rate hike','West Asia (Middle East) geopolitical crisis pushing up petcoke/coal prices','A new government cement tax','Monsoon flooding of coal mines'], correct:1, explain:'Geopolitical tensions in West Asia pushed petcoke and coal prices up 26–43% YoY sector-wide (JM Financial estimate), directly lifting UltraTech\'s fuel cost per tonne despite its scale advantages.' },
+  { q:'Which of the 4 cost centres grew fastest on a %YoY basis in Q1 FY27?', opts:['Power & Fuel (+11.45%)','Freight & Forwarding (+12.08%)','Raw Materials (+20.29%)','Packaging & Other Expenses (+24.60%)'], correct:3, explain:'Other Expenses (which includes packaging) grew fastest at +24.6% YoY, driven mainly by a ~33% jump in bag costs (₹9 → ₹12/bag) from West Asia-linked polypropylene resin disruption.' },
+  { q:'What happened to UltraTech\'s average lead distance in Q1 FY27 despite 12%+ volume growth?', opts:['It rose sharply due to new plants being far from markets','It stayed flat','It fell by 9 km to 360 km, thanks to logistics density and new plant locations','Data was not disclosed'], correct:2, explain:'Lead distance actually improved (fell) to 360 km — a sign that UltraTech\'s dense plant network, including the newly-integrated India Cements and Kesoram assets, is reducing average shipping distance even as volumes rise.' },
+  { q:'India Cements\' Q1 FY27 standalone result was best described as:', opts:['A widening loss','Break-even, no change from last year','A swing to profit (₹26.62 Cr) from a loss a year ago','A one-time exceptional gain unrelated to operations'], correct:2, explain:'India Cements posted a standalone profit of ₹26.62 Cr in Q1 FY27 versus a loss of ₹7.53 Cr in Q1 FY26 — real evidence, not just an accounting artefact, that the turnaround thesis is playing out, though utilisation (~57%) still has room to improve.' },
+  { q:'What cost headwind did management guide for Q2 FY27 specifically because of the West Asia crisis?', opts:['₹10–20/tonne','₹50–60/tonne','₹130–140/tonne','₹500+/tonne'], correct:2, explain:'CFO Atul Daga guided to a further ₹130–140/tonne sequential cost headwind for Q2 FY27 from fuel, packaging and monsoon seasonality — signalling the West Asia cost pass-through is not yet fully absorbed.' },
+  { q:'Why does scale help UltraTech specifically during a fuel-cost shock like this one?', opts:['Bigger companies are legally exempt from fuel taxes','Scale gives fuel-sourcing flexibility (coal vs petcoke mix) and spreads fixed costs, both of which peers with less flexibility cannot match', 'It doesn\'t — scale is irrelevant to fuel costs', 'Because the government subsidises large cement makers'], correct:1, explain:'As the largest buyer of kiln fuel in India, UltraTech has more contract/spot flexibility to rotate between coal and petcoke as relative prices move, plus enough volume to spread fixed costs — both are structural, not one-quarter, advantages.' }
+];
+
+function renderQuiz(){
+  const c = document.getElementById('quizContainer');
+  quizData.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    let optsHtml = '';
+    item.opts.forEach((opt, j) => {
+      optsHtml += `<button class="quiz-opt" onclick="answerQuiz(${i},${j},this)">${opt}</button>`;
+    });
+    card.innerHTML = `<div class="quiz-q">Q${i+1}. ${item.q}</div>${optsHtml}<div class="quiz-explain" id="explain-${i}">${item.explain}</div>`;
+    c.appendChild(card);
+  });
+}
+let quizAnswered = 0;
+function answerQuiz(qIdx, optIdx, btn){
+  const card = btn.parentElement;
+  const opts = card.querySelectorAll('.quiz-opt');
+  if(card.dataset.done) return;
+  card.dataset.done = '1';
+  quizAnswered++;
+  opts.forEach((o,j) => {
+    o.classList.add('disabled');
+    if(j === quizData[qIdx].correct) o.classList.add('correct');
+    else if(j === optIdx) o.classList.add('wrong');
+  });
+  document.getElementById('explain-'+qIdx).classList.add('show');
+  document.getElementById('quizScore').textContent = quizAnswered + ' / ' + quizData.length + ' answered';
+}
+renderQuiz();
+
+function askSocrates(q){
+  document.getElementById('socInput').value = q;
+  sendSocrates();
+}
+
+async function sendSocrates(){
+  const input = document.getElementById('socInput');
+  const msgs = document.getElementById('socMsgs');
+  const btn = document.getElementById('socSend');
+  const typing = document.getElementById('socTyping');
+  const q = input.value.trim();
+  if(!q) return;
+
+  const uMsg = document.createElement('div');
+  uMsg.className = 'chat-msg user';
+  uMsg.textContent = q;
+  msgs.appendChild(uMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+  btn.disabled = true;
+  typing.style.display = 'flex';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const sys = `You are Cauvery Socrates — a Socratic tutor at Cauvery Business (EIL Research) helping someone truly understand UltraTech Cement's Q1 FY27 results, not just be told the answer.
+
+RULES: Do NOT give the direct answer immediately. Instead, respond with 1-2 guiding questions that lead the person toward the insight themselves, plus at most one short factual anchor (a number or fact) to reason from. Keep it to 4-6 sentences. Be warm but rigorous, like a good mentor. If the person seems stuck or explicitly asks for the answer, you may give a concise direct answer at the end. Do NOT add disclaimers. Do NOT mention data sources.
+
+KEY DATA TO DRAW ON (UltraTech Q1 FY27, quarter ended 30 Jun 2026): Revenue ₹24,648 Cr (+15.9% YoY), EBITDA ₹5,146 Cr (+12.1%), EBITDA/tonne ₹1,214 (+1.3%), PAT ₹2,599-2,604 Cr (+16.8-17.2%), Volume 41.31 MT (+12.2%). Fuel cost/tonne ₹915 (from ₹874, West Asia crisis driven). Power & Fuel ₹5,418.65 Cr (+11.45%), Freight ₹5,210.61 Cr (+12.08%, lead distance improved to 360km), Raw Materials ₹4,129.36 Cr (+20.29%, volume-led), Other/Packaging ₹3,193.09 Cr (+24.6%, bag cost ₹9→₹12). Net Debt/EBITDA 0.87x. India Cements standalone profit ₹26.62 Cr (vs -₹7.53 Cr loss YoY), utilisation ~57%. Kesoram and India Cements brand migration completed early; UltraTech brand +21.3%. Q2 FY27 guided cost headwind ₹130-140/tonne. Broker targets ₹13,300-14,700 vs CMP ~₹12,040. Sector-wide coal/petcoke costs rose 26-43% YoY; sector EBITDA margin est. down 1.7pp to ~15.7% vs UltraTech's resilience.`;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:600, system: sys, messages:[{ role:'user', content:q }] })
+    });
+    const data = await res.json();
+    const text = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'Unable to process.';
+    typing.style.display = 'none';
+    const bMsg = document.createElement('div');
+    bMsg.className = 'chat-msg bot';
+    bMsg.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+    msgs.appendChild(bMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }catch(e){
+    typing.style.display = 'none';
+    const eMsg = document.createElement('div');
+    eMsg.className = 'chat-msg bot';
+    eMsg.textContent = 'Cauvery Socrates temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  btn.disabled = false;
+}
+
+async function sendChat(){
+  const input = document.getElementById('chatInput');
+  const msgs = document.getElementById('chatMsgs');
+  const btn = document.getElementById('chatSend');
+  const typing = document.getElementById('typing');
+  const q = input.value.trim();
+  if(!q) return;
+
+  const uMsg = document.createElement('div');
+  uMsg.className = 'chat-msg user';
+  uMsg.textContent = q;
+  msgs.appendChild(uMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+  btn.disabled = true;
+  typing.style.display = 'flex';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const sys = `You are CB Assist — expert cement sector research analyst at Cauvery Business (EIL Research), focused specifically on UltraTech Cement.
+
+Answer in English ONLY. Be analytical and concise — 6 to 9 sentences. Start with the most important insight. Use specific numbers. Do NOT add disclaimers. Do NOT mention data sources. Research analysis only — not investment advice.
+
+ULTRATECH CEMENT Q1 FY27 (quarter ended 30 Jun 2026, reported 20 Jul 2026) — CONSOLIDATED ACTUALS:
+Revenue ₹24,648.20 Cr (+15.9% YoY). EBITDA ₹5,146 Cr (+12.1% YoY), EBITDA/tonne ₹1,214 (+1.3% YoY). PAT (owners) ₹2,599.28 Cr (+16.8% YoY); PAT (consolidated) ₹2,603.72 Cr (+17.2% YoY). Basic EPS ₹88.36. Volume 41.31 MT (+12.2% YoY); domestic grey volume 39.17 MT (+13.1% YoY). Grey realisation ₹5,218/tonne (+3.7% YoY). Capacity utilisation 81% (vs 76% YoY). Consolidated capacity 205.5 MTPA (domestic 200.1 MTPA); 8.7 MT commissioned in Q1 (Shahjahanpur, Vizag, Patratu). Net Debt/EBITDA 0.87x (from 0.94x). Debt-Equity 0.27x. Net worth ₹83,431.66 Cr.
+
+COST STRUCTURE (Q1 FY27 vs Q1 FY26): Total expenses ₹21,286.19 Cr (+15.7%). Power & Fuel ₹5,418.65 Cr (+11.45%), fuel cost/tonne ₹915 (from ₹874, +4.7%) — driven by West Asia/Middle East geopolitical crisis pushing petcoke and coal prices up 26-43% YoY sector-wide (JM Financial estimate). Freight & Forwarding ₹5,210.61 Cr (+12.08%); lead distance improved to 360km (-9km YoY). Raw Materials ₹4,129.36 Cr (+20.29%, largely volume-led). Other Expenses (packaging etc.) ₹3,193.09 Cr (+24.6%); packaging bag cost ₹12/bag (from ₹9, +33%) due to West Asia-driven polypropylene resin disruption. Management guided Q2 FY27 further cost headwind of ₹130-140/tonne. Mitigation: fuel-mix shift toward domestic coal, WHRS target 511 MW by FY27, renewable power >1GW, dense logistics network, blended-cement clinker-factor reduction.
+
+ACQUISITIONS: India Cements (ICL) — UltraTech stake 55.49% since Dec 2024, 14.45 MTPA capacity, Q1 FY27 standalone profit ₹26.62 Cr (vs -₹7.53 Cr loss YoY), ex-factory revenue/volume growth 21%/19% YoY like-for-like, utilisation ~57% and improving, full merger into standalone deferred to ~Q4 FY28. Kesoram Industries cement business — demerged into UltraTech effective 1 Mar 2025, 10.75 MTPA (Sedam Karnataka + Basantnagar Telangana). Brand migration of both to UltraTech brand completed a quarter early; UltraTech brand grew 21.3% YoY.
+
+OTHER: RMC business - 477 plants, 170 cities, volume +18% to 4.62mn cu.m, revenue +22% to ₹2,235 Cr, ROCE 35%. Cables & Wires business launching Q3 FY27, ₹888 Cr spent of ₹1,800 Cr planned. UBS retail outlets 5,802 (+21% YoY). Capex guidance ₹17,000 Cr over 2-2.5 years; target 212.7 MTPA domestic grey by end FY27, 242 MTPA consolidated by FY28. Chairman Kumar Mangalam Birla, MD K.C. Jhanwar, CFO Atul Daga. CMP ~₹12,040, Market Cap ~₹3,54,646 Cr (21 Jul 2026). Broker targets: Morgan Stanley ₹14,700 (Overweight), JM Financial ₹14,500 (Buy), Jefferies ₹14,065 (Buy), MOFSL ₹13,800 (Buy), JP Morgan ₹13,300 (Overweight), Nuvama positive/bullish (no disclosed new TP).
+
+SECTOR CONTEXT: Sector avg EBITDA margin est. ~15.7% (-1.7pp YoY) amid West Asia cost shock; sector APAT est. -10.8% YoY (JM Financial, pre-results) vs UltraTech's actual +17% — illustrating UltraTech's scale/diversification advantage. Petcoke/coal prices have receded 10-16% from recent peaks per industry trackers; H2 FY27 margin recovery expected industry-wide if trend holds.`;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system: sys, messages:[{ role:'user', content:q }] })
+    });
+    const data = await res.json();
+    const text = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'Unable to process.';
+    typing.style.display = 'none';
+    const bMsg = document.createElement('div');
+    bMsg.className = 'chat-msg bot';
+    bMsg.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+    msgs.appendChild(bMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }catch(e){
+    typing.style.display = 'none';
+    const eMsg = document.createElement('div');
+    eMsg.className = 'chat-msg bot';
+    eMsg.textContent = 'CB Assist temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>

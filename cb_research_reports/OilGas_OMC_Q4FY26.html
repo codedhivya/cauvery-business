@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Oil & Gas — Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --iocl:#0053a0;--iocl-s:#e8f0fa;
+  --bpcl:#2d8b3e;--bpcl-s:#e8f5ec;
+  --hpcl:#c8202a;--hpcl-s:#fdeaea;
+  --gail:#7b3fa0;--gail-s:#f3ebfa;
+  --pnlng:#d97706;--pnlng-s:#fffbeb;
+  --ongc:#1a5276;--ongc-s:#eaf0f6;
+  --cpcl:#117a65;--cpcl-s:#e8f5f0;
+  --oil:#784212;--oil-s:#fdf3e3;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-s:#fdf5e0;
+  --sh:0 1px 8px rgba(24,21,17,.07);--sh2:0 4px 20px rgba(24,21,17,.10);
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+/* HEADER */
+.hdr{background:#0d1c2e;padding:0 32px;display:flex;align-items:stretch;justify-content:space-between;min-height:68px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;line-height:1.15;padding:16px 0 4px;}
+.hdr .sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;padding-bottom:16px;}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 0;}
+.chip{padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;}
+.chip-iocl{background:var(--iocl);}.chip-bpcl{background:var(--bpcl);}.chip-hpcl{background:var(--hpcl);}
+.chip-gail{background:var(--gail);}.chip-pnlng{background:var(--pnlng);}.chip-ongc{background:var(--ongc);}
+.chip-cpcl{background:var(--cpcl);}.chip-oil{background:var(--oil);}
+.chip-date{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);}
+/* TABS */
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;padding:0 32px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:13px 13px 11px;font-size:11.5px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--iocl);font-weight:700;}
+/* LAYOUT */
+.main{padding:22px 32px 48px;max-width:1480px;margin:0 auto;}
+.panel{display:none;animation:fi .18s ease;}
+.panel.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sec-note{font-size:10.5px;color:var(--muted);font-weight:400;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
+.card-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;}
+/* CO-CARD */
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.iocl::before{background:var(--iocl);}.co-card.bpcl::before{background:var(--bpcl);}
+.co-card.hpcl::before{background:var(--hpcl);}.co-card.gail::before{background:var(--gail);}
+.co-card.pnlng::before{background:var(--pnlng);}.co-card.ongc::before{background:var(--ongc);}
+.co-card.cpcl::before{background:var(--cpcl);}.co-card.oil::before{background:var(--oil);}
+.co-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:9px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center;}
+.m-lbl{font-size:11px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text);}
+.badge-row{margin-top:10px;display:flex;gap:4px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-neg{background:#fee2e2;color:#b91c1c;}.b-warn{background:#fff7ed;color:#c2410c;}.b-neu{background:#f3f4f6;color:#4b5563;}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:9px;margin-bottom:20px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.kpi.iocl-a{border-left:4px solid var(--iocl);}.kpi.bpcl-a{border-left:4px solid var(--bpcl);}
+.kpi.hpcl-a{border-left:4px solid var(--hpcl);}.kpi.gail-a{border-left:4px solid var(--gail);}
+.kpi.pnlng-a{border-left:4px solid var(--pnlng);}.kpi.ongc-a{border-left:4px solid var(--ongc);}
+.kpi.cpcl-a{border-left:4px solid var(--cpcl);}.kpi.oil-a{border-left:4px solid var(--oil);}
+.kpi .kl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+.kpi .kv{font-size:1rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:9.5px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+/* TABLE */
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+th{background:#0d1c2e;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:10px 12px;text-align:left;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap;vertical-align:middle;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;color:var(--text);}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;color:var(--text);}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
+/* VAL CARD */
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.val-co{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text);}
+/* SWOT */
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
+.swot-cell{padding:11px 13px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-s);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.6;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:9px;padding-bottom:5px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:7px;}
+/* ANALYST */
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;box-shadow:var(--sh);margin-bottom:12px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);}
+.rat-pill{padding:3px 11px;border-radius:20px;font-size:10.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef9c3;color:#a16207;}.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.15rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:2px;}
+.ac-cmp{font-size:10.5px;color:var(--muted);margin-bottom:7px;}
+.ac-text{font-size:11.5px;color:var(--text);line-height:1.6;}
+/* VERDICT / TROJAN */
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh2);margin-bottom:16px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:9px;}
+.verdict-body{font-size:12.5px;line-height:1.7;color:var(--text);}
+.trojan-card{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:2px solid var(--warn);border-radius:var(--r);padding:20px 24px;margin-bottom:16px;}
+.trojan-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--warn);margin-bottom:9px;}
+.rm-box{background:#fff0ef;border:1.5px solid #c8202a;border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.65;}
+.grp-hdr{padding:7px 13px;border-left:4px solid;border-radius:0 7px 7px 0;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+/* CHARTS */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:10.5px;color:var(--muted);margin-bottom:10px;}
+/* SEG BAR */
+.seg-row{margin-bottom:12px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;}
+.seg-bar{height:8px;border-radius:20px;}
+/* CB ASSIST */
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--iocl);border-radius:var(--r);padding:18px 20px;}
+.cbassist-title{font-weight:800;font-size:12px;color:var(--iocl);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.cbassist-title span{width:7px;height:7px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:100px;max-height:360px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:9px;}
+.chat-msg{padding:9px 13px;border-radius:10px;font-size:12px;max-width:92%;line-height:1.55;}
+.chat-msg.user{background:#0d1c2e;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;color:var(--text);}
+.chat-msg.bot strong{color:var(--iocl);}
+.chat-input-row{display:flex;gap:7px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;}
+.chat-input:focus{border-color:var(--iocl);}
+.chat-send{background:var(--iocl);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:7px 11px;}
+.typing-ind span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.lang-hdr{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);padding:5px 10px;background:var(--surface2);border-radius:5px;margin-bottom:8px;display:inline-block;}
+.preset-tab{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 5px 0;}
+.pt-iocl.on{background:var(--iocl);border-color:var(--iocl);color:#fff;}
+.pt-bpcl.on{background:var(--bpcl);border-color:var(--bpcl);color:#fff;}
+.pt-hpcl.on{background:var(--hpcl);border-color:var(--hpcl);color:#fff;}
+.pt-gail.on{background:var(--gail);border-color:var(--gail);color:#fff;}
+.pt-pnlng.on{background:var(--pnlng);border-color:var(--pnlng);color:#fff;}
+.pt-ongc.on{background:var(--ongc);border-color:var(--ongc);color:#fff;}
+.pt-cpcl.on{background:var(--cpcl);border-color:var(--cpcl);color:#fff;}
+.pt-oil.on{background:var(--oil);border-color:var(--oil);color:#fff;}
+.pt-sector.on{background:var(--gold);border-color:var(--gold);color:#fff;}
+.pqs{display:none;}.pqs.on{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.pq{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:8px;line-height:1.45;color:var(--text);}
+.pq:hover{border-color:var(--iocl);background:var(--iocl-s);}
+/* CO SELECTOR */
+.co-sel{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:12px;}
+.co-sel-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.sep{width:1px;height:22px;background:var(--border);display:inline-block;margin:0 4px;}
+.per-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.co-sec{display:none;}.co-sec.on{display:block;}
+.qtr-v{display:block;}.annual-v{display:none;}
+/* CAT FILTER */
+.cat-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;box-shadow:var(--sh);}
+.cat-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.cat-btn.on{background:#0d1c2e;color:#fff;border-color:#0d1c2e;}
+/* FOOTER */
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:12px 32px;border-top:1px solid var(--border);margin-top:24px;line-height:1.7;}
+.cb-wm{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);border:1.5px solid var(--border);border-radius:28px;padding:6px 13px 6px 7px;box-shadow:0 4px 18px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:26px;height:26px;background:var(--iocl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.8rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:10.5px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+@media(max-width:860px){.main{padding:12px 12px 40px;}.hdr{padding:0 14px;flex-wrap:wrap;}.tab-nav{padding:0 6px;}.g2,.g3,.g4,.kpi-grid{grid-template-columns:1fr 1fr;}.kpi-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.g2,.g3,.g4,.kpi-grid{grid-template-columns:1fr;}}
+
+<style>
+#tab-outlook td, #tab-risks td, #tab-swot td, #tab-analyst td { white-space:normal; }
+</style>
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<div class="hdr">
+  <div><h1>India Oil &amp; Gas Sector — Intelligence Dashboard</h1><div class="sub">IOCL · BPCL · HPCL · GAIL · Petronet LNG · ONGC · CPCL · Oil India · Q4 FY26 · CB Research</div></div>
+  <div class="hdr-right">
+    <span class="chip chip-iocl">IOCL</span><span class="chip chip-bpcl">BPCL</span><span class="chip chip-hpcl">HPCL</span><span class="chip chip-gail">GAIL</span><span class="chip chip-pnlng">Petronet</span><span class="chip chip-ongc">ONGC</span><span class="chip chip-cpcl">CPCL</span><span class="chip chip-oil">Oil India</span>
+    <span class="chip chip-date">Q4 FY26 · 30 May 2026</span>
+  </div>
+</div>
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="showTab('companies',this)">Companies</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Company Charts</button>
+  <button class="tab-btn" onclick="showTab('compare',this)">Compare All</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('macro',this)" style="color:#ea580c;font-weight:800;">Crude &amp; Macro</button>
+  <button class="tab-btn" onclick="showTab('sector',this)" style="color:#7c3aed;font-weight:800;">Sector Dynamics</button>
+  <button class="tab-btn" onclick="showTab('policy',this)">Under-Recovery &amp; Policy</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT &amp; Moat</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analysts</button>
+  <button class="tab-btn" onclick="showTab('outlook',this)" style="color:#c2410c;font-weight:800;">FY27 Outlook</button>
+  <button class="tab-btn" onclick="showTab('cb',this)" style="color:var(--iocl);font-weight:800;">CB Assists</button>
+</nav>
+<div class="main">
+<!-- ═══════════════ TAB 1: OVERVIEW ═══════════════ -->
+<div class="panel active" id="tab-overview">
+  <div class="sec-hdr">Overview <span class="sec-note">· Q4 FY26 Actuals · All 8 Companies · CB Research · Jan–Mar 2026</span></div>
+
+  <!-- Category Filter -->
+  <div class="cat-bar">
+    <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Filter</span>
+    <button class="cat-btn on" onclick="filterCat('all',this)">All (8)</button>
+    <button class="cat-btn" onclick="filterCat('omc',this)">⛽ OMC (3)</button>
+    <button class="cat-btn" onclick="filterCat('gas',this)">🔵 Gas (2)</button>
+    <button class="cat-btn" onclick="filterCat('upstream',this)">🛢 Upstream (2)</button>
+    <button class="cat-btn" onclick="filterCat('refiner',this)">🏭 Pure Refiner (1)</button>
+  </div>
+
+  <!-- Alert -->
+  <div class="rm-box" style="margin-bottom:18px;">
+    ⚠️ <strong>West Asia Crisis — Q4 FY26 Context:</strong> Crude surged ~51% from ~$72/bbl to ~$120/bbl peak; settled ~$105/bbl in May 2026. OMCs raised petrol &amp; diesel by ₹4/litre but still losing ~₹500 Cr/day combined. Combined OMC Q4 profit: <strong>₹19,470 Cr (+41% YoY). Full year FY26: ₹77,281 Cr — more than doubled vs FY25.</strong> GAIL severely hit by LNG supply disruption from Qatar/Middle East. FY27 profitability at serious risk if crude stays elevated and retail price freeze continues.
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-grid">
+    <div class="kpi iocl-a" data-cat="omc"><div class="kl">IOCL Q4 PAT ✅</div><div class="kv">₹15,176 Cr</div><div class="kc pos">▲ 81% YoY</div></div>
+    <div class="kpi bpcl-a" data-cat="omc"><div class="kl">BPCL Q4 PAT ✅</div><div class="kv">₹5,625 Cr</div><div class="kc pos">▲ 28% YoY</div></div>
+    <div class="kpi hpcl-a" data-cat="omc"><div class="kl">HPCL Q4 PAT ✅</div><div class="kv">₹4,902 Cr</div><div class="kc pos">▲ 46% YoY</div></div>
+    <div class="kpi gail-a" data-cat="gas"><div class="kl">GAIL Q4 PAT ✅</div><div class="kv">₹1,262 Cr</div><div class="kc neg">▼ 38% YoY</div></div>
+    <div class="kpi pnlng-a" data-cat="gas"><div class="kl">Petronet Q4 PAT ✅</div><div class="kv">₹1,338 Cr</div><div class="kc pos">▲ 25% YoY</div></div>
+    <div class="kpi ongc-a" data-cat="upstream"><div class="kl">ONGC Q4 PAT ✅</div><div class="kv">₹10,820 Cr</div><div class="kc pos">▲ 46% YoY</div></div>
+    <div class="kpi cpcl-a" data-cat="refiner"><div class="kl">CPCL Q4 PAT ✅</div><div class="kv">₹1,422 Cr</div><div class="kc pos">▲ 203% YoY</div></div>
+    <div class="kpi oil-a" data-cat="upstream"><div class="kl">Oil India Q4 PAT ✅</div><div class="kv">₹2,424 Cr</div><div class="kc pos">▲ 62% YoY</div></div>
+  </div>
+
+  <!-- Company Cards — OMC row -->
+  <div class="g3" style="margin-bottom:14px;" id="ov-row1">
+    <div class="co-card iocl" data-cat="omc">
+      <div class="co-name" style="color:var(--iocl)">Indian Oil Corporation (IOCL)</div>
+      <div class="co-seg">NSE: IOC · Maharatna · India's Largest OMC · Q4 ✅ May 19, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">₹2,36,899 Cr (+7% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA (est.)</span><span class="m-val">₹18,200 Cr | Margin ~7.7%</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">₹15,176 Cr (+81% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 GRM (est.)</span><span class="m-val">~$16–19/bbl</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹43,677 Cr (3× FY25)</span></div>
+      <div class="m-row"><span class="m-lbl">Refinery Capacity</span><span class="m-val">80+ MMTPA (11 refineries)</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +81%</span><span class="badge b-pos">FY26 PAT 3×</span><span class="badge b-warn">FY27 crude risk</span></div>
+    </div>
+    <div class="co-card bpcl" data-cat="omc">
+      <div class="co-name" style="color:var(--bpcl)">Bharat Petroleum (BPCL)</div>
+      <div class="co-seg">NSE: BPCL · Maharatna · Almost Debt-Free · Q4 ✅ May 19, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">₹1,34,947 Cr (+6.3% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PBT (Consol)</span><span class="m-val">₹7,838 Cr (+32.9%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">₹5,625 Cr (+28% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Throughput</span><span class="m-val">10.40 MMT</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (Stnd)</span><span class="m-val">₹23,303 Cr (+75.5%)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Debt</span><span class="m-val pos">Almost Zero (Debt-Free)</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +28%</span><span class="badge b-pos">Debt-Free</span><span class="badge b-neg">BPRL ₹4,349Cr write-off</span></div>
+    </div>
+    <div class="co-card hpcl" data-cat="omc">
+      <div class="co-name" style="color:var(--hpcl)">Hindustan Petroleum (HPCL)</div>
+      <div class="co-seg">NSE: HINDPETRO · Maharatna · ONGC subsidiary · Q4 ✅ May 13, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue (Stnd)</span><span class="m-val">₹1,23,075 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 GRM</span><span class="m-val pos">$14.27/bbl (vs $5.40 Q3)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Stnd)</span><span class="m-val pos">₹4,902 Cr (+46% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Throughput</span><span class="m-val">6.4 MMT</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (Stnd)</span><span class="m-val">₹17,175 Cr (+133%)</span></div>
+      <div class="m-row"><span class="m-lbl">D/E Ratio FY26</span><span class="m-val">0.80 (vs 1.38 FY25)</span></div>
+      <div class="badge-row"><span class="badge b-pos">GRM $14.27/bbl</span><span class="badge b-pos">FY26 PAT +133%</span><span class="badge b-warn">LPG burden ₹12,799Cr</span></div>
+    </div>
+  </div>
+
+  <!-- Gas + Upstream row -->
+  <div class="g4" style="margin-bottom:14px;" id="ov-row2">
+    <div class="co-card gail" data-cat="gas">
+      <div class="co-name" style="color:var(--gail)">GAIL (India) Ltd</div>
+      <div class="co-seg">NSE: GAIL · Maharatna · 70% Gas Transmission · Q4 ✅ May 21, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue (Stnd)</span><span class="m-val">₹34,797 Cr (−2.5%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Stnd)</span><span class="m-val neg">₹1,262 Cr (−38%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (Stnd)</span><span class="m-val neg">₹6,968 Cr (−38%)</span></div>
+      <div class="m-row"><span class="m-lbl">Gas Mktg Vol FY26</span><span class="m-val">104.21 MMSCMD</span></div>
+      <div class="badge-row"><span class="badge b-neg">PAT −38%</span><span class="badge b-warn">LNG disrupted</span></div>
+    </div>
+    <div class="co-card pnlng" data-cat="gas">
+      <div class="co-name" style="color:var(--pnlng)">Petronet LNG</div>
+      <div class="co-seg">NSE: PETRONET · Dahej+Kochi · Q4 ✅ May 4, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">₹9,442 Cr (−23%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">₹1,338 Cr (+25%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 LNG Volume</span><span class="m-val">219 TBTU</span></div>
+      <div class="m-row"><span class="m-lbl">Dahej Utilisation</span><span class="m-val">90.1%</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +25%</span><span class="badge b-pos">UoP reversal</span></div>
+    </div>
+    <div class="co-card ongc" data-cat="upstream">
+      <div class="co-name" style="color:var(--ongc)">ONGC</div>
+      <div class="co-seg">NSE: ONGC · Maharatna · Largest Upstream · Q4 ✅ May 26, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">₹1,73,805 Cr (+3.6%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">₹10,820 Cr (+46%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (Consol)</span><span class="m-val pos">₹41,424 Cr (Record)</span></div>
+      <div class="m-row"><span class="m-lbl">New well gas share</span><span class="m-val">17% of production</span></div>
+      <div class="badge-row"><span class="badge b-pos">Record FY26</span><span class="badge b-pos">PAT +46%</span></div>
+    </div>
+    <div class="co-card oil" data-cat="upstream">
+      <div class="co-name" style="color:var(--oil)">Oil India Ltd</div>
+      <div class="co-seg">NSE: OIL · Maharatna · NRL subsidiary · Q4 ✅ May 13, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">₹10,013 Cr (+4.4%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">₹2,424 Cr (+62%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT (Consol)</span><span class="m-val">₹7,551 Cr (+7.3%)</span></div>
+      <div class="m-row"><span class="m-lbl">Record wells drilled</span><span class="m-val">74 wells FY26</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +62%</span><span class="badge b-pos">NRL +90%</span></div>
+    </div>
+  </div>
+
+  <!-- CPCL alone -->
+  <div style="margin-bottom:18px;" id="ov-row3">
+    <div class="co-card cpcl" data-cat="refiner" style="max-width:400px;">
+      <div class="co-name" style="color:var(--cpcl)">Chennai Petroleum (CPCL)</div>
+      <div class="co-seg">NSE: CHENNPETRO · IOCL Subsidiary 51.89% · Chennai Refinery · Q4 ✅ Apr 24, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">₹20,455 Cr (flat)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 GRM</span><span class="m-val pos">$13.75/bbl (vs $6.22 Q4 FY25)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">₹1,422 Cr (+203%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Utilisation</span><span class="m-val pos">112% (2.93 MMT)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹3,062 Cr vs ₹174 Cr FY25</span></div>
+      <div class="badge-row"><span class="badge b-pos">GRM +121%</span><span class="badge b-pos">PAT +203%</span><span class="badge b-pos">112% utilisation</span></div>
+    </div>
+  </div>
+
+  <!-- Quick metrics table -->
+  <div class="card">
+    <div class="card-lbl">All 8 Companies — Q4 FY26 Quick Reference (₹ Crore)</div>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Company</th><th>Q4 Revenue</th><th>YoY%</th><th>Key Margin</th><th>Q4 PAT</th><th>PAT%</th><th>Key Volume</th><th>FY26 Revenue</th><th>FY26 PAT</th><th>Net Debt</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--iocl)"></span>IOCL</td><td class="num">₹2,36,899</td><td class="tpos">+7.0%</td><td class="tpos">GRM ~$17/bbl</td><td class="tpos">₹15,176</td><td class="tpos">+81%</td><td class="num">~23 MMT dom. sales</td><td class="num">₹9,01,453</td><td class="tpos">₹43,677</td><td class="num">Moderate</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bpcl)"></span>BPCL</td><td class="num">₹1,34,947</td><td class="tpos">+6.3%</td><td class="num">Debt-Free</td><td class="tpos">₹5,625</td><td class="tpos">+28%</td><td class="num">10.40 MMT refining</td><td class="num">₹5,22,820</td><td class="tpos">₹23,303</td><td class="tpos">~Zero</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hpcl)"></span>HPCL</td><td class="num">₹1,23,075</td><td class="num">Flat</td><td class="tpos">$14.27/bbl GRM</td><td class="tpos">₹4,902</td><td class="tpos">+46%</td><td class="num">6.4 MMT Q4</td><td class="num">₹4,78,543</td><td class="tpos">₹17,175</td><td class="warn">D/E 0.80</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--gail)"></span>GAIL</td><td class="num">₹34,797</td><td class="tneg">−2.5%</td><td class="tneg">Petchem −15.4%</td><td class="tneg">₹1,262</td><td class="tneg">−38%</td><td class="num">104.21 MMSCMD</td><td class="num">₹1,38,328</td><td class="tneg">₹6,968</td><td class="tpos">Low</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--pnlng)"></span>Petronet</td><td class="num">₹9,442</td><td class="tneg">−23.3%</td><td class="tpos">Cost fell faster</td><td class="tpos">₹1,338</td><td class="tpos">+25%</td><td class="num">219 TBTU</td><td class="num">₹43,495</td><td class="num">₹3,809</td><td class="tpos">Minimal</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ongc)"></span>ONGC</td><td class="num">₹1,73,805</td><td class="tpos">+3.6%</td><td class="tpos">Upstream E&amp;P</td><td class="tpos">₹10,820</td><td class="tpos">+46%</td><td class="num">Crude prod. +6%</td><td class="num">₹6,62,247</td><td class="tpos">₹41,424</td><td class="num">Moderate</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--cpcl)"></span>CPCL</td><td class="num">₹20,455</td><td class="num">Flat</td><td class="tpos">$13.75/bbl GRM</td><td class="tpos">₹1,422</td><td class="tpos">+203%</td><td class="num">2.93 MMT (112%)</td><td class="num">₹78,611</td><td class="tpos">₹3,062</td><td class="warn">Moderate</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--oil)"></span>Oil India</td><td class="num">₹10,013</td><td class="tpos">+4.4%</td><td class="tpos">$77.89/bbl realn.</td><td class="tpos">₹2,424</td><td class="tpos">+62%</td><td class="num">0.891 MMT crude</td><td class="num">~₹40,000 (stnd)</td><td class="tpos">₹7,551</td><td class="tpos">Low</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════ TAB 2: COMPANIES ═══════════════ -->
+<div class="panel" id="tab-companies">
+  <div class="sec-hdr">Companies <span class="sec-note">· Select Company · Quarter &amp; Annual · Revenue · EBITDA · PAT · Volume · Debt · Capacity · Inventory</span></div>
+  <!-- Selector -->
+  <div class="co-sel">
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Company</span>
+    <button class="co-sel-btn" id="cobtn-iocl" onclick="showCo('iocl',this)" style="background:var(--iocl);color:#fff;border-color:var(--iocl);">IOCL</button>
+    <button class="co-sel-btn" id="cobtn-bpcl" onclick="showCo('bpcl',this)">BPCL</button>
+    <button class="co-sel-btn" id="cobtn-hpcl" onclick="showCo('hpcl',this)">HPCL</button>
+    <button class="co-sel-btn" id="cobtn-gail" onclick="showCo('gail',this)">GAIL</button>
+    <button class="co-sel-btn" id="cobtn-pnlng" onclick="showCo('pnlng',this)">Petronet LNG</button>
+    <button class="co-sel-btn" id="cobtn-ongc" onclick="showCo('ongc',this)">ONGC</button>
+    <button class="co-sel-btn" id="cobtn-cpcl" onclick="showCo('cpcl',this)">CPCL</button>
+    <button class="co-sel-btn" id="cobtn-oil" onclick="showCo('oil',this)">Oil India</button>
+    <span class="sep"></span>
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Period</span>
+    <button class="per-btn" id="perbtn-qtr" onclick="showPer('qtr',this)" style="background:#0d1c2e;color:#fff;border-color:#0d1c2e;">Quarter</button>
+    <button class="per-btn" id="perbtn-annual" onclick="showPer('annual',this)">Annual</button>
+  </div>
+
+  <!-- ── IOCL ── -->
+  <div class="co-sec on" id="co-iocl">
+    <div class="grp-hdr" style="background:var(--iocl-s);border-color:var(--iocl);color:var(--iocl);">Indian Oil Corporation — NSE: IOC · Maharatna · India's Largest OMC · CMD: Arvinder Singh Sahney · 11 Refineries · 80+ MMTPA capacity</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss Summary (Consolidated)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tpos">₹2,36,899 Cr</td><td class="num">₹2,27,214 Cr</td><td class="num">₹2,21,360 Cr</td><td class="tpos">+7.0%</td></tr>
+              <tr><td>EBITDA (est.)</td><td class="tpos">₹18,200 Cr</td><td class="num">₹16,800 Cr</td><td class="num">₹11,400 Cr</td><td class="tpos">+59.6%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~7.7%</td><td class="num">~7.4%</td><td class="num">~5.2%</td><td class="tpos">+250 bps</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tpos">₹15,176 Cr</td><td class="num">₹13,548 Cr</td><td class="num">₹8,384 Cr</td><td class="tpos">+81.0%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">~6.4%</td><td class="num">~6.0%</td><td class="num">~3.8%</td><td class="tpos">+260 bps</td></tr>
+              <tr><td>GRM (est. Standalone)</td><td class="tpos">~$16–19/bbl</td><td class="num">$12.22/bbl</td><td class="num">~$8/bbl</td><td class="tpos">Strong expansion</td></tr>
+              <tr><td>Inventory Gain (est.)</td><td class="tpos">~₹3,200 Cr</td><td class="num">~₹1,500 Cr</td><td class="num">~−₹800 Cr</td><td class="tpos">Crude rising = gain</td></tr>
+              <tr><td>Final Dividend</td><td class="num">₹1.25/share</td><td class="num">—</td><td class="num">₹7/share (FY25 total)</td><td class="num">Declared</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Volume &amp; Capacity</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Refinery Throughput</td><td class="tpos">~19.2 MMT</td><td class="num">19.0 MMT</td><td class="tpos">+~3%</td></tr>
+              <tr><td>Refinery Utilisation</td><td class="tpos">~109%</td><td class="tpos">109.7%</td><td class="tpos">Above nameplate</td></tr>
+              <tr><td>Nameplate Capacity</td><td class="num">80+ MMTPA (annual)</td><td class="num">—</td><td class="num">India's largest</td></tr>
+              <tr><td>Pipeline Throughput</td><td class="num">Steady growth</td><td class="num">—</td><td class="num">16,000+ km network</td></tr>
+              <tr><td>Domestic Sales Volume</td><td class="num">~23 MMT</td><td class="num">~22.5 MMT</td><td class="tpos">+4.8% YoY (Q3)</td></tr>
+              <tr><td>LPG Under-Recovery</td><td class="tneg">~₹5,000 Cr (Q4 est.)</td><td class="tneg">—</td><td class="tneg">Cumulative large</td></tr>
+              <tr><td>Debt (Net)</td><td class="num">Moderate D/E</td><td class="num">—</td><td class="num">Capex ₹34,700 Cr FY26</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">FY26 Full Year vs FY25 vs FY24 (Consolidated)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue</td><td class="tpos">₹9,01,453 Cr</td><td class="num">₹8,59,363 Cr</td><td class="num">₹8,87,082 Cr</td><td class="tpos">+4.9%</td></tr>
+              <tr><td>EBITDA (est.)</td><td class="tpos">~₹70,000 Cr</td><td class="num">~₹33,000 Cr</td><td class="num">~₹62,000 Cr</td><td class="tpos">+112%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~7.8%</td><td class="num">~3.8%</td><td class="num">~7.0%</td><td class="tpos">+400 bps</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tpos">₹43,677 Cr</td><td class="num">₹13,789 Cr</td><td class="num">₹39,619 Cr</td><td class="tpos">+217%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">~4.8%</td><td class="num">~1.6%</td><td class="num">~4.5%</td><td class="tpos">+320 bps</td></tr>
+              <tr><td>GRM Average</td><td class="tpos">~$12–14/bbl</td><td class="num">~$8/bbl</td><td class="num">~$12/bbl</td><td class="tpos">Significant expansion</td></tr>
+              <tr><td>Refinery Throughput</td><td class="tpos">~75+ MMT</td><td class="num">~72 MMT</td><td class="num">~70 MMT</td><td class="tpos">Record utilisation</td></tr>
+              <tr><td>Capex</td><td class="num">₹34,700 Cr</td><td class="num">~₹24,000 Cr</td><td class="num">~₹21,000 Cr</td><td class="num">Heavy investment</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Business Segments — FY26 Revenue Mix</div>
+          <div class="seg-row"><div class="seg-lbl"><span>Petroleum Products (refining + marketing)</span><span>~89%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:89%;background:var(--iocl)"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Petrochemicals (EBIT drag in Q3)</span><span>~3%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:3%;background:#ef4444"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Natural Gas Business</span><span>~3%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:3%;background:var(--gail)"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Pipelines + Others</span><span>~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:var(--gold)"></div></div></div>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;"><strong>Key notes:</strong> Petrochemicals EBIT was −₹36.2 Bn in Q3 FY26 — persistent drag. Panipat refinery world's largest single-location. LPG under-recovery cumulative estimated ~₹18,000 Cr FY26 (partial govt. compensation received). Promoter (GoI): 51.5%.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BPCL ── -->
+  <div class="co-sec" id="co-bpcl">
+    <div class="grp-hdr" style="background:var(--bpcl-s);border-color:var(--bpcl);color:var(--bpcl);">Bharat Petroleum — NSE: BPCL · Maharatna · Refineries: Mumbai, Kochi, Bina · Almost Debt-Free · CMD: Sanjay Khanna</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss (Consolidated)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tpos">₹1,34,947 Cr</td><td class="num">₹1,24,312 Cr</td><td class="num">₹1,26,916 Cr</td><td class="tpos">+6.3%</td></tr>
+              <tr><td>EBITDA (est.)</td><td class="tpos">₹10,400 Cr</td><td class="num">₹8,700 Cr</td><td class="num">₹7,600 Cr</td><td class="tpos">+36.8%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~7.7%</td><td class="num">~7.0%</td><td class="num">~6.0%</td><td class="tpos">+170 bps</td></tr>
+              <tr><td>PBT (Consolidated)</td><td class="tpos">₹7,838 Cr</td><td class="num">₹6,542 Cr</td><td class="num">₹5,897 Cr</td><td class="tpos">+32.9%</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tpos">₹5,625 Cr</td><td class="num">₹4,886 Cr</td><td class="num">₹4,392 Cr</td><td class="tpos">+28.1%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">~4.2%</td><td class="num">~3.9%</td><td class="num">~3.5%</td><td class="tpos">+70 bps</td></tr>
+              <tr><td>PAT (Standalone)</td><td class="num">₹3,191 Cr</td><td class="num">₹3,805 Cr</td><td class="num">₹3,214 Cr</td><td class="num">−0.7% (flat)</td></tr>
+              <tr><td>BPRL Impairment (one-time)</td><td class="tneg">−₹4,349 Cr (non-cash)</td><td class="num">—</td><td class="tneg">−₹1,774 Cr</td><td class="tneg">Higher write-off</td></tr>
+              <tr><td>EPS (Basic, Consol)</td><td class="tpos">₹13.16</td><td class="num">₹11.43</td><td class="num">₹10.28</td><td class="tpos">+28%</td></tr>
+              <tr><td>Inventory Gain (est.)</td><td class="tpos">~₹2,100 Cr</td><td class="num">~₹900 Cr</td><td class="tneg">~−₹600 Cr</td><td class="tpos">Crude rising = gain</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Volume, Capacity &amp; Balance Sheet</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">Note</th></tr></thead>
+            <tbody>
+              <tr><td>Refinery Throughput Q4</td><td class="num">10.40 MMT</td><td class="num">10.25 MMT</td><td>Mumbai + Kochi + Bina</td></tr>
+              <tr><td>Total Nameplate Capacity</td><td class="num">40+ MMTPA</td><td class="num">—</td><td>3 refineries combined</td></tr>
+              <tr><td>Q4 Capacity Utilisation</td><td class="tpos">~100%+</td><td class="num">~98%</td><td>Optimised throughput</td></tr>
+              <tr><td>Domestic Sales Vol. Q4</td><td class="num">13.86 MMT</td><td class="num">13.42 MMT</td><td>+3.3% YoY</td></tr>
+              <tr><td>Net Debt (Mar 2026)</td><td class="tpos">~Zero (Debt-Free)</td><td class="num">Small net debt</td><td>Key differentiator</td></tr>
+              <tr><td>LPG Under-Rec. Buffer</td><td class="tneg">−₹12,318 Cr (cumul.)</td><td class="tneg">—</td><td>Govt approved ₹7,594 Cr; recd ₹3,164 Cr only</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue (Consolidated)</td><td class="tpos">₹5,22,820 Cr</td><td class="num">₹5,00,517 Cr</td><td class="num">₹5,07,767 Cr</td><td class="tpos">+4.5%</td></tr>
+            <tr><td>PBT (Consolidated)</td><td class="tpos">₹34,791 Cr</td><td class="num">₹18,182 Cr</td><td class="num">₹19,876 Cr</td><td class="tpos">+91.4%</td></tr>
+            <tr><td>PAT (Standalone)</td><td class="tpos">₹23,303 Cr</td><td class="num">₹13,275 Cr</td><td class="num">₹13,337 Cr</td><td class="tpos">+75.5%</td></tr>
+            <tr><td>PAT (Consolidated)</td><td class="tpos">₹25,843 Cr</td><td class="num">₹13,336 Cr</td><td class="num">—</td><td class="tpos">+93.8%</td></tr>
+            <tr><td>Domestic Sales FY26</td><td class="tpos">54.18 MMT</td><td class="num">~52 MMT</td><td class="num">~50 MMT</td><td class="tpos">+4.2%</td></tr>
+            <tr><td>Refinery Throughput</td><td class="tpos">41.15 MMT</td><td class="num">~39 MMT</td><td class="num">~37 MMT</td><td class="tpos">Improving utilisation</td></tr>
+            <tr><td>Net Debt</td><td class="tpos">~Zero (best-in-class)</td><td class="num">Small positive</td><td class="num">—</td><td class="tpos">Debt-free achievement</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HPCL ── -->
+  <div class="co-sec" id="co-hpcl">
+    <div class="grp-hdr" style="background:var(--hpcl-s);border-color:var(--hpcl);color:var(--hpcl);">Hindustan Petroleum — NSE: HINDPETRO · Maharatna · ONGC Subsidiary · Refineries: Mumbai + Vizag · CMD: Rajnish Kumar</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss (Standalone)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue (Product Sales)</td><td class="num">₹1,23,075 Cr</td><td class="num">₹1,21,348 Cr</td><td class="num">₹1,23,949 Cr</td><td class="num">−0.7%</td></tr>
+              <tr><td>GRM (Gross Refining Margin)</td><td class="tpos">$14.27/bbl</td><td class="num">$5.40/bbl</td><td class="num">$5.74/bbl</td><td class="tpos">+164%</td></tr>
+              <tr><td>EBITDA (est. Standalone)</td><td class="tpos">₹8,500 Cr</td><td class="num">₹3,800 Cr</td><td class="num">₹4,800 Cr</td><td class="tpos">+77%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~6.9%</td><td class="num">~3.1%</td><td class="num">~3.9%</td><td class="tpos">+300 bps</td></tr>
+              <tr><td>PAT (Standalone)</td><td class="tpos">₹4,902 Cr</td><td class="num">₹2,459 Cr</td><td class="num">₹3,358 Cr</td><td class="tpos">+46%</td></tr>
+              <tr><td>PAT Margin (Standalone)</td><td class="tpos">~4.0%</td><td class="num">~2.0%</td><td class="num">~2.7%</td><td class="tpos">+130 bps</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tpos">₹6,065 Cr</td><td class="num">₹3,285 Cr</td><td class="num">₹3,408 Cr</td><td class="tpos">+78%</td></tr>
+              <tr><td>Inventory Gain (est.)</td><td class="tpos">~₹1,800 Cr</td><td class="num">~₹600 Cr</td><td class="tneg">~−₹500 Cr</td><td class="tpos">Rising crude = gain</td></tr>
+              <tr><td>LPG Under-Recovery FY26</td><td class="tneg">₹12,799 Cr total</td><td class="num">—</td><td class="num">—</td><td class="tneg">Compensation only ₹3,300 Cr</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Volume, Capacity &amp; Debt</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">Note</th></tr></thead>
+            <tbody>
+              <tr><td>Refinery Throughput Q4</td><td class="num">6.4 MMT</td><td class="num">6.7 MMT</td><td>Mumbai + Vizag</td></tr>
+              <tr><td>Nameplate Capacity</td><td class="num">~26.04 MMTPA</td><td class="num">—</td><td>FY26 record throughput</td></tr>
+              <tr><td>Q4 Capacity Utilisation</td><td class="tpos">~98%</td><td class="num">~103%</td><td>Near full utilisation</td></tr>
+              <tr><td>Marketing Sales Q4</td><td class="num">13.0 MMT</td><td class="num">~13.2 MMT</td><td>Slight decline</td></tr>
+              <tr><td>D/E Ratio (Mar 2026)</td><td class="tpos">0.80</td><td class="num">1.38 (Mar 2025)</td><td>Significantly improved</td></tr>
+              <tr><td>Final Dividend FY26</td><td class="num">₹19.25/share</td><td class="num">—</td><td>Including interim paid</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue (Standalone)</td><td class="tpos">₹4,78,543 Cr</td><td class="num">₹4,66,346 Cr</td><td class="num">₹4,58,903 Cr</td><td class="tpos">+2.6%</td></tr>
+            <tr><td>GRM Average FY26</td><td class="tpos">$8.79/bbl</td><td class="num">$5.74/bbl</td><td class="num">~$7.5/bbl</td><td class="tpos">+53%</td></tr>
+            <tr><td>EBITDA (est.)</td><td class="tpos">~₹28,000 Cr</td><td class="num">~₹13,000 Cr</td><td class="num">~₹22,000 Cr</td><td class="tpos">+115%</td></tr>
+            <tr><td>PAT (Standalone)</td><td class="tpos">₹17,175 Cr</td><td class="num">₹7,365 Cr</td><td class="num">₹16,015 Cr</td><td class="tpos">+133%</td></tr>
+            <tr><td>PAT (Consolidated)</td><td class="tpos">₹18,047 Cr</td><td class="num">₹6,740 Cr</td><td class="num">—</td><td class="tpos">+168%</td></tr>
+            <tr><td>Refinery Throughput FY26</td><td class="tpos">26.04 MMT (Record)</td><td class="num">25.28 MMT</td><td class="num">~24 MMT</td><td class="tpos">+3.0%</td></tr>
+            <tr><td>D/E Ratio</td><td class="tpos">0.80 (Mar 2026)</td><td class="num">1.38 (Mar 2025)</td><td class="num">~1.5</td><td class="tpos">Sharp improvement</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GAIL ── -->
+  <div class="co-sec" id="co-gail">
+    <div class="grp-hdr" style="background:var(--gail-s);border-color:var(--gail);color:var(--gail);">GAIL (India) Ltd — NSE: GAIL · Maharatna · 70% Gas Transmission Share · CMD: Sandeep Kumar Gupta</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss (Standalone)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tneg">₹34,797 Cr</td><td class="num">₹35,120 Cr</td><td class="num">₹35,699 Cr</td><td class="tneg">−2.5%</td></tr>
+              <tr><td>EBITDA (est.)</td><td class="tneg">₹2,400 Cr</td><td class="num">₹3,100 Cr</td><td class="num">₹3,700 Cr</td><td class="tneg">−35%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tneg">~6.9%</td><td class="num">~8.8%</td><td class="num">~10.4%</td><td class="tneg">−350 bps</td></tr>
+              <tr><td>PBT (Standalone)</td><td class="tneg">₹1,577 Cr</td><td class="num">₹2,385 Cr</td><td class="num">₹2,701 Cr</td><td class="tneg">−41.6%</td></tr>
+              <tr><td>PAT (Standalone)</td><td class="tneg">₹1,262 Cr</td><td class="num">₹1,872 Cr</td><td class="num">₹2,050 Cr</td><td class="tneg">−38.4%</td></tr>
+              <tr><td>PAT Margin</td><td class="tneg">~3.6%</td><td class="num">~5.3%</td><td class="num">~5.7%</td><td class="tneg">−210 bps</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tneg">₹1,481 Cr</td><td class="num">₹2,095 Cr</td><td class="num">₹2,506 Cr</td><td class="tneg">−40.9%</td></tr>
+              <tr><td>Gas Marketing Revenue</td><td class="tneg">−1.2% YoY</td><td class="num">—</td><td class="num">~89.7% of rev.</td><td class="tneg">LNG disruption</td></tr>
+              <tr><td>Petrochemicals Revenue</td><td class="tneg">−15.4% YoY</td><td class="num">—</td><td class="num">~3.5% of rev.</td><td class="tneg">Feedstock shortage</td></tr>
+              <tr><td>Gas Transmission Revenue</td><td class="tpos">+11.6% YoY</td><td class="num">—</td><td class="num">~5.8% of rev.</td><td class="tpos">Only segment growing</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Volume &amp; Infrastructure</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">FY26 Full Year</th><th style="text-align:right">FY25</th></tr></thead>
+            <tbody>
+              <tr><td>Gas Marketing Volume</td><td class="num">~25 MMSCMD</td><td class="tpos">104.21 MMSCMD</td><td class="num">101.49 MMSCMD</td></tr>
+              <tr><td>Gas Transmission Volume</td><td class="num">~30 MMSCMD</td><td class="tneg">122.18 MMSCMD</td><td class="num">127.32 MMSCMD</td></tr>
+              <tr><td>LPG Transmission</td><td class="num">—</td><td class="tpos">4,600 TMT (+3%)</td><td class="num">~4,466 TMT</td></tr>
+              <tr><td>Polymer Production</td><td class="num">~190 TMT</td><td class="num">768 TMT (94% cap.)</td><td class="num">~770 TMT</td></tr>
+              <tr><td>Pipeline Network</td><td class="tpos">~15,500+ km</td><td class="tpos">+2,000 km added FY26</td><td class="num">~13,500 km</td></tr>
+              <tr><td>Net Debt</td><td class="tpos">Low</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>Dividend Payout Ratio</td><td class="tpos">52% (highest ever)</td><td class="num">—</td><td class="num">~40%</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue (Standalone)</td><td class="num">₹1,38,328 Cr</td><td class="num">₹1,36,942 Cr</td><td class="num">₹1,39,870 Cr</td><td class="tpos">+1.0%</td></tr>
+            <tr><td>EBITDA (est.)</td><td class="tneg">~₹9,800 Cr</td><td class="num">~₹15,400 Cr</td><td class="num">~₹11,200 Cr</td><td class="tneg">−36%</td></tr>
+            <tr><td>EBITDA Margin</td><td class="tneg">~7.1%</td><td class="num">~11.2%</td><td class="num">~8.0%</td><td class="tneg">−410 bps</td></tr>
+            <tr><td>PAT (Standalone)</td><td class="tneg">₹6,968 Cr</td><td class="num">₹11,312 Cr</td><td class="num">₹8,706 Cr</td><td class="tneg">−38.4%</td></tr>
+            <tr><td>PAT (Consolidated)</td><td class="tneg">₹7,582 Cr</td><td class="num">₹12,450 Cr</td><td class="num">—</td><td class="tneg">−39.1%</td></tr>
+            <tr><td>Gas Marketing Volume</td><td class="tpos">104.21 MMSCMD</td><td class="num">101.49 MMSCMD</td><td class="num">—</td><td class="tpos">+2.7%</td></tr>
+            <tr><td>Transmission Volume</td><td class="tneg">122.18 MMSCMD</td><td class="num">127.32 MMSCMD</td><td class="num">—</td><td class="tneg">−4.0%</td></tr>
+            <tr><td>Capex FY26</td><td class="num">₹9,594 Cr</td><td class="num">~₹7,000 Cr</td><td class="num">—</td><td class="num">Pipeline expansion heavy</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PETRONET ── -->
+  <div class="co-sec" id="co-pnlng">
+    <div class="grp-hdr" style="background:var(--pnlng-s);border-color:var(--pnlng);color:var(--pnlng);">Petronet LNG — NSE: PETRONET · JV: GAIL+IOCL+BPCL+ONGC · Dahej (17.5 MMTPA) + Kochi (5 MMTPA) · CMD: A K Singh</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss (Consolidated)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tneg">₹9,442 Cr</td><td class="num">₹10,812 Cr</td><td class="num">₹12,312 Cr</td><td class="tneg">−23.3%</td></tr>
+              <tr><td>Total Expenses</td><td class="tpos">₹7,848 Cr</td><td class="num">₹9,128 Cr</td><td class="num">₹11,070 Cr</td><td class="tpos">−29.1% (cost fell more)</td></tr>
+              <tr><td>EBITDA (est.)</td><td class="tpos">₹2,200 Cr</td><td class="num">₹1,400 Cr</td><td class="num">₹1,600 Cr</td><td class="tpos">+37.5%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~23.3%</td><td class="num">~12.9%</td><td class="num">~13.0%</td><td class="tpos">+1,030 bps</td></tr>
+              <tr><td>PBT (Consolidated)</td><td class="tpos">₹1,794 Cr</td><td class="num">₹1,140 Cr</td><td class="num">₹1,444 Cr</td><td class="tpos">+24.3%</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tpos">₹1,338 Cr</td><td class="num">₹846 Cr</td><td class="num">₹1,068 Cr</td><td class="tpos">+25.3%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">~14.2%</td><td class="num">~7.8%</td><td class="num">~8.7%</td><td class="tpos">+550 bps</td></tr>
+              <tr><td>UoP Reversal (one-time)</td><td class="tpos">~₹200–300 Cr boost</td><td class="num">—</td><td class="num">—</td><td class="tpos">JPMorgan noted this</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Volume &amp; Capacity</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th></tr></thead>
+            <tbody>
+              <tr><td>LNG Volume (Dahej + Kochi)</td><td class="num">219 TBTU</td><td class="num">233 TBTU</td><td class="num">205 TBTU</td></tr>
+              <tr><td>Dahej Utilisation</td><td class="tpos">90.1%</td><td class="num">95%</td><td class="num">84%</td></tr>
+              <tr><td>Dahej Nameplate Capacity</td><td class="num">17.5 MMTPA</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>Kochi Terminal</td><td class="num">Record FY26 annual: 68 TBTU</td><td class="num">—</td><td class="num">~55 TBTU FY25</td></tr>
+              <tr><td>Net Debt</td><td class="tpos">Minimal</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>Final Dividend</td><td class="num">₹3/share</td><td class="num">—</td><td class="num">₹3/share</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue (Standalone)</td><td class="tneg">₹43,495 Cr</td><td class="num">₹50,980 Cr</td><td class="tneg">−14.7%</td></tr>
+            <tr><td>EBITDA Margin</td><td class="tpos">~11–12%</td><td class="num">~10%</td><td class="tpos">Margin expanded</td></tr>
+            <tr><td>PAT (Consolidated)</td><td class="num">₹3,809 Cr</td><td class="num">₹3,884 Cr</td><td class="tneg">−1.9%</td></tr>
+            <tr><td>Kochi Throughput</td><td class="tpos">68 TBTU (Record)</td><td class="num">~55 TBTU</td><td class="tpos">+23.6%</td></tr>
+            <tr><td>Final Dividend</td><td class="num">₹3/share</td><td class="num">₹3/share</td><td class="num">Maintained</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ONGC ── -->
+  <div class="co-sec" id="co-ongc">
+    <div class="grp-hdr" style="background:var(--ongc-s);border-color:var(--ongc);color:var(--ongc);">ONGC — NSE: ONGC · Maharatna · ~71% India Upstream · Subsidiaries: HPCL, OVL, MRPL · CMD: Arun Kumar Singh</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss (Consolidated)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations (Consol)</td><td class="tpos">₹1,73,805 Cr</td><td class="num">₹1,66,840 Cr</td><td class="num">₹1,67,749 Cr</td><td class="tpos">+3.6%</td></tr>
+              <tr><td>Total Income (Consol)</td><td class="tpos">₹1,77,173 Cr</td><td class="num">₹1,70,208 Cr</td><td class="num">₹1,70,784 Cr</td><td class="tpos">+3.7%</td></tr>
+              <tr><td>EBITDA (est. Consol)</td><td class="tpos">~₹17,800 Cr</td><td class="num">~₹16,500 Cr</td><td class="num">~₹13,500 Cr</td><td class="tpos">+31.9%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~10.2%</td><td class="num">~9.9%</td><td class="num">~8.0%</td><td class="tpos">+220 bps</td></tr>
+              <tr><td>PAT (Consol, to owners)</td><td class="tpos">₹10,820 Cr</td><td class="num">₹10,016 Cr</td><td class="num">₹7,431 Cr</td><td class="tpos">+45.6%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">~6.2%</td><td class="num">~6.0%</td><td class="num">~4.4%</td><td class="tpos">+180 bps</td></tr>
+              <tr><td>EPS (Basic)</td><td class="tpos">₹8.60</td><td class="num">₹7.96</td><td class="num">₹5.91</td><td class="tpos">+45.5%</td></tr>
+              <tr><td>Crude Realisation (Standalone)</td><td class="tpos">Higher vs FY25</td><td class="num">~$70/bbl</td><td class="num">~$65/bbl</td><td class="tpos">West Asia uplift</td></tr>
+              <tr><td>Final Dividend</td><td class="num">₹1/share</td><td class="num">—</td><td class="num">—</td><td class="num">Declared FY26</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Production &amp; Capacity</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">FY26 Full</th><th style="text-align:right">FY25</th></tr></thead>
+            <tbody>
+              <tr><td>Crude Oil Production (Stnd)</td><td class="num">~6.9 MMT</td><td class="num">~22 MMT</td><td class="num">~21.5 MMT</td></tr>
+              <tr><td>Natural Gas Production</td><td class="num">~5.4 BCM</td><td class="num">~21.5 BCM</td><td class="num">~21 BCM</td></tr>
+              <tr><td>New Well Gas (% of prod.)</td><td class="tpos">17% of production</td><td class="tpos">21% of nom. gas rev.</td><td class="num">Lower</td></tr>
+              <tr><td>New Well Gas Revenue Uplift</td><td class="tpos">~₹651 Cr in H1 FY26</td><td class="num">—</td><td class="num">Not applicable</td></tr>
+              <tr><td>Western Offshore Capex</td><td class="tpos">₹33,075 Cr in progress</td><td class="num">—</td><td class="num">Lower</td></tr>
+              <tr><td>Net Debt</td><td class="num">Moderate</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>GoI Promoter Holding</td><td class="num">~58.9%</td><td class="num">—</td><td class="num">—</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue (Consolidated)</td><td class="num">₹6,62,247 Cr</td><td class="num">₹6,63,261 Cr</td><td class="num">~₹6,40,000 Cr</td><td class="num">Flat</td></tr>
+            <tr><td>PAT (Consol, to owners)</td><td class="tpos">₹41,424 Cr (Record)</td><td class="num">₹36,226 Cr</td><td class="num">~₹40,000 Cr</td><td class="tpos">+14.3%</td></tr>
+            <tr><td>New Well Gas (% production)</td><td class="tpos">17%</td><td class="num">Lower</td><td class="num">—</td><td class="tpos">Growing fast</td></tr>
+            <tr><td>Western Offshore Capex</td><td class="num">₹33,075 Cr ongoing</td><td class="num">—</td><td class="num">—</td><td class="num">Highest ever</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">Note: ONGC consolidated PAT of ₹41,424 Cr includes contributions from HPCL (54.9% subsidiary) which posted strong FY26 results (+133% standalone PAT). ONGC standalone was partially restrained by APM gas price regulation. OVL (overseas E&P) typically posts losses which are consolidated in.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CPCL ── -->
+  <div class="co-sec" id="co-cpcl">
+    <div class="grp-hdr" style="background:var(--cpcl-s);border-color:var(--cpcl);color:var(--cpcl);">Chennai Petroleum Corp (CPCL) — NSE: CHENNPETRO · IOCL Subsidiary 51.89% · Manali Refinery, Chennai · ~10.5 MMTPA nameplate</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="num">₹20,455 Cr</td><td class="num">₹19,890 Cr</td><td class="num">₹20,581 Cr</td><td class="num">Flat</td></tr>
+              <tr><td>GRM (Gross Refining Margin)</td><td class="tpos">$13.75/bbl</td><td class="num">$9.51/bbl</td><td class="num">$6.22/bbl</td><td class="tpos">+121%</td></tr>
+              <tr><td>EBITDA (est.)</td><td class="tpos">₹2,476 Cr</td><td class="num">₹1,001 Cr</td><td class="num">₹730 Cr</td><td class="tpos">+239%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~12.1%</td><td class="num">~5.0%</td><td class="num">~3.5%</td><td class="tpos">+860 bps</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tpos">₹1,422 Cr</td><td class="num">₹1,001 Cr</td><td class="num">₹470 Cr</td><td class="tpos">+203%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">~6.9%</td><td class="num">~5.0%</td><td class="num">~2.3%</td><td class="tpos">+460 bps</td></tr>
+              <tr><td>Inventory Gain (est.)</td><td class="tpos">~₹400 Cr</td><td class="num">~₹150 Cr</td><td class="tneg">~−₹200 Cr</td><td class="tpos">Rising crude = gain</td></tr>
+              <tr><td>Distillate Yield</td><td class="tpos">~80%</td><td class="num">~79%</td><td class="num">~78%</td><td class="tpos">Best-in-class</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Volume, Capacity &amp; Balance Sheet</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">FY26 Annual</th><th style="text-align:right">FY25 Annual</th></tr></thead>
+            <tbody>
+              <tr><td>Crude Throughput Q4</td><td class="num">2.93 MMT</td><td class="tpos">11.71 MMT</td><td class="num">10.45 MMT</td></tr>
+              <tr><td>Nameplate Capacity</td><td class="num">10.5 MMTPA</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>Capacity Utilisation</td><td class="tpos">112% (above nameplate)</td><td class="tpos">112% avg FY26</td><td class="num">~100%</td></tr>
+              <tr><td>Distillate Yield</td><td class="tpos">~80%</td><td class="num">—</td><td class="num">~79%</td></tr>
+              <tr><td>FY26 GRM Average</td><td class="tpos">$9.28/bbl</td><td class="tpos">$9.28/bbl</td><td class="num">$4.22/bbl</td></tr>
+              <tr><td>Net Debt</td><td class="num">Moderate</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>CMP (May 2026)</td><td class="num">~₹1,034</td><td class="num">Mkt Cap ~₹16,059 Cr</td><td class="num">52-wk high ₹858</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24 — The GRM Turnaround Story</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue</td><td class="tpos">₹78,611 Cr</td><td class="num">₹71,050 Cr</td><td class="num">₹73,800 Cr</td><td class="tpos">+10.6%</td></tr>
+            <tr><td>GRM Average</td><td class="tpos">$9.28/bbl</td><td class="num">$4.22/bbl</td><td class="num">~$7.5/bbl</td><td class="tpos">+120%</td></tr>
+            <tr><td>EBITDA (est.)</td><td class="tpos">~₹7,300 Cr</td><td class="num">~₹1,400 Cr</td><td class="num">~₹5,200 Cr</td><td class="tpos">+421%</td></tr>
+            <tr><td>EBITDA Margin</td><td class="tpos">~9.3%</td><td class="num">~2.0%</td><td class="num">~7.0%</td><td class="tpos">+730 bps</td></tr>
+            <tr><td>PAT (Standalone)</td><td class="tpos">₹3,062 Cr</td><td class="num">₹174 Cr</td><td class="num">₹2,619 Cr</td><td class="tpos">~17.6× FY25</td></tr>
+            <tr><td>PAT (Consolidated)</td><td class="tpos">₹3,103 Cr</td><td class="num">₹174 Cr</td><td class="num">—</td><td class="tpos">Record year</td></tr>
+            <tr><td>Crude Throughput</td><td class="tpos">11.71 MMT</td><td class="num">10.45 MMT</td><td class="num">~9.8 MMT</td><td class="tpos">+12% — max capacity</td></tr>
+            <tr><td>Dividend FY26</td><td class="tpos">₹54/share (total)</td><td class="num">₹0 (near-zero PAT)</td><td class="num">₹30/share</td><td class="tpos">Generous payout</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">CPCL is a pure-play refiner — 100% of earnings driven by GRM. FY25 was near-breakeven ($4.22/bbl GRM). FY26 was transformative ($9.28/bbl avg). Key risk: GRM reversion to $5–6/bbl in FY27 would severely compress profits.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── OIL INDIA ── -->
+  <div class="co-sec" id="co-oil">
+    <div class="grp-hdr" style="background:var(--oil-s);border-color:var(--oil);color:var(--oil);">Oil India — NSE: OIL · Maharatna · Upstream E&P · NRL Subsidiary (69.63%) · PNPCL Pipeline · CMD: Ranjit Rath</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss (Consolidated)</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations (Consol)</td><td class="tpos">₹10,013 Cr</td><td class="num">₹9,621 Cr</td><td class="num">₹9,588 Cr</td><td class="tpos">+4.4%</td></tr>
+              <tr><td>EBITDA (est. Consol)</td><td class="tpos">₹3,800 Cr</td><td class="num">₹3,200 Cr</td><td class="num">₹2,700 Cr</td><td class="tpos">+40.7%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">~38%</td><td class="num">~33%</td><td class="num">~28%</td><td class="tpos">+1,000 bps</td></tr>
+              <tr><td>PAT (Consolidated)</td><td class="tpos">₹2,424 Cr</td><td class="num">₹1,977 Cr</td><td class="num">₹1,497 Cr</td><td class="tpos">+62%</td></tr>
+              <tr><td>PAT (Standalone)</td><td class="tpos">₹1,790 Cr</td><td class="num">₹1,453 Cr</td><td class="num">₹1,591 Cr</td><td class="tpos">+12.5%</td></tr>
+              <tr><td>PAT Margin (Consol)</td><td class="tpos">~24.2%</td><td class="num">~20.6%</td><td class="num">~15.6%</td><td class="tpos">+860 bps</td></tr>
+              <tr><td>Crude Realisation</td><td class="tpos">$77.89/bbl</td><td class="num">$73.42/bbl</td><td class="num">$74.46/bbl</td><td class="tpos">+4.6%</td></tr>
+              <tr><td>NRL (Subsidiary) PAT</td><td class="tpos">Strong Q4 (full year +90%)</td><td class="num">—</td><td class="num">—</td><td class="tpos">NRL GRM $13.43/bbl FY26</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Volume, Production &amp; Capacity</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">FY26 Full</th><th style="text-align:right">FY25</th></tr></thead>
+            <tbody>
+              <tr><td>Crude Production</td><td class="tpos">0.891 MMT</td><td class="tpos">3.10 MMT</td><td class="num">3.02 MMT</td></tr>
+              <tr><td>Daily Crude Production</td><td class="tpos">10,566 MT/day</td><td class="tpos">Decade high</td><td class="num">Lower</td></tr>
+              <tr><td>Natural Gas Production</td><td class="num">~0.77 BCM</td><td class="num">~3.1 BCM</td><td class="num">~3.0 BCM</td></tr>
+              <tr><td>Wells Drilled FY26</td><td class="tpos">Record 74 wells</td><td class="tpos">74 (all-time high)</td><td class="num">~50 wells</td></tr>
+              <tr><td>NRL Nameplate Capacity</td><td class="num">3 MMTPA</td><td class="tpos">103.75% utilisation</td><td class="num">~95%</td></tr>
+              <tr><td>PNPCL Pipeline</td><td class="tpos">92% complete (Apr 2026)</td><td class="num">Est. completion Oct 2026</td><td class="num">~75%</td></tr>
+              <tr><td>Net Debt</td><td class="tpos">Low</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>Total Dividend FY26</td><td class="tpos">₹11.50/share</td><td class="num">—</td><td class="num">₹8.50/share</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue (Standalone)</td><td class="tneg">₹21,346 Cr</td><td class="num">₹22,117 Cr</td><td class="num">~₹20,800 Cr</td><td class="tneg">−3.5% (lower avg crude)</td></tr>
+            <tr><td>PAT (Standalone)</td><td class="tneg">₹4,455 Cr</td><td class="num">₹6,114 Cr</td><td class="num">~₹4,900 Cr</td><td class="tneg">−27% (avg realn. $60 vs $70)</td></tr>
+            <tr><td>PAT (Consolidated)</td><td class="tpos">₹7,551 Cr</td><td class="num">₹7,040 Cr</td><td class="num">~₹6,400 Cr</td><td class="tpos">+7.3% (NRL offset)</td></tr>
+            <tr><td>NRL PAT (Subsidiary)</td><td class="tpos">₹3,057 Cr</td><td class="num">₹1,608 Cr</td><td class="num">~₹1,200 Cr</td><td class="tpos">+90% — GRM $13.43/bbl</td></tr>
+            <tr><td>Crude Production</td><td class="tpos">3.10 MMT (+2.6%)</td><td class="num">3.02 MMT</td><td class="num">~2.95 MMT</td><td class="tpos">Record drilling</td></tr>
+            <tr><td>Wells Drilled</td><td class="tpos">74 (all-time record)</td><td class="num">~50</td><td class="num">~45</td><td class="tpos">+48% YoY</td></tr>
+            <tr><td>Crude Avg Realisation FY26</td><td class="tneg">~$60.09/bbl</td><td class="num">~$70.23/bbl</td><td class="num">~$78/bbl</td><td class="tneg">−14.5% — explains standalone fall</td></tr>
+            <tr><td>PNPCL Pipeline Progress</td><td class="tpos">92% (Apr 2026)</td><td class="num">~70%</td><td class="num">~45%</td><td class="tpos">Oct 2026 completion est.</td></tr>
+            <tr><td>Total Dividend FY26</td><td class="tpos">₹11.50/share</td><td class="num">₹8.50/share</td><td class="num">₹7.50/share</td><td class="tpos">+35%</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">Key insight: Oil India standalone PAT fell 27% because crude realisation averaged $60/bbl in FY26 vs $70/bbl in FY25. But NRL (subsidiary refinery) had a spectacular year (+90% PAT, GRM $13.43/bbl), lifting consolidated PAT to ₹7,551 Cr. PNPCL pipeline completion (Oct 2026) will unlock full NRL throughput capacity and add refinery-side revenue.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════ TAB 3: CHARTS ═══════════════ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Company Charts <span class="sec-note">· All 8 Companies · Revenue · EBITDA Margin · PAT · GRM · Capacity · Inventory · Volumes</span></div>
+  <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);">
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">View</span>
+    <button id="chq" onclick="showCharts('q',this)" style="background:#0d1c2e;color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:700;cursor:pointer;">Q4 FY26</button>
+    <button id="cha" onclick="showCharts('a',this)" style="background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:700;cursor:pointer;">FY26 Annual</button>
+  </div>
+  <div id="chq-view">
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>Q4 FY26 — PAT All 8 Companies (₹ Cr)</h3><p class="sub">Consol/Stnd · ONGC ₹10,820 Cr leads; GAIL only decline</p><canvas id="q4Pat" height="240"></canvas></div>
+      <div class="chart-card"><h3>Q4 FY26 — Revenue All 8 Companies (₹ Cr)</h3><p class="sub">ONGC + IOCL dominate at ₹1–2.4 lakh Cr range</p><canvas id="q4Rev" height="240"></canvas></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>Q4 FY26 — PAT YoY Growth % · All 8</h3><p class="sub">CPCL +203% best; GAIL −38% only negative</p><canvas id="q4Grw" height="240"></canvas></div>
+      <div class="chart-card"><h3>Q4 FY26 — GRM ($/bbl) · Refiners Only</h3><p class="sub">IOCL est.$17 · HPCL $14.27 · CPCL $13.75 · NRL/OIL $13.43</p><canvas id="q4Grm" height="240"></canvas></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>Q4 FY26 — EBITDA Margin % · All 8 Companies</h3><p class="sub">Upstream highest; OMCs moderate; GAIL lowest this quarter</p><canvas id="q4Ebt" height="240"></canvas></div>
+      <div class="chart-card"><h3>Q4 FY26 — Refinery Capacity vs Actual Throughput</h3><p class="sub">Actual throughput vs nameplate capacity (MMT) — CPCL 112%</p><canvas id="q4Cap" height="240"></canvas></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>Inventory Effect on PAT — Q4 FY26 (₹ Cr est.)</h3><p class="sub">Rising crude in Q4 → inventory gains boosted reported PAT</p><canvas id="q4Inv" height="200"></canvas></div>
+      <div class="chart-card"><h3>HPCL GRM Trend — Q1 FY25 to Q4 FY26 ($/bbl)</h3><p class="sub">GRM collapsed to $5.40 Q3 FY26 → surged to $14.27 Q4</p><canvas id="grmTrend" height="200"></canvas></div>
+    </div>
+  </div>
+  <div id="cha-view" style="display:none;">
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>FY26 Annual PAT · All 8 Companies (₹ Cr)</h3><p class="sub">IOCL ₹43,677 Cr leads; GAIL only significant decline</p><canvas id="fyPat" height="240"></canvas></div>
+      <div class="chart-card"><h3>FY26 Annual Revenue · All 8 Companies (₹ Cr)</h3><p class="sub">ONGC + IOCL dominate; note GPCL revenue small scale</p><canvas id="fyRev" height="240"></canvas></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>FY26 vs FY25 — PAT Change % · All 8</h3><p class="sub">CPCL near 18× turnaround; GAIL −38% only negative</p><canvas id="fyGrw" height="240"></canvas></div>
+      <div class="chart-card"><h3>FY26 Annual GRM Average · Refiners ($/bbl)</h3><p class="sub">NRL/OIL $13.43 · CPCL $9.28 · HPCL $8.79 · BPCL/IOCL est.</p><canvas id="fyGrm" height="240"></canvas></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>FY26 EBITDA Margin % · All 8 Companies</h3><p class="sub">Upstream Oil India highest margin; OMCs moderate 4–8%</p><canvas id="fyEbt" height="240"></canvas></div>
+      <div class="chart-card"><h3>FY26 Refinery Throughput FY25 vs FY26 (MMT)</h3><p class="sub">HPCL record 26.04; CPCL 11.71 (112%); BPCL 41.15</p><canvas id="fyThru" height="240"></canvas></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>GAIL — Gas Volumes FY25 vs FY26 (MMSCMD)</h3><p class="sub">Marketing +2.7%; Transmission −4% — divergence story</p><canvas id="gailVol" height="200"></canvas></div>
+      <div class="chart-card"><h3>Oil India — Crude Production FY24–FY26 (MMT)</h3><p class="sub">Record 74 wells drilled FY26 → production growth trajectory</p><canvas id="oilProd" height="200"></canvas></div>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════ TAB 4: COMPARE ALL ═══════════════ -->
+<div class="panel" id="tab-compare">
+  <div class="sec-hdr">Compare All Companies <span class="sec-note">· Q4 FY26 · FY26 Annual · 3-Year Trajectory · ₹ Crore · All from BSE/NSE Filings</span></div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">Q4 FY26 — All 8 Companies at a Glance</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>Category</th><th>Q4 Revenue</th><th>Q4 EBITDA (est.)</th><th>EBITDA%</th><th>Q4 PAT</th><th>PAT%</th><th>Key Metric</th><th>Key Volume</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--iocl)"></span>IOCL</td><td>OMC</td><td class="num">₹2,36,899</td><td class="tpos">~₹18,200</td><td class="tpos">7.7%</td><td class="tpos">₹15,176</td><td class="tpos">6.4%</td><td class="tpos">GRM ~$17/bbl</td><td class="num">~23 MMT sales</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bpcl)"></span>BPCL</td><td>OMC</td><td class="num">₹1,34,947</td><td class="tpos">~₹10,400</td><td class="tpos">7.7%</td><td class="tpos">₹5,625</td><td class="tpos">4.2%</td><td class="num">Debt-Free</td><td class="num">10.40 MMT ref.</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hpcl)"></span>HPCL</td><td>OMC</td><td class="num">₹1,23,075</td><td class="tpos">~₹8,500</td><td class="tpos">6.9%</td><td class="tpos">₹4,902</td><td class="tpos">4.0%</td><td class="tpos">GRM $14.27/bbl</td><td class="num">6.4 MMT Q4</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--gail)"></span>GAIL</td><td>Gas</td><td class="num">₹34,797</td><td class="tneg">~₹2,400</td><td class="tneg">6.9%</td><td class="tneg">₹1,262</td><td class="tneg">3.6%</td><td class="tneg">Petchem −15.4%</td><td class="num">104 MMSCMD</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--pnlng)"></span>Petronet</td><td>Gas</td><td class="num">₹9,442</td><td class="tpos">~₹2,200</td><td class="tpos">23.3%</td><td class="tpos">₹1,338</td><td class="tpos">14.2%</td><td class="tpos">Cost fell −29%</td><td class="num">219 TBTU</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ongc)"></span>ONGC</td><td>Upstream</td><td class="num">₹1,73,805</td><td class="tpos">~₹17,800</td><td class="tpos">10.2%</td><td class="tpos">₹10,820</td><td class="tpos">6.2%</td><td class="tpos">New well gas 17%</td><td class="num">~7 MMT crude Q4</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--cpcl)"></span>CPCL</td><td>Refiner</td><td class="num">₹20,455</td><td class="tpos">~₹2,476</td><td class="tpos">12.1%</td><td class="tpos">₹1,422</td><td class="tpos">6.9%</td><td class="tpos">GRM $13.75/bbl</td><td class="num">2.93 MMT (112%)</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--oil)"></span>Oil India</td><td>Upstream</td><td class="num">₹10,013</td><td class="tpos">~₹3,800</td><td class="tpos">38%</td><td class="tpos">₹2,424</td><td class="tpos">24.2%</td><td class="tpos">$77.89/bbl realn.</td><td class="num">0.891 MMT crude</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">FY26 Full Year — All 8 Companies</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>FY26 Revenue</th><th>Rev YoY</th><th>FY26 EBITDA (est.)</th><th>EBITDA%</th><th>FY26 PAT</th><th>PAT YoY</th><th>Net Debt Status</th><th>Key Metric FY26</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--iocl)"></span>IOCL</td><td class="num">₹9,01,453 Cr</td><td class="tpos">+4.9%</td><td class="tpos">~₹70,000 Cr</td><td class="tpos">~7.8%</td><td class="tpos">₹43,677 Cr</td><td class="tpos">+217%</td><td class="num">Moderate</td><td>Throughput record ~75+ MMT</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bpcl)"></span>BPCL</td><td class="num">₹5,22,820 Cr</td><td class="tpos">+4.5%</td><td class="tpos">~₹42,000 Cr</td><td class="tpos">~8.0%</td><td class="tpos">₹23,303 Cr (stnd)</td><td class="tpos">+75.5%</td><td class="tpos">~Zero (Debt-Free)</td><td>Domestic sales 54.18 MMT</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hpcl)"></span>HPCL</td><td class="num">₹4,78,543 Cr</td><td class="tpos">+2.6%</td><td class="tpos">~₹28,000 Cr</td><td class="tpos">~5.8%</td><td class="tpos">₹17,175 Cr (stnd)</td><td class="tpos">+133%</td><td class="warn">D/E 0.80</td><td>GRM avg $8.79/bbl; D/E improved</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--gail)"></span>GAIL</td><td class="num">₹1,38,328 Cr</td><td class="tpos">+1.0%</td><td class="tneg">~₹9,800 Cr</td><td class="tneg">~7.1%</td><td class="tneg">₹6,968 Cr (stnd)</td><td class="tneg">−38.4%</td><td class="tpos">Low</td><td>2,000 km pipeline added; 52% payout</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--pnlng)"></span>Petronet</td><td class="num">₹43,495 Cr</td><td class="tneg">−14.7%</td><td class="tpos">~₹5,200 Cr</td><td class="tpos">~12%</td><td class="num">₹3,809 Cr</td><td class="tneg">−1.9%</td><td class="tpos">Minimal</td><td>Kochi record 68 TBTU; UoP reversals</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ongc)"></span>ONGC</td><td class="num">₹6,62,247 Cr</td><td class="num">Flat</td><td class="tpos">~₹66,000 Cr</td><td class="tpos">~10%</td><td class="tpos">₹41,424 Cr (consol)</td><td class="tpos">+14.3%</td><td class="num">Moderate</td><td>Record consol PAT; HPCL subsidiary uplift</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--cpcl)"></span>CPCL</td><td class="num">₹78,611 Cr</td><td class="tpos">+10.6%</td><td class="tpos">~₹7,300 Cr</td><td class="tpos">~9.3%</td><td class="tpos">₹3,062 Cr</td><td class="tpos">~17.6× FY25</td><td class="warn">Moderate</td><td>GRM $9.28/bbl; 112% utilisation</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--oil)"></span>Oil India</td><td class="num">~₹40,000 Cr (stnd)</td><td class="tneg">−3.5%</td><td class="tpos">~₹8,000 Cr</td><td class="tpos">~20%</td><td class="tpos">₹7,551 Cr (consol)</td><td class="tpos">+7.3%</td><td class="tpos">Low</td><td>NRL PAT +90%; record 74 wells drilled</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="card-lbl">3-Year PAT Trajectory — FY24 → FY25 → FY26 (₹ Crore)</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th style="text-align:right">FY24 PAT</th><th style="text-align:right">FY25 PAT</th><th style="text-align:right">FY26 PAT</th><th>2-Year Pattern</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--iocl)"></span>IOCL (Consol)</td><td class="num">₹39,619 Cr</td><td class="tneg">₹13,789 Cr</td><td class="tpos">₹43,677 Cr</td><td><span class="badge b-pos">V-shape recovery</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bpcl)"></span>BPCL (Stnd)</td><td class="num">₹13,337 Cr</td><td class="num">₹13,275 Cr</td><td class="tpos">₹23,303 Cr</td><td><span class="badge b-pos">Steady then surge</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hpcl)"></span>HPCL (Stnd)</td><td class="num">₹16,015 Cr</td><td class="tneg">₹7,365 Cr</td><td class="tpos">₹17,175 Cr</td><td><span class="badge b-pos">V-shape; best year</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--gail)"></span>GAIL (Stnd)</td><td class="num">₹8,706 Cr</td><td class="tpos">₹11,312 Cr</td><td class="tneg">₹6,968 Cr</td><td><span class="badge b-neg">Peak FY25 → fall FY26</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--pnlng)"></span>Petronet (Consol)</td><td class="num">₹3,174 Cr</td><td class="tpos">₹3,884 Cr</td><td class="num">₹3,809 Cr</td><td><span class="badge b-neu">Broadly stable</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ongc)"></span>ONGC (Consol)</td><td class="num">~₹40,000 Cr</td><td class="num">₹36,226 Cr</td><td class="tpos">₹41,424 Cr</td><td><span class="badge b-pos">Dip FY25 → record FY26</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--cpcl)"></span>CPCL (Stnd)</td><td class="num">₹2,619 Cr</td><td class="tneg">₹174 Cr</td><td class="tpos">₹3,062 Cr</td><td><span class="badge b-pos">Crash FY25 → record FY26</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--oil)"></span>Oil India (Consol)</td><td class="num">~₹6,400 Cr</td><td class="num">₹7,040 Cr</td><td class="tpos">₹7,551 Cr</td><td><span class="badge b-pos">Steady growth</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+<!-- ═══════════════ TAB 5: VALUATIONS ═══════════════ -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuations <span class="sec-note">· All 8 Companies · CMP · Market Cap · P/E · P/BV · Dividend Yield · May 2026</span></div>
+  <div class="g4" style="margin-bottom:14px;">
+    <div class="val-card"><div class="val-co" style="color:var(--iocl)">IOCL</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹134</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹1,98,036 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Consol)</span><span class="val-num pos">₹43,677 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~4.5×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~0.8×</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num">~5–6% est.</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk High</span><span class="val-num warn">₹195 (−22% YTD)</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">OMC · Maharatna</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--bpcl)">BPCL</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹291</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹1,24,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Stnd)</span><span class="val-num pos">₹23,303 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~5.3×</span></div>
+      <div class="val-row"><span class="val-lbl">Net Debt</span><span class="val-num pos">~Zero</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num">~3–4% est.</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT Growth</span><span class="val-num pos">+75.5%</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">OMC · Debt-Free</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--hpcl)">HPCL</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹370 (est.)</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹78,000 Cr est.</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Stnd)</span><span class="val-num pos">₹17,175 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~4.5×</span></div>
+      <div class="val-row"><span class="val-lbl">D/E Ratio</span><span class="val-num warn">0.80</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 Dividend</span><span class="val-num pos">₹19.25/share</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num pos">~5%+</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">OMC · ONGC sub.</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--gail)">GAIL</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹185</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹1,21,000 Cr est.</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Stnd)</span><span class="val-num warn">₹6,968 Cr (−38%)</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num warn">~17× (suppressed)</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk High</span><span class="val-num">₹245</span></div>
+      <div class="val-row"><span class="val-lbl">Div. Payout Ratio</span><span class="val-num pos">52% (highest ever)</span></div>
+      <div class="val-row"><span class="val-lbl">Analyst Targets</span><span class="val-num">₹205–₹250</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">Gas · Pipeline</span></div>
+    </div>
+  </div>
+  <div class="g4" style="margin-bottom:14px;">
+    <div class="val-card"><div class="val-co" style="color:var(--pnlng)">Petronet LNG</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹300</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹45,000 Cr est.</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Consol)</span><span class="val-num">₹3,809 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~12×</span></div>
+      <div class="val-row"><span class="val-lbl">JPMorgan Target</span><span class="val-num pos">₹335 (Overweight)</span></div>
+      <div class="val-row"><span class="val-lbl">Investec Target</span><span class="val-num pos">₹400 (Buy)</span></div>
+      <div class="val-row"><span class="val-lbl">Final Dividend</span><span class="val-num">₹3/share</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">Gas · LNG Terminal</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--ongc)">ONGC</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹265 est.</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹3,33,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Consol)</span><span class="val-num pos">₹41,424 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~8×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~1.1×</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend FY26</span><span class="val-num pos">₹1/share final + interim</span></div>
+      <div class="val-row"><span class="val-lbl">GoI Stake</span><span class="val-num">~58.9%</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">Upstream · Maharatna</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--cpcl)">CPCL</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹1,034</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹16,059 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Consol)</span><span class="val-num pos">₹3,062 Cr (~18× FY25)</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num warn">~5.2× (GRM peak risk)</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 GRM avg.</span><span class="val-num pos">$9.28/bbl</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend FY26</span><span class="val-num pos">₹54/share total</span></div>
+      <div class="val-row"><span class="val-lbl">IOCL Stake</span><span class="val-num">51.89%</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">Pure Refiner</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--oil)">Oil India</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹480 est.</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹51,000 Cr est.</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT (Consol)</span><span class="val-num">₹7,551 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~6.7×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~1.2×</span></div>
+      <div class="val-row"><span class="val-lbl">Total Dividend FY26</span><span class="val-num pos">₹11.50/share</span></div>
+      <div class="val-row"><span class="val-lbl">NRL GRM FY26</span><span class="val-num pos">$13.43/bbl</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">Upstream · NRL sub.</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-lbl">Valuation Summary Table — All 8 Companies</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>CMP</th><th>Mkt Cap (Cr)</th><th>FY26 PAT</th><th>P/E (FY26)</th><th>P/BV</th><th>Div. Yield</th><th>Net Debt</th><th>52-wk High</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--iocl)"></span>IOCL</td><td class="num">~₹134</td><td class="num">~₹1,98,036</td><td class="tpos">₹43,677 Cr</td><td class="num">~4.5×</td><td class="num">~0.8×</td><td class="tpos">~5–6%</td><td class="num">Moderate</td><td class="warn">₹195</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bpcl)"></span>BPCL</td><td class="num">~₹291</td><td class="num">~₹1,24,000</td><td class="tpos">₹23,303 Cr</td><td class="num">~5.3×</td><td class="num">~1.4×</td><td class="num">~3–4%</td><td class="tpos">~Zero</td><td class="num">~₹340</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hpcl)"></span>HPCL</td><td class="num">~₹370</td><td class="num">~₹78,000</td><td class="tpos">₹17,175 Cr</td><td class="num">~4.5×</td><td class="num">~1.0×</td><td class="tpos">~5%+</td><td class="warn">D/E 0.80</td><td class="num">~₹430</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--gail)"></span>GAIL</td><td class="num">~₹185</td><td class="num">~₹1,21,000</td><td class="warn">₹6,968 Cr</td><td class="warn">~17×</td><td class="num">~1.8×</td><td class="tpos">~4%</td><td class="tpos">Low</td><td class="num">₹245</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--pnlng)"></span>Petronet</td><td class="num">~₹300</td><td class="num">~₹45,000</td><td class="num">₹3,809 Cr</td><td class="num">~12×</td><td class="num">~2.5×</td><td class="tpos">~4%</td><td class="tpos">Minimal</td><td class="num">~₹345</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ongc)"></span>ONGC</td><td class="num">~₹265</td><td class="num">~₹3,33,000</td><td class="tpos">₹41,424 Cr</td><td class="num">~8×</td><td class="num">~1.1×</td><td class="tpos">~3–4%</td><td class="num">Moderate</td><td class="num">~₹310</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--cpcl)"></span>CPCL</td><td class="num">~₹1,034</td><td class="num">~₹16,059</td><td class="tpos">₹3,062 Cr</td><td class="num">~5.2×</td><td class="num">~1.6×</td><td class="tpos">~5%</td><td class="num">Moderate</td><td class="num">~₹858</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--oil)"></span>Oil India</td><td class="num">~₹480</td><td class="num">~₹51,000</td><td class="tpos">₹7,551 Cr</td><td class="num">~6.7×</td><td class="num">~1.2×</td><td class="tpos">~2.4%</td><td class="tpos">Low</td><td class="num">~₹560</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+<!-- ═══ TAB 6: CRUDE & MACRO ═══ -->
+<div class="panel" id="tab-macro">
+  <div class="sec-hdr">Crude &amp; Macro — GRM, GMM &amp; Refining Economics <span class="sec-note">· The #1 Metric · Singapore Benchmark · Crack Spreads · LNG Pricing · FY26-27</span></div>
+  <div class="rm-box">&#x26A0;&#xFE0F; <strong>Crude Oil at $105/bbl — Q1 FY27 Full Impact Coming:</strong> West Asia conflict drove crude from ~$72 to ~$120/bbl peak; settled ~$105/bbl in May 2026. OMCs raised petrol &amp; diesel by &#x20B9;4/litre but still losing ~&#x20B9;500 Cr/day combined. Q4 FY26 benefited from high GRMs (HPCL $14.27/bbl; CPCL $13.75/bbl). <strong>Q1 FY27 is the true test.</strong></div>
+  <div class="verdict-card" style="margin-top:16px;margin-bottom:16px;"><div class="verdict-title">&#x1F6E2;&#xFE0F; GRM — The Single Most Important Metric for Indian Refiners</div><div class="verdict-body">Same throughput volume: HPCL Q3 FY26 at GRM $5.40/bbl — EBITDA ~&#x20B9;2,200 Cr. Q4 FY26 at GRM $14.27/bbl — EBITDA ~&#x20B9;7,500 Cr. A 3.4x swing on identical volume. <strong>GRM (Gross Refining Margin)</strong> = Product Revenue/bbl minus Crude Cost/bbl minus Variable Opex/bbl. It determines whether a quarter is good or bad for every Indian refiner.</div></div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-lbl">GRM vs GMM — The Two Pillars of OMC Profitability</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Dimension</th><th>GRM (Gross Refining Margin)</th><th>GMM (Gross Marketing Margin)</th></tr></thead>
+      <tbody>
+        <tr><td>What it measures</td><td>Refining profitability per barrel</td><td>Retail fuel marketing profitability per litre</td></tr>
+        <tr><td>Unit</td><td>US$/barrel ($/bbl)</td><td>&#x20B9;/litre of petrol or diesel</td></tr>
+        <tr><td>Formula</td><td>Product Revenue/bbl minus Crude Cost/bbl minus Opex</td><td>Retail Price/ltr minus Import Parity minus Distrib. Cost</td></tr>
+        <tr><td>Government control</td><td>Indirect only (crude import duty)</td><td class="tneg">Direct — Cabinet sets petrol/diesel price</td></tr>
+        <tr><td>When crude spikes</td><td class="tpos">GRM can expand (products spike faster than crude)</td><td class="tneg">GMM collapses (retail price frozen, cost surges)</td></tr>
+        <tr><td>Q4 FY26 status</td><td class="tpos">Boom — HPCL $14.27; CPCL $13.75; NRL $13.43</td><td class="tneg">Near zero to negative at $100+ crude</td></tr>
+        <tr><td>FY27 outlook</td><td class="warn">Normalising — base case $8-10/bbl</td><td class="tneg">Negative unless crude falls or further price hike</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">India GRM vs Singapore GRM — Historical</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Period</th><th>Singapore GRM</th><th>India Avg GRM</th><th>India Premium</th><th>Key Reason</th></tr></thead>
+        <tbody>
+          <tr><td>FY21 (COVID)</td><td class="num">$1-3/bbl</td><td class="num">$2-4/bbl</td><td class="num">+$1-2</td><td>Demand collapse</td></tr>
+          <tr><td>FY23 (Russia starts)</td><td class="num">$6-9/bbl</td><td class="tpos">$8-12/bbl</td><td class="tpos">+$2-4</td><td>Russia crude discount begins</td></tr>
+          <tr><td>FY24 (Russia peak)</td><td class="num">$5-8/bbl</td><td class="tpos">$11-14/bbl</td><td class="tpos">+$4-6</td><td>Russia discount $12-15/bbl</td></tr>
+          <tr><td>FY25 (softening)</td><td class="num">$3-6/bbl</td><td class="num">$5-8/bbl</td><td class="tpos">+$2-3</td><td>GRM cycle declined</td></tr>
+          <tr><td>Q4 FY26 (ME spike)</td><td class="tpos">$12-15/bbl</td><td class="tpos">$13-17/bbl</td><td class="tpos">+$2-4</td><td>Product supply shock</td></tr>
+        </tbody>
+      </table></div>
+      <div style="background:var(--bpcl-s);border:1.5px solid var(--bpcl);border-radius:7px;padding:11px 13px;margin-top:11px;font-size:11.5px;line-height:1.65;"><strong style="color:var(--bpcl)">Why India beats Singapore:</strong> India buys Russian Urals at $8-15/bbl below Brent since March 2022. Singapore prices against Dubai crude. Structural cost advantage = <strong>$3-8/bbl over Singapore GRM.</strong></div>
+    </div>
+    <div class="card"><div class="card-lbl">Crude Price Impact — GRM + GMM Combined View</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Crude Level</th><th>GMM (&#x20B9;/ltr)</th><th>GRM ($/bbl)</th><th>Net OMC Profitability</th></tr></thead>
+        <tbody>
+          <tr><td>$60-70 (FY24 H2)</td><td class="tpos">+&#x20B9;7-10</td><td class="num">$8-12</td><td class="tpos">Record — both pillars strong</td></tr>
+          <tr><td>$72-80 (H1 FY26)</td><td class="tpos">+&#x20B9;5-7</td><td class="tpos">$10-14</td><td class="tpos">Very strong FY26 boom</td></tr>
+          <tr><td>$90-100 (Q4 FY26)</td><td class="warn">&#x20B9;0-2</td><td class="tpos">$13-17 (spike)</td><td class="warn">GRM saving the day</td></tr>
+          <tr><td>$100-110 (Q1 FY27)</td><td class="tneg">-&#x20B9;2-4</td><td class="warn">$8-12 (normalising)</td><td class="tneg">Double squeeze</td></tr>
+          <tr><td>$110+ (bear case)</td><td class="tneg">-&#x20B9;5-8</td><td class="tneg">$6-9 (compressed)</td><td class="tneg">FY22-style crisis</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-lbl">Crack Spreads by Product — What Drives GRM</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Product</th><th>Crack Spread</th><th>% of Output</th><th>Q4 FY26 Status</th></tr></thead>
+      <tbody>
+        <tr><td>ATF (Jet Fuel)</td><td class="tpos">$15-25/bbl</td><td class="num">~8-10%</td><td class="tpos">Strong — air travel recovery</td></tr>
+        <tr><td>Diesel (Gasoil)</td><td class="tpos">$15-30/bbl</td><td class="num">~40-45%</td><td class="tpos">Elevated — transport demand</td></tr>
+        <tr><td>Petrol (Gasoline)</td><td class="tpos">$10-20/bbl</td><td class="num">~20-25%</td><td class="tpos">Steady</td></tr>
+        <tr><td>Naphtha</td><td class="num">$5-12/bbl</td><td class="num">~8-12%</td><td class="num">Moderate</td></tr>
+        <tr><td>LPG</td><td class="tpos">$8-15/bbl</td><td class="num">~5-7%</td><td class="warn">Sold at subsidy domestically</td></tr>
+        <tr><td>Fuel Oil (HSFO)</td><td class="tneg">Negative vs crude</td><td class="num">~5-8%</td><td class="tneg">Drag on overall GRM</td></tr>
+        <tr><td>Bitumen</td><td class="num">Flat to negative</td><td class="num">~3-5%</td><td class="num">Infrastructure demand offset</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:11px;color:var(--pos);margin-top:9px;font-weight:600;">&#x1F4A1; CPCL's ~80% distillate yield (India's best) is why its GRM ($13.75/bbl Q4 FY26) consistently outperforms peers at similar throughput.</p>
+  </div>
+  <div class="card"><div class="card-lbl">LNG Pricing — GAIL &amp; Petronet LNG Impact</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Factor</th><th>Impact on GAIL</th><th>Impact on Petronet</th></tr></thead>
+      <tbody>
+        <tr><td>LNG spot price rises</td><td class="warn">Input cost rises — margin compresses</td><td class="tpos">Revenue rises (tariff formula-linked)</td></tr>
+        <tr><td>LNG spot price falls</td><td class="tpos">Input cost falls — margin expands</td><td class="tneg">Revenue falls — but PAT can still rise</td></tr>
+        <tr><td>Qatar/ME supply disruption</td><td class="tneg">Volume shortage — customers cut consumption</td><td class="tneg">Dahej throughput at risk; UoP provisions</td></tr>
+        <tr><td>India gas demand growth</td><td class="tpos">More marketing + transmission volumes</td><td class="tpos">More LNG regasification volumes</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 7: SECTOR DYNAMICS ═══ -->
+<div class="panel" id="tab-sector">
+  <div class="sec-hdr">Sector Dynamics <span class="sec-note">· Business Model Comparison · India Energy Demand · Pipeline &amp; LNG Growth</span></div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-lbl">Business Model — All 4 Sub-Sectors</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Dimension</th><th>OMCs (IOCL/BPCL/HPCL)</th><th>GAIL</th><th>Petronet LNG</th><th>Upstream (ONGC/Oil India)</th></tr></thead>
+      <tbody>
+        <tr><td>Primary revenue</td><td>Refining + fuel retail</td><td>Gas marketing + transmission</td><td>LNG regasification fee</td><td>Crude oil + gas production</td></tr>
+        <tr><td>Retail price risk</td><td class="tneg">Very High (govt controls)</td><td class="num">Low (B2B pricing)</td><td class="tpos">None — fee based</td><td class="num">Low (market price)</td></tr>
+        <tr><td>Crude price sensitivity</td><td class="tneg">Very High (cost-side)</td><td class="warn">Moderate (LNG-linked)</td><td class="tpos">Low (pass-through)</td><td class="tpos">Positive — higher crude = more revenue</td></tr>
+        <tr><td>Moat</td><td>Refinery scale + distribution</td><td>Pipeline natural monopoly</td><td>Terminal natural monopoly</td><td>Resource base + exploration licences</td></tr>
+        <tr><td>FY27 earnings visibility</td><td class="tneg">Low (crude + price freeze)</td><td class="warn">Medium (LNG recovery?)</td><td class="tpos">High (contracted volumes)</td><td class="warn">Medium (crude price linked)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-lbl">India Energy Demand — Structural Growth</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Petrol &amp; Diesel demand (~5-7% CAGR)</span><span>OMC tailwind</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:70%;background:var(--iocl)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>ATF (air travel recovery)</span><span>OMC upside</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:60%;background:var(--bpcl)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Natural gas demand to double by 2030</span><span>GAIL + Petronet</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:80%;background:var(--gail)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>LNG share of India gas mix (rising)</span><span>Petronet</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:50%;background:var(--pnlng)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Domestic upstream production growth</span><span>ONGC + Oil India</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:40%;background:var(--ongc)"></div></div></div>
+    </div>
+    <div class="card"><div class="card-lbl">Key Infrastructure Milestones FY26</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Company</th><th>Initiative</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--gail)"><strong>GAIL</strong></td><td>Mumbai-Nagpur-Jharsuguda pipeline</td><td class="tpos">Commissioned FY26</td></tr>
+          <tr><td style="color:var(--gail)"><strong>GAIL</strong></td><td>New pipelines FY26</td><td class="tpos">~2,000 km — largest single year</td></tr>
+          <tr><td style="color:var(--pnlng)"><strong>Petronet</strong></td><td>Dahej expansion 17.5 to 22.5 MMTPA</td><td class="warn">Underway</td></tr>
+          <tr><td style="color:var(--pnlng)"><strong>Petronet</strong></td><td>Kochi annual throughput FY26</td><td class="tpos">Record 68 TBTU</td></tr>
+          <tr><td style="color:var(--ongc)"><strong>ONGC</strong></td><td>Western offshore projects</td><td class="tpos">Rs.33,075 Cr in progress</td></tr>
+          <tr><td style="color:var(--oil)"><strong>Oil India</strong></td><td>PNPCL crude pipeline</td><td class="tpos">92% complete; Oct 2026 est.</td></tr>
+          <tr><td style="color:var(--hpcl)"><strong>HPCL</strong></td><td>Rajasthan Refinery (HRRL)</td><td class="warn">Multi-year construction</td></tr>
+          <tr><td style="color:var(--cpcl)"><strong>CPCL</strong></td><td>Capacity 10.5 to 12 MMTPA</td><td class="warn">Planning stage</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 8: POLICY ═══ -->
+<div class="panel" id="tab-policy">
+  <div class="sec-hdr">Under-Recovery &amp; Policy <span class="sec-note">· LPG Subsidy · Retail Price Freeze · Govt Compensation</span></div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-lbl">LPG Under-Recovery — FY26 Across OMCs</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>Total Under-Recovery FY26</th><th>Govt Compensation Received</th><th>Net Uncompensated</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--hpcl)">HPCL</td><td class="tneg">&#x20B9;12,799 Cr</td><td class="tpos">&#x20B9;3,300 Cr</td><td class="tneg">~&#x20B9;9,499 Cr</td></tr>
+        <tr><td class="tb" style="color:var(--bpcl)">BPCL</td><td class="tneg">~&#x20B9;14,000 Cr (est.)</td><td class="tpos">&#x20B9;3,164 Cr (of &#x20B9;7,594 approved)</td><td class="tneg">Cumul. buffer -&#x20B9;12,318 Cr</td></tr>
+        <tr><td class="tb" style="color:var(--iocl)">IOCL</td><td class="tneg">~&#x20B9;18,000 Cr (est.)</td><td class="tpos">Partial received</td><td class="tneg">~&#x20B9;12,000 Cr</td></tr>
+        <tr><td class="tb">Combined</td><td class="tneg">~&#x20B9;44,000 Cr</td><td class="warn">Partial only</td><td class="tneg">~&#x20B9;33,000+ Cr uncompensated</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card"><div class="card-lbl">Retail Price Freeze — FY22 Crisis vs FY27 Risk</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Parameter</th><th>FY22 Crisis</th><th>FY27 Risk (Current)</th></tr></thead>
+      <tbody>
+        <tr><td>Peak crude level</td><td>$120/bbl</td><td>$105/bbl</td></tr>
+        <tr><td>Retail hike allowed</td><td class="tpos">&#x20B9;17/ltr total (petrol+diesel)</td><td class="warn">Only &#x20B9;4/ltr — insufficient</td></tr>
+        <tr><td>GRM cushion</td><td class="tpos">High $15-19/bbl — large buffer</td><td class="tneg">Normalising $8-12 — less cushion</td></tr>
+        <tr><td>Russia crude discount</td><td class="num">Not available</td><td class="tpos">$8-10/bbl — partial offset</td></tr>
+        <tr><td>Combined daily OMC loss</td><td class="warn">~&#x20B9;300-400 Cr (before hikes)</td><td class="tneg">~&#x20B9;500-800 Cr (post &#x20B9;4 hike)</td></tr>
+        <tr><td>Double squeeze risk</td><td class="warn">GRM high = offset GMM loss</td><td class="tneg">Both GRM normalising AND GMM negative</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 9: SWOT ═══ -->
+<div class="panel" id="tab-swot">
+  <div class="sec-hdr">SWOT &amp; Moat <span class="sec-note">· All 8 Companies · Competitive Advantages · Inventory Effect Explained</span></div>
+  <div class="g2" style="margin-bottom:14px;">
+    <div><div class="co-hdr"><span class="dot" style="background:var(--iocl)"></span>IOCL</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India's largest refiner — 80+ MMTPA, 11 refineries</li><li>World's largest single refinery (Panipat)</li><li>Pan-India pipeline 16,000+ km</li><li>FY26 PAT nearly tripled — best in a decade</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Petrochemicals EBIT losses (Q3 FY26)</li><li>LPG under-recovery ~Rs.12,000 Cr uncompensated</li><li>High capex Rs.34,700 Cr FY26</li><li>Stock down 22% YTD despite strong FY26</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Petrochemical margin recovery FY27+</li><li>India fuel demand growth 5-7% CAGR</li><li>Russian crude discount sustains advantage</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Crude $105/bbl margin pressure FY27</li><li>Retail price freeze continuation</li><li>EV disruption long-term demand</li></ul></div></div></div>
+    <div><div class="co-hdr"><span class="dot" style="background:var(--bpcl)"></span>BPCL</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Almost debt-free — best balance sheet</li><li>FY26 PAT +76% strong annual</li><li>Strong retail fuel presence South + West India</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>BPRL impairment Rs.4,349 Cr Q4 (total Rs.11,314 Cr)</li><li>LPG buffer -Rs.12,318 Cr cumulative</li><li>E&P segment loss-making via BPRL</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Petrochemical projects Bina and Kochi</li><li>LNG import + CGD expansion</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Crude $105/bbl FY27 margin risk</li><li>BPRL write-offs ongoing</li></ul></div></div></div>
+  </div>
+  <div class="g2" style="margin-bottom:14px;">
+    <div><div class="co-hdr"><span class="dot" style="background:var(--hpcl)"></span>HPCL</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Best GRM Q4 among OMCs: $14.27/bbl</li><li>Record refinery throughput 26.04 MMT FY26</li><li>FY26 PAT +133% — best year in history</li><li>D/E improved 1.38 to 0.80</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>LPG burden Rs.12,799 Cr — compensation Rs.3,300 Cr only</li><li>D/E 0.80 still higher than BPCL</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Rajasthan greenfield refinery — FY28 catalyst</li><li>GRM environment may continue Q1 FY27</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Crude $105/bbl bites FY27 margins</li><li>GRM normalisation from $14.27 peak</li></ul></div></div></div>
+    <div><div class="co-hdr"><span class="dot" style="background:var(--gail)"></span>GAIL</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>70% India gas transmission share</li><li>~2,000 km new pipeline commissioned FY26</li><li>52% dividend payout — highest ever</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Gas marketing margin directly LNG-price linked</li><li>Petchem -15.4% Q4; FY26 PAT -38%</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>India gas demand to double by 2030</li><li>Jamnagar-Loni capacity doubling authorised</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Qatar/ME LNG supply disruption ongoing</li><li>LNG spot price volatility</li></ul></div></div></div>
+  </div>
+  <div class="g2" style="margin-bottom:14px;">
+    <div><div class="co-hdr"><span class="dot" style="background:var(--pnlng)"></span>Petronet LNG</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Dahej — India's largest LNG terminal (17.5 MMTPA)</li><li>Long-term Qatar Rasgas contracted supply</li><li>Kochi record annual 68 TBTU FY26</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Revenue sensitive to LNG spot price swings</li><li>UoP provisions create volatility</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Dahej expansion 17.5 to 22.5 MMTPA</li><li>India LNG demand to double by 2030</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>ME disruption to Qatar LNG routes</li><li>Global LNG oversupply from US/Australia</li></ul></div></div></div>
+    <div><div class="co-hdr"><span class="dot" style="background:var(--ongc)"></span>ONGC</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>~71% of India domestic crude + gas production</li><li>Subsidiaries: HPCL, OVL, MRPL</li><li>FY26 consol PAT record Rs.41,424 Cr</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>APM gas price regulation caps standalone</li><li>Consolidated PAT heavily HPCL-dependent</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>New well gas premium growing (20% over APM)</li><li>Western offshore production growth coming</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>APM gas price may be reduced</li><li>OVL write-offs ongoing</li></ul></div></div></div>
+  </div>
+  <div class="g2" style="margin-bottom:14px;">
+    <div><div class="co-hdr"><span class="dot" style="background:var(--cpcl)"></span>CPCL</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>112% capacity utilisation — India's best</li><li>~80% distillate yield — India's highest</li><li>GRM $13.75/bbl Q4 FY26 — near-record</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Pure-play refiner — 100% GRM cycle exposure</li><li>FY25 PAT: only Rs.174 Cr — extremely volatile</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Expansion 10.5 to 12 MMTPA under planning</li><li>Russian crude processing capability</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>GRM normalisation — FY25 repeat risk</li><li>No marketing business to cushion GRM fall</li></ul></div></div></div>
+    <div><div class="co-hdr"><span class="dot" style="background:var(--oil)"></span>Oil India</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Record 74 wells drilled FY26 — all-time high</li><li>NRL subsidiary: GRM $13.43/bbl; PAT +90%</li><li>PNPCL pipeline 92% complete</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Standalone PAT -27% FY26 (avg realn. $60 vs $70)</li><li>Mature Assam oilfields — natural decline</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>PNPCL completion Oct 2026 — NRL full capacity</li><li>Higher crude $105/bbl improves standalone FY27</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>NRL GRM normalisation from $13.43 peak</li><li>Assam flood/disruption risk annual</li></ul></div></div></div>
+  </div>
+  <div class="card"><div class="card-lbl">Inventory Effect — How Rising/Falling Crude Distorts OMC Quarterly Profits</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Crude Movement</th><th>Inventory Impact</th><th>On Reported GRM</th><th>PAT Impact (est.)</th><th>FY26 Example</th></tr></thead>
+      <tbody>
+        <tr><td class="tpos">Rising crude (Q4 FY26: $72 to $105)</td><td class="tpos">GAIN — old cheap stock sold at higher price</td><td class="tpos">Reported GRM &gt; Core GRM</td><td class="tpos">IOCL +Rs.3,200 Cr; BPCL +Rs.2,100 Cr; HPCL +Rs.1,800 Cr</td><td class="tpos">Q4 FY26 — major PAT booster</td></tr>
+        <tr><td class="tneg">Falling crude (FY25 H2)</td><td class="tneg">LOSS — expensive stock sold at lower price</td><td class="tneg">Reported GRM &lt; Core GRM</td><td class="tneg">Could drag PAT Rs.500-2,000 Cr/quarter</td><td class="tneg">FY25 — inventory losses hit OMCs</td></tr>
+        <tr><td class="num">Stable crude</td><td class="num">Minimal effect</td><td class="num">Reported ~ Core GRM</td><td class="num">Negligible impact</td><td class="num">PAT reflects true operations</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:11.5px;line-height:1.65;margin-top:10px;color:var(--text);">Analysts use <strong>Core GRM</strong> to strip inventory effect. IOCL Q3 FY26: Reported $12.22/bbl; Core $13.50/bbl. Q4 FY26 reported PAT was elevated by inventory gains (~Rs.7,500 Cr combined estimate). Q1 FY27 could disappoint even with no change in operations as inventory gains normalise.</p>
+  </div>
+</div>
+
+<!-- ═══ TAB 10: RISKS ═══ -->
+<div class="panel" id="tab-risks">
+  <div class="sec-hdr">Risks <span class="sec-note">· Sector-Level · Company-Level · Macro · Regulatory · All 8 Companies</span></div>
+  <div class="verdict-card" style="margin-bottom:16px;"><div class="verdict-title">Key Risks — India Oil &amp; Gas Sector FY26-27</div><div class="verdict-body">The India oil &amp; gas sector delivered a historic FY26. But the West Asia crisis has reset FY27 conditions. Crude at $105/bbl, retail price freeze, uncompensated LPG burdens, and Middle East LNG supply disruption create a complex risk environment investors must understand before acting.</div></div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-lbl">Sector-Wide Risks</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Risk</th><th>Severity</th><th>Companies Affected</th><th>Timeline</th></tr></thead>
+      <tbody>
+        <tr><td>Crude oil at $105/bbl — margin pressure</td><td class="tneg">Very High</td><td>IOCL, BPCL, HPCL</td><td>Immediate Q1 FY27</td></tr>
+        <tr><td>Retail price freeze — GMM turning negative</td><td class="tneg">Very High</td><td>IOCL, BPCL, HPCL</td><td>Ongoing FY27</td></tr>
+        <tr><td>Middle East LNG supply disruption</td><td class="tneg">High</td><td>GAIL, Petronet</td><td>FY26-27 ongoing</td></tr>
+        <tr><td>LPG under-recovery Rs.40,000 Cr+ uncompensated</td><td class="tneg">High</td><td>BPCL, HPCL, IOCL</td><td>Chronic FY27</td></tr>
+        <tr><td>GRM normalisation from Q4 peak $13-17/bbl</td><td class="warn">Medium-High</td><td>HPCL, CPCL, IOCL, NRL</td><td>Q1-Q2 FY27</td></tr>
+        <tr><td>Inventory loss risk if crude corrects sharply</td><td class="warn">Medium</td><td>All OMCs + refiners</td><td>If crude corrects</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-lbl">Company-Specific Risks — All 8</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>Key FY27 Risk</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--iocl)">IOCL</td><td>Stock -22% YTD. Petrochemicals drag. Rs.34,700 Cr capex = FCF pressure. LPG ~Rs.12,000 Cr uncompensated.</td></tr>
+        <tr><td class="tb" style="color:var(--bpcl)">BPCL</td><td>BPRL accumulated impairment Rs.11,314 Cr. LPG buffer -Rs.12,318 Cr. FY27 PAT could fall sharply if crude stays $105 without price hike.</td></tr>
+        <tr><td class="tb" style="color:var(--hpcl)">HPCL</td><td>Highest LPG uncompensated burden (~Rs.9,500 Cr). D/E 0.80 still elevated. GRM normalisation from $14.27 peak is FY27 headwind.</td></tr>
+        <tr><td class="tb" style="color:var(--gail)">GAIL</td><td>FY26 PAT -38% worst year. Middle East LNG disruption may persist. Petchem at Pata under pressure. Transmission volume -4% FY26.</td></tr>
+        <tr><td class="tb" style="color:var(--pnlng)">Petronet LNG</td><td>UoP provisions can reverse both ways — Q4 boost may reverse. Dahej expansion capex pressures FCF. Middle East LNG routes still disrupted.</td></tr>
+        <tr><td class="tb" style="color:var(--ongc)">ONGC</td><td>Consolidated PAT depends heavily on HPCL. If HPCL PAT falls FY27, ONGC consolidated falls too. APM gas price caps standalone growth.</td></tr>
+        <tr><td class="tb" style="color:var(--cpcl)">CPCL</td><td>Pure refiner — 100% earnings depend on GRM. At $4.22/bbl GRM (FY25), PAT was Rs.174 Cr. GRM reversion to $5-6/bbl could repeat FY25.</td></tr>
+        <tr><td class="tb" style="color:var(--oil)">Oil India</td><td>Standalone PAT fell 27% FY26 from lower realisations. Consolidated growth was NRL-driven. PNPCL delay (post Oct 2026) defers capacity unlock.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card"><div class="card-lbl">Sector Snapshot — Q4 FY26 Actuals · All 8 Companies</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>Q4 PAT Growth</th><th>Key Margin Q4</th><th>FY26 PAT</th><th>P/E (FY26)</th><th>Balance Sheet</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--iocl)">IOCL</td><td class="tpos">+81%</td><td class="tpos">GRM ~$17/bbl</td><td class="tpos">Rs.43,677 Cr</td><td class="num">~4.5x</td><td><span class="badge b-neu">D/E moderate</span></td></tr>
+        <tr><td class="tb" style="color:var(--bpcl)">BPCL</td><td class="tpos">+28%</td><td class="num">Debt-Free</td><td class="tpos">Rs.23,303 Cr</td><td class="num">~5.3x</td><td><span class="badge b-pos">Almost Debt-Free</span></td></tr>
+        <tr><td class="tb" style="color:var(--hpcl)">HPCL</td><td class="tpos">+46%</td><td class="tpos">GRM $14.27/bbl</td><td class="tpos">Rs.17,175 Cr</td><td class="num">~4.5x</td><td><span class="badge b-neu">D/E 0.80</span></td></tr>
+        <tr><td class="tb" style="color:var(--gail)">GAIL</td><td class="tneg">-38%</td><td class="tneg">LNG disrupted</td><td class="tneg">Rs.6,968 Cr</td><td class="num">~17x</td><td><span class="badge b-pos">Low Debt</span></td></tr>
+        <tr><td class="tb" style="color:var(--pnlng)">Petronet</td><td class="tpos">+25%</td><td class="tpos">Margin expanded</td><td class="num">Rs.3,809 Cr</td><td class="num">~12x</td><td><span class="badge b-pos">Minimal Debt</span></td></tr>
+        <tr><td class="tb" style="color:var(--ongc)">ONGC</td><td class="tpos">+46%</td><td class="tpos">Upstream E&P</td><td class="tpos">Rs.41,424 Cr</td><td class="num">~8x</td><td><span class="badge b-neu">Moderate</span></td></tr>
+        <tr><td class="tb" style="color:var(--cpcl)">CPCL</td><td class="tpos">+203%</td><td class="tpos">GRM $13.75/bbl</td><td class="tpos">Rs.3,062 Cr</td><td class="num">~5.2x</td><td><span class="badge b-neu">Moderate</span></td></tr>
+        <tr><td class="tb" style="color:var(--oil)">Oil India</td><td class="tpos">+62%</td><td class="tpos">$77.89/bbl realn.</td><td class="tpos">Rs.7,551 Cr</td><td class="num">~6.7x</td><td><span class="badge b-pos">Low Debt</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 11: ANALYSTS ═══ -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Views <span class="sec-note">· External Brokerage Views Post Q4 FY26 · CB Research Presents Factually — No Recommendations</span></div>
+  <div class="rm-box" style="background:#fdf5e0;border-color:var(--gold);">ℹ️ These are <strong>external brokerage analyst views</strong> as published post Q4 FY26 results. CB Research presents these factually and does not endorse any specific view.</div>
+  <div class="g3" style="margin-top:16px;margin-bottom:16px;">
+    <div>
+      <div class="ac"><div class="ac-head"><div class="ac-name">Prabhudas Lilladher — IOCL</div><div class="rat-pill rp-buy">ACCUMULATE</div></div><div class="ac-tp">CMP: Rs.134 | Target: Rs.195</div><div class="ac-cmp">Post Q3 FY26 Updated May 2026</div><div class="ac-text">GRM $12.22/bbl Q3; throughput 109.7%. Q4 GRM expected $16-19/bbl. Petrochemicals drag persists. Target Rs.195 vs CMP Rs.134. Key risk: crude FY27 and retail price freeze.</div></div>
+      <div class="ac"><div class="ac-head"><div class="ac-name">Nomura — BPCL</div><div class="rat-pill rp-buy">BUY</div></div><div class="ac-tp">CMP: Rs.291</div><div class="ac-cmp">Post FY26 Results May 2026</div><div class="ac-text">FY26 net profit +75.5%. Debt-free balance sheet key differentiator. BPRL impairment non-cash. Most resilient OMC for FY27.</div></div>
+      <div class="ac"><div class="ac-head"><div class="ac-name">Jefferies — BPCL</div><div class="rat-pill rp-buy">BUY</div></div><div class="ac-tp">CMP: Rs.291</div><div class="ac-cmp">Post FY26 Results May 2026</div><div class="ac-text">Domestic sales 54.18 MMT. Petrochemical and green energy investments add long-term value. Key risk: crude and LPG subsidy burden.</div></div>
+    </div>
+    <div>
+      <div class="ac"><div class="ac-head"><div class="ac-name">JPMorgan — Petronet LNG</div><div class="rat-pill rp-buy">OVERWEIGHT</div></div><div class="ac-tp">CMP: ~Rs.300 | Target: Rs.335</div><div class="ac-cmp">Post Q4 FY26 May 2026</div><div class="ac-text">Q4 beat on volumes + UoP recovery. Strong FCF. Dahej expansion provides long-term volume growth. Best risk-reward in gas sector.</div></div>
+      <div class="ac"><div class="ac-head"><div class="ac-name">Investec — Petronet LNG</div><div class="rat-pill rp-buy">BUY</div></div><div class="ac-tp">CMP: ~Rs.300 | Target: Rs.400</div><div class="ac-cmp">Initiation May 2026</div><div class="ac-text">Earnings beat on provision reversal. India LNG demand growth is structural. Kochi turning profitable adds re-rating potential. 33% upside to TP.</div></div>
+    </div>
+    <div>
+      <div class="ac"><div class="ac-head"><div class="ac-name">Multiple Brokers — GAIL</div><div class="rat-pill rp-hold">HOLD</div></div><div class="ac-tp">CMP: ~Rs.185 | Targets: Rs.205-250</div><div class="ac-cmp">Post FY26 May 2026</div><div class="ac-text">FY26 worst year for GAIL. Recovery depends on Middle East LNG normalisation. Pipeline expansion 2,000 km is long-term positive. 52% dividend payout supportive for income investors.</div></div>
+      <div class="ac"><div class="ac-head"><div class="ac-name">Multiple Brokers — ONGC</div><div class="rat-pill rp-hold">HOLD</div></div><div class="ac-tp">CMP: ~Rs.265 | Targets: Rs.290-320</div><div class="ac-cmp">Post FY26 May 2026</div><div class="ac-text">Record consolidated PAT boosted by HPCL. New well gas premium is standalone growth lever for FY27+. APM gas price regulation remains constraint.</div></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-lbl">External Analyst Ratings Summary — Post Q4 FY26 (Factual Only)</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>Broker (External)</th><th>Their Rating</th><th>Their CMP</th><th>Their Target</th><th>Brief Rationale</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--iocl)">IOCL</td><td>Prabhudas Lilladher</td><td><span class="badge b-neu">ACCUMULATE</span></td><td class="num">Rs.134</td><td class="num">Rs.195</td><td>GRM cycle positive; petrochem recovery needed</td></tr>
+        <tr><td class="tb" style="color:var(--bpcl)">BPCL</td><td>Nomura + Jefferies</td><td><span class="badge b-pos">BUY</span></td><td class="num">Rs.291</td><td class="num">Positive</td><td>Debt-free; best quality OMC; +76% FY26 PAT</td></tr>
+        <tr><td class="tb" style="color:var(--hpcl)">HPCL</td><td>Multiple brokers</td><td><span class="badge b-neu">HOLD/NEUTRAL</span></td><td class="num">~Rs.370</td><td class="num">Watch LPG</td><td>GRM peak; LPG compensation resolution key</td></tr>
+        <tr><td class="tb" style="color:var(--gail)">GAIL</td><td>Multiple brokers</td><td><span class="badge b-neu">HOLD</span></td><td class="num">~Rs.185</td><td class="num">Rs.205-250</td><td>FY26 worst year; recovery if LNG normalises</td></tr>
+        <tr><td class="tb" style="color:var(--pnlng)">Petronet LNG</td><td>JPMorgan + Investec</td><td><span class="badge b-pos">BUY</span></td><td class="num">~Rs.300</td><td class="num">Rs.335-400</td><td>Best risk-reward; no retail price risk; contracted vol.</td></tr>
+        <tr><td class="tb" style="color:var(--ongc)">ONGC</td><td>Multiple brokers</td><td><span class="badge b-neu">HOLD</span></td><td class="num">~Rs.265</td><td class="num">Rs.290-320</td><td>Record consol; new well gas premium FY27 lever</td></tr>
+        <tr><td class="tb" style="color:var(--cpcl)">CPCL</td><td>Limited coverage</td><td><span class="badge b-neu">NEUTRAL</span></td><td class="num">~Rs.1,034</td><td class="num">GRM watch</td><td>Pure GRM play; volatile earnings</td></tr>
+        <tr><td class="tb" style="color:var(--oil)">Oil India</td><td>Multiple brokers</td><td><span class="badge b-neu">HOLD</span></td><td class="num">~Rs.480</td><td class="num">Rs.520-580</td><td>PNPCL pipeline is key catalyst; record drilling</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 12: OUTLOOK ═══ -->
+<div class="panel" id="tab-outlook">
+  <div class="sec-hdr">FY27 Outlook <span class="sec-note">· Scenario Analysis · All 8 Companies · Data View — No Recommendations</span></div>
+  <div class="trojan-card"><div class="trojan-title">FY26 Was the Banner Year — FY27 Is the Test</div>
+    <div class="g2"><div>
+      <p style="font-size:12px;line-height:1.75;margin-bottom:10px;"><strong>What made FY26 exceptional:</strong> Combined OMC PAT crossed Rs.77,281 Cr — more than double FY25. HPCL +133%, IOCL 3x, CPCL nearly 18x. Reasons: declining crude in H1 FY26, high GRMs in Q4 from West Asia conflict, Russia crude discount throughout.</p>
+      <p style="font-size:12px;line-height:1.75;"><strong>Why FY27 is at risk:</strong> The same conflict that boosted Q4 GRMs has locked crude at $105/bbl. Government retail price control means OMCs cannot pass through fully. GRM is normalising from Q4 peaks. GAIL's LNG supply remains disrupted.</p>
+    </div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Scenario</th><th>Crude</th><th>OMC FY27 PAT (est.)</th></tr></thead>
+      <tbody>
+        <tr><td class="tpos">Bull: Crude falls back</td><td>$75-80/bbl</td><td class="tpos">Close to FY26 levels</td></tr>
+        <tr><td class="warn">Base: Crude $95-100</td><td>$95-100/bbl</td><td class="warn">30-50% below FY26</td></tr>
+        <tr><td class="tneg">Bear: Crude $105+ persists</td><td>$105+/bbl</td><td class="tneg">Could post quarterly losses Q1 FY27</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px;"><div class="card-lbl">FY27 Earnings Visibility — All 8 Companies</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Rank</th><th>Company</th><th>FY27 Visibility</th><th>Key Upside</th><th>Key Risk</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="tb" style="color:var(--pnlng)">Petronet LNG</td><td class="tpos">High — contracted volumes</td><td>India LNG demand growth; Dahej expansion</td><td>UoP provision volatility; ME supply</td></tr>
+        <tr><td>2</td><td class="tb" style="color:var(--bpcl)">BPCL</td><td class="tpos">Good</td><td>Debt-free; FY26 strong base; petrochem</td><td>BPRL write-offs; LPG buffer; crude $105</td></tr>
+        <tr><td>3</td><td class="tb" style="color:var(--oil)">Oil India</td><td class="tpos">Good</td><td>PNPCL pipeline Oct 26; record drilling</td><td>NRL GRM normalisation; Assam decline</td></tr>
+        <tr><td>4</td><td class="tb" style="color:var(--iocl)">IOCL</td><td class="warn">Moderate</td><td>Cheap valuation; petrochem recovery</td><td>Crude $105 + price freeze; petchem drag</td></tr>
+        <tr><td>5</td><td class="tb" style="color:var(--ongc)">ONGC</td><td class="warn">Moderate</td><td>New well gas premium; Western offshore</td><td>APM regulation; OVL write-offs; HPCL dependency</td></tr>
+        <tr><td>6</td><td class="tb" style="color:var(--hpcl)">HPCL</td><td class="warn">Moderate</td><td>High dividend; GRM may stay elevated Q1</td><td>Highest LPG burden; D/E 0.80; GRM normalisation</td></tr>
+        <tr><td>7</td><td class="tb" style="color:var(--gail)">GAIL</td><td class="tneg">Low-Moderate</td><td>Pipeline expansion; gas demand structural</td><td>LNG disruption may persist; FY26 worst year</td></tr>
+        <tr><td>8</td><td class="tb" style="color:var(--cpcl)">CPCL</td><td class="tneg">Low</td><td>GRM still $8+ Q1 FY27; 112% utilisation</td><td>Pure refiner — GRM slump = earnings collapse</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card"><div class="card-lbl">FY27 Risk Matrix — All 8 Companies</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Risk Factor</th><th>IOCL</th><th>BPCL</th><th>HPCL</th><th>GAIL</th><th>Petronet</th><th>ONGC</th><th>CPCL</th><th>Oil India</th></tr></thead>
+      <tbody>
+        <tr><td>Crude $105/bbl</td><td class="tneg">High</td><td class="warn">Medium</td><td class="tneg">High</td><td class="num">Low</td><td class="num">Low</td><td class="tpos">Positive</td><td class="tneg">High</td><td class="tpos">Positive</td></tr>
+        <tr><td>Retail price freeze</td><td class="tneg">High</td><td class="tneg">High</td><td class="tneg">High</td><td class="num">None</td><td class="num">None</td><td class="num">None</td><td class="num">None</td><td class="num">None</td></tr>
+        <tr><td>LNG supply disruption</td><td class="num">Low</td><td class="num">Low</td><td class="num">Low</td><td class="tneg">Very High</td><td class="warn">Medium</td><td class="num">Low</td><td class="num">Low</td><td class="num">Low</td></tr>
+        <tr><td>GRM normalisation</td><td class="warn">Medium</td><td class="warn">Medium</td><td class="tneg">High</td><td class="num">None</td><td class="num">None</td><td class="num">None</td><td class="tneg">High</td><td class="warn">Medium (NRL)</td></tr>
+        <tr><td>LPG under-recovery</td><td class="tneg">High</td><td class="tneg">High</td><td class="tneg">High</td><td class="num">None</td><td class="num">None</td><td class="num">None</td><td class="num">None</td><td class="num">None</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 13: CB ASSISTS ═══ -->
+<div class="panel" id="tab-cb">
+  <div class="sec-hdr">CB Assists — Oil &amp; Gas Q&amp;A <span class="sec-note">· All 8 Companies · English &amp; Tamil · Dashboard Data · No Internet Needed</span></div>
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist · India Oil &amp; Gas · All 8 Companies · CB Research · No API key needed</div>
+
+    <!-- ENGLISH -->
+    <div style="margin-bottom:14px;">
+      <div class="lang-hdr">🇬🇧 English — Click a Company</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="preset-tab pt-iocl" onclick="swPre('ei',this)">IOCL</button>
+        <button class="preset-tab pt-bpcl" onclick="swPre('eb',this)">BPCL</button>
+        <button class="preset-tab pt-hpcl" onclick="swPre('eh',this)">HPCL</button>
+        <button class="preset-tab pt-gail" onclick="swPre('eg',this)">GAIL</button>
+        <button class="preset-tab pt-pnlng" onclick="swPre('ep',this)">Petronet</button>
+        <button class="preset-tab pt-ongc" onclick="swPre('eo',this)">ONGC</button>
+        <button class="preset-tab pt-cpcl" onclick="swPre('ec',this)">CPCL</button>
+        <button class="preset-tab pt-oil" onclick="swPre('eo2',this)">Oil India</button>
+        <button class="preset-tab pt-sector" onclick="swPre('es',this)">Sector</button>
+      </div>
+      <div class="pqs" id="pqs-ei">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📊</span><b>IOCL Q4 FY26 PAT, revenue and full year FY26 numbers?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📉</span><b>Why is IOCL stock down 22% in 2026 despite strong profits?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🛢️</span><b>What is IOCL GRM and what is the petrochemical situation?</b></div>
+      </div>
+      <div class="pqs" id="pqs-eb">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📊</span><b>BPCL Q4 FY26 results — PAT, revenue and key takeaways?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🏦</span><b>What is BPRL impairment and why does it affect BPCL?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🏆</span><b>Why is BPCL considered the most resilient OMC for FY27?</b></div>
+      </div>
+      <div class="pqs" id="pqs-eh">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>💰</span><b>HPCL Q4 GRM surged to $14.27 per barrel — what does this mean?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>⛽</span><b>What is LPG under-recovery and how does it affect HPCL profits?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📈</span><b>HPCL FY26 PAT jumped 133% — why was it the best year ever?</b></div>
+      </div>
+      <div class="pqs" id="pqs-eg">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📉</span><b>Why did GAIL Q4 FY26 PAT fall 38% year-on-year?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🌍</span><b>How did the Middle East crisis impact GAIL business?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🔧</span><b>What is GAIL pipeline expansion story and long-term outlook?</b></div>
+      </div>
+      <div class="pqs" id="pqs-ep">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>❓</span><b>Why did Petronet PAT rise 25% when revenue fell 23%? Explain the paradox.</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📋</span><b>What is Use-or-Pay UoP and why does it matter for Petronet profits?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🎯</span><b>Petronet LNG JPMorgan target ₹335 and Investec ₹400 — what is the rationale?</b></div>
+      </div>
+      <div class="pqs" id="pqs-eo">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📊</span><b>ONGC Q4 FY26 and FY26 full year results — PAT and highlights?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🛢️</span><b>Why is ONGC FY26 consolidated PAT a record despite flat revenue?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🔬</span><b>What is new well gas and why does it matter for ONGC?</b></div>
+      </div>
+      <div class="pqs" id="pqs-ec">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🏭</span><b>CPCL Q4 FY26 PAT jumped 203% — what happened?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>💰</span><b>CPCL FY26 vs FY25 — why such a massive turnaround in profits?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>⚠️</span><b>What is the risk in CPCL being a pure refiner with only GRM exposure?</b></div>
+      </div>
+      <div class="pqs" id="pqs-eo2">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📊</span><b>Oil India Q4 FY26 results — PAT production and key highlights?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🏭</span><b>What is NRL and why did its 90% PAT growth matter for Oil India?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>⚙️</span><b>Why did Oil India standalone PAT fall 27% while consolidated rose 7%?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🔧</span><b>What is PNPCL pipeline and why is it important for Oil India?</b></div>
+      </div>
+      <div class="pqs" id="pqs-es">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🛢️</span><b>How does crude oil at $105 per barrel impact OMC profits?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📊</span><b>What is the combined OMC Q4 FY26 profit and full year FY26?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>⛽</span><b>Explain LPG under-recovery — what it is and its impact on OMCs?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🔮</span><b>FY27 outlook for India oil and gas sector — bull base and bear cases?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>🔬</span><b>What is GRM and how does it differ from Singapore GRM benchmark?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'en')"><span>📈</span><b>What is inventory effect and how does it distort OMC quarterly PAT?</b></div>
+      </div>
+    </div>
+
+    <!-- TAMIL -->
+    <div style="margin-bottom:14px;border-top:1px solid var(--border);padding-top:12px;">
+      <div class="lang-hdr" style="color:var(--iocl);">🇮🇳 Tamil — அனைத்து நிறுவனங்களும் · Click a Company</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="preset-tab pt-iocl" onclick="swPre('ti',this)">IOCL</button>
+        <button class="preset-tab pt-bpcl" onclick="swPre('tb',this)">BPCL</button>
+        <button class="preset-tab pt-hpcl" onclick="swPre('th',this)">HPCL</button>
+        <button class="preset-tab pt-gail" onclick="swPre('tg',this)">GAIL</button>
+        <button class="preset-tab pt-pnlng" onclick="swPre('tp',this)">Petronet</button>
+        <button class="preset-tab pt-ongc" onclick="swPre('to',this)">ONGC</button>
+        <button class="preset-tab pt-cpcl" onclick="swPre('tc',this)">CPCL</button>
+        <button class="preset-tab pt-oil" onclick="swPre('to2',this)">Oil India</button>
+        <button class="preset-tab pt-sector" onclick="swPre('ts',this)">Sector</button>
+      </div>
+      <div class="pqs" id="pqs-ti">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📊</span><b>IOCL Q4 FY26 results என்ன? Tamil-ல் சொல்லு</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🛢️</span><b>GRM என்றால் என்ன? எப்படி OMC profit affect ஆகும்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📉</span><b>IOCL stock 22% down ஆனது ஏன்?</b></div>
+      </div>
+      <div class="pqs" id="pqs-tb">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📊</span><b>BPCL Q4 FY26 results — PAT, Revenue Tamil-ல்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🏦</span><b>BPCL almost debt-free — இதன் significance என்ன?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>⛽</span><b>LPG under-recovery என்னன்னு? BPCL-ஐ எப்படி affect பண்றது?</b></div>
+      </div>
+      <div class="pqs" id="pqs-th">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>💰</span><b>HPCL GRM $14.27/bbl — இதன் அர்த்தம் என்ன?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📈</span><b>HPCL FY26 PAT 133% jump ஆனது ஏன்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>⚠️</span><b>HPCL LPG under-recovery ₹12,799 Cr — இது என்ன problem?</b></div>
+      </div>
+      <div class="pqs" id="pqs-tg">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📉</span><b>GAIL profit 38% drop ஆனது ஏன்? Tamil-ல் விளக்கு</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🌍</span><b>Middle East conflict GAIL-ஐ எப்படி affect பண்ணது?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🔧</span><b>GAIL pipeline 2,000 km — long-term story என்ன?</b></div>
+      </div>
+      <div class="pqs" id="pqs-tp">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>❓</span><b>Petronet revenue 23% down ஆனாலும் PAT 25% up — ஏன்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📋</span><b>Use-or-Pay UoP என்னன்னு? Petronet-க்கு எப்படி help ஆகுது?</b></div>
+      </div>
+      <div class="pqs" id="pqs-to">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📊</span><b>ONGC Q4 FY26 results Tamil-ல்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🛢️</span><b>ONGC FY26 PAT record ₹41,424 Cr — HPCL connection என்ன?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🔬</span><b>New well gas என்னன்னு? ONGC-க்கு ஏன் important?</b></div>
+      </div>
+      <div class="pqs" id="pqs-tc">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🏭</span><b>CPCL Q4 PAT 203% jump — என்ன நடந்தது?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>⚠️</span><b>CPCL pure refiner — GRM மட்டும் depend ஆனால் என்ன risk?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📍</span><b>CPCL என்னன்னு? IOCL-உடன் என்ன relationship?</b></div>
+      </div>
+      <div class="pqs" id="pqs-to2">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📊</span><b>Oil India Q4 FY26 results — PAT production Tamil-ல்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🏭</span><b>NRL என்னன்னு? Oil India-க்கு எப்படி help ஆகுது?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>⚙️</span><b>PNPCL pipeline என்னன்னு? ஏன் important?</b></div>
+      </div>
+      <div class="pqs" id="pqs-ts">
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🛢️</span><b>Crude $105/bbl — OMC profits-ல் என்ன impact?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>⛽</span><b>LPG under-recovery என்னன்னு? OMC-களுக்கு என்ன ஆகும்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>🔮</span><b>FY27 oil gas sector outlook — bull base bear Tamil-ல்?</b></div>
+        <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>📈</span><b>Inventory effect என்னன்னு? OMC PAT-ஐ எப்படி affect பண்றது?</b></div>
+      </div>
+    </div>
+
+    <!-- Chat Window -->
+    <div style="margin-top:4px;">
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="chat-msg bot">🛢️ <strong>CB Assist</strong> — India Oil &amp; Gas · All 8 Companies · CB Research. Click any preset question above or type your own below. English and Tamil supported. All answers from dashboard data — no internet needed.</div>
+      </div>
+      <div id="typingInd" class="typing-ind"><span></span><span></span><span></span></div>
+      <div class="chat-input-row">
+        <input type="text" id="chatIn" class="chat-input" placeholder="Type in English or Tamil... (e.g. CPCL GRM story, Oil India NRL, GAIL LNG crisis, inventory effect)" onkeypress="if(event.key==='Enter')cbA(this.value,'auto')"/>
+        <button class="chat-send" onclick="cbA(document.getElementById('chatIn').value,'auto')">Ask ➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">Oil &amp; Gas · Q4 FY26</div></div>
+</div>
+
+<div class="footer">
+  CB Research — India Oil &amp; Gas Sector Intelligence Dashboard · Q4 FY26 · 30 May 2026 · All 8 Companies<br>
+  IOCL (NSE: IOC) · BPCL (NSE: BPCL) · HPCL (NSE: HINDPETRO) · GAIL (NSE: GAIL) · Petronet LNG (NSE: PETRONET) · ONGC (NSE: ONGC) · CPCL (NSE: CHENNPETRO) · Oil India (NSE: OIL)<br>
+  All Q4 FY26 data from BSE/NSE official filings. Sources: Business Standard, Groww, PSU Connect, Screener.in — May 2026.<br>
+  For information and research purposes only — not investment advice. Consult a SEBI-registered investment advisor before making financial decisions.
+</div>
+<script>
+/* ─── TABS ─── */
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts')setTimeout(initCharts,80);
+}
+
+/* ─── CATEGORY FILTER ─── */
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.kpi[data-cat]').forEach(el=>{
+    el.style.display=(cat==='all'||el.dataset.cat===cat)?'block':'none';
+  });
+  document.querySelectorAll('.co-card[data-cat]').forEach(el=>{
+    el.style.display=(cat==='all'||el.dataset.cat===cat)?'block':'none';
+  });
+}
+
+/* ─── COMPANY SELECTOR ─── */
+const coClr={iocl:'#0053a0',bpcl:'#2d8b3e',hpcl:'#c8202a',gail:'#7b3fa0',pnlng:'#d97706',ongc:'#1a5276',cpcl:'#117a65',oil:'#784212'};
+function showCo(co,btn){
+  document.querySelectorAll('.co-sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.co-sel-btn').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  document.getElementById('co-'+co).classList.add('on');
+  btn.style.background=coClr[co];btn.style.color='#fff';btn.style.border='none';
+}
+function showPer(per,btn){
+  document.querySelectorAll('.qtr-v').forEach(v=>v.style.display=per==='qtr'?'block':'none');
+  document.querySelectorAll('.annual-v').forEach(v=>v.style.display=per==='annual'?'block':'none');
+  document.querySelectorAll('.per-btn').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.border='none';
+}
+
+/* ─── CHARTS ─── */
+function showCharts(period,btn){
+  document.getElementById('chq-view').style.display=period==='q'?'block':'none';
+  document.getElementById('cha-view').style.display=period==='a'?'block':'none';
+  document.querySelectorAll('#chq,#cha').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.border='none';
+  setTimeout(initCharts,80);
+}
+
+let chartsBuilt=false;
+function initCharts(){
+  if(chartsBuilt)return;chartsBuilt=true;
+  const c8=['IOCL','BPCL','HPCL','GAIL','Petronet','ONGC','CPCL','Oil India'];
+  const cl8=['#0053a0','#2d8b3e','#c8202a','#7b3fa0','#d97706','#1a5276','#117a65','#784212'];
+  const cl8t=cl8.map(c=>c+'bb');
+
+  /* label plugin — white text on bars */
+  const lblP={id:'lp',afterDatasetsDraw(ch){
+    const {ctx}=ch;
+    ch.data.datasets.forEach((ds,di)=>{
+      const meta=ch.getDatasetMeta(di);
+      meta.data.forEach((bar,i)=>{
+        const v=ds.data[i];if(v==null||v===0)return;
+        ctx.save();ctx.fillStyle='#1F2937';ctx.font='bold 8.5px IBM Plex Mono';ctx.textAlign='center';
+        const disp=Math.abs(v)>=1000?Math.round(Math.abs(v)/100)/10+'k':Math.abs(v).toString();
+        ctx.fillText(disp,bar.x,bar.y-(v>=0?5:-10));ctx.restore();
+      });
+    });
+  }};
+  Chart.register(lblP);
+
+  const rOpts={responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'₹'+c.parsed.y.toLocaleString('en-IN')+' Cr'}}},
+    scales:{y:{ticks:{callback:v=>v>=1000?Math.round(v/100)/10+'k':'₹'+v,font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}};
+  const pOpts={responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},
+    scales:{y:{ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}};
+
+  function bar(id,labels,data,colors,opts){
+    const ctx=document.getElementById(id);if(!ctx)return;
+    new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},options:opts});
+  }
+  function grpBar(id,labels,d1,d2,n1,n2,c1,c2){
+    const ctx=document.getElementById(id);if(!ctx)return;
+    new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:n1,data:d1,backgroundColor:c1,borderRadius:3},{label:n2,data:d2,backgroundColor:c2,borderRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{font:{size:9}}}},scales:{y:{ticks:{font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  }
+  function line(id,labels,data,color){
+    const ctx=document.getElementById(id);if(!ctx)return;
+    new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:color,backgroundColor:color+'22',tension:.4,fill:true,pointRadius:4,pointBackgroundColor:color}]},
+      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+v,font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:8}},grid:{display:false}}}}});
+  }
+
+  /* Q4 Charts */
+  bar('q4Pat',c8,[15176,5625,4902,1262,1338,10820,1422,2424],cl8,rOpts);
+  bar('q4Rev',c8,[236899,134947,123075,34797,9442,173805,20455,10013],cl8t,rOpts);
+  bar('q4Grw',c8,[81,28,46,-38,25,46,203,62],cl8.map((c,i)=>[3].includes(i)?'#dc2626':c),pOpts);
+  bar('q4Grm',['IOCL est.','HPCL','CPCL','NRL/OIL','BPCL est.'],
+    [17.5,14.27,13.75,13.43,10],
+    ['#0053a0','#c8202a','#117a65','#784212','#2d8b3e'],
+    {responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y+'/bbl'}}},scales:{y:{ticks:{callback:v=>'$'+v,font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}});
+  bar('q4Ebt',c8,[7.7,7.7,6.9,6.9,23.3,10.2,12.1,38],cl8,pOpts);
+  /* Capacity vs Actual */
+  (function(){
+    const ctx=document.getElementById('q4Cap');if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:['HPCL','BPCL','CPCL'],
+        datasets:[
+          {label:'Nameplate Capacity (MMTPA)',data:[26.04,41,10.5],backgroundColor:'#e2ddd5',borderRadius:3},
+          {label:'Q4 Actual Throughput (MMT)',data:[6.4,10.40,2.93],backgroundColor:['#c8202a','#2d8b3e','#117a65'],borderRadius:3}
+        ]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:true,labels:{font:{size:9}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+' MMT'}}},
+        scales:{y:{ticks:{callback:v=>v+' MMT',font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  })();
+  /* Inventory Effect */
+  bar('q4Inv',['IOCL','BPCL','HPCL','CPCL'],[3200,2100,1800,400],
+    ['#0053a0','#2d8b3e','#c8202a','#117a65'],
+    {...rOpts,plugins:{...rOpts.plugins,tooltip:{callbacks:{label:c=>'₹'+c.parsed.y+' Cr (est. inv. gain)'}}}});
+  /* HPCL GRM Trend */
+  line('grmTrend',['Q1FY25','Q2FY25','Q3FY25','Q4FY25','Q1FY26','Q2FY26','Q3FY26','Q4FY26'],[8.5,6.2,5.74,5.40,7.2,6.8,5.40,14.27],'#c8202a');
+
+  /* Annual Charts */
+  bar('fyPat',c8,[43677,23303,17175,6968,3809,41424,3062,7551],cl8,rOpts);
+  bar('fyRev',c8,[901453,522820,478543,138328,43495,662247,78611,40000],cl8t,rOpts);
+  bar('fyGrw',c8,[217,75.5,133,-38.4,-1.9,14.3,1660,7.3],cl8.map((c,i)=>[3].includes(i)?'#dc2626':c),pOpts);
+  bar('fyGrm',['IOCL est.','HPCL','CPCL','NRL/OIL','BPCL est.'],[12.5,8.79,9.28,13.43,7.5],
+    ['#0053a0','#c8202a','#117a65','#784212','#2d8b3e'],
+    {responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y+'/bbl'}}},scales:{y:{ticks:{callback:v=>'$'+v,font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}});
+  bar('fyEbt',c8,[7.8,8.0,5.8,7.1,12,10,9.3,20],cl8,pOpts);
+  /* FY26 vs FY25 throughput */
+  (function(){
+    const ctx=document.getElementById('fyThru');if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:['HPCL','BPCL','CPCL','IOCL (est.)'],
+        datasets:[
+          {label:'FY25 Throughput',data:[25.28,39,10.45,72],backgroundColor:'#e2ddd5',borderRadius:3},
+          {label:'FY26 Throughput',data:[26.04,41.15,11.71,75],backgroundColor:['#c8202a','#2d8b3e','#117a65','#0053a0'],borderRadius:3}
+        ]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:true,labels:{font:{size:9}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+' MMT'}}},
+        scales:{y:{ticks:{callback:v=>v+' MMT',font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  })();
+  grpBar('gailVol',['Gas Mktg\n(MMSCMD)','Gas Transmission\n(MMSCMD)','LPG Trans.\n(TMT/10)'],
+    [101.49,127.32,447.8],[104.21,122.18,460],'FY25','FY26','rgba(123,63,160,0.3)','#7b3fa0');
+  /* Oil India production */
+  (function(){
+    const ctx=document.getElementById('oilProd');if(!ctx)return;
+    new Chart(ctx,{type:'bar',data:{labels:['FY24','FY25','FY26'],datasets:[{data:[2.95,3.02,3.10],backgroundColor:['#784212aa','#784212cc','#784212'],borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+' MMT crude'}}},scales:{y:{ticks:{callback:v=>v+' MMT',font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  })();
+}
+
+/* ─── CB ASSIST PRESET ─── */
+function swPre(id,btn){
+  document.querySelectorAll('.pqs').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('on'));
+  const p=document.getElementById('pqs-'+id);
+  if(p)p.classList.add('on');
+  btn.classList.add('on');
+}
+
+/* ─── KNOWLEDGE BASE ─── */
+const KB={
+  iocl:{
+    en:`<strong>IOCL Q4 FY26 Results</strong><br><br>• <strong>Q4 Consolidated PAT:</strong> ₹15,176 Cr (+81% YoY, +12% QoQ)<br>• <strong>Q4 Revenue:</strong> ₹2,36,899 Cr (+7% YoY)<br>• <strong>Q4 GRM (est.):</strong> ~$16–19/bbl — significantly above Q3's $12.22<br>• <strong>Q4 Inventory Gain (est.):</strong> ~₹3,200 Cr (crude rising from $72 to $105)<br>• <strong>Q4 EBITDA (est.):</strong> ~₹18,200 Cr | EBITDA Margin ~7.7%<br>• <strong>FY26 Revenue:</strong> ₹9,01,453 Cr (+4.9%)<br>• <strong>FY26 PAT (Consol):</strong> ₹43,677 Cr vs ₹13,789 Cr FY25 — nearly 3×<br>• <strong>Refinery utilisation:</strong> 109.7% in Q3; Q4 similar<br>• <strong>Final Dividend:</strong> ₹1.25/share<br>• <strong>Promoter (GoI):</strong> 51.5%<br><br>Stock down 22% YTD because market prices in FY27 risk — crude at $105/bbl + retail price freeze means FY27 will be significantly weaker. Petrochemicals drag persists (EBIT loss Q3). Target ₹195 vs CMP ₹134 (analyst view — not CB recommendation).`,
+    ta:`<strong>IOCL Q4 FY26 Results (Tamil)</strong><br><br>• <strong>Q4 PAT:</strong> ₹15,176 கோடி (+81% YoY) — Consolidated<br>• <strong>Revenue:</strong> ₹2,36,899 கோடி (+7%)<br>• <strong>Q4 GRM:</strong> ~$16–19/barrel — crude refine பண்ணும்போது barrel-க்கு கிடைக்கும் profit<br>• <strong>Inventory Gain:</strong> ~₹3,200 கோடி — crude price rising-ஆல் old stock more value-ல் sell ஆச்சு<br>• <strong>FY26 Full Year PAT:</strong> ₹43,677 கோடி — FY25-ல் ₹13,789 கோடி மட்டும் — 3× jump!<br><br>Stock ஏன் down? FY26 நல்லா இருந்தாலும், crude $105/bbl இருக்கு. Petrol/diesel price freeze நிலவுது. FY27 profit குறையும் என்று market பயப்படுது.`
+  },
+  bpcl:{
+    en:`<strong>BPCL Q4 FY26 Results</strong><br><br>• <strong>Q4 Revenue (Consol):</strong> ₹1,34,947 Cr (+6.3%)<br>• <strong>Q4 EBITDA (est.):</strong> ~₹10,400 Cr | Margin ~7.7%<br>• <strong>Q4 PBT (Consol):</strong> ₹7,838 Cr (+32.9%)<br>• <strong>Q4 PAT (Consol):</strong> ₹5,625 Cr (+28%)<br>• <strong>Q4 PAT (Standalone):</strong> ₹3,191 Cr (flat YoY — BPRL impairment drag)<br>• <strong>BPRL Impairment Q4:</strong> −₹4,349 Cr one-time non-cash write-off<br>• <strong>Q4 Throughput:</strong> 10.40 MMT | Domestic sales: 13.86 MMT<br>• <strong>FY26 Standalone PAT:</strong> ₹23,303 Cr (+75.5%)<br>• <strong>Net Debt:</strong> Almost Zero — best-in-class among OMCs<br>• <strong>LPG negative buffer:</strong> −₹12,318 Cr cumulative<br><br>BPCL's debt-free status is a key structural differentiator. Nomura and Jefferies both have Buy ratings (external analysts — not CB recommendation).`,
+    ta:`<strong>BPCL Q4 FY26 (Tamil)</strong><br><br>• Q4 PAT: ₹5,625 கோடி (+28%) — Consolidated<br>• Q4 Standalone PAT: ₹3,191 கோடி (flat — BPRL write-off காரணம்)<br>• BPRL Impairment: ₹4,349 கோடி — non-cash loss, actual cash out இல்லை<br>• FY26 Annual PAT: ₹23,303 கோடி (+76%)<br>• Net Debt: Almost Zero — OMCs-ல் இது மிகப்பெரிய strength<br>• LPG buffer: −₹12,318 கோடி cumulative — government compensate பண்ணலை<br><br>BPCL debt-free இருப்பதால் FY27-ல் most resilient OMC என்று analysts சொல்றாங்க.`
+  },
+  hpcl:{
+    en:`<strong>HPCL Q4 FY26 — GRM Surge Story</strong><br><br>• <strong>Q4 Revenue (Stnd):</strong> ₹1,23,075 Cr (flat YoY)<br>• <strong>Q4 GRM:</strong> $14.27/bbl — vs $5.40 in Q3 FY26 (+164% in one quarter!)<br>• <strong>Q4 EBITDA (est.):</strong> ~₹8,500 Cr | Margin ~6.9%<br>• <strong>Q4 PAT (Standalone):</strong> ₹4,902 Cr (+46%)<br>• <strong>Q4 PAT (Consolidated):</strong> ₹6,065 Cr (+78%)<br>• <strong>Q4 Throughput:</strong> 6.4 MMT | Utilisation ~98%<br>• <strong>Q4 Inventory Gain (est.):</strong> ~₹1,800 Cr (crude rising)<br>• <strong>FY26 GRM avg:</strong> $8.79/bbl (vs $5.74 FY25)<br>• <strong>FY26 PAT (Stnd):</strong> ₹17,175 Cr (+133%) — Best year ever<br>• <strong>D/E ratio:</strong> 0.80 (improved from 1.38)<br>• <strong>LPG burden:</strong> ₹12,799 Cr — compensation only ₹3,300 Cr received<br>• <strong>Final Dividend:</strong> ₹19.25/share<br><br>Same refinery, same volume — GRM alone drove 3.4× EBITDA swing between Q3 and Q4. This is why GRM is the #1 metric for refiners.`,
+    ta:`<strong>HPCL Q4 GRM Story (Tamil)</strong><br><br>GRM = Gross Refining Margin. Crude oil வாங்கி petrol/diesel ஆக்கும்போது barrel-க்கு கிடைக்கும் profit.<br><br>• Q3 FY26 GRM: $5.40/bbl → Q4 FY26 GRM: $14.27/bbl (+164%!)<br>• Same refinery, same volume — GRM மட்டும் jump ஆனது<br>• Q3 EBITDA ~₹2,200 Cr → Q4 EBITDA ~₹7,500 Cr (3.4× jump!)<br>• FY26 Annual PAT: ₹17,175 கோடி (+133%) — Best year ever<br>• D/E ratio: 1.38 → 0.80 — balance sheet improved<br>• LPG burden: ₹12,799 கோடி — compensation ₹3,300 கோடி மட்டும் received<br><br>West Asia conflict-ல் product prices crude price-ஐ விட faster-ஆ spike ஆயின — இதனால் GRM boom.`
+  },
+  gail:{
+    en:`<strong>GAIL Q4 FY26 — Why PAT Fell 38%</strong><br><br>• <strong>Q4 Revenue (Stnd):</strong> ₹34,797 Cr (−2.5% YoY)<br>• <strong>Q4 EBITDA (est.):</strong> ~₹2,400 Cr | Margin ~6.9%<br>• <strong>Q4 PAT (Standalone):</strong> ₹1,262 Cr (−38.4%)<br>• <strong>Q4 PAT (Consolidated):</strong> ₹1,481 Cr (−40.9%)<br>• <strong>Gas Marketing segment:</strong> −1.2% YoY (89.7% of revenue)<br>• <strong>Petrochemicals:</strong> −15.4% YoY (feedstock shortage from LNG disruption)<br>• <strong>Gas Transmission:</strong> +11.6% YoY (only growing segment)<br>• <strong>FY26 Full Year PAT:</strong> ₹6,968 Cr vs ₹11,312 Cr FY25 (−38%)<br>• <strong>FY26 Gas Marketing Volume:</strong> 104.21 MMSCMD (+2.7%)<br>• <strong>FY26 Transmission Volume:</strong> 122.18 MMSCMD (−4.0%)<br>• <strong>New pipelines FY26:</strong> ~2,000 km — highest single year ever<br>• <strong>Dividend payout ratio:</strong> 52% — highest ever<br><br><strong>Root cause:</strong> West Asia conflict disrupted Qatar and Gulf LNG tanker routes → industrial customers cut gas consumption ~5% YoY → GAIL's gas marketing fell. Petchem at Pata plant also hit by feedstock shortage. Revenue fell 2.5% but costs rose 2% — double squeeze.`,
+    ta:`<strong>GAIL Q4 PAT −38% (Tamil)</strong><br><br>காரணங்கள்:<br><br>1. <strong>Middle East LNG Supply Cut:</strong> Qatar, Gulf-லிருந்து LNG tankers disrupted. Gas supply குறைஞ்சது.<br>2. <strong>Industrial customers gas குறைத்தனர்:</strong> Power plants, fertiliser companies Q4-ல் ~5% gas consumption குறைத்தனர்.<br>3. <strong>Petrochemicals revenue −15.4%:</strong> GAIL's Pata plant-ல் feedstock shortage.<br>4. Revenue −2.5% ஆனாலும் expenses +2% — double squeeze.<br><br>FY26 full year: ₹6,968 கோடி vs FY25 ₹11,312 கோடி (−38%). ஆனால் long-term: 2,000 km new pipeline commissioned. Gas demand India-ல் double ஆகும் by 2030 — structural story intact.`
+  },
+  petronet:{
+    en:`<strong>Petronet LNG Q4 FY26 — The Revenue Paradox</strong><br><br>• <strong>Q4 Revenue (Consol):</strong> ₹9,442 Cr (−23.3% YoY)<br>• <strong>Q4 Total Expenses:</strong> ₹7,848 Cr (−29.1% — fell MORE than revenue)<br>• <strong>Q4 EBITDA (est.):</strong> ~₹2,200 Cr | EBITDA Margin ~23.3%<br>• <strong>Q4 PAT (Consol):</strong> ₹1,338 Cr (+25.3% YoY)<br>• <strong>Q4 PAT Margin:</strong> ~14.2%<br>• <strong>Q4 LNG Volume:</strong> 219 TBTU | Dahej utilisation 90.1%<br>• <strong>UoP Reversal:</strong> ~₹200–300 Cr one-time boost in Q4<br>• <strong>Kochi FY26:</strong> Record annual throughput 68 TBTU<br><br><strong>Why PAT rose despite revenue falling?</strong><br>Petronet is a regasification SERVICE business — not a gas trader. Revenue is volume × LNG-price-linked tariff. When global LNG spot prices fall, revenue falls. BUT Petronet buys LNG under a LONG-TERM CONTRACTED price from Qatar (Rasgas) — not at spot. So when spot prices crash, Petronet's cost doesn't fall proportionally. The spread between contracted cost and formula revenue = IMPROVED MARGIN.<br><br>Additionally, Use-or-Pay (UoP) provisions from prior quarters were REVERSED in Q4 — giving a one-time PAT boost.<br><br>JPMorgan Target: ₹335 (Overweight). Investec Target: ₹400 (Buy). External analyst views — not CB recommendation.`,
+    ta:`<strong>Petronet Revenue −23%, PAT +25% (Tamil)</strong><br><br>Petronet ஒரு service company — LNG trade பண்றது இல்லை. Revenue = volume × LNG price formula. LNG price குறைஞ்சா revenue குறையும்.<br><br>ஆனால் cost: Qatar Rasgas-உடன் long-term contract — spot price-ல் வாங்கல. LNG spot price குறைஞ்சாலும் cost directly proportionally குறையாது → margin improve ஆகும்.<br><br>UoP reversal: Customer-கள் contracted gas use பண்ணலன்னா Petronet-க்கு penalty கொடுக்கணும். Previous quarters provisions போட்டிருந்தோம் — Q4-ல் reverse ஆச்சு → one-time PAT boost.<br><br>Result: Revenue −23%, ஆனால் PAT +25%. JPMorgan TP ₹335, Investec TP ₹400 (external analysts — CB recommendation இல்லை).`
+  },
+  ongc:{
+    en:`<strong>ONGC Q4 FY26 Results</strong><br><br>• <strong>Q4 Revenue (Consol):</strong> ₹1,73,805 Cr (+3.6% YoY)<br>• <strong>Q4 EBITDA (est. Consol):</strong> ~₹17,800 Cr | Margin ~10.2%<br>• <strong>Q4 PAT (Consol, to owners):</strong> ₹10,820 Cr (+45.6% YoY, +8% QoQ)<br>• <strong>Q4 PAT Margin:</strong> ~6.2%<br>• <strong>Q4 EPS:</strong> ₹8.60<br>• <strong>FY26 Revenue (Consol):</strong> ₹6,62,247 Cr (flat YoY)<br>• <strong>FY26 PAT (Consol):</strong> ₹41,424 Cr (+14.3%) — RECORD<br>• <strong>New well gas:</strong> 17% of production, 21% of nomination gas revenue<br>• <strong>Western offshore capex:</strong> ₹33,075 Cr in progress — highest ever<br>• <strong>Final Dividend:</strong> ₹1/share<br><br><strong>Key note:</strong> ONGC consolidated record PAT is significantly boosted by HPCL (54.9% subsidiary) which posted +133% standalone PAT in FY26. ONGC standalone was constrained by APM gas price regulation. OVL (overseas E&P) typically posts losses which are consolidated in. New well gas premium (+20% over APM price) is the key standalone growth lever for FY27.`,
+    ta:`<strong>ONGC Q4 FY26 (Tamil)</strong><br><br>• Q4 PAT: ₹10,820 கோடி (+46%) — Consolidated<br>• FY26 Annual PAT: ₹41,424 கோடி — RECORD!<br>• New well gas: Production-ல் 17%, Revenue-ல் 21%<br>• Western offshore-ல் ₹33,075 கோடி projects underway — highest ever<br><br>Important: ONGC-ன் consolidated profit-ல் subsidiary HPCL-ன் contribution பெரியது. HPCL FY26-ல் +133% PAT பதிவு செய்தது. ONGC standalone APM gas price regulation-ஆல் constrained. New well gas premium (APM-ஐ விட 20% அதிகம்) — FY27 growth lever.`
+  },
+  cpcl:{
+    en:`<strong>CPCL Q4 FY26 — The GRM Turnaround</strong><br><br>• <strong>Q4 Revenue:</strong> ₹20,455 Cr (flat YoY)<br>• <strong>Q4 GRM:</strong> $13.75/bbl (vs $6.22 Q4 FY25 — +121%!)<br>• <strong>Q4 EBITDA (est.):</strong> ~₹2,476 Cr | EBITDA Margin ~12.1%<br>• <strong>Q4 PAT (Consol):</strong> ₹1,422 Cr (+203% YoY!)<br>• <strong>Q4 Throughput:</strong> 2.93 MMT (112% nameplate capacity!)<br>• <strong>Q4 Distillate Yield:</strong> ~80% — India's best<br>• <strong>Q4 Inventory Gain (est.):</strong> ~₹400 Cr (crude rising)<br>• <strong>FY26 GRM avg:</strong> $9.28/bbl (vs $4.22 FY25)<br>• <strong>FY26 PAT:</strong> ₹3,062 Cr vs ₹174 Cr FY25 — nearly 18×<br>• <strong>FY26 Throughput:</strong> 11.71 MMT (+12%)<br>• <strong>Dividend FY26:</strong> ₹54/share total<br><br><strong>The risk:</strong> CPCL is a PURE-PLAY REFINER — 100% of earnings driven by GRM. FY25 showed what happens when GRM falls to $4.22/bbl (PAT ₹174 Cr). If GRM reverts to $5–6/bbl in FY27, CPCL could post near-breakeven results again. No marketing business to cushion the blow.`,
+    ta:`<strong>CPCL Q4 FY26 (Tamil)</strong><br><br>• Q4 PAT: ₹1,422 கோடி (+203%) — 3× jump!<br>• GRM: $13.75/bbl — Q4 FY25-ல் $6.22 மட்டும் இருந்தது (+121%!)<br>• FY26 Full Year PAT: ₹3,062 கோடி — FY25-ல் ₹174 கோடி மட்டும்!<br>• 112% capacity utilisation — nameplate-ஐ விட அதிகமாக refining<br>• Distillate yield ~80% — India-ல் best<br><br>CPCL ஒரு pure-play refiner — 100% earnings GRM-ல் depend. FY25-ல் GRM $4.22/bbl-ல் இருந்தது → PAT ₹174 கோடி மட்டும். FY27-ல் GRM $5–6-க்கு வந்தால் இது repeat ஆகலாம். Marketing business இல்லை — cushion இல்லை.`
+  },
+  oil:{
+    en:`<strong>Oil India Q4 FY26 Results</strong><br><br>• <strong>Q4 Revenue (Consol):</strong> ₹10,013 Cr (+4.4% YoY)<br>• <strong>Q4 EBITDA (est. Consol):</strong> ~₹3,800 Cr | Margin ~38%<br>• <strong>Q4 PAT (Consolidated):</strong> ₹2,424 Cr (+62% YoY)<br>• <strong>Q4 PAT (Standalone):</strong> ₹1,790 Cr (+12.5%)<br>• <strong>Q4 Crude Production:</strong> 0.891 MMT (+6% YoY)<br>• <strong>Q4 Crude Realisation:</strong> $77.89/bbl (vs $74.46 Q4 FY25)<br>• <strong>NRL Subsidiary:</strong> FY26 PAT +90%; GRM $13.43/bbl<br>• <strong>FY26 PAT (Consol):</strong> ₹7,551 Cr (+7.3%)<br>• <strong>FY26 PAT (Standalone):</strong> ₹4,455 Cr (−27%) — avg realisation $60 vs $70 FY25<br>• <strong>Record drilling:</strong> 74 wells FY26 — all-time high<br>• <strong>PNPCL pipeline:</strong> 92% complete (Apr 2026); est. Oct 2026 completion<br>• <strong>Total Dividend FY26:</strong> ₹11.50/share<br><br><strong>Key insight:</strong> Consolidated PAT rose 7% because NRL (subsidiary refinery) had spectacular year (+90%, GRM $13.43). Standalone fell 27% because crude avg realisation was $60/bbl vs $70/bbl FY25. PNPCL pipeline completion will unlock full NRL throughput.`,
+    ta:`<strong>Oil India Q4 FY26 (Tamil)</strong><br><br>• Q4 Consol PAT: ₹2,424 கோடி (+62%)<br>• Crude production: +6%; Realisation $77.89/bbl<br>• FY26 Consol PAT: ₹7,551 கோடி (+7%)<br>• FY26 Standalone PAT: ₹4,455 கோடி (−27%) — avg crude price $60 vs $70 FY25<br>• NRL (subsidiary): PAT ₹3,057 கோடி (+90%) — GRM $13.43/bbl spectacular!<br>• Record 74 wells drilled FY26 — all-time high<br>• Total dividend: ₹11.50/share<br><br>PNPCL pipeline என்றால் என்ன? Paradip-Numaligarh Crude Pipeline — இது complete ஆனால் (Oct 2026 est.), NRL refinery full capacity-ல் run ஆகும். இது Oil India-ன் biggest near-term catalyst.`
+  },
+  grm:{
+    en:`<strong>GRM vs Singapore GRM — The Key Metric Explained</strong><br><br><strong>GRM (Gross Refining Margin)</strong> = Revenue from refined products/bbl − Cost of crude/bbl − Variable opex/bbl<br><br>It is the #1 metric for Indian refiners. Same throughput volume: HPCL Q3 FY26 at GRM $5.40 → EBITDA ~₹2,200 Cr. Q4 FY26 at GRM $14.27 → EBITDA ~₹7,500 Cr. A 3.4× swing on identical volume.<br><br><strong>Singapore GRM</strong> is the Asia-Pacific benchmark — theoretical margin from processing Dubai/Oman crude through a complex Singapore refinery using Singapore spot product prices. India typically beats Singapore GRM by $3–8/bbl because:<br>1. Russia crude discount: India buys Urals at $8–15/bbl below Brent since Mar 2022<br>2. Singapore prices against Dubai crude — Indian refiners using Russian crude have lower input cost<br>3. Complex Indian refineries (CPCL 80% distillate yield) extract more high-value products<br><br>Historical India premium over Singapore: FY21: +$1–2; FY22: similar; FY23: +$2–4; FY24: +$4–6 (Russia peak); FY25: +$2–3; Q4 FY26: +$2–4`,
+    ta:`<strong>GRM என்னன்னு? (Tamil)</strong><br><br>GRM = Gross Refining Margin. Crude oil வாங்கி refine பண்ணும்போது barrel-க்கு கிடைக்கும் profit.<br><br>Formula: Product Revenue/barrel − Crude Cost/barrel − Operating Cost = GRM ($/bbl)<br><br>HPCL example: Q3 FY26 GRM $5.40 → EBITDA ~₹2,200 Cr. Q4 FY26 GRM $14.27 → EBITDA ~₹7,500 Cr. Same refinery, same volume — 3.4× difference!<br><br>Singapore GRM என்பது Asia-Pacific-க்கான benchmark. India usually beats Singapore by $3–8/bbl காரணம்: Russia crude $8–15 discount-ல் வாங்குகிறோம் (Mar 2022-இல் இருந்து). இதனால் India refiners-க்கு structural cost advantage இருக்கு.`
+  },
+  inventory:{
+    en:`<strong>Inventory Effect — How It Distorts OMC Quarterly PAT</strong><br><br>Inventory Effect = change in value of crude/product stocks held at refinery due to crude price movement.<br><br><strong>When crude RISES (Q4 FY26: $72→$105/bbl):</strong><br>• OMC bought cheap crude earlier at $72<br>• By the time they process and sell products, crude is $105<br>• Products are priced at current crude equivalent → old cheap stock generates windfall profit<br>• Estimated Q4 FY26 inventory gains: IOCL ~₹3,200 Cr; BPCL ~₹2,100 Cr; HPCL ~₹1,800 Cr; CPCL ~₹400 Cr<br>• This inflates REPORTED GRM above CORE GRM<br><br><strong>When crude FALLS:</strong><br>• OMC bought expensive crude earlier<br>• Products sold at lower prices → inventory LOSS<br>• Drags reported PAT below true operating performance<br><br><strong>Core GRM</strong> = Reported GRM minus inventory effect — reflects true refining economics<br>Example: IOCL Q3 FY26: Reported GRM $12.22/bbl; Core GRM $13.50/bbl<br><br>This is why Q4 FY26 PAT was spectacularly high AND why Q1 FY27 could disappoint even with no change in refinery operations — inventory gains reverse as crude price impact normalises.`,
+    ta:`<strong>Inventory Effect என்னன்னு? (Tamil)</strong><br><br>Refinery-ல் இருக்கும் crude oil stock-ன் value, price change-ஆல் gain or loss ஆகுது — இதை inventory effect என்று சொல்வோம்.<br><br>Crude rising (Q4 FY26): $72-ல் வாங்கிய crude, $105 price-ல் product-ஆக sell ஆகும்போது, extra profit வருது.<br>• IOCL: ~₹3,200 கோடி inventory gain estimate<br>• BPCL: ~₹2,100 கோடி<br>• HPCL: ~₹1,800 கோடி<br><br>Crude falling: Expensive stock, cheap price-ல் sell → inventory loss → PAT குறையும்.<br><br>அதனால் analysts "Core GRM" பார்க்கிறாங்க — inventory effect strip out பண்ணினது. IOCL Q3: Reported GRM $12.22; Core GRM $13.50. இது true refining economics-ஐ காட்டும்.`
+  },
+  combined:{
+    en:`<strong>Combined OMC Q4 FY26 and FY26 Full Year</strong><br><br><strong>Q4 FY26 Combined (IOCL + BPCL + HPCL):</strong><br>• Combined PAT: ₹19,470 Cr (+41% YoY)<br>• IOCL led: +81%; HPCL: +46%; BPCL: +28%<br><br><strong>FY26 Full Year Combined:</strong><br>• Combined PAT: ₹77,281 Cr — more than DOUBLED vs FY25<br>• IOCL: ₹43,677 Cr; BPCL: ₹23,303 Cr; HPCL: ₹17,175 Cr<br><br>Despite this: OMCs are losing ~₹500 Cr/day combined at current $105/bbl crude (post ₹4/litre hike). FY27 combined profit could fall 30–50% in base case, or turn negative in Q1 FY27 in bear case.`,
+    ta:`<strong>Combined OMC Profit (Tamil)</strong><br><br>Q4 FY26: IOCL + BPCL + HPCL combined: ₹19,470 கோடி (+41% YoY)<br>FY26 Full Year: ₹77,281 கோடி — FY25-ல் இருந்து 2× அதிகம்!<br><br>ஆனால் warning: Crude $105/bbl — ₹4 உயர்த்தியும் daily ₹500 கோடி loss நடக்குது. FY27 profit significantly குறையும் risk இருக்கு.`
+  },
+  lpg:{
+    en:`<strong>LPG Under-Recovery — What It Is and Why It Matters</strong><br><br>Domestic LPG (cooking gas) is sold at a government-mandated price. The actual cost to OMCs is much higher. Gap = <strong>under-recovery</strong>.<br><br>FY26 figures:<br>• HPCL: ₹12,799 Cr under-recovery; only ₹3,300 Cr compensation received<br>• BPCL: Net LPG buffer −₹12,318 Cr cumulative<br>• IOCL: ~₹18,000 Cr estimated<br>• Combined across 3 OMCs: ₹40,000 Cr+ uncompensated<br><br>This is a POLICY issue. Government compensates partially and with delays. At crude $105/bbl, LPG cost is even higher — new under-recoveries add to the pile every month.`,
+    ta:`<strong>LPG Under-Recovery (Tamil)</strong><br><br>Government-ஆல் set ஆன price-ல் domestic LPG விற்கணும். Actual cost அதை விட அதிகம் → difference = under-recovery.<br><br>FY26:<br>• HPCL: ₹12,799 கோடி under-recovery; ₹3,300 கோடி மட்டும் compensation<br>• BPCL: −₹12,318 கோடி cumulative buffer<br><br>Crude $105/bbl → LPG cost மேலும் அதிகம் → under-recovery மேலும் வளரும் FY27-ல்.`
+  },
+  fy27:{
+    en:`<strong>FY27 Outlook — CB Research Data View (No Recommendations)</strong><br><br><strong>Bull case (crude $75–80/bbl):</strong> OMC profits near FY26 levels. GAIL LNG normalises. Petronet volumes up. CPCL GRM holds $8+.<br><br><strong>Base case (crude $95–100/bbl):</strong> OMC FY27 PAT 30–50% below FY26. GAIL partial recovery. CPCL GRM moderate $7–8/bbl. Oil India standalone improves (higher crude).<br><br><strong>Bear case (crude $105+ persists):</strong> OMCs could post quarterly losses in Q1 FY27. GAIL further compressed. CPCL at breakeven. Petronet most insulated (contracted volumes).<br><br><strong>CB Research FY27 Earnings Visibility Ranking (not buy/sell):</strong><br>1. Petronet LNG — High (contracted volumes, no retail risk)<br>2. BPCL — Good (debt-free, resilient)<br>3. Oil India — Good (PNPCL catalyst, record drilling)<br>4. IOCL — Moderate (cheap valuation, scale)<br>5. ONGC — Moderate (new well gas, but APM constraint)<br>6. HPCL — Moderate (dividend attractive, watch LPG)<br>7. GAIL — Low-Moderate (recovery depends on LNG normalisation)<br>8. CPCL — Low (pure GRM play, high volatility risk)`,
+    ta:`<strong>FY27 Outlook (Tamil)</strong><br><br>3 scenarios:<br>• Crude $75–80: OMC profits FY26 level-ல் இருக்கும்<br>• Crude $95–100: FY27 PAT 30–50% குறையும்<br>• Crude $105+: Q1 FY27-ல் quarterly losses possible<br><br>CB Research FY27 Earnings Visibility (recommendation இல்லை):<br>1. Petronet LNG — High visibility (contracted vol.)<br>2. BPCL — Good (debt-free)<br>3. Oil India — Good (PNPCL catalyst)<br>4. IOCL, ONGC, HPCL — Moderate<br>7. GAIL — Low-Moderate (LNG recovery wait)<br>8. CPCL — Low (pure GRM volatility risk)`
+  }
+};
+
+/* ─── ANSWER ENGINE ─── */
+function cbA(q,lang){
+  if(!q||!q.trim())return;
+  const msgs=document.getElementById('chatMsgs');
+  const inp=document.getElementById('chatIn');
+  const typ=document.getElementById('typingInd');
+  const uEl=document.createElement('div');
+  uEl.className='chat-msg user';uEl.textContent=q.trim();
+  msgs.appendChild(uEl);inp.value='';msgs.scrollTop=msgs.scrollHeight;
+  const isTa=/[\u0B80-\u0BFF]/.test(q)||/tamil/i.test(q);
+  const l=(lang==='ta'||isTa)?'ta':'en';
+  typ.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typ.style.display='none';
+    const a=findA(q.toLowerCase(),l);
+    const bEl=document.createElement('div');
+    bEl.className='chat-msg bot';bEl.innerHTML=a;
+    msgs.appendChild(bEl);msgs.scrollTop=msgs.scrollHeight;
+  },500);
+}
+
+function findA(q,l){
+  const get=(k)=>KB[k]?.(KB[k][l]?l:'en')===l?KB[k][l]:KB[k]?.en||'';
+  const G=k=>KB[k]?.[l]||KB[k]?.en||'';
+  if(/iocl|indian oil|ioc\b/.test(q))return G('iocl');
+  if(/bpcl|bharat petrol/.test(q))return G('bpcl');
+  if(/hpcl|hindustan petrol/.test(q))return G('hpcl');
+  if(/\bgail\b/.test(q))return G('gail');
+  if(/petronet|uop|use.or.pay|dahej|kochi/.test(q))return G('petronet');
+  if(/ongc|oil.natural.gas|new well gas/.test(q))return G('ongc');
+  if(/cpcl|chennai petrol|chennpetro/.test(q))return G('cpcl');
+  if(/oil india|\bnrl\b|pnpcl|numaligarh/.test(q))return G('oil');
+  if(/\bgrm\b|refining margin|singapore grm|crack spread/.test(q))return G('grm');
+  if(/inventor/.test(q))return G('inventory');
+  if(/combined|77281|19470|all three omc/.test(q))return G('combined');
+  if(/lpg|under.recover|cooking gas/.test(q))return G('lpg');
+  if(/fy27|outlook|bull|bear|scenario/.test(q))return G('fy27');
+  if(/crude.*105|105.*crude|oil price|macro/.test(q))return G('fy27');
+  if(l==='ta')return `<strong>CB Assist</strong> — இந்த topics try பண்ணுங்க:<br><br>• IOCL / BPCL / HPCL / GAIL / Petronet Q4 results<br>• ONGC / CPCL / Oil India results<br>• GRM என்றால் என்ன?<br>• Inventory effect என்னன்னு?<br>• LPG under-recovery<br>• FY27 outlook`;
+  return `<strong>CB Assist</strong> — Try asking about:<br><br>• <em>IOCL / BPCL / HPCL / GAIL / Petronet / ONGC / CPCL / Oil India Q4 FY26 results</em><br>• <em>GRM — what it is and Singapore GRM comparison</em><br>• <em>Inventory effect on OMC quarterly PAT</em><br>• <em>LPG under-recovery explained</em><br>• <em>FY27 outlook — bull, base, bear cases</em>`;
+}
+</script>
+</body>
+</html>

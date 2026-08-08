@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="DMart (Avenue Supermarts) Q1 FY27 Intelligence Dashboard — Cauvery Business Research. Value Retail Grocery · EDLC-EDLP Model · Why DMart Differs From Every Other Listed Retailer.">
+<title>DMart · Avenue Supermarts · Q1 FY27 Intelligence Dashboard | Cauvery Business Research</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --dmart:#166534;--dmart-soft:#f0fdf4;
+  --growth:#1d4ed8;--growth-soft:#eff6ff;
+  --peer:#7c3aed;--peer-soft:#f5f3ff;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-dmart{background:var(--dmart);color:#fff;}
+.chip-growth{background:var(--growth);color:#fff;}
+.chip-peer{background:var(--peer);color:#fff;}
+.chip-gold{background:var(--gold);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--dmart);font-weight:700;}
+.main{padding:26px 40px 60px;max-width:1460px;margin:0 auto;isolation:isolate;}
+.panel{display:none;animation:fadeIn .2s ease;position:relative;z-index:1;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gap-top{margin-top:22px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-neg{background:#fee2e2;color:#b91c1c;}.b-warn{background:#fff7ed;color:#c2410c;}.b-spec{background:#f3f4f6;color:#4b5563;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.sector-a{border-left:4px solid var(--gold);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;}
+td.tb{font-weight:700;}
+td.warn{color:var(--warn);font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.q1-highlight{background:#f0fdf4;border:1.5px solid #22c55e;border-radius:8px;padding:12px 15px;margin-bottom:10px;}
+.q1-highlight .q1-tag{display:inline-block;background:#22c55e;color:#fff;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:10px;margin-bottom:8px;}
+.q1-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(34,197,94,.2);}
+.q1-row:last-child{border-bottom:none;}
+.q1-lbl{font-size:11px;color:var(--muted);}
+.q1-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:#15803d;}
+.q1-neg{color:#b91c1c!important;}
+.q1-warn{color:#c2410c!important;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text);}
+.chart-card p.sub{font-size:10.5px;color:var(--muted);margin-bottom:14px;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verdict-body{font-size:13px;line-height:1.7;color:var(--text);}
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.moat-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.moat-body{font-size:11px;color:var(--muted);line-height:1.55;}
+.moat-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;margin-right:4px;}
+.diff-card{background:var(--surface);border:1.5px solid var(--dmart);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.diff-num{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--dmart);margin-bottom:4px;}
+.diff-title{font-size:12px;font-weight:700;margin-bottom:5px;}
+.diff-body{font-size:11.3px;color:var(--muted);line-height:1.6;}
+.watermark{text-align:center;font-size:10px;color:var(--muted);opacity:.55;margin-top:30px;letter-spacing:.06em;}
+.period-toggle{display:flex;gap:6px;margin-bottom:16px;}
+.ptbtn{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;}
+.ptbtn.active{background:var(--dmart);color:#fff;border-color:var(--dmart);}
+.psub{display:none;}
+.psub.active{display:block;}
+/* CB ASSIST */
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--dmart);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--dmart);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.cbassist-sub{font-size:10px;font-weight:400;color:var(--muted);margin-bottom:12px;padding-left:16px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:400px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;padding-right:4px;}
+.msg{max-width:85%;padding:10px 14px;border-radius:10px;font-size:12px;line-height:1.55;}
+.msg.user{align-self:flex-end;background:var(--dmart);color:#fff;border-bottom-right-radius:2px;}
+.msg.bot{align-self:flex-start;background:var(--surface2);color:var(--text);border-bottom-left-radius:2px;}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input-row input{flex:1;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:12.5px;font-family:'Inter',sans-serif;}
+.chat-input-row button{padding:10px 18px;background:var(--dmart);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;}
+.quick-q{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.qq-btn{font-size:10.5px;padding:5px 10px;border-radius:14px;background:var(--dmart-soft);color:var(--dmart);border:1px solid var(--dmart);cursor:pointer;font-weight:600;}
+/* SOCRATES */
+.soc-topic-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.soc-topic-pill{padding:7px 14px;border-radius:20px;font-size:11.5px;font-weight:700;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;}
+.soc-topic-pill.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.soc-scorebar{display:none;gap:16px;margin-bottom:14px;font-size:11.5px;font-weight:700;}
+.soc-scorebar.visible-flex{display:flex;}
+.soc-box{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px 24px;min-height:220px;}
+.soc-welcome{text-align:center;padding:30px 10px;}
+.soc-welcome-icon{font-size:2.2rem;margin-bottom:8px;}
+.soc-welcome-title{font-family:'Playfair Display',serif;font-weight:900;font-size:1.2rem;color:var(--gold);margin-bottom:8px;}
+.soc-welcome-sub{font-size:12px;color:var(--muted);line-height:1.7;}
+.soc-q-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.soc-q-text{font-size:14px;font-weight:700;margin-bottom:10px;line-height:1.5;}
+.soc-q-hint{font-size:11px;color:var(--muted);background:var(--surface2);padding:8px 12px;border-radius:8px;margin-bottom:14px;}
+.soc-mcq{display:flex;flex-direction:column;gap:8px;}
+.soc-opt{text-align:left;padding:11px 15px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;}
+.soc-opt:hover{border-color:var(--gold);}
+.soc-opt.correct{background:#dcfce7;border-color:#22c55e;font-weight:700;}
+.soc-opt.wrong{background:#fee2e2;border-color:#dc2626;font-weight:700;}
+.soc-opt.reveal{opacity:.5;}
+.soc-response{margin-top:14px;padding:13px 16px;border-radius:8px;font-size:12px;line-height:1.6;}
+.soc-response.correct-resp{background:#f0fdf4;border:1.5px solid #22c55e;}
+.soc-response.wrong-resp{background:#fef2f2;border:1.5px solid #dc2626;}
+.soc-resp-tag{font-weight:800;text-transform:uppercase;font-size:10px;letter-spacing:.06em;display:block;margin-bottom:5px;}
+.soc-followup{margin-top:8px;font-size:11px;font-style:italic;color:var(--muted);}
+.soc-next-btn{display:none;margin-top:14px;padding:9px 20px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;}
+.soc-next-btn.visible{display:inline-block;}
+.soc-complete{text-align:center;padding:20px 10px;}
+.soc-complete-icon{font-size:2.4rem;margin-bottom:8px;}
+.soc-complete-title{font-family:'Playfair Display',serif;font-weight:900;font-size:1.25rem;color:var(--gold);margin-bottom:8px;}
+.soc-complete-msg{font-size:12.5px;color:var(--text);line-height:1.7;margin-bottom:16px;}
+.soc-restart-btn{padding:10px 22px;background:var(--dmart);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;}
+@media(max-width:900px){
+  .hdr{padding:0 16px;flex-direction:column;min-height:auto;}
+  .main{padding:18px 14px 40px;}
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .tab-btn{padding:12px 10px 10px;font-size:11px;}
+  table{display:block;overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>DMart · Avenue Supermarts</h1>
+      <div class="sub">Cauvery Business Research · CB Investment Intelligence</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-dmart">Value Retail · Grocery</span>
+    <span class="chip chip-growth">Q1 FY27 Results</span>
+    <span class="chip chip-gold">CBF26 Framework</span>
+    <span class="chip chip-date">NSE: DMART · BSE: 540376</span>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('school',this)">🎓 School</button>
+  <button class="tab-btn" onclick="switchTab('overview',this)">📊 Overview</button>
+  <button class="tab-btn" onclick="switchTab('store',this)">🏬 Store Economics</button>
+  <button class="tab-btn" onclick="switchTab('differ',this)">⚖️ Why DMart Differs</button>
+  <button class="tab-btn" onclick="switchTab('charts',this)">📈 Charts</button>
+  <button class="tab-btn" onclick="switchTab('swot',this)">🔲 SWOT</button>
+  <button class="tab-btn" onclick="switchTab('moat',this)">🏰 Moats & Risks</button>
+  <button class="tab-btn" onclick="switchTab('valuation',this)">💰 Valuation</button>
+  <button class="tab-btn" onclick="switchTab('analyst',this)">🎯 CBF26 Rating</button>
+  <button class="tab-btn" onclick="switchTab('verdict',this)">⚖️ Verdict</button>
+  <button class="tab-btn" onclick="switchTab('cb',this)">🤖 CB Assist</button>
+  <button class="tab-btn" onclick="switchTab('socrates',this)">🏛️ Cauvery Socrates</button>
+</div>
+
+<div class="main">
+
+<!-- ================= SCHOOL ================= -->
+<div class="panel active" id="p-school">
+  <div class="sec-hdr">🎓 DMart School <span class="sec-note">What the company does · Sector context · The EDLC-EDLP model</span></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.75;">Avenue Supermarts Ltd (DMart) is India's largest listed value-retail grocery chain by revenue and profitability, promoted by Radhakishan Damani. Launched in Mumbai in 2002, DMart operates <strong>503 stores</strong> (as of 30 June 2026) across Maharashtra, Gujarat, Telangana, Karnataka, Andhra Pradesh, Madhya Pradesh, Chhattisgarh, NCR, Tamil Nadu, Punjab and Rajasthan. Revenue is built on three category blocks — Foods, Non-Foods/FMCG, and General Merchandise & Apparel — with Foods and FMCG forming the bulk of footfall-driving, high-frequency basket. The online arm, DMart Ready, is run through subsidiary Avenue E-Commerce.</p>
+      <div class="badge-row">
+        <span class="badge b-spec">Founded 2002</span>
+        <span class="badge b-spec">HQ Mumbai</span>
+        <span class="badge b-pos">503 Stores</span>
+        <span class="badge b-spec">11 States/UTs</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">The "Everyday Low Cost – Everyday Low Price" Model</div>
+      <p style="font-size:12.5px;line-height:1.75;">DMart's entire economic engine is built around <strong>EDLC-EDLP</strong> — Everyday Low Cost enabling Everyday Low Price. Unlike promotional retailers that run periodic discounting cycles, DMart holds prices consistently low every day, funded by structurally lower costs rather than thinner margins on any single sale. The three pillars: (1) bulk, negotiated, largely cash-paid procurement directly from manufacturers, (2) a lean, no-frills store format with minimal advertising spend, and (3) high inventory turnover from a curated, limited SKU count (no long-tail assortment), which keeps working capital cycles short and shelves moving fast.</p>
+      <div class="badge-row">
+        <span class="badge b-pos">Volume &gt; Margin</span>
+        <span class="badge b-spec">Cash-and-Carry Buying</span>
+        <span class="badge b-spec">Limited SKU Depth</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">The Cluster Expansion Strategy</div>
+      <p style="font-size:12.5px;line-height:1.75;">DMart does not chase pan-India store count for its own sake. It expands in tight geographic clusters radiating outward from its Maharashtra-Gujarat home base, so that each new store shares the same regional distribution centre, vendor network and supply chain as its neighbours. This keeps logistics cost per store low and lets DMart reach a break-even faster than a retailer opening isolated stores in far-flung cities. It is also why DMart's expansion into new geographies (South, North) has historically been deliberate and slower than fashion retailers who can drop a store into any well-located mall.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Owned Real Estate, Not Leased Malls</div>
+      <p style="font-size:12.5px;line-height:1.75;">A defining structural choice: DMart preferentially <strong>owns</strong> the land and building for a large share of its stores rather than leasing mall space, which is the norm for apparel/fashion retailers like Trent (Zudio/Westside) or Vishal Mega Mart. Ownership means heavier upfront capex and a slower, more capital-intensive rollout — but it insulates DMart from rental escalation, gives it standalone big-box/highway-facing formats rather than mall dependency, and converts store real estate into a long-term appreciating balance sheet asset rather than a recurring lease expense.</p>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Sector Context — Organised Retail in India, July 2026</div>
+    <p style="font-size:12.5px;line-height:1.75;">India's organised grocery retail sector sits at an inflection point. Traditional brick-and-mortar value retailers (DMart, Reliance Retail's Smart Bazaar, Big Bazaar's erstwhile footprint) built their moats on price and assortment. That moat is now being tested from two directions simultaneously: quick-commerce platforms (Blinkit, Zepto, Instamart, Swiggy) delivering groceries in 10-20 minutes to metro households, and value-fashion chains (Trent's Zudio, Vishal Mega Mart, V2 Retail) scaling aggressively in Tier-2/3 towns with a leased, asset-light, higher-margin apparel model. DMart's Q1 FY27 results — a slowdown in same-store sales growth concentrated specifically in large metros — are best read against this backdrop rather than as a company-specific stumble.</p>
+  </div>
+
+  <div class="watermark">CB Research · Cauvery Business Research — Educational content, not investment advice</div>
+</div>
+
+<!-- ================= OVERVIEW ================= -->
+<div class="panel" id="p-overview">
+  <div class="sec-hdr">📊 Financial Overview <span class="sec-note">Q1 FY27 (Quarter ended 30 June 2026) — Regulatory Filings, BSE/NSE</span></div>
+
+  <div class="q1-highlight">
+    <span class="q1-tag">Q1 FY27 Snapshot</span>
+    <div class="q1-row"><span class="q1-lbl">Consolidated Revenue from Operations</span><span class="q1-val">₹18,794.53 Cr <span style="font-weight:400;">(+14.9% YoY)</span></span></div>
+    <div class="q1-row"><span class="q1-lbl">Consolidated EBITDA</span><span class="q1-val">₹1,499 Cr <span style="font-weight:400;">(+15.4% YoY)</span></span></div>
+    <div class="q1-row"><span class="q1-lbl">Consolidated Net Profit (PAT)</span><span class="q1-val">₹860.44 Cr <span style="font-weight:400;">(+11.3% YoY)</span></span></div>
+    <div class="q1-row"><span class="q1-lbl">Standalone (DMart brick-and-mortar) PAT</span><span class="q1-val">₹936 Cr <span style="font-weight:400;">(+12.8% YoY)</span></span></div>
+    <div class="q1-row"><span class="q1-lbl">Same-Store Sales Growth (LFL)</span><span class="q1-val q1-warn">5.5% <span style="font-weight:400;">(vs 10.8% in Q4 FY26)</span></span></div>
+    <div class="q1-row"><span class="q1-lbl">Store Additions in Quarter</span><span class="q1-val q1-warn">3 stores <span style="font-weight:400;">(lowest in 12 quarters)</span></span></div>
+  </div>
+
+  <div class="kpi-row gap-top">
+    <div class="kpi sector-a"><div class="kl">Total Stores</div><div class="kv">503</div><div class="kc pos">+3 in Q1 FY27</div></div>
+    <div class="kpi"><div class="kl">EBITDA Margin</div><div class="kv">8.0%</div><div class="kc pos">+10 bps YoY</div></div>
+    <div class="kpi"><div class="kl">PAT Margin (Consol.)</div><div class="kv">4.6%</div><div class="kc neg">-10 bps YoY</div></div>
+    <div class="kpi"><div class="kl">EPS (Consol., Q1)</div><div class="kv">₹13.20</div><div class="kc warn">Missed est. ₹13.51</div></div>
+    <div class="kpi"><div class="kl">DMart Ready Cities</div><div class="kv">11</div><div class="kc neg">Down from peak 25</div></div>
+  </div>
+
+  <div class="period-toggle">
+    <button class="ptbtn active" onclick="showPeriod('q1',this)">Quarterly Trend (Consolidated)</button>
+    <button class="ptbtn" onclick="showPeriod('fy',this)">Full Year FY26</button>
+  </div>
+
+  <div class="psub active" id="period-q1">
+    <table>
+      <tr><th>Metric</th><th>Q1 FY26</th><th>Q4 FY26</th><th>Q1 FY27</th><th>YoY %</th><th>QoQ %</th></tr>
+      <tr><td>Revenue from Operations (₹ Cr)</td><td class="num">16,359.70</td><td class="num">17,683.86</td><td class="num tb">18,794.53</td><td class="num tpos">+14.9%</td><td class="num tpos">+6.3%</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td class="num">1,299.00</td><td class="num">~1,239.00</td><td class="num tb">1,499.00</td><td class="num tpos">+15.4%</td><td class="num tpos">+21.0%</td></tr>
+      <tr><td>EBITDA Margin</td><td class="num">7.9%</td><td class="num">7.0%*</td><td class="num tb">8.0%</td><td class="num tpos">+10 bps</td><td class="num tpos">+100 bps</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td class="num">772.81</td><td class="num">656.42</td><td class="num tb">860.44</td><td class="num tpos">+11.3%</td><td class="num tpos">+31.1%</td></tr>
+      <tr><td>PAT Margin</td><td class="num">4.7%</td><td class="num">3.7%</td><td class="num tb">4.6%</td><td class="num tneg">-10 bps</td><td class="num tpos">+90 bps</td></tr>
+      <tr><td>Same-Store Sales Growth</td><td class="num">7.1%</td><td class="num">10.8%</td><td class="num tb warn">5.5%</td><td class="num tneg">-160 bps</td><td class="num tneg">-530 bps</td></tr>
+    </table>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">*Q4 FY26 EBITDA margin estimated from disclosed EBITDA (~₹1,239 Cr implied) on revenue of ₹17,683.86 Cr; company discloses EBITDA margin on a comparable basis in investor presentations.</p>
+  </div>
+
+  <div class="psub" id="period-fy">
+    <table>
+      <tr><th>Metric</th><th>FY25</th><th>FY26</th><th>YoY %</th></tr>
+      <tr><td>Total Income, Consolidated (₹ Cr)</td><td class="num">59,527.00*</td><td class="num tb">68,894.84</td><td class="num tpos">+15.8%</td></tr>
+      <tr><td>Net Profit, Consolidated (₹ Cr)</td><td class="num">2,706.85*</td><td class="num tb">2,969.86</td><td class="num tpos">+9.7%</td></tr>
+      <tr><td>Q4 Revenue (₹ Cr)</td><td class="num">14,871.86</td><td class="num tb">17,683.86</td><td class="num tpos">+18.9%</td></tr>
+      <tr><td>Q4 Net Profit (₹ Cr)</td><td class="num">550.79</td><td class="num tb">656.42</td><td class="num tpos">+19.2%</td></tr>
+    </table>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">*FY25 base figures derived from disclosed YoY growth rates; refer company filings for audited FY25 absolute numbers.</p>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">Board / Corporate Actions — Q1 FY27</div>
+      <ul class="swot-ul">
+        <li>Board approved issuance of Non-Convertible Debentures (NCDs) up to ₹1,000 Cr via private placement</li>
+        <li>Bhaskaran N reappointed COO until 31 May 2028</li>
+        <li>Lalit Ahuja appointed as additional COO effective 13 July 2026</li>
+        <li>Multiple commercial paper issuances (₹200-500 Cr tranches) through the quarter for working capital</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Management Commentary</div>
+      <p style="font-size:12px;line-height:1.7;"><strong>Anshul Asawa, MD & CEO (Avenue Supermarts):</strong> "In large metros, growth in older stores, which have significantly higher revenue per square foot, was flat this quarter, while stores in non-metros continued to grow well."</p>
+      <p style="font-size:12px;line-height:1.7;margin-top:8px;"><strong>Vikram Dasu, CEO (Avenue E-Commerce):</strong> "We discontinued our operations in seven cities, which were marginal contributors. As of June 30, 2026, we operate in 11 cities," on DMart Ready's continued focus on metro profitability over city-count expansion.</p>
+    </div>
+  </div>
+
+  <div class="watermark">CB Research · Standalone figures relate to the DMart brick-and-mortar business; consolidated includes Avenue E-Commerce (DMart Ready)</div>
+</div>
+
+<!-- ================= STORE ECONOMICS ================= -->
+<div class="panel" id="p-store">
+  <div class="sec-hdr">🏬 Store Economics &amp; Network <span class="sec-note">Expansion Pace · Same-Store Sales · Metro vs Non-Metro · DMart Ready</span></div>
+
+  <div class="g3">
+    <div class="kpi"><div class="kl">Total Stores (30 Jun 2026)</div><div class="kv">503</div><div class="kc pos">Across 11 states/UTs</div></div>
+    <div class="kpi"><div class="kl">Stores Added Q1 FY27</div><div class="kv">3</div><div class="kc warn">2 of 3 in non-metros</div></div>
+    <div class="kpi"><div class="kl">Pace vs History</div><div class="kv">Slowest</div><div class="kc neg">In 12 quarters (3 years)</div></div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Same-Store Sales Growth (SSSG) — Quarterly Trend</div>
+    <table>
+      <tr><th>Quarter</th><th>SSSG</th><th>Context</th></tr>
+      <tr><td>Q1 FY26</td><td class="num">7.1%</td><td>Base quarter</td></tr>
+      <tr><td>Q2 FY26</td><td class="num">6.8%</td><td>Steady festive build-up</td></tr>
+      <tr><td>Q3 FY26</td><td class="num">5.6%</td><td>Festive timing shift effects</td></tr>
+      <tr><td>Q4 FY26</td><td class="num tb">10.8%</td><td>Strong quarter — partly pre-buying that pulled forward Q1 FY27 demand (per Jefferies)</td></tr>
+      <tr><td>Q1 FY27</td><td class="num tb warn">5.5%</td><td>Sharp moderation — metro stores flat, non-metro stores continued to grow</td></tr>
+    </table>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">Metro vs Non-Metro Divergence</div>
+      <p style="font-size:12.5px;line-height:1.75;">The single most important operating disclosure this quarter: DMart's <strong>older, high-throughput metro stores</strong> — which carry significantly higher revenue per square foot — grew flat year-on-year. <strong>Non-metro stores continued to grow well.</strong> Three brokerages (Goldman Sachs, JPMorgan, Jefferies) independently attribute the metro softness to intensifying quick-commerce competition for the daily grocery basket, a category where 10-20 minute delivery apps compete most directly with DMart's core footfall driver.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">DMart Ready (Avenue E-Commerce)</div>
+      <p style="font-size:12.5px;line-height:1.75;">DMart Ready exited 7 more cities in Q1 FY27, narrowing its footprint to <strong>11 cities</strong> — down sharply from a peak presence of 25 cities. Management frames this as a deliberate pivot toward large-metro profitability rather than city-count expansion, i.e. choosing unit economics over scale in a segment where quick-commerce players are burning capital aggressively. This is a rational retreat, not a failure to compete on delivery speed — DMart Ready was never built as a 10-minute delivery model.</p>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Cost Structure Pressures — Q1 FY27</div>
+    <ul class="swot-ul">
+      <li>Gross margin expanded ~50 bps YoY to a multi-quarter high, aided by higher contribution from General Merchandise & Apparel (higher-margin, discretionary categories)</li>
+      <li>Staff costs grew over 30% YoY, which limited the pass-through of gross margin gains into EBITDA margin expansion</li>
+      <li>Historically DMart's gross margin band has run around 14-14.5%, reflecting the low-margin, high-volume Foods/FMCG skew of its revenue mix</li>
+      <li>Store additions guidance for FY27 will be a key monitorable — Q1's 3-store addition is well below DMart's own multi-year run-rate</li>
+    </ul>
+  </div>
+
+  <div class="watermark">CB Research · Store and SSSG data per company investor presentation and brokerage notes (Goldman Sachs, JPMorgan, CITI, Jefferies)</div>
+</div>
+
+<!-- ================= WHY DMART DIFFERS ================= -->
+<div class="panel" id="p-differ">
+  <div class="sec-hdr">⚖️ Why DMart Differs <span class="sec-note">DMart vs Trent (Zudio/Westside) vs Vishal Mega Mart — Contrasting Retail Models</span></div>
+
+  <div class="card">
+    <div class="card-lbl">The Core Distinction</div>
+    <p style="font-size:12.5px;line-height:1.8;">All three companies are labelled "value retailers" by the market, but they compete for a different rupee in a customer's wallet, run fundamentally different cost structures, and answer to different competitive threats. DMart sells low-margin, high-frequency <strong>groceries and FMCG</strong> from <strong>owned</strong> big-box stores. Trent and Vishal Mega Mart sell higher-margin, discretionary-purchase <strong>apparel and general merchandise</strong> from <strong>leased</strong> mall/high-street stores. That single difference in category mix and real-estate strategy explains almost every gap in their headline numbers below.</p>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Peer Snapshot — Latest Reported Annual Numbers (FY26)</div>
+    <table>
+      <tr><th>Metric</th><th>DMart (Avenue Supermarts)</th><th>Trent Ltd</th><th>Vishal Mega Mart</th></tr>
+      <tr><td>Core Category</td><td>Grocery / Foods / FMCG</td><td>Fashion (Zudio, Westside)</td><td>Value Fashion + GM + FMCG</td></tr>
+      <tr><td>Real Estate Model</td><td class="tb">Predominantly Owned</td><td>Leased (Malls/High St.)</td><td>Leased</td></tr>
+      <tr><td>FY26 Revenue (₹ Cr)</td><td class="num tb">68,894.84 (total income)</td><td class="num">20,074.21</td><td class="num">12,906.00</td></tr>
+      <tr><td>FY26 Revenue Growth</td><td class="num tpos">+15.8%</td><td class="num tpos">+17-19%</td><td class="num tpos">+20.4%</td></tr>
+      <tr><td>FY26 EBITDA Margin</td><td class="num warn">~8.0% (Q1FY27)</td><td class="num tpos">~18.0-18.5%</td><td class="num">~10.2%</td></tr>
+      <tr><td>FY26 PAT (₹ Cr)</td><td class="num tb">2,969.86</td><td class="num">1,741-1,986</td><td class="num">839.20</td></tr>
+      <tr><td>FY26 SSSG</td><td class="num warn">Moderating (5.5-10.8%)</td><td class="num warn">Low single digits</td><td class="num tpos">11.0%</td></tr>
+      <tr><td>Store Count</td><td class="num">503</td><td class="num">1,263 (small format)</td><td class="num">795</td></tr>
+      <tr><td>P/E (approx.)</td><td class="num warn">~83x</td><td class="num">~90-100x</td><td class="num">~65.6x</td></tr>
+    </table>
+  </div>
+
+  <div class="g3 gap-top">
+    <div class="diff-card">
+      <div class="diff-num">01</div>
+      <div class="diff-title">Low Margin by Design, Not by Weakness</div>
+      <div class="diff-body">DMart's ~8% EBITDA margin looks weak next to Trent's ~18% — but that's the FMCG/grocery category structurally, everywhere in the world. Grocery retailers globally run 4-9% EBITDA margins because food and daily-use items are price-sensitive and repeat-purchase; apparel carries far higher gross margins because it's discretionary, seasonal and brand-driven. Comparing DMart's margin to Trent's is comparing a wholesale grocer to a fashion label — the more meaningful comparison is absolute EBITDA and PAT, where DMart is larger than Trent and Vishal Mega Mart combined.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">02</div>
+      <div class="diff-title">Owned Real Estate = Slower but Stickier</div>
+      <div class="diff-body">Trent and Vishal Mega Mart lease mall space and can open a store in months; DMart typically buys land and builds, which is why it added only 3 stores this quarter versus Trent's 132 store additions in a single quarter (FY26). The trade-off: DMart's occupancy cost is capped and depreciates rather than escalating with rental cycles, giving it structurally lower and more predictable long-run operating costs once a cluster matures — at the price of a much slower, capital-heavy rollout.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">03</div>
+      <div class="diff-title">Quick Commerce Hits Groceries, Not Fashion</div>
+      <div class="diff-body">The metro slowdown hurting DMart's SSSG is a grocery-specific problem — 10-20 minute delivery apps compete directly for the daily basket DMart is built around. Trent's Zudio/Westside and Vishal Mega Mart's apparel-led model face far less quick-commerce pressure, since fashion purchases are planned, tried-on, and browsed rather than impulse-reordered. This is precisely why DMart's LFL growth (5.5%) lagged Vishal Mega Mart's (11% FY26) this cycle, despite DMart's overall scale advantage.</div>
+    </div>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">Why DMart Still Performs So Well Despite Thinner Margins</div>
+      <ul class="swot-ul">
+        <li><strong>Absolute scale:</strong> ₹68,895 Cr FY26 total income dwarfs Trent (₹20,074 Cr) and Vishal Mega Mart (₹12,906 Cr) combined — DMart is roughly 2x the size of its two closest listed peers put together</li>
+        <li><strong>No long-tail SKU discipline:</strong> a curated, high-velocity assortment keeps inventory turns high and working capital days low — DMart doesn't carry seasonal fashion risk or end-of-season markdown cycles that eat into Trent/VMM's margins periodically</li>
+        <li><strong>Minimal marketing spend:</strong> DMart spends negligibly on advertising versus fashion retailers who must constantly refresh brand and seasonal campaigns — price itself is the marketing message</li>
+        <li><strong>Debt-light, high cash generation:</strong> owned real estate becomes a depreciating asset on the balance sheet rather than a recurring lease liability, supporting one of the cleanest balance sheets in Indian retail</li>
+        <li><strong>Category resilience in non-metros:</strong> even as metro grocery growth flattens, DMart's non-metro stores continue to compound, insulated from quick-commerce penetration which remains overwhelmingly metro-concentrated</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Why the Market Still Prices DMart at a Premium</div>
+      <p style="font-size:12.5px;line-height:1.75;">Despite a "soft" Q1 FY27 print and a ~83x trailing P/E versus a ~41x peer average (per Simply Wall St), DMart continues to command premium multiples because investors are pricing in <strong>predictability and moat durability</strong>, not near-term growth. Fifty-seven analysts cover the stock; the average rating is a cautious "Hold" with a consensus 12-month target clustered around ₹4,200-4,540 — implying the market sees the current growth deceleration as a cyclical, quick-commerce-driven air pocket rather than a structural break in the DMart model. The wide analyst target range (₹3,100 to ₹6,494) reflects genuine disagreement on how permanently quick commerce dents the metro grocery opportunity.</p>
+    </div>
+  </div>
+
+  <div class="watermark">CB Research · Peer figures from company filings, brokerage notes and public financial data trackers — not a recommendation to buy, sell or hold any security</div>
+</div>
+
+<!-- ================= CHARTS ================= -->
+<div class="panel" id="p-charts">
+  <div class="sec-hdr">📈 Charts <span class="sec-note">Revenue · EBITDA · Margins · SSSG Trend · Peer Comparison</span></div>
+  <div class="g2">
+    <div class="chart-card"><h3>Consolidated Revenue — Quarterly Trend (₹ Cr)</h3><p class="sub">Q1 FY26 to Q1 FY27</p><canvas id="chartRevenue" height="220"></canvas></div>
+    <div class="chart-card"><h3>Consolidated EBITDA &amp; Net Profit (₹ Cr)</h3><p class="sub">Q1 FY26 to Q1 FY27</p><canvas id="chartProfit" height="220"></canvas></div>
+  </div>
+  <div class="g2 gap-top">
+    <div class="chart-card"><h3>Same-Store Sales Growth Trend</h3><p class="sub">Q1 FY26 to Q1 FY27 — the key metric under pressure</p><canvas id="chartSSSG" height="220"></canvas></div>
+    <div class="chart-card"><h3>Store Count Growth</h3><p class="sub">FY23 to Q1 FY27</p><canvas id="chartStores" height="220"></canvas></div>
+  </div>
+  <div class="sec-hdr gap-top" style="font-size:1.05rem;border-color:var(--peer);"><span style="color:var(--peer);">🏢 Peer Comparison Charts</span> <span class="sec-note">DMart vs Trent vs Vishal Mega Mart — FY26</span></div>
+  <div class="g2">
+    <div class="chart-card"><h3>FY26 Revenue Comparison (₹ Cr)</h3><p class="sub">Logarithmic scale — reflects large scale disparity</p><canvas id="chartPeerRev" height="220"></canvas></div>
+    <div class="chart-card"><h3>FY26 EBITDA Margin Comparison (%)</h3><p class="sub">Category mix explains the gap, not operating weakness</p><canvas id="chartPeerMargin" height="220"></canvas></div>
+  </div>
+
+  <div class="watermark">CB Research · Chart.js visualizations — all values sourced from company filings and brokerage notes</div>
+</div>
+
+<!-- ================= SWOT ================= -->
+<div class="panel" id="p-swot">
+  <div class="sec-hdr">🔲 SWOT Analysis <span class="sec-note">DMart · Avenue Supermarts · Q1 FY27</span></div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+      <li>Largest listed value-retail grocery chain in India by revenue and absolute profit</li>
+      <li>EDLC-EDLP model with structurally lower cost base than promotional retailers</li>
+      <li>Owned real estate reduces long-run occupancy cost volatility</li>
+      <li>Debt-light balance sheet, strong free cash flow generation</li>
+      <li>Cluster-based expansion gives distribution and vendor-negotiation efficiency</li>
+    </ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+      <li>Slowest store addition pace in 12 quarters (3 stores in Q1 FY27)</li>
+      <li>Metro same-store sales growth flat — core high-productivity stores stalling</li>
+      <li>Low ROE (13.6% over 3 years) for a business trading at premium multiples</li>
+      <li>DMart Ready has shrunk from 25 to 11 cities, ceding online grocery share</li>
+      <li>Staff cost inflation (+30% YoY) is outpacing gross margin gains</li>
+    </ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+      <li>Continued non-metro expansion where quick-commerce penetration is minimal</li>
+      <li>Rising General Merchandise & Apparel mix improving blended gross margin</li>
+      <li>NCD fundraise (up to ₹1,000 Cr) to support balance-sheet-light expansion</li>
+      <li>Potential re-acceleration in store additions once current cluster matures</li>
+    </ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+      <li>Quick-commerce platforms (Blinkit, Zepto, Instamart) structurally eroding metro grocery footfall</li>
+      <li>Premium valuation (~83x P/E) leaves little room for further growth disappointment</li>
+      <li>Brokerage downgrades (Emkay: Sell; CITI cutting FY27-29 estimates) pressuring sentiment</li>
+      <li>Competitive intensity rising from Reliance Retail's Smart Bazaar and regional value chains</li>
+    </ul></div>
+  </div>
+  <div class="watermark">CB Research · SWOT synthesis, not investment advice</div>
+</div>
+
+<!-- ================= MOATS & RISKS ================= -->
+<div class="panel" id="p-moat">
+  <div class="sec-hdr">🏰 Moats &amp; Key Risks <span class="sec-note">Competitive advantages · Structural risks</span></div>
+  <div class="g3">
+    <div class="moat-card"><div class="moat-title">Owned Real Estate Moat</div><div class="moat-body">Large-format, owned stores anchor DMart's cost base in a way no leased-model competitor can replicate quickly — replicating this moat would take a rival a decade of disciplined capital allocation.</div><span class="moat-tag b-pos">Structural</span></div>
+    <div class="moat-card"><div class="moat-title">Procurement Scale</div><div class="moat-body">₹68,895 Cr in annual purchasing volume gives DMart vendor terms smaller retailers cannot match, reinforcing the EDLP promise without margin sacrifice.</div><span class="moat-tag b-pos">Durable</span></div>
+    <div class="moat-card"><div class="moat-title">Cluster Density</div><div class="moat-body">Contiguous store clusters reduce last-mile logistics cost per store versus rivals opening isolated stores across the country.</div><span class="moat-tag b-pos">Durable</span></div>
+    <div class="moat-card"><div class="moat-title">Quick Commerce Disintermediation</div><div class="moat-body">Metro same-store sales flat YoY — the clearest sign yet that instant delivery apps are structurally capturing a share of DMart's core daily-grocery footfall.</div><span class="moat-tag b-neg">Active Risk</span></div>
+    <div class="moat-card"><div class="moat-title">Capital Intensity Slowing Growth</div><div class="moat-body">Owned-store model that is a long-run strength is a near-term constraint — only 3 new stores in Q1 FY27, the slowest pace in three years.</div><span class="moat-tag b-warn">Watch</span></div>
+    <div class="moat-card"><div class="moat-title">Valuation Risk</div><div class="moat-body">At ~83x trailing P/E against a decelerating growth print, any further LFL disappointment carries outsized downside to the stock, as seen in the post-result 4%+ single-day fall.</div><span class="moat-tag b-warn">Watch</span></div>
+  </div>
+  <div class="watermark">CB Research · Moat and risk assessment for educational purposes only</div>
+</div>
+
+<!-- ================= VALUATION ================= -->
+<div class="panel" id="p-valuation">
+  <div class="sec-hdr">💰 Valuation Analysis <span class="sec-note">Current market data · CBF26 multiples · Peer comparison</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi sector-a"><div class="kl">Market Capitalisation</div><div class="kv">~₹2,55,371 Cr</div><div class="kc warn">Pre-result reference; moved post-result</div></div>
+    <div class="kpi"><div class="kl">Trailing P/E</div><div class="kv">~83x</div><div class="kc neg">vs peer avg ~41.1x</div></div>
+    <div class="kpi"><div class="kl">3-Year Average ROE</div><div class="kv">13.6%</div><div class="kc warn">Low relative to valuation</div></div>
+    <div class="kpi"><div class="kl">Analyst Rating (31-57 analysts)</div><div class="kv">Hold</div><div class="kc spec">Consensus cautious</div></div>
+    <div class="kpi"><div class="kl">12-Month Target (Consensus)</div><div class="kv">~₹4,200-4,540</div><div class="kc spec">Range: ₹3,100 – ₹6,494</div></div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Post-Result Stock Reaction</div>
+    <p style="font-size:12.5px;line-height:1.75;">Shares fell as much as 4.2-4.9% in the sessions around the Q1 FY27 release and business update, trading in a band of roughly ₹3,900-4,080 through mid-July 2026, as brokerages flagged weaker-than-expected LFL growth and a subdued near-term outlook. Despite this, DMart shares are still up ~7.8-10% year-to-date for 2026, outperforming a declining Nifty 50 over the same period.</p>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Brokerage Views — Q1 FY27</div>
+    <table>
+      <tr><th>Brokerage</th><th>Key View</th></tr>
+      <tr><td class="tb">Emkay Global</td><td>Initiated coverage with a Sell rating, citing high valuation</td></tr>
+      <tr><td class="tb">JPMorgan</td><td>EBITDA margin stable (+10bps YoY) on gross margin gains, but weak LFL growth (5.5%) expected to keep stock performance subdued</td></tr>
+      <tr><td class="tb">CITI</td><td>Cut FY27-29 revenue estimates 4-6% and EPS estimates 5-7% on moderating SSSG trend</td></tr>
+      <tr><td class="tb">Goldman Sachs</td><td>Flagged slower revenue growth and lower store additions despite large Q4 FY26 openings; cautious stance with upside risks tied to faster rollout / DMart Ready scaling</td></tr>
+      <tr><td class="tb">Jefferies</td><td>Q1 performance better than headline suggests — Q4 pre-buying pulled forward demand; gross margin at multi-quarter high, but staff cost growth (+30% YoY) capped EBITDA margin expansion</td></tr>
+    </table>
+  </div>
+
+  <div class="sec-hdr gap-top" style="font-size:1.05rem;border-color:var(--peer);"><span style="color:var(--peer);">🏢 Peer Valuation Snapshot</span></div>
+  <table>
+    <tr><th>Company</th><th>Market Cap (₹ Cr, approx.)</th><th>P/E (approx.)</th><th>FY26 PAT (₹ Cr)</th></tr>
+    <tr><td class="tb">DMart (Avenue Supermarts)</td><td class="num">~2,55,371</td><td class="num warn">~83x</td><td class="num tb">2,969.86</td></tr>
+    <tr><td>Trent Ltd</td><td class="num">~3,60,000-4,00,000†</td><td class="num warn">~90-100x</td><td class="num">1,741-1,986</td></tr>
+    <tr><td>Vishal Mega Mart</td><td class="num">~55,775</td><td class="num">~65.6x</td><td class="num">839.20</td></tr>
+  </table>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">†Trent market cap estimate directional only, given rapid price movements and a 1:2 bonus issue during FY26; refer live market data for current figures.</p>
+
+  <div class="watermark">CB Research · Valuation data as of mid-July 2026, subject to daily market movement — not investment advice</div>
+</div>
+
+<!-- ================= CBF26 RATING ================= -->
+<div class="panel" id="p-analyst">
+  <div class="sec-hdr">🎯 CBF26 Rating Scorecard <span class="sec-note">CB Research proprietary framework — not investment advice</span></div>
+  <div class="g3">
+    <div class="card"><div class="card-lbl">Growth (G)</div><div class="kv" style="font-size:1.4rem;font-weight:800;font-family:'IBM Plex Mono',monospace;">6.5 / 10</div><p style="font-size:11.5px;color:var(--muted);margin-top:6px;">Revenue growth intact (+14.9% YoY) but decelerating, store additions at 3-year low, SSSG down to 5.5%</p></div>
+    <div class="card"><div class="card-lbl">Margin (M)</div><div class="kv" style="font-size:1.4rem;font-weight:800;font-family:'IBM Plex Mono',monospace;">6.0 / 10</div><p style="font-size:11.5px;color:var(--muted);margin-top:6px;">EBITDA margin stable at 8.0%, gross margin at multi-quarter high, but staff cost inflation capping further gains</p></div>
+    <div class="card"><div class="card-lbl">Debt/Balance Sheet (D)</div><div class="kv" style="font-size:1.4rem;font-weight:800;font-family:'IBM Plex Mono',monospace;">8.0 / 10</div><p style="font-size:11.5px;color:var(--muted);margin-top:6px;">Debt-light, owned real estate, strong cash generation; new NCD issuance modest relative to scale</p></div>
+    <div class="card"><div class="card-lbl">Valuation (V)</div><div class="kv" style="font-size:1.4rem;font-weight:800;font-family:'IBM Plex Mono',monospace;">4.0 / 10</div><p style="font-size:11.5px;color:var(--muted);margin-top:6px;">~83x P/E against decelerating growth is a rich multiple even for a moated business</p></div>
+    <div class="card"><div class="card-lbl">Trend/Momentum (T)</div><div class="kv" style="font-size:1.4rem;font-weight:800;font-family:'IBM Plex Mono',monospace;">5.0 / 10</div><p style="font-size:11.5px;color:var(--muted);margin-top:6px;">Stock down post-results, mixed brokerage sentiment, but still positive YTD versus a falling Nifty</p></div>
+    <div class="card"><div class="card-lbl">Risk (R)</div><div class="kv" style="font-size:1.4rem;font-weight:800;font-family:'IBM Plex Mono',monospace;">6.0 / 10</div><p style="font-size:11.5px;color:var(--muted);margin-top:6px;">Quick-commerce disintermediation is a genuine structural risk to metro same-store sales; non-metro resilience offsets partially</p></div>
+  </div>
+  <div class="card gap-top" style="border:2px solid var(--gold);">
+    <div class="card-lbl" style="color:var(--gold);">CBF26 Composite Score</div>
+    <div style="font-size:2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--gold);">5.9 / 10</div>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px;">A structurally strong, well-run business facing a genuine near-term growth and margin test from quick commerce, priced at a valuation that leaves little room for further disappointment. CBF26 scores are a proprietary CB Research framework for structured comparison and do not constitute a buy, sell or hold recommendation.</p>
+  </div>
+  <div class="watermark">CB Research · CBF26 = CB Framework 2026 — six-factor scoring (G/M/D/V/T/R)</div>
+</div>
+
+<!-- ================= VERDICT ================= -->
+<div class="panel" id="p-verdict">
+  <div class="sec-hdr">⚖️ CB Research Verdict <span class="sec-note">Synthesis · Not investment advice</span></div>
+  <div class="verdict-card">
+    <div class="verdict-title">🏛️ The Examined Business</div>
+    <div class="verdict-body">DMart's Q1 FY27 print is a case study in a great business meeting a real headwind. Revenue and profit both grew double digits, EBITDA margin held firm, and the balance sheet remains one of the cleanest in Indian retail — yet the stock fell on results day because the market has learned to watch same-store sales growth as the true health indicator, and 5.5% against a 10.8% prior quarter is a genuine deceleration, concentrated exactly where it should worry investors: DMart's most productive, highest-revenue-per-square-foot metro stores. This is not a failure of execution; it is quick commerce eating into the specific job DMart was built to do — being the cheapest, closest place to buy groceries in bulk. DMart's response — leaning harder into non-metro expansion, trimming DMart Ready to profitable cities rather than chasing city count, and letting store additions slow rather than overpay for real estate — is a disciplined, not a panicked, one. Whether that discipline is rewarded depends on whether metro grocery demand structurally migrates online, or whether this is a cyclical air pocket that eases as quick-commerce unit economics mature and consolidate. At ~83x earnings, the market is still betting on the latter — but with far less patience than a year ago.</div>
+  </div>
+  <div class="watermark">CB Research · This is an educational synthesis, not a recommendation to buy, sell or hold any security</div>
+</div>
+
+<!-- ================= CB ASSIST ================= -->
+<div class="panel" id="p-cb">
+  <div class="sec-hdr">🤖 CB Assist <span class="sec-note">Ask in English or Tamil — Powered by CB Research knowledge base</span></div>
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist — DMart Q1 FY27</div>
+    <div class="cbassist-sub">தமிழிலும் கேளுங்கள் · Ask about revenue, margins, stores, quick commerce, valuation, or peers</div>
+    <div class="quick-q">
+      <button class="qq-btn" onclick="cbAsk('Why did DMart stock fall after results?')">Why did the stock fall?</button>
+      <button class="qq-btn" onclick="cbAsk('How does DMart differ from Trent?')">DMart vs Trent?</button>
+      <button class="qq-btn" onclick="cbAsk('What is same store sales growth?')">What is SSSG?</button>
+      <button class="qq-btn" onclick="cbAsk('குயிக் காமர்ஸ் தாக்கம் என்ன?')">குயிக் காமர்ஸ் தாக்கம்?</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="msg bot">வணக்கம் / Hello! I'm CB Assist. Ask me anything about DMart's Q1 FY27 results, its business model, or how it compares to Trent and Vishal Mega Mart.</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Type your question / உங்கள் கேள்வியை தட்டச்சு செய்யவும்..." onkeypress="if(event.key==='Enter')cbSend()">
+      <button onclick="cbSend()">Ask</button>
+    </div>
+  </div>
+  <div class="watermark">CB Assist provides educational information based on CB Research's knowledge base — not investment advice</div>
+</div>
+
+<!-- ================= SOCRATES ================= -->
+<div class="panel" id="p-socrates">
+  <div class="sec-hdr">🏛️ Cauvery Socrates <span class="sec-note">Socratic learning — Grocery retail economics · Quick commerce disruption · Valuation</span></div>
+  <div class="soc-topic-row">
+    <button class="soc-topic-pill" data-topic="model">🏬 Business Model</button>
+    <button class="soc-topic-pill" data-topic="results">📊 Q1 FY27 Results</button>
+    <button class="soc-topic-pill" data-topic="peer">⚖️ vs Peers</button>
+  </div>
+  <div class="soc-scorebar" id="socScorebar">
+    <span>✅ Correct: <span id="socCorrect">0</span></span>
+    <span>❌ Wrong: <span id="socWrong">0</span></span>
+  </div>
+  <div class="soc-box">
+    <div id="socContent">
+      <div class="soc-welcome">
+        <div class="soc-welcome-icon">🏛️</div>
+        <div class="soc-welcome-title">The Examined Portfolio</div>
+        <div class="soc-welcome-sub">"I know that I know nothing." — Socrates<br><br>Pick a topic above to test your understanding of DMart's business model, its Q1 FY27 results, and how it stacks up against Trent and Vishal Mega Mart.</div>
+      </div>
+    </div>
+    <button class="soc-next-btn" id="socNextBtn">Next Question →</button>
+  </div>
+  <div class="watermark">CB Research · Cauvery Socrates — a Socratic learning module, not investment advice</div>
+</div>
+
+</div>
+
+<script>
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('p-'+id).classList.add('active');
+}
+function showPeriod(id,btn){
+  document.querySelectorAll('.ptbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.psub').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('period-'+id).classList.add('active');
+}
+
+var CO = {
+  name:"Avenue Supermarts Ltd (DMart)",
+  q1fy27:{ revenue:18794.53, revenueYoY:14.9, ebitda:1499, ebitdaYoY:15.4, ebitdaMargin:8.0, pat:860.44, patYoY:11.3, patMargin:4.6,
+    standaloneRevenue:18343, standalonePAT:936, standalonePATYoY:12.8, sssg:5.5, storesAdded:3, totalStores:503, dmartReadyCities:11 },
+  fy26:{ totalIncome:68894.84, pat:2969.86, patYoY:9.7 },
+  peers:{ trent:{revenue:20074.21, ebitdaMargin:18.3, pat:1864}, vishalMegaMart:{revenue:12906, ebitdaMargin:10.2, pat:839.2} }
+};
+
+/* ---- CHARTS ---- */
+Chart.defaults.font.family="'IBM Plex Mono',monospace";
+Chart.defaults.color="#6e6860";
+function withDataLabels(){
+  return { id:'dl', afterDatasetsDraw:function(chart){
+    const ctx=chart.ctx;
+    chart.data.datasets.forEach(function(ds,i){
+      const meta=chart.getDatasetMeta(i);
+      meta.data.forEach(function(el,idx){
+        const v=ds.data[idx];
+        ctx.save();
+        ctx.font="700 10px 'IBM Plex Mono',monospace";
+        ctx.fillStyle="#181511";
+        ctx.textAlign="center";
+        ctx.fillText(typeof v==='number'?v.toLocaleString('en-IN'):v, el.x, el.y-6);
+        ctx.restore();
+      });
+    });
+  }};
+}
+new Chart(document.getElementById('chartRevenue'),{
+  type:'bar',
+  data:{labels:['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'],
+    datasets:[{label:'Revenue (₹ Cr)',data:[16359.70,16850,17204,17683.86,18794.53],backgroundColor:'#166534'}]},
+  options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')}}}},
+  plugins:[withDataLabels()]
+});
+new Chart(document.getElementById('chartProfit'),{
+  type:'bar',
+  data:{labels:['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'],
+    datasets:[
+      {label:'EBITDA (₹ Cr)',data:[1299,1310,1290,1239,1499],backgroundColor:'#1d4ed8'},
+      {label:'Net Profit (₹ Cr)',data:[772.81,700,725,656.42,860.44],backgroundColor:'#166534'}
+    ]},
+  options:{scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')}}}},
+  plugins:[withDataLabels()]
+});
+new Chart(document.getElementById('chartSSSG'),{
+  type:'line',
+  data:{labels:['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'],
+    datasets:[{label:'SSSG %',data:[7.1,6.8,5.6,10.8,5.5],borderColor:'#ea580c',backgroundColor:'#ea580c',tension:.3,fill:false}]},
+  options:{plugins:{legend:{display:false}}},
+  plugins:[withDataLabels()]
+});
+new Chart(document.getElementById('chartStores'),{
+  type:'line',
+  data:{labels:['FY23','FY24','FY25','FY26','Q1 FY27'],
+    datasets:[{label:'Store Count',data:[324,365,415,500,503],borderColor:'#166534',backgroundColor:'#166534',tension:.3,fill:false}]},
+  options:{plugins:{legend:{display:false}}},
+  plugins:[withDataLabels()]
+});
+new Chart(document.getElementById('chartPeerRev'),{
+  type:'bar',
+  data:{labels:['DMart','Trent','Vishal Mega Mart'],
+    datasets:[{label:'FY26 Revenue (₹ Cr)',data:[68894.84,20074.21,12906],backgroundColor:['#166534','#7c3aed','#1d4ed8']}]},
+  options:{plugins:{legend:{display:false}},scales:{y:{type:'logarithmic',ticks:{callback:v=>v.toLocaleString('en-IN')}}}},
+  plugins:[withDataLabels()]
+});
+new Chart(document.getElementById('chartPeerMargin'),{
+  type:'bar',
+  data:{labels:['DMart','Trent','Vishal Mega Mart'],
+    datasets:[{label:'FY26 EBITDA Margin %',data:[8.0,18.3,10.2],backgroundColor:['#166534','#7c3aed','#1d4ed8']}]},
+  options:{plugins:{legend:{display:false}}},
+  plugins:[withDataLabels()]
+});
+
+/* ---- CB ASSIST ---- */
+var CB_KB = [
+  {kw:['fall','fell','drop','stock price','why did the stock'], en:"DMart shares fell 4-5% around the Q1 FY27 result because same-store sales growth (SSSG) moderated sharply to 5.5% from 10.8% in Q4 FY26, with metro stores flat YoY. Brokerages like JPMorgan and CITI flagged this as the key negative even though revenue, EBITDA and PAT all grew double digits.", ta:"Q1 FY27 முடிவுகளுக்குப் பிறகு DMart பங்கு விலை 4-5% வரை குறைந்தது, ஏனெனில் அதே கடை விற்பனை வளர்ச்சி (SSSG) 10.8%-ல் இருந்து 5.5%-ஆக குறைந்தது, மெட்ரோ கடைகள் தட்டையாக இருந்தன."},
+  {kw:['trent','vs trent','differ','different','compare'], en:"DMart sells low-margin groceries from owned real estate (EBITDA margin ~8%); Trent sells higher-margin fashion (Zudio/Westside) from leased mall space (EBITDA margin ~18%). DMart is far bigger in absolute revenue and profit, but Trent's category and leased model let it grow store count much faster.", ta:"DMart சொந்த கட்டிடங்களில் இருந்து குறைந்த மார்ஜின் மளிகைப் பொருட்களை விற்கிறது; Trent வாடகை மால் இடத்தில் இருந்து அதிக மார்ஜின் கொண்ட ஃபேஷனை (Zudio/Westside) விற்கிறது."},
+  {kw:['sssg','same store','same-store','lfl','like for like'], en:"Same-Store Sales Growth (SSSG) or Like-for-Like (LFL) growth measures revenue growth only from stores open for over a year, stripping out the effect of new store additions. It's the cleanest signal of whether existing stores are genuinely getting busier. DMart's Q1 FY27 SSSG was 5.5%, down from 10.8% in Q4 FY26.", ta:"அதே கடை விற்பனை வளர்ச்சி (SSSG) என்பது ஒரு வருடத்திற்கும் மேலாக திறந்திருக்கும் கடைகளில் இருந்து மட்டும் வருவாய் வளர்ச்சியை அளவிடுகிறது."},
+  {kw:['quick commerce','blinkit','zepto','instamart','disrupt'], en:"Quick commerce (Blinkit, Zepto, Instamart) delivers groceries in 10-20 minutes, competing directly with DMart's daily-basket customers in large metros. This is the main reason DMart's older, high-productivity metro stores grew flat in Q1 FY27, while non-metro stores — where quick commerce has low penetration — continued to grow.", ta:"குயிக் காமர்ஸ் (Blinkit, Zepto, Instamart) 10-20 நிமிடங்களில் மளிகைப் பொருட்களை வழங்குகிறது, இது பெரிய மெட்ரோக்களில் DMart-இன் நாள்தோறும் வாடிக்கையாளர்களுடன் நேரடியாக போட்டியிடுகிறது."},
+  {kw:['revenue','sales'], en:"DMart's consolidated revenue from operations for Q1 FY27 was ₹18,794.53 Cr, up 14.9% YoY. Standalone (brick-and-mortar) revenue was ₹18,343 Cr, up 15.1% YoY.", ta:"DMart-இன் ஒருங்கிணைந்த வருவாய் Q1 FY27-ல் ₹18,794.53 கோடி, ஆண்டுக்கு ஆண்டு 14.9% அதிகரிப்பு."},
+  {kw:['profit','pat','net profit'], en:"Consolidated net profit (PAT) for Q1 FY27 was ₹860.44 Cr, up 11.3% YoY. Standalone PAT was ₹936 Cr, up 12.8% YoY, and 31% higher sequentially versus Q4 FY26.", ta:"ஒருங்கிணைந்த நிகர லாபம் Q1 FY27-ல் ₹860.44 கோடி, ஆண்டுக்கு ஆண்டு 11.3% அதிகரிப்பு."},
+  {kw:['margin','ebitda margin'], en:"Q1 FY27 EBITDA margin was 8.0%, up 10 bps YoY from 7.9%. This is structurally lower than fashion retailers like Trent (~18%) because DMart's revenue mix is dominated by low-margin Foods and FMCG.", ta:"Q1 FY27 EBITDA மார்ஜின் 8.0%, ஆண்டுக்கு ஆண்டு 10 bps அதிகரிப்பு."},
+  {kw:['store','stores added','how many stores'], en:"DMart operated 503 stores as of 30 June 2026, adding just 3 stores in Q1 FY27 — the slowest pace of expansion in 12 quarters (3 years), reflecting the capital-intensive owned-real-estate model.", ta:"DMart 30 ஜூன் 2026 நிலவரப்படி 503 கடைகளை இயக்கியது, Q1 FY27-ல் வெறும் 3 கடைகள் மட்டுமே சேர்க்கப்பட்டன."},
+  {kw:['valuation','p/e','pe ratio','expensive'], en:"DMart trades at roughly 83x trailing P/E versus a peer average of ~41x, per Simply Wall St. Analyst consensus rating is 'Hold' with a 12-month target price clustered around ₹4,200-4,540.", ta:"DMart தோராயமாக 83x P/E-ல் வர்த்தகமாகிறது, சக நிறுவனங்களின் சராசரி ~41x உடன் ஒப்பிடும்போது."},
+  {kw:['dmart ready','e-commerce','online'], en:"DMart Ready (run by Avenue E-Commerce) now operates in just 11 cities, down from a peak of 25, after exiting 7 more cities in Q1 FY27. Management is deliberately prioritising metro profitability over city-count expansion.", ta:"DMart Ready இப்போது 11 நகரங்களில் மட்டுமே செயல்படுகிறது, முன்பு 25 நகரங்களில் இருந்து குறைந்துள்ளது."},
+  {kw:['vishal mega mart','vmm'], en:"Vishal Mega Mart posted FY26 revenue of ₹12,906 Cr (+20.4% YoY), EBITDA margin ~10.2%, and PAT of ₹839.2 Cr, with SSSG of 11% — stronger LFL growth than DMart this cycle, though on a much smaller base and a leased, apparel-heavy model.", ta:"Vishal Mega Mart FY26 வருவாயில் ₹12,906 கோடி பதிவு செய்தது, 20.4% அதிகரிப்புடன்."},
+  {kw:['edlc','edlp','everyday low','business model'], en:"DMart's core strategy is EDLC-EDLP — Everyday Low Cost enabling Everyday Low Price. Instead of periodic discounting, DMart holds prices consistently low every day, funded by bulk procurement, lean stores, minimal advertising and high inventory turnover.", ta:"DMart-இன் முக்கிய உத்தி EDLC-EDLP — தினசரி குறைந்த செலவு தினசரி குறைந்த விலையை சாத்தியமாக்குகிறது."}
+];
+function cbFindAnswer(q){
+  var ql=q.toLowerCase();
+  for(var i=0;i<CB_KB.length;i++){
+    for(var j=0;j<CB_KB[i].kw.length;j++){
+      if(ql.indexOf(CB_KB[i].kw[j].toLowerCase())!==-1) return CB_KB[i];
+    }
+  }
+  return {en:"I don't have a specific answer for that in my DMart Q1 FY27 knowledge base yet — try asking about revenue, margins, stores, quick commerce, SSSG, valuation, or how DMart compares to Trent and Vishal Mega Mart.", ta:"அதற்கான குறிப்பிட்ட பதில் என்னிடம் இல்லை — வருவாய், மார்ஜின், கடைகள், குயிக் காமர்ஸ், மதிப்பீடு அல்லது சக நிறுவனங்கள் பற்றி கேளுங்கள்."};
+}
+function cbAppend(text,cls){
+  var d=document.createElement('div');
+  d.className='msg '+cls;
+  d.textContent=text;
+  document.getElementById('chatMsgs').appendChild(d);
+  document.getElementById('chatMsgs').scrollTop=document.getElementById('chatMsgs').scrollHeight;
+}
+function cbAsk(q){
+  cbAppend(q,'user');
+  var ans=cbFindAnswer(q);
+  var isTamil=/[\u0B80-\u0BFF]/.test(q);
+  setTimeout(function(){ cbAppend(isTamil?ans.ta:ans.en,'bot'); },350);
+}
+function cbSend(){
+  var inp=document.getElementById('chatInput');
+  var q=inp.value.trim();
+  if(!q) return;
+  cbAsk(q);
+  inp.value='';
+}
+
+/* ---- SOCRATES ---- */
+var SOC_TOPICS = {
+  model:{
+    title:"Business Model",
+    questions:[
+      {
+        q:"Why does DMart's EBITDA margin (~8%) look so much lower than Trent's (~18%), and does that mean DMart is a weaker business?",
+        options:[
+          "Yes, it proves Trent is a better-run company",
+          "No — grocery/FMCG is structurally a low-margin, high-volume category everywhere, while apparel carries higher gross margins; the comparison should be on absolute scale and cash generation instead",
+          "DMart's accountants are being conservative",
+          "EBITDA margin doesn't matter for any retailer"
+        ],
+        correct:1,
+        hint:"Think about what kind of products each company sells, and whether margin comparisons make sense across categories.",
+        responses:[
+          {cls:'wrong-resp',tag:'Not quite',text:"Margin alone doesn't measure how well a company is run — it partly reflects the economics of the category it operates in.",followup:"What category is DMart selling that structurally caps its margin?"},
+          {cls:'correct-resp',tag:'Correct',text:"Exactly. Grocery and FMCG are low-margin, repeat-purchase, price-sensitive categories worldwide — DMart's ~8% EBITDA margin is normal for that business, not a sign of weakness. Trent's ~18% reflects apparel's higher gross margins and brand-driven pricing. The more meaningful comparison is absolute EBITDA and PAT, where DMart's scale (₹68,895 Cr FY26 revenue) dwarfs Trent's ₹20,074 Cr.",followup:"Given this, what single metric would best capture whether DMart is truly the stronger business despite the lower margin?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"There's no evidence of accounting conservatism here — the margin gap is explained by category economics, not reporting choices.",followup:"What category does DMart sell that structurally runs on thin margins?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"EBITDA margin does matter — it just needs to be compared within the same category, not across grocery and fashion retail.",followup:"Can you think of a global grocery chain with similarly thin margins?"}
+        ]
+      },
+      {
+        q:"Why does DMart prefer owning its store real estate instead of leasing, unlike Trent or Vishal Mega Mart?",
+        options:[
+          "It's cheaper to build than to rent in the short term",
+          "Ownership caps long-run occupancy cost and insulates DMart from rental escalation, at the cost of a slower, more capital-intensive rollout",
+          "Indian law requires grocery stores to own their premises",
+          "DMart doesn't trust landlords"
+        ],
+        correct:1,
+        hint:"Think about the trade-off between upfront capital and long-term cost predictability.",
+        responses:[
+          {cls:'wrong-resp',tag:'Not quite',text:"Owning is actually more capital-intensive upfront than leasing — the benefit shows up over the long run, not immediately.",followup:"What happens to a leased store's costs over 10-15 years that an owned store avoids?"},
+          {cls:'correct-resp',tag:'Correct',text:"Right. Owned real estate converts a recurring lease expense into a depreciating balance sheet asset with a capped, predictable cost — but it means DMart can't open stores nearly as fast as a leasing rival like Trent, which added over 250 stores in FY26 alone versus DMart's much slower pace.",followup:"Why might this trade-off matter more now, with quick commerce pressuring metro growth?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"There's no such legal requirement — this is a deliberate strategic choice by DMart's management.",followup:"What long-term cost does ownership protect DMart from that leasing exposes Trent to?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"This is a financial and strategic decision, not a matter of trust.",followup:"What financial metric best captures the benefit of owning versus leasing over 10+ years?"}
+        ]
+      }
+    ]
+  },
+  results:{
+    title:"Q1 FY27 Results",
+    questions:[
+      {
+        q:"DMart's revenue and profit both grew double digits in Q1 FY27, yet the stock fell 4-5%. What best explains this apparent contradiction?",
+        options:[
+          "The market made an irrational mistake",
+          "Same-store sales growth (SSSG) moderated sharply to 5.5% from 10.8%, with metro stores flat — a leading indicator investors weight more heavily than headline revenue/profit growth driven partly by new stores",
+          "DMart's profit numbers were later found to be incorrect",
+          "Investors don't care about profit growth at all"
+        ],
+        correct:1,
+        hint:"Distinguish between growth from new stores versus growth from existing stores.",
+        responses:[
+          {cls:'wrong-resp',tag:'Not quite',text:"Markets can be volatile, but this reaction tracks a specific, disclosed operating metric — it isn't random.",followup:"What metric, distinct from total revenue, tells you how existing stores are performing?"},
+          {cls:'correct-resp',tag:'Correct',text:"Exactly. SSSG isolates growth from stores open over a year, stripping out the boost from new store additions. A drop from 10.8% to 5.5%, concentrated in DMart's highest-revenue-per-square-foot metro stores, signals the core business is decelerating even as total revenue still grows from new stores and non-metro strength.",followup:"Why would metro stores specifically be more exposed to this slowdown than non-metro stores?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"There's no restatement or accounting issue here — the results were as reported.",followup:"What operating metric moderated sharply even as headline revenue and profit grew?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"Investors do care about profit growth — but they weight it against the quality and sustainability of that growth, which SSSG helps reveal.",followup:"What does a flat same-store sales number in metros suggest about future growth quality?"}
+        ]
+      }
+    ]
+  },
+  peer:{
+    title:"vs Peers",
+    questions:[
+      {
+        q:"Vishal Mega Mart posted 11% same-store sales growth in FY26 while DMart's Q1 FY27 SSSG was only 5.5%. Does this mean Vishal Mega Mart is now the better business?",
+        options:[
+          "Yes, higher SSSG always means a better business",
+          "Not necessarily — the two companies sell different categories facing different competitive pressures; Vishal Mega Mart's apparel-led model faces far less quick-commerce competition than DMart's grocery-led model",
+          "No, DMart's numbers are simply wrong",
+          "SSSG comparisons across companies are meaningless"
+        ],
+        correct:1,
+        hint:"Think about which category — grocery or apparel — is more exposed to 10-20 minute delivery competition.",
+        responses:[
+          {cls:'wrong-resp',tag:'Not quite',text:"SSSG is a useful metric, but it needs context — the underlying category matters as much as the number itself.",followup:"Which category, grocery or apparel, is more exposed to quick-commerce competition?"},
+          {cls:'correct-resp',tag:'Correct',text:"Exactly. Vishal Mega Mart's growth is apparel and general-merchandise led, a category barely touched by quick commerce since fashion purchases are planned and browsed, not impulse-reordered. DMart's SSSG softness is concentrated precisely in its grocery-heavy metro stores, which quick commerce targets directly. Comparing the two numbers without this context is misleading.",followup:"Given this, what would be a fairer way to compare DMart and Vishal Mega Mart's underlying momentum?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"There's no indication DMart's disclosed figures are inaccurate — both companies reported their numbers through regulatory filings.",followup:"What category difference could explain the gap in SSSG between the two companies?"},
+          {cls:'wrong-resp',tag:'Not quite',text:"SSSG comparisons are useful, but only when you also account for category mix and competitive exposure.",followup:"What competitive threat affects DMart's category far more than Vishal Mega Mart's?"}
+        ]
+      }
+    ]
+  }
+};
+
+let socState={topic:null,questions:[],idx:0,correct:0,wrong:0,answered:false};
+function socLoadTopic(topicKey,btn){
+  document.querySelectorAll('.soc-topic-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const topic=SOC_TOPICS[topicKey];
+  if(!topic) return;
+  socState={topic:topicKey,questions:[...topic.questions],idx:0,correct:0,wrong:0,answered:false};
+  document.getElementById('socScorebar').classList.add('visible-flex');
+  document.getElementById('socCorrect').textContent='0';
+  document.getElementById('socWrong').textContent='0';
+  document.getElementById('socNextBtn').classList.remove('visible');
+  socRenderQ();
+}
+function socRenderQ(){
+  const q=socState.questions[socState.idx];
+  if(!q){ socShowResults(); return; }
+  socState.answered=false;
+  document.getElementById('socNextBtn').classList.remove('visible');
+  let html=`<div class="soc-q-label">Question ${socState.idx+1} of ${socState.questions.length} · ${SOC_TOPICS[socState.topic].title}</div><div class="soc-q-text">${q.q}</div>${q.hint?`<div class="soc-q-hint">💡 Hint: ${q.hint}</div>`:''}`;
+  html+=`<div class="soc-mcq">`+q.options.map((o,i)=>`<button class="soc-opt" data-idx="${i}" onclick="socMCQ(${i})">${o}</button>`).join('')+`</div>`;
+  document.getElementById('socContent').innerHTML=html;
+}
+function socMCQ(chosen){
+  if(socState.answered) return;
+  socState.answered=true;
+  const q=socState.questions[socState.idx];
+  const opts=document.querySelectorAll('.soc-opt');
+  opts.forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct) b.classList.add('correct');
+    else if(i===chosen && chosen!==q.correct) b.classList.add('wrong');
+    else b.classList.add('reveal');
+  });
+  const isCorrect=chosen===q.correct;
+  if(isCorrect) socState.correct++; else socState.wrong++;
+  document.getElementById('socCorrect').textContent=socState.correct;
+  document.getElementById('socWrong').textContent=socState.wrong;
+  const resp=q.responses[chosen];
+  const respDiv=document.createElement('div');
+  respDiv.className=`soc-response ${resp.cls}`;
+  respDiv.innerHTML=`<span class="soc-resp-tag">${resp.tag}</span>${resp.text}<div class="soc-followup">🔁 Follow-up challenge: ${resp.followup}</div>`;
+  document.getElementById('socContent').appendChild(respDiv);
+  document.getElementById('socNextBtn').classList.add('visible');
+}
+function socNextQ(){
+  socState.idx++;
+  if(socState.idx>=socState.questions.length) socShowResults();
+  else socRenderQ();
+}
+function socShowResults(){
+  const total=socState.questions.length;
+  const score=socState.correct;
+  const pct=total?Math.round((score/total)*100):0;
+  const verdict=pct>=80?{icon:'🏛️',title:'Socratic Scholar',msg:'You reasoned well through complex questions. The examined portfolio thrives.'}
+    :pct>=50?{icon:'📚',title:'Active Learner',msg:"Good engagement. Revisit the questions you found difficult and return."}
+    :{icon:'🔍',title:"Beginner's Mind",msg:"Socrates would say this is the best starting point. Revisit DMart's business model and try again."};
+  document.getElementById('socContent').innerHTML=`<div class="soc-complete"><div class="soc-complete-icon">${verdict.icon}</div><div class="soc-complete-title">${verdict.title}</div><div class="soc-complete-msg">You answered <strong>${score} of ${total}</strong> questions well (${pct}%).<br><br>${verdict.msg}</div><button class="soc-restart-btn" onclick="socRestart()">Try Another Topic</button></div>`;
+  document.getElementById('socNextBtn').classList.remove('visible');
+}
+function socRestart(){
+  document.querySelectorAll('.soc-topic-pill').forEach(b=>b.classList.remove('active'));
+  document.getElementById('socScorebar').classList.remove('visible-flex');
+  document.getElementById('socContent').innerHTML=`<div class="soc-welcome"><div class="soc-welcome-icon">🏛️</div><div class="soc-welcome-title">The Examined Portfolio</div><div class="soc-welcome-sub">"I know that I know nothing." — Socrates<br><br>Pick another topic above to continue your Socratic journey.</div></div>`;
+}
+function socWireEvents(){
+  document.querySelectorAll('.soc-topic-pill[data-topic]').forEach(function(btn){
+    btn.addEventListener('click',function(){ socLoadTopic(btn.dataset.topic,btn); });
+  });
+  const nextBtn=document.getElementById('socNextBtn');
+  if(nextBtn) nextBtn.addEventListener('click',socNextQ);
+}
+socWireEvents();
+</script>
+
+</body>
+</html>

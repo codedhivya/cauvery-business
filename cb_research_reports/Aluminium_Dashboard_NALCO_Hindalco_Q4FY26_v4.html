@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aluminium – NALCO vs Hindalco – Q4 FY26 Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd6;--text:#1a1714;--muted:#6b6660;
+  --nalco:#0d9488;--hindalco:#c84b31;--novelis:#2979FF;
+  --accent:#c84b31;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+
+/* HEADER */
+.hdr{background:#1a1714;padding:24px 36px 18px;display:flex;justify-content:space-between;align-items:flex-end}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;letter-spacing:2px;line-height:1}
+.hdr p{color:#aaa;font-size:0.75rem;font-family:'DM Mono',monospace;margin-top:4px;letter-spacing:1px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bdg{padding:3px 9px;border-radius:3px;font-size:0.68rem;font-family:'DM Mono',monospace}
+.bdg-r{background:var(--accent);color:#fff}
+.bdg-g{background:#333;color:#bbb;border:1px solid #555}
+
+/* TABS */
+.tabs{background:#111;padding:0 36px;display:flex;border-bottom:2px solid var(--accent);overflow-x:auto}
+.tab{padding:12px 20px;cursor:pointer;font-size:0.8rem;font-weight:500;color:#777;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.4px}
+.tab:hover{color:#ccc}
+.tab.on{color:#fff;border-bottom-color:var(--accent)}
+
+/* MAIN */
+.main{padding:24px 36px;max-width:1440px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+
+/* SECTION TITLE */
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1.5px;margin:0 0 14px;padding-bottom:6px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.st .sq{width:9px;height:9px;border-radius:2px;background:var(--accent)}
+
+/* KPI GRID */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi[data-c=NALCO]::before{background:var(--nalco)}
+.kpi[data-c=Hindalco]::before{background:var(--hindalco)}
+.kpi[data-c=Novelis]::before{background:var(--novelis)}
+.kpi-co{font-size:.65rem;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;line-height:1}
+.kpi-lbl{font-size:.62rem;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.kpi-yoy{margin-top:7px;font-size:.7rem;font-weight:600;padding:2px 6px;border-radius:3px;display:inline-block}
+.up{background:#dcfce7;color:#15803d}.dn{background:#fee2e2;color:#b91c1c}.flat{background:#f3f4f6;color:#6b7280}
+.kpi-sub{font-size:.65rem;color:var(--muted);margin-top:5px}
+
+/* CHART GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:24px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:24px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+.ct{font-size:.72rem;font-weight:600;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.cw{position:relative;height:240px}
+.cw-lg{position:relative;height:300px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl th{background:#1a1714;color:#fff;padding:9px 12px;text-align:left;font-size:.68rem;letter-spacing:.8px;font-family:'DM Mono',monospace;font-weight:400;white-space:nowrap}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#faf9f6}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
+.mono{font-family:'DM Mono',monospace;font-size:.78rem}
+.tag{padding:2px 7px;border-radius:3px;font-size:.65rem;font-weight:600;font-family:'DM Mono',monospace}
+.buy{background:#dcfce7;color:#15803d}.hold{background:#fef9c3;color:#854d0e}.neutral{background:#f3f4f6;color:#6b7280}
+
+/* PROFILE CARDS */
+.pg{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.pg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:-10px;right:-10px;width:70px;height:70px;border-radius:50%;opacity:.06}
+.pc[data-c=NALCO]::after{background:var(--nalco)}
+.pc[data-c=Hindalco]::after{background:var(--hindalco)}
+.pc[data-c=Novelis]::after{background:var(--novelis)}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px}
+.ptype{font-size:.63rem;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:500}
+.pure{background:#e0f2fe;color:#0369a1}.hybrid{background:#fef3c7;color:#92400e}.spec{background:#ede9fe;color:#5b21b6}
+.sb{margin-bottom:6px}
+.sl{display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:2px;color:var(--muted)}
+.st2{height:5px;background:#f0ede8;border-radius:3px;overflow:hidden}
+.sf{height:100%;border-radius:3px}
+.pdiv{border:none;border-top:1px solid var(--border);margin:10px 0}
+.pi{font-size:.74rem;color:var(--muted);line-height:1.5}
+.pi strong{color:var(--text)}
+
+/* ANALYST CARDS */
+.ag{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.ac-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;margin-bottom:8px}
+.ac-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ac-lbl{font-size:.7rem;color:var(--muted)}
+.ac-val{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500}
+.ac-view{font-size:.73rem;color:var(--muted);line-height:1.5;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+
+/* RISK */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.rc-title{font-weight:600;font-size:.78rem;margin-bottom:9px}
+.ri{display:flex;gap:7px;align-items:flex-start;font-size:.74rem;color:var(--muted);margin-bottom:5px;line-height:1.5}
+
+/* FOOTNOTE */
+.fn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;margin-top:20px}
+.wm{text-align:center;padding:10px;font-size:.66rem;color:#ccc;font-family:'DM Mono',monospace;letter-spacing:1px}
+
+/* MARKET PRICE ROW */
+.mp-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+.mp{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.mp-co{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.mp-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem}
+.mp-chg{font-size:.68rem;font-family:'DM Mono',monospace;margin-top:3px}
+.mp-hi{font-size:.62rem;color:var(--muted);margin-top:3px}
+.mp-pe{font-size:.7rem;font-weight:600;margin-top:4px;font-family:'DM Mono',monospace}
+
+@media(max-width:900px){
+  .main{padding:12px}
+  .hdr{padding:14px;flex-direction:column;gap:8px}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .mp-row{grid-template-columns:1fr}
+  .g2,.g3,.g21,.pg,.pg3,.ag,.rg{grid-template-columns:1fr}
+}
+
+/* ══ CB ASSIST ══ */
+.cba-wrap{max-width:900px;margin:0 auto;}
+.cba-head{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:12px;border-bottom:3px solid var(--accent);}
+.cba-logo{width:46px;height:46px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;flex-shrink:0;letter-spacing:1px;}
+.cba-head-text h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;margin-bottom:2px;}
+.cba-head-text p{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;}
+.cba-qlbl{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding:6px 0 6px 10px;border-left:3px solid var(--accent);}
+.qa-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.qa-q{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;cursor:pointer;transition:background .15s;}
+.qa-q:hover{background:#faf9f6;}
+.qa-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--border);line-height:1;flex-shrink:0;width:30px;}
+.qa-qtxt .qen{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:3px;}
+.qa-qtxt .qta{font-size:.78rem;color:var(--accent);font-weight:500;}
+.qa-toggle{margin-left:auto;font-size:.8rem;color:var(--muted);flex-shrink:0;transition:transform .2s;padding-top:2px;}
+.qa-card.open .qa-toggle{transform:rotate(180deg);}
+.qa-ans{display:none;padding:0 16px 16px 58px;border-top:1px solid var(--border);}
+.qa-card.open .qa-ans{display:block;}
+.ans-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-top:12px;margin-bottom:4px;}
+.lang-h{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;margin-top:14px;margin-bottom:8px;padding:5px 10px;border-radius:5px;display:inline-block;}
+.lang-h.en{background:#1a1714;color:#fff;}
+.lang-h.ta{background:var(--accent);color:#fff;}
+.ans-qline{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:6px;padding:8px 10px;background:#faf9f6;border-left:3px solid var(--border);border-radius:0 5px 5px 0;}
+.ans-en{font-size:.8rem;color:var(--text);line-height:1.75;}
+.ans-ta{font-size:.78rem;color:var(--muted);line-height:1.75;font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+/* live chat */
+.cba-chat{background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:18px 20px;margin-top:22px;}
+.cba-chat-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.cba-chat-title .live-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+.chat-msgs{min-height:100px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.cmsg{padding:9px 13px;border-radius:8px;font-size:.8rem;max-width:88%;line-height:1.55;}
+.cmsg.u{background:#1a1714;color:#fff;align-self:flex-end;border-radius:8px 8px 2px 8px;}
+.cmsg.b{background:#f5f4f0;border:1px solid var(--border);align-self:flex-start;border-radius:8px 8px 8px 2px;}
+.cmsg.b strong{color:var(--accent);}
+.chat-row{display:flex;gap:8px;}
+.chat-in{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:.8rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-in:focus{border-color:var(--accent);}
+.chat-btn{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:.78rem;font-family:'DM Mono',monospace;letter-spacing:.5px;cursor:pointer;transition:opacity .18s;}
+.chat-btn:hover{opacity:.85;}
+.chat-btn:disabled{opacity:.45;cursor:not-allowed;}
+.typing{display:none;align-items:center;gap:5px;padding:6px 12px;}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:tdot 1.1s infinite;}
+.typing span:nth-child(2){animation-delay:.18s;}.typing span:nth-child(3){animation-delay:.36s;}
+@keyframes tdot{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>Aluminium Industry — NALCO vs Hindalco</h1>
+    <p>INDIA SECTOR DASHBOARD · Q4 FY26 BOTH ACTUALS · NALCO Q4 ACT (₹5,013 Cr, PAT ₹1,722 Cr) · HINDALCO Q4 ACT (₹78,133 Cr, PAT ₹2,597 Cr) · V4 · EBITDA CHARTS + CB RANKING TAB + EN/TA CB ASSIST · UPDATED 11 JUN 2026</p>
+  </div>
+  <div class="badges">
+    <span class="bdg bdg-r">Q4 FY26</span>
+    <span class="bdg bdg-g">NALCO · Hindalco (incl. Novelis)</span>
+    <span class="bdg bdg-g">₹ Cr · Official BSE/NSE Filings</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="sw('ov')">Overview</div>
+  <div class="tab" onclick="sw('rank')">CB Ranking</div>
+  <div class="tab" onclick="sw('perf')">Performance &amp; Charts</div>
+  <div class="tab" onclick="sw('seg')">Business Segments</div>
+  <div class="tab" onclick="sw('raw')">Raw Materials</div>
+  <div class="tab" onclick="sw('exp')">Expansions: India &amp; US</div>
+  <div class="tab" onclick="sw('an')">Analyst View</div>
+  <div class="tab" onclick="sw('risk')">Risks &amp; Outlook</div>
+  <div class="tab" style="color:#c84b31;font-weight:700;" onclick="sw('cbassist')">🤖 CB Assist</div>
+</div>
+
+<div class="main">
+
+<!-- ══ TAB 1: OVERVIEW ══ -->
+<div id="pov" class="pane on">
+
+  <div class="st"><div class="sq"></div> MARKET PRICE SNAPSHOT (NSE · 08 Jun 2026)</div>
+  <div class="mp-row">
+    <div class="mp">
+      <div class="mp-co">NALCO (NATIONALUM)</div>
+      <div class="mp-price" style="color:var(--nalco)">₹379</div>
+      <div class="mp-chg up">▲ +117% 1Y</div>
+      <div class="mp-hi">52W: ₹180–₹445 · MCap ~₹70,500 Cr</div>
+      <div class="mp-pe">P/E ~12x FY26 · Net Cash PSU</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Hindalco (HINDALCO)</div>
+      <div class="mp-price" style="color:var(--hindalco)">₹1,065</div>
+      <div class="mp-chg up">▲ +18% CY26 · 52W High ₹1,105 (14 May)</div>
+      <div class="mp-hi">52W Low ~₹584 · MCap ~₹2,39,000 Cr</div>
+      <div class="mp-pe">P/E ~17.7x FY26 reported · Sensex inclusion candidate (Jun 2026 rejig)</div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> Q4 FY26 KPI SNAPSHOT · BOTH ACTUALS (₹ Cr · BSE/NSE Filings)</div>
+  <div class="kpi-row">
+    <div class="kpi" data-c="NALCO">
+      <div class="kpi-co">NALCO Revenue</div>
+      <div class="kpi-val">₹5,013</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26 ACTUAL ★</div>
+      <span class="kpi-yoy dn">-4.8% YoY</span>
+      <div class="kpi-sub">+6% QoQ · Alumina realisation $348/t · Metal $2,700/t</div>
+    </div>
+    <div class="kpi" data-c="NALCO">
+      <div class="kpi-co">NALCO PAT</div>
+      <div class="kpi-val">₹1,722</div>
+      <div class="kpi-lbl">PAT (Cr) · Q4 FY26 CONSOL.</div>
+      <span class="kpi-yoy dn">-16.7% YoY</span>
+      <div class="kpi-sub">+7.9% QoQ · High base of Q4 FY25 alumina super-cycle</div>
+    </div>
+    <div class="kpi" data-c="NALCO">
+      <div class="kpi-co">NALCO FY26</div>
+      <div class="kpi-val">₹5,816</div>
+      <div class="kpi-lbl">FY26 PAT (Cr) · RECORD</div>
+      <span class="kpi-yoy up">+9.2% YoY</span>
+      <div class="kpi-sub">FY26 Revenue ₹17,843 Cr · Highest-ever · PAT margin ~33%</div>
+    </div>
+    <div class="kpi" data-c="Hindalco">
+      <div class="kpi-co">Hindalco Revenue</div>
+      <div class="kpi-val">₹78,133</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26 ACTUAL ★</div>
+      <span class="kpi-yoy up">+20.4% YoY</span>
+      <div class="kpi-sub">Record · EBITDA ₹11,197 Cr all-time high (+8.8%)</div>
+    </div>
+    <div class="kpi" data-c="Hindalco">
+      <div class="kpi-co">Hindalco PAT</div>
+      <div class="kpi-val">₹2,597</div>
+      <div class="kpi-lbl">PAT (Cr) · Q4 FY26 REPORTED</div>
+      <span class="kpi-yoy dn">-50.8% YoY†</span>
+      <div class="kpi-sub">₹4,171 Cr exceptional (Oswego fire) · PBT pre-exceptional +16%</div>
+    </div>
+    <div class="kpi" data-c="Novelis">
+      <div class="kpi-co">Novelis (US Sub)</div>
+      <div class="kpi-val">$4,787 Mn</div>
+      <div class="kpi-lbl">NET SALES · Q4 FY26</div>
+      <span class="kpi-yoy up">+4% YoY</span>
+      <div class="kpi-sub">Adj EBITDA $459 Mn (-3%) · $544/t (+10%) · Shipments 844 kt (-12%)</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Q4 FY26 Revenue (₹ Cr) — Scale Difference</div>
+      <div class="cw"><canvas id="c_rev"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Revenue YoY Growth (%) — Q4 FY26</div>
+      <div class="cw"><canvas id="c_yoy"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> COMPARATIVE FINANCIALS</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Company</th><th>Quarter</th><th>Revenue (₹ Cr)</th><th>YoY %</th>
+        <th>EBITDA (₹ Cr)</th><th>EBITDA %</th><th>PAT (₹ Cr)</th><th>YoY PAT%</th>
+        <th>FY26 Revenue</th><th>FY26 EBITDA</th><th>FY26 PAT</th><th>Market Cap</th><th>Div / share</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="dot" style="background:var(--nalco)"></span>NALCO</td>
+        <td class="mono">Q4 FY26 ★</td><td class="mono">5,013</td>
+        <td><span class="tag hold">-4.8%</span></td><td class="mono">~2,230*</td><td class="mono">~44.5%*</td>
+        <td class="mono">1,722</td><td><span class="tag hold">-16.7%</span></td>
+        <td class="mono">17,843</td><td class="mono">~7,950*</td><td class="mono">5,816</td>
+        <td class="mono">~₹70,500 Cr</td><td class="mono">₹4.50 + ₹2 interims‡</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--hindalco)"></span>Hindalco</td>
+        <td class="mono">Q4 FY26 ★</td><td class="mono">78,133</td>
+        <td><span class="tag buy">+20.4%</span></td><td class="mono">11,197</td><td class="mono">14.3%</td>
+        <td class="mono">2,597†</td><td><span class="tag hold">-50.8%†</span></td>
+        <td class="mono">2,74,944</td><td class="mono">38,097</td><td class="mono">13,391</td>
+        <td class="mono">~₹2,39,000 Cr</td><td class="mono">₹5 final</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div style="font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace">★ Both Q4 FY26 actuals from BSE/NSE filings &nbsp;|&nbsp; * NALCO EBITDA is CB Research estimate from filed P&amp;L (revenue ₹5,013 Cr less expenses ₹2,898 Cr, adjusted for other income/depreciation) — among the highest margins in Indian metals &nbsp;|&nbsp; † Hindalco Q4 PAT hit by ₹4,171 Cr exceptional charges from Novelis Oswego (NY) plant fires; PBT BEFORE exceptional items was ₹7,622 Cr, UP 16% YoY — the operating business made record profits &nbsp;|&nbsp; ‡ NALCO FY26 interim dividends include 2nd interim ₹4.50/share and 3rd interim ₹2/share (₹367.33 Cr)</div>
+
+</div><!-- /pov -->
+
+<!-- ══ TAB 2: CB RANKING ══ -->
+<div id="prank" class="pane">
+
+  <div class="st"><div class="sq"></div> CB RANKING — HEAD-TO-HEAD SCORECARD (FY26 · 12 PARAMETERS)</div>
+  <div style="overflow-x:auto;margin-bottom:12px">
+  <table class="tbl">
+    <thead><tr><th>#</th><th>Parameter</th><th>NALCO</th><th>Hindalco</th><th>Rank #1</th><th>CB Reading</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td><strong>Revenue Scale (FY26)</strong></td><td class="mono">₹17,843 Cr</td><td class="mono">₹2,74,944 Cr</td><td><span class="tag buy" style="background:#fee2e2;color:#b91c1c">Hindalco</span></td><td>15.4x larger — world's biggest aluminium company by revenue</td></tr>
+      <tr><td class="mono">2</td><td><strong>EBITDA Scale (FY26)</strong></td><td class="mono">~₹7,950 Cr*</td><td class="mono">₹38,097 Cr</td><td><span class="tag buy" style="background:#fee2e2;color:#b91c1c">Hindalco</span></td><td>4.8x larger; both at record/near-record levels</td></tr>
+      <tr><td class="mono">3</td><td><strong>Net Profit Scale (FY26)</strong></td><td class="mono">₹5,816 Cr</td><td class="mono">₹13,391 Cr</td><td><span class="tag buy" style="background:#fee2e2;color:#b91c1c">Hindalco</span></td><td>2.3x larger even after ₹4,565 Cr Oswego hit</td></tr>
+      <tr><td class="mono">4</td><td><strong>Revenue Growth (FY26 YoY)</strong></td><td class="mono">+6.3%</td><td class="mono">+15.3%</td><td><span class="tag buy" style="background:#fee2e2;color:#b91c1c">Hindalco</span></td><td>Copper +52% Q4 and Novelis metal-price pass-through drove it</td></tr>
+      <tr><td class="mono">5</td><td><strong>Revenue CAGR (FY24→FY26)</strong></td><td class="mono">16.5%</td><td class="mono">12.8%</td><td><span class="tag buy">NALCO</span></td><td>Price-cycle driven, not volume — quality of growth differs</td></tr>
+      <tr><td class="mono">6</td><td><strong>EBITDA Margin (FY26)</strong></td><td class="mono">~44.6%*</td><td class="mono">13.9%</td><td><span class="tag buy">NALCO</span></td><td>3.2x richer — fully captive raw material chain</td></tr>
+      <tr><td class="mono">7</td><td><strong>PAT Margin (FY26)</strong></td><td class="mono">32.6%</td><td class="mono">4.9%</td><td><span class="tag buy">NALCO</span></td><td>One of the fattest PAT margins in Indian large-caps</td></tr>
+      <tr><td class="mono">8</td><td><strong>Margin Expansion (FY24→FY26)</strong></td><td class="mono">+17.2 pp (27.4→44.6)</td><td class="mono">+2.0 pp (11.9→13.9)</td><td><span class="tag buy">NALCO</span></td><td>NALCO's expansion is price-led — it can reverse just as fast</td></tr>
+      <tr><td class="mono">9</td><td><strong>PAT Growth (FY26 YoY)</strong></td><td class="mono">+9.2% (record)</td><td class="mono">-16.3% (Oswego exceptional)</td><td><span class="tag buy">NALCO</span></td><td>Hindalco ex-exceptional PAT was at all-time highs</td></tr>
+      <tr><td class="mono">10</td><td><strong>Balance Sheet / Debt</strong></td><td class="mono">Debt-Free · Cash ~₹7,590 Cr</td><td class="mono">Borrowings ~₹56,200 Cr · Novelis 4.1x</td><td><span class="tag buy">NALCO</span></td><td>Cash = ~11% of NALCO MCap; Hindalco leverage peaks FY27</td></tr>
+      <tr><td class="mono">11</td><td><strong>ROE (FY26)</strong></td><td class="mono">~28%</td><td class="mono">~12.4%</td><td><span class="tag buy">NALCO</span></td><td>Cyclical-peak ROE vs capex-trough ROE — both will mean-revert</td></tr>
+      <tr><td class="mono">12</td><td><strong>Valuation (P/E FY26)</strong></td><td class="mono">~12x · Div yield ~1.7%+</td><td class="mono">~17.7x reported (~13.7x ex-exceptional)</td><td><span class="tag buy">NALCO</span></td><td>Cheaper optically — but low multiple prices peak-cycle earnings</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="rg" style="margin-bottom:20px">
+    <div class="rc"><div class="rc-title" style="color:var(--nalco)">🏆 NALCO wins 8 of 12 — Quality &amp; Efficiency ranks</div>
+      <div class="ri"><span>✅</span><span>Margins (#6,#7,#8), profitability growth (#9), debt (#10), ROE (#11), valuation (#12), CAGR (#5). NALCO is the superior <strong>per-rupee machine</strong>: every rupee of revenue produces 33 paise of PAT with zero debt. But 6 of its 8 wins are amplified by the alumina/LME price cycle sitting near highs.</span></div>
+    </div>
+    <div class="rc"><div class="rc-title" style="color:var(--hindalco)">🏆 Hindalco wins 4 of 12 — but they are the Scale ranks</div>
+      <div class="ri"><span>✅</span><span>Revenue (#1), EBITDA (#2), PAT (#3), growth (#4). Hindalco is the superior <strong>absolute-profit machine</strong> with 4.8x the EBITDA and far lower earnings volatility (Novelis conversion model). CB caution: a 2-company tally is not a verdict — the 8-4 score measures different virtues, not one winner. Rank by what YOUR portfolio needs: cycle torque (NALCO) or compounding scale (Hindalco).</span></div>
+    </div>
+  </div>
+
+</div><!-- /rank -->
+
+
+
+<!-- ══ TAB 2: PERFORMANCE & CHARTS ══ -->
+<div id="pperf" class="pane">
+
+  <div class="st"><div class="sq"></div> ANNUAL FINANCIALS — FY24 → FY26 (₹ Cr)</div>
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">NALCO — Revenue · EBITDA* · PAT 3-Year Trend (₹ Cr)</div>
+      <div class="cw-lg"><canvas id="c_nalco_ann"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Hindalco — Revenue · EBITDA · PAT 3-Year Trend (₹ Cr)</div>
+      <div class="cw-lg"><canvas id="c_hind_ann"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> EBITDA ANALYSIS — FY24 → FY26 (₹ Cr)</div>
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">FY26 EBITDA (₹ Cr) — Absolute Scale</div>
+      <div class="cw"><canvas id="c_ebitda_abs"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">EBITDA Margin Trend % — FY24 → FY26</div>
+      <div class="cw"><canvas id="c_ebitda_trend"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> MARGIN &amp; PROFIT ANALYSIS</div>
+  <div class="g3">
+    <div class="cc">
+      <div class="ct">EBITDA Margin % — Q4 FY26 (Business Model Gap)</div>
+      <div class="cw"><canvas id="c_ebitda"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">FY26 PAT (₹ Cr)</div>
+      <div class="cw"><canvas id="c_pat"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">FY26 PAT Margin %</div>
+      <div class="cw"><canvas id="c_patm"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> RECENT QUARTERLY TREND (₹ Cr)</div>
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">NALCO — Quarterly Revenue (Q4 FY25 → Q4 FY26)</div>
+      <div class="cw-lg"><canvas id="c_trend1"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Hindalco — Quarterly Revenue (Q4 FY25 → Q4 FY26)</div>
+      <div class="cw-lg"><canvas id="c_trend2"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:4px"><div class="sq"></div> CAPITAL ALLOCATION &amp; BALANCE SHEET</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead>
+      <tr><th>Company</th><th>FY26 Revenue Growth</th><th>EBITDA Margin FY26</th><th>Net Cash / Debt</th><th>Capex Plan</th><th>ROE</th><th>Dividend</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td class="mono">+6.3% FY26 (₹16,788 → ₹17,843 Cr)</td><td class="mono">~44–45%* (integrated, captive raw material)</td><td class="mono">Debt-Free | Cash &amp; bank ~₹7,590 Cr (~11% of MCap, Q2 FY26)</td><td>₹1,600 Cr FY26 → ₹1,800–2,000 Cr FY27; ₹30,000 Cr smelter+CPP from FY28 (70:30 D/E)</td><td class="mono">~28%</td><td class="mono">Interims ₹4.50 + ₹2 (FY26)</td></tr>
+      <tr><td><span class="dot" style="background:var(--hindalco)"></span>Hindalco</td><td class="mono">+15.3% FY26 (₹2,38,496 → ₹2,74,944 Cr)</td><td class="mono">13.9% (conversion-margin model via Novelis)</td><td class="mono">Moderate leverage | Borrowings ~₹56,200 Cr; Novelis net debt $6.7 Bn, leverage 4.1x</td><td>Novelis FY27 $2.1–2.4 Bn ($1.7 Bn Bay Minette); India $10 Bn over 5 years</td><td class="mono">~12.4%</td><td class="mono">₹5/share final (record date 10 Jul 2026)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /perf -->
+
+
+<!-- ══ TAB 3: BUSINESS SEGMENTS ══ -->
+<div id="pseg" class="pane">
+
+  <div class="st"><div class="sq"></div> BUSINESS ARCHITECTURE — WHAT EACH COMPANY ACTUALLY DOES</div>
+  <div class="pg">
+    <div class="pc" data-c="NALCO">
+      <div class="pc-top"><div class="pc-name" style="color:var(--nalco)">NALCO</div><span class="ptype pure">Pure Upstream PSU · Mining-to-Metal</span></div>
+      <div class="sb"><div class="sl"><span>Aluminium (Smelting · Q4 rev ₹3,895 Cr)</span><span>~78%</span></div><div class="st2"><div class="sf" style="width:78%;background:var(--nalco)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Chemicals (Alumina &amp; Hydrate — incl. exports)</span><span>~22%</span></div><div class="st2"><div class="sf" style="width:22%;background:#5eead4"></div></div></div>
+      <div class="sb"><div class="sl"><span>Power (1,200 MW CPP — captive, enabling)</span><span>Captive</span></div><div class="st2"><div class="sf" style="width:100%;background:#99f6e4"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>Asia's lowest-cost integrated primary producer.</strong> 7.5 MTPA Panchpatmali bauxite → 2.1 MTPA Damanjodi alumina refinery → 0.46 MTPA Angul smelter → 1,200 MW CPP. Sells surplus alumina to global smelters — a second profit engine. GoI holds 51.28% (Navratna, Ministry of Mines). 100% LME price-taker, no hedging. FY26 record physical output across bauxite, alumina, metal, coal and power.</div>
+    </div>
+    <div class="pc" data-c="Hindalco">
+      <div class="pc-top"><div class="pc-name" style="color:var(--hindalco)">HINDALCO</div><span class="ptype hybrid">Global Integrated · Upstream + Downstream + Copper</span></div>
+      <div class="sb"><div class="sl"><span>Novelis (US/global FRP rolling &amp; recycling)</span><span>~55%</span></div><div class="st2"><div class="sf" style="width:55%;background:var(--novelis)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Copper (smelting, rods, recycling · Q4 ₹22,156 Cr)</span><span>~25%</span></div><div class="st2"><div class="sf" style="width:25%;background:#f59e0b"></div></div></div>
+      <div class="sb"><div class="sl"><span>Aluminium Upstream India (Q4 ₹11,418 Cr)</span><span>~13%</span></div><div class="st2"><div class="sf" style="width:13%;background:var(--hindalco)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Aluminium Downstream India (FRP, foil, extrusions)</span><span>~7%</span></div><div class="st2"><div class="sf" style="width:7%;background:#fda4af"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>World's largest aluminium company by revenue</strong> (Aditya Birla Group flagship, ~34.6% promoter). India upstream is among the world's lowest-cost smelting (captive bauxite, Utkal alumina, captive coal). Novelis is the world's #1 FRP roller &amp; aluminium recycler — a conversion-premium business largely insulated from LME swings. World's #2 copper rods maker outside China. FY26 India EBITDA record ₹22,671 Cr.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> THE SUBTLE DIFFERENCES — WHO IS COMPARABLE TO WHOM?</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Company</th><th>Core Identity</th><th>Earnings Driver</th><th>LME Sensitivity</th><th>Geography</th><th>Ownership</th><th>Key Differentiator</th><th>Don't Confuse With</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td>Upstream commodity pure-play</td><td>LME aluminium + alumina spot prices</td><td>Very High — direct price-taker</td><td>India (Odisha) + alumina exports</td><td>PSU — GoI 51.28%</td><td>Lowest-cost integration, net cash, ~44% margins</td><td>Hindalco (NALCO has no downstream/Novelis)</td></tr>
+      <tr><td><span class="dot" style="background:var(--hindalco)"></span>Hindalco</td><td>Global converter + Indian upstream</td><td>Novelis conversion premium $/t + India upstream spreads</td><td>Moderate — Novelis is pass-through</td><td>India + North America + Europe + Asia</td><td>Private — Aditya Birla 34.6%</td><td>Scale, downstream value-add, recycling moat</td><td>NALCO / Vedanta (different model: 55% revenue is US rolling)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /seg -->
+
+
+<!-- ══ TAB 4: RAW MATERIALS ══ -->
+<div id="praw" class="pane">
+
+  <div class="st"><div class="sq"></div> RAW MATERIAL SECURITY — THE REAL MOAT IN ALUMINIUM</div>
+  <div class="pg">
+    <div class="pc" data-c="NALCO">
+      <div class="pc-top"><div class="pc-name" style="color:var(--nalco)">NALCO — FULLY CAPTIVE CHAIN</div><span class="ptype pure">Bauxite → Alumina → Power → Metal</span></div>
+      <div class="pi" style="color:var(--text)">
+      <strong>Bauxite:</strong> Panchpatmali captive mines 7.5 MTPA (leases valid to FY29/FY31, renewal process to start). New Pottangi mines — 111 Mn tonne reserves, 3.5 MTPA — opening from May 2026, feeding the 5th refinery stream. Among the world's lowest-cost bauxite.<br><br>
+      <strong>Caustic Soda:</strong> Key refinery input. Cost rose ₹37,000/t → ₹41,000/t, but ~50% of requirement comes from the GNAL JV (with Gujarat Alkalies), cushioning spot exposure.<br><br>
+      <strong>Coal (7.2 MTPA requirement):</strong> Captive Utkal D &amp; E blocks produced ~4 MTPA in FY26, targeting 4.8 MTPA in FY27 (~55–57% of needs). Landed cost of captive coal only ₹1,600–1,700/t — ₹200–250/t cheaper than linkage. Balance via renewed 5-year MCL fuel supply agreement (5.6 MTPA).<br><br>
+      <strong>Power:</strong> 1,200 MW CPP. Grid power purchase collapsed from ₹186 Cr (H1 FY25) to just ₹50 Cr (H1 FY26) — grid used only for standby. Wind (Maharashtra/Rajasthan/TN) + solar add green capacity.</div>
+    </div>
+    <div class="pc" data-c="Hindalco">
+      <div class="pc-top"><div class="pc-name" style="color:var(--hindalco)">HINDALCO — HYBRID: CAPTIVE + SCRAP + IMPORTED</div><span class="ptype hybrid">Three Different Raw Material Models</span></div>
+      <div class="pi" style="color:var(--text)">
+      <strong>India Aluminium (captive):</strong> Own bauxite mines + Utkal Alumina (one of the world's lowest-cost refineries) + captive coal mines feed the Aditya/Mahan/Hirakud smelters. This is why India upstream EBITDA hit a record ₹18,884 Cr (+16%) in FY26 — first-decile global cost curve.<br><br>
+      <strong>Copper (imported concentrate):</strong> Dahej smelter runs on imported copper concentrate — earnings come from TC/RC margins plus by-products. Q4 FY26 by-product strength (sulphuric acid realisations) drove record Copper EBITDA ₹907 Cr (+48%).<br><br>
+      <strong>Novelis (scrap-led):</strong> The world's largest aluminium recycler — high recycled content is the core input strategy. Favourable scrap prices/spreads supported Q4 adj. EBITDA/t of $544 (+10%) despite the Oswego volume hit. Scrap spreads are a structural margin driver as low-carbon demand rises.<br><br>
+      <strong>Cost pressure flag:</strong> Consolidated raw material cost jumped 38.2% YoY in Q4 FY26 to ₹55,890 Cr — mostly metal-price pass-through inside Novelis and copper concentrate values.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> RAW MATERIAL SCORECARD — INTEGRATION COMPARISON</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Input</th><th>NALCO</th><th>Hindalco (India)</th><th>Novelis (US/Global)</th><th>Who Wins</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bauxite</strong></td><td class="mono">100% captive (7.5 MTPA + Pottangi 3.5 MTPA new)</td><td class="mono">Largely captive (own mines + Utkal)</td><td class="mono">N/A — buys metal/scrap</td><td><span class="tag buy">Both strong</span></td></tr>
+      <tr><td><strong>Alumina</strong></td><td class="mono">2.1→3.1 MTPA captive; surplus EXPORTED (profit centre)</td><td class="mono">Utkal — lowest-cost; internal use</td><td class="mono">N/A</td><td><span class="tag buy">NALCO (sells surplus)</span></td></tr>
+      <tr><td><strong>Coal / Energy</strong></td><td class="mono">Utkal D&amp;E 4→4.8 MTPA captive @ ₹1,600–1,700/t + MCL FSA</td><td class="mono">Captive coal mines + linkages</td><td class="mono">Grid/gas; recycling needs ~95% less energy</td><td><span class="tag buy">NALCO (cheapest)</span></td></tr>
+      <tr><td><strong>Caustic Soda</strong></td><td class="mono">~50% via GNAL JV; spot at ₹41,000/t</td><td class="mono">Market purchase</td><td class="mono">N/A</td><td><span class="tag buy">NALCO (JV hedge)</span></td></tr>
+      <tr><td><strong>Copper Concentrate</strong></td><td class="mono">N/A</td><td class="mono">Imported — TC/RC + by-product model</td><td class="mono">N/A</td><td><span class="tag neutral">Hindalco only</span></td></tr>
+      <tr><td><strong>Aluminium Scrap</strong></td><td class="mono">N/A</td><td class="mono">Growing (recycling push)</td><td class="mono">World #1 recycler — scrap spread = margin engine</td><td><span class="tag buy">Hindalco/Novelis</span></td></tr>
+      <tr><td><strong>Price Hedging</strong></td><td class="mono">None — full LME exposure both ways</td><td class="mono">Selective hedging</td><td class="mono">Conversion model — metal passed through</td><td><span class="tag neutral">Different philosophies</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="fn">CB READING: NALCO's raw material integration is why its EBITDA margin (~44%) is 3x Hindalco's consolidated margin (13.9%) — but it also makes NALCO's earnings a leveraged bet on LME aluminium and alumina spot prices (alumina already normalised from $690/t peak in Q3 FY25 to ~$320–348/t now). Hindalco's Novelis model converts metal rather than owning the price — lower margin %, far lower volatility. Two different machines that should never be valued on the same multiple.</div>
+</div><!-- /raw -->
+
+
+<!-- ══ TAB 5: EXPANSIONS — INDIA & US ══ -->
+<div id="pexp" class="pane">
+
+  <div class="st"><div class="sq"></div> 🇮🇳 INDIAN OPERATIONS — EXPANSION PIPELINE</div>
+  <div class="pg">
+    <div class="pc" data-c="NALCO">
+      <div class="pc-top"><div class="pc-name" style="color:var(--nalco)">NALCO — THE BIG PSU CAPEX CYCLE</div><span class="ptype pure">₹30,000+ Cr Multi-Year Programme</span></div>
+      <div class="pi" style="color:var(--text)">
+      <strong>1. Pottangi Bauxite Mines (May 2026):</strong> 3.5 MTPA, 111 Mn t reserves, 50-year lease — raw material for the next leg.<br><br>
+      <strong>2. 5th Stream Alumina Refinery (Jun 2026):</strong> +1 MTPA, taking Damanjodi from 2.1 → 3.1 MTPA. ~0.2–0.3 Mn t incremental alumina in FY27, full utilisation through FY27. The nearest-term earnings trigger.<br><br>
+      <strong>3. Smelter Expansion (+0.5 MTPA, ~₹17,000 Cr):</strong> Targeted late 2030 / early 2031. Doubles metal capacity. Revised DPR under preparation.<br><br>
+      <strong>4. New 1,080 MW CPP:</strong> Powers the new smelter; combined smelter+CPP capex ~₹30,000 Cr, spending ramps from FY28 on a 70:30 debt:equity structure. MoUs with NTPC and Neyveli Lignite for power collaboration.<br><br>
+      <strong>5. Coal &amp; Green:</strong> Utkal D&amp;E ramping 4 → 4.8 MTPA; wind 50 MW × 2 (Maharashtra, Rajasthan) + 25.5 MW (TN) + 20 MW solar (MP).<br><br>
+      <strong>6. New frontiers:</strong> Exploring critical minerals — Gallium and rare earth elements.</div>
+    </div>
+    <div class="pc" data-c="Hindalco">
+      <div class="pc-top"><div class="pc-name" style="color:var(--hindalco)">HINDALCO INDIA — $10 BN / 5-YEAR PLAN</div><span class="ptype hybrid">Downstream &amp; Value-Added Push</span></div>
+      <div class="pi" style="color:var(--text)">
+      <strong>1. Aditya FRP ramp-up:</strong> Now contributing meaningfully to overall flat-rolled product scale-up — the downstream growth engine.<br><br>
+      <strong>2. EV ecosystem:</strong> Battery enclosure facility at full ramp (10,000 enclosures already delivered to Mahindra); Aditya Battery Foil unit in commissioning — EV-grade foil is a high-margin niche.<br><br>
+      <strong>3. Taloja AC Fin facility:</strong> Commissioning commenced — import substitution in AC heat-exchanger fin stock.<br><br>
+      <strong>4. Copper:</strong> New copper tubes plant ramping; Pakhajan (Gujarat) — India's first and the world's 2nd-largest dedicated e-waste &amp; copper recycling facility under construction; world's largest Indian copper smelter ambition stated by the group.<br><br>
+      <strong>5. Upstream:</strong> Aditya alumina refinery and aluminium smelter expansion projects progressing to lift upstream capacity.<br><br>
+      <strong>6. Cost programme:</strong> Permanent cost-structure reduction of $300 Mn (Novelis-led, FY28 exit), $200 Mn run-rate already achieved at FY26 exit.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> 🇺🇸 US OPERATIONS — NOVELIS: THE DECISIVE 12 MONTHS</div>
+  <div class="pg">
+    <div class="pc" data-c="Novelis">
+      <div class="pc-top"><div class="pc-name" style="color:var(--novelis)">BAY MINETTE, ALABAMA — $4.1 BN GREENFIELD</div><span class="ptype spec">First Integrated US Aluminium Mill in 40+ Years</span></div>
+      <div class="pi" style="color:var(--text)">
+      <strong>Scale:</strong> 600 kt rolling &amp; recycling capacity, with an engineered pathway to 1.2 Mn t.<br><br>
+      <strong>Markets:</strong> North American beverage can sheet + automotive aluminium sheet — both structurally short of domestic supply, and tariff-protected demand pools.<br><br>
+      <strong>Timeline:</strong> Commissioning in H2 CY2026. FY27 Novelis capex $2.1–2.4 Bn, of which $1.7 Bn is Bay Minette; capex falls sharply from Q4 FY27, with Novelis guided to return to free cash flow by end-FY27.<br><br>
+      <strong>Strategic logic:</strong> US 25–50% aluminium import tariffs make domestic rolling capacity MORE valuable — Bay Minette converts Hindalco's tariff headwind into a moat.</div>
+    </div>
+    <div class="pc" data-c="Novelis">
+      <div class="pc-top"><div class="pc-name" style="color:var(--novelis)">OSWEGO, NY — RESTART AHEAD OF SCHEDULE</div><span class="ptype spec">The FY26 Crisis Now Reversing</span></div>
+      <div class="pi" style="color:var(--text)">
+      <strong>What happened:</strong> Two major fires (Sep &amp; Nov 2025) at the Oswego rolling plant — ₹4,565 Cr net exceptional expenses in Q4, shipments down 12%, Novelis FY26 adjusted FCF deeply negative.<br><br>
+      <strong>Recovery:</strong> Hot mill restart commencing within weeks of the May 2026 call — well ahead of the previous end-June guidance — with a swift ramp to pre-fire levels. Earnings recovery expected to strengthen from Q2–Q3 FY27 as volumes normalise. Insurance recoveries staggered over the next two years.<br><br>
+      <strong>Leverage watch:</strong> Net debt $6.7 Bn, leverage 4.1x (vs 3.7x in Dec 2025), could touch ~4.5x near-term before moderating toward ~4.0x by end-FY27. Liquidity solid at $2.8 Bn.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> EXPANSION TIMELINE — WHAT LANDS WHEN</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Window</th><th>Project</th><th>Company</th><th>Capacity / Capex</th><th>Earnings Impact</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">May 2026</td><td>Pottangi bauxite mines open</td><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td class="mono">3.5 MTPA bauxite</td><td>Feeds 5th stream; raw material security</td></tr>
+      <tr><td class="mono">Jun 2026</td><td>5th Stream alumina refinery commissioning</td><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td class="mono">+1 MTPA (2.1→3.1)</td><td>+0.2–0.3 Mn t alumina in FY27 — near-term trigger</td></tr>
+      <tr><td class="mono">Jun 2026</td><td>Oswego hot mill restart</td><td><span class="dot" style="background:var(--novelis)"></span>Novelis</td><td class="mono">Restoration of lost volumes</td><td>Recovery builds from Q2–Q3 FY27</td></tr>
+      <tr><td class="mono">H2 CY2026</td><td>Bay Minette commissioning</td><td><span class="dot" style="background:var(--novelis)"></span>Novelis</td><td class="mono">600 kt · $4.1 Bn</td><td>FY28+ volume/EBITDA step-up; FCF positive end-FY27</td></tr>
+      <tr><td class="mono">FY27</td><td>Battery foil, AC fin, copper tubes ramps</td><td><span class="dot" style="background:var(--hindalco)"></span>Hindalco</td><td class="mono">Part of $10 Bn plan</td><td>Value-added mix improvement</td></tr>
+      <tr><td class="mono">FY27–28</td><td>Pakhajan copper &amp; e-waste recycling</td><td><span class="dot" style="background:var(--hindalco)"></span>Hindalco</td><td class="mono">World's 2nd largest</td><td>High-margin circular copper</td></tr>
+      <tr><td class="mono">FY28 →</td><td>Smelter + CPP capex ramp begins</td><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td class="mono">~₹30,000 Cr · 70:30 D/E</td><td>Net cash erodes; execution becomes the story</td></tr>
+      <tr><td class="mono">2030–31</td><td>NALCO smelter +0.5 MTPA + 1,080 MW CPP live</td><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td class="mono">Metal capacity ~2x</td><td>Next decade's volume growth</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /exp -->
+
+
+<!-- ══ TAB 6: ANALYST VIEW ══ -->
+<div id="pan" class="pane">
+
+  <div class="st"><div class="sq"></div> ANALYST RATINGS, TARGETS &amp; INVESTMENT CASE</div>
+  <div class="ag">
+    <div class="ac"><div class="ac-name" style="color:var(--nalco)">NALCO</div>
+      <div class="ac-row"><span class="ac-lbl">Antique Stock Broking</span><span class="tag buy">BUY</span></div>
+      <div class="ac-row"><span class="ac-lbl">Antique Target</span><span class="ac-val">₹420 (6x FY28E EV/EBITDA)</span></div>
+      <div class="ac-row"><span class="ac-lbl">CMP</span><span class="ac-val">~₹379 · Upside ~11%</span></div>
+      <div class="ac-row"><span class="ac-lbl">Valuation</span><span class="ac-val">~12x FY26 EPS · 2%+ div yield</span></div>
+      <div class="ac-row"><span class="ac-lbl">Key Anchor</span><span class="ac-val">Cash ~₹7,590 Cr ≈ 11% of MCap</span></div>
+      <div class="ac-view">Bull case rests on: domestic aluminium demand CAGR ~7.2% to 2030 (power infra + autos), 5th stream volumes from FY27, captive coal at rated 4 MTPA cutting costs, critical-minerals optionality, and net-cash margin of safety. Bear case: NALCO is a pure price-taker — Q4 already showed PAT -17% YoY as alumina normalised from $690/t (Q3 FY25) to $348/t; Q1 FY27 alumina trending lower at ~$320/t. Management sees LME averaging ~$3,000/t. The ₹30,000 Cr capex from FY28 turns a dividend stock into an execution story.</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:var(--hindalco)">Hindalco Industries</div>
+      <div class="ac-row"><span class="ac-lbl">MOFSL</span><span class="tag buy">BUY · TP ₹1,280</span></div>
+      <div class="ac-row"><span class="ac-lbl">MOFSL Basis</span><span class="ac-val">7.5x EV/EBITDA, 1.7x P/B FY28E</span></div>
+      <div class="ac-row"><span class="ac-lbl">Emkay Global</span><span class="ac-val">Positive — Oswego restart ahead of plan</span></div>
+      <div class="ac-row"><span class="ac-lbl">CMP</span><span class="ac-val">~₹1,065 · Upside ~20% (MOFSL)</span></div>
+      <div class="ac-row"><span class="ac-lbl">Index Catalyst</span><span class="ac-val">Sensex inclusion candidate · ~$366 Mn passive flows</span></div>
+      <div class="ac-view">Post-Q4 consensus turned more constructive: India business at record across all three segments, Novelis beat after adjusting for Oswego, restart ahead of guidance, Bay Minette commissioning H2 CY26. MOFSL expects Novelis volume/EBITDA recovery from Q2–Q3 FY27. Watch items: Novelis leverage possibly peaking ~4.5x, staggered insurance recoveries, and US tariff dynamics (which cut both ways — they protect Bay Minette economics).</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> INVESTMENT FRAMEWORK — HOW TO POSITION EACH (CB LENS)</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Company</th><th>Thesis</th><th>Best For</th><th>Key Risk</th><th>Analogy</th><th>CB View</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td>Lowest-cost integrated upstream + net cash + dividend, leveraged to LME/alumina</td><td>Commodity-cycle investors; dividend seekers who accept volatility</td><td>Alumina/LME downcycle; ₹30,000 Cr capex execution from FY28</td><td>The ONGC of aluminium — own the resource, ride the price</td><td><span class="tag buy">High Score (cycle-aware)</span></td></tr>
+      <tr><td><span class="dot" style="background:var(--hindalco)"></span>Hindalco</td><td>Global conversion + recycling moat + record India engine; FY27 is the recovery year</td><td>Structural growth investors; 3–5 year horizon through the Novelis capex trough</td><td>Novelis leverage 4.1–4.5x; another operational shock before FCF turns</td><td>The TSMC of rolled aluminium — paid to convert, not to speculate</td><td><span class="tag buy">High Score (recovery + growth)</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /an -->
+
+
+<!-- ══ TAB 7: RISKS & OUTLOOK ══ -->
+<div id="prisk" class="pane">
+  <div class="st"><div class="sq"></div> SECTOR-WIDE RISKS</div>
+  <div class="rg">
+    <div class="rc"><div class="rc-title">🔴 Common Risks — Both Companies</div>
+      <div class="ri"><span>🪙</span><span><strong>LME / Alumina Price Cycle:</strong> Alumina already normalised from $690/t (Q3 FY25) to ~$320–348/t. LME aluminium ~$2,700–2,835/t with management hopes of ~$3,000 average — any global demand shock reprices both stocks, NALCO far more violently.</span></div>
+      <div class="ri"><span>🇨🇳</span><span><strong>China supply behaviour:</strong> China is ~60% of world aluminium; smelter restarts or weak Chinese demand can flood the seaborne market and crush realisations.</span></div>
+      <div class="ri"><span>🇺🇸</span><span><strong>US tariffs:</strong> US aluminium import tariffs reshape trade flows — a headwind for exporters into the US, but a structural tailwind for Novelis' domestic Bay Minette capacity.</span></div>
+      <div class="ri"><span>⚡</span><span><strong>Energy transition costs:</strong> Aluminium is energy-intensive; carbon pricing/CBAM in Europe will increasingly differentiate low-carbon (recycled, hydro) metal from coal-based metal.</span></div>
+    </div>
+    <div class="rc"><div class="rc-title">🏢 Company-Specific Risks</div>
+      <div class="ri"><span>🟢</span><span><strong>NALCO:</strong> Pure price-taker with zero hedging — FY26's record ₹5,816 Cr PAT was made at elevated prices; Q4 already showed the fade (-17% PAT YoY). ₹30,000 Cr smelter+CPP capex from FY28 will consume the net cash and add debt (70:30) — PSU execution timelines (smelter only by 2030–31) are the perennial risk. Bauxite lease renewals (FY29/FY31) need monitoring.</span></div>
+      <div class="ri"><span>🔴</span><span><strong>Hindalco:</strong> Novelis leverage 4.1x rising possibly to ~4.5x before relief; insurance recoveries staggered over two years; a third operational incident would be very damaging. Bay Minette ramp risk — greenfield mills rarely ramp perfectly. Copper TC/RC margins are globally depressed; by-product strength may not repeat. Reported PAT optics (-51% Q4) can mislead screens.</span></div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:20px"><div class="sq"></div> FY27 OUTLOOK</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Company</th><th>FY27 Volume Drivers</th><th>Margin Outlook</th><th>Key Trigger</th><th>Pending Catalyst</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--nalco)"></span>NALCO</td><td class="mono">+0.2–0.3 Mn t alumina (5th stream); metal sales above rated 0.46 MTPA; coal 4.8 MTPA captive</td><td class="mono">Hostage to alumina ($320/t trend) &amp; LME ($2,700–3,000 band)</td><td>5th stream ramp speed; LME holding $2,800+</td><td>Smelter DPR finalisation; FY27 capex ₹1,800–2,000 Cr execution</td></tr>
+      <tr><td><span class="dot" style="background:var(--hindalco)"></span>Hindalco</td><td class="mono">Oswego volumes back from Q2–Q3 FY27; Bay Minette first output H2 CY26; India downstream ramps</td><td class="mono">Novelis $/t aided by scrap spreads + $200→350–400 Mn cost programme; India upstream stays first-decile</td><td>Novelis FCF positive by end-FY27; leverage back to ~4.0x</td><td>Sensex inclusion decision (Jun 2026); Bay Minette commissioning date</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="st"><div class="sq"></div> STRUCTURAL DEMAND TAILWINDS</div>
+  <div class="rg">
+    <div class="rc"><div class="rc-title">🏗️ Domestic Drivers</div>
+      <div class="ri"><span>✅</span><span><strong>India aluminium demand CAGR ~7.2% to 2030:</strong> Power T&amp;D conductors, solar structures, EVs and packaging — the same PGCIL/grid supercycle driving cables also drives primary metal demand.</span></div>
+      <div class="ri"><span>✅</span><span><strong>EV &amp; lightweighting:</strong> Battery enclosures, battery foil, body sheet — Hindalco already supplying Mahindra; per-vehicle aluminium content rising structurally.</span></div>
+      <div class="ri"><span>✅</span><span><strong>Import substitution:</strong> AC fin stock, foils, FRP — India remains a net importer of value-added aluminium; downstream capex closes the gap.</span></div>
+    </div>
+    <div class="rc"><div class="rc-title">🌍 Global Drivers</div>
+      <div class="ri"><span>✅</span><span><strong>Beverage can + auto sheet shortage in North America:</strong> The whole Bay Minette thesis — domestic US rolling capacity is structurally short.</span></div>
+      <div class="ri"><span>✅</span><span><strong>Low-carbon/recycled premium:</strong> Recycling uses ~95% less energy — Novelis' high-recycled-content sheet is what global beverage and auto majors are contracting for.</span></div>
+      <div class="ri"><span>⚠️</span><span><strong>Alumina seaborne softness:</strong> Middle-East smelter disruptions cut alumina demand (Qatalum, EGA flagged on NALCO's call) — watch NALCO's export realisations.</span></div>
+    </div>
+  </div>
+
+  <div class="fn">DATA SOURCES: NALCO Q4 FY26 — BSE filing Apr 30, 2026 (consolidated PAT ₹1,722.44 Cr, revenue ₹5,012.82 Cr; FY26 record revenue ₹17,843 Cr, PAT ₹5,816 Cr; 3rd interim dividend ₹2/share ₹367.33 Cr; Q4 alumina realisation $348/t, metal $2,700/t; stock fell 7.8% on results day). Hindalco Q4 FY26 — BSE filing May 22, 2026 (revenue ₹78,133 Cr record, EBITDA ₹11,197 Cr all-time high, PAT ₹2,597 Cr after ₹4,171 Cr Oswego exceptional; PBT pre-exceptional ₹7,622 Cr +16%; FY26 revenue ₹2,74,944 Cr, EBITDA ₹38,097 Cr, PAT ₹13,391 Cr, EPS ₹60.31, dividend ₹5/share, record date Jul 10, 2026; AGM Jul 23, 2026). Novelis Q4 FY26 — SEC 8-K May 2026 (net sales $4,787 Mn, adj EBITDA $459 Mn, $544/t, shipments 844 kt, FY26 capex $2.3 Bn, net debt $6.7 Bn, leverage 4.1x, liquidity $2.8 Bn). Expansion/raw material detail: NALCO Q4 FY26 earnings call, Axis Securities Q2 FY26 update, Antique Stock Broking note (TP ₹420, Mar 2026), Hindalco/ABG statements (Bay Minette $4.1 Bn, Pakhajan, $10 Bn India plan), MOFSL post-Q4 note (TP ₹1,280). Market prices NSE Jun 8, 2026: NALCO ₹379, Hindalco ₹1,065. * NALCO EBITDA margins are CB estimates derived from filed P&amp;L since EBITDA is not separately reported. All figures ₹ crore, consolidated unless stated. Dashboard updated Jun 11, 2026. FOR EDUCATIONAL PURPOSES ONLY — NOT INVESTMENT ADVICE.</div>
+</div><!-- /risk -->
+
+
+<!-- ══ TAB 8: CB ASSIST ══ -->
+<div id="pcbassist" class="pane">
+<div class="cba-wrap">
+
+  <div class="cba-head">
+    <div class="cba-logo">CB</div>
+    <div class="cba-head-text">
+      <h2>CB Assist</h2>
+      <p>Cauvery Business · Aluminium Sector Intelligence · NALCO vs Hindalco · Q4 FY26 · English &amp; Tamil</p>
+    </div>
+  </div>
+
+  <div class="cba-qlbl">📚 Curated Research Questions — Smart Analytical Questions · Click Any to Expand · Each answer has separate ENGLISH and தமிழ் sections</div>
+
+  <!-- Q1 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">01</div>
+      <div class="qa-qtxt">
+        <div class="qen">Normalised-earnings test: NALCO made FY26 PAT of ₹5,816 Cr at average alumina well above today's $320/t and metal ~$2,700/t. Rebuild the FY27 earnings bridge at spot — is the "cheap" 12x P/E actually 15–16x on normalised earnings, and what does the 5th stream volume really offset?</div>
+        <div class="qta">NALCO-வின் "மலிவான" 12x P/E, normalised earnings-ல் உண்மையில் 15–16x ஆகுமா? FY27 earnings bridge-ஐ $320/t alumina-வில் மறுகட்டமைப்போம்.</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="lang-h en">ENGLISH</div>
+      <div class="ans-qline">Q: NALCO made FY26 PAT of ₹5,816 Cr at elevated realisations. Rebuilt at spot ($320/t alumina, ~$2,700/t metal), is the 12x P/E really 15–16x on normalised earnings — and how much does the 5th stream offset?</div>
+      <div class="ans-en">Build the bridge in three blocks. <strong>Block 1 — price normalisation (negative):</strong> Q4 FY26 is the cleanest template of "spot economics" — revenue ₹5,013 Cr and PAT ₹1,722 Cr were earned at $348/t alumina and $2,700/t metal. Annualising Q4 gives ~₹6,900 Cr PAT, but Q1 FY27 alumina is trending ~8% lower at $320/t; on NALCO's roughly 1+ Mn t of external alumina sales, every $28/t is ~₹650–700 Cr of revenue, almost all of which is PBT since costs are fixed-captive. That alone clips ~₹500 Cr from post-tax annualised earnings. <strong>Block 2 — volume offset (positive):</strong> the 5th stream adds 0.2–0.3 Mn t of saleable alumina in FY27. At $320/t (~₹27,000/t) with NALCO's cash cost among the world's lowest, incremental EBITDA is plausibly ₹400–550 Cr — a partial, not full, offset; full 1 MTPA utilisation only helps FY28. <strong>Block 3 — cost tailwind (positive):</strong> captive coal rising 4→4.8 MTPA replaces costlier linkage coal, worth a further ₹150–200 Cr. Net result: normalised FY27 PAT plausibly lands at ₹4,500–5,200 Cr unless LME averages the $3,000 management hopes for. On ₹70,500 Cr market cap, that is 13.5–15.5x — so yes, the optical 12x flatters peak earnings. The correct conclusion is not "expensive" but "fairly priced for mid-cycle, with the cash pile (~₹7,590 Cr) and dividend as the floor, and LME at $3,000+ as the free call option." The mistake to avoid is paying 12x believing the E is durable.</div>
+      <div class="lang-h ta">தமிழ்</div>
+      <div class="ans-qline">கேள்வி: உயர்ந்த விலைகளில் NALCO FY26 PAT ₹5,816 Cr சம்பாதித்தது. Spot விலையில் ($320/t alumina) மறுகணக்கிட்டால், 12x P/E உண்மையில் 15–16x ஆகுமா? 5th stream எவ்வளவு ஈடுசெய்யும்?</div>
+      <div class="ans-ta">மூன்று blocks-ல் bridge கட்டுவோம். <strong>Block 1 — விலை normalisation (negative):</strong> Q4 FY26-தான் "spot economics"-ன் தூய்மையான template — $348/t alumina + $2,700/t metal-ல் PAT ₹1,722 Cr. இதை annualise செய்தால் ~₹6,900 Cr; ஆனால் Q1 FY27 alumina ~$320/t (8% குறைவு). NALCO-வின் ~1+ Mn t வெளி alumina விற்பனையில், ஒவ்வொரு $28/t-ம் ~₹650–700 Cr வருவாய் — captive costs நிலையானதால் இது கிட்டத்தட்ட முழுவதும் PBT. இது ~₹500 Cr post-tax-ஐ வெட்டும். <strong>Block 2 — volume ஈடு (positive):</strong> 5th stream FY27-ல் 0.2–0.3 Mn t alumina சேர்க்கும் — incremental EBITDA ~₹400–550 Cr; முழு ஈடு அல்ல, பகுதி ஈடுதான். முழு 1 MTPA பயன் FY28-ல்தான். <strong>Block 3 — cost tailwind (positive):</strong> captive coal 4→4.8 MTPA — மேலும் ₹150–200 Cr. நிகர முடிவு: LME $3,000 average ஆகாவிட்டால், normalised FY27 PAT ₹4,500–5,200 Cr — அதாவது ₹70,500 Cr MCap-ல் 13.5–15.5x. எனவே optical 12x peak earnings-ஐ அழகுபடுத்துகிறது. சரியான முடிவு "விலை அதிகம்" அல்ல — "mid-cycle-க்கு நியாயமான விலை; ₹7,590 Cr cash + dividend = floor; LME $3,000+ = இலவச call option." தவிர்க்க வேண்டிய தவறு: E நிரந்தரம் என்று நம்பி 12x கொடுப்பது.</div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">02</div>
+      <div class="qa-qtxt">
+        <div class="qen">Sum-of-the-parts arbitrage: Hindalco's India business alone produced ₹22,671 Cr EBITDA in FY26. At Indian metal-peer multiples, India could justify most of the ₹2,39,000 Cr market cap — implying the market is valuing Novelis (a $9.6 Bn-revenue global #1) at very little. Is that a mispricing, or is Novelis' equity genuinely worth less after debt?</div>
+        <div class="qta">Hindalco SOTP புதிர்: India business EBITDA ₹22,671 Cr மட்டுமே MCap-ன் பெரும்பகுதியை நியாயப்படுத்தும் — அப்படியானால் market Novelis-ஐ கிட்டத்தட்ட இலவசமாக மதிப்பிடுகிறதா?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="lang-h en">ENGLISH</div>
+      <div class="ans-qline">Q: India alone makes ₹22,671 Cr EBITDA. At peer multiples that covers most of the ₹2,39,000 Cr market cap — so is Novelis being valued at almost nothing, and is that rational?</div>
+      <div class="ans-en">Run the arithmetic honestly and the "free Novelis" story half-survives. <strong>India leg:</strong> ₹22,671 Cr EBITDA at a conservative 7x EV/EBITDA (upstream-heavy peers trade 6–8x) = ~₹1,58,000 Cr EV. India-attributable net debt is modest, so India equity value ≈ ₹1,40,000–1,50,000 Cr — about 60% of Hindalco's market cap. <strong>Novelis leg:</strong> implied residual equity ≈ ₹90,000–1,00,000 Cr (~$10.5–11.7 Bn). Novelis FY26 adjusted EBITDA was depressed (~$1.8 Bn) by Oswego; normalised, with restart plus Bay Minette plus $350–400 Mn cost cuts, FY28 EBITDA of $2.2–2.4 Bn is the management trajectory. At a global converter multiple of 7x, EV = $15.5–17 Bn; subtract $6.7 Bn net debt → equity $9–10 Bn. <strong>Verdict:</strong> the market is NOT giving Novelis away — it is pricing Novelis near fair value on stressed numbers, with zero credit for the Bay Minette step-up. The real arbitrage is temporal, not structural: if FY28 EBITDA lands at $2.3 Bn+, today's residual undervalues Novelis equity by 30–40%. Three honest deflators: leverage at 4.1–4.5x means equity value is a thin, volatile slice of a large EV; insurance recoveries are timing-uncertain; and SOTP for a 100% subsidiary never fully crystallises without listing — which Hindalco has explicitly shelved. So treat the SOTP gap as an expected-return engine for FY27–28, not as a snap-shut mispricing.</div>
+      <div class="lang-h ta">தமிழ்</div>
+      <div class="ans-qline">கேள்வி: India மட்டுமே ₹22,671 Cr EBITDA — peer multiples-ல் இது MCap-ன் பெரும்பகுதியை cover செய்யும். Novelis கிட்டத்தட்ட இலவசமா? அது rational-ஆ?</div>
+      <div class="ans-ta">கணக்கை நேர்மையாக போட்டால் "இலவச Novelis" கதை பாதிதான் தப்பிக்கும். <strong>India leg:</strong> ₹22,671 Cr EBITDA × conservative 7x EV/EBITDA = ~₹1,58,000 Cr EV; India equity ≈ ₹1,40,000–1,50,000 Cr — MCap-ன் ~60%. <strong>Novelis leg:</strong> மீதி equity ≈ ₹90,000–1,00,000 Cr (~$10.5–11.7 Bn). Novelis FY26 EBITDA (~$1.8 Bn) Oswego-வால் depressed; restart + Bay Minette + $350–400 Mn cost cuts சேர்ந்தால் FY28-ல் $2.2–2.4 Bn trajectory. 7x converter multiple-ல் EV $15.5–17 Bn − net debt $6.7 Bn → equity $9–10 Bn. <strong>தீர்ப்பு:</strong> market Novelis-ஐ இலவசமாக தரவில்லை — stressed numbers-ல் fair value-க்கு அருகில் pricing செய்கிறது; Bay Minette step-up-க்கு zero credit. உண்மையான arbitrage structural அல்ல, temporal: FY28 EBITDA $2.3 Bn+ வந்தால், இன்றைய residual 30–40% undervalue. மூன்று எச்சரிக்கைகள்: 4.1–4.5x leverage-ல் equity என்பது பெரிய EV-யின் மெல்லிய, volatile துண்டு; insurance recoveries timing நிச்சயமற்றது; 100% subsidiary-க்கு listing இல்லாமல் SOTP முழுமையாக crystallise ஆகாது. எனவே SOTP gap-ஐ FY27–28 expected-return engine ஆக பாருங்கள், உடனடி mispricing ஆக அல்ல.</div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">03</div>
+      <div class="qa-qtxt">
+        <div class="qen">The multiple inversion: NALCO earns 44% EBITDA margins yet trades at ~12x; Hindalco earns 14% margins yet trades at ~17.7x. Decompose WHY markets pay more per rupee of low-margin earnings here — and identify the single variable that would flip the ranking.</div>
+        <div class="qta">Multiple inversion: 44% margin NALCO-வுக்கு 12x, 14% margin Hindalco-வுக்கு 17.7x. ஏன்? எந்த ஒரு variable இந்த ranking-ஐ தலைகீழாக்கும்?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="lang-h en">ENGLISH</div>
+      <div class="ans-qline">Q: Why does the market pay 17.7x for 14% margins (Hindalco) but only 12x for 44% margins (NALCO) — and what single variable flips the ranking?</div>
+      <div class="ans-en">Decompose the multiple into the three things it actually prices: earnings <strong>durability</strong>, earnings <strong>growth visibility</strong>, and <strong>balance-sheet optionality</strong>. On durability, NALCO's E is a price residual — FY24 PAT ₹2,060 Cr → FY26 ₹5,816 Cr is a 2.8x swing on volumes that barely moved; the market caps unstable earnings cheaply because the denominator of P/E is unreliable. Hindalco's largest earnings stream (Novelis, ~55% of revenue) is a per-tonne conversion fee — $544/t even in a quarter with two factory fires — which behaves like industrial toll income and deserves a structurally higher capitalisation rate. On growth visibility, Hindalco has dated, contracted catalysts (Oswego volumes Q2–Q3 FY27, Bay Minette H2 CY26, $350–400 Mn cost-out by FY28); NALCO's growth before 2030 is essentially one refinery stream plus whatever LME does. On optionality, the inversion flips: NALCO's net cash is genuine optionality while Hindalco's 4.1x Novelis leverage is negative optionality — yet markets weight durability and growth more than cash when rates are benign. <strong>The single flipping variable: a sustained LME breakout above ~$3,000–3,200/t.</strong> In that regime NALCO's operating leverage produces 40–60% EPS upgrades while Novelis' pass-through model captures almost none of it, and NALCO's multiple re-rates toward 15x on rising earnings — double torque. The mirror risk: at $2,300/t LME, NALCO's 12x quietly becomes 20x+ on collapsed earnings while Hindalco's conversion income barely notices. The inversion is therefore not inefficiency — it is the market correctly charging an insurance premium for owning the commodity price.</div>
+      <div class="lang-h ta">தமிழ்</div>
+      <div class="ans-qline">கேள்வி: 14% margin-க்கு 17.7x, 44% margin-க்கு 12x — ஏன்? எந்த variable ranking-ஐ flip செய்யும்?</div>
+      <div class="ans-ta">Multiple உண்மையில் மூன்றை price செய்கிறது: earnings <strong>நிலைத்தன்மை</strong>, <strong>growth visibility</strong>, <strong>balance-sheet optionality</strong>. நிலைத்தன்மை: NALCO-வின் E ஒரு price residual — FY24 ₹2,060 Cr → FY26 ₹5,816 Cr = volumes அசையாமலே 2.8x swing; நம்பமுடியாத denominator-க்கு market மலிவான multiple தரும். Hindalco-வின் மிகப்பெரிய stream (Novelis, ~55%) ஒரு per-tonne conversion fee — இரண்டு தீ விபத்து quarter-லும் $544/t — இது toll income போல; அதிக capitalisation rate-க்கு தகுதி. Growth visibility: Hindalco-வுக்கு தேதியிட்ட catalysts (Oswego Q2–Q3 FY27, Bay Minette H2 CY26, $350–400 Mn cost-out FY28); NALCO-வுக்கு 2030 வரை ஒரு refinery stream + LME என்ன செய்கிறதோ அதுதான். Optionality: இங்கு தலைகீழ் — NALCO-வின் net cash positive optionality, Novelis 4.1x leverage negative. <strong>Flip செய்யும் ஒரே variable: LME நிலையாக $3,000–3,200/t-ஐ தாண்டுவது.</strong> அந்த regime-ல் NALCO operating leverage 40–60% EPS upgrades தரும்; Novelis pass-through அதில் எதையும் பிடிக்காது; NALCO multiple 15x நோக்கி re-rate ஆகும் — double torque. Mirror risk: $2,300/t-ல் NALCO-வின் 12x அமைதியாக 20x+ ஆகும்; Hindalco conversion income கவனிக்கவே செய்யாது. எனவே inversion inefficiency அல்ல — commodity price-ஐ சொந்தமாக வைத்திருப்பதற்கான insurance premium-ஐ market சரியாகவே வசூலிக்கிறது.</div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">04</div>
+      <div class="qa-qtxt">
+        <div class="qen">Capital-cycle test: Novelis is spending $4.1 Bn on Bay Minette exactly when leverage peaks at 4.1–4.5x, while NALCO will spend ₹30,000 Cr from FY28 starting from net cash. Same industry, opposite balance-sheet sequencing — whose capital cycle is better designed, and what does each company's IRR depend on?</div>
+        <div class="qta">Capital-cycle test: Novelis $4.1 Bn-ஐ leverage peak-ல் செலவிடுகிறது; NALCO ₹30,000 Cr-ஐ net cash-ல் இருந்து தொடங்கும். யாருடைய capital cycle சிறந்த design? ஒவ்வொருவரின் IRR எதை சார்ந்தது?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="lang-h en">ENGLISH</div>
+      <div class="ans-qline">Q: Novelis spends $4.1 Bn at peak leverage; NALCO spends ₹30,000 Cr from a net-cash start. Whose capital cycle is better designed, and what does each IRR depend on?</div>
+      <div class="ans-en">Judge a capital cycle on three axes: demand certainty at completion, the price the project earns, and the cost of carrying it. <strong>Bay Minette scores highest on the first two axes:</strong> it lands into a North American market structurally short of can and auto sheet, with 25–50% import tariffs functioning as a state-built moat around its 600 kt (path to 1.2 Mn t), and Novelis sells conversion contracts — so the project's IRR depends on utilisation ramp and $/t premiums, both substantially contractible in advance, not on the LME. Its weakness is the third axis: it is being carried at 4.1x leverage with FY26 FCF negative, so 12 months of execution risk sit directly on the equity. The de-risking sequence is unusually concrete — capex falls from Q4 FY27, FCF positive by end-FY27, leverage to ~4.0x. <strong>NALCO's cycle is the mirror image:</strong> the financing is comfortable (net cash today, 70:30 D/E planned, government parentage) but the project's IRR depends on the one thing nobody can contract — the LME aluminium price in 2031, when the 0.5 MTPA smelter and 1,080 MW CPP arrive. Add PSU schedule risk (the much smaller 5th stream already slipped from Sep-25 to Jun-26 with a cost overrun) and the demand-side certainty is far weaker. <strong>Design verdict:</strong> Bay Minette is the better-designed cycle — it converts a policy distortion (tariffs) into a moat and sells certainty; its risk is financial sequencing. NALCO's cycle has the safer financing but is, at its core, a ₹30,000 Cr unhedged forward purchase of the 2031 LME price executed at PSU speed. Watch metrics: for Novelis — quarterly Bay Minette commissioning milestones and the leverage print; for NALCO — the smelter DPR, the financing structure (the Neyveli MoU hints partnerships remain open), and whether dividends survive the build.</div>
+      <div class="lang-h ta">தமிழ்</div>
+      <div class="ans-qline">கேள்வி: Novelis peak leverage-ல் $4.1 Bn; NALCO net cash-ல் இருந்து ₹30,000 Cr. யாருடைய cycle சிறந்தது? IRR எதை சார்ந்தது?</div>
+      <div class="ans-ta">Capital cycle-ஐ மூன்று அச்சுகளில் மதிப்பிடுங்கள்: முடிவில் demand உறுதி, project சம்பாதிக்கும் விலை, சுமக்கும் cost. <strong>Bay Minette முதல் இரண்டிலும் உயர்ந்த score:</strong> can sheet + auto sheet பற்றாக்குறையான North American market; 25–50% tariffs = அரசே கட்டிய moat; Novelis conversion contracts விற்கிறது — IRR utilisation ramp + $/t premiums-ஐ சார்ந்தது, LME-ஐ அல்ல. பலவீனம் மூன்றாவது அச்சு: 4.1x leverage + negative FCF-ல் சுமக்கப்படுகிறது — 12 மாத execution risk நேரடியாக equity மீது. De-risking sequence தெளிவானது: Q4 FY27-ல் capex சரிவு, end-FY27 FCF positive, leverage ~4.0x. <strong>NALCO cycle இதன் mirror image:</strong> financing வசதியானது (net cash, 70:30, அரசு பின்புலம்) ஆனால் IRR யாராலும் contract செய்ய முடியாத ஒன்றை சார்ந்தது — 2031-ன் LME விலை. PSU schedule risk சேருங்கள் (சிறிய 5th stream-ஏ Sep-25 → Jun-26 slip + cost overrun). <strong>Design தீர்ப்பு:</strong> Bay Minette சிறந்த design — policy distortion-ஐ moat ஆக மாற்றி உறுதியை விற்கிறது; risk = financial sequencing. NALCO-வின் cycle = பாதுகாப்பான financing, ஆனால் அடிப்படையில் PSU வேகத்தில் execute ஆகும் 2031 LME விலையின் ₹30,000 Cr unhedged forward purchase. கண்காணிக்க: Novelis — Bay Minette milestones + leverage print; NALCO — smelter DPR, financing structure (Neyveli MoU), dividend-ன் உயிர்வாழ்வு.</div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">05</div>
+      <div class="qa-qtxt">
+        <div class="qen">Portfolio construction: NALCO and Hindalco have low overlap — one owns the LME price, the other owns conversion capacity. Build the pair logic: in which macro regimes does each outperform, can holding BOTH hedge an aluminium view, and what is the one scenario that hurts both simultaneously?</div>
+        <div class="qta">Portfolio construction: NALCO LME விலையை சொந்தமாக்குகிறது, Hindalco conversion capacity-ஐ. எந்த macro regime-ல் எது outperform? இரண்டையும் ஒரே நேரத்தில் தாக்கும் ஒரே scenario என்ன?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="lang-h en">ENGLISH</div>
+      <div class="ans-qline">Q: In which regimes does each outperform, does holding both hedge an aluminium view, and what one scenario hurts both at once?</div>
+      <div class="ans-en">Map four regimes. <strong>Regime 1 — global reflation / supply shock (LME $3,000+):</strong> NALCO dominates. 100% price capture, fixed captive costs, EPS torque of 40–60% per $300/t; Hindalco's Novelis captures little of the metal move (pass-through), though India upstream helps. <strong>Regime 2 — global slowdown (LME $2,200–2,400):</strong> Hindalco dominates. Conversion premiums and can-sheet demand (consumer staples-linked) hold; NALCO's PAT can halve, as FY24's ₹2,060 Cr proved. <strong>Regime 3 — stable prices + strong volume growth (the FY27 consensus case):</strong> Hindalco modestly ahead — Oswego recovery, Bay Minette ramp and cost-outs are company-specific earnings that need no macro help; NALCO gets only the 5th stream. <strong>Regime 4 — India infra boom with soft global prices:</strong> roughly neutral — NALCO's domestic metal demand grows ~7.2% CAGR but at weak realisations; Hindalco's India downstream value-add captures the same demand with better economics. So yes, the pair is a genuine intra-sector hedge: NALCO is the call option on price, Hindalco the compounder on volume, and their EPS drivers correlate weakly. <strong>The scenario that breaks both simultaneously: a China hard-landing.</strong> China is ~60% of global supply AND the marginal demand setter — a property/industrial collapse floods the seaborne market with metal (crushing NALCO's realisations) while simultaneously cutting global manufacturing demand for rolled products and pressuring scrap spreads (hitting Novelis volumes), and risk-off pulls EM flows out of both stocks. Secondary joint risk: an India-specific shock (mining tax, export duty on alumina, power-tariff intervention) hits both upstream engines at once. A pair hedges the aluminium cycle; it does not hedge China or Delhi.</div>
+      <div class="lang-h ta">தமிழ்</div>
+      <div class="ans-qline">கேள்வி: எந்த regime-ல் எது outperform செய்யும்? இரண்டையும் வைத்திருப்பது hedge ஆகுமா? இரண்டையும் ஒரே நேரத்தில் தாக்கும் ஒரே scenario?</div>
+      <div class="ans-ta">நான்கு regimes map செய்வோம். <strong>Regime 1 — global reflation / supply shock (LME $3,000+):</strong> NALCO ஆதிக்கம் — 100% price capture, $300/t-க்கு 40–60% EPS torque; Novelis pass-through-ல் metal move பிடிபடாது. <strong>Regime 2 — global slowdown (LME $2,200–2,400):</strong> Hindalco ஆதிக்கம் — conversion premiums + can-sheet demand நிலைக்கும்; NALCO PAT பாதியாகலாம் (FY24-ன் ₹2,060 Cr ஆதாரம்). <strong>Regime 3 — நிலையான விலை + வலுவான volume (FY27 consensus case):</strong> Hindalco சற்று முன்னே — Oswego recovery, Bay Minette ramp, cost-outs எல்லாம் macro உதவி தேவையில்லாத company-specific earnings; NALCO-வுக்கு 5th stream மட்டுமே. <strong>Regime 4 — India infra boom + மென்மையான global விலை:</strong> கிட்டத்தட்ட சமம். ஆம், இந்த pair உண்மையான intra-sector hedge: NALCO = விலை மீதான call option; Hindalco = volume மீதான compounder; EPS drivers பலவீனமாக correlate ஆகும். <strong>இரண்டையும் ஒரே நேரத்தில் உடைக்கும் scenario: China hard-landing.</strong> China = global supply-ன் ~60% + marginal demand setter — property/industrial சரிவு seaborne market-ல் metal-ஐ வெள்ளமாக்கி NALCO realisations-ஐ நசுக்கும்; அதே நேரம் global manufacturing demand + scrap spreads குறைந்து Novelis volumes-ஐ தாக்கும்; risk-off EM flows இரண்டு stocks-ல் இருந்தும் வெளியேறும். இரண்டாம் joint risk: India-specific shock (mining tax, alumina export duty, power tariff தலையீடு). Pair aluminium cycle-ஐ hedge செய்யும்; China-வையோ Delhi-யையோ hedge செய்யாது.</div>
+    </div>
+  </div>
+
+  <div class="cba-chat">
+    <div class="cba-chat-title"><span class="live-dot"></span> ASK CB ASSIST LIVE — ALUMINIUM SECTOR · ENGLISH &amp; தமிழ்</div>
+    <div class="chat-msgs" id="cbaMsgs">
+      <div class="cmsg b"><strong>CB Assist:</strong> Vanakkam! Ask me anything about NALCO, Hindalco, Novelis, aluminium prices, raw materials, or the expansion pipeline — Q4 FY26 actuals loaded. நீங்கள் தமிழிலும் கேட்கலாம்!</div>
+    </div>
+    <div class="typing" id="cbaTyping"><span></span><span></span><span></span></div>
+    <div class="chat-row">
+      <input class="chat-in" id="cbaInput" type="text" placeholder="Ask about revenues, margins, expansions, raw materials, risks, comparisons..." onkeydown="if(event.key==='Enter')sendCBA()"/>
+      <button class="chat-btn" id="cbaSendBtn" onclick="sendCBA()">SEND</button>
+    </div>
+  </div>
+
+</div>
+</div><!-- /cbassist -->
+
+</div><!-- main -->
+<div class="wm">CAUVERY BUSINESS · Aluminium Sector · NALCO vs Hindalco · Q4 FY26 · v4 · 11 JUN 2026 · CB Assist Enabled</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   CBF26 MACHINE-READABLE DATA LAYER — var CO={}
+   CB Research & Analytics · Company Analysis Skill v1.0
+   ══════════════════════════════════════════════════════════════ */
+var CO = {
+
+  nalco: {
+    name:   'NALCO — National Aluminium Company Limited',
+    cls:    'nalco-c',
+    bse:    '532234',
+    seg:    'Integrated Aluminium Upstream (Bauxite-Alumina-Metal-Power) | PSU Navratna (GoI 51.28%)',
+
+    q4: {
+      rev:     5013,
+      ebitda:  2230,
+      ebitdaM: 44.5,
+      pat:     1722,
+      yoy:     -5,
+    },
+
+    fy: {
+      rev24:    13149,    rev25:    16788,    rev26:    17843,
+      ebitda24: 3600,     ebitda25: 7150,     ebitda26: 7950,
+      ebitdaM24: 27.4,    ebitdaM25: 42.6,    ebitdaM26: 44.6,
+      pat24:    2060,     pat25:    5325,     pat26:    5816,
+    },
+
+    ob:  0,
+    obr: 0,
+    bs:  'Debt-Free | Net Cash ~₹7,590 Cr',
+    roe: 28.0,
+
+    analysts: 'Antique TP ₹420 (Buy, 6x FY28E EV/EBITDA) | Street ~12x FY26 EPS | Div yield 2%+',
+    mgmt:     'CMD: Brijendra Pratap Singh. Navratna CPSE under Ministry of Mines, GoI 51.28%. Strong delivery on FY26 physical targets across bauxite/alumina/metal/coal/power; 5th stream saw cost overrun and timeline slippage from Sep-25 to Jun-26.',
+    spec:     'Asia lowest-cost integrated primary aluminium: 7.5 MTPA Panchpatmali bauxite, 2.1→3.1 MTPA Damanjodi refinery, 0.46 MTPA Angul smelter, 1,200 MW CPP. Surplus alumina exports = second profit engine. Zero hedging — full LME/alumina spot exposure. Q4 FY26 realisations: alumina $348/t, metal $2,700/t.',
+    jv:       'GNAL JV with Gujarat Alkalies (caustic soda, ~50% of need). Angul Aluminium Park JV with IDCO. MoUs with NTPC and Neyveli Lignite for power. Exploring Gallium and rare earth elements.',
+    export:   'Major alumina exporter to global smelters (Middle East smelter cuts — Qatalum/EGA — flagged as demand risk). Metal largely domestic. Alumina normalised $690/t (Q3FY25) → $348/t (Q4FY26) → ~$320/t (Q1FY27 trend).',
+    delays:   '5th stream slipped Sep-25 → Jun-26 with capex overrun. Smelter +0.5 MTPA only by late 2030/early 2031. Bauxite leases expire FY29/FY31 — renewal process pending. ₹30,000 Cr capex from FY28 erodes net-cash status (70:30 D/E planned).',
+
+    swot: {
+      s: ['World-lowest-cost captive chain: bauxite + alumina + coal (₹1,600-1,700/t landed) + 1,200 MW power', 'Debt-free with ~₹7,590 Cr cash (~11% of market cap) and record FY26 PAT ₹5,816 Cr', 'FY26 record physical output across all five product lines; 5th stream adds 0.2-0.3 Mn t alumina FY27'],
+      w: ['Pure price-taker, no hedging — Q4 PAT -17% YoY purely on alumina normalisation', 'Metal capacity stagnant at 0.46 MTPA until 2030-31; growth is price-dependent'],
+      o: ['5th stream (Jun 2026) + Pottangi mines (May 2026) — nearest-term volume triggers', 'Smelter doubling by 2030-31 converts exported alumina into higher-value metal', 'Critical minerals: Gallium and REE exploration optionality; India Al demand CAGR ~7.2% to 2030'],
+      t: ['Alumina trending to ~$320/t; China supply behaviour can crush seaborne realisations', '₹30,000 Cr debt-funded PSU capex execution risk; dividend may compete with interest+capex'],
+    },
+  },
+
+  hindalco: {
+    name:   'Hindalco — Hindalco Industries Limited',
+    cls:    'hindalco-c',
+    bse:    '500440',
+    seg:    'Global Aluminium (Upstream + Novelis FRP) + Copper | Private — Aditya Birla Group (34.6%)',
+
+    q4: {
+      rev:     78133,
+      ebitda:  11197,
+      ebitdaM: 14.3,
+      pat:     2597,
+      yoy:     20,
+    },
+
+    fy: {
+      rev24:    215962,   rev25:    238496,   rev26:    274944,
+      ebitda24: 25652,    ebitda25: 35496,    ebitda26: 38097,
+      ebitdaM24: 11.9,    ebitdaM25: 14.9,    ebitdaM26: 13.9,
+      pat24:    10155,    pat25:    16002,    pat26:    13391,
+    },
+
+    ob:  0,
+    obr: 0,
+    bs:  'Moderate leverage | Borrowings ~₹56,200 Cr; Novelis net debt $6.7 Bn at 4.1x',
+    roe: 12.4,
+
+    analysts: 'MOFSL TP ₹1,280 (Buy, 7.5x EV/EBITDA FY28E) | Emkay positive on early Oswego restart | Sensex inclusion candidate Jun-26 (~$366 Mn passive flows)',
+    mgmt:     'MD: Satish Pai. Aditya Birla Group flagship (Kumar Mangalam Birla), promoters 34.6%. Crisis management at Oswego credible — restart weeks ahead of guidance; $200 Mn cost-savings run-rate already delivered at FY26 exit.',
+    spec:     'World #1 aluminium company by revenue and #1 FRP roller/recycler (Novelis). India upstream first-decile cost curve (Utkal alumina + captive coal). World #2 copper rods ex-China. Q4: India record across all 3 segments; Copper EBITDA record ₹907 Cr (+48%); Novelis $544/t (+10%).',
+    jv:       'Novelis 100% subsidiary (US). EV partnerships — 10,000 battery enclosures delivered to Mahindra. Pakhajan e-waste/copper recycling (world #2) under construction.',
+    export:   'Novelis = ~55% of consolidated revenue across North America, Europe, Asia, South America. Bay Minette ($4.1 Bn, 600 kt → 1.2 Mn t path) commissions H2 CY26 — first integrated US mill in 40+ years; US tariffs protect its economics.',
+    delays:   'Oswego fires (Sep + Nov 2025): ₹4,565 Cr net exceptional in Q4, shipments -12%, FY26 FCF negative. Restart underway ahead of plan; volumes normalise Q2-Q3 FY27. Novelis leverage 4.1x may touch ~4.5x before easing to ~4.0x by end-FY27.',
+
+    swot: {
+      s: ['Record FY26: revenue ₹2,74,944 Cr, EBITDA ₹38,097 Cr; India EBITDA record ₹22,671 Cr', 'Novelis conversion-premium model insulates ~55% of revenue from LME swings; $544/t even in crisis quarter', 'Bay Minette: tariff-protected 600 kt US capacity into structurally short can/auto sheet market'],
+      w: ['Novelis leverage 4.1x rising toward ~4.5x — no margin for another operational shock', 'Reported ROE ~12.4% and PAT optics (-51% Q4) screen poorly despite record operations'],
+      o: ['Oswego volumes back Q2-Q3 FY27 + Bay Minette H2 CY26 = FY28 earnings step-up', '$350-400 Mn permanent cost reduction by FY28; staggered insurance recoveries', '$10 Bn India plan: battery foil, AC fin, copper tubes, Pakhajan recycling — value-added mix shift'],
+      t: ['Bay Minette greenfield ramp risk while balance sheet is stretched', 'Copper TC/RC globally depressed; by-product (sulphuric acid) strength may not repeat'],
+    },
+  },
+
+};
+
+/* Expected CB factors:
+   nalco    → g:4 m:5 d:5 v:4 t:2 r:5   (FY24→26 rev CAGR 16.5%; EBITDA M 44.6%; net cash; ~12x PE; no OB; ROE ~28%)
+   hindalco → g:3 m:3 d:3 v:4 t:2 r:2   (FY24→26 rev CAGR 12.8%; EBITDA M 13.9%; moderate leverage; ~13.7x PE ex-exceptional; no OB; ROE 12.4%)
+*/
+
+Chart.register(ChartDataLabels);
+const COS=['NALCO','Hindalco'];
+const CL={'NALCO':'#0d9488','Hindalco':'#c84b31','Novelis':'#2979FF'};
+const CA=COS.map(c=>CL[c]);
+
+const OPTS=(suffix='',showLegend=false,horizontal=false)=>({
+  responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
+  plugins:{
+    legend:{display:showLegend,labels:{font:{family:'DM Sans',size:11},color:'#1a1714'}},
+    datalabels:{
+      anchor:'end',align:'top',color:'#1a1714',
+      font:{family:'DM Mono',size:10,weight:'500'},
+      formatter:v=>v===null||v===undefined?'N/A':(typeof v==='number'?v.toLocaleString('en-IN')+suffix:v)
+    }
+  },
+  scales:{
+    x:{ticks:{font:{family:'DM Sans',size:10},color:'#6b6660'},grid:{display:false}},
+    y:{ticks:{font:{family:'DM Mono',size:10},color:'#6b6660',callback:v=>typeof v==='number'?v.toLocaleString('en-IN')+suffix:v},grid:{color:'#f0ede8'}}
+  },
+  layout:{padding:{top:28}}
+});
+
+function bar(id,labels,data,suffix='',clrs=null,showLegend=false){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:clrs||CA.slice(0,data.length),borderRadius:6,borderSkipped:false}]},options:OPTS(suffix,showLegend)});
+}
+
+function multiBar(id,labels,datasets,suffix=''){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:datasets.map(d=>({...d,borderRadius:4,borderSkipped:false}))},
+    options:{...OPTS(suffix,true),plugins:{...OPTS(suffix,true).plugins,datalabels:{display:false}}}
+  });
+}
+
+function line(id,labels,datasets,suffix=''){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:datasets.map(d=>({...d,tension:0.35,pointRadius:5,pointHoverRadius:7}))},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{font:{family:'DM Sans',size:11},color:'#1a1714',boxWidth:12}},datalabels:{display:false}},
+      scales:{
+        x:{ticks:{font:{family:'DM Sans',size:10},color:'#6b6660'},grid:{display:false}},
+        y:{ticks:{font:{family:'DM Mono',size:10},color:'#6b6660',callback:v=>v.toLocaleString('en-IN')+suffix},grid:{color:'#f0ede8'}}
+      }
+    }
+  });
+}
+
+// — Overview tab —
+bar('c_rev', COS, [5013,78133], ' Cr');
+bar('c_yoy', COS, [-4.8,20.4], '%');
+
+// — Performance tab —
+multiBar('c_nalco_ann',['FY24','FY25','FY26'],[
+  {label:'Revenue (₹ Cr)',data:[13149,16788,17843],backgroundColor:'rgba(13,148,136,.30)'},
+  {label:'EBITDA (₹ Cr)*',data:[3600,7150,7950],backgroundColor:'rgba(13,148,136,.60)'},
+  {label:'PAT (₹ Cr)',data:[2060,5325,5816],backgroundColor:CL['NALCO']}
+],' Cr');
+
+multiBar('c_hind_ann',['FY24','FY25','FY26'],[
+  {label:'Revenue (₹ Cr)',data:[215962,238496,274944],backgroundColor:'rgba(200,75,49,.30)'},
+  {label:'EBITDA (₹ Cr)',data:[25652,35496,38097],backgroundColor:'rgba(200,75,49,.60)'},
+  {label:'PAT (₹ Cr)',data:[10155,16002,13391],backgroundColor:CL['Hindalco']}
+],' Cr');
+
+bar('c_ebitda_abs',COS,[7950,38097],' Cr');
+line('c_ebitda_trend',['FY24','FY25','FY26'],[
+  {label:'NALCO EBITDA Margin %*',data:[27.4,42.6,44.6],borderColor:CL['NALCO'],backgroundColor:'transparent'},
+  {label:'Hindalco EBITDA Margin %',data:[11.9,14.9,13.9],borderColor:CL['Hindalco'],backgroundColor:'transparent'}
+],'%');
+
+bar('c_ebitda',COS,[44.5,14.3],'%');
+bar('c_pat',COS,[5816,13391],' Cr');
+bar('c_patm',COS,[32.6,4.9],'%');
+
+// Quarterly trend lines (filed quarters)
+line('c_trend1',['Q4 FY25','Q3 FY26','Q4 FY26'],[
+  {label:'NALCO Revenue',data:[5268,4731,5013],borderColor:CL['NALCO'],backgroundColor:'transparent'},
+  {label:'NALCO PAT',data:[2067,1595,1722],borderColor:'#5eead4',backgroundColor:'transparent'}
+],' Cr');
+line('c_trend2',['Q4 FY25','Q3 FY26','Q4 FY26'],[
+  {label:'Hindalco Revenue',data:[64890,66500,78133],borderColor:CL['Hindalco'],backgroundColor:'transparent'},
+  {label:'Hindalco PAT',data:[5284,2049,2597],borderColor:'#fda4af',backgroundColor:'transparent'}
+],' Cr');
+
+function sw(t){
+  const ids=['ov','rank','perf','seg','raw','exp','an','risk','cbassist'];
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('on',ids[i]===t);
+  });
+  document.querySelectorAll('.pane').forEach(p=>{
+    p.classList.toggle('on',p.id==='p'+t);
+  });
+}
+
+function toggleQA(card){card.classList.toggle('open');}
+
+async function sendCBA(){
+  const input=document.getElementById('cbaInput');
+  const msgs=document.getElementById('cbaMsgs');
+  const btn=document.getElementById('cbaSendBtn');
+  const typing=document.getElementById('cbaTyping');
+  const q=input.value.trim();
+  if(!q)return;
+  const uMsg=document.createElement('div');
+  uMsg.className='cmsg u';uMsg.textContent=q;
+  msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';
+  msgs.scrollTop=msgs.scrollHeight;
+
+  const sys=`You are CB Assist, an expert financial research assistant for Cauvery Business (CB Research). You specialise in the Indian Aluminium sector — NALCO and Hindalco (including Novelis).
+
+MANDATORY: Always answer in BOTH English AND Tamil. Format: full English answer first, then a "---" separator line, then Tamil answer starting with "தமிழில்:".
+
+Key Q4 FY26 data (all actuals from BSE/NSE/SEC filings):
+- NALCO (BSE 532234, PSU GoI 51.28%): Q4 Revenue ₹5,013 Cr (-4.8% YoY, +6% QoQ), PAT ₹1,722 Cr (-16.7% YoY, +7.9% QoQ); FY26 RECORD Revenue ₹17,843 Cr (+6.3%), PAT ₹5,816 Cr (+9.2%); FY25: ₹16,788 Cr / ₹5,325 Cr; FY24: ₹13,149 Cr / ₹2,060 Cr. EBITDA margin ~44-45% (CB estimate). Debt-free, cash ~₹7,590 Cr. Q4 alumina realisation $348/t (vs $690/t peak Q3FY25; Q1FY27 trend ~$320/t), metal $2,700/t, mgmt LME outlook ~$3,000/t. 3rd interim dividend ₹2/sh. CMP ~₹379 (8 Jun 2026), 52W ₹180-445, MCap ~₹70,500 Cr, PE ~12x, +117% 1Y. Antique TP ₹420 Buy.
+- NALCO operations & raw materials: 7.5 MTPA Panchpatmali bauxite (leases to FY29/FY31), 2.1 MTPA Damanjodi refinery, 0.46 MTPA Angul smelter, 1,200 MW CPP. Caustic soda ₹41,000/t, ~50% from GNAL JV. Coal need 7.2 MTPA: captive Utkal D&E 4 MTPA FY26 → 4.8 MTPA FY27 @ ₹1,600-1,700/t landed; balance MCL FSA 5.6 MTPA. Grid power purchase fell ₹186 Cr → ₹50 Cr H1.
+- NALCO expansions: Pottangi bauxite 3.5 MTPA (May 2026, 111 Mn t reserves), 5th stream refinery +1 MTPA → 3.1 MTPA (Jun 2026, +0.2-0.3 Mn t FY27, had cost overrun), smelter +0.5 MTPA ₹17,000 Cr by late 2030/early 2031, 1,080 MW CPP — combined ₹30,000 Cr from FY28 at 70:30 D/E. MoUs NTPC & Neyveli. Gallium/REE exploration. Capex ₹1,600 Cr FY26 → ₹1,800-2,000 Cr FY27.
+- Hindalco (BSE 500440, Aditya Birla 34.6%): Q4 Revenue ₹78,133 Cr (+20.4%, record), EBITDA ₹11,197 Cr (+8.8%, all-time high, 14.3%), PAT ₹2,597 Cr (-50.8% on ₹4,171 Cr Oswego exceptional; PBT pre-exceptional ₹7,622 Cr +16%); FY26 Revenue ₹2,74,944 Cr (+15.3% record), EBITDA ₹38,097 Cr (+7.3% record), PAT ₹13,391 Cr (-16.3%), EPS ₹60.31, Div ₹5/sh (record date 10 Jul 2026); FY25: ₹2,38,496 Cr / EBITDA ₹35,496 Cr / PAT ₹16,002 Cr; FY24: ₹2,15,962 Cr / ₹25,652 Cr / ₹10,155 Cr. India FY26 EBITDA record ₹22,671 Cr; Upstream ₹18,884 Cr (+16%); Copper Q4 rev ₹22,156 Cr (+52%), EBITDA ₹907 Cr record (+48% on sulphuric acid by-products). Q4 raw material cost +38.2% YoY ₹55,890 Cr. CMP ~₹1,065 (8 Jun), 52W high ₹1,105 (14 May), MCap ~₹2,39,000 Cr. MOFSL Buy TP ₹1,280 (7.5x EV/EBITDA FY28E). Sensex inclusion candidate Jun-26 (~$366 Mn passive flows).
+- Novelis (100% US sub): Q4 net sales $4,787 Mn (+4%), adj EBITDA $459 Mn (-3%), $544/t (+10%), shipments 844 kt (-12% on Oswego). Oswego NY fires Sep+Nov 2025 → ₹4,565 Cr net exceptional Q4; restart within weeks of May-26 call, ahead of end-June guidance; volumes normalise Q2-Q3 FY27. Bay Minette, Alabama: $4.1 Bn greenfield, 600 kt (path to 1.2 Mn t), first integrated US aluminium mill in 40+ years, commissioning H2 CY26; FY26 capex $2.3 Bn (+39%), FY27 $2.1-2.4 Bn ($1.7 Bn Bay Minette); FCF positive by end-FY27. Net debt $6.7 Bn, leverage 4.1x (3.7x Dec-25), may touch ~4.5x then ~4.0x end-FY27. Liquidity $2.8 Bn. Cost programme: $200 Mn run-rate FY26 exit → $350-400 Mn by FY28. Hindalco India plan: $10 Bn/5 yrs — Aditya FRP ramp, battery foil, Taloja AC fin, copper tubes, Pakhajan e-waste/copper recycling (world #2), battery enclosures (10,000 to Mahindra).
+
+Sector context: Alumina normalised $690/t → ~$320-348/t. LME Al ~$2,700-2,835/t. China ~60% of world supply. US tariffs protect Bay Minette but hit exporters. India Al demand CAGR ~7.2% to 2030. Aluminium recycling uses ~95% less energy. NALCO = pure upstream price-taker (44% margins, no hedge); Hindalco = conversion model via Novelis (14% margins, pass-through) + first-decile India upstream.
+
+Be rigorous, analytical, and non-elementary. Address strategy, risks, valuation, and competitive dynamics. Never give investment advice — provide analysis.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:1000,
+        system:sys,
+        messages:[{role:"user",content:q}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:"Unable to process response.";
+    typing.style.display='none';
+    const bMsg=document.createElement('div');
+    bMsg.className='cmsg b';
+    const fmt=text
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/---/g,'<hr style="border:none;border-top:1px dashed var(--border);margin:8px 0;">')
+      .replace(/\n/g,'<br>');
+    bMsg.innerHTML=fmt;
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');
+    eMsg.className='cmsg b';
+    eMsg.textContent='CB Assist is temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

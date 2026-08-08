@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CB Company Ranker — Q4 FY26 | CB Research</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1e2a4a;--navy-m:#2d3f6b;--amber:#f59e0b;--amber-s:#fffbeb;
+  --green:#059669;--green-s:#ecfdf5;--red:#e11d48;--red-s:#fff1f4;
+  --warn:#d97706;--warn-s:#fef3c7;
+  --slate:#64748b;--slate-l:#f1f5f9;--slate-m:#e2e8f0;
+  --ink:#1e293b;--ink-2:#475569;--ink-3:#94a3b8;
+  --white:#ffffff;--r:8px;
+  --shadow:0 1px 8px rgba(30,42,74,.08);
+  color-scheme:light only;
+}
+html,body{background:#f8fafc;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;}
+
+/* HEADER */
+.hdr{background:var(--navy);color:#fff;padding:24px 24px 20px;}
+.hdr-inner{max-width:1200px;margin:0 auto;}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:5px;}
+.hdr-title{font-family:'Playfair Display',serif;font-size:clamp(20px,3.5vw,32px);font-weight:900;line-height:1.1;margin-bottom:6px;}
+.hdr-title span{color:var(--amber);}
+.hdr-sub{font-size:11.5px;color:#94a3b8;}
+
+/* SUMMARY STRIP */
+.summary{background:#fff;border-bottom:1px solid var(--slate-m);padding:12px 24px;}
+.sum-inner{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;}
+.s-stat{display:flex;flex-direction:column;}
+.s-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--navy);}
+.s-val.g{color:var(--green);}
+.s-val.a{color:var(--amber);}
+.s-val.r{color:var(--red);}
+.s-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--slate);}
+.s-div{width:1px;height:32px;background:var(--slate-m);}
+
+/* CONTROLS */
+.ctrl-bar{background:#fff;border-bottom:1px solid var(--slate-m);padding:10px 24px;}
+.ctrl-inner{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.ctrl-sep{width:1px;height:22px;background:var(--slate-m);margin:0 4px;}
+.search-box{padding:5px 10px;border:1.5px solid var(--slate-m);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;width:160px;outline:none;}
+.search-box:focus{border-color:var(--navy);}
+.fbtn{padding:5px 12px;border-radius:20px;border:1.5px solid var(--slate-m);background:#fff;color:var(--ink-2);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.fbtn:hover{border-color:var(--navy);color:var(--navy);}
+.fbtn.on{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(30,42,74,.25);}
+.fbtn.g-on{background:var(--green);border-color:var(--green);color:#fff;}
+.sbtn{padding:5px 12px;border-radius:20px;border:1.5px solid var(--slate-m);background:#fff;color:var(--ink-2);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.sbtn.son{background:var(--amber);border-color:var(--amber);color:var(--navy);box-shadow:0 2px 6px rgba(245,158,11,.3);}
+.sbtn:hover{border-color:var(--amber);color:var(--navy);}
+.fbtn.r-on{background:var(--red);border-color:var(--red);color:#fff;}
+.sort-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--slate);white-space:nowrap;}
+
+/* TABLE WRAPPER */
+.tbl-wrap{max-width:1200px;margin:16px auto 40px;padding:0 20px;overflow-x:auto;}
+
+/* TABLE */
+table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border-radius:var(--r);border:1px solid var(--slate-m);box-shadow:var(--shadow);font-size:12.5px;}
+thead tr{background:#f8fafc;border-bottom:2px solid var(--slate-m);}
+th{padding:9px 10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--slate);white-space:nowrap;cursor:pointer;user-select:none;background:#f8fafc;}
+th:first-child{border-radius:var(--r) 0 0 0;border-left:none;}
+th:last-child{border-radius:0 var(--r) 0 0;}
+th.r{text-align:right;}
+th.sort-asc::after{content:' ↑';color:var(--amber);}
+th.sort-desc::after{content:' ↓';color:var(--amber);} th.sorted{color:var(--navy);background:#eef2ff;}
+th:hover{color:var(--navy);}
+
+tbody tr{border-bottom:1px solid var(--slate-m);transition:background .12s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#eef2ff;}tbody tr:nth-child(even){background:#fafbfd;}tbody tr:nth-child(even):hover{background:#eef2ff;}
+tbody tr.hidden{display:none;}
+
+td{padding:8px 10px;vertical-align:middle;}
+td.r{text-align:right;font-family:'DM Mono',monospace;}
+td.rank-cell{font-family:'DM Mono',monospace;font-weight:500;font-size:11px;color:var(--ink-3);text-align:center;width:36px;}
+
+/* rank medal */
+.medal{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;}
+.m-gold{background:var(--amber);color:var(--navy);}
+.m-silver{background:#94a3b8;color:#fff;}
+.m-bronze{background:#b45309;color:#fff;}
+.m-top10{background:var(--navy);color:#fff;}
+.m-plain{background:var(--slate-l);color:var(--ink-2);}
+.m-bot{background:var(--red-s);color:var(--red);}
+
+/* company name cell */
+.co-cell{display:flex;flex-direction:column;gap:1px;}
+.co-name{font-weight:700;color:var(--navy);font-size:13px;white-space:nowrap;letter-spacing:-0.2px;}
+.co-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px;}
+.co-why{font-size:10.5px;color:var(--ink-2);margin-top:3px;line-height:1.4;max-width:340px;font-style:italic;}
+.tag{display:inline-block;padding:1px 6px;border-radius:8px;font-size:9.5px;font-weight:600;white-space:nowrap;}
+.tag-sec{background:#f0f4ff;color:#4361a8;}
+.tag-grp{background:#ecfdf5;color:#047857;}
+
+/* number cells */
+.pos{color:var(--green);font-weight:500;}
+.neg{color:var(--red);font-weight:500;}
+.warn{color:var(--warn);font-weight:500;}
+.neu{color:var(--ink-2);}
+
+/* CB score badge */
+.cb-badge{display:inline-flex;flex-direction:column;align-items:flex-end;}
+.cb-num{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;}
+.cb-bar-wrap{width:48px;height:5px;background:var(--slate-m);border-radius:3px;margin-top:3px;}
+.cb-bar{height:100%;border-radius:2px;}
+.cb-hi .cb-num{color:var(--green);}
+.cb-mid .cb-num{color:var(--warn);}
+.cb-lo .cb-num{color:var(--red);}
+
+/* signal pill */
+.sig{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.sig-g{background:#dcfce7;color:#15803d;font-weight:700;}
+.sig-a{background:#fef9c3;color:#a16207;font-weight:700;}
+.sig-r{background:#fee2e2;color:#b91c1c;font-weight:700;}
+
+/* result count */
+.result-count{font-size:11px;color:var(--slate);padding:6px 16px;max-width:1200px;margin:0 auto;}
+
+/* disclaimer */
+.disc{max-width:1200px;margin:0 auto 32px;padding:0 16px;}
+.disc-box{background:var(--warn-s);border:1px solid #fcd34d;border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--ink-2);line-height:1.6;}
+
+/* ── NOTES PANEL ── */
+.notes-row td{padding:0;}
+.notes-panel{display:none;padding:12px 16px 14px;background:#fffbeb;border-top:2px solid #f59e0b;font-size:11.5px;line-height:1.75;color:var(--ink-2);}
+.notes-panel.open{display:block;}
+.has-notes .co-name::after{content:' ⚠️';font-size:10px;vertical-align:middle;}
+tr.data-row{cursor:pointer;}
+tr.data-row:has(+ tr .notes-panel.open){background:#fffbeb!important;}
+.notes-toggle{font-size:9.5px;color:var(--amber);font-weight:700;margin-left:6px;cursor:pointer;border:1px solid var(--amber);border-radius:8px;padding:1px 5px;white-space:nowrap;}
+
+@media(max-width:700px){
+  th:nth-child(n+6){display:none;}
+  td:nth-child(n+6){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="eyebrow">CB Research · EIL Research · Q4 FY26 · Company Intelligence</div>
+    <div class="hdr-title">India <span>Company Ranker</span></div>
+    <div class="hdr-sub">130+ companies · Ranked on CB Score independent of sector · Q4 FY26 actuals · Sortable by any metric · Not investment advice</div>
+  </div>
+</div>
+
+<div class="summary" style="background:linear-gradient(135deg,#f8fafc 0%,#eef2ff 100%);">
+  <div class="sum-inner">
+    <div class="s-stat"><span class="s-val" id="s-total">131</span><span class="s-lbl">Companies</span></div>
+    <div class="s-div"></div>
+    <div class="s-stat"><span class="s-val g" id="s-green">—</span><span class="s-lbl">Score ≥75</span></div>
+    <div class="s-div"></div>
+    <div class="s-stat"><span class="s-val a" id="s-mid">—</span><span class="s-lbl">Score 55–74</span></div>
+    <div class="s-div"></div>
+    <div class="s-stat"><span class="s-val r" id="s-low">—</span><span class="s-lbl">Score &lt;55</span></div>
+    <div class="s-div"></div>
+    <div class="s-stat"><span class="s-val">30</span><span class="s-lbl">Sectors</span></div>
+    <div class="s-div"></div>
+    <div class="s-stat"><span class="s-val">Q4 FY26</span><span class="s-lbl">Period</span></div>
+  </div>
+</div>
+
+<div class="ctrl-bar">
+  <div class="ctrl-inner">
+    <input class="search-box" id="search" placeholder="🔍 Search company…" oninput="applyFilters()">
+    <div class="ctrl-sep"></div>
+    <span class="sort-lbl">Score:</span>
+    <button class="fbtn on" onclick="filterScore('all',this)">All</button>
+    <button class="fbtn" onclick="filterScore('hi',this)">≥75 🟢</button>
+    <button class="fbtn" onclick="filterScore('mid',this)">55–74 🟡</button>
+    <button class="fbtn" onclick="filterScore('lo',this)">&lt;55 🔴</button>
+    <div class="ctrl-sep"></div>
+    <span class="sort-lbl">Group:</span>
+    <button class="fbtn on" onclick="filterGrp('all',this)">All</button>
+    <button class="fbtn" onclick="filterGrp('Manufacturing',this)">Mfg</button>
+    <button class="fbtn" onclick="filterGrp('Financials',this)">Finance</button>
+    <button class="fbtn" onclick="filterGrp('Consumption & Services',this)">Consumption</button>
+    <button class="fbtn" onclick="filterGrp('Infrastructure',this)">Infra</button>
+    <button class="fbtn" onclick="filterGrp('Energy',this)">Energy</button>
+    <div class="ctrl-sep"></div>
+    <span class="sort-lbl">Sort:</span>
+    <button class="sbtn son" onclick="sortBy('cb',this)">CB Score</button>
+    <button class="sbtn" onclick="sortBy('rev',this)">Rev Growth</button>
+    <button class="sbtn" onclick="sortBy('ebitda',this)">EBITDA%</button>
+    <button class="sbtn" onclick="sortBy('pat',this)">PAT%</button>
+  </div>
+</div>
+
+<div class="result-count" id="result-count"></div>
+
+<div class="tbl-wrap">
+  <table id="co-table">
+    <thead>
+      <tr>
+        <th style="text-align:center;">Rank</th>
+        <th onclick="sortCol('name')">Company</th>
+        <th class="r" onclick="sortCol('rev')">Q4 Rev (Cr)</th>
+        <th class="r" onclick="sortCol('revYoy')">Rev YoY</th>
+        <th class="r" onclick="sortCol('ebitda')">EBITDA%</th>
+        <th class="r" onclick="sortCol('patYoy')">PAT YoY</th>
+        <th class="r" onclick="sortCol('cb')">CB Score</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody id="co-tbody"></tbody>
+  </table>
+</div>
+
+<div class="disc">
+  <div class="disc-box">⚠️ <strong>CB Research Disclaimer:</strong> CB Scores are a composite of Revenue Growth (30%), EBITDA Margin (25%), PAT Quality (25%) and FY27 Outlook (20%) based on Q4 FY26 reported results. This is sector-research intelligence for CB Research members only. Not SEBI-registered investment advice. Do not make buy/sell decisions based solely on CB Scores. Individual company research is essential before any investment decision. · Elango Industries Limited (BSE: 513452) · EIL Research</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// COMPANY DATA — Q4 FY26 · CB Research compiled
+// Fields: name, sector, group, rev(Cr), revYoy(%), ebitda(%), patYoy(%), cb(0-100), signal
+// signal: 'BUY MOMENTUM' | 'WATCH' | 'AVOID' replaced with
+//         'Strong' | 'Selective' | 'Weak' (no buy/sell language)
+// ══════════════════════════════════════════════════════════════
+const DATA=[
+// ── DEFENCE ──
+{name:'HAL',sector:'Defence',group:'Manufacturing',rev:7595,revYoy:35,ebitda:22,patYoy:42,cb:72,sig:'Selective',
+ notes:`<strong>⚠️ CB Research Note — Execution Risk Elevated (June 2026)</strong><br><br>
+<strong>Engine Crisis (GE F404 — Tejas Mk1A):</strong><br>
+• 99 engines ordered ($716 Mn). Only 6 delivered as of April 2026 — 2+ years behind schedule. HAL has formally fined GE for delays.<br>
+• 30 Tejas Mk1A jets fully built &amp; tested but parked — awaiting production-grade engines. Formal IAF delivery now targeted Aug–Sep 2026, contingent on GE supply stabilising.<br>
+• GE schedule: 12 engines FY26, 20 engines FY27 — HAL cannot meet its 30-jet/year target at this pace.<br><br>
+<strong>F414 Engine (Tejas Mk2 &amp; AMCA) — Also Delayed:</strong><br>
+• F414 co-production deal with GE repeatedly postponed — still not signed as of mid-2026. Without this, Tejas Mk2 and AMCA timelines face multi-year slippage.<br><br>
+<strong>Three Tejas Crashes Since Induction (2015):</strong><br>
+• Mar 2024 — Crash near Jaisalmer<br>
+• Nov 2025 — Tejas nosedived &amp; exploded at Dubai Air Show in front of global audience; pilot Wg Cdr Namansh Syal (34) killed. HAL shares fell 8%+ in a single session. Export image damaged.<br>
+• Feb 2026 — Third incident at IAF base; pilot ejected safely; aircraft significantly damaged; IAF launched fleet-wide safety checks.<br><br>
+<strong>Additional Risk:</strong><br>
+• HAL chose Israeli ELTA radar over indigenous Uttam for Mk1A — Israel controls the software. India's Astra Mk1 missile failed a March 2025 test due to radar data-sync issues.<br><br>
+<em>Revenue &amp; PAT growth remain real — order backlog ₹1.4L Cr is genuine. But execution bottleneck (engines) and image risk (crashes) make the 92-score untenable. CB Score revised 92 → 72. Signal: Selective.</em>`},
+{name:'BEL',sector:'Defence',group:'Manufacturing',rev:6130,revYoy:28,ebitda:20,patYoy:38,cb:88,sig:'Strong',why:'Clean execution; radar/EW/naval electronics; no engine bottleneck like HAL'},
+{name:'Mazagon Dock',sector:'Defence',group:'Manufacturing',rev:3200,revYoy:32,ebitda:12,patYoy:55,cb:85,sig:'Strong',why:'Submarines + frigates on record delivery schedule; PAT +55%'},
+{name:'Garden Reach',sector:'Defence',group:'Manufacturing',rev:1480,revYoy:25,ebitda:10,patYoy:40,cb:80,sig:'Strong',why:'Naval order book ₹22,000 Cr; steady execution, clean story'},
+{name:'Bharat Forge',sector:'Defence',group:'Manufacturing',rev:1720,revYoy:14,ebitda:22,patYoy:18,cb:72,sig:'Selective',why:'Defence + auto cyclical mix; growth solid but not best-in-class'},
+{name:'Data Patterns',sector:'Defence',group:'Manufacturing',rev:290,revYoy:8,ebitda:28,patYoy:12,cb:65,sig:'Selective',why:'Niche high-margin components but small base, slower growth'},
+{name:'Azad Engineering',sector:'Defence',group:'Manufacturing',rev:160,revYoy:20,ebitda:24,patYoy:30,cb:74,sig:'Selective',why:'High-RoCE precision parts; strong PAT growth off small base'},
+
+// ── HOTELS ──
+{name:'IHCL',sector:'Hotels',group:'Consumption & Services',rev:2765,revYoy:14,ebitda:37,patYoy:26,cb:88,sig:'Strong',why:'Sector leader; +14% rev, 37% EBITDA, PAT +26%; hotel upcycle tailwind'},
+{name:'Lemon Tree',sector:'Hotels',group:'Consumption & Services',rev:420,revYoy:11,ebitda:52,patYoy:22,cb:86,sig:'Strong',why:'Best-in-class 52% EBITDA margin; mid-market dual model scaling'},
+{name:'Juniper Hotels',sector:'Hotels',group:'Consumption & Services',rev:302,revYoy:9,ebitda:44,patYoy:99,cb:84,sig:'Strong',why:'PAT nearly doubled FY26; 81% occupancy highest in pack'},
+{name:'ITC Hotels',sector:'Hotels',group:'Consumption & Services',rev:1254,revYoy:18,ebitda:38,patYoy:20,cb:83,sig:'Strong',why:'+18% rev post-demerger; luxury pure-play; margin expanding'},
+{name:'EIH (Oberoi)',sector:'Hotels',group:'Consumption & Services',rev:910,revYoy:10,ebitda:43,patYoy:-5,cb:78,sig:'Selective',why:'Record EBITDA but PAT dipped YoY; ultra-luxury ARR-led growth'},
+{name:'SAMHI Hotels',sector:'Hotels',group:'Consumption & Services',rev:249,revYoy:19,ebitda:38,patYoy:999,cb:76,sig:'Selective',why:'Turnaround to profit FY26 but high leverage (~₹1,900 Cr net debt)'},
+{name:'Chalet Hotels',sector:'Hotels',group:'Consumption & Services',rev:558,revYoy:7,ebitda:49,patYoy:15,cb:74,sig:'Selective',why:'48.8% EBITDA; owned upscale + CRE; Q4 occupancy softened'},
+
+// ── POWER GENCOS ──
+{name:'NTPC',sector:'Power (Gencos)',group:'Energy',rev:46800,revYoy:18,ebitda:32,patYoy:18,cb:84,sig:'Strong',why:'Capacity additions + peak demand 250GW; PAT +18%; regulated stability'},
+{name:'Adani Power',sector:'Power (Gencos)',group:'Energy',rev:14200,revYoy:22,ebitda:35,patYoy:28,cb:83,sig:'Strong',why:'+22% rev; merchant tariffs surging; 35% EBITDA; strong momentum'},
+{name:'Tata Power',sector:'Power (Gencos)',group:'Energy',rev:16100,revYoy:16,ebitda:20,patYoy:22,cb:78,sig:'Strong',why:'Integrated utility + RE pivot; PAT +22%; transmission capex'},
+{name:'Power Grid',sector:'Power (Gencos)',group:'Energy',rev:11800,revYoy:10,ebitda:85,patYoy:12,cb:76,sig:'Strong',why:'85% EBITDA monopoly; steady +12% PAT; T&D capex visibility'},
+{name:'Torrent Power',sector:'Power (Gencos)',group:'Energy',rev:8900,revYoy:14,ebitda:28,patYoy:20,cb:75,sig:'Strong',why:'Integrated play; +14% rev, PAT +20%; distribution franchise strong'},
+{name:'JSW Energy',sector:'Power (Gencos)',group:'Energy',rev:3200,revYoy:12,ebitda:42,patYoy:15,cb:72,sig:'Selective',why:'42% EBITDA; RE pipeline building but high capex intensity'},
+{name:'NHPC',sector:'Power (Gencos)',group:'Energy',rev:3600,revYoy:8,ebitda:55,patYoy:10,cb:70,sig:'Selective',why:'Hydro stability, 55% EBITDA; slower growth profile'},
+{name:'CESC',sector:'Power (Gencos)',group:'Energy',rev:4200,revYoy:9,ebitda:22,patYoy:12,cb:68,sig:'Selective',why:'Distribution-heavy; steady but modest growth; regulated returns'},
+
+// ── POWER FINANCIERS ──
+{name:'PFC',sector:'Power Financiers',group:'Financials',rev:11200,revYoy:22,ebitda:96,patYoy:25,cb:88,sig:'Strong',why:'NII +22%; near-zero NPAs; ₹11L Cr power capex pipeline backing'},
+{name:'REC',sector:'Power Financiers',group:'Financials',rev:9800,revYoy:20,ebitda:96,patYoy:22,cb:86,sig:'Strong',why:'Loan book record; sovereign-backed RE lending; clean asset quality'},
+{name:'IREDA',sector:'Power Financiers',group:'Financials',rev:1680,revYoy:28,ebitda:94,patYoy:35,cb:84,sig:'Strong',why:'Fastest-growing RE financier; NII +28%, PAT +35%; 500GW tailwind'},
+
+// ── CAPITAL GOODS ──
+{name:'ABB India',sector:'Capital Goods',group:'Manufacturing',rev:3200,revYoy:16,ebitda:18,patYoy:28,cb:84,sig:'Strong',why:'18% EBITDA; record order inflow; T&D + automation super-cycle'},
+{name:'Siemens India',sector:'Capital Goods',group:'Manufacturing',rev:4800,revYoy:19,ebitda:17,patYoy:32,cb:83,sig:'Strong',why:'+19% rev; PAT +32%; energy + digital industries momentum'},
+{name:'Hitachi Energy',sector:'Capital Goods',group:'Manufacturing',rev:1680,revYoy:24,ebitda:14,patYoy:40,cb:80,sig:'Strong',why:'+24% rev; PAT +40%; pure T&D play in transmission boom'},
+{name:'Voltamp Transformers',sector:'Capital Goods',group:'Manufacturing',rev:540,revYoy:22,ebitda:22,patYoy:35,cb:82,sig:'Strong',why:'22% EBITDA; transformer demand boom; PAT +35% off niche'},
+{name:'Bosch India',sector:'Capital Goods',group:'Manufacturing',rev:4600,revYoy:10,ebitda:16,patYoy:15,cb:72,sig:'Selective',why:'Steady but slower; auto-tech mix; +10% rev, +15% PAT'},
+
+// ── EXCHANGES / DEPOSITORIES ──
+{name:'BSE',sector:'Exchanges',group:'Financials',rev:760,revYoy:35,ebitda:62,patYoy:52,cb:90,sig:'Strong',why:'Options volume boom; +35% rev, PAT +52%; duopoly economics'},
+{name:'MCX',sector:'Exchanges',group:'Financials',rev:210,revYoy:28,ebitda:52,patYoy:38,cb:84,sig:'Strong',why:'+28% rev post tech migration; commodity volumes recovering'},
+{name:'CDSL',sector:'Exchanges',group:'Financials',rev:280,revYoy:22,ebitda:68,patYoy:20,cb:82,sig:'Strong',why:'68% EBITDA; 18Cr+ demat accounts; retail participation structural'},
+{name:'IEX',sector:'Exchanges',group:'Financials',rev:160,revYoy:18,ebitda:72,patYoy:15,cb:78,sig:'Strong',why:'72% EBITDA monopoly; volume growth steady; power market expansion'},
+{name:'NSDL',sector:'Exchanges',group:'Financials',rev:180,revYoy:15,ebitda:60,patYoy:18,cb:74,sig:'Selective',why:'Depository duopoly; steady 60% EBITDA; slower than CDSL'},
+
+// ── CABLES & WIRES ──
+{name:'Polycab',sector:'Cables & Wires',group:'Manufacturing',rev:5200,revYoy:18,ebitda:13,patYoy:22,cb:80,sig:'Strong',why:'Market leader; +18% rev; infra + housing demand; PAT +22%'},
+{name:'KEI Industries',sector:'Cables & Wires',group:'Manufacturing',rev:2800,revYoy:22,ebitda:11,patYoy:28,cb:79,sig:'Strong',why:'+22% rev fastest in pack; T&D + real estate; PAT +28%'},
+{name:'RR Kabel',sector:'Cables & Wires',group:'Manufacturing',rev:1480,revYoy:20,ebitda:10,patYoy:24,cb:75,sig:'Strong',why:'+20% rev; consumer + cables; scaling well off mid base'},
+{name:'Havells India',sector:'Cables & Wires',group:'Manufacturing',rev:5600,revYoy:14,ebitda:12,patYoy:16,cb:72,sig:'Selective',why:'Diversified electricals; steady +14%; brand strength'},
+{name:'Finolex Cables',sector:'Cables & Wires',group:'Manufacturing',rev:1100,revYoy:10,ebitda:13,patYoy:12,cb:66,sig:'Selective',why:'Slower +10% growth; cables steady but limited catalysts'},
+
+// ── SOLAR / RENEWABLES ──
+{name:'Shakti Pumps',sector:'Solar/Renewables',group:'Energy',rev:820,revYoy:40,ebitda:18,patYoy:55,cb:86,sig:'Strong',why:'+40% rev top in solar; PM-KUSUM tailwind; PAT +55%'},
+{name:'Waaree Energies',sector:'Solar/Renewables',group:'Energy',rev:4200,revYoy:32,ebitda:20,patYoy:45,cb:84,sig:'Strong',why:'+32% rev; module leader; export demand; PAT +45%'},
+{name:'Premier Energies',sector:'Solar/Renewables',group:'Energy',rev:1100,revYoy:35,ebitda:18,patYoy:50,cb:82,sig:'Strong',why:'+35% rev; integrated cell+module; capacity ramp; PAT +50%'},
+{name:'Adani Green',sector:'Solar/Renewables',group:'Energy',rev:3200,revYoy:22,ebitda:82,patYoy:18,cb:74,sig:'Selective',why:'82% EBITDA but high leverage; capacity additions slower PAT'},
+
+// ── RAILWAYS ──
+{name:'RVNL',sector:'Railways',group:'Infrastructure',rev:6800,revYoy:20,ebitda:14,patYoy:22,cb:78,sig:'Strong',why:'Order book ₹95,000 Cr+; +20% rev; railway capex execution'},
+{name:'IRCTC',sector:'Railways',group:'Infrastructure',rev:1120,revYoy:12,ebitda:32,patYoy:15,cb:76,sig:'Strong',why:'32% EBITDA monopoly; ticketing + catering; +12% steady'},
+{name:'IRFC',sector:'Railways',group:'Infrastructure',rev:7200,revYoy:18,ebitda:96,patYoy:14,cb:74,sig:'Selective',why:'96% EBITDA financier; low-risk railway funding; modest +14% PAT'},
+{name:'Titagarh Rail',sector:'Railways',group:'Infrastructure',rev:820,revYoy:25,ebitda:12,patYoy:35,cb:72,sig:'Selective',why:'+25% rev; wagons + Vande Bharat; PAT +35% off small base'},
+
+// ── EMS ──
+{name:'Dixon Technologies',sector:'EMS',group:'Manufacturing',rev:5800,revYoy:35,ebitda:10,patYoy:48,cb:86,sig:'Strong',why:'+35% rev; EMS leader; PLI tailwind; operating leverage PAT +48%'},
+{name:'Netweb Technologies',sector:'EMS',group:'Manufacturing',rev:480,revYoy:28,ebitda:20,patYoy:42,cb:84,sig:'Strong',why:'+28% rev; AI servers 20% EBITDA; high-value EMS niche'},
+{name:'Kaynes Technology',sector:'EMS',group:'Manufacturing',rev:520,revYoy:32,ebitda:12,patYoy:38,cb:80,sig:'Strong',why:'+32% rev; diversified EMS; PAT +38%; scaling fast'},
+{name:'Amber Enterprises',sector:'EMS',group:'Manufacturing',rev:3200,revYoy:28,ebitda:8,patYoy:30,cb:76,sig:'Strong',why:'+28% rev; AC contract mfg leader; thin margins improving'},
+
+// ── NBFC ──
+{name:'Muthoot Finance',sector:'NBFC',group:'Financials',rev:4800,revYoy:28,ebitda:78,patYoy:28,cb:82,sig:'Strong',why:'Gold loan + gold price surge; +28% rev & PAT; 78% EBITDA'},
+{name:'Cholamandalam',sector:'NBFC',group:'Financials',rev:4200,revYoy:22,ebitda:70,patYoy:18,cb:78,sig:'Strong',why:'+22% AUM; diversified lending; clean asset quality; PAT +18%'},
+{name:'Shriram Finance',sector:'NBFC',group:'Financials',rev:6800,revYoy:18,ebitda:68,patYoy:16,cb:74,sig:'Selective',why:'Vehicle + MSME lending; +18%; merger synergies; steady'},
+{name:'Bajaj Finance',sector:'NBFC',group:'Financials',rev:16200,revYoy:22,ebitda:72,patYoy:14,cb:72,sig:'Selective',why:'+22% AUM but PAT +14% only — credit cost normalisation drag'},
+
+// ── GOLD & JEWELLERY ──
+{name:'Kalyan Jewellers',sector:'Gold & Jewellery',group:'Consumption & Services',rev:7200,revYoy:28,ebitda:8,patYoy:35,cb:78,sig:'Strong',why:'+28% rev; franchise model scaling; PAT +35%; organised shift'},
+{name:'Titan Company',sector:'Gold & Jewellery',group:'Consumption & Services',rev:12800,revYoy:22,ebitda:11,patYoy:18,cb:74,sig:'Selective',why:'+22% rev but PAT +18% only; valuation premium caps score'},
+{name:'Thangamayil Jewellery',sector:'Gold & Jewellery',group:'Consumption & Services',rev:1480,revYoy:32,ebitda:7,patYoy:28,cb:72,sig:'Selective',why:'+32% rev fastest; South India focus; PAT +28% off small base'},
+
+// ── PHARMA ──
+{name:'Lupin',sector:'Pharma',group:'Manufacturing',rev:7475,revYoy:32,ebitda:36,patYoy:89,cb:92,sig:'Strong',why:'PAT +89%, EBITDA 36.5% (+1,070bps); US +57%; spectacular turnaround'},
+{name:'Laurus Labs',sector:'Pharma',group:'Manufacturing',rev:1800,revYoy:23,ebitda:27,patYoy:148,cb:88,sig:'Strong',why:'PAT +148%; CDMO secular growth; EBITDA 26.8% expanding'},
+{name:'Sun Pharma',sector:'Pharma',group:'Manufacturing',rev:14560,revYoy:14,ebitda:27,patYoy:26,cb:84,sig:'Strong',why:'Largest pharma; US Innovative crossed $1Bn; PAT +26%; specialty moat'},
+{name:'Alkem Laboratories',sector:'Pharma',group:'Manufacturing',rev:3600,revYoy:16,ebitda:22,patYoy:25,cb:80,sig:'Strong',why:'Domestic-led +16%; chronic therapy strong; PAT +25%'},
+{name:'Torrent Pharma',sector:'Pharma',group:'Manufacturing',rev:2900,revYoy:12,ebitda:28,patYoy:20,cb:78,sig:'Strong',why:'28% EBITDA; branded domestic + acquisitions; PAT +20%'},
+{name:'Divi\'s Laboratories',sector:'Pharma',group:'Manufacturing',rev:2400,revYoy:10,ebitda:28,patYoy:15,cb:74,sig:'Selective',why:'API/CDMO recovery; 28% EBITDA; slower +10% rev caps score'},
+{name:'Cipla',sector:'Pharma',group:'Manufacturing',rev:6800,revYoy:8,ebitda:24,patYoy:-8,cb:66,sig:'Selective',why:'gRevlimid exclusivity expiry hit Q4; PAT -8%; respiratory steady'},
+{name:'Dr Reddys',sector:'Pharma',group:'Manufacturing',rev:7200,revYoy:4,ebitda:22,patYoy:-18,cb:60,sig:'Selective',why:'Weakest large pharma; gRevlimid hit + shelf-stock adj; PAT -18%'},
+
+// ── BANKING ──
+{name:'ICICI Bank',sector:'Banking',group:'Financials',rev:22800,revYoy:15,ebitda:48,patYoy:18,cb:80,sig:'Strong',why:'Best large bank; +15% rev; ROA ~2.4%; clean asset quality'},
+{name:'SBI',sector:'Banking',group:'Financials',rev:68000,revYoy:12,ebitda:38,patYoy:16,cb:76,sig:'Strong',why:'Largest PSU bank; +12%; strong recovery; PAT +16%; valuation comfort'},
+{name:'Kotak Mahindra',sector:'Banking',group:'Financials',rev:14200,revYoy:12,ebitda:46,patYoy:14,cb:72,sig:'Selective',why:'Conservative; +12%; high CASA but growth moderating'},
+{name:'Axis Bank',sector:'Banking',group:'Financials',rev:15800,revYoy:10,ebitda:40,patYoy:12,cb:68,sig:'Selective',why:'+10%; NIM pressure; asset quality stable but slower momentum'},
+{name:'HDFC Bank',sector:'Banking',group:'Financials',rev:42000,revYoy:8,ebitda:44,patYoy:6,cb:64,sig:'Selective',why:'Merger deposit normalisation drags NIM; PAT +6% only'},
+{name:'PNB',sector:'Banking',group:'Financials',rev:16200,revYoy:10,ebitda:28,patYoy:22,cb:62,sig:'Selective',why:'PSU recovery; PAT +22% on low base; asset quality improving'},
+{name:'Bank of Baroda',sector:'Banking',group:'Financials',rev:18400,revYoy:8,ebitda:30,patYoy:12,cb:60,sig:'Selective',why:'PSU steady; +8%; modest growth; clean book'},
+{name:'IndusInd Bank',sector:'Banking',group:'Financials',rev:12800,revYoy:6,ebitda:38,patYoy:-14,cb:42,sig:'Weak',why:'Derivatives accounting issue flagged; PAT -14%; trust dented'},
+
+// ── FMCG ──
+{name:'Varun Beverages',sector:'FMCG',group:'Consumption & Services',rev:5200,revYoy:22,ebitda:22,patYoy:22,cb:78,sig:'Strong',why:'+22% rev best in FMCG; PepsiCo bottling; volume-led PAT +22%'},
+{name:'Dabur India',sector:'FMCG',group:'Consumption & Services',rev:3400,revYoy:10,ebitda:20,patYoy:12,cb:66,sig:'Selective',why:'+10%; rural lag; ayurveda portfolio; modest recovery'},
+{name:'Marico',sector:'FMCG',group:'Consumption & Services',rev:2600,revYoy:8,ebitda:19,patYoy:10,cb:64,sig:'Selective',why:'+8%; Saffola/Parachute; rural stress; margin steady'},
+{name:'Nestle India',sector:'FMCG',group:'Consumption & Services',rev:5100,revYoy:9,ebitda:24,patYoy:8,cb:63,sig:'Selective',why:'+9% but PAT +8%; premium portfolio; input cost watch'},
+{name:'Britannia',sector:'FMCG',group:'Consumption & Services',rev:4200,revYoy:7,ebitda:17,patYoy:8,cb:60,sig:'Selective',why:'+7%; biscuit leader; thin 17% margin; rural-dependent'},
+{name:'HUL',sector:'FMCG',group:'Consumption & Services',rev:15200,revYoy:6,ebitda:24,patYoy:2,cb:56,sig:'Selective',why:'Largest FMCG but PAT +2% flat; rural stress; volume recovery slow'},
+
+// ── HOSPITALS ──
+{name:'Max Healthcare',sector:'Hospitals',group:'Consumption & Services',rev:1960,revYoy:20,ebitda:24,patYoy:32,cb:84,sig:'Strong',why:'+20% rev; 24% EBITDA; bed additions ramping; PAT +32%'},
+{name:'Narayana Hrudayalaya',sector:'Hospitals',group:'Consumption & Services',rev:2100,revYoy:18,ebitda:22,patYoy:28,cb:82,sig:'Strong',why:'+18%; cardiac-focused; asset-light efficiency; PAT +28%'},
+{name:'Apollo Hospitals',sector:'Hospitals',group:'Consumption & Services',rev:5400,revYoy:16,ebitda:20,patYoy:24,cb:78,sig:'Strong',why:'Largest network; +16%; pharmacy + diagnostics; PAT +24%'},
+{name:'Fortis Healthcare',sector:'Hospitals',group:'Consumption & Services',rev:2200,revYoy:14,ebitda:18,patYoy:20,cb:72,sig:'Selective',why:'+14%; network recovery; margins improving steadily'},
+
+// ── TELECOM ──
+{name:'Bharti Airtel',sector:'Telecom',group:'Infrastructure',rev:22800,revYoy:15,ebitda:54,patYoy:35,cb:78,sig:'Strong',why:'ARPU ₹245; +15% rev; PAT +35%; 5G monetisation; FCF strong'},
+{name:'Tata Communications',sector:'Telecom',group:'Infrastructure',rev:5800,revYoy:12,ebitda:28,patYoy:18,cb:68,sig:'Selective',why:'+12%; enterprise data + cloud; margin recovery slower'},
+{name:'Vodafone Idea',sector:'Telecom',group:'Infrastructure',rev:10400,revYoy:4,ebitda:42,patYoy:-999,cb:28,sig:'Weak',why:'Weakest in universe; negative PAT; solvency overhang; AGR debt'},
+
+// ── AUTO 2W ──
+{name:'TVS Motor',sector:'Auto 2W',group:'Manufacturing',rev:9200,revYoy:18,ebitda:19,patYoy:28,cb:80,sig:'Strong',why:'+18% rev best in 2W; premium + EV; PAT +28%; export momentum'},
+{name:'Bajaj Auto',sector:'Auto 2W',group:'Manufacturing',rev:13200,revYoy:15,ebitda:22,patYoy:22,cb:79,sig:'Strong',why:'22% EBITDA; exports strong; PAT +22%; premium mix'},
+{name:'Royal Enfield (Eicher)',sector:'Auto 2W',group:'Manufacturing',rev:4800,revYoy:12,ebitda:28,patYoy:18,cb:76,sig:'Strong',why:'28% EBITDA moat; premium 350cc+; consistent compounder'},
+{name:'Hero MotoCorp',sector:'Auto 2W',group:'Manufacturing',rev:10400,revYoy:8,ebitda:17,patYoy:12,cb:66,sig:'Selective',why:'+8% only; entry-level dependent; EV transition lag'},
+
+// ── AUTO 4W ──
+{name:'M&M',sector:'Auto 4W',group:'Manufacturing',rev:28400,revYoy:24,ebitda:15,patYoy:38,cb:82,sig:'Strong',why:'+24% rev; SUV boom; tractor recovery; PAT +38%; best auto play'},
+{name:'Hyundai India',sector:'Auto 4W',group:'Manufacturing',rev:18200,revYoy:9,ebitda:13,patYoy:14,cb:66,sig:'Selective',why:'+9% post-IPO; SUV mix; PAT +14%; steady but not standout'},
+{name:'Maruti Suzuki',sector:'Auto 4W',group:'Manufacturing',rev:40200,revYoy:6,ebitda:12,patYoy:10,cb:63,sig:'Selective',why:'+6%; entry-segment slowdown; EV transition cost; PAT +10%'},
+{name:'Tata Motors',sector:'Auto 4W',group:'Manufacturing',rev:120000,revYoy:8,ebitda:12,patYoy:18,cb:62,sig:'Selective',why:'JLR + India PV; +8%; PAT +18%; demerger value unlock pending'},
+
+// ── AUTO ANCILLARIES ──
+{name:'Sona BLW',sector:'Auto Ancillaries',group:'Manufacturing',rev:1120,revYoy:18,ebitda:24,patYoy:22,cb:76,sig:'Strong',why:'+18%; EV content per vehicle rising; 24% EBITDA; structural'},
+{name:'Minda Industries',sector:'Auto Ancillaries',group:'Manufacturing',rev:4200,revYoy:14,ebitda:14,patYoy:18,cb:68,sig:'Selective',why:'+14%; diversified components; steady; EV-ready portfolio'},
+{name:'Motherson Sumi',sector:'Auto Ancillaries',group:'Manufacturing',rev:26000,revYoy:10,ebitda:10,patYoy:14,cb:60,sig:'Selective',why:'Global auto exposure; +10%; thin 10% margin; broad but slow'},
+
+// ── TYRES ──
+{name:'Balkrishna Industries',sector:'Tyres',group:'Manufacturing',rev:2960,revYoy:14,ebitda:28,patYoy:22,cb:82,sig:'Strong',why:'28% EBITDA; farm/OTR tyre export niche; PAT +22%'},
+{name:'MRF',sector:'Tyres',group:'Manufacturing',rev:7200,revYoy:9,ebitda:22,patYoy:18,cb:76,sig:'Strong',why:'Tyre leader; 22% EBITDA; +9% rev; RM easing tailwind; PAT +18%'},
+{name:'Apollo Tyres',sector:'Tyres',group:'Manufacturing',rev:6800,revYoy:11,ebitda:19,patYoy:20,cb:74,sig:'Selective',why:'+11%; replacement demand; PAT +20%; margin recovery'},
+{name:'CEAT',sector:'Tyres',group:'Manufacturing',rev:3400,revYoy:10,ebitda:16,patYoy:16,cb:68,sig:'Selective',why:'+10%; 2W/PV tyres; thinner margins; steady'},
+
+// ── CEMENT ──
+{name:'Shree Cement',sector:'Cement',group:'Infrastructure',rev:5200,revYoy:8,ebitda:23,patYoy:5,cb:62,sig:'Selective',why:'23% best cement margin; +8%; but realisations flat; PAT +5%'},
+{name:'UltraTech Cement',sector:'Cement',group:'Infrastructure',rev:21800,revYoy:6,ebitda:20,patYoy:4,cb:60,sig:'Selective',why:'Largest; +6% rev; volume up but pricing weak; PAT +4%'},
+{name:'Ambuja Cements',sector:'Cement',group:'Infrastructure',rev:8400,revYoy:5,ebitda:18,patYoy:3,cb:56,sig:'Selective',why:'+5%; Adani synergies; weakest pricing; PAT +3%'},
+
+// ── METALS ──
+{name:'NALCO',sector:'Metals',group:'Manufacturing',rev:4800,revYoy:14,ebitda:22,patYoy:28,cb:74,sig:'Selective',why:'Aluminium + alumina; +14%; LME tailwind; PAT +28%; integrated'},
+{name:'Hindalco',sector:'Metals',group:'Manufacturing',rev:58000,revYoy:8,ebitda:14,patYoy:15,cb:65,sig:'Selective',why:'Novelis + India; +8%; 20% EBITDA; PAT +15%; aluminium strength'},
+{name:'JSW Steel',sector:'Metals',group:'Manufacturing',rev:44000,revYoy:4,ebitda:14,patYoy:-8,cb:52,sig:'Weak',why:'China dumping hit realisations; PAT -8%; volume up but prices weak'},
+{name:'Tata Steel',sector:'Metals',group:'Manufacturing',rev:56000,revYoy:3,ebitda:12,patYoy:-12,cb:48,sig:'Weak',why:'Weakest metal; China steel glut; Europe drag; PAT -12%'},
+
+// ── OIL & GAS ──
+{name:'ONGC',sector:'Oil & Gas',group:'Energy',rev:72000,revYoy:6,ebitda:32,patYoy:5,cb:60,sig:'Selective',why:'Upstream +6%; stable production; PAT +5%; gas pricing watch'},
+{name:'RIL (O2C+)',sector:'Oil & Gas',group:'Energy',rev:240000,revYoy:4,ebitda:18,patYoy:6,cb:58,sig:'Selective',why:'Diversified giant; O2C flat; retail/Jio steady; PAT +6%'},
+{name:'Petronet LNG',sector:'Oil & Gas',group:'Energy',rev:14400,revYoy:8,ebitda:14,patYoy:10,cb:56,sig:'Selective',why:'+8%; regas volumes; modest; gas demand recovery'},
+{name:'BPCL',sector:'Oil & Gas',group:'Energy',rev:128000,revYoy:2,ebitda:5,patYoy:-20,cb:44,sig:'Weak',why:'Marketing margin normalised; PAT -20%; OMC windfall faded'},
+{name:'IOC',sector:'Oil & Gas',group:'Energy',rev:220000,revYoy:1,ebitda:4,patYoy:-25,cb:40,sig:'Weak',why:'Weakest OMC; refining + marketing squeeze; PAT -25%; subsidy burden'},
+
+// ── PAINTS ──
+{name:'Berger Paints',sector:'Paints',group:'Manufacturing',rev:2800,revYoy:8,ebitda:18,patYoy:10,cb:62,sig:'Selective',why:'+8%; #2 paint; 18% EBITDA; steady share defence'},
+{name:'Kansai Nerolac',sector:'Paints',group:'Manufacturing',rev:2200,revYoy:7,ebitda:14,patYoy:8,cb:58,sig:'Selective',why:'+7%; auto + deco; margin pressure; slower growth'},
+{name:'Asian Paints',sector:'Paints',group:'Manufacturing',rev:8600,revYoy:6,ebitda:18,patYoy:-5,cb:54,sig:'Selective',why:'Market leader but Birla Opus disruption; PAT -5%; share defence cost'},
+{name:'Indigo Paints',sector:'Paints',group:'Manufacturing',rev:340,revYoy:10,ebitda:15,patYoy:12,cb:60,sig:'Selective',why:'+10%; niche challenger; small base; scaling'},
+
+// ── SUGAR / ETHANOL ──
+{name:'Balrampur Chini',sector:'Sugar/Ethanol',group:'Manufacturing',rev:2800,revYoy:14,ebitda:16,patYoy:18,cb:66,sig:'Selective',why:'Ethanol mix accretive; +14%; PAT +18%; blending tailwind'},
+{name:'Triveni Engineering',sector:'Sugar/Ethanol',group:'Manufacturing',rev:2200,revYoy:12,ebitda:14,patYoy:15,cb:63,sig:'Selective',why:'Sugar + engineering; +12%; distillery margin; PAT +15%'},
+{name:'EID Parry',sector:'Sugar/Ethanol',group:'Manufacturing',rev:1800,revYoy:10,ebitda:12,patYoy:12,cb:60,sig:'Selective',why:'Sugar + nutraceuticals; +10%; Coromandel stake value'},
+
+// ── ALCOBEV ──
+{name:'Radico Khaitan',sector:'Alcobev',group:'Consumption & Services',rev:1120,revYoy:14,ebitda:16,patYoy:18,cb:68,sig:'Selective',why:'Premiumisation; +14%; prestige mix; PAT +18%; best alcobev'},
+{name:'United Spirits',sector:'Alcobev',group:'Consumption & Services',rev:3200,revYoy:11,ebitda:14,patYoy:12,cb:63,sig:'Selective',why:'+11%; Diageo portfolio; premium shift; excise drag'},
+{name:'United Breweries',sector:'Alcobev',group:'Consumption & Services',rev:2400,revYoy:9,ebitda:12,patYoy:10,cb:59,sig:'Selective',why:'+9%; beer leader; state policy risk; margin thin'},
+
+// ── TEXTILES ──
+{name:'KPR Mill',sector:'Textiles',group:'Manufacturing',rev:1480,revYoy:12,ebitda:18,patYoy:15,cb:66,sig:'Selective',why:'Integrated textile + sugar; +12%; 18% EBITDA; better than peers'},
+{name:'Page Industries',sector:'Textiles',group:'Manufacturing',rev:1420,revYoy:10,ebitda:20,patYoy:12,cb:64,sig:'Selective',why:'Jockey licensee; +10%; brand moat; premium innerwear'},
+{name:'Vardhman Textiles',sector:'Textiles',group:'Manufacturing',rev:2800,revYoy:8,ebitda:14,patYoy:8,cb:56,sig:'Selective',why:'Spinning margin squeeze; +8%; export-dependent; weak cycle'},
+
+// ── RECYCLING ──
+{name:'Gravita India',sector:'Recycling',group:'Manufacturing',rev:880,revYoy:20,ebitda:10,patYoy:28,cb:74,sig:'Selective',why:'Lead recycling +20%; EPR tailwind; PAT +28%; organised shift'},
+
+// ── IT SERVICES ──
+{name:'LTIMindtree',sector:'IT Services',group:'Manufacturing',rev:9800,revYoy:8,ebitda:22,patYoy:12,cb:62,sig:'Selective',why:'Best mid-IT; +8%; deal wins; PAT +12%; merger synergies'},
+{name:'HCL Technologies',sector:'IT Services',group:'Manufacturing',rev:29600,revYoy:6,ebitda:26,patYoy:10,cb:60,sig:'Selective',why:'26% EBITDA; +6%; ER&D + products; resilient'},
+{name:'TCS',sector:'IT Services',group:'Manufacturing',rev:63400,revYoy:4,ebitda:25,patYoy:6,cb:56,sig:'Selective',why:'Largest IT; +4% CC; margins stable but discretionary spend slow'},
+{name:'Infosys',sector:'IT Services',group:'Manufacturing',rev:40200,revYoy:5,ebitda:22,patYoy:8,cb:54,sig:'Selective',why:'+5% CC; BFSI recovery gradual; PAT +8%; GenAI deals small'},
+{name:'Tech Mahindra',sector:'IT Services',group:'Manufacturing',rev:13800,revYoy:4,ebitda:14,patYoy:5,cb:48,sig:'Weak',why:'Weak; +4%; telecom vertical drag; turnaround in progress'},
+{name:'Wipro',sector:'IT Services',group:'Manufacturing',rev:22500,revYoy:2,ebitda:21,patYoy:4,cb:46,sig:'Weak',why:'Weakest large IT; +2%; deal ramp delays; margin focus'},
+
+// ── AVIATION ──
+{name:'IndiGo (InterGlobe)',sector:'Aviation',group:'Consumption & Services',rev:22400,revYoy:15,ebitda:16,patYoy:-40,cb:42,sig:'Weak',why:'GTF engine grounding; PAT -40%; 60% share but capacity hit'},
+];
+
+// ── Sort & Rank ──
+let sortKey='cb', sortDir=-1;
+let filterScoreVal='all', filterGrpVal='all', searchVal='';
+
+function cbColor(s){return s>=75?'cb-hi':s>=55?'cb-mid':'cb-lo';}
+function cbBarColor(s){return s>=75?'var(--green)':s>=55?'var(--warn)':'var(--red)';}
+function sigClass(s){return s==='Strong'?'sig-g':s==='Weak'?'sig-r':'sig-a';}
+function revFmt(v){if(v>=100000)return'₹'+(v/100000).toFixed(1)+'L Cr';if(v>=1000)return'₹'+(v/1000).toFixed(1)+'K Cr';return'₹'+v+' Cr';}
+function pctFmt(v,cls){
+  if(v===999)return`<span class="${cls}">Turnaround</span>`;
+  if(v===-999)return`<span class="neg">Loss</span>`;
+  const c=v>0?cls:v<0?'neg':'neu';
+  return`<span class="${c}">${v>0?'+':''}${v}%</span>`;
+}
+function medalEl(r,sig){
+  if(sig==='Weak'||r>100)return`<span class="medal m-bot">${r}</span>`;
+  if(r===1)return`<span class="medal m-gold">1</span>`;
+  if(r===2)return`<span class="medal m-silver">2</span>`;
+  if(r===3)return`<span class="medal m-bronze">3</span>`;
+  if(r<=10)return`<span class="medal m-top10">${r}</span>`;
+  return`<span class="medal m-plain">${r}</span>`;
+}
+
+function getVisible(){
+  return DATA.filter(d=>{
+    const sOk=filterScoreVal==='all'||(filterScoreVal==='hi'&&d.cb>=75)||(filterScoreVal==='mid'&&d.cb>=55&&d.cb<75)||(filterScoreVal==='lo'&&d.cb<55);
+    const gOk=filterGrpVal==='all'||d.group===filterGrpVal;
+    const q=searchVal.toLowerCase();
+    const tOk=!q||d.name.toLowerCase().includes(q)||d.sector.toLowerCase().includes(q);
+    return sOk&&gOk&&tOk;
+  });
+}
+
+function render(){
+  const vis=getVisible();
+  vis.sort((a,b)=>{
+    let av=a[sortKey],bv=b[sortKey];
+    if(typeof av==='string')return sortDir*(av.localeCompare(bv));
+    return sortDir*(av-bv);
+  });
+
+  // assign display ranks within visible set
+  let rank=1;
+  const tbody=document.getElementById('co-tbody');
+  tbody.innerHTML=vis.map(d=>{
+    const r=rank++;
+    const cbCls=cbColor(d.cb);
+    const hasNotes=!!d.notes;
+    const nid=`notes-${r}`;
+    return`<tr class="data-row ${hasNotes?'has-notes':''}" onclick="${hasNotes?`toggleNotes('${nid}')`:''}" style="${hasNotes?'cursor:pointer':''}">
+      <td class="rank-cell">${medalEl(r,d.sig)}</td>
+      <td><div class="co-cell">
+        <span class="co-name">${d.name}${hasNotes?'<span class="notes-toggle">⚠ Notes</span>':''}</span>
+        <div class="co-tags"><span class="tag tag-sec">${d.sector}</span><span class="tag tag-grp">${d.group}</span></div>
+        ${d.why?`<div class="co-why">${d.why}</div>`:''}
+      </div></td>
+      <td class="r neu">${revFmt(d.rev)}</td>
+      <td class="r">${pctFmt(d.revYoy,'pos')}</td>
+      <td class="r">${pctFmt(d.ebitda,'pos')}</td>
+      <td class="r">${pctFmt(d.patYoy,'pos')}</td>
+      <td class="r"><div class="${cbCls} cb-badge">
+        <span class="cb-num">${d.cb}</span>
+        <div class="cb-bar-wrap"><div class="cb-bar" style="width:${d.cb}%;background:${cbBarColor(d.cb)};"></div></div>
+      </div></td>
+      <td><span class="sig ${sigClass(d.sig)}">${d.sig}</span></td>
+    </tr>${hasNotes?`<tr class="notes-row"><td colspan="8"><div class="notes-panel" id="${nid}">${d.notes}</div></td></tr>`:''}`;
+  }).join('');
+
+  document.getElementById('result-count').textContent=`Showing ${vis.length} of ${DATA.length} companies`;
+
+  // update summary counts
+  document.getElementById('s-green').textContent=DATA.filter(d=>d.cb>=75).length;
+  document.getElementById('s-mid').textContent=DATA.filter(d=>d.cb>=55&&d.cb<75).length;
+  document.getElementById('s-low').textContent=DATA.filter(d=>d.cb<55).length;
+  document.getElementById('s-total').textContent=DATA.length;
+
+  // update sort header indicators
+  document.querySelectorAll('th').forEach(th=>th.classList.remove('sort-asc','sort-desc'));
+}
+
+function sortBy(key,btn){
+  if(sortKey===key){sortDir*=-1;}else{sortKey=key;sortDir=-1;}
+  document.querySelectorAll('.ctrl-inner .sbtn').forEach(b=>b.classList.remove('son'));
+  btn.classList.add('son');
+  function toggleNotes(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('open');
+}
+
+render();
+}
+
+function sortCol(key){
+  if(sortKey===key){sortDir*=-1;}else{sortKey=key;sortDir=key==='name'||key==='sector'?1:-1;}
+  render();
+}
+
+function filterScore(v,btn){
+  filterScoreVal=v;
+  document.querySelectorAll('.ctrl-inner .fbtn').forEach(b=>{if(['All','≥75 🟢','55–74 🟡','<55 🔴'].includes(b.textContent))b.classList.remove('on','g-on','r-on');});
+  btn.classList.add(v==='hi'?'g-on':v==='lo'?'r-on':'on');
+  render();
+}
+
+function filterGrp(v,btn){
+  filterGrpVal=v;
+  document.querySelectorAll('.ctrl-inner .fbtn').forEach(b=>{if(['All','Mfg','Finance','Consumption','Infra','Energy'].includes(b.textContent))b.classList.remove('on');});
+  btn.classList.add('on');
+  render();
+}
+
+function applyFilters(){
+  searchVal=document.getElementById('search').value;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

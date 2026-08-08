@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBI Q4 FY26 — Financial Analysis Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Libre+Franklin:wght@300;400;500;600&display=swap');
+
+  :root {
+    --navy: #1a56db;
+    --navy-mid: #f0f4ff;
+    --navy-light: #e8f0fe;
+    --gold: #1a56db;
+    --gold-light: #1e429f;
+    --gold-pale: #c7d7fd;
+    --cream: #1e3a8a;
+    --cream-dark: #1e40af;
+    --red: #dc2626;
+    --green: #16a34a;
+    --green-light: #22c55e;
+    --white: #ffffff;
+    --text-dim: rgba(30,58,138,0.65);
+    --border: rgba(26,86,219,0.18);
+    --card-bg: rgba(239,246,255,0.85);
+    --card-border: rgba(26,86,219,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #ffffff;
+    color: #1e3a8a;
+    font-family: 'Libre Franklin', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Background texture ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(26,86,219,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 85% 80%, rgba(219,234,254,0.4) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(26,86,219,0.02) 80px, rgba(26,86,219,0.02) 81px),
+      repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(26,86,219,0.015) 80px, rgba(26,86,219,0.015) 81px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrap { position: relative; z-index: 1; max-width: 1340px; margin: 0 auto; padding: 0 28px 80px; }
+
+  /* ─── HEADER ─── */
+  header {
+    padding: 54px 0 44px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    animation: fadeDown 0.9s ease both;
+  }
+  .header-left { display: flex; flex-direction: column; gap: 10px; }
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 96px);
+    line-height: 0.92;
+    color: var(--cream);
+    letter-spacing: 0.01em;
+  }
+  h1 span { color: var(--gold); }
+  .header-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+  }
+  .header-badge {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--navy);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    text-align: center;
+    line-height: 1.6;
+    align-self: flex-start;
+  }
+
+  /* ─── SECTION TITLES ─── */
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--cream);
+    margin: 56px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-title::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 2px;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+    padding-left: 46px;
+  }
+
+  /* ─── KPI CARDS ─── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+  }
+  .kpi-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(8px);
+    border-radius: 4px;
+    padding: 22px 20px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    animation: fadeUp 0.7s ease both;
+  }
+  .kpi-card:hover { transform: translateY(-3px); border-color: rgba(200,146,42,0.5); }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .kpi-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .kpi-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .kpi-unit { font-size: 14px; opacity: 0.7; margin-left: 2px; }
+  .kpi-change {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .kpi-change.up { color: #4ade80; }
+  .kpi-change.down { color: #f87171; }
+  .kpi-change.neutral { color: var(--text-dim); }
+  .kpi-arrow { font-size: 13px; }
+
+  /* ─── CHART CONTROLS ─── */
+  .chart-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .ctrl-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 7px 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ctrl-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .ctrl-btn.active { background: var(--gold); border-color: var(--gold); color: var(--navy); font-weight: 500; }
+
+  /* ─── CHART CONTAINERS ─── */
+  .chart-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(8px);
+    border-radius: 4px;
+    padding: 28px 24px;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .chart-inner-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+  .chart-inner-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    margin-bottom: 24px;
+  }
+  canvas { display: block; width: 100% !important; }
+
+  /* ─── TWO-COL CHARTS ─── */
+  .chart-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width: 900px) { .chart-duo { grid-template-columns: 1fr; } }
+
+  /* ─── COMPARISON TABLE ─── */
+  .compare-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(8px);
+    border-radius: 4px;
+    overflow: auto;
+    margin-top: 28px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: rgba(200,146,42,0.12); }
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 14px 18px;
+    text-align: right;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 11px 18px;
+    text-align: right;
+    border-top: 1px solid rgba(26,86,219,0.1);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--cream);
+    white-space: nowrap;
+  }
+  td:first-child {
+    text-align: left;
+    font-family: 'Libre Franklin', sans-serif;
+    font-size: 13px;
+    color: var(--cream-dark);
+  }
+  tr:hover td { background: rgba(200,146,42,0.05); }
+  .sbi-row td { color: #1e429f !important; font-weight: 500; }
+  .sbi-row td:first-child { color: #1a56db !important; font-weight: 600; }
+  td.up { color: #4ade80 !important; }
+  td.down { color: #f87171 !important; }
+
+  /* ─── ANALYSIS CARDS ─── */
+  .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
+  @media(max-width: 800px) { .analysis-grid { grid-template-columns: 1fr; } }
+  .analysis-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(8px);
+    border-radius: 4px;
+    padding: 28px 24px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .analysis-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--gold-light);
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .analysis-card p { font-size: 13.5px; line-height: 1.75; color: rgba(30,58,138,0.85); margin-bottom: 10px; }
+  .analysis-card p:last-child { margin-bottom: 0; }
+  .highlight { color: var(--gold-light); font-weight: 500; }
+  .warn { color: #f87171; font-weight: 500; }
+  .good { color: #4ade80; font-weight: 500; }
+
+  /* ─── WATERFALL BARS (custom SVG chart) ─── */
+  .bar-chart-custom { overflow: visible; }
+
+  /* ─── RADAR ─── */
+  .radar-wrap { display: flex; align-items: center; justify-content: center; padding: 10px 0; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    margin-top: 80px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .kpi-card:nth-child(1)  { animation-delay: 0.05s; }
+  .kpi-card:nth-child(2)  { animation-delay: 0.10s; }
+  .kpi-card:nth-child(3)  { animation-delay: 0.15s; }
+  .kpi-card:nth-child(4)  { animation-delay: 0.20s; }
+  .kpi-card:nth-child(5)  { animation-delay: 0.25s; }
+  .kpi-card:nth-child(6)  { animation-delay: 0.30s; }
+  .kpi-card:nth-child(7)  { animation-delay: 0.35s; }
+  .kpi-card:nth-child(8)  { animation-delay: 0.40s; }
+
+  /* ─── TOOLTIP ─── */
+  .tooltip-custom {
+    position: fixed;
+    background: #f0f4ff;
+    border: 1px solid #1a56db;
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--cream);
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+    line-height: 1.7;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    min-width: 140px;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #f0f4ff; }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  .divider { height: 1px; background: var(--border); margin: 48px 0; }
+
+  /* Metric pill */
+  .pill {
+    display: inline-block;
+    background: rgba(26,86,219,0.15);
+    color: var(--gold-light);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.1em;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <div class="eyebrow">Q4 FY2026 · Financial Analysis · State Bank of India</div>
+      <h1>SBI<br><span>Results</span><br>Dashboard</h1>
+      <div class="header-sub">Quarter Ended March 31, 2026 · Source: SBI Analyst Presentation 08.05.2026</div>
+    </div>
+
+  </header>
+
+  <!-- KPI CARDS -->
+  <div class="section-title" style="margin-top:44px;">Snapshot — Q4 FY26</div>
+  <div class="section-desc">Key performance indicators vs prior quarter and year-ago period</div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="divider"></div>
+
+  <!-- REVENUE & PROFIT TREND -->
+  <div class="section-title">Earnings Trend</div>
+  <div class="section-desc">Net Interest Income and Net Profit across last 3 quarters · ₹ Crore</div>
+
+  <div class="chart-controls" id="earningsCtrl">
+    <button class="ctrl-btn active" data-metric="both">NII + PAT</button>
+    <button class="ctrl-btn" data-metric="nii">Net Interest Income</button>
+    <button class="ctrl-btn" data-metric="pat">Net Profit</button>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-inner-title">NII vs Net Profit — Quarterly</div>
+    <div class="chart-inner-sub">₹ CRORE · Q4 FY25 · Q3 FY26 · Q4 FY26</div>
+    <canvas id="earningsChart" height="320"></canvas>
+  </div>
+
+  <!-- ASSET QUALITY -->
+  <div class="section-title">Asset Quality</div>
+  <div class="section-desc">NPA ratios and Provision Coverage — two-decade lows achieved</div>
+
+  <div class="chart-duo">
+    <div class="chart-wrap">
+      <div class="chart-inner-title">GNPA & NNPA Trend</div>
+      <div class="chart-inner-sub">% OF ADVANCES · QUARTERLY</div>
+      <canvas id="npaChart" height="280"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-inner-title">Provision Coverage Ratio</div>
+      <div class="chart-inner-sub">% · INCLUDING AUCA PROVISIONS</div>
+      <canvas id="pcrChart" height="280"></canvas>
+    </div>
+  </div>
+
+  <!-- BALANCE SHEET -->
+  <div class="section-title">Balance Sheet Growth</div>
+  <div class="section-desc">Deposits and Advances — size and trajectory · ₹ Lakh Crore</div>
+
+  <div class="chart-wrap">
+    <div class="chart-inner-title">Deposits vs Advances</div>
+    <div class="chart-inner-sub">₹ LAKH CRORE · Q4 FY25 · Q3 FY26 · Q4 FY26</div>
+    <canvas id="bsChart" height="300"></canvas>
+  </div>
+
+  <!-- MARGINS & RETURNS -->
+  <div class="section-title">Margins & Returns</div>
+  <div class="section-desc">NIM compression and profitability ratios — FY trend and quarterly comparison</div>
+
+  <div class="chart-duo">
+    <div class="chart-wrap">
+      <div class="chart-inner-title">NIM — Domestic vs Whole Bank</div>
+      <div class="chart-inner-sub">% · QUARTERLY TREND</div>
+      <canvas id="nimChart" height="280"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-inner-title">ROA & ROE</div>
+      <div class="chart-inner-sub">% · ANNUALISED · FY COMPARISON</div>
+      <canvas id="roeChart" height="280"></canvas>
+    </div>
+  </div>
+
+  <!-- CAPITAL & COSTS -->
+  <div class="section-title">Capital & Efficiency</div>
+  <div class="section-desc">Capital adequacy ratios and cost metrics — quarterly</div>
+
+  <div class="chart-duo">
+    <div class="chart-wrap">
+      <div class="chart-inner-title">CRAR & CET-1 Ratio</div>
+      <div class="chart-inner-sub">% · CAPITAL ADEQUACY</div>
+      <canvas id="crarChart" height="280"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-inner-title">Yield on Advances vs Cost of Deposits</div>
+      <div class="chart-inner-sub">% · SPREAD ANALYSIS</div>
+      <canvas id="spreadChart" height="280"></canvas>
+    </div>
+  </div>
+
+  <!-- ADVANCE MIX -->
+  <div class="section-title">Loan Book Composition</div>
+  <div class="section-desc">Segment-wise share of domestic advances — March 2026</div>
+
+  <div class="chart-duo">
+    <div class="chart-wrap">
+      <div class="chart-inner-title">Domestic Advances Mix — Mar 2026</div>
+      <div class="chart-inner-sub">% SHARE · ₹41.9 LAKH CRORE TOTAL</div>
+      <canvas id="mixChart" height="320"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-inner-title">Segment YoY Growth</div>
+      <div class="chart-inner-sub">% GROWTH · FY25 → FY26</div>
+      <canvas id="growthChart" height="320"></canvas>
+    </div>
+  </div>
+
+  <!-- PEER COMPARISON TABLE -->
+  <div class="divider"></div>
+  <div class="section-title">Peer Comparison</div>
+  <div class="section-desc">SBI vs major Indian banks — Q4 FY26 key metrics · Deposit-ranked</div>
+
+  <div class="compare-wrap">
+    <table id="peerTable">
+      <thead>
+        <tr>
+          <th>Bank</th>
+          <th>Deposits (₹Cr)</th>
+          <th>Advances (₹Cr)</th>
+          <th>NII (₹Cr)</th>
+          <th>PAT (₹Cr)</th>
+          <th>NIM %</th>
+          <th>GNPA %</th>
+          <th>NNPA %</th>
+          <th>CRAR %</th>
+          <th>ROE %</th>
+          <th>ROA %</th>
+        </tr>
+      </thead>
+      <tbody id="peerBody"></tbody>
+    </table>
+  </div>
+
+  <!-- BUSINESS ANALYSIS -->
+  <div class="divider"></div>
+  <div class="section-title">Business Analysis</div>
+  <div class="section-desc">Deep-dive: Strengths, risks, and outlook for SBI in FY27</div>
+
+  <div class="analysis-grid">
+    <div class="analysis-card">
+      <h3>📈 Profit & Revenue Quality</h3>
+      <p><span class="highlight">Net Profit of ₹19,684 Cr</span> in Q4 FY26 — up <span class="good">+5.6% YoY</span> — marks four consecutive quarters of profit growth. FY26 full-year PAT of ₹80,032 Cr is the bank's all-time record, growing <span class="good">+12.88% YoY</span>.</p>
+      <p>NII grew <span class="good">+4.1% YoY</span> to ₹44,380 Cr, driven by a <span class="highlight">+16.9% expansion in advances</span>. However, interest income quality slightly declined as treasury income fell ₹1,471 Cr due to rising G-Sec yields — a transient headwind.</p>
+      <p>Operating profit fell <span class="warn">–11.4% YoY</span> in Q4, primarily from lower non-interest income and higher OpEx. This is the key miss vs street expectations.</p>
+    </div>
+    <div class="analysis-card">
+      <h3>🏦 Asset Quality — Structural Improvement</h3>
+      <p>GNPA declined to <span class="good">1.49%</span> from 1.82% a year ago — a <span class="highlight">two-decade low</span>. NNPA stands at just <span class="good">0.39%</span>. Slippage ratio for FY26 came in at only <span class="good">0.54%</span>, reflecting disciplined underwriting.</p>
+      <p>Provision Coverage Ratio (PCR) stands at <span class="good">74.36%</span>, with additional non-NPA provisions of ₹29,713 Cr (~158% of Net NPA) acting as a substantial buffer. Credit cost at <span class="highlight">0.37%</span> is among the lowest in recent history.</p>
+      <p>International GNPA at <span class="good">0.13%</span> is a multi-year low, underscoring high-quality offshore book composition.</p>
+    </div>
+    <div class="analysis-card">
+      <h3>⚠️ NIM Pressure — Key Risk</h3>
+      <p>Domestic NIM compressed to <span class="warn">2.93%</span> in Q4 FY26, down <span class="warn">21 bps YoY</span> and <span class="warn">18 bps QoQ</span>. Whole-bank NIM at 2.81% for the quarter vs 2.99% in Q4 FY25. This drove the 7% stock correction on results day.</p>
+      <p>The compression stems from two forces: <span class="highlight">RBI rate cuts</span> repricing floating loans faster than term deposits mature, and <span class="highlight">rising G-Sec yields</span> causing treasury mark-to-market losses. FY26 full-year domestic NIM at 3.03%.</p>
+      <p>Management guidance: domestic NIM <span class="highlight">~3%</span> in FY27 — implying stabilisation rather than recovery. Rate transmission lag on deposit repricing may provide marginal tailwind in H2 FY27.</p>
+    </div>
+    <div class="analysis-card">
+      <h3>💰 Balance Sheet & Capital Strength</h3>
+      <p>Total Business crossed <span class="highlight">₹109 Trillion</span>. Deposits at ₹59.8 lakh crore (+11% YoY); Advances at ₹49.3 lakh crore (<span class="good">+16.9% YoY</span>). Domestic C/D ratio at 73.08%, leaving ample room for credit deployment.</p>
+      <p>CRAR strengthened to <span class="good">15.40%</span> (from 14.25%) and CET-1 rose to <span class="good">12.29%</span> (from 10.81%) — signalling strong capital self-sufficiency. SBI can fund ~₹12 trillion additional credit growth without equity dilution. Pending SBI AMC IPO will further boost CET-1.</p>
+      <p>LCR at <span class="highlight">~124%</span> well above the 100% regulatory floor; new RBI LCR guidelines expected to add 3–4% improvement.</p>
+    </div>
+    <div class="analysis-card">
+      <h3>🌱 Loan Growth — Diversified Engine</h3>
+      <p>RAM (Retail, Agri, MSME) advances grew <span class="good">+17.1% YoY</span> to ₹27.65 lakh crore. SME the standout at <span class="good">+21%</span>, Agri at <span class="good">+19.7%</span>, Retail Personal at <span class="good">+15.2%</span> (Home Loan market share: 28.1%).</p>
+      <p>Corporate book grew +14.8%; overall domestic mix is 42.5% Retail / 35% Corporate / 13.2% SME / 9.3% Agri — well-balanced. International advances up +20% YoY at ₹7.43 lakh crore.</p>
+      <p>Management guiding for system credit growth of <span class="highlight">13–15%</span> in FY27, with SBI expected to outperform given its reach and digital edge.</p>
+    </div>
+    <div class="analysis-card">
+      <h3>📱 Digital & Franchise Moat</h3>
+      <p>YONO platform now has <span class="highlight">10.02 crore registered users</span>; 66% of new savings accounts opened digitally. Alternate channels handle <span class="good">98.7%</span> of all transactions — up from 98.2% in FY25. New YONO crossed 4 crore registrations.</p>
+      <p>Savings deposits of ₹18.8 lakh crore — <span class="highlight">nearly 3× the next largest bank</span>. CASA ratio: 39.46% domestic. ~63,000 new savings accounts opened daily. This unmatched liability franchise is SBI's most durable competitive moat.</p>
+      <p>Declared dividend: <span class="highlight">₹17.35/share</span> (record date May 16, 2026), reflecting confidence in sustaining capital generation while rewarding shareholders.</p>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<div class="tooltip-custom" id="tooltip"></div>
+
+<footer style="position:relative;z-index:1;max-width:1340px;margin:0 auto;padding:28px 28px 40px;">
+  <div>Source: SBI Analyst Presentation Q4FY26 · BSE Filings · Peer data from banking sector comparison workbook</div>
+  <div>Generated: 11 May 2026 · All figures in ₹ Crore unless stated · For informational purposes only</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────
+const QUARTERS = ['Q4 FY25', 'Q3 FY26', 'Q4 FY26'];
+
+const SBI = {
+  deposits:      [5382190, 5726000, 5975642],
+  advances:      [4220703, 4733000, 4932627],
+  nii:           [42618,   44987,   44380],
+  pat:           [18643,   21028,   19684],
+  otherIncome:   [24367,   18562,   17314],
+  provisions:    [12643,   11834,   8020],
+  gnpa:          [1.82,    1.57,    1.49],
+  nnpa:          [0.47,    0.42,    0.39],
+  pcr:           [74.42,   74.00,   74.36],
+  nim_dom:       [3.14,    3.11,    2.93],
+  nim_wb:        [2.99,    2.98,    2.81],
+  roe:           [19.87,   20.32,   18.57],
+  roa:           [1.10,    1.30,    1.12],
+  crar:          [14.25,   14.80,   15.40],
+  cet1:          [10.81,   11.80,   12.29],
+  yieldAdv:      [8.98,    8.61,    8.50],
+  costDep:       [5.11,    5.07,    5.04],
+  cti:           [53.29,   48.29,   55.09],
+};
+
+const PEER = [
+  { name:'SBI',          dep:5975642, adv:4932627, nii:44380, pat:19684, nim:2.93, gnpa:1.49, nnpa:0.39, crar:15.40, roe:18.57, roa:1.12 },
+  { name:'HDFC Bank',    dep:3105250, adv:2960000, nii:33081, pat:19221, nim:3.38, gnpa:1.15, nnpa:0.38, crar:19.71, roe:14.10, roa:1.96 },
+  { name:'ICICI Bank',   dep:1794625, adv:1553893, nii:22979, pat:13702, nim:4.32, gnpa:1.40, nnpa:0.33, crar:17.18, roe:17.20, roa:2.28 },
+  { name:'Axis Bank',    dep:1335834, adv:1233570, nii:14457, pat:7071,  nim:3.62, gnpa:1.23, nnpa:0.37, crar:16.42, roe:13.50, roa:1.50 },
+  { name:'Union Bank',   dep:1306891, adv:1078611, nii:9406,  pat:5316,  nim:2.64, gnpa:2.82, nnpa:0.48, crar:18.10, roe:15.86, roa:1.25 },
+  { name:'IndusInd',     dep:399931,  adv:315871,  nii:4371,  pat:594,   nim:3.39, gnpa:3.43, nnpa:1.00, crar:17.48, roe:3.78,  roa:0.40 },
+  { name:'Indian Bank',  dep:827726,  adv:667113,  nii:7110,  pat:3103,  nim:3.37, gnpa:1.98, nnpa:0.16, crar:17.10, roe:18.54, roa:1.20 },
+];
+
+// ─── THEME ──────────────────────────────────────────────────────────────
+const GOLD = '#1a56db';
+const GOLD_L = '#1e429f';
+const CREAM = '#1e3a8a';
+const CREAM_A = 'rgba(30,58,138,0.85)';
+const NAVY = '#ffffff';
+const NAVY_MID = '#f0f4ff';
+const RED = '#f87171';
+const GREEN = '#4ade80';
+const BLUE = '#60a5fa';
+
+Chart.defaults.color = CREAM_A;
+Chart.defaults.borderColor = 'rgba(26,86,219,0.15)';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const tooltipPlugin = {
+  backgroundColor: NAVY_MID,
+  borderColor: GOLD,
+  borderWidth: 1,
+  titleColor: GOLD,
+  bodyColor: CREAM,
+  padding: 12,
+  cornerRadius: 2,
+  titleFont: { family: "'DM Mono', monospace", size: 11, weight: '500' },
+  bodyFont: { family: "'DM Mono', monospace", size: 11 },
+};
+
+function mkChart(id, config) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  return new Chart(ctx.getContext('2d'), config);
+}
+
+function barDs(label, data, color, border) {
+  return {
+    label, data,
+    backgroundColor: color || `${GOLD}33`,
+    borderColor: border || GOLD,
+    borderWidth: 2,
+    borderRadius: 2,
+  };
+}
+
+function lineDs(label, data, color) {
+  return {
+    label, data,
+    borderColor: color,
+    backgroundColor: `${color}18`,
+    borderWidth: 2.5,
+    pointBackgroundColor: color,
+    pointRadius: 5,
+    pointHoverRadius: 8,
+    tension: 0.3,
+    fill: true,
+  };
+}
+
+const xAxis = (display) => ({ display, grid: { color: 'rgba(26,86,219,0.1)' }, ticks: { color: CREAM_A } });
+const yAxis = (label, fmt) => ({
+  display: true,
+  grid: { color: 'rgba(26,86,219,0.1)' },
+  ticks: { color: CREAM_A, callback: fmt || (v => v.toLocaleString('en-IN')) },
+  title: label ? { display: true, text: label, color: `${GOLD}99`, font: { size: 10, family: "'DM Mono', monospace" } } : {}
+});
+
+// ─── KPI CARDS ──────────────────────────────────────────────────────────
+const kpis = [
+  { label: 'Net Profit', val: '₹19,684', unit: 'Cr', change: '+5.6% YoY', dir: 'up' },
+  { label: 'Net Int. Income', val: '₹44,380', unit: 'Cr', change: '+4.1% YoY', dir: 'up' },
+  { label: 'Total Deposits', val: '₹59.76', unit: 'L Cr', change: '+11.0% YoY', dir: 'up' },
+  { label: 'Gross Advances', val: '₹49.33', unit: 'L Cr', change: '+16.9% YoY', dir: 'up' },
+  { label: 'GNPA Ratio', val: '1.49', unit: '%', change: '–33 bps YoY', dir: 'up' },
+  { label: 'NNPA Ratio', val: '0.39', unit: '%', change: '–8 bps YoY', dir: 'up' },
+  { label: 'Domestic NIM', val: '2.93', unit: '%', change: '–21 bps YoY', dir: 'down' },
+  { label: 'CRAR', val: '15.40', unit: '%', change: '+115 bps YoY', dir: 'up' },
+];
+
+document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+  <div class="kpi-card">
+    <div class="kpi-label">${k.label}</div>
+    <div class="kpi-value">${k.val}<span class="kpi-unit">${k.unit}</span></div>
+    <div class="kpi-change ${k.dir}">
+      <span class="kpi-arrow">${k.dir === 'up' ? '▲' : k.dir === 'down' ? '▼' : '●'}</span>
+      ${k.change}
+    </div>
+  </div>
+`).join('');
+
+// ─── EARNINGS CHART ──────────────────────────────────────────────────────
+let earningsChart = mkChart('earningsChart', {
+  type: 'bar',
+  data: {
+    labels: QUARTERS,
+    datasets: [
+      barDs('NII (₹ Cr)', SBI.nii, `${GOLD}44`, GOLD),
+      barDs('Net Profit (₹ Cr)', SBI.pat, `${BLUE}33`, BLUE),
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index' },
+    plugins: { legend: { labels: { color: CREAM_A, boxWidth: 12 } }, tooltip: tooltipPlugin },
+    scales: {
+      x: xAxis(true),
+      y: yAxis('₹ Crore', v => '₹' + v.toLocaleString('en-IN')),
+    }
+  }
+});
+
+document.querySelectorAll('#earningsCtrl .ctrl-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#earningsCtrl .ctrl-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const m = btn.dataset.metric;
+    earningsChart.data.datasets.forEach(ds => {
+      if (m === 'both') ds.hidden = false;
+      else if (m === 'nii') ds.hidden = ds.label.includes('Profit');
+      else if (m === 'pat') ds.hidden = ds.label.includes('NII');
+    });
+    earningsChart.update();
+  });
+});
+
+// ─── NPA CHART ───────────────────────────────────────────────────────────
+mkChart('npaChart', {
+  type: 'line',
+  data: {
+    labels: QUARTERS,
+    datasets: [
+      lineDs('GNPA %', SBI.gnpa, RED),
+      lineDs('NNPA %', SBI.nnpa, '#f97316'),
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index' },
+    plugins: { legend: { labels: { color: CREAM_A, boxWidth: 12 } }, tooltip: tooltipPlugin },
+    scales: {
+      x: xAxis(true),
+      y: yAxis('%', v => v.toFixed(2) + '%'),
+    }
+  }
+});
+
+// ─── PCR CHART ───────────────────────────────────────────────────────────
+mkChart('pcrChart', {
+  type: 'bar',
+  data: {
+    labels: QUARTERS,
+    datasets: [barDs('PCR %', SBI.pcr, `${GREEN}33`, GREEN)]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: CREAM_A, boxWidth: 12 } },
+      tooltip: tooltipPlugin,
+    },
+    scales: {
+      x: xAxis(true),
+      y: {
+        min: 70, max: 80,
+        grid: { color: 'rgba(26,86,219,0.1)' },
+        ticks: { color: CREAM_A, callback: v => v.toFixed(1) + '%' },
+      }
+    }
+  }
+});
+
+// ─── BALANCE SHEET CHART ──────────────────────────────────────────────────
+mkChart('bsChart', {
+  type: 'bar',
+  data: {
+    labels: QUARTERS,
+    datasets: [
+      barDs('Deposits (₹ L Cr)', SBI.deposits.map(v => +(v/100000).toFixed(2)), `${GOLD}44`, GOLD),
+      barDs('Advances (₹ L Cr)', SBI.advances.map(v => +(v/100000).toFixed(2)), `${BLUE}33`, BLUE),
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index' },
+    plugins: { legend: { labels: { color: CREAM_A, boxWidth: 12 } }, tooltip: tooltipPlugin },
+    scales: {
+      x: xAxis(true),
+      y: yAxis('₹ Lakh Crore', v => '₹' + v.toFixed(1) + ' L Cr'),
+    }
+  }
+});
+
+// ─── NIM CHART ────────────────────────────────────────────────────────────
+mkChart('nimChart', {
+  type: 'line',
+  data: {
+    labels: QUARTERS,
+    datasets: [
+      lineDs('Domestic NIM %', SBI.nim_dom, GOLD),
+      lineDs('Whole Bank NIM %', SBI.nim_wb, BLUE),
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index' },
+    plugins: { legend: { labels: { color: CREAM_A, boxWidth: 12 } }, tooltip: tooltipPlugin },
+    scales: {
+      x: xAxis(true),
+      y: {
+        min: 2.5, max: 3.5,
+        grid: { color: 'rgba(26,86,219,0.1)' },
+        ticks: { color: CREAM_A, callback: v => v.toFixed(2) + '%' }
+      }
+    }
+  }
+});
+
+// ─── ROE/ROA CHART ────────────────────────────────────────────────────────
+mkChart('roeChart', {
+  type: 'line',
+  data: {
+    labels: QUARTERS,
+    datasets: [
+      lineDs('ROE %', SBI.roe, GOLD),
+      { ...lineDs('ROA % (×10)', SBI.roa.map(v => +(v*10).toFixed(2)), GREEN), yAxisID: 'y' }
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index' },
+    plugins: {
+      legend: { labels: { color: CREAM_A, boxWidth: 12 } },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: {
+          label: ctx => {
+            if (ctx.dataset.label.includes('ROA')) return ' ROA: ' + (ctx.parsed.y / 10).toFixed(2) + '%';
+            return ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: xAxis(true),
+      y: {
+        grid: { color: 'rgba(26,86,219,0.1)' },
+        ticks: { color: CREAM_A, callback: v => v.toFixed(1) + '%' }
+      }
+    }
+  }
+});
+
+// ─── CRAR CHART ───────────────────────────────────────────────────────────
+mkChart('crarChart', {
+  type: 'bar',
+  data: {
+    labels: QUARTERS,
+    datasets: [
+      barDs('CRAR %', SBI.crar, `${GOLD}44`, GOLD),
+      barDs('CET-1 %', SBI.cet1, `${GREEN}44`, GREEN),
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index' },
+    plugins: { legend: { labels: { color: CREAM_A, boxWidth: 12 } }, tooltip: tooltipPlugin },
+    scales: {
+      x: xAxis(true),
+      y: {
+        min: 8, max: 18,
+        grid: { color: 'rgba(26,86,219,0.1)' },
+        ticks: { color: CREAM_A, callback: v => v.toFixed(1) + '%' }
+      }
+    }
+  }
+});
+
+// ─── SPREAD CHART ─────────────────────────────────────────────────────────
+mkChart('spreadChart', {
+  type: 'line',
+  data: {
+    labels: QUARTERS,
+    datasets: [
+      lineDs('Yield on Adv %', SBI.yieldAdv, GOLD),
+      lineDs('Cost of Deposits %', SBI.costDep, RED),
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index' },
+    plugins: {
+      legend: { labels: { color: CREAM_A, boxWidth: 12 } },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: {
+          afterBody: (items) => {
+            const y = items.find(i => i.dataset.label.includes('Yield'));
+            const c = items.find(i => i.dataset.label.includes('Cost'));
+            if (y && c) return [`Spread: ${(y.parsed.y - c.parsed.y).toFixed(2)}%`];
+            return [];
+          }
+        }
+      }
+    },
+    scales: {
+      x: xAxis(true),
+      y: {
+        min: 4, max: 10,
+        grid: { color: 'rgba(26,86,219,0.1)' },
+        ticks: { color: CREAM_A, callback: v => v.toFixed(2) + '%' }
+      }
+    }
+  }
+});
+
+// ─── ADVANCE MIX PIE ──────────────────────────────────────────────────────
+mkChart('mixChart', {
+  type: 'doughnut',
+  data: {
+    labels: ['Retail Personal', 'Corporate', 'SME', 'Agriculture'],
+    datasets: [{
+      data: [41.43, 34.00, 13.20, 9.30],
+      backgroundColor: [GOLD, BLUE, GREEN, '#f97316'],
+      borderColor: NAVY,
+      borderWidth: 3,
+      hoverBorderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: CREAM_A,
+          boxWidth: 14,
+          padding: 20,
+          font: { size: 12 }
+        }
+      },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(1)}%` }
+      }
+    },
+    cutout: '62%',
+  }
+});
+
+// ─── SEGMENT GROWTH BAR ───────────────────────────────────────────────────
+mkChart('growthChart', {
+  type: 'bar',
+  data: {
+    labels: ['SME', 'Agri', 'Retail Personal', 'Corporate', 'International'],
+    datasets: [{
+      label: 'YoY Growth %',
+      data: [20.99, 19.68, 15.22, 14.83, 20.01],
+      backgroundColor: [GREEN, '#86efac', GOLD, BLUE, '#f97316'].map(c => c + '88'),
+      borderColor: [GREEN, '#86efac', GOLD, BLUE, '#f97316'],
+      borderWidth: 2,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: { label: ctx => ` +${ctx.parsed.x.toFixed(2)}% YoY` }
+      }
+    },
+    scales: {
+      x: {
+        min: 0, max: 25,
+        grid: { color: 'rgba(26,86,219,0.1)' },
+        ticks: { color: CREAM_A, callback: v => v + '%' }
+      },
+      y: { grid: { display: false }, ticks: { color: CREAM } }
+    }
+  }
+});
+
+// ─── PEER TABLE ───────────────────────────────────────────────────────────
+const fmt = (v, dec=0) => typeof v === 'number' ? v.toLocaleString('en-IN', { minimumFractionDigits: dec, maximumFractionDigits: dec }) : v;
+
+document.getElementById('peerBody').innerHTML = PEER.map((b, i) => {
+  const isSBI = b.name === 'SBI';
+  const row = `
+    <tr class="${isSBI ? 'sbi-row' : ''}">
+      <td>${isSBI ? '★ ' : ''}${b.name}</td>
+      <td>${fmt(b.dep)}</td>
+      <td>${fmt(b.adv)}</td>
+      <td>${fmt(b.nii)}</td>
+      <td>${fmt(b.pat)}</td>
+      <td>${b.nim.toFixed(2)}%</td>
+      <td class="${b.gnpa < 1.5 ? 'up' : b.gnpa > 2.5 ? 'down' : ''}">${b.gnpa.toFixed(2)}%</td>
+      <td class="${b.nnpa < 0.4 ? 'up' : b.nnpa > 0.8 ? 'down' : ''}">${b.nnpa.toFixed(2)}%</td>
+      <td>${b.crar.toFixed(2)}%</td>
+      <td class="${b.roe > 17 ? 'up' : b.roe < 10 ? 'down' : ''}">${b.roe.toFixed(2)}%</td>
+      <td class="${b.roa > 1.5 ? 'up' : b.roa < 0.5 ? 'down' : ''}">${b.roa.toFixed(2)}%</td>
+    </tr>
+  `;
+  return row;
+}).join('');
+
+</script>
+</body>
+</html>

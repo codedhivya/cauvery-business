@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Proxy Sector — Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --hitachi:#d9282f;--hitachi-soft:#fff0f0;
+  --abb:#1e6fa5;--abb-soft:#eff6ff;
+  --bosch:#c0392b;--bosch-soft:#fff0f0;
+  --siemens:#009999;--siemens-soft:#e6f7f7;
+  --voltamp:#7c3aed;--voltamp-soft:#f5f3ff;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-hitachi{background:var(--hitachi);color:#fff;}
+.chip-abb{background:var(--abb);color:#fff;}
+.chip-bosch{background:var(--bosch);color:#fff;}
+.chip-siemens{background:var(--siemens);color:#fff;}
+.chip-voltamp{background:var(--voltamp);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--hitachi);font-weight:700;}
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.gap-top{margin-top:22px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.hitachi::before{background:var(--hitachi);}
+.co-card.abb::before{background:var(--abb);}
+.co-card.bosch::before{background:var(--bosch);}
+.co-card.siemens::before{background:var(--siemens);}
+.co-card.voltamp::before{background:var(--voltamp);}
+.co-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}
+.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}
+.b-spec{background:#f3f4f6;color:#4b5563;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+.b-warn{background:#fff7ed;color:#c2410c;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.hitachi-a{border-left:4px solid var(--hitachi);}
+.kpi.abb-a{border-left:4px solid var(--abb);}
+.kpi.bosch-a{border-left:4px solid var(--bosch);}
+.kpi.siemens-a{border-left:4px solid var(--siemens);}
+.kpi.voltamp-a{border-left:4px solid var(--voltamp);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.val-co{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11.5px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
+.seg-bar{height:10px;border-radius:20px;}
+.seg-row{margin-bottom:14px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}
+.rp-hold{background:#fef9c3;color:#a16207;}
+.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.moat-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.moat-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.moat-body{font-size:11px;color:var(--muted);line-height:1.55;}
+.moat-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verdict-body{font-size:13px;line-height:1.7;color:var(--text);}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--hitachi);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--hitachi);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--hitachi);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--hitachi);}
+.chat-send{background:var(--hitachi);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.lang-section{margin-top:18px;}
+.lang-section-hdr{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:6px 12px;background:var(--surface2);border-radius:6px;margin-bottom:10px;display:inline-block;}
+.lang-section-hdr.ta{color:#c84b2f;}.lang-section-hdr.en{color:var(--abb);}
+.preset-tab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 6px 0;}
+.pt-hitachi.active{background:var(--hitachi);border-color:var(--hitachi);color:#fff;}
+.pt-abb.active{background:var(--abb);border-color:var(--abb);color:#fff;}
+.pt-bosch.active{background:var(--bosch);border-color:var(--bosch);color:#fff;}
+.pt-siemens.active{background:var(--siemens);border-color:var(--siemens);color:#fff;}
+.pt-voltamp.active{background:var(--voltamp);border-color:var(--voltamp);color:#fff;}
+.pt-sector.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.presets-panel{display:none;}.presets-panel.active{display:block;}
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.preset-q{padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:9px;line-height:1.45;}
+.preset-q:hover{border-color:var(--hitachi);background:var(--hitachi-soft);}
+.pq-en{font-weight:600;color:var(--text);}
+.grp-hdr{margin-bottom:8px;padding:7px 14px;border-left:4px solid;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.cb-wm{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid var(--border);border-radius:30px;padding:7px 14px 7px 8px;box-shadow:0 4px 20px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:28px;height:28px;background:var(--hitachi);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:11px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:14px 40px;border-top:1px solid var(--border);margin-top:28px;line-height:1.7;}
+@media(max-width:860px){.main{padding:14px 16px 40px;}.hdr{padding:0 16px;flex-wrap:wrap;}.tab-nav{padding:0 8px;}.g2,.g3,.kpi-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Power Proxy Sector — Intelligence Dashboard</h1>
+      <div class="sub">Hitachi Energy · ABB India · Bosch · Siemens Energy India · Voltamp · Q4 FY26 Actuals ✅ · CB Research</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-hitachi">Hitachi Energy</span>
+    <span class="chip chip-abb">ABB India</span>
+    <span class="chip chip-bosch">Bosch</span>
+    <span class="chip chip-siemens">Siemens Energy</span>
+    <span class="chip chip-voltamp">Voltamp</span>
+    <span class="chip chip-date">26 May 2026 · CB Research</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('business',this)">Business Profiles</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">Financials</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Segments</button>
+  <button class="tab-btn" onclick="showTab('bizanalysis',this)">SWOT</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">Moats &amp; USPs</button>
+  <button class="tab-btn" onclick="showTab('school',this)" style="color:#009999;font-weight:800;">⚡ Power School</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--hitachi);font-weight:800;">🤖 CB Assist</button>
+</nav>
+<div class="main">
+
+<!-- TAB 1 DASHBOARD -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">· 5 companies · Q4 FY26 Actuals ✅ · India Power Proxy / T&amp;D / Industrial Electricals</span></div>
+  <div class="kpi-row">
+    <div class="kpi hitachi-a"><div class="kl">Hitachi Energy Q4 Rev ✅</div><div class="kv">₹2,754 Cr</div><div class="kc pos">▲ 46.2% YoY</div></div>
+    <div class="kpi abb-a"><div class="kl">ABB India Q4 Rev ✅</div><div class="kv">₹3,184 Cr</div><div class="kc pos">▲ 5.8% YoY</div></div>
+    <div class="kpi bosch-a"><div class="kl">Bosch Q4 Rev ✅</div><div class="kv">₹5,566 Cr</div><div class="kc pos">▲ 13.3% YoY</div></div>
+    <div class="kpi siemens-a"><div class="kl">Siemens Energy Q* Rev ✅</div><div class="kv">₹2,394 Cr</div><div class="kc pos">▲ 27.4% YoY</div></div>
+    <div class="kpi voltamp-a"><div class="kl">Voltamp Q4 Rev ✅</div><div class="kv">₹617 Cr</div><div class="kc neg">▼ 1.2% YoY</div></div>
+  </div>
+  <div class="g3" style="margin-bottom:22px;">
+    <div class="co-card hitachi">
+      <div class="co-name" style="color:var(--hitachi)">Hitachi Energy India</div>
+      <div class="co-seg">NSE: POWERINDIA · T&amp;D / HVDC / Transformers · Q4 FY26 ✅ May 25, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹330.5 Cr (+79.7%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹420 Cr (+65% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin Q4</span><span class="m-val">16.3%</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹988 Cr (+157%)</span></div>
+      <div class="m-row"><span class="m-lbl">Order Backlog</span><span class="m-val">₹29,555 Cr (+53.5%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (May 26)</span><span class="m-val">~₹35,745</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +157% FY26</span><span class="badge b-pos">Backlog 3.6× Rev</span><span class="badge b-warn">Gross Margin −30bps</span></div>
+    </div>
+    <div class="co-card abb">
+      <div class="co-name" style="color:var(--abb)">ABB India Limited</div>
+      <div class="co-seg">NSE: ABB · Automation / Motion / Smart Infra · Jan-Dec FY · Q4 FY26 ✅ May 8, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (core) ✅</span><span class="m-val">₹342 Cr (−25% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (reported)</span><span class="m-val">₹1,784 Cr (Robotics †)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">₹3,184 Cr (+5.8%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val">12.9% (multi-qtr low)</span></div>
+      <div class="m-row"><span class="m-lbl">Reserves post-Robotics</span><span class="m-val">₹9,000+ Cr</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (May 26)</span><span class="m-val">~₹5,900</span></div>
+      <div class="badge-row"><span class="badge b-warn">Core PAT −25%</span><span class="badge b-warn">Margin Pressure</span><span class="badge b-pos">Debt-Free</span></div>
+    </div>
+    <div class="co-card bosch">
+      <div class="co-name" style="color:var(--bosch)">Bosch Limited</div>
+      <div class="co-seg">NSE: BOSCHLTD · Auto / Industrial / EV Power Tech · Q4 FY26 ✅ May 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹568 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">₹5,566 Cr (+13.3%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹2,770 Cr (+37.6%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹20,035 Cr (+10.8%)</span></div>
+      <div class="m-row"><span class="m-lbl">PBT Margin FY26</span><span class="m-val">18.2%</span></div>
+      <div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val">₹512/share (total)</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +37.6%</span><span class="badge b-pos">2W Power +63%</span><span class="badge b-spec">Debt-Free</span></div>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:22px;">
+    <div class="co-card siemens">
+      <div class="co-name" style="color:var(--siemens)">Siemens Energy India</div>
+      <div class="co-seg">NSE: SEINDIA · Power T&amp;D / Generation · Oct-Sep FY · Jan-Mar 26 Qtr ✅ May 14, 2026</div>
+      <div class="m-row"><span class="m-lbl">Qtr PAT ✅ (Jan-Mar 26)</span><span class="m-val">₹375 Cr (+52.4%)</span></div>
+      <div class="m-row"><span class="m-lbl">Qtr Revenue</span><span class="m-val">₹2,394 Cr (+27.4%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBIT Margin</span><span class="m-val">19.4% (+160bps YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Order Backlog</span><span class="m-val">₹18,433 Cr (+22.2%)</span></div>
+      <div class="m-row"><span class="m-lbl">New Greenfield Capex</span><span class="m-val">₹20.6 Bn (transformer)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (May 26)</span><span class="m-val">~₹2,847 (+21% 1yr)</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +52.4%</span><span class="badge b-pos">Best Margin 19.4%</span><span class="badge b-pos">Backlog +22%</span></div>
+    </div>
+    <div class="co-card voltamp">
+      <div class="co-name" style="color:var(--voltamp)">Voltamp Transformers</div>
+      <div class="co-seg">NSE: VOLTAMP · Power Transformers (up to 220kV) · Vadodara · Q4 FY26 ✅ May 5, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹47.9 Cr (−50.5% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">₹617 Cr (−1.2% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val">13.2% (vs 18.9% FY26)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue (Record)</span><span class="m-val">₹2,154 Cr (+11.3%)</span></div>
+      <div class="m-row"><span class="m-lbl">Order Backlog (Apr 26)</span><span class="m-val">₹1,200 Cr (10,270 MVA)</span></div>
+      <div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val">₹100/share (1000%)</span></div>
+      <div class="badge-row"><span class="badge b-neg">Q4 PAT −50%</span><span class="badge b-pos">FY26 Rev Record</span><span class="badge b-pos">Zero Debt</span></div>
+    </div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-lbl">Power Proxy — Q4 FY26 Quick Metrics at a Glance</div>
+    <table>
+      <thead><tr><th>Company</th><th>Q4 Revenue</th><th>YoY%</th><th>Q4 EBITDA/EBIT</th><th>Margin%</th><th>Q4 PAT</th><th>PAT%</th><th>FY26 Rev</th><th>FY26 PAT</th><th>Order Backlog</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td class="num">₹2,754 Cr</td><td class="tpos">+46.2%</td><td class="num">₹420 Cr</td><td class="tpos">16.3%</td><td class="tpos">₹330.5 Cr</td><td class="tpos">+79.7%</td><td class="num">₹8,150 Cr</td><td class="tpos">₹988 Cr (+157%)</td><td class="tpos">₹29,555 Cr</td><td><span class="badge b-pos">Star Performer</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India</td><td class="num">₹3,184 Cr</td><td class="tpos">+5.8%</td><td class="num">₹408 Cr</td><td class="tneg">12.9%</td><td class="tneg">₹342 Cr*</td><td class="tneg">−25% (core)</td><td class="num">~₹13,200 Cr</td><td class="num">₹1,618 Cr (cont.)</td><td class="num">~₹13,500 Cr</td><td><span class="badge b-warn">Margin Concern</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bosch)"></span>Bosch</td><td class="num">₹5,566 Cr</td><td class="tpos">+13.3%</td><td class="num">~₹700 Cr</td><td class="num">~12.6%</td><td class="tpos">₹568 Cr</td><td class="tpos">+3.3%</td><td class="num">₹20,035 Cr</td><td class="tpos">₹2,770 Cr (+38%)</td><td class="num">N/A</td><td><span class="badge b-spec">Diversified</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy†</td><td class="num">₹2,394 Cr</td><td class="tpos">+27.4%</td><td class="num">~₹465 Cr</td><td class="tpos">19.4%</td><td class="tpos">₹375 Cr</td><td class="tpos">+52.4%</td><td class="num">~₹9,200 Cr</td><td class="tpos">~₹1,400 Cr</td><td class="tpos">₹18,433 Cr</td><td><span class="badge b-pos">Strong Growth</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--voltamp)"></span>Voltamp Tfmrs</td><td class="num">₹617 Cr</td><td class="tneg">−1.2%</td><td class="tneg">₹79.8 Cr</td><td class="tneg">13.2%</td><td class="tneg">₹47.9 Cr</td><td class="tneg">−50.5%</td><td class="tpos">₹2,154 Cr</td><td class="num">₹305.4 Cr</td><td class="num">₹1,200 Cr</td><td><span class="badge b-warn">Q4 Stumble</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">*ABB Q4 PAT ₹342 Cr = continuing operations; reported PAT ₹1,784 Cr includes ₹1,658 Cr one-time Robotics slump-sale gain (Mar 1, 2026). †Siemens Energy India follows Oct-Sep FY; Jan-Mar 2026 = their Q2 FY26. Sources: BSE/NSE filings &amp; company press releases.</p>
+  </div>
+</div>
+
+<!-- TAB 2 BUSINESS PROFILES -->
+<div class="panel" id="tab-business">
+  <div class="sec-hdr">Business Profiles <span class="sec-note">· Products · Markets · Strategy · Key People</span></div>
+
+  <div class="grp-hdr" style="background:var(--hitachi-soft);border-color:var(--hitachi);color:var(--hitachi);margin-bottom:14px;">Hitachi Energy India — NSE: POWERINDIA · MD &amp; CEO: Venu Nuguri · Hitachi ABB Power Grid</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Hitachi Energy India</strong> (formerly ABB Power Grid) is India's leading power technology company in Transmission &amp; Distribution (T&amp;D). Carved out when ABB divested its Power Grid division to Hitachi in 2020, it provides the full grid-to-grid value chain — from ultra-high voltage transformers and HVDC systems to grid automation and digital solutions.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Products:</strong> Power transformers (HVDC, EHV 765kV), switchgear (GIS/AIS), grid automation, protection &amp; control, FACTS, EV charging, power quality systems.<br><br><strong>Key Markets FY26:</strong> Data Centres (largest Q4 segment — AI infra), Rail &amp; Metro, Exports (36.8% of Q4 orders — US/Europe/APAC), Renewables, Utilities.<br><br><strong>Capex:</strong> ₹2,000 Cr greenfield large power transformer plant in Karjan, Vadodara approved Q4 FY26 — on top of ₹2,000 Cr Oct 2024 announcement. Total cumulative capex commitment: ₹4,000 Cr — largest in Indian electrical equipment sector.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹8,150 Cr</td><td class="num">₹6,370 Cr</td><td class="tpos">+28%</td></tr>
+          <tr><td>EBITDA</td><td class="num">₹1,260 Cr</td><td class="num">₹596 Cr</td><td class="tpos">+111%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="num">15.4%</td><td class="num">9.4%</td><td class="tpos">+610 bps</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹988 Cr</td><td class="num">₹384 Cr</td><td class="tpos">+157%</td></tr>
+          <tr><td>Q4 Revenue</td><td class="num">₹2,754 Cr</td><td class="num">₹1,884 Cr</td><td class="tpos">+46.2%</td></tr>
+          <tr><td>Q4 PAT</td><td class="tpos">₹330.5 Cr</td><td class="num">₹184 Cr</td><td class="tpos">+79.7%</td></tr>
+          <tr><td>Order Backlog (Mar 26)</td><td class="tpos">₹29,555 Cr</td><td class="num">₹19,254 Cr</td><td class="tpos">+53.5%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CMP ~₹35,745 (May 26). Stock fell 3.8% on results day despite beating estimates — typical "sell on news" reaction. Q4 PAT margin improved to 12.0%.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--abb-soft);border-color:var(--abb);color:var(--abb);margin-bottom:14px;">ABB India — NSE: ABB · Jan-Dec FY · MD: Sanjeev Sharma · ABB Switzerland parent</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>ABB India</strong> covers Electrification (switchgear, EV charging, solar), Motion (motors, drives), Process/Automation, and Smart Infrastructure (building electrification). Follows January-December fiscal year.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Key FY26 Event:</strong> Slump sale of Robotics &amp; Discrete Automation business to ABB Robotics India on March 1, 2026 for ₹1,568 Cr — generating ₹1,658 Cr exceptional gain, inflating reported Q4 PAT to ₹1,784 Cr. Core continuing operations PAT fell 25%.<br><br><strong>Post-Robotics segments:</strong> Electrification, Motion, Automation (renamed from Process Automation Jan 2026), Smart Infrastructure. Growth focus: data centre electrification, EV charging (ABB Terra range), railways automation.<br><br><strong>Balance Sheet:</strong> Debt-free. Reserves ₹9,000+ Cr post-Robotics gain. Near-zero finance costs. Large cash pile — capital allocation decision (dividend/buyback) is the key investor question.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Q4 FY26 / CY25</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26 / CY25</th><th style="text-align:right">Prior</th><th style="text-align:right">Change</th></tr></thead>
+        <tbody>
+          <tr><td>Q4 Revenue (Jan-Mar 26)</td><td class="num">₹3,184 Cr</td><td class="num">₹3,009 Cr</td><td class="tpos">+5.8%</td></tr>
+          <tr><td>Q4 PAT (Reported)</td><td class="tpos">₹1,784 Cr</td><td class="num">₹475 Cr</td><td class="tpos">+276% (one-time)</td></tr>
+          <tr><td>Q4 PAT (Continuing Ops)</td><td class="tneg">₹342 Cr</td><td class="num">₹457 Cr</td><td class="tneg">−25.2%</td></tr>
+          <tr><td>Q4 EBITDA Margin</td><td class="tneg">12.9%</td><td class="num">18.5%</td><td class="tneg">−580 bps</td></tr>
+          <tr><td>CY25 Revenue (est.)</td><td class="num">~₹13,200 Cr</td><td class="num">₹12,188 Cr</td><td class="tpos">+8.3%</td></tr>
+          <tr><td>CY25 PAT (continuing)</td><td class="num">₹1,618 Cr</td><td class="num">~₹1,800 Cr</td><td class="tneg">Slight decline</td></tr>
+          <tr><td>MF Holdings (Mar 26)</td><td class="num">4.62%</td><td class="num">4.18%</td><td class="tpos">Accumulating</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CMP ~₹5,900. 52-wk range ₹5,200–₹8,400. Nomura cut PAT estimates 5-7%. Margin erosion from labour code + material cost inflation.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--hitachi-soft);border-color:var(--bosch);color:var(--bosch);margin-bottom:14px;">Bosch Limited — NSE: BOSCHLTD · Robert Bosch GmbH Germany · MD: Guruprasad Mudlapur</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Bosch India</strong> operates in Mobility Solutions, Consumer Goods, Industrial Technology, and Energy &amp; Building Technology. Its Power Solutions segment (EV drivetrains, battery mgmt, charging) and GCC engineering services position it as a power proxy through electrification and industrial automation.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>FY26 Highlights:</strong> 2-Wheeler Power Solutions grew 63.4% in Q4 — EV transition accelerating. Mobility grew 23.3% QoQ, Power Solutions +27.4%. Consumer Goods +14.3%. Video Solutions business sold Q1 FY26 (₹556 Cr exceptional gain).<br><br><strong>New JV:</strong> Board approved joint venture with Wheels India and Brakes India for commercial vehicle air systems — new business line.<br><br><strong>Capital Return:</strong> Dividend FY26 ₹512/share total (₹270 final + ₹242 interim) — one of the highest in Indian industrials. Consistent dividend payer.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹20,035 Cr</td><td class="num">₹18,082 Cr</td><td class="tpos">+10.8%</td></tr>
+          <tr><td>PBT</td><td class="num">₹3,642 Cr</td><td class="num">~₹2,700 Cr</td><td class="tpos">+34.9%</td></tr>
+          <tr><td>PBT Margin</td><td class="num">18.2%</td><td class="num">~14.9%</td><td class="tpos">+330 bps</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹2,770 Cr</td><td class="num">₹2,012 Cr</td><td class="tpos">+37.6%</td></tr>
+          <tr><td>Q4 Revenue</td><td class="num">₹5,566 Cr</td><td class="num">₹4,913 Cr</td><td class="tpos">+13.3%</td></tr>
+          <tr><td>Q4 PAT</td><td class="tpos">₹568 Cr</td><td class="num">₹550 Cr</td><td class="tpos">+3.3%</td></tr>
+          <tr><td>Dividend FY26 (total)</td><td class="num">₹512/share</td><td class="num">~₹390/share</td><td class="tpos">+31%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">Zero debt. CMP ~₹30,500. Revenue crossed ₹20,000 Cr milestone in FY26.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--siemens-soft);border-color:var(--siemens);color:var(--siemens);margin-bottom:14px;">Siemens Energy India — NSE: SEINDIA · Demerged from Siemens Ltd 2024 · MD: Guilherme Mendonca · Oct-Sep FY</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Siemens Energy India</strong> (NSE: SEINDIA) was demerged from Siemens Limited at 1:1 ratio in 2024 — focused purely on the energy segment. Parent: Siemens Energy AG Germany. Follows October-September FY (Jan-Mar 2026 = their Q2 FY26). Pure-play power T&amp;D and generation company.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Segments:</strong> Power Transmission (~60% — transformers, GIS, HVDC converters) and Power Generation (~40% — turbines, generators, O&amp;M for industrial and thermal power plants).<br><br><strong>Capex:</strong> ₹7.4 Bn ongoing expansions + ₹20.6 Bn new greenfield transformer factory — total ₹28 Bn (≈₹2,800 Cr) transformative capex. Focus on large power transformers for 765kV and export markets (Gulf, Africa, SEA).<br><br><strong>EBIT margin 19.4%</strong> is best in the peer group — driven by high-margin power generation services (O&amp;M) and disciplined project execution.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Jan-Mar 2026 Quarter</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Jan-Mar 26</th><th style="text-align:right">Jan-Mar 25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹2,394 Cr</td><td class="num">₹1,880 Cr</td><td class="tpos">+27.4%</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹375 Cr</td><td class="num">₹246 Cr</td><td class="tpos">+52.4%</td></tr>
+          <tr><td>EBIT Margin</td><td class="tpos">19.4%</td><td class="num">17.8%</td><td class="tpos">+160 bps</td></tr>
+          <tr><td>Order Backlog</td><td class="tpos">₹18,433 Cr</td><td class="num">₹15,085 Cr</td><td class="tpos">+22.2%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CMP ~₹2,847. 1-yr return +21%. Oct-Sep FY creates reporting timing differences vs Apr-Mar peers. Book-to-bill &gt;1.0×.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--voltamp-soft);border-color:var(--voltamp);color:var(--voltamp);margin-bottom:14px;">Voltamp Transformers — NSE: VOLTAMP · Vadodara · CMD: Kunjal Mehta · Zero debt · Pure-play transformers</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Voltamp Transformers</strong> is India's most disciplined pure-play power transformer maker — exclusively in distribution and power transformers (up to 220kV / 100 MVA). Selective order intake: refuses below-margin orders, maintaining premium customer base and high ROE.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Q4 FY26 Stumble:</strong> Hit by (1) negative MTM treasury losses (other income −₹10.06 Cr vs +₹26.14 Cr Q3), (2) one-time provisions, (3) CRGO steel (cold-rolled grain-oriented) cost spikes. Management confirmed these are transient; FY26 full-year business intact — record revenue ₹2,154 Cr.<br><br><strong>Expansion:</strong> New power transformer factory under construction — commences July 2026. ₹25 Cr land acquisition near Vadodara approved. Order backlog ₹1,200 Cr (10,270 MVA) entering FY27; ₹310 Cr new orders in April 2026 alone.<br><br><strong>Dividend:</strong> 1000% = ₹100/share FY26 — signals zero-debt financial confidence despite Q4 miss.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Record)</td><td class="tpos">₹2,154 Cr</td><td class="num">₹1,934 Cr</td><td class="tpos">+11.3%</td></tr>
+          <tr><td>EBITDA</td><td class="num">₹344 Cr</td><td class="num">₹356 Cr</td><td class="tneg">−3%</td></tr>
+          <tr><td>EBITDA Margin FY26</td><td class="tneg">16.5%</td><td class="num">18.9%</td><td class="tneg">−240 bps</td></tr>
+          <tr><td>PAT FY26</td><td class="num">₹305.4 Cr</td><td class="num">₹321.7 Cr</td><td class="tneg">−5%</td></tr>
+          <tr><td>Q4 Revenue</td><td class="num">₹617 Cr</td><td class="num">₹625 Cr</td><td class="tneg">−1.2%</td></tr>
+          <tr><td>Q4 EBITDA</td><td class="tneg">₹79.8 Cr</td><td class="num">₹114 Cr</td><td class="tneg">−30%</td></tr>
+          <tr><td>Q4 PAT</td><td class="tneg">₹47.9 Cr</td><td class="num">₹96.8 Cr</td><td class="tneg">−50.5%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CMP ~₹10,100 post 20% lower circuit. Mkt Cap ~₹14,650 Cr. EPS FY26 ₹301.85. 52-wk high ₹12,826. 5-year return 818%.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 FINANCIALS -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Financials Comparison <span class="sec-note">· Q4 FY26 vs Q4 FY25 · Full Year · All figures ₹ Crore</span></div>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">Q4 FY26 — Quarter Performance (Jan–Mar 2026)</div>
+    <table>
+      <thead><tr><th>Company</th><th>Q4 Revenue</th><th>YoY%</th><th>Q4 EBITDA/EBIT</th><th>Margin%</th><th>Q4 PAT</th><th>PAT%</th><th>Key Note</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td class="num">₹2,754 Cr</td><td class="tpos">+46.2%</td><td class="num">₹420 Cr</td><td class="tpos">16.3%</td><td class="tpos">₹330.5 Cr</td><td class="tpos">+79.7%</td><td>Beat estimates by 10%; data centre largest segment</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India</td><td class="num">₹3,184 Cr</td><td class="tpos">+5.8%</td><td class="num">₹408 Cr</td><td class="tneg">12.9%</td><td class="tneg">₹342 Cr*</td><td class="tneg">−25%</td><td>Robotics sale ₹1,658 Cr gain (excl. above)</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bosch)"></span>Bosch</td><td class="num">₹5,566 Cr</td><td class="tpos">+13.3%</td><td class="num">~₹700 Cr</td><td class="num">12.6%</td><td class="tpos">₹568 Cr</td><td class="tpos">+3.3%</td><td>2W power solutions +63%; mobility +23.3%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy†</td><td class="num">₹2,394 Cr</td><td class="tpos">+27.4%</td><td class="tpos">~₹465 Cr</td><td class="tpos">19.4%</td><td class="tpos">₹375 Cr</td><td class="tpos">+52.4%</td><td>Best margin in peer group; backlog +22%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--voltamp)"></span>Voltamp</td><td class="num">₹617 Cr</td><td class="tneg">−1.2%</td><td class="tneg">₹79.8 Cr</td><td class="tneg">13.2%</td><td class="tneg">₹47.9 Cr</td><td class="tneg">−50.5%</td><td>MTM treasury loss + one-time provisions</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">*ABB PAT = continuing operations only. †Siemens Energy India (SEINDIA) Oct-Sep FY; Jan-Mar 2026 = their Q2 FY26. Sources: BSE/NSE exchange filings and press releases.</p>
+  </div>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">Full Year FY26 Performance</div>
+    <table>
+      <thead><tr><th>Company</th><th>FY26 Revenue</th><th>YoY%</th><th>FY26 EBITDA</th><th>Margin%</th><th>FY26 PAT</th><th>PAT Growth</th><th>Order Book</th><th>Balance Sheet</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td class="num">₹8,150 Cr</td><td class="tpos">+28%</td><td class="num">₹1,260 Cr</td><td class="tpos">15.4%</td><td class="tpos">₹988 Cr</td><td class="tpos">+157%</td><td class="tpos">₹29,555 Cr</td><td><span class="badge b-pos">Debt-Light</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India</td><td class="num">~₹13,200 Cr</td><td class="tpos">+8.3%</td><td class="num">~₹1,600 Cr</td><td class="tneg">~12.1%</td><td class="tneg">₹1,618 Cr (cont.)</td><td class="tneg">Slight decline</td><td class="num">~₹13,500 Cr</td><td><span class="badge b-pos">Debt-Free</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bosch)"></span>Bosch</td><td class="num">₹20,035 Cr</td><td class="tpos">+10.8%</td><td class="num">~₹2,500 Cr</td><td class="num">12.5%</td><td class="tpos">₹2,770 Cr</td><td class="tpos">+37.6%</td><td class="num">N/A</td><td><span class="badge b-pos">Debt-Free</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy†</td><td class="num">~₹9,200 Cr</td><td class="tpos">+27%</td><td class="tpos">~₹1,790 Cr</td><td class="tpos">19.4%</td><td class="tpos">~₹1,400 Cr</td><td class="tpos">+50%+</td><td class="tpos">₹18,433 Cr</td><td><span class="badge b-pos">Debt-Light</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--voltamp)"></span>Voltamp</td><td class="tpos">₹2,154 Cr</td><td class="tpos">+11.3%</td><td class="num">₹344 Cr</td><td class="tneg">16.5%</td><td class="tneg">₹305.4 Cr</td><td class="tneg">−5%</td><td class="num">₹1,200 Cr</td><td><span class="badge b-pos">Zero Debt</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">†SEINDIA FY26 full year ends Sep 2026 — estimates based on Q1+Q2 actuals. Bosch EBITDA estimated from PBT 18.2% + D&amp;A. Sources: BSE/NSE filings.</p>
+  </div>
+  <div class="card">
+    <div class="card-lbl">Order Book Strength — Revenue Visibility</div>
+    <table>
+      <thead><tr><th>Company</th><th>Order Backlog</th><th>Annual Revenue</th><th>Backlog/Rev Ratio</th><th>Q4 New Orders</th><th>Key Demand Drivers</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td class="tpos">₹29,555 Cr</td><td class="num">₹8,150 Cr</td><td class="tpos">3.6×</td><td class="num">₹2,423 Cr</td><td>Data Centres, Rail, US/Europe exports</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India</td><td class="num">~₹13,500 Cr</td><td class="num">~₹13,200 Cr</td><td class="num">~1.0×</td><td class="num">Moderate</td><td>Smart Infra, Electrification, Data Centres</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bosch)"></span>Bosch</td><td class="num">N/A</td><td class="num">₹20,035 Cr</td><td class="num">—</td><td class="num">N/A</td><td>Auto OEM, 2W EV, Consumer Goods</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy</td><td class="tpos">₹18,433 Cr</td><td class="num">~₹9,200 Cr</td><td class="tpos">2.0×</td><td class="num">Strong</td><td>PGCIL, State utilities, Rail, Exports</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--voltamp)"></span>Voltamp</td><td class="num">₹1,200 Cr</td><td class="num">₹2,154 Cr</td><td class="num">0.6×</td><td class="num">₹310 Cr (Apr 26)</td><td>Industrial, Commercial, Infra</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">Hitachi Energy's 3.6× backlog-to-revenue ratio gives extraordinary multi-year visibility — revenue growth can sustain 25-30% CAGR for 2-3 years purely from backlog execution.</p>
+  </div>
+</div>
+
+<!-- TAB 4 CHARTS -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Visual Analytics <span class="sec-note">· Q4 FY26 · Revenue · PAT · Margins · Order Books</span></div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>Q4 FY26 — Revenue (₹ Crore)</h3>
+      <p class="sub">Revenue from operations — latest available quarter</p>
+      <canvas id="revenueChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Q4 FY26 — EBITDA/EBIT Margin %</h3>
+      <p class="sub">Operating margin comparison (continuing operations basis)</p>
+      <canvas id="marginChart" height="200"></canvas>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>FY26 Annual Revenue (₹ Crore)</h3>
+      <p class="sub">Full year revenue — FY26 vs FY25</p>
+      <canvas id="annualRevChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>FY26 Annual PAT (₹ Crore)</h3>
+      <p class="sub">Full year profit after tax (core/continuing operations)</p>
+      <canvas id="patChart" height="200"></canvas>
+    </div>
+  </div>
+  <div class="chart-card" style="margin-bottom:18px;">
+    <h3>Order Backlog — Revenue Visibility (₹ Crore)</h3>
+    <p class="sub">Order backlog as at latest reporting date — Hitachi and SEINDIA far ahead</p>
+    <canvas id="orderChart" height="130"></canvas>
+  </div>
+</div>
+
+<!-- TAB 5 VALUATIONS -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuations <span class="sec-note">· P/E · EV/EBITDA · P/BV · Market Cap · CMP context</span></div>
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--hitachi)">Hitachi Energy India</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹35,745</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹76,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num">₹988 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num warn">~77×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num warn">~60×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~12–15×</span></div>
+      <div class="val-row"><span class="val-lbl">1-yr Return</span><span class="val-num warn">−18% → recovering</span></div>
+      <div style="margin-top:10px"><span class="badge b-buy">Premium justified — 157% PAT growth + 3.6× backlog</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--abb)">ABB India</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹5,900</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹1,24,700 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">CY25 PAT (core)</span><span class="val-num">₹1,618 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (core)</span><span class="val-num warn">~77×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num warn">~75×</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk Range</span><span class="val-num">₹5,200 – ₹8,400</span></div>
+      <div class="val-row"><span class="val-lbl">Reserves</span><span class="val-num pos">₹9,000+ Cr</span></div>
+      <div style="margin-top:10px"><span class="badge b-hold">Expensive on core earnings — margin recovery key</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--bosch)">Bosch Limited</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹30,500</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹90,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num">₹2,770 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~32×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~36×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~5×</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num pos">~1.7%</span></div>
+      <div style="margin-top:10px"><span class="badge b-hold">Reasonable valuation — EV transition key to re-rating</span></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--siemens)">Siemens Energy India</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹2,847</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹45,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">Annualised PAT</span><span class="val-num">~₹1,400 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (est. FY26)</span><span class="val-num pos">~32×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num pos">~25×</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~8×</span></div>
+      <div class="val-row"><span class="val-lbl">1-yr Return</span><span class="val-num pos">+21%</span></div>
+      <div style="margin-top:10px"><span class="badge b-buy">Best value in peer group — 32× P/E vs Hitachi 77×</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--voltamp)">Voltamp Transformers</div>
+      <div class="val-row"><span class="val-lbl">CMP (May 26)</span><span class="val-num">~₹10,100</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹14,650 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num">₹305.4 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~48×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~43×</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk High / Low</span><span class="val-num">₹12,826 / ₹6,670</span></div>
+      <div class="val-row"><span class="val-lbl">EPS FY26</span><span class="val-num">₹301.85</span></div>
+      <div style="margin-top:10px"><span class="badge b-hold">Post-circuit window — margin recovery FY27 decisive</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 6 SEGMENTS -->
+<div class="panel" id="tab-segments">
+  <div class="sec-hdr">Business Segments <span class="sec-note">· Revenue Mix · Product Lines · Verticals</span></div>
+  <div class="grp-hdr" style="background:var(--hitachi-soft);border-color:var(--hitachi);color:var(--hitachi);margin-bottom:14px;">Hitachi Energy India — Q4 FY26 Order Inflow Mix (₹2,423 Cr total)</div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Q4 FY26 Segment Share</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Exports (US / Europe / APAC)</span><span style="font-weight:700">36.8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:36.8%;background:var(--hitachi)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Data Centres (AI infra)</span><span style="font-weight:700">~30%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--hitachi);opacity:.8"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Rail &amp; Metro</span><span style="font-weight:700">~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:var(--hitachi);opacity:.65"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Renewables / Utilities</span><span style="font-weight:700">~11%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:11%;background:#94a3b8"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products</div>
+      <table><thead><tr><th>Product</th><th>Technology</th><th>End Market</th></tr></thead>
+        <tbody>
+          <tr><td>Power Transformers (EHV)</td><td>765kV, HVDC</td><td>Utilities, Exports</td></tr>
+          <tr><td>Grid Automation</td><td>SCADA, Protection</td><td>State Discoms</td></tr>
+          <tr><td>FACTS / SVC</td><td>Power Quality</td><td>Renewable plants</td></tr>
+          <tr><td>GIS / AIS Switchgear</td><td>High Voltage</td><td>Substations</td></tr>
+          <tr><td>EV Charging Systems</td><td>AC / DC Chargers</td><td>Fleet, Highways</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="grp-hdr" style="background:var(--hitachi-soft);border-color:var(--bosch);color:var(--bosch);margin-bottom:14px;">Bosch India — Revenue Mix FY26</div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Segment Revenue Mix (FY26 est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Mobility Solutions (Auto)</span><span style="font-weight:700">~73%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:73%;background:var(--bosch)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Consumer Goods (Power Tools)</span><span style="font-weight:700">~16%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:16%;background:var(--bosch);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Industrial Technology</span><span style="font-weight:700">~6%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:6%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Energy &amp; Building Tech</span><span style="font-weight:700">~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:#94a3b8"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Mobility Sub-segment Q4 FY26 Growth</div>
+      <table><thead><tr><th>Sub-segment</th><th>Q4 Growth</th></tr></thead>
+        <tbody>
+          <tr><td>2-Wheeler Power Solutions</td><td class="tpos">+63.4%</td></tr>
+          <tr><td>Mobility (Overall QoQ)</td><td class="tpos">+23.3%</td></tr>
+          <tr><td>Power Solutions</td><td class="tpos">+27.4%</td></tr>
+          <tr><td>Mobility Aftermarket</td><td class="tpos">+5.2%</td></tr>
+          <tr><td>Consumer Goods</td><td class="tpos">+14.3%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="grp-hdr" style="background:var(--siemens-soft);border-color:var(--siemens);color:var(--siemens);margin-bottom:14px;">Siemens Energy India — Segment Mix</div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Revenue by Business Line</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Power Transmission (Transformers, GIS, HVDC)</span><span style="font-weight:700">~60%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:60%;background:var(--siemens)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Power Generation (Turbines, Generators, O&amp;M)</span><span style="font-weight:700">~40%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:40%;background:var(--siemens);opacity:.70"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">End Market Distribution (est.)</div>
+      <table><thead><tr><th>End Market</th><th>Share</th></tr></thead>
+        <tbody>
+          <tr><td>Power Grid Corp (PGCIL)</td><td class="num">~25%</td></tr>
+          <tr><td>State Utilities / SEBs</td><td class="num">~30%</td></tr>
+          <tr><td>Railways / Metro</td><td class="num">~15%</td></tr>
+          <tr><td>Renewables (Solar/Wind)</td><td class="num">~15%</td></tr>
+          <tr><td>Exports</td><td class="num">~15%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 7 SWOT -->
+<div class="panel" id="tab-bizanalysis">
+  <div class="sec-hdr">SWOT Analysis <span class="sec-note">· Strengths · Weaknesses · Opportunities · Threats</span></div>
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span style="width:12px;height:12px;border-radius:50%;background:var(--hitachi);display:inline-block;"></span> Hitachi Energy India</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Record order backlog ₹29,555 Cr — 3.6× revenue</li><li>FY26 PAT +157%; EBITDA margin +610bps to 15.4%</li><li>Dominant in HVDC/EHV — no comparable Indian rival</li><li>Export capability: 36.8% Q4 orders from US/Europe</li><li>₹4,000 Cr committed capex — management conviction</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Gross margin contracted 30bps to 36.9% in Q4</li><li>Single factory risk — Vadodara concentration</li><li>High valuation 77× P/E leaves no room for miss</li><li>Technical talent bottleneck in EHV engineering</li><li>Revenue small vs order book → execution risk</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Data centre power boom — AI infra is structural</li><li>India grid investment ₹9.15 lakh Cr by 2032</li><li>8 HVDC green corridors for RE integration</li><li>US China+1 strategy — export substitution</li><li>Green hydrogen, offshore wind — future markets</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Chinese transformer price aggression / dumping</li><li>Parent Hitachi strategic changes</li><li>PGCIL / SECI order delays</li><li>CRGO steel and copper price volatility</li><li>Global slowdown → data centre capex pause risk</li></ul></div>
+    </div>
+  </div>
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span style="width:12px;height:12px;border-radius:50%;background:var(--abb);display:inline-block;"></span> ABB India</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Multi-segment breadth — 4 business verticals</li><li>Debt-free; reserves ₹9,000+ Cr post-Robotics</li><li>ABB global brand — 75+ years in India</li><li>EV charging early-mover; MF accumulating</li><li>Jan-Dec FY — full-year clarity</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>EBITDA margin at multi-year low 12.9% in Q4</li><li>Revenue growth decelerating to 5.8% YoY</li><li>Robotics divestiture reduces topline scale</li><li>Process Automation recovery uncertain</li><li>Capital allocation intent unclear</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Data centre electrification and automation</li><li>EV charging rollout — ABB Terra range</li><li>Railways and metro automation</li><li>Special dividend / buyback from ₹9,000 Cr reserves</li><li>Smart building energy management systems</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Margin erosion — labour codes + FX</li><li>Shrinking portfolio post-divestitures</li><li>Competition from Hitachi, SEINDIA, BHEL</li><li>Nomura cut PAT estimates 5-7%</li><li>Slow Process Automation recovery</li></ul></div>
+    </div>
+  </div>
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span style="width:12px;height:12px;border-radius:50%;background:var(--bosch);display:inline-block;"></span> Bosch India</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India's largest auto components exposure — growing market</li><li>PAT +37.6% FY26 — strong earnings momentum</li><li>₹512/share dividend — highest-quality capital return</li><li>GCC engineering services — high-margin recurring</li><li>World-class R&amp;D (IoT, AI, EV tech)</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>70%+ auto revenue — sector-concentrated</li><li>Diesel engine legacy — EV transition headwind</li><li>Limited India strategic autonomy (global parent)</li><li>Lower direct power infrastructure exposure vs peers</li><li>EBITDA margin below Hitachi/SEINDIA</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>2W EV transition — power electronics surge</li><li>AI/IoT industrial automation — Industry 4.0</li><li>CV air systems JV — new business line</li><li>GCC engineering services export scale-up</li><li>Thermal management for EV batteries</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>EV disrupting legacy fuel injection products</li><li>Chinese auto component entrants in India</li><li>Auto cyclicality — demand slowdown risk</li><li>Parent Bosch GmbH global restructuring</li><li>Regulatory changes on ICE vehicles timeline</li></ul></div>
+    </div>
+  </div>
+  <div style="margin-bottom:24px;">
+    <div class="co-hdr-swot"><span style="width:12px;height:12px;border-radius:50%;background:var(--voltamp);display:inline-block;"></span> Voltamp Transformers</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Zero debt — pure cash-generative model</li><li>Selective order intake — premium pricing discipline</li><li>Record FY26 revenue ₹2,154 Cr</li><li>1000% dividend — financial confidence</li><li>New factory July 2026 — capacity expansion</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 EBITDA margin crashed to 13.2%</li><li>Small scale vs Hitachi/SEINDIA</li><li>Single-product (transformer) risk</li><li>CRGO steel price sensitivity</li><li>No export revenue — purely domestic</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>India substation buildout for RE integration</li><li>Data centre distribution transformers — fast-growing</li><li>New factory doubles capacity + range</li><li>Industrial capex cycle — steel, cement, chemicals</li><li>Potential export entry with new factory</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>CRGO steel supply constraints / price spikes</li><li>Big players expanding into mid-range</li><li>Chinese transformer dumping</li><li>New factory commissioning execution risk</li><li>Treasury MTM losses if interest rates stay high</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 8 ANALYST RATINGS -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Ratings &amp; Price Targets <span class="sec-note">· Post Q4 FY26 · Brokerage Views</span></div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--hitachi)">Hitachi Energy India (NSE: POWERINDIA)</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-tp">₹38,000 – ₹42,000 <span style="font-size:12px;font-weight:400;color:var(--muted)">/ 12-month targets</span></div>
+    <div class="ac-cmp">CMP ~₹35,745 · FY26 P/E ~77× · 52-wk High ~₹17,900 (pre-split adj.)</div>
+    <div class="ac-text"><strong>Bullish Case:</strong> Revenue beat estimates by 10%, EBITDA beat by 6%, PAT beat by 6%. Record backlog ₹29,555 Cr = 3.6× revenue gives extraordinary multi-year visibility. Data centre emerging as the largest order category is a structural shift — not a one-quarter event. ₹4,000 Cr committed capex signals management's conviction in sustained 25-30% revenue CAGR. FY26 PAT +157% and EBITDA margin expanding from 9.4% → 15.4% demonstrates operating leverage at scale. <strong>Risk:</strong> Gross margin contracted 30bps — CRGO steel and copper costs to watch. Stock fell 4.5% despite strong results — "sell on news" mechanics. Export concentration creates FX risk. Consensus: Strong BUY with 15-20% upside from backlog monetisation.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--siemens)">Siemens Energy India (NSE: SEINDIA)</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-tp">₹3,200 – ₹3,800 <span style="font-size:12px;font-weight:400;color:var(--muted)">/ 12-month targets</span></div>
+    <div class="ac-cmp">CMP ~₹2,847 · 1-yr Return +21% · Est. P/E ~32×</div>
+    <div class="ac-text"><strong>Value + Growth:</strong> Best EBIT margin (19.4%) in the peer group — significantly above Hitachi (16.3%) and ABB (12.9%). PAT +52.4% on revenue +27.4% shows strong operating leverage. ₹18,433 Cr order backlog = 2× annual revenue. The ₹20.6 Bn greenfield transformer factory is transformative. At ~32× P/E vs Hitachi at ~77×, SEINDIA offers materially better earnings-adjusted value for similar T&amp;D exposure. Power generation O&amp;M services add high-margin recurring revenue that most peers lack. <strong>Risk:</strong> Oct-Sep FY creates reporting confusion; full FY26 ends Sep 2026. Siemens Ltd demerger still being absorbed by the market. CB Research top pick in the space.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--bosch)">Bosch Limited (NSE: BOSCHLTD)</div><span class="rat-pill rp-hold">HOLD / BUY ON DIPS</span></div>
+    <div class="ac-tp">₹30,000 – ₹34,000 <span style="font-size:12px;font-weight:400;color:var(--muted)">/ 12-month targets</span></div>
+    <div class="ac-cmp">CMP ~₹30,500 · FY26 P/E ~32× · Dividend Yield ~1.7%</div>
+    <div class="ac-text"><strong>Quality Hold:</strong> FY26 PAT +37.6% is strong; 2W/EV power solutions +63.4% validates the EV transition thesis. Revenue crossing ₹20,000 Cr is a milestone. At 32× FY26 earnings, valuation is reasonable for a quality MNC with global technology access and deep OEM relationships. The new CV air systems JV creates an additional growth vector. <strong>Concerns:</strong> Diesel/ICE revenue is a long-term structural headwind — Bosch must transition faster. Parent Bosch GmbH is globally restructuring (cost cuts, workforce reduction). India strategic autonomy is limited. <strong>Buy on dips:</strong> ₹27,000–28,000 range for long-term investors with EV/industrial conviction.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--voltamp)">Voltamp Transformers (NSE: VOLTAMP)</div><span class="rat-pill rp-hold">ACCUMULATE</span></div>
+    <div class="ac-tp">₹11,000 – ₹13,500 <span style="font-size:12px;font-weight:400;color:var(--muted)">/ 12-month targets</span></div>
+    <div class="ac-cmp">CMP ~₹10,100 · Post 20% lower circuit · 52-wk High ₹12,826</div>
+    <div class="ac-text"><strong>Tactical Opportunity:</strong> The 20% post-result lower circuit appears disproportionate to a one-time margin blip. Full-year FY26 EPS ₹301.85 is strong; Q4 weakness was MTM treasury losses + provisions — both non-recurring. Core business intact: record FY26 revenue, robust order backlog ₹1,200 Cr, new factory from July 2026. FY27 margin recovery to 18%+ is achievable if CRGO steel normalises. 818% five-year return reflects the quality of Voltamp's capital discipline model. <strong>Risk:</strong> If CRGO prices stay elevated or new factory delays, earnings disappointment could persist. <strong>Strategy:</strong> Accumulate at ₹9,500–10,500 range, 12-18 month horizon.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--abb)">ABB India (NSE: ABB)</div><span class="rat-pill rp-hold">HOLD / REDUCE</span></div>
+    <div class="ac-tp">₹5,200 – ₹6,500 <span style="font-size:12px;font-weight:400;color:var(--muted)">/ target range</span></div>
+    <div class="ac-cmp">CMP ~₹5,900 · Core P/E ~77× · 52-wk Range ₹5,200–₹8,400</div>
+    <div class="ac-text"><strong>Cautious View:</strong> The ₹1,784 Cr reported PAT headline is misleading — core continuing operations PAT fell 25% YoY. EBITDA margin at 12.9% is a multi-quarter low and deteriorating trend. Revenue growth at 5.8% is decelerating with Process Automation still sluggish. Nomura cut earnings estimates 5-7%. MF accumulation (4.62%) offers mild support. <strong>Bull case:</strong> ₹9,000 Cr+ reserves could unlock a special dividend or buyback — significant value crystallisation. Data centres and EV charging could revive growth in FY27. <strong>Bear case:</strong> Margin erosion + slow pipeline = further rating downgrades. Hold below ₹6,000; accumulate only below ₹5,200.</div>
+  </div>
+</div>
+
+<!-- TAB 9 MOATS -->
+<div class="panel" id="tab-moats">
+  <div class="sec-hdr">Economic Moats &amp; USPs <span class="sec-note">· Competitive Advantages · Barriers to Entry</span></div>
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--hitachi)">Hitachi Energy India</div>
+      <div class="moat-title">🏰 HVDC &amp; EHV Technology Monopoly</div>
+      <div class="moat-body">India's only supplier of HVDC converters and 765kV class transformers at scale. Technology licensed exclusively from global Hitachi Energy — unavailable to domestic competitors. Data centre power transformers require specialised engineering. Export credibility in US/Europe creates self-reinforcing global reputation moat.</div>
+      <span class="moat-tag" style="background:var(--hitachi-soft);color:var(--hitachi)">Technology Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--abb)">ABB India</div>
+      <div class="moat-title">🏭 Multi-Technology Platform</div>
+      <div class="moat-body">ABB's breadth across electrification, motion, automation, and smart infra creates cross-selling and systems integration moats. The ABB global brand is synonymous with industrial reliability — pricing power persists even during margin pressure. EV charging network (ABB Terra) is an early-mover advantage in a fast-growing market.</div>
+      <span class="moat-tag" style="background:var(--abb-soft);color:var(--abb)">Brand + Scale</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--bosch)">Bosch India</div>
+      <div class="moat-title">🔧 OEM Switching Costs + GCC</div>
+      <div class="moat-body">Deep OEM integration with every major Indian auto maker creates switching-cost moats. Bosch's aftermarket spare parts and service network generates recurring high-margin revenue. GCC engineering services (IoT, AI, software) is building a separate high-IP moat that will outlast the ICE-to-EV transition.</div>
+      <span class="moat-tag" style="background:#fff5f5;color:var(--bosch)">Switching Costs</span>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--siemens)">Siemens Energy India</div>
+      <div class="moat-title">⚡ Pure-Play Power Grid Champion</div>
+      <div class="moat-body">The only listed pure-play entity with global Siemens Energy parentage focused entirely on the power sector. Its 19.4% EBIT margin is structurally superior because power generation services (O&amp;M for gas/steam turbines) are high-margin recurring revenue streams. State utility relationships built over decades create sticky, government-backed revenue visibility.</div>
+      <span class="moat-tag" style="background:var(--siemens-soft);color:var(--siemens)">Focused Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--voltamp)">Voltamp Transformers</div>
+      <div class="moat-title">💎 Premium Niche + Capital Discipline</div>
+      <div class="moat-body">Voltamp's selective order intake is a quality moat — refusing below-margin orders maintains a premium customer base and high ROE. Zero-debt balance sheet with consistent 1000% dividends signals exceptional capital allocation. Vadodara clustering (proximity to raw materials, skilled workforce) provides a geographic operational moat. 818% five-year returns prove the model.</div>
+      <span class="moat-tag" style="background:var(--voltamp-soft);color:var(--voltamp)">Capital Discipline</span>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 10 POWER SCHOOL -->
+<div class="panel" id="tab-school">
+  <div class="sec-hdr">⚡ Power School <span class="sec-note">· Fundamentals of India's Power Proxy sector</span></div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">What is the "Power Proxy" Theme?</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;">"Power Proxy" refers to companies that <strong>are not power generators</strong> but benefit enormously from India's power sector investment boom. Think of them as the <em>picks-and-shovels</em> of the electricity revolution — they make the transformers, switchgear, grid automation, motors, and industrial electrical equipment that goes into every substation, solar plant, data centre, and EV charger built in India.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)">India is investing ₹9.15 lakh crore in power grid infrastructure by 2032. Every ₹1 of generation capacity needs ~₹0.50 of T&amp;D investment. The companies in this dashboard capture that T&amp;D and industrial electrical equipment spend. Unlike power generators (whose earnings depend on tariffs and PLF), Power Proxy companies earn revenue from capital orders with high order-book visibility, regardless of who wins the PPA.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Financial Metrics to Watch</div>
+      <table><thead><tr><th>Metric</th><th>What It Tells You</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Order Backlog / Revenue</strong></td><td>Revenue visibility. Above 2× = healthy. Hitachi at 3.6× is exceptional.</td></tr>
+          <tr><td><strong>EBIT / EBITDA Margin</strong></td><td>Pricing power. SEINDIA's 19.4% is best-in-class.</td></tr>
+          <tr><td><strong>Book-to-Bill Ratio</strong></td><td>New orders ÷ Revenue. Above 1× = growing pipeline.</td></tr>
+          <tr><td><strong>Gross Margin Trend</strong></td><td>CRGO steel/copper cost impact — key lever for transformer companies.</td></tr>
+          <tr><td><strong>EV/EBITDA</strong></td><td>Primary valuation metric for capital-goods — more reliable than P/E.</td></tr>
+          <tr><td><strong>Working Capital Days</strong></td><td>Long-cycle projects have high WC — debtor days signal cash quality.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">India Grid Investment Drivers FY26-32</div>
+      <table><thead><tr><th>Driver</th><th>Scale</th><th>Beneficiary</th></tr></thead>
+        <tbody>
+          <tr><td>Power Grid Corp (PGCIL) Capex</td><td>₹3.5 lakh Cr</td><td>Hitachi, SEINDIA, Voltamp</td></tr>
+          <tr><td>500 GW RE target 2030</td><td>National goal</td><td>All 5 companies</td></tr>
+          <tr><td>HVDC Green Corridors (8 planned)</td><td>~₹75,000 Cr</td><td>Hitachi Energy, SEINDIA</td></tr>
+          <tr><td>Data Centre Power (AI boom)</td><td>20+ GW by 2030</td><td>Hitachi, ABB, SEINDIA</td></tr>
+          <tr><td>100% Railway Electrification</td><td>By 2030</td><td>Hitachi, Siemens Ltd</td></tr>
+          <tr><td>EV Charging Infrastructure</td><td>2 lakh+ chargers</td><td>ABB, Bosch</td></tr>
+          <tr><td>Industrial PLI Capex</td><td>₹1.97 lakh Cr</td><td>Voltamp, ABB, Bosch</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Transformer Types — Why Hitachi Commands Premium</div>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted);margin-bottom:10px;">Not all transformers are equal. Understanding this unlocks the valuation gap:</p>
+      <table><thead><tr><th>Type</th><th>Voltage Range</th><th>Indian Makers</th></tr></thead>
+        <tbody>
+          <tr><td>Distribution Transformer</td><td>11kV / 33kV</td><td>Voltamp + 200 SMEs</td></tr>
+          <tr><td>Power Transformer</td><td>66kV – 220kV</td><td>Voltamp, Crompton, EMCO</td></tr>
+          <tr><td>EHV Transformer</td><td>400kV – 765kV</td><td>Hitachi, SEINDIA, BHEL</td></tr>
+          <tr><td>HVDC Converter Transformer</td><td>±800kV</td><td>Hitachi Energy (only)</td></tr>
+          <tr><td>Data Centre Dry-Type</td><td>Custom</td><td>Hitachi, SEINDIA</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">EHV/HVDC = ultra-high barriers to entry. Distribution = highly competitive market.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 11 VERDICT -->
+<div class="panel" id="tab-verdict">
+  <div class="sec-hdr">🏆 Investment Verdict <span class="sec-note">· CB Research · 26 May 2026</span></div>
+  <div class="verdict-card">
+    <div class="verdict-title">⚡ Power Proxy: India's Strongest Structural Theme for FY27</div>
+    <div class="verdict-body">Q4 FY26 results confirm the Power Proxy sector is delivering on its decade-long promise. India's grid investment super-cycle is firmly in motion — and the companies enabling this transition are compounding earnings at historic rates. Hitachi Energy's ₹29,555 Cr order backlog (3.6× revenue) is perhaps the clearest signal of what lies ahead. Siemens Energy India's 19.4% EBIT margin proves that superior technology commands pricing power even in competition. The sector as a whole is moving from "infrastructure hope" to "earnings delivery" — the most powerful re-rating catalyst for long-duration investors.</div>
+  </div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">CB Research Rankings — Power Proxy Q4 FY26</div>
+      <table>
+        <thead><tr><th>Rank</th><th>Company</th><th>Q4 PAT %</th><th>Margin</th><th>Backlog</th><th>P/E</th><th>CB View</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">1</td><td class="tb" style="color:var(--siemens)">SEINDIA</td><td class="tpos">+52.4%</td><td class="tpos">19.4%</td><td class="tpos">2.0×</td><td class="num pos">~32×</td><td><span class="badge b-buy">BUY</span></td></tr>
+          <tr><td class="tb">2</td><td class="tb" style="color:var(--hitachi)">Hitachi</td><td class="tpos">+79.7%</td><td class="num">16.3%</td><td class="tpos">3.6×</td><td class="warn">77×</td><td><span class="badge b-buy">BUY Dips</span></td></tr>
+          <tr><td class="tb">3</td><td class="tb" style="color:var(--bosch)">Bosch</td><td class="tpos">+3.3%</td><td class="num">12.6%</td><td class="num">N/A</td><td class="num">~32×</td><td><span class="badge b-hold">HOLD</span></td></tr>
+          <tr><td class="tb">4</td><td class="tb" style="color:var(--voltamp)">Voltamp</td><td class="tneg">−50.5%</td><td class="tneg">13.2%</td><td class="num">0.6×</td><td class="num">~48×</td><td><span class="badge b-hold">Accumulate</span></td></tr>
+          <tr><td class="tb">5</td><td class="tb" style="color:var(--abb)">ABB India</td><td class="tneg">−25%*</td><td class="tneg">12.9%</td><td class="num">~1.0×</td><td class="warn">~77×</td><td><span class="badge b-hold">HOLD</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">*ABB PAT = continuing operations. Ranking: Q4 margin + backlog + PAT growth + valuation. CB Research view is informational — not investment advice. Consult SEBI-registered advisor.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Top Picks Summary</div>
+      <div style="padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:10px)">
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--siemens);margin-bottom:4px;">🥇 Siemens Energy India — BUY</div>
+        <p style="font-size:12px;line-height:1.65;">Best margin (19.4%), PAT +52.4%, ~32× P/E vs Hitachi's 77×, ₹20.6 Bn capex committed, 2× revenue backlog, pure-play power positioning. Best risk/reward in the group.</p>
+      </div>
+      <div style="padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:10px;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--hitachi);margin-bottom:4px;">🥈 Hitachi Energy — BUY on Dips</div>
+        <p style="font-size:12px;line-height:1.65;">Unmatched 3.6× backlog, PAT +157% FY26, HVDC technology monopoly. Expensive at 77× but backlog execution drives upgrades. Buy below ₹32,000.</p>
+      </div>
+      <div style="padding:12px 0;">
+        <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--voltamp);margin-bottom:4px;">🎯 Voltamp — Accumulate (Tactical)</div>
+        <p style="font-size:12px;line-height:1.65;">20% circuit overdone for a transient Q4 blip. Core FY26 intact. Accumulate ₹9,500–10,500 for 12-18 month margin recovery + new factory play.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 12 CB ASSIST -->
+<div class="panel" id="tab-cbassist">
+  <div class="sec-hdr">🤖 CB Assist — Power Proxy Analyst <span class="sec-note">· English or Tamil · Enter API key to activate</span></div>
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist · Power Proxy Sector · Powered by Claude · CB Research</div>
+    <div class="lang-section">
+      <div class="lang-section-hdr en">🇬🇧 English Presets</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="preset-tab pt-hitachi active" onclick="switchPreset('en-hitachi',this)">Hitachi Energy</button>
+        <button class="preset-tab pt-abb" onclick="switchPreset('en-abb',this)">ABB India</button>
+        <button class="preset-tab pt-bosch" onclick="switchPreset('en-bosch',this)">Bosch</button>
+        <button class="preset-tab pt-siemens" onclick="switchPreset('en-siemens',this)">Siemens Energy</button>
+        <button class="preset-tab pt-voltamp" onclick="switchPreset('en-voltamp',this)">Voltamp</button>
+        <button class="preset-tab pt-sector" onclick="switchPreset('en-sector',this)">Sector</button>
+      </div>
+      <div class="presets-panel active" id="pn-en-hitachi">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>⚡</span><div><div class="pq-en">What does Hitachi Energy's ₹29,555 Cr backlog mean for FY27 revenue growth?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>📉</span><div><div class="pq-en">Why did Hitachi Energy shares fall despite strong Q4 FY26 results?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🏭</span><div><div class="pq-en">Explain Hitachi Energy's ₹4,000 Cr capex commitment — bullish signal or execution risk?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🖥️</span><div><div class="pq-en">Why is data centre becoming Hitachi Energy's largest order category?</div></div></div>
+        </div>
+      </div>
+      <div class="presets-panel" id="pn-en-abb">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🤖</span><div><div class="pq-en">ABB India sold its Robotics business for ₹1,568 Cr — was it the right strategic call?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>📉</span><div><div class="pq-en">ABB India core PAT fell 25% — is the margin compression structural or cyclical?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>💰</span><div><div class="pq-en">ABB India has ₹9,000 Cr+ in reserves. What should they do with it?</div></div></div>
+        </div>
+      </div>
+      <div class="presets-panel" id="pn-en-bosch">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🛵</span><div><div class="pq-en">Bosch 2-Wheeler Power Solutions grew 63.4% in Q4 — what is driving this surge?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🔋</span><div><div class="pq-en">How does India's EV transition impact Bosch's business model positively and negatively?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>💸</span><div><div class="pq-en">Bosch declared ₹512/share dividend FY26 — how does this reflect earnings quality?</div></div></div>
+        </div>
+      </div>
+      <div class="presets-panel" id="pn-en-siemens">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>⚡</span><div><div class="pq-en">Siemens Energy India has 19.4% EBIT margin — why is it better than all peers?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🏭</span><div><div class="pq-en">Explain the ₹20.6 Bn greenfield transformer factory — why is it transformative?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>📅</span><div><div class="pq-en">Siemens Energy India follows Oct-Sep FY — how should investors compare with Apr-Mar peers?</div></div></div>
+        </div>
+      </div>
+      <div class="presets-panel" id="pn-en-voltamp">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>📉</span><div><div class="pq-en">Voltamp Q4 PAT fell 50% — buying opportunity or red flag?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>💎</span><div><div class="pq-en">Why does Voltamp refuse low-margin orders — and does this discipline create shareholder value?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🏭</span><div><div class="pq-en">Voltamp new factory starts July 2026 — what impact on FY27 revenue and margins?</div></div></div>
+        </div>
+      </div>
+      <div class="presets-panel" id="pn-en-sector">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🏆</span><div><div class="pq-en">Which power proxy company has the best risk-reward for FY27 investing?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🖥️</span><div><div class="pq-en">Explain how India's data centre boom is a game-changer for power equipment companies</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>⚔️</span><div><div class="pq-en">Compare Hitachi Energy vs Siemens Energy India — which is a better investment?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this.querySelector('.pq-en').textContent)"><span>🔩</span><div><div class="pq-en">What is CRGO steel and why does it matter for transformer company margins?</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="lang-section">
+      <div class="lang-section-hdr ta">🇮🇳 தமிழ் கேள்விகள்</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="preset-tab pt-hitachi active" onclick="switchTamilPreset('ta-hitachi',this)">Hitachi Energy</button>
+        <button class="preset-tab pt-sector" onclick="switchTamilPreset('ta-sector',this)">துறை பகுப்பாய்வு</button>
+      </div>
+      <div class="presets-panel active" id="pn-ta-hitachi">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askTamilPreset(this.querySelector('.pq-en').textContent)"><span>⚡</span><div><div class="pq-en">Hitachi Energy-இன் ₹29,555 கோடி order backlog என்ன அர்த்தம்? FY27-ல் வருமானம் எவ்வளவு வளரும்?</div></div></div>
+          <div class="preset-q" onclick="askTamilPreset(this.querySelector('.pq-en').textContent)"><span>💡</span><div><div class="pq-en">Siemens Energy India vs Hitachi Energy — எது சிறந்த முதலீடு? தமிழில் விளக்கவும்</div></div></div>
+        </div>
+      </div>
+      <div class="presets-panel" id="pn-ta-sector">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askTamilPreset(this.querySelector('.pq-en').textContent)"><span>🏆</span><div><div class="pq-en">Power proxy sector என்றால் என்ன? இந்தியாவில் ஏன் இது முக்கியமான முதலீட்டு theme? தமிழில் விளக்கவும்</div></div></div>
+          <div class="preset-q" onclick="askTamilPreset(this.querySelector('.pq-en').textContent)"><span>🔩</span><div><div class="pq-en">CRGO steel என்றால் என்ன? Voltamp margin ஏன் Q4-ல் குறைந்தது? தமிழில் விளக்கவும்</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <div class="chat-msgs" id="powerChatMsgs">
+        <div class="chat-msg bot">👋 நமஸ்காரம்! I'm <strong>CB Assist</strong> — your Power Proxy sector analyst at CB Research. I cover Hitachi Energy, ABB India, Bosch, Siemens Energy India, and Voltamp based on Q4 FY26 actuals. Ask me anything in English or Tamil. Enter your Anthropic API key below to activate responses.</div>
+      </div>
+      <div id="powerTyping" class="typing-ind"><span></span><span></span><span></span><span style="font-size:11px;color:var(--muted);margin-left:6px;">CB Assist thinking...</span></div>
+      <div style="margin-bottom:8px;">
+        <input type="password" id="apiKeyInput" class="chat-input" placeholder="🔑 Enter Anthropic API key (session only — not stored)" style="width:100%;"/>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="powerInput" class="chat-input" placeholder="Ask about Hitachi, ABB, Bosch, Siemens Energy, Voltamp... or type in Tamil" onkeypress="if(event.key==='Enter')sendPowerChat()"/>
+        <button class="chat-send" id="powerSend" onclick="sendPowerChat()">Send ➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">Power Proxy · FY26</div></div>
+</div>
+<div class="footer">
+  CB Research — Power Proxy Sector Intelligence Dashboard · Q4 FY26 · 26 May 2026<br>
+  Hitachi Energy India (NSE: POWERINDIA) · ABB India (NSE: ABB) · Bosch Limited (NSE: BOSCHLTD) · Siemens Energy India (NSE: SEINDIA) · Voltamp Transformers (NSE: VOLTAMP)<br>
+  Sources: BSE/NSE filings, company press releases, investor presentations. For information only. Not investment advice. Consult a SEBI-registered advisor before investing.
+</div>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts')setTimeout(initCharts,100);
+}
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return; chartsInit=true;
+  const cos=['Hitachi Energy','ABB India','Bosch','Siemens Energy','Voltamp'];
+  const bgs=['#d9282f','#1e6fa5','#c0392b','#009999','#7c3aed'];
+  const base={responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'₹'+c.parsed.y.toLocaleString('en-IN')+' Cr'}}},scales:{y:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#f0ede8'}},x:{grid:{display:false}}}};
+  new Chart(document.getElementById('revenueChart'),{type:'bar',data:{labels:cos,datasets:[{label:'Q4 Revenue',data:[2754,3184,5566,2394,617],backgroundColor:bgs,borderRadius:5}]},options:base});
+  new Chart(document.getElementById('marginChart'),{type:'bar',data:{labels:cos,datasets:[{label:'Margin %',data:[16.3,12.9,12.6,19.4,13.2],backgroundColor:bgs,borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'#f0ede8'}},x:{grid:{display:false}}}}});
+  new Chart(document.getElementById('annualRevChart'),{type:'bar',data:{labels:cos,datasets:[{label:'FY26',data:[8150,13200,20035,9200,2154],backgroundColor:bgs,borderRadius:4},{label:'FY25',data:[6370,12188,18082,7240,1934],backgroundColor:bgs.map(c=>c+'55'),borderRadius:4}]},options:{...base,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},tooltip:base.plugins.tooltip}}});
+  new Chart(document.getElementById('patChart'),{type:'bar',data:{labels:cos,datasets:[{label:'FY26 PAT',data:[988,1618,2770,1400,305],backgroundColor:bgs,borderRadius:5}]},options:base});
+  new Chart(document.getElementById('orderChart'),{type:'bar',data:{labels:['Hitachi Energy','ABB India','Siemens Energy','Voltamp'],datasets:[{label:'Order Backlog (₹ Cr)',data:[29555,13500,18433,1200],backgroundColor:['#d9282f','#1e6fa5','#009999','#7c3aed'],borderRadius:5}]},options:{...base,indexAxis:'y',scales:{x:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#f0ede8'}},y:{grid:{display:false}}}}});
+}
+function switchPreset(id,btn){
+  document.querySelectorAll('[id^="pn-en-"]').forEach(p=>p.classList.remove('active'));
+  btn.closest('.lang-section').querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pn-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function switchTamilPreset(id,btn){
+  document.querySelectorAll('[id^="pn-ta-"]').forEach(p=>p.classList.remove('active'));
+  btn.closest('.lang-section').querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pn-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function askPreset(q){document.getElementById('powerInput').value=q;sendPowerChat();}
+function askTamilPreset(q){document.getElementById('powerInput').value=q;sendPowerChat();}
+async function sendPowerChat(){
+  const input=document.getElementById('powerInput');
+  const msgs=document.getElementById('powerChatMsgs');
+  const btn=document.getElementById('powerSend');
+  const typing=document.getElementById('powerTyping');
+  const apiKey=document.getElementById('apiKeyInput').value.trim();
+  const q=input.value.trim();
+  if(!q)return;
+  if(!apiKey){const w=document.createElement('div');w.className='chat-msg bot';w.textContent='🔑 Please enter your Anthropic API key above to use CB Assist.';msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;return;}
+  const isTamil=/[\u0B80-\u0BFF]/.test(q);
+  const uMsg=document.createElement('div');uMsg.className='chat-msg user';uMsg.textContent=q;msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  const langInst=isTamil?'Answer in Tamil ONLY. தமிழில் மட்டுமே பதில் தாருங்கள். Company names, numbers, financial/technical terms stay in English. Give a sharp 6-9 sentence analytical answer. Start with the key insight.':'Answer in English ONLY. Be analytical and concise — 6-9 sentences. Start with the most important insight. Use specific numbers. Do NOT add disclaimers.';
+  const sys=`You are CB Assist — expert Power Proxy sector research analyst at Cauvery Business (CB Research). You cover India's power equipment, T&D, and industrial electrical sector in depth.\n\n${langInst}\n\nRULES: Analytical depth required. Use specific data. Do NOT mention data sources. Research analysis only — not investment advice.\n\nCOMPANY DATA Q4 FY26:\n\nHITACHI ENERGY INDIA (NSE: POWERINDIA): Q4 FY26 ✅ May 25 — Revenue ₹2,754 Cr (+46.2%), EBITDA ₹420 Cr (+65%), PAT ₹330.5 Cr (+79.7%), Margin 16.3%, Gross Margin 36.9% (−30bps). FY26: Revenue ₹8,150 Cr (+28%), EBITDA ₹1,260 Cr (+111%), Margin 15.4% (+610bps), PAT ₹988 Cr (+157%). Order Backlog ₹29,555 Cr (+53.5%) = 3.6× revenue. Q4 orders ₹2,423 Cr — Data Centres largest (30%), Rail 22%, Exports 36.8%. Board approved ₹2,000 Cr greenfield transformer plant Vadodara; total capex commitment ₹4,000 Cr. HVDC only supplier India. MD: Venu Nuguri. CMP ~₹35,745.\n\nABB INDIA (NSE: ABB): Jan-Dec FY. Q4 FY26 ✅ May 8. Revenue ₹3,184 Cr (+5.8%). Reported PAT ₹1,784 Cr (includes ₹1,658 Cr Robotics slump-sale gain, executed Mar 1 for ₹1,568 Cr). Continuing ops PAT ₹342 Cr (−25% YoY). EBITDA ₹408 Cr, Margin 12.9% (−580bps). Reserves ₹9,000+ Cr. Zero debt. MF holdings 4.62%. Nomura cut estimates 5-7%. CMP ~₹5,900.\n\nBOSCH LIMITED (NSE: BOSCHLTD): Q4 FY26 ✅ May. Revenue ₹5,566 Cr (+13.3%), PAT ₹568 Cr. FY26: Revenue ₹20,035 Cr (+10.8%), PAT ₹2,770 Cr (+37.6%), PBT Margin 18.2%. Mobility +23.3% QoQ, Power Solutions +27.4%, 2W segment +63.4%. Dividend ₹512/share. JV with Wheels India+Brakes India for CV air systems. CMP ~₹30,500.\n\nSIEMENS ENERGY INDIA (NSE: SEINDIA): Oct-Sep FY. Jan-Mar 2026 = Q2 FY26. ✅ May 14. Revenue ₹2,394 Cr (+27.4%), PAT ₹375 Cr (+52.4%), EBIT Margin 19.4% (+160bps), Backlog ₹18,433 Cr (+22.2%). Capex ₹20.6 Bn greenfield transformer + ₹7.4 Bn ongoing. Segments: Power Transmission 60%, Power Generation 40%. MD: Guilherme Mendonca. CMP ~₹2,847. Demerged from Siemens Ltd 2024.\n\nVOLTAMP TRANSFORMERS (NSE: VOLTAMP): Q4 FY26 ✅ May 5. Revenue ₹617 Cr (−1.2%), EBITDA ₹79.8 Cr (−30%), Margin 13.2%, PAT ₹47.9 Cr (−50.5%). Q4 hit by MTM treasury losses (other income −₹10.06 Cr) + one-time provisions. FY26 full year: Revenue ₹2,154 Cr (+11.3% RECORD), PAT ₹305.4 Cr, EPS ₹301.85. Dividend 1000% = ₹100/share. Backlog ₹1,200 Cr (10,270 MVA). New factory July 2026. Zero debt. CMP ~₹10,100 (post 20% circuit).\n\nSECTOR: India grid investment ₹9.15 lakh Cr by 2032. 500 GW RE by 2030. 8 HVDC green corridors. Data centres 20+ GW by 2030 — fastest transformer demand growth. CRGO (cold-rolled grain-oriented steel) key transformer input — prices volatile FY26.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:sys,messages:[{role:'user',content:q}]})});
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:'Unable to process. Check your API key.';
+    typing.style.display='none';
+    const bMsg=document.createElement('div');bMsg.className='chat-msg bot';
+    bMsg.innerHTML=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');eMsg.className='chat-msg bot';eMsg.textContent='CB Assist unavailable. Check your API key and try again.';msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

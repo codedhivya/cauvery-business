@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Sector Intelligence Dashboard | Q4 FY26 | CB Research</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;--text:#181511;--muted:#6e6860;
+--iex:#0053a0;--iex-s:#e8f0fa;--ind:#1a5fb4;--ind-s:#e9f0f9;--frc:#7c3aed;--frc-s:#f3ebfa;--air:#e0202a;--air-s:#fdeaea;
+--pos:#166534;--neg:#dc2626;--warn:#ea580c;--gold:#b8911e;--gold-s:#fdf5e0;
+--sh:0 1px 8px rgba(24,21,17,.07);--sh2:0 4px 20px rgba(24,21,17,.10);--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#0d1c2e;padding:0 32px;display:flex;align-items:stretch;justify-content:space-between;min-height:68px;flex-wrap:wrap;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;line-height:1.15;padding:16px 0 4px;}
+.hdr .sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;padding-bottom:16px;}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 0;}
+.chip{padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;}
+.chip-iex{background:var(--iex);}.chip-ind{background:var(--ind);}.chip-frc{background:var(--frc);}.chip-air{background:var(--air);}
+.chip-date{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;padding:0 32px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:13px 13px 11px;font-size:11.5px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--iex);font-weight:700;}
+.main{padding:22px 32px 48px;max-width:1480px;margin:0 auto;}
+.panel{display:none;animation:fi .18s ease;}.panel.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sec-note{font-size:10.5px;color:var(--muted);font-weight:400;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
+.card-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.iex::before{background:var(--iex);}.co-card.ind::before{background:var(--ind);}
+.co-card.frc::before{background:var(--frc);}.co-card.air::before{background:var(--air);}
+.co-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:9px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center;}
+.m-lbl{font-size:11px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text);}
+.badge-row{margin-top:10px;display:flex;gap:4px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-neg{background:#fee2e2;color:#b91c1c;}.b-warn{background:#fff7ed;color:#c2410c;}.b-neu{background:#f3f4f6;color:#4b5563;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.kpi.iex-a{border-left:4px solid var(--iex);}.kpi.ind-a{border-left:4px solid var(--ind);}
+.kpi.frc-a{border-left:4px solid var(--frc);}.kpi.air-a{border-left:4px solid var(--air);}
+.kpi .kl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+.kpi .kv{font-size:1rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:9.5px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+th{background:#0d1c2e;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:10px 12px;text-align:left;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap;vertical-align:middle;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}.td-wrap{white-space:normal;}.td-src{font-size:10px;color:var(--muted);white-space:normal;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
+.swot-cell{padding:11px 13px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-s);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"\2022  ";color:var(--muted);}
+.co-hdr{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:9px;padding-bottom:5px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:7px;}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;box-shadow:var(--sh);margin-bottom:12px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+.rat-pill{padding:3px 11px;border-radius:20px;font-size:10.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef9c3;color:#a16207;}.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.15rem;font-weight:900;font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
+.ac-cmp{font-size:10.5px;color:var(--muted);margin-bottom:7px;}
+.ac-text{font-size:11.5px;line-height:1.6;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh2);margin-bottom:16px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:9px;}
+.verdict-body{font-size:12.5px;line-height:1.7;}
+.rm-box{background:#fff0ef;border:1.5px solid #c8202a;border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.65;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:10.5px;color:var(--muted);margin-bottom:10px;}
+.chart-box{position:relative;width:100%;min-width:0;height:320px;}
+.note-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;font-size:12px;line-height:1.65;box-shadow:var(--sh);}
+.note-card strong{color:var(--text);}
+.rm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
+.rm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);}
+.rm-icon{font-size:1.5rem;margin-bottom:6px;}
+.rm-title{font-weight:800;font-size:11.5px;margin-bottom:4px;}
+.rm-body{font-size:11px;color:var(--text);line-height:1.6;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--iex);border-radius:var(--r);padding:18px 20px;}
+.cbassist-title{font-weight:800;font-size:12px;color:var(--iex);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.cbassist-title span{width:7px;height:7px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:100px;max-height:360px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:9px;}
+.chat-msg{padding:9px 13px;border-radius:10px;font-size:12px;max-width:92%;line-height:1.55;}
+.chat-msg.user{background:#0d1c2e;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--iex);}
+.chat-input-row{display:flex;gap:7px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);outline:none;}
+.chat-input:focus{border-color:var(--iex);}
+.chat-send{background:var(--iex);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:7px 11px;}
+.typing-ind span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.preset-tab{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 5px 0;}
+.pt-iex.on{background:var(--iex);border-color:var(--iex);color:#fff;}
+.pt-ind.on{background:var(--ind);border-color:var(--ind);color:#fff;}
+.pt-frc.on{background:var(--frc);border-color:var(--frc);color:#fff;}
+.pt-air.on{background:var(--air);border-color:var(--air);color:#fff;}
+.pt-sector.on{background:var(--gold);border-color:var(--gold);color:#fff;}
+.pqs{display:none;}.pqs.on{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.pq{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:8px;line-height:1.45;}
+.pq:hover{border-color:var(--iex);background:var(--iex-s);}
+.cat-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;box-shadow:var(--sh);}
+.cat-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.cat-btn.on{background:#0d1c2e;color:#fff;border-color:#0d1c2e;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:12px 32px;border-top:1px solid var(--border);margin-top:24px;line-height:1.7;}
+.cb-wm{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);border:1.5px solid var(--border);border-radius:28px;padding:6px 13px 6px 7px;box-shadow:0 4px 18px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:26px;height:26px;background:var(--iex);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.8rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:10.5px;font-weight:700;}.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.tag{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;vertical-align:middle;}
+.tag-iex{background:var(--iex-s);color:var(--iex);}.tag-ind{background:var(--ind-s);color:var(--ind);}
+.tag-frc{background:var(--frc-s);color:var(--frc);}.tag-air{background:var(--air-s);color:var(--air);}
+.co-sel{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:14px;position:sticky;top:46px;z-index:50;}
+.co-sel-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.per-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.sep{width:1px;height:22px;background:var(--border);display:inline-block;margin:0 4px;}
+.co-sec{display:none;}.co-sec.on{display:block;}
+.grp-hdr{padding:9px 14px;border-left:4px solid;border-radius:0 7px 7px 0;font-size:11px;font-weight:800;letter-spacing:.02em;margin-bottom:14px;line-height:1.5;}
+.seg-row{margin-bottom:11px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;}
+.seg-bar{height:8px;border-radius:20px;}
+.tcard{background:linear-gradient(135deg,#0d1c2e,#16304d);color:#fff;border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh2);margin-bottom:16px;}
+.tcard h4{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;margin-bottom:8px;color:#ffd86b;display:flex;align-items:center;gap:9px;}
+.tcard p{font-size:12px;line-height:1.7;color:rgba(255,255,255,.9);}
+.tcard .mcr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.tcard .mc{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:10px 12px;}
+.tcard .mc .l{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin-bottom:3px;}
+.tcard .mc .v{font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:800;color:#fff;}
+.coupling-box{background:#fff0ef;border:1.5px solid var(--air);border-left:5px solid var(--air);border-radius:var(--r);padding:16px 20px;margin-bottom:14px;}
+.coupling-box .ct{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:800;color:#b91c1c;margin-bottom:8px;}
+.tl-row{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;}
+.tl-date{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:#b91c1c;min-width:88px;padding-top:1px;}
+.tl-txt{font-size:11.5px;line-height:1.55;}
+@media(max-width:860px){.main{padding:12px 12px 40px;}.hdr{padding:0 14px;}.tab-nav{padding:0 6px;}.g2,.g3,.g4,.kpi-grid,.rm-grid{grid-template-columns:1fr 1fr;}.co-sel{position:static;}.tcard .mcr{grid-template-columns:1fr;}}
+@media(max-width:500px){.g2,.g3,.g4,.kpi-grid,.rm-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><h1>Multi-Sector Intelligence Dashboard</h1>
+  <div class="sub">IEX &middot; InterGlobe Aviation (IndiGo) &middot; Fractal Analytics &middot; Bharti Airtel &middot; Q4 &amp; FY26 &middot; CB Research</div></div>
+  <div class="hdr-right">
+    <span class="chip chip-iex">IEX</span><span class="chip chip-ind">IndiGo</span><span class="chip chip-frc">Fractal</span>
+    <span class="chip chip-air">Airtel</span>
+    <span class="chip chip-date">Q4 FY26 &middot; 01 Jun 2026</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="showTab('companies',this)">Companies</button>
+  <button class="tab-btn" onclick="showTab('metrics',this)">Sector Metrics</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT &amp; Moat</button>
+  <button class="tab-btn" onclick="showTab('board',this)">Management</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst View</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks &amp; Outlook</button>
+  <button class="tab-btn" onclick="showTab('assist',this)">CB Assist &#x1F916;</button>
+</nav>
+<div class="main">
+
+<!-- ===== OVERVIEW ===== -->
+<div class="panel active" id="tab-overview">
+<div class="sec-hdr">Overview <span class="sec-note">&middot; 4 Companies &middot; 4 Different Sectors &middot; Q4 FY26 (Quarter ended 31 Mar 2026)</span></div>
+
+<div class="note-card">
+  <strong>Why these four are not comparable on a single template.</strong> Each operates in a structurally different business, so the meaningful KPIs differ entirely. <span class="tag tag-iex">IEX</span> is a power exchange &mdash; judged on traded <em>volumes (BU)</em>, transaction-fee mix and EBITDA margin (~86%). <span class="tag tag-ind">IndiGo</span> is an airline &mdash; judged on <em>ASK, load factor, yield, CASK and RASK</em>. <span class="tag tag-frc">Fractal</span> is an AI/analytics services firm &mdash; judged on <em>revenue growth, gross margin, NRR and revenue-per-FTE</em>. <span class="tag tag-air">Airtel</span> is a telecom operator &mdash; judged on <em>ARPU, subscriber adds, data usage and net-debt/EBITDA</em>. The dashboard keeps each on its own native metric set rather than forcing one comparison table.
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi iex-a"><div class="kl">IEX &mdash; Q4 PAT</div><div class="kv">&#8377;129.8 Cr</div><div class="kc pos">+10.8% YoY</div></div>
+  <div class="kpi ind-a"><div class="kl">IndiGo &mdash; Q4 Net</div><div class="kv">&minus;&#8377;2,537 Cr</div><div class="kc neg">Loss vs &#8377;3,068 Cr profit</div></div>
+  <div class="kpi frc-a"><div class="kl">Fractal &mdash; Q4 PAT</div><div class="kv">&#8377;117.8 Cr</div><div class="kc pos">+109% YoY</div></div>
+  <div class="kpi air-a"><div class="kl">Airtel &mdash; Q4 PAT</div><div class="kv">&#8377;7,325 Cr</div><div class="kc neg">&minus;33.5% YoY*</div></div>
+</div>
+
+<div class="g4" style="margin-bottom:14px;">
+  <div class="co-card iex">
+    <div class="co-name" style="color:var(--iex)">Indian Energy Exchange</div>
+    <div class="co-seg">NSE: IEX &middot; Power Exchange &middot; Asset-light platform</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;196.4 Cr (+12.5%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">~85.7%</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">&#8377;129.8 Cr (+10.8%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;747.0 Cr (+13.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;492.9 Cr (+14.9%)</span></div>
+    <div class="badge-row"><span class="badge b-pos">Record 39.4 BU vol</span><span class="badge b-warn">Mkt coupling overhang</span></div>
+  </div>
+  <div class="co-card ind">
+    <div class="co-name" style="color:var(--ind)">InterGlobe Aviation</div>
+    <div class="co-seg">NSE: INDIGO &middot; Low-Cost Airline &middot; Nifty 50</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Ops)</span><span class="m-val">&#8377;22,438 Cr (+1.3%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDAR</span><span class="m-val neg">&#8377;6,396 Cr (&minus;6%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 Net Loss</span><span class="m-val neg">&minus;&#8377;2,537 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 Adj. PAT*</span><span class="m-val pos">&#8377;1,921 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Net Loss</span><span class="m-val neg">&minus;&#8377;2,394 Cr</span></div>
+    <div class="badge-row"><span class="badge b-neg">Forex hit</span><span class="badge b-warn">Labour codes one-off</span></div>
+  </div>
+  <div class="co-card frc">
+    <div class="co-name" style="color:var(--frc)">Fractal Analytics</div>
+    <div class="co-seg">NSE: FRACTAL &middot; AI &amp; Analytics &middot; Feb-2026 IPO</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Ops)</span><span class="m-val">&#8377;886.3 Cr (+17%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 Gross Margin</span><span class="m-val pos">48.2%</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;117.8 Cr (+109%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;3,300 Cr (+19%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;286.8 Cr (+30%)</span></div>
+    <div class="badge-row"><span class="badge b-pos">Now debt-free</span><span class="badge b-pos">NRR 112% Q4</span></div>
+  </div>
+  <div class="co-card air">
+    <div class="co-name" style="color:var(--air)">Bharti Airtel</div>
+    <div class="co-seg">NSE: BHARTIARTL &middot; Telecom &middot; India + Africa</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;55,383 Cr (+15.7%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">57.8%</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#8377;7,325 Cr (&minus;33.5%)*</span></div>
+    <div class="m-row"><span class="m-lbl">India ARPU</span><span class="m-val pos">&#8377;257 (vs &#8377;245)</span></div>
+    <div class="m-row"><span class="m-lbl">Final Dividend</span><span class="m-val">&#8377;24 / share</span></div>
+    <div class="badge-row"><span class="badge b-pos">ARPU leader</span><span class="badge b-neu">High-base YoY effect</span></div>
+  </div>
+</div>
+
+<div class="note-card">
+  <strong>Reading the headline numbers.</strong> *IndiGo's Q4 reported a net <em>loss</em> of &#8377;2,537 Cr against a &#8377;3,068 Cr profit a year ago &mdash; but the swing is largely a sharp rupee-depreciation forex loss plus a one-time labour-code charge; excluding those, the airline says it earned ~&#8377;1,921 Cr. *Airtel's Q4 PAT fell ~33.5% YoY, but that is a "high-base" effect &mdash; the year-ago quarter (&#8377;11,022 Cr) carried large exceptional gains; <em>before exceptionals</em>, net income rose ~38.7% YoY to ~&#8377;7,245 Cr. IEX and Fractal both posted clean double-digit-plus growth.
+</div>
+</div>
+
+<!-- ===== COMPANIES ===== -->
+<div class="panel" id="tab-companies">
+<div class="sec-hdr">Company Deep-Dives <span class="sec-note">&middot; Select company &middot; Quarter &amp; Annual &middot; Figures from official BSE/NSE filings and company releases</span></div>
+
+<div class="co-sel">
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Company</span>
+  <button class="co-sel-btn" id="cobtn-iex" onclick="showCo('iex',this)" style="background:var(--iex);color:#fff;border-color:var(--iex);">IEX</button>
+  <button class="co-sel-btn" id="cobtn-ind" onclick="showCo('ind',this)">IndiGo</button>
+  <button class="co-sel-btn" id="cobtn-frc" onclick="showCo('frc',this)">Fractal</button>
+  <button class="co-sel-btn" id="cobtn-air" onclick="showCo('air',this)">Airtel</button>
+  <span class="sep"></span>
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Period</span>
+  <button class="per-btn" id="perbtn-qtr" onclick="showPer('qtr',this)" style="background:#0d1c2e;color:#fff;border-color:#0d1c2e;">Quarter</button>
+  <button class="per-btn" id="perbtn-annual" onclick="showPer('annual',this)">Annual</button>
+</div>
+
+<!-- ===================== IEX ===================== -->
+<div class="co-sec on" id="co-iex">
+  <div class="grp-hdr" style="background:var(--iex-s);border-color:var(--iex);color:var(--iex);">Indian Energy Exchange (IEX) &mdash; NSE: IEX / BSE: 540750 &middot; India's dominant power exchange (~85-90% share) &middot; Asset-light platform &middot; Listed Oct-2017 &middot; HQ Noida</div>
+
+  <!-- IEX QUARTER -->
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--iex)">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Traded electricity (BU)</td><td class="tpos">39.4</td><td class="num">31.7</td><td class="tpos">+24.3%</td></tr>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;196.4 Cr</td><td class="num">&#8377;174.6 Cr</td><td class="tpos">+12.5%</td></tr>
+          <tr><td>PAT (Consol)</td><td class="tpos">&#8377;129.8 Cr</td><td class="num">&#8377;117.1 Cr</td><td class="tpos">+10.8%</td></tr>
+          <tr><td>PAT (Standalone)</td><td class="tpos">&#8377;124.0 Cr</td><td class="num">&#8377;112.0 Cr</td><td class="tpos">+10.7%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">~85.7%</td><td class="num">~85.3%</td><td class="tpos">+40 bps</td></tr>
+          <tr><td>Transaction-fee mix</td><td class="num">85.4%</td><td class="num">78.7%</td><td class="tpos">+670 bps</td></tr>
+          <tr><td>REC traded (lakh)</td><td class="num">71.71</td><td class="num">67.6</td><td class="tpos">+6.1%</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">Record quarterly volume of 39.4 BU. Asset-light model means almost all revenue drops to EBITDA. Source: IEX exchange filing, Apr-2026.</p>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--iex)">IEX &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Liquidity network effect</td><td style="white-space:normal">~85-90% of exchange power volume; ~99% of DAM &amp; RTM. Buyers and sellers congregate where liquidity is deepest</td></tr>
+          <tr><td class="tb">Asset-light economics</td><td style="white-space:normal">~86% EBITDA margin, near-zero capex, nearly debt-free balance sheet &mdash; pure platform model</td></tr>
+          <tr><td class="tb">Multi-segment platform</td><td style="white-space:normal">DAM, RTM, TAM, Green &amp; REC markets; RTM grew +41% in FY26 &mdash; fastest segment</td></tr>
+          <tr><td class="tb">Group optionality</td><td style="white-space:normal">IGX (gas exchange) PAT &#8377;41.9 Cr (+35%); ICX (carbon) revenue more than doubled to &#8377;7.7 Cr</td></tr>
+          <tr><td class="tb">Regulatory dependence</td><td style="white-space:normal">The same regulator that licenses it can dilute its moat &mdash; see Market Coupling below</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- IEX MARKET COUPLING (always in quarter view) -->
+  <div class="coupling-box">
+    <div class="ct">&#9889; The Market Coupling Issue &mdash; the single biggest swing factor for IEX</div>
+    <p style="font-size:12px;line-height:1.7;margin-bottom:12px;"><strong>What it is:</strong> Today each exchange (IEX, PXIL, HPX) discovers its own price. Under <strong>market coupling</strong>, a central operator (Grid-India as Market Coupling Operator) pools <em>all</em> buy/sell bids across every exchange and computes <strong>one uniform market-clearing price</strong>. CERC has approved it, starting with the Day-Ahead Market.</p>
+    <p style="font-size:12px;line-height:1.7;margin-bottom:12px;"><strong>Why it threatens IEX:</strong> IEX's edge is its liquidity-driven price discovery &mdash; participants come to IEX because that is where the best price forms. If the price is identical everywhere, that advantage collapses (the analogy: forcing every e-commerce site to show the same price erodes the leader's pull). IEX earns ~78-85% of revenue from <strong>per-unit transaction fees</strong>, so any loss of volume share &mdash; or a regulator-led fee "rationalisation" &mdash; hits the topline directly. Its DAM share is ~98.8%, and DAM contributes 80%+ of trading volume, so that is exactly the segment most exposed.</p>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;">Timeline &amp; market reaction</div>
+      <div class="tl-row"><div class="tl-date">Jul 2025</div><div class="tl-txt">CERC approves market coupling after 2+ years of deliberation; phased rollout to begin with DAM. IEX stock crashes up to ~28-30% in a day &mdash; worst since its 2017 IPO.</div></div>
+      <div class="tl-row"><div class="tl-date">Feb 2026</div><div class="tl-txt">APTEL (Appellate Tribunal for Electricity) dismisses IEX's plea against the earlier CERC directive.</div></div>
+      <div class="tl-row"><div class="tl-date">Apr 2026</div><div class="tl-txt">CERC releases the formal draft notification codifying the framework; Grid-India to frame the Power Market Coupling Procedure within 6 months. IEX falls ~6-8% intraday. Comments invited by 16 May 2026.</div></div>
+      <div class="tl-row"><div class="tl-date">Watch</div><div class="tl-txt">Exact DAM/RTM go-live dates and the transaction-fee design are the key unknowns. Any delay, dilution or rollback reduces pressure; full implementation reshapes the model. Jefferies cut target to ~&#8377;105 citing this risk.</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;"><strong>Net:</strong> The operations are flawless (record volumes, ~86% margins). The stock is regulation-gated &mdash; it trades on the market-coupling outcome, not on the earnings print.</p>
+  </div>
+  </div>
+
+  <!-- IEX ANNUAL -->
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--iex)">FY26 Full Year vs FY25 (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Traded electricity (BU)</td><td class="tpos">141.1</td><td class="num">120.6</td><td class="tpos">+17%</td></tr>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;747.0 Cr</td><td class="num">&#8377;657.6 Cr</td><td class="tpos">+13.6%</td></tr>
+          <tr><td>Revenue (Standalone)</td><td class="tpos">&#8377;744.9 Cr</td><td class="num">&#8377;654.3 Cr</td><td class="tpos">+13.9%</td></tr>
+          <tr><td>PAT (Consol)</td><td class="tpos">&#8377;492.9 Cr</td><td class="num">&#8377;429.2 Cr</td><td class="tpos">+14.9%</td></tr>
+          <tr><td>PAT (Standalone)</td><td class="tpos">&#8377;473.7 Cr</td><td class="num">&#8377;414.6 Cr</td><td class="tpos">+14.2%</td></tr>
+          <tr><td>RTM segment growth</td><td class="tpos">+41%</td><td class="num">&mdash;</td><td class="num">Fastest</td></tr>
+          <tr><td>REC traded (lakh)</td><td class="num">187.2</td><td class="num">178.3</td><td class="tpos">+5%</td></tr>
+          <tr><td>Final Dividend</td><td class="num">&#8377;2/share</td><td class="num">&#8377;1.5/share</td><td class="tpos">Raised</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--iex)">FY26 Annual Story &amp; Subsidiaries</div>
+      <p style="font-size:12px;line-height:1.7;">Highest-ever annual volume (141.1 BU). FY26 DAM market-clearing price fell ~13.7% to &#8377;3.86/unit &mdash; <em>lower</em> power prices actually <em>helped</em> by pulling more buyers onto the exchange. Supply-side liquidity from coal + wind + hydro + solar drove the volume surge.</p>
+      <div style="margin-top:12px;">
+        <div class="seg-row"><div class="seg-lbl"><span>IGX &mdash; Gas Exchange (PAT &#8377;41.9 Cr, +35%)</span><span>76.8 mn MMBtu (+28%)</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:80%;background:var(--iex)"></div></div></div>
+        <div class="seg-row"><div class="seg-lbl"><span>ICX &mdash; Carbon Exchange (rev &#8377;7.7 Cr)</span><span>I-RECs +200%+</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:45%;background:var(--iex)"></div></div></div>
+        <div class="seg-row"><div class="seg-lbl"><span>Core Power Exchange</span><span>~95%+ of group PAT</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:95%;background:var(--iex)"></div></div></div>
+      </div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:10px;">Auditors Walker Chandiok &amp; Co LLP &mdash; unmodified opinion. Two VPs designated Senior Management Personnel. Record date for dividend: 15 May 2026.</p>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===================== INDIGO ===================== -->
+<div class="co-sec" id="co-ind">
+  <div class="grp-hdr" style="background:var(--ind-s);border-color:var(--ind);color:var(--ind);">InterGlobe Aviation (IndiGo) &mdash; NSE: INDIGO / BSE: 539448 &middot; India's largest airline (~60%+ domestic) &middot; Nifty 50 &middot; MD: Rahul Bhatia &middot; Fleet 441 &middot; Founded 2006</div>
+
+  <!-- INDIGO QUARTER -->
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--ind)">Q4 FY26 &mdash; P&amp;L &amp; Ops (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from ops</td><td class="tpos">&#8377;22,438 Cr</td><td class="num">&#8377;22,152 Cr</td><td class="tpos">+1.3%</td></tr>
+          <tr><td>EBITDAR</td><td class="tneg">&#8377;6,396 Cr</td><td class="num">&#8377;6,817 Cr</td><td class="tneg">&minus;6.0%</td></tr>
+          <tr><td>Net profit / (loss)</td><td class="tneg">(2,537) Cr</td><td class="num">&#8377;3,068 Cr</td><td class="tneg">Loss</td></tr>
+          <tr><td>Adj. PAT (ex-forex/one-off)</td><td class="tpos">&#8377;1,921 Cr</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+          <tr><td>Capacity (ASK, bn)</td><td class="tpos">43.6</td><td class="num">42.2</td><td class="tpos">+3.4%</td></tr>
+          <tr><td>Passengers (mn)</td><td class="tneg">31.6</td><td class="num">32.0</td><td class="tneg">&minus;1.1%</td></tr>
+          <tr><td>Load factor</td><td class="tneg">84.4%</td><td class="num">86.0%</td><td class="tneg">&minus;1.6 pp</td></tr>
+          <tr><td>Yield (&#8377;/RPK)</td><td class="tneg">5.06</td><td class="num">5.15</td><td class="tneg">&minus;1.7%</td></tr>
+          <tr><td>Fuel CASK (&#8377;)</td><td class="tpos">1.47</td><td class="num">1.66</td><td class="tpos">&minus;11.5%</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">The reported loss is a forex + one-time labour-code event; the core operation was profitable (adj. PAT ~&#8377;1,921 Cr). Source: IndiGo exchange filing, 29 May 2026.</p>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--ind)">IndiGo &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Scale &amp; share</td><td style="white-space:normal">~60%+ domestic market share; 7th-largest airline globally by daily departures; 86 destinations</td></tr>
+          <tr><td class="tb">Lowest-cost operator</td><td style="white-space:normal">Single-fleet-type efficiency, high utilisation; FY26 CASK ex-fuel &#8377;3.52 &mdash; cost discipline intact</td></tr>
+          <tr><td class="tb">Net-cash balance sheet</td><td style="white-space:normal">Total cash &#8377;51,651 Cr (free cash &#8377;36,216 Cr) &mdash; cushions cyclical shocks</td></tr>
+          <tr><td class="tb">Fleet &amp; order book</td><td style="white-space:normal">441 aircraft; large Airbus order book + A350 widebody for long-haul push</td></tr>
+          <tr><td class="tb">Forex vulnerability</td><td style="white-space:normal">USD-linked leases &amp; fuel mean a weak rupee can dominate a quarter's reported P&amp;L &mdash; the key weakness</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+
+  <!-- INDIGO ANNUAL -->
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--ind)">FY26 Full Year vs FY25 (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from ops</td><td class="tpos">&#8377;84,962 Cr</td><td class="num">&#8377;80,803 Cr</td><td class="tpos">+5.1%</td></tr>
+          <tr><td>Total income</td><td class="tpos">&#8377;89,513 Cr</td><td class="num">&#8377;84,130 Cr</td><td class="tpos">+6.4%</td></tr>
+          <tr><td>Net profit / (loss)</td><td class="tneg">(2,394) Cr</td><td class="tneg">(7,258) Cr</td><td class="tpos">Narrowed</td></tr>
+          <tr><td>Adj. PAT (ex-forex/one-off)</td><td class="tpos">&#8377;7,503 Cr</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+          <tr><td>Capacity growth</td><td class="tpos">+9.5%</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+          <tr><td>CASK / CASK ex-fuel</td><td class="num">5.00 / 3.52</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+          <tr><td>FY26 forex loss</td><td class="tneg">~&#8377;8,976 Cr</td><td class="num">&mdash;</td><td class="num">Key drag</td></tr>
+          <tr><td>Exceptional (labour codes)</td><td class="tneg">~&#8377;1,796 Cr</td><td class="num">&mdash;</td><td class="num">One-off</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--ind)">FY26 Annual Story</div>
+      <p style="font-size:12px;line-height:1.7;">A year of strong operational expansion masked by macro shocks. Capacity grew 9.5%, total income +6.4% &mdash; but exceptionally sharp rupee depreciation, new labour-code changes and a tough operating environment pushed the company to a reported net loss. <strong>Excluding forex and exceptionals, FY26 profit was ~&#8377;7,503 Cr.</strong></p>
+      <p style="font-size:12px;line-height:1.7;margin-top:10px;">MD Rahul Bhatia called it an "exceptionally challenging operating environment" while stressing the core stayed resilient. Aloke Singh (ex-Air India Express MD/CEO) joined as Chief Strategy Officer. Board approved up to ~$450 mn lease prepayment; AGM 20 Aug 2026. No dividend with FY26 results. Q1 FY27 capacity guided +3-4% YoY.</p>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===================== FRACTAL ===================== -->
+<div class="co-sec" id="co-frc">
+  <div class="grp-hdr" style="background:var(--frc-s);border-color:var(--frc);color:var(--frc);">Fractal Analytics &mdash; NSE: FRACTAL / BSE: 544700 &middot; Enterprise AI &amp; decision-intelligence &middot; Feb-2026 IPO &middot; Group CEO: Srikanth Velamakanni &middot; HQ Mumbai</div>
+
+  <!-- FRACTAL QUARTER -->
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--frc)">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from ops</td><td class="tpos">&#8377;886.3 Cr</td><td class="num">&#8377;757.5 Cr</td><td class="tpos">+17%</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;117.8 Cr</td><td class="num">&#8377;54.8 Cr</td><td class="tpos">+109%</td></tr>
+          <tr><td>Gross margin</td><td class="tpos">48.2%</td><td class="num">&mdash;</td><td class="num">Best-in-class</td></tr>
+          <tr><td>NRR (Net Revenue Retention)</td><td class="tpos">112%</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+          <tr><td>Basic EPS (&#8377;)</td><td class="tpos">7.07</td><td class="num">3.54</td><td class="tpos">+100%</td></tr>
+          <tr><td>CFO (&#8377; Cr)</td><td class="tpos">301</td><td class="num">279</td><td class="tpos">+8%</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">First quarterly print as a listed company. Employee cost ~75% of expenses. Source: Fractal exchange filing / investor presentation, 11-12 May 2026.</p>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--frc)">Q4 Segment Performance (YoY)</div>
+      <div style="margin-top:4px;">
+        <div class="seg-row"><div class="seg-lbl"><span>Healthcare &amp; Life Sciences (HLS)</span><span class="pos">+82%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:var(--frc)"></div></div></div>
+        <div class="seg-row"><div class="seg-lbl"><span>BFSI</span><span class="pos">+42%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:60%;background:var(--frc)"></div></div></div>
+        <div class="seg-row"><div class="seg-lbl"><span>CPG &amp; Retail (CPGR)</span><span class="pos">+11%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--frc)"></div></div></div>
+        <div class="seg-row"><div class="seg-lbl"><span>Tech, Media &amp; Telecom (TMT)</span><span class="neg">&minus;19%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:var(--neg)"></div></div></div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">HLS is the engine; TMT (~&frac14; of mix) is the drag &mdash; the single number most coverage misses. Platforms: Cogentiq, Iqigai, Kalaido.ai. 59 patents granted/pending; 5,868 employees.</p>
+    </div>
+  </div></div>
+
+  <!-- FRACTAL ANNUAL -->
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--frc)">FY26 Full Year vs FY25 (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from ops</td><td class="tpos">&#8377;3,300 Cr</td><td class="num">&#8377;2,765 Cr</td><td class="tpos">+19%</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;286.8 Cr</td><td class="num">&#8377;220.6 Cr</td><td class="tpos">+30%</td></tr>
+          <tr><td>NRR (full year)</td><td class="tpos">117%</td><td class="num">&mdash;</td><td class="num">Expanding</td></tr>
+          <tr><td>Rev / billable FTE (TTM)</td><td class="tpos">$85,000</td><td class="num">~$81,000</td><td class="tpos">+5%</td></tr>
+          <tr><td>Million-$+ clients</td><td class="tpos">59</td><td class="num">53</td><td class="tpos">+6</td></tr>
+          <tr><td>R&amp;D % of revenue</td><td class="num">6.4%</td><td class="num">5.2%</td><td class="tpos">+125 bps</td></tr>
+          <tr><td>Year-end cash</td><td class="num">&#8377;2,052 Cr</td><td class="num">&mdash;</td><td class="num">incl &#8377;957 Cr IPO</td></tr>
+          <tr><td>Long-term debt</td><td class="tpos">Nil</td><td class="num">&mdash;</td><td class="tpos">Debt-free (Apr-26)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--frc)">FY26 Annual Story &amp; Segments</div>
+      <p style="font-size:12px;line-height:1.7;">Revenue +19%, profit +30% &mdash; growth led by HLS (+66% FY) and BFSI (+32% FY). Europe ~18% of revenue, +24% YoY in Q4. Used &#8377;957 Cr of IPO proceeds to fully repay long-term debt in April 2026 &mdash; now debt-free.</p>
+      <div style="margin-top:12px;">
+        <div class="seg-row"><div class="seg-lbl"><span>Fractal.ai (core)</span><span>Rev &#8377;3,219 Cr</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:97%;background:var(--frc)"></div></div></div>
+        <div class="seg-row"><div class="seg-lbl"><span>Fractal Alpha</span><span>Rev &#8377;91 Cr (loss narrowing)</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:var(--frc)"></div></div></div>
+      </div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:10px;">Standalone revenue &#8377;1,866 Cr. DSO improved to 72 days. Auditors B S R &amp; Co LLP &mdash; unmodified opinion. Watch: TMT recovery and durability of post-IPO momentum.</p>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===================== AIRTEL ===================== -->
+<div class="co-sec" id="co-air">
+  <div class="grp-hdr" style="background:var(--air-s);border-color:var(--air);color:var(--air);">Bharti Airtel &mdash; NSE: BHARTIARTL / BSE: 532454 &middot; Telecom + Digital, India &amp; Africa &middot; 650 mn+ customers &middot; Exec Vice Chairman: Gopal Vittal &middot; Founded 1995</div>
+
+  <!-- AIRTEL QUARTER -->
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--air)">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;55,383 Cr</td><td class="num">&#8377;47,876 Cr</td><td class="tpos">+15.7%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;32,038 Cr</td><td class="num">&#8377;27,404 Cr</td><td class="tpos">+16.9%</td></tr>
+          <tr><td>EBITDA margin</td><td class="tpos">57.8%</td><td class="num">57.2%</td><td class="tpos">+60 bps</td></tr>
+          <tr><td>PAT reported</td><td class="tneg">&#8377;7,325 Cr</td><td class="num">&#8377;11,022 Cr</td><td class="tneg">&minus;33.5%</td></tr>
+          <tr><td>PAT ex-exceptionals</td><td class="tpos">&#8377;7,245 Cr</td><td class="num">&#8377;5,223 Cr</td><td class="tpos">+38.7%</td></tr>
+          <tr><td>India revenue</td><td class="tpos">&#8377;39,566 Cr</td><td class="num">&#8377;36,737 Cr</td><td class="tpos">+7.7%</td></tr>
+          <tr><td>India mobile ARPU (&#8377;)</td><td class="tpos">257</td><td class="num">245</td><td class="tpos">+4.9%</td></tr>
+          <tr><td>Data usage (GB/mo)</td><td class="tpos">31.4</td><td class="num">23.6</td><td class="tpos">+32.8%</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">Reported PAT fell only on a high base (year-ago had large exceptional gains). Ex-exceptionals it rose 38.7%. Source: Airtel exchange filing, 13 May 2026.</p>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--air)">Airtel &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">ARPU leadership</td><td style="white-space:normal">Industry-leading &#8377;257 ARPU; premiumisation flywheel &mdash; each rupee of ARPU is near-pure margin</td></tr>
+          <tr><td class="tb">Operating leverage</td><td style="white-space:normal">57.8% EBITDA margin; incremental revenue drops largely to profit</td></tr>
+          <tr><td class="tb">Multi-engine portfolio</td><td style="white-space:normal">India mobile + Homes (+37%) + Africa + Enterprise + Digital &mdash; diversified growth</td></tr>
+          <tr><td class="tb">Balance-sheet repair</td><td style="white-space:normal">Net debt/EBITDA improved to 1.29x (from 1.86x); net debt ex-leases/EBITDAaL 0.79x</td></tr>
+          <tr><td class="tb">650 mn customer base</td><td style="white-space:normal">A vast ecosystem to cross-sell broadband, financial services, cloud and digital</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+
+  <!-- AIRTEL ANNUAL -->
+  <div class="annual-v" style="display:none;">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl" style="color:var(--air)">FY26 Highlights &amp; Balance Sheet</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">Change</th></tr></thead>
+        <tbody>
+          <tr><td>Net debt / EBITDA</td><td class="tpos">1.29x</td><td class="num">1.86x</td><td class="tpos">Improved</td></tr>
+          <tr><td>Q4 India mobile subs (cr)</td><td class="tpos">37.32</td><td class="num">36.85*</td><td class="tpos">+47 lakh QoQ</td></tr>
+          <tr><td>4G/5G base (cr)</td><td class="tpos">29.68</td><td class="num">29.10*</td><td class="tpos">Premiumising</td></tr>
+          <tr><td>Postpaid base (mn)</td><td class="tpos">29.0</td><td class="num">&mdash;</td><td class="tpos">+0.8 mn</td></tr>
+          <tr><td>Homes revenue YoY</td><td class="tpos">+37.3%</td><td class="num">&mdash;</td><td class="num">Fastest vertical</td></tr>
+          <tr><td>Final dividend</td><td class="num">&#8377;24/share</td><td class="num">&#8377;16/share</td><td class="tpos">+50%</td></tr>
+          <tr><td>Market cap</td><td class="num">~&#8377;11.14 L Cr</td><td class="num">&mdash;</td><td class="num">~$130 bn</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">*Dec-25 (Q3) base shown for QoQ context. FY26 a "landmark year" per Gopal Vittal: crossed 650 mn customers, launched telco-grade sovereign cloud, RBI nod for lending, data-centre expansion.</p>
+    </div>
+    <div class="card"><div class="card-lbl" style="color:var(--air)">The Airtel Group &mdash; Subsidiaries &amp; Adjacencies</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Business</th><th style="white-space:normal">FY26 / Q4 position</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--air)">Airtel Africa<br><span style="font-weight:400;color:var(--muted);font-size:10px;">LSE/Lagos listed</span></td><td style="white-space:normal">14 markets, 183.5 mn customers (+10.5%). FY26 revenue <strong>$6.42 bn (+29.5%)</strong>, PAT <strong>$813 mn</strong> (vs $328 mn). Record EBITDA margin 50.3% in Q4. <strong>Data overtook voice</strong> as the largest revenue line &mdash; a structural break.</td></tr>
+          <tr><td class="tb" style="color:var(--air)">Airtel Money<br><span style="font-weight:400;color:var(--muted);font-size:10px;">within Africa</span></td><td style="white-space:normal">54.1 mn customers; annualised TPV &gt;$215 bn in Q4 (+35%). App-transacting customers +74%. IPO pushed to H2-2026 on geopolitics.</td></tr>
+          <tr><td class="tb" style="color:var(--air)">Indus Towers<br><span style="font-weight:400;color:var(--muted);font-size:10px;">NSE: INDUSTOWER</span></td><td style="white-space:normal">Airtel owns ~51% &mdash; the listed passive-infrastructure (tower) arm. ~226,000 towers; FY25 revenue ~&#8377;30,123 Cr, net income ~&#8377;9,932 Cr. Anchor tenants Airtel + Vi; growth hinges on Vi turnaround + 5G rollout.</td></tr>
+          <tr><td class="tb" style="color:var(--air)">Airtel Payments Bank<br><span style="font-weight:400;color:var(--muted);font-size:10px;">subsidiary</span></td><td style="white-space:normal">~120 mn monthly transacting users; ~23% YoY revenue growth; profitable. 500,000+ banking points. RBI approval secured to <strong>enter lending</strong> &mdash; financial-services flywheel.</td></tr>
+          <tr><td class="tb" style="color:var(--air)">Nxtra (Data Centres)<br><span style="font-weight:400;color:var(--muted);font-size:10px;">subsidiary</span></td><td style="white-space:normal">$1 bn raise from Alpha Wave, Carlyle, Anchorage (Airtel also participating) to scale toward <strong>1 GW</strong> capacity. Core of the data-centre adjacency.</td></tr>
+          <tr><td class="tb" style="color:var(--air)">Airtel Cloud<br><span style="font-weight:400;color:var(--muted);font-size:10px;">enterprise</span></td><td style="white-space:normal">Telco-grade <strong>sovereign cloud</strong> launched in FY26; 24 deals signed &mdash; an early but strategic enterprise-digital bet.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- TRILLION DOLLAR CARD -->
+  <div class="tcard">
+    <h4>&#127757; Could Airtel be India's first trillion-dollar company? Why it's in the conversation</h4>
+    <p>A $1 trillion valuation is ~&#8377;85 lakh crore. Airtel's market cap is ~&#8377;11.14 lakh crore (~$130 bn) &mdash; so it would need to roughly <strong>7-8&times;</strong> from here. No Indian company is close yet: Reliance (~$200 bn) leads, followed by HDFC Bank, TCS and Airtel itself among the most-valued. So "first trillion-dollar Indian company" is a <em>long-horizon</em> thesis, not a near-term call &mdash; but the reasons Airtel is named as a contender are real:</p>
+    <div class="mcr">
+      <div class="mc"><div class="l">Current m-cap</div><div class="v">~&#8377;11.1 L Cr</div></div>
+      <div class="mc"><div class="l">Approx in USD</div><div class="v">~$130 bn</div></div>
+      <div class="mc"><div class="l">Gap to $1 trn</div><div class="v">~7-8&times;</div></div>
+    </div>
+    <p style="margin-top:14px;"><strong>The bull argument (why it's a candidate):</strong></p>
+    <p style="margin-top:6px;">&bull; <strong>ARPU runway</strong> &mdash; India ARPU at &#8377;257 is still low globally; structural tariff hikes flow almost entirely to profit.<br>
+    &bull; <strong>Multiple compounding engines</strong> &mdash; not just telecom: Africa (data &gt; voice now, mobile-money IPO pending), Homes broadband (+37%), Indus Towers (~51%), Payments Bank entering lending, Nxtra data centres scaling to 1 GW, and a sovereign cloud.<br>
+    &bull; <strong>Sum-of-the-parts re-rating</strong> &mdash; if Airtel Money, Nxtra and the lending business are listed/valued separately, hidden value could surface.<br>
+    &bull; <strong>Operating leverage + deleveraging</strong> &mdash; 57.8% EBITDA margin and net-debt/EBITDA down to 1.29x means more profit and a stronger balance sheet each year.<br>
+    &bull; <strong>Duopoly economics</strong> &mdash; India telecom is now a pricing-disciplined market, not a race to the bottom.</p>
+    <p style="margin-top:12px;"><strong>The reality check:</strong> reaching $1 trillion needs sustained ~20%+ annual compounding for a decade <em>and</em> a stable rupee. Reliance, given its scale and energy/retail/Jio breadth, is the more-cited front-runner. Airtel's case rests on digital-adjacency monetisation actually delivering. <em>This is analysis of the debate, not a price prediction or recommendation.</em></p>
+  </div>
+  </div>
+</div>
+
+</div>
+
+<div class="panel" id="tab-metrics">
+<div class="sec-hdr">Sector-Specific Metrics <span class="sec-note">&middot; Each business judged on its own native KPIs &mdash; this is where the four genuinely differ</span></div>
+
+<div class="g2" style="gap:16px;">
+  <div class="card" style="border-top:4px solid var(--iex);">
+    <div class="card-lbl" style="color:var(--iex)">IEX &mdash; Power Exchange Metrics</div>
+    <table>
+      <thead><tr><th>What matters</th><th>Q4 FY26</th><th>Read</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Traded volume (BU)</td><td class="num">39.4</td><td>Record; +24% YoY</td></tr>
+        <tr><td class="tb">DAM market share</td><td class="num">~85-90%</td><td>Dominant</td></tr>
+        <tr><td class="tb">EBITDA margin</td><td class="num">~86%</td><td>Asset-light</td></tr>
+        <tr><td class="tb">Transaction fee mix</td><td class="num">85.4%</td><td>Volume-geared</td></tr>
+        <tr><td class="tb">RTM growth (FY26)</td><td class="num">+41%</td><td>Fastest segment</td></tr>
+        <tr><td class="tb">DAM clearing price</td><td class="num">&#8377;3.86</td><td>&minus;13.7% (good for volume)</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;">Volume is everything: revenue = volume &times; transaction fee. Lower power prices actually <em>help</em> by drawing more buyers onto the exchange. The swing factor is regulatory (market coupling), not operational.</p>
+  </div>
+
+  <div class="card" style="border-top:4px solid var(--ind);">
+    <div class="card-lbl" style="color:var(--ind)">IndiGo &mdash; Airline Unit Economics</div>
+    <table>
+      <thead><tr><th>What matters</th><th>Q4 FY26</th><th>Read</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">ASK (bn) &mdash; capacity</td><td class="num">43.6</td><td>+3.4% YoY</td></tr>
+        <tr><td class="tb">Load factor</td><td class="num">84.4%</td><td>&minus;1.6 pp</td></tr>
+        <tr><td class="tb">Yield (&#8377;/RPK)</td><td class="num">5.06</td><td>&minus;1.7%</td></tr>
+        <tr><td class="tb">CASK ex-fuel (FY26)</td><td class="num">3.52</td><td>Cost discipline</td></tr>
+        <tr><td class="tb">Fuel CASK</td><td class="num">1.47</td><td>&minus;11.5% (relief)</td></tr>
+        <tr><td class="tb">Fleet</td><td class="num">441</td><td>Growth runway</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;">The spread between RASK (revenue/seat-km) and CASK (cost/seat-km) is the whole game. Forex is the wild card &mdash; lease and fuel liabilities are USD-linked, so a weak rupee hits the P&amp;L even when the core operation is sound.</p>
+  </div>
+
+  <div class="card" style="border-top:4px solid var(--frc);">
+    <div class="card-lbl" style="color:var(--frc)">Fractal &mdash; AI Services Metrics</div>
+    <table>
+      <thead><tr><th>What matters</th><th>FY26 / Q4</th><th>Read</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue growth (FY26)</td><td class="num">+19%</td><td>Healthy for scale</td></tr>
+        <tr><td class="tb">NRR (FY26 / Q4)</td><td class="num">117% / 112%</td><td>Clients expanding</td></tr>
+        <tr><td class="tb">Gross margin (Q4)</td><td class="num">48.2%</td><td>Best-in-class</td></tr>
+        <tr><td class="tb">Rev / billable FTE</td><td class="num">$85K</td><td>+5% YoY</td></tr>
+        <tr><td class="tb">Million-$+ clients</td><td class="num">59</td><td>From 53</td></tr>
+        <tr><td class="tb">R&amp;D % of revenue</td><td class="num">6.4%</td><td>IP-led bet</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;">People-heavy (employee cost ~75% of expenses), so the model scales by selling more to existing clients (NRR &gt;100%) and lifting revenue per head. TMT segment (&minus;19% in Q4, ~&frac14; of mix) is the watch-item.</p>
+  </div>
+
+  <div class="card" style="border-top:4px solid var(--air);">
+    <div class="card-lbl" style="color:var(--air)">Airtel &mdash; Telecom Metrics</div>
+    <table>
+      <thead><tr><th>What matters</th><th>Q4 FY26</th><th>Read</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">India ARPU (&#8377;)</td><td class="num">257</td><td>Industry leader</td></tr>
+        <tr><td class="tb">Data usage (GB/mo)</td><td class="num">31.4</td><td>+32.8% YoY</td></tr>
+        <tr><td class="tb">India mobile subs (cr)</td><td class="num">37.32</td><td>+47 lakh QoQ</td></tr>
+        <tr><td class="tb">4G/5G base (cr)</td><td class="num">29.68</td><td>Premiumising</td></tr>
+        <tr><td class="tb">EBITDA margin</td><td class="num">57.8%</td><td>High operating leverage</td></tr>
+        <tr><td class="tb">Homes revenue YoY</td><td class="num">+37.3%</td><td>Fastest vertical</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;">ARPU is the master lever: each rupee of ARPU is near-pure margin. The next leg is moving basic users to data/5G and cross-selling broadband, financial services and digital &mdash; a flywheel off the 650 mn-customer base.</p>
+  </div>
+</div>
+
+<div class="note-card" style="margin-top:16px;">
+  <strong>Cross-read:</strong> Two of the four (IEX, Airtel) carry very high structural margins (asset-light platform / operating-leverage telecom). Fractal sits in the middle (people-cost-heavy but IP-rising). IndiGo runs on thin spreads where a few rupees of yield vs cost decide profit and forex can dominate a single quarter. So a "bad" quarter means very different things: for IndiGo it was an accounting/forex event on a sound operation; for IEX the risk is regulatory, not in the numbers; for Airtel the YoY optics hide strong underlying growth; for Fractal the question is durability of its first public-market print.
+</div>
+</div>
+
+<!-- ===== CHARTS ===== -->
+<div class="panel" id="tab-charts">
+<div class="sec-hdr">Charts <span class="sec-note">&middot; Indian number formatting (en-IN) &middot; figures in &#8377; Crore unless noted</span></div>
+
+<div class="note-card" style="margin-bottom:16px;">
+  <strong>Why these charts use a log scale / per-company panels.</strong> On a normal axis Airtel (&#8377;55,383 Cr) and IndiGo dwarf IEX (&#8377;196 Cr) and Fractal &mdash; the small ones become invisible. So the size charts below use a <strong>logarithmic y-axis</strong> (each gridline = 10&times;), which keeps <em>all four</em> companies clearly visible while still showing real values on every bar and tooltip. Growth, margin and the company-specific trends are shown on their own native scales.
+</div>
+
+<div class="g2" style="gap:16px;margin-bottom:16px;">
+  <div class="chart-card"><h3>Q4 FY26 Revenue (&#8377; Cr) &mdash; log scale</h3><p class="sub">Log axis so all four stay visible; real values labelled on bars</p><div class="chart-box"><canvas id="cRev"></canvas></div></div>
+  <div class="chart-card"><h3>FY26 Annual Revenue (&#8377; Cr) &mdash; log scale</h3><p class="sub">Full-year operating revenue, all four companies</p><div class="chart-box"><canvas id="cRevA"></canvas></div></div>
+</div>
+
+<div class="g2" style="gap:16px;margin-bottom:16px;">
+  <div class="chart-card"><h3>Q4 FY26 PAT (&#8377; Cr)</h3><p class="sub">IndiGo reported loss shown below zero; adj. PAT noted</p><div class="chart-box"><canvas id="cPat"></canvas></div></div>
+  <div class="chart-card"><h3>FY26 Annual PAT (&#8377; Cr)</h3><p class="sub">IndiGo reported net loss; others net profit</p><div class="chart-box"><canvas id="cPatA"></canvas></div></div>
+</div>
+
+<div class="g2" style="gap:16px;margin-bottom:16px;">
+  <div class="chart-card"><h3>Revenue YoY Growth (Q4 FY26, %)</h3><p class="sub">Same scale &mdash; growth is comparable across sectors</p><div class="chart-box"><canvas id="cGrow"></canvas></div></div>
+  <div class="chart-card"><h3>EBITDA / Operating Margin (%)</h3><p class="sub">IEX &amp; Airtel high-margin; IndiGo shown as EBITDAR margin</p><div class="chart-box"><canvas id="cMargin"></canvas></div></div>
+</div>
+
+<div class="sec-hdr" style="font-size:1rem;margin-top:8px;">Each company on its own native metric <span class="sec-note">&middot; the trend that actually drives each business</span></div>
+<div class="g2" style="gap:16px;margin-bottom:16px;">
+  <div class="chart-card"><h3>IEX &mdash; Traded Electricity Volume (BU)</h3><p class="sub">Volume is the engine &mdash; record 39.4 BU in Q4</p><div class="chart-box"><canvas id="cIex"></canvas></div></div>
+  <div class="chart-card"><h3>IndiGo &mdash; Load Factor vs Yield (Q4)</h3><p class="sub">Airline unit economics: how full vs how priced</p><div class="chart-box"><canvas id="cInd"></canvas></div></div>
+</div>
+<div class="g2" style="gap:16px;">
+  <div class="chart-card"><h3>Fractal &mdash; Q4 Segment Growth (% YoY)</h3><p class="sub">HLS engine vs TMT drag</p><div class="chart-box"><canvas id="cFrc"></canvas></div></div>
+  <div class="chart-card"><h3>Airtel &mdash; India ARPU (&#8377;)</h3><p class="sub">Premiumisation trend</p><div class="chart-box"><canvas id="cArpu"></canvas></div></div>
+</div>
+</div>
+
+<!-- ===== SWOT ===== -->
+<div class="panel" id="tab-swot">
+<div class="sec-hdr">SWOT &amp; Competitive Moat <span class="sec-note">&middot; Per company</span></div>
+
+<div class="co-hdr"><span class="dot" style="background:var(--iex)"></span>Indian Energy Exchange</div>
+<div class="swot-grid">
+  <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>~85-90% DAM dominance, network-effect moat</li><li>~86% EBITDA margin, near-zero capex</li><li>Record volumes; RTM +41% in FY26</li><li>Optionality via IGX (gas) and ICX (carbon)</li></ul></div>
+  <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Single-market concentration (power trading)</li><li>Revenue tied to regulated transaction fees</li><li>Earnings highly volume-sensitive</li></ul></div>
+  <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Open-access &amp; C&amp;I solar/RE driving short-term trades</li><li>Gas market &amp; carbon-credit scale-up</li><li>Rising share of power sold via exchanges</li></ul></div>
+  <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>CERC market coupling &mdash; the central overhang</li><li>New exchanges (PXIL, HPX) under coupled pricing</li><li>Regulatory caps on transaction fees</li></ul></div>
+</div>
+
+<div class="co-hdr"><span class="dot" style="background:var(--ind)"></span>InterGlobe Aviation (IndiGo)</div>
+<div class="swot-grid">
+  <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>~60%+ domestic share; lowest-cost operator</li><li>Strong net-cash balance sheet (&#8377;36k Cr free cash)</li><li>Large fleet &amp; order book; A350 long-haul push</li><li>Fuel CASK falling; cost discipline intact</li></ul></div>
+  <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>USD-linked leases/fuel &mdash; forex-exposed P&amp;L</li><li>Thin yield-vs-cost spread; seasonally weak Q4</li><li>Loss-making quarter optics hurt sentiment</li></ul></div>
+  <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>International expansion &amp; codeshares</li><li>Industry consolidation amid supply constraints</li><li>Loyalty / premium (business class) monetisation</li></ul></div>
+  <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Jet fuel price spikes &amp; rupee depreciation</li><li>Middle-East geopolitics hitting key routes</li><li>New labour codes raising structural costs</li></ul></div>
+</div>
+
+<div class="co-hdr"><span class="dot" style="background:var(--frc)"></span>Fractal Analytics</div>
+<div class="swot-grid">
+  <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>NRR 117% &mdash; clients expand spend each year</li><li>Debt-free post-IPO; &#8377;2,052 Cr cash</li><li>Rising IP/platform layer (Cogentiq, Kalaido.ai)</li><li>Diversified across HLS, BFSI, CPG verticals</li></ul></div>
+  <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>People-cost ~75% of expenses &mdash; labour-leveraged</li><li>Client concentration risk (TMT &minus;19% in Q4)</li><li>Premium valuation leaves little room for misses</li></ul></div>
+  <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Enterprise GenAI adoption tailwind</li><li>Land-and-expand into million-$+ accounts</li><li>Margin lift as proprietary IP scales</li></ul></div>
+  <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Global IT-services demand / discretionary cuts</li><li>Wage inflation &amp; talent churn</li><li>Transfer-pricing tax disputes (FY22-23 notice)</li></ul></div>
+</div>
+
+<div class="co-hdr"><span class="dot" style="background:var(--air)"></span>Bharti Airtel</div>
+<div class="swot-grid">
+  <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Industry-leading ARPU (&#8377;257) &amp; premium mix</li><li>57.8% EBITDA margin; high operating leverage</li><li>650 mn+ customers; multi-engine (India+Africa+Homes)</li><li>Homes broadband +37% &mdash; strong second engine</li></ul></div>
+  <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Africa forex (Naira) volatility on reported PAT</li><li>Capital-intensive (spectrum, 5G capex)</li><li>Net-debt load though improving</li></ul></div>
+  <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Further tariff/ARPU hikes; 5G monetisation</li><li>Lending &amp; financial-services entry (regulatory nod)</li><li>Data-centre &amp; digital cross-sell off the base</li></ul></div>
+  <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Jio competitive intensity &amp; tariff timing</li><li>Regulatory/AGR-type liabilities</li><li>FII outflows / macro (tariff overhang)</li></ul></div>
+</div>
+</div>
+
+<!-- ===== MANAGEMENT ===== -->
+<div class="panel" id="tab-board">
+<div class="sec-hdr">Management &amp; Board <span class="sec-note">&middot; Leadership and key commentary</span></div>
+<div class="g2" style="gap:16px;">
+  <div class="card" style="border-top:4px solid var(--iex);">
+    <div class="card-lbl" style="color:var(--iex)">Indian Energy Exchange</div>
+    <p style="font-size:12px;line-height:1.7;">Listed Oct-2017, HQ Noida; founded 2007. Professionally managed power-exchange operator. FY26 commentary emphasised record annual volume (141.1 BU, +17%), strong supply-side liquidity pulling down clearing prices, and growth optionality from IGX (gas) and ICX (carbon). Two Vice Presidents designated as Senior Management Personnel. Auditors Walker Chandiok &amp; Co LLP issued an unmodified opinion. Final dividend &#8377;2/share.</p>
+  </div>
+  <div class="card" style="border-top:4px solid var(--ind);">
+    <div class="card-lbl" style="color:var(--ind)">InterGlobe Aviation (IndiGo)</div>
+    <p style="font-size:12px;line-height:1.7;">Managing Director Rahul Bhatia described FY26 as an "exceptionally challenging operating environment" that materially affected profitability, while stressing the core business stayed resilient. Aloke Singh (ex-Air India Express MD/CEO) joined as Chief Strategy Officer (Apr-2026). Board approved FY26 audited results and up to ~$450 mn of lease prepayment; AGM 20 Aug 2026. Founded 2006.</p>
+  </div>
+  <div class="card" style="border-top:4px solid var(--frc);">
+    <div class="card-lbl" style="color:var(--frc)">Fractal Analytics</div>
+    <p style="font-size:12px;line-height:1.7;">Group CEO &amp; co-founder Srikanth Velamakanni highlighted HLS leadership (+82% Q4, +66% FY26) and BFSI strength (+32% FY26), and confirmed the company is now debt-free after repaying long-term debt with &#8377;957 Cr of IPO proceeds. First results as a listed company; board met 11 May 2026; auditors B S R &amp; Co LLP issued an unmodified opinion. Operates two segments: Fractal.ai (core) and Fractal Alpha.</p>
+  </div>
+  <div class="card" style="border-top:4px solid var(--air);">
+    <div class="card-lbl" style="color:var(--air)">Bharti Airtel</div>
+    <p style="font-size:12px;line-height:1.7;">Executive Vice Chairman Gopal Vittal called FY26 a "landmark year" &mdash; crossing 650 mn global customers, expanding the data-centre footprint and securing regulatory approval to enter lending. He framed strategy around world-class digital networks, "putting AI at the heart" and sharpening the portfolio for long-term growth. Founded 1995, HQ New Delhi; operations across 18 countries. Final dividend &#8377;24/share.</p>
+  </div>
+</div>
+</div>
+
+<!-- ===== ANALYST ===== -->
+<div class="panel" id="tab-analyst">
+<div class="sec-hdr">Analysts' Ratings &amp; Targets <span class="sec-note">&middot; Consensus snapshots from public research &middot; not investment advice</span></div>
+
+<div class="ac" style="border-left:4px solid var(--iex);">
+  <div class="ac-head"><div class="ac-name">Indian Energy Exchange (IEX)</div><div class="rat-pill rp-hold">Mixed / Hold-bias</div></div>
+  <div class="ac-tp">Target range ~&#8377;145&ndash;175</div>
+  <div class="ac-cmp">CMP ~&#8377;128&ndash;140 (Apr&ndash;May 2026) &middot; e.g. Elara &#8377;145 target</div>
+  <div class="ac-text">Operationally strong (record volumes, ~86% margins), but ratings are capped by the CERC market-coupling overhang, which could dilute IEX's pricing power and transaction fees. Analysts treat it as a "headline-driven" stock where regulation, not earnings, sets the multiple.</div>
+</div>
+
+<div class="ac" style="border-left:4px solid var(--ind);">
+  <div class="ac-head"><div class="ac-name">InterGlobe Aviation (IndiGo)</div><div class="rat-pill rp-buy">Buy / Overweight bias</div></div>
+  <div class="ac-tp">Avg target ~&#8377;6,113 (range to ~&#8377;6,442)</div>
+  <div class="ac-cmp">CMP ~&#8377;4,315&ndash;4,770 (May 2026) &middot; Morgan Stanley OW ~&#8377;5,913; some cut to ~&#8377;5,200</div>
+  <div class="ac-text">Most brokers look through the forex-driven loss to a sound core operation, net-cash balance sheet and consolidation-led share gains. Near-term caution on fuel costs and Middle-East route demand; long-term growth thesis (fleet, international, premium) intact.</div>
+</div>
+
+<div class="ac" style="border-left:4px solid var(--frc);">
+  <div class="ac-head"><div class="ac-name">Fractal Analytics</div><div class="rat-pill rp-buy">Buy / Overweight</div></div>
+  <div class="ac-tp">Avg target ~&#8377;991 (range ~&#8377;910&ndash;1,110)</div>
+  <div class="ac-cmp">CMP ~&#8377;936&ndash;1,009 (May 2026) &middot; Morgan Stanley OW &#8377;964; Goldman Sachs initiated</div>
+  <div class="ac-text">Bulls cite AI-driven growth, improving margins, high NRR and a niche-leader position, balanced against premium valuation (high P/E) and client-dependency risk. The TMT segment drag and durability of post-IPO momentum are the key debates.</div>
+</div>
+
+<div class="ac" style="border-left:4px solid var(--air);margin-bottom:0;">
+  <div class="ac-head"><div class="ac-name">Bharti Airtel</div><div class="rat-pill rp-buy">Buy (consensus)</div></div>
+  <div class="ac-tp">Avg target ~&#8377;2,324 (range ~&#8377;1,800&ndash;2,600)</div>
+  <div class="ac-cmp">CMP ~&#8377;1,829 (29 May 2026) &middot; majority "Buy"</div>
+  <div class="ac-text">Preferred large-cap telecom on ARPU leadership, premiumisation, broadband momentum and operating leverage. Watch items: Africa forex, capex intensity and tariff-hike timing. Reported PAT decline is a high-base optical effect, not operational weakness.</div>
+</div>
+</div>
+
+<!-- ===== RISKS ===== -->
+<div class="panel" id="tab-risks">
+<div class="sec-hdr">Risks &amp; FY27 Outlook <span class="sec-note">&middot; CB Research data view &middot; no recommendations</span></div>
+
+<div class="rm-box">
+  <strong>The single biggest swing factor for each is different &mdash; that is the whole point of analysing them separately:</strong><br>
+  &bull; <strong>IEX</strong> &rarr; <em>regulation</em> (market coupling). Operationally clean, but the multiple hinges on a CERC decision, not on volumes.<br>
+  &bull; <strong>IndiGo</strong> &rarr; <em>forex + fuel</em>. The reported loss was an accounting/forex event; underlying operation profitable. Rupee and crude direction decide FY27 optics.<br>
+  &bull; <strong>Fractal</strong> &rarr; <em>client/segment concentration + valuation</em>. NRR and HLS strength are the engine; TMT weakness and a rich P/E are the vulnerabilities.<br>
+  &bull; <strong>Airtel</strong> &rarr; <em>ARPU trajectory + Africa forex</em>. Premiumisation flywheel intact; tariff timing and Naira are the variables.
+</div>
+
+<div class="rm-grid">
+  <div class="rm-card" style="border-left:4px solid var(--iex);"><div class="rm-title" style="color:var(--iex)">IEX &mdash; FY27 watch</div><div class="rm-body">Market-coupling implementation detail (which segments, fee impact). Continued volume records from RE/open-access trades would offset some fee pressure. Gas (IGX) and carbon (ICX) scaling provide diversification optionality.</div></div>
+  <div class="rm-card" style="border-left:4px solid var(--ind);"><div class="rm-title" style="color:var(--ind)">IndiGo &mdash; FY27 watch</div><div class="rm-body">Rupee stability and crude levels are decisive for reported profit. Q1 FY27 capacity guided +3&ndash;4%. International long-haul (A350) ramp, fuel surcharge traction, and Middle-East route normalisation are the levers.</div></div>
+  <div class="rm-card" style="border-left:4px solid var(--frc);"><div class="rm-title" style="color:var(--frc)">Fractal &mdash; FY27 watch</div><div class="rm-body">HLS base-effect (after +82% Q4) is the biggest variable into Q1 FY27. Watch TMT recovery, NRR durability, margin lift from IP platforms, and whether R&amp;D investment converts to higher-value deals.</div></div>
+  <div class="rm-card" style="border-left:4px solid var(--air);"><div class="rm-title" style="color:var(--air)">Airtel &mdash; FY27 watch</div><div class="rm-body">Next tariff hike timing and pace of 5G/data monetisation. Homes and enterprise scaling, lending-business launch, and Africa currency trends. Net-debt/EBITDA improvement supports re-rating.</div></div>
+</div>
+
+<div class="verdict-card">
+  <div class="verdict-title">&#9878; CB Research &mdash; FY27 Earnings Visibility (not buy/sell)</div>
+  <div class="verdict-body">
+    <strong>Highest visibility:</strong> <span class="tag tag-air">Airtel</span> &mdash; ARPU-led, high-margin, multi-engine growth with clear levers.<br>
+    <strong>Strong but valuation-sensitive:</strong> <span class="tag tag-frc">Fractal</span> &mdash; structural AI tailwind and high NRR, but a premium multiple and segment concentration mean misses are punished.<br>
+    <strong>Operationally clean, regulation-gated:</strong> <span class="tag tag-iex">IEX</span> &mdash; the business compounds volumes; the stock waits on market-coupling clarity.<br>
+    <strong>Cyclical / macro-geared:</strong> <span class="tag tag-ind">IndiGo</span> &mdash; sound core operation, but FY27 reported profit will be swung by rupee and fuel more than by passenger demand.
+  </div>
+</div>
+</div>
+
+<!-- ===== CB ASSIST ===== -->
+<div class="panel" id="tab-assist">
+<div class="sec-hdr">CB Assist <span class="sec-note">&middot; Ask about any of the four companies or the cross-sector view</span></div>
+<div>
+  <span class="preset-tab pt-iex on" onclick="setPreset('iex',this)">IEX</span>
+  <span class="preset-tab pt-ind" onclick="setPreset('ind',this)">IndiGo</span>
+  <span class="preset-tab pt-frc" onclick="setPreset('frc',this)">Fractal</span>
+  <span class="preset-tab pt-air" onclick="setPreset('air',this)">Airtel</span>
+  <span class="preset-tab pt-sector" onclick="setPreset('sector',this)">Cross-Sector</span>
+</div>
+<div class="pqs on" id="pqs-iex">
+  <div class="pq" onclick="cbA('IEX Q4 FY26 results',null)">IEX Q4 FY26 results &amp; volumes</div>
+  <div class="pq" onclick="cbA('What is market coupling and why does it matter for IEX',null)">Market coupling &mdash; the IEX overhang</div>
+</div>
+<div class="pqs" id="pqs-ind">
+  <div class="pq" onclick="cbA('IndiGo Q4 FY26 results',null)">IndiGo Q4 FY26 &mdash; why the loss?</div>
+  <div class="pq" onclick="cbA('Explain airline metrics ASK CASK yield',null)">Airline metrics: ASK, CASK, yield, load factor</div>
+</div>
+<div class="pqs" id="pqs-frc">
+  <div class="pq" onclick="cbA('Fractal Analytics Q4 FY26 results',null)">Fractal Q4 FY26 &amp; segment mix</div>
+  <div class="pq" onclick="cbA('What is NRR and why does it matter for Fractal',null)">What NRR tells you about Fractal</div>
+</div>
+<div class="pqs" id="pqs-air">
+  <div class="pq" onclick="cbA('Bharti Airtel Q4 FY26 results',null)">Airtel Q4 FY26 &amp; ARPU</div>
+  <div class="pq" onclick="cbA('Why did Airtel profit fall if business is strong',null)">Why did PAT fall 33% YoY?</div>
+</div>
+<div class="pqs" id="pqs-sector">
+  <div class="pq" onclick="cbA('Compare all four companies',null)">How do the four compare?</div>
+  <div class="pq" onclick="cbA('FY27 outlook for all four',null)">FY27 outlook across the four</div>
+</div>
+<div class="cbassist-chat">
+  <div class="cbassist-title"><span></span>CB Assist &middot; Multi-Sector Q4 FY26</div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="chat-msg bot"><strong>CB Assist</strong> &mdash; ask about IEX, IndiGo, Fractal or Airtel Q4 FY26, their sector-specific metrics, or the cross-sector view. Pick a chip above or type below.</div>
+  </div>
+  <div class="typing-ind" id="typingInd"><span></span><span></span><span></span></div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatIn" placeholder="Ask about Q4 FY26 results, metrics, or outlook..." onkeydown="if(event.key==='Enter')cbA(this.value,null)">
+    <button class="chat-send" onclick="cbA(document.getElementById('chatIn').value,null)">Ask</button>
+  </div>
+</div>
+</div>
+
+</div>
+
+<div class="footer">
+  <strong>CB Research</strong> &middot; Cauvery Business &middot; Multi-Sector Intelligence Dashboard &middot; Q4 &amp; FY26 (Quarter ended 31 March 2026)<br>
+  All figures sourced from official BSE/NSE filings and company result releases. For education only &mdash; not investment advice. Generated 01 June 2026.
+</div>
+
+<div class="cb-wm"><div class="cb-wm-logo">CB</div><div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">Cauvery Business</div></div></div>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(id==='charts')setTimeout(initCharts,60);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+var coColors={iex:'#0053a0',ind:'#1a5fb4',frc:'#7c3aed',air:'#e0202a'};
+function showCo(co,btn){
+  document.querySelectorAll('.co-sec').forEach(function(s){s.classList.remove('on');});
+  document.getElementById('co-'+co).classList.add('on');
+  document.querySelectorAll('.co-sel-btn').forEach(function(b){b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.borderColor='var(--border)';});
+  btn.style.background=coColors[co];btn.style.color='#fff';btn.style.borderColor=coColors[co];
+}
+function showPer(per,btn){
+  document.querySelectorAll('.qtr-v').forEach(function(v){v.style.display=per==='qtr'?'block':'none';});
+  document.querySelectorAll('.annual-v').forEach(function(v){v.style.display=per==='annual'?'block':'none';});
+  document.querySelectorAll('.per-btn').forEach(function(b){b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.borderColor='var(--border)';});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.borderColor='#0d1c2e';
+}
+function setPreset(k,el){
+  document.querySelectorAll('.preset-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.pqs').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pqs-'+k).classList.add('on');
+}
+
+// ---- Charts ----
+var chartsDone=false;
+var C={iex:'#0053a0',ind:'#1a5fb4',frc:'#7c3aed',air:'#e0202a'};
+var labels4=['IEX','IndiGo','Fractal','Airtel'];
+var colors4=[C.iex,C.ind,C.frc,C.air];
+function inr(n){return new Intl.NumberFormat('en-IN').format(n);}
+if(window.ChartDataLabels){Chart.register(window.ChartDataLabels);}
+Chart.defaults.set('plugins.datalabels',{display:false});
+
+// log-scale revenue chart factory (keeps all 4 visible; real values on bars)
+function logRevChart(id,data){
+  new Chart(document.getElementById(id),{type:'bar',
+    data:{labels:labels4,datasets:[{data:data,backgroundColor:colors4,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:22}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:function(ctx){return '\u20B9'+inr(ctx.parsed.y)+' Cr';}}},
+        datalabels:{display:true,anchor:'end',align:'end',color:'#1F2937',
+          font:{family:'IBM Plex Mono',size:10,weight:'700'},
+          formatter:function(v){return '\u20B9'+inr(v);}}},
+      scales:{y:{type:'logarithmic',grid:{color:'#eee'},min:100,
+        ticks:{callback:function(v){var a=[100,1000,10000,100000];return a.indexOf(v)>=0?inr(v):'';},font:{family:'IBM Plex Mono',size:10}},
+        title:{display:true,text:'\u20B9 Cr (log scale)',font:{family:'IBM Plex Mono',size:9},color:'#6e6860'}},
+        x:{grid:{display:false},ticks:{font:{family:'Inter',size:11,weight:'600'}}}}}});
+}
+// PAT chart factory (linear, allows negative; value labels)
+function patChart(id,data){
+  new Chart(document.getElementById(id),{type:'bar',
+    data:{labels:labels4,datasets:[{data:data,backgroundColor:colors4,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:22,bottom:6}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:function(ctx){return '\u20B9'+inr(ctx.parsed.y)+' Cr';}}},
+        datalabels:{display:true,
+          anchor:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'end':'end';},
+          align:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'bottom':'top';},
+          color:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'#dc2626':'#1F2937';},
+          font:{family:'IBM Plex Mono',size:10,weight:'700'},
+          formatter:function(v){return '\u20B9'+inr(v);}}},
+      scales:{y:{grid:{color:'#eee'},ticks:{callback:function(v){return inr(v);},font:{family:'IBM Plex Mono',size:10}},
+        title:{display:true,text:'\u20B9 Cr',font:{family:'IBM Plex Mono',size:9},color:'#6e6860'}},
+        x:{grid:{display:false},ticks:{font:{family:'Inter',size:11,weight:'600'}}}}}});
+}
+// percent bar factory (value labels)
+function pctChart(id,data,colors){
+  new Chart(document.getElementById(id),{type:'bar',
+    data:{labels:labels4,datasets:[{data:data,backgroundColor:colors||colors4,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:22,bottom:6}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:function(ctx){return ctx.parsed.y+'%';}}},
+        datalabels:{display:true,
+          anchor:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'end':'end';},
+          align:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'bottom':'top';},
+          color:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'#dc2626':'#1F2937';},
+          font:{family:'IBM Plex Mono',size:10,weight:'700'},
+          formatter:function(v){return v+'%';}}},
+      scales:{y:{grid:{color:'#eee'},ticks:{callback:function(v){return v+'%';},font:{family:'IBM Plex Mono',size:10}}},
+        x:{grid:{display:false},ticks:{font:{family:'Inter',size:11,weight:'600'}}}}}});
+}
+function initCharts(){
+  if(chartsDone)return;chartsDone=true;
+  // Revenue (log scale) - Q4 and Annual
+  logRevChart('cRev',[196,22438,886,55383]);
+  logRevChart('cRevA',[747,84962,3300,210973]);
+  // PAT (linear, negative allowed)
+  patChart('cPat',[129.8,-2537,117.8,7325]);
+  patChart('cPatA',[492.9,-2394,286.8,33823]);
+  // Growth and Margin (% - same scale)
+  pctChart('cGrow',[12.5,1.3,17,15.7]);
+  pctChart('cMargin',[85.7,28.5,48.2,57.8]);
+  // IEX volume line
+  new Chart(document.getElementById('cIex'),{type:'line',
+    data:{labels:['Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'],
+      datasets:[{data:[31.7,33.8,34.2,33.7,39.4],borderColor:C.iex,backgroundColor:'rgba(0,83,160,.10)',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:C.iex}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return inr(ctx.parsed.y)+' BU';}}},
+        datalabels:{display:true,anchor:'end',align:'top',color:C.iex,font:{family:'IBM Plex Mono',size:9,weight:'700'},formatter:function(v){return v;}}},
+      scales:{y:{grid:{color:'#eee'},ticks:{callback:function(v){return inr(v);},font:{family:'IBM Plex Mono',size:10}},title:{display:true,text:'BU',font:{size:9},color:'#6e6860'}},
+              x:{grid:{display:false},ticks:{font:{family:'Inter',size:10}}}}}});
+  // IndiGo: load factor vs yield (two bars, dual axis feel via single % + annotation)
+  new Chart(document.getElementById('cInd'),{type:'bar',
+    data:{labels:['Load Factor (%)','Yield x10 (\u20B9/RPK)'],
+      datasets:[{data:[84.4,50.6],backgroundColor:[C.ind,'#6f9bd6'],borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:22}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:function(ctx){return ctx.dataIndex===0?(ctx.parsed.y+'% load factor'):('\u20B9'+(ctx.parsed.y/10).toFixed(2)+' yield/RPK');}}},
+        datalabels:{display:true,anchor:'end',align:'top',color:'#1F2937',font:{family:'IBM Plex Mono',size:10,weight:'700'},
+          formatter:function(v,ctx){return ctx.dataIndex===0?(v+'%'):('\u20B9'+(v/10).toFixed(2));}}},
+      scales:{y:{beginAtZero:true,grid:{color:'#eee'},ticks:{font:{family:'IBM Plex Mono',size:10}}},
+              x:{grid:{display:false},ticks:{font:{family:'Inter',size:10}}}}}});
+  // Fractal segment growth
+  new Chart(document.getElementById('cFrc'),{type:'bar',
+    data:{labels:['HLS','BFSI','CPGR','TMT'],
+      datasets:[{data:[82,42,11,-19],backgroundColor:['#7c3aed','#9560e8','#b89af0','#dc2626'],borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:22,bottom:6}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.parsed.y+'% YoY';}}},
+        datalabels:{display:true,
+          anchor:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'end':'end';},
+          align:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'bottom':'top';},
+          color:function(ctx){return ctx.dataset.data[ctx.dataIndex]<0?'#dc2626':'#1F2937';},
+          font:{family:'IBM Plex Mono',size:10,weight:'700'},formatter:function(v){return v+'%';}}},
+      scales:{y:{grid:{color:'#eee'},ticks:{callback:function(v){return v+'%';},font:{family:'IBM Plex Mono',size:10}}},
+              x:{grid:{display:false},ticks:{font:{family:'Inter',size:10}}}}}});
+  // Airtel ARPU line
+  new Chart(document.getElementById('cArpu'),{type:'line',
+    data:{labels:['Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'],
+      datasets:[{data:[245,250,253,259,257],borderColor:C.air,backgroundColor:'rgba(224,32,42,.10)',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:C.air}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return '\u20B9'+inr(ctx.parsed.y);}}},
+        datalabels:{display:true,anchor:'end',align:'top',color:C.air,font:{family:'IBM Plex Mono',size:9,weight:'700'},formatter:function(v){return '\u20B9'+v;}}},
+      scales:{y:{grid:{color:'#eee'},min:230,ticks:{callback:function(v){return '\u20B9'+inr(v);},font:{family:'IBM Plex Mono',size:10}}},
+              x:{grid:{display:false},ticks:{font:{family:'Inter',size:10}}}}}});
+}
+
+// ---- CB Assist knowledge base ----
+var KB={
+ iex:'<strong>IEX &mdash; Q4 FY26 (Power Exchange)</strong><br><br>Consol revenue &#8377;196.4 Cr (+12.5% YoY), PAT &#8377;129.8 Cr (+10.8%). Record quarterly traded volume of 39.4 BU (+24.3%). FY26: volume 141.1 BU (+17%), revenue &#8377;747 Cr (+13.6%), PAT &#8377;492.9 Cr (+14.9%). EBITDA margin ~86% &mdash; asset-light, almost all revenue is profit. Transaction fees were 85.4% of standalone revenue. Final dividend &#8377;2/share.<br><br>The catch: the stock is pressured by the CERC <em>market-coupling</em> directive, not by its numbers.',
+ ind:'<strong>IndiGo (InterGlobe) &mdash; Q4 FY26 (Airline)</strong><br><br>Revenue &#8377;22,438 Cr (+1.3% YoY) but a reported net <em>loss</em> of &#8377;2,537 Cr vs &#8377;3,068 Cr profit a year ago. The swing is a sharp rupee-depreciation forex loss plus a one-time labour-code charge &mdash; excluding those, adj. PAT was ~&#8377;1,921 Cr. EBITDAR &#8377;6,396 Cr (&minus;6%). Capacity +3.4% (43.6 bn ASK), load factor 84.4% (&minus;1.6pp), yield &#8377;5.06 (&minus;1.7%). Fleet 441; free cash &#8377;36,216 Cr. No dividend. Q1 FY27 capacity guided +3-4%.',
+ frc:'<strong>Fractal Analytics &mdash; Q4 FY26 (AI &amp; Analytics)</strong><br><br>First results since its Feb-2026 IPO. Revenue &#8377;886.3 Cr (+17% YoY), PAT &#8377;117.8 Cr (+109%). Q4 gross margin 48.2% (best-in-class). FY26: revenue &#8377;3,300 Cr (+19%), PAT &#8377;286.8 Cr (+30%). NRR 117% FY / 112% Q4 &mdash; existing clients keep spending more. Segment Q4 YoY: HLS +82%, BFSI +42%, CPG&amp;Retail +11%, TMT &minus;19% (client-specific). Now debt-free (repaid via &#8377;957 Cr IPO proceeds); cash &#8377;2,052 Cr. 59 million-$+ clients.',
+ air:'<strong>Bharti Airtel &mdash; Q4 FY26 (Telecom)</strong><br><br>Consol revenue &#8377;55,383 Cr (+15.7% YoY), EBITDA &#8377;32,038 Cr at 57.8% margin. Reported PAT &#8377;7,325 Cr (&minus;33.5% YoY) &mdash; but that is a high-base effect; <em>ex-exceptionals</em> net income rose ~38.7% to ~&#8377;7,245 Cr. India ARPU &#8377;257 (vs &#8377;245), data usage 31.4 GB/mo (+32.8%), India mobile subs 37.32 cr. Homes revenue +37.3%. Final dividend &#8377;24/share. 650 mn+ global customers.',
+ coupling:'<strong>Market Coupling &mdash; the IEX overhang</strong><br><br>CERC approved market coupling for the Day-Ahead Market. A central operator would pool bids from all exchanges (IEX, PXIL, HPX) and discover a single uniform price. Today IEX enjoys ~85-90% DAM share and pricing power; under coupling, order matching is centralised, which could erode IEX\'s volume dominance and pressure transaction fees over time. That is why IEX shares fell sharply on the news despite record operating volumes &mdash; it is a regulatory risk, not an earnings problem.',
+ airline:'<strong>Airline metrics explained</strong><br><br>&bull; <strong>ASK</strong> (Available Seat Kilometres) = capacity (seats &times; distance flown).<br>&bull; <strong>RPK</strong> = revenue passenger km (seats actually sold &times; distance).<br>&bull; <strong>Load factor</strong> = RPK / ASK &mdash; how full the planes are (IndiGo Q4: 84.4%).<br>&bull; <strong>Yield</strong> = revenue per RPK (&#8377;5.06) &mdash; pricing.<br>&bull; <strong>RASK</strong> = revenue per ASK; <strong>CASK</strong> = cost per ASK (FY26 &#8377;5.00; ex-fuel &#8377;3.52).<br>Profit comes from the <em>spread</em> between RASK and CASK &mdash; very thin, so fuel and forex swing the result.',
+ nrr:'<strong>NRR &mdash; Net Revenue Retention</strong><br><br>NRR measures how much existing clients spend this year vs last year. Fractal\'s NRR of 117% (FY26) means the same client cohort spent 17% more &mdash; pure organic expansion before any new logos. For a people-led AI-services firm this is the key quality signal: &gt;100% means the land-and-expand motion is working. Million-$+ clients grew from 53 to 59. The watch-item is TMT (&minus;19% in Q4) &mdash; about a quarter of the mix.',
+ whyfall:'<strong>Why Airtel PAT fell 33% if the business is strong</strong><br><br>It is a <em>high-base optical effect</em>. The year-ago quarter (Q4 FY25) carried large one-time exceptional gains, inflating that &#8377;11,022 Cr base. Compare like-for-like: <em>before</em> exceptional items, Q4 FY26 net income rose ~38.7% YoY to ~&#8377;7,245 Cr. Revenue +15.7%, EBITDA margin 57.8%, ARPU up to &#8377;257 &mdash; every operating signal improved. So the headline drop is accounting, not operations.',
+ compare:'<strong>How the four compare (Q4 FY26)</strong><br><br>They are deliberately <em>not</em> on one scale &mdash; different sectors, different KPIs:<br>&bull; <strong>IEX</strong> &mdash; power exchange; +12.5% rev, ~86% margin; regulation is the risk.<br>&bull; <strong>IndiGo</strong> &mdash; airline; +1.3% rev, reported loss on forex; core profitable.<br>&bull; <strong>Fractal</strong> &mdash; AI services; +17% rev, PAT +109%, NRR 117%.<br>&bull; <strong>Airtel</strong> &mdash; telecom; +15.7% rev, ARPU &#8377;257, PAT optics from high base.<br><br>Margins: Airtel &amp; IEX very high; Fractal mid (people-cost); IndiGo thin-spread.',
+ fy27:'<strong>FY27 Outlook &mdash; CB Research (no recommendations)</strong><br><br>&bull; <strong>IEX</strong> &mdash; clean compounding of volumes; multiple gated on market-coupling clarity.<br>&bull; <strong>IndiGo</strong> &mdash; reported profit swung by rupee &amp; fuel; Q1 capacity +3-4%; A350 long-haul ramp.<br>&bull; <strong>Fractal</strong> &mdash; HLS base-effect is the big variable; watch TMT recovery &amp; NRR durability; premium valuation.<br>&bull; <strong>Airtel</strong> &mdash; highest visibility; ARPU hikes, 5G monetisation, Homes/lending optionality; Africa forex the swing.'
+};
+function cbA(q,lang){
+  if(!q||!q.trim())return;
+  var msgs=document.getElementById('chatMsgs');
+  var inp=document.getElementById('chatIn');
+  var typ=document.getElementById('typingInd');
+  var uEl=document.createElement('div');
+  uEl.className='chat-msg user';uEl.textContent=q.trim();
+  msgs.appendChild(uEl);inp.value='';msgs.scrollTop=msgs.scrollHeight;
+  typ.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(function(){
+    typ.style.display='none';
+    var a=findA(q.toLowerCase());
+    var bEl=document.createElement('div');
+    bEl.className='chat-msg bot';bEl.innerHTML=a;
+    msgs.appendChild(bEl);msgs.scrollTop=msgs.scrollHeight;
+  },450);
+}
+function findA(q){
+  if(/market coupl|coupling|cerc/.test(q))return KB.coupling;
+  if(/ask|cask|rask|yield|load factor|airline metric/.test(q))return KB.airline;
+  if(/\bnrr\b|net revenue retention|retention/.test(q))return KB.nrr;
+  if(/why.*(fall|drop|down)|high base|optical/.test(q))return KB.whyfall;
+  if(/compare|versus|\bvs\b|all four|four compan/.test(q))return KB.compare;
+  if(/fy27|outlook|next year|guidance/.test(q))return KB.fy27;
+  if(/\biex\b|energy exchange|power exchange/.test(q))return KB.iex;
+  if(/indigo|interglobe|airline|aviation/.test(q))return KB.ind;
+  if(/fractal|analytics/.test(q))return KB.frc;
+  if(/airtel|bharti|telecom|arpu/.test(q))return KB.air;
+  return '<strong>CB Assist</strong> &mdash; try asking about:<br><br>&bull; <em>IEX / IndiGo / Fractal / Airtel Q4 FY26 results</em><br>&bull; <em>Market coupling &mdash; the IEX risk</em><br>&bull; <em>Airline metrics (ASK, CASK, yield)</em><br>&bull; <em>NRR &mdash; what it says about Fractal</em><br>&bull; <em>Why Airtel PAT fell 33% YoY</em><br>&bull; <em>Compare all four / FY27 outlook</em>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cables & Wires – Q4 FY26 Dashboard v2</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd6;--text:#1a1714;--muted:#6b6660;
+  --polycab:#c84b31;--kei:#2979FF;--rrkabel:#7c3aed;--havells:#FF6A00;--finolex:#22C55E;--apar:#0ea5e9;
+  --accent:#c84b31;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+
+/* HEADER */
+.hdr{background:#1a1714;padding:24px 36px 18px;display:flex;justify-content:space-between;align-items:flex-end}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;letter-spacing:2px;line-height:1}
+.hdr p{color:#aaa;font-size:0.75rem;font-family:'DM Mono',monospace;margin-top:4px;letter-spacing:1px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bdg{padding:3px 9px;border-radius:3px;font-size:0.68rem;font-family:'DM Mono',monospace}
+.bdg-r{background:var(--accent);color:#fff}
+.bdg-g{background:#333;color:#bbb;border:1px solid #555}
+
+/* TABS */
+.tabs{background:#111;padding:0 36px;display:flex;border-bottom:2px solid var(--accent);overflow-x:auto}
+.tab{padding:12px 20px;cursor:pointer;font-size:0.8rem;font-weight:500;color:#777;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.4px}
+.tab:hover{color:#ccc}
+.tab.on{color:#fff;border-bottom-color:var(--accent)}
+
+/* MAIN */
+.main{padding:24px 36px;max-width:1440px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+
+/* SECTION TITLE */
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1.5px;margin:0 0 14px;padding-bottom:6px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.st .sq{width:9px;height:9px;border-radius:2px;background:var(--accent)}
+
+/* KPI GRID */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi[data-c=Polycab]::before{background:var(--polycab)}
+.kpi[data-c=KEI]::before{background:var(--kei)}
+.kpi[data-c="RR Kabel"]::before{background:var(--rrkabel)}
+.kpi[data-c=Havells]::before{background:var(--havells)}
+.kpi[data-c=Finolex]::before{background:var(--finolex)}
+.kpi[data-c=Apar]::before{background:var(--apar)}
+.kpi-co{font-size:.65rem;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;line-height:1}
+.kpi-lbl{font-size:.62rem;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.kpi-yoy{margin-top:7px;font-size:.7rem;font-weight:600;padding:2px 6px;border-radius:3px;display:inline-block}
+.up{background:#dcfce7;color:#15803d}.dn{background:#fee2e2;color:#b91c1c}.flat{background:#f3f4f6;color:#6b7280}
+.kpi-sub{font-size:.65rem;color:var(--muted);margin-top:5px}
+
+/* CHART GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:24px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:18px;margin-bottom:24px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:24px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+.ct{font-size:.72rem;font-weight:600;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.cw{position:relative;height:240px}
+.cw-lg{position:relative;height:300px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl th{background:#1a1714;color:#fff;padding:9px 12px;text-align:left;font-size:.68rem;letter-spacing:.8px;font-family:'DM Mono',monospace;font-weight:400;white-space:nowrap}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#faf9f6}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
+.mono{font-family:'DM Mono',monospace;font-size:.78rem}
+.tag{padding:2px 7px;border-radius:3px;font-size:.65rem;font-weight:600;font-family:'DM Mono',monospace}
+.buy{background:#dcfce7;color:#15803d}.hold{background:#fef9c3;color:#854d0e}.neutral{background:#f3f4f6;color:#6b7280}
+
+/* PROFILE CARDS */
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:-10px;right:-10px;width:70px;height:70px;border-radius:50%;opacity:.06}
+.pc[data-c=Polycab]::after{background:var(--polycab)}
+.pc[data-c=KEI]::after{background:var(--kei)}
+.pc[data-c="RR Kabel"]::after{background:var(--rrkabel)}
+.pc[data-c=Havells]::after{background:var(--havells)}
+.pc[data-c=Finolex]::after{background:var(--finolex)}
+.pc[data-c=Apar]::after{background:var(--apar)}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px}
+.ptype{font-size:.63rem;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:500}
+.pure{background:#e0f2fe;color:#0369a1}.hybrid{background:#fef3c7;color:#92400e}.spec{background:#ede9fe;color:#5b21b6}
+.sb{margin-bottom:6px}
+.sl{display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:2px;color:var(--muted)}
+.st2{height:5px;background:#f0ede8;border-radius:3px;overflow:hidden}
+.sf{height:100%;border-radius:3px}
+.pdiv{border:none;border-top:1px solid var(--border);margin:10px 0}
+.pi{font-size:.74rem;color:var(--muted);line-height:1.5}
+.pi strong{color:var(--text)}
+
+/* ANALYST CARDS */
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.ac-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;margin-bottom:8px}
+.ac-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ac-lbl{font-size:.7rem;color:var(--muted)}
+.ac-val{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500}
+.ac-view{font-size:.73rem;color:var(--muted);line-height:1.5;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+
+/* RISK */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.rc-title{font-weight:600;font-size:.78rem;margin-bottom:9px}
+.ri{display:flex;gap:7px;align-items:flex-start;font-size:.74rem;color:var(--muted);margin-bottom:5px;line-height:1.5}
+
+/* FOOTNOTE */
+.fn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;margin-top:20px}
+.wm{text-align:center;padding:10px;font-size:.66rem;color:#ccc;font-family:'DM Mono',monospace;letter-spacing:1px}
+
+/* MARKET PRICE ROW */
+.mp-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.mp{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.mp-co{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.mp-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem}
+.mp-chg{font-size:.68rem;font-family:'DM Mono',monospace;margin-top:3px}
+.mp-hi{font-size:.62rem;color:var(--muted);margin-top:3px}
+.mp-pe{font-size:.7rem;font-weight:600;margin-top:4px;font-family:'DM Mono',monospace}
+
+@media(max-width:900px){
+  .main{padding:12px}
+  .hdr{padding:14px;flex-direction:column;gap:8px}
+  .kpi-row,.mp-row{grid-template-columns:repeat(2,1fr)}
+  .g2,.g3,.g4,.g21,.pg,.ag,.rg{grid-template-columns:1fr}
+}
+
+/* ══ CB ASSIST ══ */
+.cba-wrap{max-width:900px;margin:0 auto;}
+.cba-head{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:12px;border-bottom:3px solid var(--accent);}
+.cba-logo{width:46px;height:46px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;flex-shrink:0;letter-spacing:1px;}
+.cba-head-text h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;margin-bottom:2px;}
+.cba-head-text p{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;}
+.cba-qlbl{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding:6px 0 6px 10px;border-left:3px solid var(--accent);}
+.qa-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.qa-q{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;cursor:pointer;transition:background .15s;}
+.qa-q:hover{background:#faf9f6;}
+.qa-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--border);line-height:1;flex-shrink:0;width:30px;}
+.qa-qtxt .qen{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:3px;}
+.qa-qtxt .qta{font-size:.78rem;color:var(--accent);font-weight:500;}
+.qa-toggle{margin-left:auto;font-size:.8rem;color:var(--muted);flex-shrink:0;transition:transform .2s;padding-top:2px;}
+.qa-card.open .qa-toggle{transform:rotate(180deg);}
+.qa-ans{display:none;padding:0 16px 16px 58px;border-top:1px solid var(--border);}
+.qa-card.open .qa-ans{display:block;}
+.ans-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-top:12px;margin-bottom:4px;}
+.ans-en{font-size:.8rem;color:var(--text);line-height:1.75;}
+.ans-ta{font-size:.78rem;color:var(--muted);line-height:1.75;font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+/* live chat */
+.cba-chat{background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:18px 20px;margin-top:22px;}
+.cba-chat-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.cba-chat-title .live-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+.chat-msgs{min-height:100px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.cmsg{padding:9px 13px;border-radius:8px;font-size:.8rem;max-width:88%;line-height:1.55;}
+.cmsg.u{background:#1a1714;color:#fff;align-self:flex-end;border-radius:8px 8px 2px 8px;}
+.cmsg.b{background:#f5f4f0;border:1px solid var(--border);align-self:flex-start;border-radius:8px 8px 8px 2px;}
+.cmsg.b strong{color:var(--accent);}
+.chat-row{display:flex;gap:8px;}
+.chat-in{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:.8rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-in:focus{border-color:var(--accent);}
+.chat-btn{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:.78rem;font-family:'DM Mono',monospace;letter-spacing:.5px;cursor:pointer;transition:opacity .18s;}
+.chat-btn:hover{opacity:.85;}
+.chat-btn:disabled{opacity:.45;cursor:not-allowed;}
+.typing{display:none;align-items:center;gap:5px;padding:6px 12px;}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:tdot 1.1s infinite;}
+.typing span:nth-child(2){animation-delay:.18s;}.typing span:nth-child(3){animation-delay:.36s;}
+@keyframes tdot{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>Cables &amp; Wires Industry</h1>
+    <p>INDIA SECTOR DASHBOARD · Q4 FY26 ALL SIX ACTUALS · FINOLEX Q4 ACT (₹1,951 Cr, PAT ₹161 Cr) · APAR Q4 ACT (₹6,603 Cr, PAT ₹254 Cr) · UPDATED 09 JUN 2026</p>
+  </div>
+  <div class="badges">
+    <span class="bdg bdg-r">Q4 FY26</span>
+    <span class="bdg bdg-g">Polycab · KEI · RR Kabel · Havells · Finolex · Apar</span>
+    <span class="bdg bdg-g">₹ Cr · Official BSE/NSE Filings</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on"  onclick="sw('ov')">Overview</div>
+  <div class="tab"    onclick="sw('perf')">Performance &amp; Charts</div>
+  <div class="tab"    onclick="sw('seg')">Business Segments</div>
+  <div class="tab"    onclick="sw('an')">Analyst View</div>
+  <div class="tab"    onclick="sw('risk')">Risks &amp; Outlook</div>
+  <div class="tab" style="color:#c84b31;font-weight:700;" onclick="sw('cbassist')">🤖 CB Assist</div>
+</div>
+
+<div class="main">
+
+<!-- ══ TAB 1: OVERVIEW ══ -->
+<div id="pov" class="pane on">
+
+  <div class="st"><div class="sq"></div> MARKET PRICE SNAPSHOT (NSE · Approx May 2026)</div>
+  <div class="mp-row">
+    <div class="mp">
+      <div class="mp-co">Polycab</div>
+      <div class="mp-price" style="color:var(--polycab)">₹8,418</div>
+      <div class="mp-chg up">▲ Strong</div>
+      <div class="mp-hi">52W: ₹6,200–₹9,200</div>
+      <div class="mp-pe">P/E ~42x FY27E</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">KEI</div>
+      <div class="mp-price" style="color:var(--kei)">₹4,950</div>
+      <div class="mp-chg dn">▼ -2% post Q4</div>
+      <div class="mp-hi">52W: ₹3,200–₹5,800</div>
+      <div class="mp-pe">P/E ~35x FY27E</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">RR Kabel</div>
+      <div class="mp-price" style="color:var(--rrkabel)">₹1,560</div>
+      <div class="mp-chg flat">◆ Cautious</div>
+      <div class="mp-hi">52W: ₹900–₹1,750</div>
+      <div class="mp-pe">P/E ~36–40x FY27E</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Havells</div>
+      <div class="mp-price" style="color:var(--havells)">₹1,350</div>
+      <div class="mp-chg dn">▼ -3% post Q4</div>
+      <div class="mp-hi">52W: ₹1,100–₹1,750</div>
+      <div class="mp-pe">P/E ~50x FY27E</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Finolex</div>
+      <div class="mp-price" style="color:var(--finolex)">₹1,137</div>
+      <div class="mp-chg up">▲ +39% Post Q4</div>
+      <div class="mp-hi">52W: ₹700–₹1,150</div>
+      <div class="mp-pe">P/E ~26x FY27E</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Apar</div>
+      <div class="mp-price" style="color:var(--apar)">₹13,422</div>
+      <div class="mp-chg up">▲ +71% 1Y (Post Q4)</div>
+      <div class="mp-hi">52W: ₹6,400–₹13,900</div>
+      <div class="mp-pe">P/E ~55x FY27E</div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> Q4 FY26 KPI SNAPSHOT · ALL SIX COMPANIES — Q4 FY26 ACTUALS (₹ Cr · BSE/NSE Filings)</div>
+  <div class="kpi-row">
+    <div class="kpi" data-c="Polycab">
+      <div class="kpi-co">Polycab India</div>
+      <div class="kpi-val">₹8,864</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26</div>
+      <span class="kpi-yoy up">+27% YoY</span>
+      <div class="kpi-sub">PAT ₹773 Cr · EBITDA 13.1% · Highest-ever Qtrly PAT</div>
+    </div>
+    <div class="kpi" data-c="KEI">
+      <div class="kpi-co">KEI Industries</div>
+      <div class="kpi-val">₹3,476</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26</div>
+      <span class="kpi-yoy up">+19% YoY</span>
+      <div class="kpi-sub">PAT ₹284 Cr · EBITDA 10.9% · Net debt negative</div>
+    </div>
+    <div class="kpi" data-c="RR Kabel">
+      <div class="kpi-co">RR Kabel</div>
+      <div class="kpi-val">₹2,964</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26</div>
+      <span class="kpi-yoy up">+34% YoY</span>
+      <div class="kpi-sub">PAT ₹168 Cr · EBITDA 8.8% · Record revenue</div>
+    </div>
+    <div class="kpi" data-c="Havells">
+      <div class="kpi-co">Havells India</div>
+      <div class="kpi-val">₹6,688</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26</div>
+      <span class="kpi-yoy up">+2.4% YoY</span>
+      <div class="kpi-sub">PAT ₹734 Cr* · EBITDA 10.9% · Lloyd drag</div>
+    </div>
+    <div class="kpi" data-c="Finolex">
+      <div class="kpi-co">Finolex Cables</div>
+      <div class="kpi-val">₹1,951</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26 ACTUAL ★</div>
+      <span class="kpi-yoy up">+22.4% YoY</span>
+      <div class="kpi-sub">PAT ₹161 Cr (Stdalone) · EBITDA ~9.3% · All-time high revenue</div>
+    </div>
+    <div class="kpi" data-c="Apar">
+      <div class="kpi-co">Apar Industries</div>
+      <div class="kpi-val">₹6,603</div>
+      <div class="kpi-lbl">REVENUE (Cr) · Q4 FY26 ACTUAL ★</div>
+      <span class="kpi-yoy up">+26.7% YoY</span>
+      <div class="kpi-sub">PAT ₹254 Cr (+1.4% YoY, adj +14%) · EBITDA 8.8% · Record FY26 revenue</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Quarterly Revenue (₹ Cr) — Latest Available</div>
+      <div class="cw"><canvas id="c_rev"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Revenue YoY Growth (%)</div>
+      <div class="cw"><canvas id="c_yoy"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> COMPARATIVE FINANCIALS</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Company</th><th>Quarter</th><th>Revenue (₹ Cr)</th><th>YoY %</th>
+        <th>EBITDA %</th><th>PAT (₹ Cr)</th><th>YoY PAT%</th>
+        <th>FY26 Revenue</th><th>FY26 PAT</th><th>Market Cap</th><th>Div / share</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="dot" style="background:var(--polycab)"></span>Polycab India</td>
+        <td class="mono">Q4 FY26</td><td class="mono">8,864</td>
+        <td><span class="tag buy">+27%</span></td><td class="mono">13.1%</td>
+        <td class="mono">773</td><td><span class="tag buy">+7%</span></td>
+        <td class="mono">28,884</td><td class="mono">2,708</td>
+        <td class="mono">~₹1,27,000 Cr</td><td class="mono">₹47</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--kei)"></span>KEI Industries</td>
+        <td class="mono">Q4 FY26</td><td class="mono">3,476</td>
+        <td><span class="tag buy">+19%</span></td><td class="mono">10.9%</td>
+        <td class="mono">284</td><td><span class="tag buy">+21%</span></td>
+        <td class="mono">11,748</td><td class="mono">918</td>
+        <td class="mono">~₹47,500 Cr</td><td class="mono">₹4.50</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--rrkabel)"></span>RR Kabel</td>
+        <td class="mono">Q4 FY26</td><td class="mono">2,964</td>
+        <td><span class="tag buy">+34%</span></td><td class="mono">8.8%</td>
+        <td class="mono">168</td><td><span class="tag buy">+30%</span></td>
+        <td class="mono">9,722</td><td class="mono">487</td>
+        <td class="mono">~₹17,600 Cr</td><td class="mono">₹9.50</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--havells)"></span>Havells India</td>
+        <td class="mono">Q4 FY26</td><td class="mono">6,688</td>
+        <td><span class="tag hold">+2.4%</span></td><td class="mono">10.9%</td>
+        <td class="mono">734*</td><td><span class="tag buy">+41%*</span></td>
+        <td class="mono">~24,500</td><td class="mono">~1,800</td>
+        <td class="mono">~₹84,500 Cr</td><td class="mono">₹6 final</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--finolex)"></span>Finolex Cables</td>
+        <td class="mono">Q4 FY26 ★</td><td class="mono">1,951</td>
+        <td><span class="tag buy">+22.4%</span></td><td class="mono">~9.3%</td>
+        <td class="mono">161*</td><td><span class="tag buy">+6.1%</span></td>
+        <td class="mono">6,321</td><td class="mono">623</td>
+        <td class="mono">~₹17,600 Cr</td><td class="mono">₹9</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:var(--apar)"></span>Apar Industries</td>
+        <td class="mono">Q4 FY26 ★</td><td class="mono">6,603</td>
+        <td><span class="tag buy">+26.7%</span></td><td class="mono">8.8%</td>
+        <td class="mono">254†</td><td><span class="tag hold">+1.4% (adj +14%)</span></td>
+        <td class="mono">22,902</td><td class="mono">977</td>
+        <td class="mono">~₹55,000 Cr</td><td class="mono">₹60</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div style="font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace">* Havells PAT includes ₹283 Cr one-time Goldi Solar revaluation gain — adjusted growth is much lower &nbsp;|&nbsp; * Finolex PAT is standalone figure (₹161 Cr); Consolidated PAT Q4 FY26 = ₹224 Cr (+17% YoY) &nbsp;|&nbsp; † Apar PAT impacted by one-off provisions (new wage code gratuity, MTM ECB loan, old legal case) — adjusted recurring PAT ≈ ₹285 Cr (+14% YoY)</div>
+</div><!-- /pov -->
+
+
+<!-- ══ TAB 2: PERFORMANCE & CHARTS ══ -->
+<div id="pperf" class="pane">
+
+  <div class="st"><div class="sq"></div> FY26 ANNUAL REVENUE — AVAILABLE (₹ Cr)</div>
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">FY26 vs FY25 Annual Revenue Comparison (₹ Cr)</div>
+      <div class="cw-lg"><canvas id="c_ann_rev_cmp"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">FY26 Annual PAT (₹ Cr)</div>
+      <div class="cw-lg"><canvas id="c_ann_pat"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> MARGIN ANALYSIS</div>
+  <div class="g3">
+    <div class="cc">
+      <div class="ct">EBITDA Margin % — Latest Quarter</div>
+      <div class="cw"><canvas id="c_ebitda"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">PAT (₹ Cr) — Latest Quarter</div>
+      <div class="cw"><canvas id="c_pat"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">PAT Margin % — Latest Quarter</div>
+      <div class="cw"><canvas id="c_patm"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> MULTI-QUARTER REVENUE TREND (₹ Cr)</div>
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Polycab, Havells &amp; Apar — Quarterly Revenue Trend</div>
+      <div class="cw-lg"><canvas id="c_trend1"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">KEI, RR Kabel &amp; Finolex — Quarterly Revenue Trend</div>
+      <div class="cw-lg"><canvas id="c_trend2"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> FY26 REVENUE GROWTH (YoY %)</div>
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Full-Year FY26 Revenue Growth % (where available)</div>
+      <div class="cw"><canvas id="c_fy26g"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">EBITDA Margin % — FY26 Full Year (where available)</div>
+      <div class="cw"><canvas id="c_fy26m"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:4px"><div class="sq"></div> CAPITAL ALLOCATION &amp; BALANCE SHEET</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead>
+      <tr><th>Company</th><th>Revenue Growth</th><th>EBITDA Margin</th><th>PAT Margin</th><th>Net Cash / Debt</th><th>Capex Plan</th><th>Dividend</th><th>Payout %</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Polycab</td><td class="mono">+27% Q4; +29% FY26</td><td class="mono">13.1% Q4; 13.9% FY26</td><td class="mono">8.9% Q4; 9.4% FY26</td><td class="mono">Net Cash ₹4,190 Cr</td><td>₹1,200–₹1,600 Cr/yr</td><td class="mono">₹47/share</td><td class="mono">27.2%</td></tr>
+      <tr><td><span class="dot" style="background:var(--kei)"></span>KEI</td><td class="mono">+19% Q4; +21% FY26</td><td class="mono">10.9% Q4; 11.8% FY26</td><td class="mono">8.2% Q4; 7.8% FY26</td><td class="mono">Net Debt Negative</td><td>Capacity expansion</td><td class="mono">₹4.50/share</td><td class="mono">~18%</td></tr>
+      <tr><td><span class="dot" style="background:var(--rrkabel)"></span>RR Kabel</td><td class="mono">+34% Q4; +28% FY26</td><td class="mono">8.8% Q4</td><td class="mono">5.7% Q4; 5.0% FY26</td><td class="mono">Capex ₹1,450 Cr (FY26-28)</td><td>Waghodia plant expansion</td><td class="mono">₹9.50/share</td><td class="mono">~20%</td></tr>
+      <tr><td><span class="dot" style="background:var(--havells)"></span>Havells</td><td class="mono">+2.4% Q4 (weak)</td><td class="mono">10.9% Q4 (vs 11.6% prior yr)</td><td class="mono">11.0%* (incl. Goldi gain)</td><td class="mono">Strong balance sheet</td><td>Brand &amp; distribution led</td><td class="mono">₹6 final</td><td class="mono">~40%</td></tr>
+      <tr><td><span class="dot" style="background:var(--finolex)"></span>Finolex</td><td class="mono">+22.4% Q4 YoY; +18.9% FY26</td><td class="mono">Q4: ~9.3% (vs 10.7% PY); FY26 ~9.5% compressed</td><td class="mono">~8.3% Q4 standalone</td><td class="mono">Debt-Free | Net Cash Positive</td><td>Preform facility Phase 1 commissioned; fiber draw Q2 FY27</td><td class="mono">₹9/share</td><td class="mono">~50%</td></tr>
+      <tr><td><span class="dot" style="background:var(--apar)"></span>Apar</td><td class="mono">+26.7% Q4 YoY; +23.3% FY26</td><td class="mono">8.8% Q4; 9.0% FY26 full year</td><td class="mono">3.8% Q4 (one-offs); ~4.3% FY26</td><td class="mono">Moderate leverage | D/E ~0.7x</td><td>Capex ₹1,500 Cr FY27 — data centres, renewables, US cables</td><td class="mono">₹60/share (rec.)</td><td class="mono">~25%</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /perf -->
+
+
+<!-- ══ TAB 3: BUSINESS SEGMENTS ══ -->
+<div id="pseg" class="pane">
+
+  <div class="st"><div class="sq"></div> BUSINESS ARCHITECTURE — WHAT EACH COMPANY ACTUALLY DOES</div>
+  <div class="pg">
+    <div class="pc" data-c="Polycab">
+      <div class="pc-top"><div class="pc-name" style="color:var(--polycab)">POLYCAB</div><span class="ptype pure">Pure-Play + FMEG + EPC</span></div>
+      <div class="sb"><div class="sl"><span>Wires &amp; Cables (W&C)</span><span>87%</span></div><div class="st2"><div class="sf" style="width:87%;background:var(--polycab)"></div></div></div>
+      <div class="sb"><div class="sl"><span>FMEG (fans/lights/switches/solar)</span><span>7%</span></div><div class="st2"><div class="sf" style="width:7%;background:#f97316"></div></div></div>
+      <div class="sb"><div class="sl"><span>EPC Projects</span><span>6%</span></div><div class="st2"><div class="sf" style="width:6%;background:#94a3b8"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>India's #1 cable maker</strong> — 30–31% organised domestic market share, up from 26–27% in FY25. W&C +33% FY26; FMEG +47% Q4 with solar now #1 FMEG sub-segment. Middle East disruption hurt exports in Q4. Project Spring targets FMEG EBITDA 8–10% by FY30.</div>
+    </div>
+    <div class="pc" data-c="KEI">
+      <div class="pc-top"><div class="pc-name" style="color:var(--kei)">KEI INDUSTRIES</div><span class="ptype pure">Pure Cables + EPC + SS Wire</span></div>
+      <div class="sb"><div class="sl"><span>Cables &amp; Wires</span><span>95%</span></div><div class="st2"><div class="sf" style="width:95%;background:var(--kei)"></div></div></div>
+      <div class="sb"><div class="sl"><span>EPC Projects</span><span>5%</span></div><div class="st2"><div class="sf" style="width:5%;background:#94a3b8"></div></div></div>
+      <div class="sb"><div class="sl"><span>Stainless Steel Wire</span><span>&lt;2%</span></div><div class="st2"><div class="sf" style="width:2%;background:#64748b"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>Purest cable play in India.</strong> Zero FMEG distraction — 95%+ from cables. ~60% institutional / ~40% dealer. EPC growing +72% YoY in Q4. Order book ₹3,585 Cr. Net debt negative — cleanest balance sheet in sector. Exports weak on Middle East issues.</div>
+    </div>
+    <div class="pc" data-c="RR Kabel">
+      <div class="pc-top"><div class="pc-name" style="color:var(--rrkabel)">RR KABEL</div><span class="ptype hybrid">W&amp;C + Nascent FMEG</span></div>
+      <div class="sb"><div class="sl"><span>Wires &amp; Cables</span><span>90%</span></div><div class="st2"><div class="sf" style="width:90%;background:var(--rrkabel)"></div></div></div>
+      <div class="sb"><div class="sl"><span>FMEG (fans/lights/appliances)</span><span>10%</span></div><div class="st2"><div class="sf" style="width:10%;background:#a78bfa"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>Fastest growing peer.</strong> W&C +36% YoY Q4; cables in high-teen growth vs single-digit for wires. FMEG still loss-making (−₹33 Cr FY26) with impairment risk flagged by auditors. Project Rise: 18% W&C volume CAGR target. Inventory +75% YoY — key watch item.</div>
+    </div>
+    <div class="pc" data-c="Havells">
+      <div class="pc-top"><div class="pc-name" style="color:var(--havells)">HAVELLS INDIA</div><span class="ptype hybrid">Diversified Consumer Electricals</span></div>
+      <div class="sb"><div class="sl"><span>Cables &amp; Wires</span><span>~30%</span></div><div class="st2"><div class="sf" style="width:30%;background:var(--havells)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Lloyd (ACs, TVs, Consumer Durables)</span><span>~23%</span></div><div class="st2"><div class="sf" style="width:23%;background:#f59e0b"></div></div></div>
+      <div class="sb"><div class="sl"><span>ECD (Fans, Water Heaters, Appliances)</span><span>~20%</span></div><div class="st2"><div class="sf" style="width:20%;background:#fbbf24"></div></div></div>
+      <div class="sb"><div class="sl"><span>Switchgear + Lighting + Others</span><span>~27%</span></div><div class="st2"><div class="sf" style="width:27%;background:#fde68a"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>Cable is just one piece.</strong> Cables ~30% of revenue. Lloyd (ACs/TVs) fell −19% Q4 and slipped into operating loss — the key drag on group performance. Cable and switchgear remain healthy. Revenue +2.4% in Q4 due to Lloyd drag. Best-in-class brand franchise and distribution.</div>
+    </div>
+    <div class="pc" data-c="Finolex">
+      <div class="pc-top"><div class="pc-name" style="color:var(--finolex)">FINOLEX CABLES</div><span class="ptype pure">Cables + Communication</span></div>
+      <div class="sb"><div class="sl"><span>Electrical Cables &amp; Wires</span><span>~80%</span></div><div class="st2"><div class="sf" style="width:80%;background:var(--finolex)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Communication Cables (OFC, LAN, CCTV)</span><span>~15%</span></div><div class="st2"><div class="sf" style="width:15%;background:#4ade80"></div></div></div>
+      <div class="sb"><div class="sl"><span>Others</span><span>~5%</span></div><div class="st2"><div class="sf" style="width:5%;background:#86efac"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>The conservative compounder.</strong> Uniquely positioned in communication cables (OFC, LAN) alongside electrical. Highest margin profile (~14% EBITDA). Promoter dispute (Orbit Electricals vs Finolex family) is a governance overhang. Deep value case: stock −28% from highs. Q4 results May 10, 2026.</div>
+    </div>
+    <div class="pc" data-c="Apar">
+      <div class="pc-top"><div class="pc-name" style="color:var(--apar)">APAR INDUSTRIES</div><span class="ptype spec">Conductors + HV Cables + Oil</span></div>
+      <div class="sb"><div class="sl"><span>Conductors (ACSR, HTLS, ACCC)</span><span>~55%</span></div><div class="st2"><div class="sf" style="width:55%;background:var(--apar)"></div></div></div>
+      <div class="sb"><div class="sl"><span>Cables (HV, Underground, Speciality)</span><span>~35%</span></div><div class="st2"><div class="sf" style="width:35%;background:#38bdf8"></div></div></div>
+      <div class="sb"><div class="sl"><span>Transformer Oil (Lubricants)</span><span>~10%</span></div><div class="st2"><div class="sf" style="width:10%;background:#7dd3fc"></div></div></div>
+      <hr class="pdiv">
+      <div class="pi"><strong>NOT a retail cable company.</strong> Apar makes conductors (overhead transmission lines) and high-voltage underground cables for utilities — globally. Revenue ~30–35% exports. US tariff (26%) hurt US business −51% in Q3 FY26. CEO Cable Solutions resigned Jan 2026. Energy transition megatrend is the structural driver.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> THE SUBTLE DIFFERENCES — WHO IS COMPARABLE TO WHOM?</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Company</th><th>Core Identity</th><th>Primary Customer</th><th>Retail vs Inst.</th><th>Int'l Exposure</th><th>FMEG?</th><th>Key Differentiator</th><th>Don't Confuse With</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Polycab</td><td>Cable Giant + FMEG Aspirant</td><td>B2B &amp; B2C</td><td>55% Dealer / 45% Inst.</td><td>Moderate (growing)</td><td>Yes — serious; Solar #1</td><td>Scale + market share dominance</td><td>Havells (very different mix)</td></tr>
+      <tr><td><span class="dot" style="background:var(--kei)"></span>KEI</td><td>Institutional Cable Specialist</td><td>Infra / Industrial</td><td>60% Inst. / 40% Dealer</td><td>Moderate ~15–20%</td><td>No</td><td>Purest cable, no FMEG drag</td><td>Polycab (KEI is more B2B)</td></tr>
+      <tr><td><span class="dot" style="background:var(--rrkabel)"></span>RR Kabel</td><td>Aggressive Growth Challenger</td><td>Dealer + Exports</td><td>50/50 split</td><td>High (Middle East)</td><td>Yes — nascent loss-making</td><td>Fastest growth; export leverage</td><td>Polycab (much smaller scale)</td></tr>
+      <tr><td><span class="dot" style="background:var(--havells)"></span>Havells</td><td>Consumer Electricals Brand</td><td>B2C / Retail</td><td>~80% Retail</td><td>Low (domestic)</td><td>Yes — huge (Lloyd ACs)</td><td>Brand premium; product breadth</td><td>KEI/Polycab (cable is only 30%)</td></tr>
+      <tr><td><span class="dot" style="background:var(--finolex)"></span>Finolex</td><td>Conservative Cable Compounder</td><td>Retail + Telecom</td><td>70% Retail / 30% Inst.</td><td>Low</td><td>Minimal</td><td>Communication cable; highest margins</td><td>Others (unique OFC exposure)</td></tr>
+      <tr><td><span class="dot" style="background:var(--apar)"></span>Apar</td><td>Grid Infra &amp; Export Specialist</td><td>Power utilities, global T&amp;D</td><td>100% Institutional/Utility</td><td>Very High ~30–40%</td><td>No</td><td>HTLS conductors + HV cables — NOT consumer wiring</td><td>All others (completely different)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /seg -->
+
+
+<!-- ══ TAB 4: ANALYST VIEW ══ -->
+<div id="pan" class="pane">
+
+  <div class="st"><div class="sq"></div> ANALYST RATINGS, TARGETS &amp; INVESTMENT CASE</div>
+  <div class="ag">
+    <div class="ac"><div class="ac-name" style="color:var(--polycab)">Polycab India</div>
+      <div class="ac-row"><span class="ac-lbl">Consensus</span><span class="tag buy">BUY</span></div>
+      <div class="ac-row"><span class="ac-lbl">MOFSL Target</span><span class="ac-val">₹9,800</span></div>
+      <div class="ac-row"><span class="ac-lbl">ICICI Securities</span><span class="ac-val">₹9,700 (35x FY28E)</span></div>
+      <div class="ac-row"><span class="ac-lbl">JM Financial</span><span class="ac-val">₹9,700 (42x Mar28E)</span></div>
+      <div class="ac-row"><span class="ac-lbl">CMP</span><span class="ac-val">~₹8,418 · Upside ~16%</span></div>
+      <div class="ac-view">Q4 margins hit by higher institutional mix, Middle East export weakness, and soft March demand. FY27/28 EPS revised +3–5%. Market share gain of 3–4% in FY26 is the standout. ₹6,000–8,000 Cr capex over 5 yrs under Project Spring is big commitment.</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:var(--kei)">KEI Industries</div>
+      <div class="ac-row"><span class="ac-lbl">Consensus</span><span class="tag hold">NEUTRAL / HOLD</span></div>
+      <div class="ac-row"><span class="ac-lbl">Morgan Stanley</span><span class="ac-val">Equal-weight · ₹5,213</span></div>
+      <div class="ac-row"><span class="ac-lbl">Key Concern</span><span class="ac-val">Soft volumes, weak exports</span></div>
+      <div class="ac-row"><span class="ac-lbl">CMP</span><span class="ac-val">~₹4,950 · Limited upside</span></div>
+      <div class="ac-view">PAT beat on stronger margins despite soft volume growth. Rising competition in wires is a risk. Domestic C&W +23% strong; exports weak. FY27/28 EPS cut 3–4% by Morgan Stanley. Risk-reward seen as balanced post ~35% stock outperformance.</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:var(--rrkabel)">RR Kabel</div>
+      <div class="ac-row"><span class="ac-lbl">Consensus</span><span class="tag buy">BUY (Growth)</span></div>
+      <div class="ac-row"><span class="ac-lbl">Choice Institutional</span><span class="ac-val">Buy — Growth intact</span></div>
+      <div class="ac-row"><span class="ac-lbl">Key Risk</span><span class="ac-val">36–40x PE — premium heavy</span></div>
+      <div class="ac-row"><span class="ac-lbl">CMP</span><span class="ac-val">~₹1,560</span></div>
+      <div class="ac-view">Record Q4 FY26 revenue; W&C +36% YoY. FMEG improving but loss-making. ₹1,200 Cr capex targets ₹4,500 Cr incremental revenue at 3.5x asset turn. FY27 guidance: 16–18% volume growth. Inventory +75% YoY is the key watch item.</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:var(--havells)">Havells India</div>
+      <div class="ac-row"><span class="ac-lbl">Consensus</span><span class="tag hold">HOLD / NEUTRAL</span></div>
+      <div class="ac-row"><span class="ac-lbl">Key Positive</span><span class="ac-val">Cables &amp; Switchgear strong</span></div>
+      <div class="ac-row"><span class="ac-lbl">Key Negative</span><span class="ac-val">Lloyd −19%; operating loss</span></div>
+      <div class="ac-row"><span class="ac-lbl">One-time Gain</span><span class="ac-val">₹283 Cr Goldi Solar (non-recurring)</span></div>
+      <div class="ac-view">Core EBITDA down 4.4% despite reported PAT up 41%. Lloyd is the make-or-break — 23% full-year revenue decline. Mild summer hurt cooling products. Cable segment healthy. Cables alone justify investment but Lloyd remains a drag.</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:var(--finolex)">Finolex Cables</div>
+      <div class="ac-row"><span class="ac-lbl">Consensus</span><span class="tag buy">BUY (Deep Value)</span></div>
+      <div class="ac-row"><span class="ac-lbl">52W High</span><span class="ac-val">₹1,150 — now ₹820 (−28%)</span></div>
+      <div class="ac-row"><span class="ac-lbl">Beat threshold</span><span class="ac-val">Rev &gt;₹1,550 Cr + EBITDA &gt;14%</span></div>
+      <div class="ac-row"><span class="ac-lbl">Q4 Results</span><span class="ac-val">May 10, 2026</span></div>
+      <div class="ac-view">Consistently high margins (~14%). Unique OFC communication cable exposure. Key re-rating catalyst: FY27 volume guidance of 10%+ and resolution of Orbit vs Finolex promoter dispute. Conservative management, high dividend yield. Classic value trap or value opportunity?</div>
+    </div>
+    <div class="ac"><div class="ac-name" style="color:var(--apar)">Apar Industries</div>
+      <div class="ac-row"><span class="ac-lbl">Consensus</span><span class="tag buy">BUY</span></div>
+      <div class="ac-row"><span class="ac-lbl">MOFSL / Emkay Target</span><span class="ac-val">₹9,400–₹9,800</span></div>
+      <div class="ac-row"><span class="ac-lbl">CMP</span><span class="ac-val">~₹7,800 · Upside ~25%</span></div>
+      <div class="ac-row"><span class="ac-lbl">Q4 Results</span><span class="ac-val">May 28, 2026</span></div>
+      <div class="ac-view">Structural play on global grid modernisation and energy transition. US tariff (26%) is near-term risk — US business −51% YoY in Q3. New CEO Cable Solutions: Chandrashekhar Shrotri (appointed post Jan resignation). MOFSL, YES, JM, Emkay all Buy. Q4 FY26 results conference call May 28, 2026 — FY27 guidance is the key catalyst. Analyst consensus Q4 estimate: ₹4,400–4,750 Cr revenue, PAT ₹225–255 Cr.</div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:24px"><div class="sq"></div> INVESTMENT FRAMEWORK — HOW TO POSITION EACH</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Company</th><th>Investment Thesis</th><th>Best For</th><th>Key Risk</th><th>Analogy</th><th>Rating</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Polycab</td><td>Market share dominance + FMEG optionality</td><td>Core large-cap; long-term hold</td><td>FMEG margin drag; export disruption; high valuation</td><td>Asian Paints of cables — scale moat</td><td><span class="tag buy">BUY</span></td></tr>
+      <tr><td><span class="dot" style="background:var(--kei)"></span>KEI</td><td>Pure infra-backed cable demand; clean balance sheet</td><td>Investors wanting clean cable exposure</td><td>Volume growth slowdown; competition from smaller players</td><td>Focused specialist — Cummins in engines</td><td><span class="tag hold">HOLD</span></td></tr>
+      <tr><td><span class="dot" style="background:var(--rrkabel)"></span>RR Kabel</td><td>High-growth challenger; export optionality</td><td>Growth investors; 3–5 year horizon</td><td>Premium PE 36–40x; FMEG losses; inventory build</td><td>Indigo of cables — young, fast, aggressive</td><td><span class="tag buy">BUY (Growth)</span></td></tr>
+      <tr><td><span class="dot" style="background:var(--havells)"></span>Havells</td><td>Premium brand franchise; cables just one part</td><td>Consumer electricals exposure; brand premium</td><td>Lloyd recovery — make-or-break</td><td>Titan of electricals — brand over product</td><td><span class="tag hold">HOLD</span></td></tr>
+      <tr><td><span class="dot" style="background:var(--finolex)"></span>Finolex</td><td>Value + margin quality + OFC upside</td><td>Conservative; dividend seekers</td><td>Governance overhang; low growth rate (~10%)</td><td>Steady compounder — boring but reliable</td><td><span class="tag buy">BUY (Value)</span></td></tr>
+      <tr><td><span class="dot" style="background:var(--apar)"></span>Apar</td><td>Global energy transition + grid supercycle</td><td>Thematic; power capex globally</td><td>US tariffs; management churn; low PAT margins</td><td>Kalpataru of conductors — infra supercycle bet</td><td><span class="tag buy">BUY (Thematic)</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</div><!-- /an -->
+
+
+<!-- ══ TAB 5: RISKS & OUTLOOK ══ -->
+<div id="prisk" class="pane">
+  <div class="st"><div class="sq"></div> SECTOR-WIDE RISKS</div>
+  <div class="rg">
+    <div class="rc"><div class="rc-title">🔴 Common Risks — ALL Companies</div>
+      <div class="ri"><span>🪙</span><span><strong>Copper/Aluminium Prices:</strong> LME copper spiked ~25% in Q3 FY26, compressing margins. All companies are pass-through players — price volatility inflates revenue while masking true volume growth.</span></div>
+      <div class="ri"><span>⚓</span><span><strong>Middle East Export Disruption:</strong> Strait of Hormuz concerns hurt Polycab, KEI, and RR Kabel exports in Q4 FY26. Gulf region is a major export market for Indian cable makers.</span></div>
+      <div class="ri"><span>🇨🇳</span><span><strong>Chinese Competition:</strong> Chinese cable imports (especially in non-US markets) continue to pressure pricing. Apar specifically flagged Chinese competition in global conductor markets.</span></div>
+      <div class="ri"><span>🇺🇸</span><span><strong>US Reciprocal Tariff (26%):</strong> India-origin goods face 26% tariff in US. Severely impacts Apar (US −51% in Q3). Polycab and KEI less affected due to domestic tilt.</span></div>
+    </div>
+    <div class="rc"><div class="rc-title">🏢 Company-Specific Risks</div>
+      <div class="ri"><span>🔵</span><span><strong>Polycab:</strong> FMEG targeting 8–10% EBITDA by FY30 — still building. EPC timing volatility. ₹6,000–8,000 Cr capex commitment over 5 years creates execution risk.</span></div>
+      <div class="ri"><span>🟠</span><span><strong>Havells:</strong> Lloyd fell 19% Q4 and slipped into operating loss. ₹283 Cr one-time Goldi Solar gain flatters reported PAT. Core EBITDA actually declined 4.4% YoY.</span></div>
+      <div class="ri"><span>🟣</span><span><strong>RR Kabel:</strong> Inventory days 64 vs 56 in FY25 — channel stuffing risk. FMEG goodwill impairment risk flagged by auditors. Former CEO lawsuit pending.</span></div>
+      <div class="ri"><span>🟢</span><span><strong>Finolex:</strong> Promoter dispute (Orbit vs Chhabria family) — prolonged governance overhang. Low growth ~10% vs sector 20–30%. Deep value but catalyst unclear.</span></div>
+      <div class="ri"><span>🔷</span><span><strong>Apar:</strong> CEO Cable Solutions resigned Jan 2026. US tariff hit. Low PAT margin (~3.8–5%) amplifies any revenue swing. Transformer oil segment faces cyclical softness.</span></div>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:20px"><div class="sq"></div> FY27 OUTLOOK</div>
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="tbl">
+    <thead><tr><th>Company</th><th>FY27 Revenue Guidance</th><th>Margin Outlook</th><th>Key Trigger</th><th>Pending Catalyst</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--polycab)"></span>Polycab</td><td>~19–20% Rev CAGR FY26–28E</td><td>13.5–14% EBITDA guided</td><td>Export recovery; FMEG margin improvement</td><td>Capex ₹1,200–1,600 Cr FY27 execution</td></tr>
+      <tr><td><span class="dot" style="background:var(--kei)"></span>KEI</td><td>~20% Revenue; volume recovery needed</td><td>~11–12% EBITDA</td><td>Volume normalisation; export recovery</td><td>New capacity commissioning</td></tr>
+      <tr><td><span class="dot" style="background:var(--rrkabel)"></span>RR Kabel</td><td>16–18% volume CAGR (Project Rise)</td><td>W&C EBIT ~10%; FMEG breakeven FY27</td><td>FMEG breakeven is key milestone</td><td>₹1,200 Cr Waghodia plant capacity ramp</td></tr>
+      <tr><td><span class="dot" style="background:var(--havells)"></span>Havells</td><td>Recovery depends on Lloyd</td><td>11–12% EBITDA if Lloyd recovers</td><td>Summer AC demand; Lloyd turnaround</td><td>Lloyd segment-by-segment recovery</td></tr>
+      <tr><td><span class="dot" style="background:var(--finolex)"></span>Finolex</td><td>~10–12% volume growth guidance FY27</td><td>Q3 FY26 EBITDA ~10.3%; recovery to 14% target in FY27</td><td>Promoter dispute resolution; margin recovery</td><td>Q4 FY26 results declared May 10 (actuals not yet captured)</td></tr>
+      <tr><td><span class="dot" style="background:var(--apar)"></span>Apar</td><td>~12–16% depends on US tariff resolution</td><td>~8.5–9% EBITDA</td><td>US tariff resolution; new CEO Cable Solutions settling in</td><td>Q4 FY26 results conference call: May 28, 2026 (PENDING)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="st"><div class="sq"></div> STRUCTURAL DEMAND TAILWINDS</div>
+  <div class="rg">
+    <div class="rc"><div class="rc-title">🏗️ Domestic Drivers</div>
+      <div class="ri"><span>✅</span><span><strong>Housing Boom:</strong> PMAY, smart cities, real estate cycle drive residential wiring demand sustainably for years.</span></div>
+      <div class="ri"><span>✅</span><span><strong>Power T&amp;D Capex:</strong> PGCIL's ₹3.5 lakh crore 5-year plan + DISCOM upgrades + 250 mn smart meters = sustained HV cable demand.</span></div>
+      <div class="ri"><span>✅</span><span><strong>Renewables &amp; Solar:</strong> Wind + solar plants need massive cabling — intra-plant and grid evacuation. Solar is now Polycab's fastest FMEG category.</span></div>
+      <div class="ri"><span>✅</span><span><strong>Data Centres + EV:</strong> Data centre boom + EV charging networks = specialised cable demand across all players.</span></div>
+    </div>
+    <div class="rc"><div class="rc-title">🌍 Export / Global Drivers</div>
+      <div class="ri"><span>✅</span><span><strong>Global Grid Modernisation:</strong> US, Europe, Middle East, Africa investing heavily in grid upgrades — benefits Apar (conductors) and RR Kabel (export cables).</span></div>
+      <div class="ri"><span>✅</span><span><strong>China+1 Sourcing:</strong> Global buyers diversifying from Chinese cable suppliers — structural tailwind for organised Indian cable makers.</span></div>
+      <div class="ri"><span>⚠️</span><span><strong>US Tariff (26%):</strong> India-origin cables face 26% tariff in USA — reduces competitiveness vs domestic US supply or other geographies.</span></div>
+      <div class="ri"><span>⚠️</span><span><strong>Middle East Conflict:</strong> Gulf is a major export market — Strait of Hormuz risk elevated, directly hurting exports in Q4 FY26.</span></div>
+    </div>
+  </div>
+
+  <div class="fn">DATA SOURCES: Polycab Q4 FY26 — BSE filing May 6, 2026 (audited). KEI Industries Q4 FY26 — BSE filing May 4, 2026. RR Kabel Q4 FY26 — BSE filing Apr 30, 2026. Havells India Q4 FY26 — BSE filing Apr 22, 2026. Finolex Cables Q4 FY26 — BSE filing May 28, 2026 (standalone revenue ₹1,951 Cr, PAT ₹161 Cr; consolidated PAT ₹224 Cr; FY26 revenue ₹6,321 Cr, FY26 PAT ₹623 Cr; dividend ₹9/share). Apar Industries Q4 FY26 — BSE filing May 28, 2026 (revenue ₹6,603 Cr, PAT ₹254 Cr incl. one-offs; FY26 revenue ₹22,902 Cr, PAT ₹977 Cr; dividend ₹60/share recommended). Market prices: Finolex ₹1,137 (May 29, 2026); Apar ₹13,422 (May 29, 2026); others approximate May 2026. * Havells PAT includes ₹283 Cr Goldi Solar one-time gain. † Apar Q4 PAT impacted by non-recurring provisions — adjusted recurring PAT ≈ ₹285 Cr. All figures ₹ crore, consolidated unless stated. Dashboard updated Jun 9, 2026. FOR EDUCATIONAL PURPOSES ONLY — NOT INVESTMENT ADVICE.</div>
+</div><!-- /risk -->
+
+
+
+<!-- ══ TAB 6: CB ASSIST ══ -->
+<div id="pcbassist" class="pane">
+<div class="cba-wrap">
+
+  <div class="cba-head">
+    <div class="cba-logo">CB</div>
+    <div class="cba-head-text">
+      <h2>CB Assist</h2>
+      <p>Cauvery Business · Cables &amp; Wires Sector Intelligence · Q4 FY26 · English &amp; Tamil</p>
+    </div>
+  </div>
+
+  <div class="cba-qlbl">📚 Curated Research Questions — Click Any to Expand</div>
+
+  <!-- Q1 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">01</div>
+      <div class="qa-qtxt">
+        <div class="qen">Polycab is India's #1 cable maker with 30–31% market share, yet its Q4 FY26 PAT grew only 7% YoY despite 27% revenue growth. What explains this divergence, and is it a structural problem?</div>
+        <div class="qta">Polycab Q4 FY26-ல் Revenue 27% வளர்ந்தும் PAT வெறும் 7% வளர்ந்தது — இந்த வேறுபாட்டிற்கான காரணம் என்ன? இது structural பிரச்சினையா?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">The PAT–Revenue gap at Polycab in Q4 FY26 has three compounding causes. First, EBITDA margin compressed to 13.1% vs the FY26 full-year average of 13.9% — this was driven by a higher mix of institutional/EPC business (which carries thinner margins than dealer-channel retail wire business) and softness in Middle East exports, where Polycab earns a premium. Second, FMEG continues to be a margin dilutant — FMEG grew 47% YoY in Q4 but still operates below the 8–10% target margin, dragging the blended rate. Third, the revenue base effect: a 27% revenue surge on copper-pass-through inflates the top line far more than the actual volume or margin-contributing growth. This is NOT a structural problem — it is a quarterly mix shift. The structural proof: FY26 full-year PAT of ₹2,708 Cr grew at a healthy clip from ₹2,210 Cr in FY25, and net cash stands at ₹4,190 Cr. The risk to monitor is FMEG margin trajectory — if it doesn't reach 8% EBITDA by FY28, the valuation premium (42x FY27E) faces compression.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">Polycab Q4 FY26-ல் PAT-Revenue gap மூன்று காரணங்களால்: (1) Institutional/EPC business அதிக mix — இதன் margin dealer channel-ஐ விட குறைவு; Middle East exports softness. (2) FMEG 47% வளர்ந்தும் target margin-ஐ தாண்டவில்லை — blended margin-ஐ குறைக்கிறது. (3) Copper pass-through வருவாயை inflate செய்கிறது — volume growth-ஐ விட revenue growth அதிகமாக தெரிகிறது. இது structural பிரச்சினை இல்லை. FY26 full-year PAT ₹2,708 Cr — சுகாதாரமான வளர்ச்சி. FMEG margin trajectory கவனிக்க வேண்டியது: FY28-ல் 8% EBITDA தாண்டாவிட்டால் 42x valuation அழுத்தப்படும்.</div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">02</div>
+      <div class="qa-qtxt">
+        <div class="qen">RR Kabel posted 34% revenue growth — the fastest in the sector — yet trades at the lowest absolute market cap. Its inventory rose 75% YoY. Is this inventory build a red flag or a strategic positioning for FY27 growth?</div>
+        <div class="qta">RR Kabel sector-இல் அதிவேக 34% revenue growth காட்டியது. ஆனால் inventory 75% YoY உயர்ந்தது — இது red flag-ஆ அல்லது FY27 வளர்ச்சிக்கான strategic preparation-ஆ?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">RR Kabel's inventory build is a genuine dual-signal that requires careful interpretation. The bull case for the inventory: RR Kabel operates in a copper-intensive business where metal prices rose 25%+ in FY26. Pre-buying copper inventory at lower prices before upward moves is standard operating practice — if timed well, it protects margins in subsequent quarters. Additionally, RR Kabel's Project Rise targets 18% W&C volume CAGR — to support that, channel stocking and dealer pipeline building are necessary. The bear case: inventory days rose from 56 to 64, which in a wire-heavy business means dealers are carrying 8 extra days of stock. In a demand slowdown scenario, this creates a destocking risk where dealers reduce orders, leading to a revenue air pocket. The FMEG segment adds complexity — the goodwill impairment risk flagged by auditors on FMEG acquisitions suggests the intangible inventory (goodwill) is at risk too. Additionally, the former CEO lawsuit adds governance uncertainty. Net assessment: the inventory build is a 60/40 split between strategic and concerning. Investors should watch Q4 FY27 inventory days — if it stays above 60, demand absorption isn't keeping pace with supply push.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">RR Kabel inventory build இரு சமிக்ஞைகளை தருகிறது. Bull case: Copper prices FY26-ல் 25%+ உயர்ந்தன — குறைந்த விலையில் pre-buy செய்வது standard practice; margin protection-க்கு உதவும். Project Rise 18% W&C volume CAGR target-க்கு channel stocking அவசியம். Bear case: inventory days 56→64 — dealer-கள் அதிக stock தூக்குகிறார்கள். Demand slowdown-ல் destocking risk உருவாகும். FMEG goodwill impairment risk auditors flagged; former CEO lawsuit governance uncertainty. தீர்மானம்: 60/40 ratio-ல் strategic vs concerning. FY27 Q4 inventory days கவனிக்கவும் — 60+ இருந்தால் supply push demand-ஐ outpace செய்கிறது.</div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">03</div>
+      <div class="qa-qtxt">
+        <div class="qen">Havells reported ₹734 Cr PAT (+41% YoY) but ₹283 Cr of it was a one-time Goldi Solar gain. Core EBITDA actually declined 4.4%. How should investors strip out the noise and value the real business?</div>
+        <div class="qta">Havells PAT ₹734 Cr — 41% வளர்ந்தது போல் தெரிகிறது. ஆனால் ₹283 Cr Goldi Solar one-time gain. Core EBITDA உண்மையில் 4.4% குறைந்தது. Noise-ஐ நீக்கி உண்மையான business-ஐ எவ்வாறு மதிப்பிடுவது?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">Stripping out the Goldi Solar gain is the essential first step. Adjusted PAT = ₹734 Cr minus ₹283 Cr (post-tax gain, ~₹211 Cr net) = adjusted PAT of approximately ₹523 Cr — a much more modest outcome. On that basis, Havells' "real" Q4 PAT grew close to flat or marginally positive. More important than PAT is the segment-level EBITDA picture. Cables & Switchgear remain the genuine strengths — cables grew in double digits, switchgear margins held. Lloyd (ACs/TVs) is the value destruction centre — a 19% revenue decline plus slipping into operating loss in a structurally growing AC market is alarming. The ECD (fans, heaters) showed resilience. For valuation purposes: Havells at ~₹84,500 Cr market cap trades at ~50x FY27E P/E. If Lloyd is valued at a discount (given losses) and the core cables+switchgear+ECD business at 35x, the sum-of-parts gives meaningful downside to current prices unless Lloyd recovers sharply. The asymmetric risk: if Lloyd turns around in FY27 (normalisation of summer demand + product refresh), the earnings uplift is massive because the operating leverage works in reverse — a ₹100 Cr operating loss becomes a ₹100 Cr profit swing on modest volume recovery.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">Goldi Solar gain நீக்கினால் adjusted PAT ~₹523 Cr — modest outcome. Cable & Switchgear genuine strength. Lloyd (ACs/TVs) value destruction centre: growing AC market-ல் 19% revenue decline + operating loss — alarming. ECD resilient. Valuation: ₹84,500 Cr market cap at ~50x FY27E P/E. Sum-of-parts analysis: Core (cables+switchgear+ECD) at 35x + Lloyd at discount = current price-க்கு downside risk. Asymmetric opportunity: Lloyd FY27-ல் turnaround ஆனால் — operating leverage reverse-ல் வேலை செய்யும், ₹100 Cr loss → ₹100 Cr profit swing சாத்தியம். Key watch: Summer FY27 AC demand normalisation.</div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">04</div>
+      <div class="qa-qtxt">
+        <div class="qen">Apar Industries Q4 FY26: Revenue ₹6,603 Cr (+26.7% YoY — record high) yet PAT grew only 1.4% to ₹254 Cr. US business recovered sharply (+28.8% YoY, +254% QoQ vs Q3). How does the Q4 actuals change the investment thesis versus Q3's narrative of tariff damage?</div>
+        <div class="qta">Apar Q4 FY26 actual: Revenue ₹6,603 Cr record high (+26.7%). PAT வெறும் +1.4% (one-offs தாக்கியது). US business Q3-ல் -51% — Q4-ல் +254% QoQ recover! FY26 PAT ₹977 Cr. Investment thesis Q3 vs Q4 — என்ன மாறியது?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">The Q4 FY26 actual print for Apar is a significant narrative reversal from Q3's tariff-disruption story. Three critical takeaways: (1) US Business Recovery — The most important data point. Q3 FY26 US revenue was -51% YoY, causing significant analyst concern. Q4 FY26 reversed this entirely with +28.8% YoY growth and a stunning +254.7% QoQ jump. This confirms Apar successfully rerouted orders, rebuilt relationships, and benefited from the temporary tariff exemption window. The structural US grid modernisation thesis remains intact. (2) PAT "Disappointment" is Artificial — The reported 1.4% PAT growth masks a +14% adjusted growth. Three one-offs hit Q4: (a) New wage code gratuity/leave encashment provisioning, (b) MTM loss on ECB (foreign currency loan) due to rupee movement, (c) provision for an old legal case. Strip these out and Apar delivered ₹285 Cr PAT — a solid beat. (3) FY26 Full Year is Genuinely Historic — Revenue ₹22,902 Cr (+23.3%), EBITDA ₹2,067 Cr (9.0%), PAT ₹977 Cr (+19%). All three are records. The ₹60/share dividend (vs ₹51 in FY25) signals management's confidence. (4) FY27 Capex Signal — ₹1,500 Cr planned capex in FY27 (vs ₹740 Cr in FY26) for data centres, renewables, and US cable scaling is an aggressive growth bet. The market re-rated sharply — stock up ~71% in 1 year to ₹13,422. At 55x FY27E P/E, Apar is no longer cheap. The investment thesis has shifted from deep value recovery to growth premium sustainability.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">Apar Q4 FY26 actual Q3 tariff narrative-ஐ முழுவதும் மாற்றியது. (1) US Business Recovery — Q3 -51%, Q4 +28.8% YoY, +254.7% QoQ. Order rerouting + tariff exemption window பயன்படுத்தியது. US grid modernisation thesis intact. (2) PAT 1.4% disappointment artificial — one-offs: (a) New wage code gratuity provisioning, (b) MTM ECB forex loss, (c) Old legal case provision. Adjusted PAT ₹285 Cr = +14% YoY. (3) FY26 full year historic: Revenue ₹22,902 Cr, PAT ₹977 Cr — record. ₹60 dividend vs ₹51 FY25 — confidence signal. (4) FY27 Capex ₹1,500 Cr — data centres, renewables, US cables aggressive bet. Stock ₹13,422 (+71% 1Y) at 55x FY27E P/E — cheap இல்லை இனி. Thesis shifted: deep value recovery → growth premium sustainability.</div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">05</div>
+      <div class="qa-qtxt">
+        <div class="qen">KEI Industries is the "purest cable play" in India — 95% cables, zero FMEG distraction, net-debt negative. Yet analysts are neutral/hold. If the fundamentals are clean, why isn't the market rewarding it?</div>
+        <div class="qta">KEI Industries purest cable play — 95% cables, zero FMEG, net debt negative. ஆனால் analysts neutral/hold. Fundamentals clean-ஆக இருக்கும்போது market ஏன் reward செய்யவில்லை?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">The paradox of KEI is that its purity is also its prison. When sector tailwinds are strong, Polycab and RR Kabel get the "growth story" premium because they have FMEG optionality and higher revenue velocity. KEI delivers steady compounding but no narrative re-rating catalyst. Four specific reasons for the neutral stance: (1) Volume growth of +19% in Q4 is solid, but Morgan Stanley's concern about volumes softening is valid — KEI's institutional-heavy mix makes it sensitive to government capex cycles, EPC project awards, and DISCOM payment timeliness. A single quarter of capex pause would hit revenues meaningfully. (2) Export weakness: Middle East accounts for ~15-20% of KEI revenues; geopolitical risk elevated. (3) Valuation: at ~35x FY27E P/E, KEI is fairly valued for its growth rate — not cheap, not expensive, not exciting. (4) The upcoming capacity expansion will be a volume catalyst, but capital expenditure during the expansion phase suppresses near-term free cash flow. The long-term case for KEI remains intact — if you want clean cable exposure without FMEG noise, KEI at 35x is a reasonable accumulate-on-dips candidate. The trigger for an upgrade would be: government infra capex acceleration above ₹12 lakh crore in Union Budget FY27 + 2-3 quarters of sustained >20% volume growth.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">KEI-இன் purity அதன் prison-ஆகவும் இருக்கிறது. FMEG optionality இல்லாமல் "growth story" premium கிடைப்பதில்லை. நான்கு காரணங்கள்: (1) Institutional-heavy mix — government capex cycles, EPC awards, DISCOM payments-க்கு sensitive. (2) Middle East exports ~15-20% — geopolitical risk. (3) 35x FY27E P/E — fairly valued, not exciting. (4) Capacity expansion phase → near-term FCF suppression. Long-term case intact. Trigger for upgrade: Union Budget FY27 infra capex ₹12L Cr+ + 2–3 quarters >20% volume growth sustained.</div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-num">06</div>
+      <div class="qa-qtxt">
+        <div class="qen">Finolex Q4 FY26 actual: Revenue ₹1,951 Cr (+22.4% YoY, all-time quarterly high). FY26 full-year Revenue ₹6,321 Cr (+18.9%). Stock rallied from ₹820 to ₹1,137 post results. Yet EBITDA margin compressed to ~9.3% from 10.7%. Has the deep-value thesis played out — or is there more re-rating potential?</div>
+        <div class="qta">Finolex Q4 FY26 actual: Revenue ₹1,951 Cr all-time high (+22.4%). Stock ₹820 → ₹1,137 (+39% post results). FY26 Revenue ₹6,321 Cr. ஆனால் EBITDA margin 10.7% → 9.3% compress ஆனது. Deep-value thesis முடிந்ததா — அல்லது இன்னும் rerating potential இருக்கிறதா?</div>
+      </div>
+      <div class="qa-toggle">▼</div>
+    </div>
+    <div class="qa-ans">
+      <div class="ans-label">English</div>
+      <div class="ans-en">The Finolex story from April 2026 (₹820, deep value) to June 2026 (₹1,137, up 39%) is a textbook example of patience rewarding a value thesis. Now the question is whether the re-rating still has legs. (1) What Happened: Q4 FY26 revenue ₹1,951 Cr — all-time quarterly high, confirming demand momentum. FY26 revenue ₹6,321 Cr (+18.9%) is far above the earlier estimate of ₹6,000 Cr, validating the communication cable (OFC/LAN fibre rollout) thesis alongside electrical cable strength. Dividend ₹9/share confirms management's confidence in free cash flow. (2) The Margin Problem Persists: EBITDA margin compressed to ~9.3% in Q4 FY26 from 10.7% in Q4 FY25. This is driven by two factors: (a) LME copper price spike forcing margin compression in a pass-through business model — this is cyclical, likely to normalise as copper stabilises, and (b) product mix shift toward higher-revenue-lower-margin communication cables. The 14% margin seen in FY24 and early FY25 is unlikely to fully return given the new mix. A realistic normalised margin band is 11–12.5%. (3) Re-Rating Assessment: At ₹1,137, Finolex trades at ~26x FY27E P/E — up from the 22x entry point. The full discount has not been awarded back: peers (KEI 35x, Polycab 42x) still trade at significant premium. For Finolex to reach 32–35x (deserved given debt-free + communication cable optionality), the two remaining catalysts are: (a) Promoter dispute resolution — Orbit Electricals vs Finolex — a resolution unlocks a governance premium and potentially triggers an open offer; (b) Margin recovery to 11–12% EBITDA over 2 quarters confirming copper stabilisation. If both deliver, ₹1,300–₹1,450 is achievable on FY27 earnings. If only margin recovers (not dispute), ₹1,200–₹1,280. New entrants at ₹1,137 need both catalysts to get satisfactory returns.</div>
+      <div class="ans-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+      <div class="ans-ta">₹820 → ₹1,137 (+39%) — deep value patience பலித்தது. இனி thesis முடிந்ததா? (1) Q4 actual: Revenue ₹1,951 Cr all-time high, FY26 Revenue ₹6,321 Cr — estimates-ஐ தாண்டியது. OFC/LAN + electrical cable demand solid. ₹9 dividend — FCF confidence. (2) Margin problem: EBITDA 10.7% → 9.3% — copper spike pass-through cyclical; new product mix communication cables higher revenue but lower margin. Realistic normalised band 11–12.5%, FY24-ல் இருந்த 14% return ஆகாது. (3) Rerating: 26x FY27E P/E இப்போது. Peers KEI 35x, Polycab 42x premium தொடர்கிறது. 32–35x-க்கு இரு catalyst வேண்டும்: (a) Orbit vs Finolex promoter dispute resolution → governance premium + open offer potential; (b) Margin recovery 11–12% EBITDA. இரண்டும் நடந்தால் → ₹1,300–₹1,450. Margin மட்டும் → ₹1,200–₹1,280. ₹1,137-ல் புதிய entry: இரண்டு catalyst-ம் இல்லாவிட்டால் satisfactory return கஷ்டம்.</div>
+    </div>
+  </div>
+
+  <!-- Live CB Assist Chat -->
+  <div class="cba-chat">
+    <div class="cba-chat-title"><span class="live-dot"></span> CB Assist Live — Ask Your Question (English or Tamil)</div>
+    <div class="chat-msgs" id="cbaMsgs">
+      <div class="cmsg b">Welcome to <strong>CB Assist</strong> — Cauvery Business Cables &amp; Wires Intelligence. Ask any analytical question about Polycab, KEI, RR Kabel, Havells, Finolex or Apar. I answer in both <strong>English and Tamil</strong>.<br><br>Polycab, KEI, RR Kabel, Havells, Finolex, Apar பற்றிய கேள்விகளை English அல்லது Tamil-ல் கேளுங்கள்.</div>
+    </div>
+    <div class="typing" id="cbaTyping">
+      <span></span><span></span><span></span>
+      <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-left:4px;">CB Assist is analysing...</span>
+    </div>
+    <div class="chat-row">
+      <input class="chat-in" id="cbaInput" type="text" placeholder="Ask about revenues, margins, strategy, risks, comparisons..." onkeydown="if(event.key==='Enter')sendCBA()"/>
+      <button class="chat-btn" id="cbaSendBtn" onclick="sendCBA()">SEND</button>
+    </div>
+  </div>
+
+</div>
+</div><!-- /cbassist -->
+
+</div><!-- main -->
+<div class="wm">CAUVERY BUSINESS · Cables &amp; Wires Sector · Q4 FY26 · v3 · 20 May 2026 · CB Assist Enabled</div>
+
+<script>
+Chart.register(ChartDataLabels);
+const CO=['Polycab','KEI','RR Kabel','Havells','Finolex','Apar'];
+const CL={'Polycab':'#c84b31','KEI':'#2979FF','RR Kabel':'#7c3aed','Havells':'#FF6A00','Finolex':'#22C55E','Apar':'#0ea5e9'};
+const CA=CO.map(c=>CL[c]);
+const QTR=['Q2 FY26','Q3 FY26','Q4 FY26'];
+
+const OPTS=(suffix='',showLegend=false,horizontal=false)=>({
+  responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
+  plugins:{
+    legend:{display:showLegend,labels:{font:{family:'DM Sans',size:11},color:'#1a1714'}},
+    datalabels:{
+      anchor:'end',align:'top',color:'#1a1714',
+      font:{family:'DM Mono',size:10,weight:'500'},
+      formatter:v=>v===null||v===undefined?'N/A':(typeof v==='number'?v.toLocaleString('en-IN')+suffix:v)
+    }
+  },
+  scales:{
+    x:{ticks:{font:{family:'DM Sans',size:10},color:'#6b6660'},grid:{display:false}},
+    y:{ticks:{font:{family:'DM Mono',size:10},color:'#6b6660',callback:v=>typeof v==='number'?v.toLocaleString('en-IN')+suffix:v},grid:{color:'#f0ede8'}}
+  },
+  layout:{padding:{top:28}}
+});
+
+function bar(id,labels,data,suffix='',clrs=null,showLegend=false){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:clrs||CA.slice(0,data.length),borderRadius:6,borderSkipped:false}]},options:OPTS(suffix,showLegend)});
+}
+
+function multiBar(id,labels,datasets,suffix=''){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:datasets.map(d=>({...d,borderRadius:4,borderSkipped:false}))},
+    options:{...OPTS(suffix,true),plugins:{...OPTS(suffix,true).plugins,datalabels:{display:false}}}
+  });
+}
+
+function line(id,labels,datasets,suffix=''){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  return new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:datasets.map(d=>({...d,tension:0.35,pointRadius:5,pointHoverRadius:7}))},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{font:{family:'DM Sans',size:11},color:'#1a1714',boxWidth:12}},datalabels:{display:false}},
+      scales:{
+        x:{ticks:{font:{family:'DM Sans',size:10},color:'#6b6660'},grid:{display:false}},
+        y:{ticks:{font:{family:'DM Mono',size:10},color:'#6b6660',callback:v=>v.toLocaleString('en-IN')+suffix},grid:{color:'#f0ede8'}}
+      }
+    }
+  });
+}
+
+// — Overview tab —
+bar('c_rev', CO, [8864,3476,2964,6688,1951,6603], ' Cr');
+bar('c_yoy', CO, [27,19,34,2.4,22.4,26.7], '%');
+
+// — Performance tab —
+// FY26 vs FY25 annual revenue comparison (grouped bar)
+const annCos=['Polycab','KEI','RR Kabel','Apar','Finolex'];
+multiBar('c_ann_rev_cmp',annCos,[
+  {label:'FY25 Revenue (₹ Cr)',data:[22408,9736,7618,18581,5319],backgroundColor:['rgba(200,75,49,.35)','rgba(41,121,255,.35)','rgba(124,58,237,.35)','rgba(14,165,233,.35)','rgba(34,197,94,.35)']},
+  {label:'FY26 Revenue (₹ Cr)',data:[28884,11748,9722,22902,6321],backgroundColor:[CL['Polycab'],CL['KEI'],CL['RR Kabel'],CL['Apar'],CL['Finolex']]}
+],' Cr');
+
+bar('c_ann_pat',['Polycab','KEI','RR Kabel','Apar','Finolex'],[2708,918,487,977,623],' Cr',[CL['Polycab'],CL['KEI'],CL['RR Kabel'],CL['Apar'],CL['Finolex']]);
+
+bar('c_ebitda',CO,[13.1,10.9,8.8,10.9,9.3,8.8],'%');
+bar('c_pat',CO,[773,284,168,734,161,254],' Cr');
+bar('c_patm',CO,[8.9,8.2,5.7,11.0,8.3,3.8],'%');
+
+// Multi-quarter revenue trend lines
+const qtrLbls=['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'];
+line('c_trend1',qtrLbls,[
+  {label:'Polycab',data:[6500,6900,7620,8864],borderColor:CL['Polycab'],backgroundColor:'transparent'},
+  {label:'Havells',data:[4700,4800,5520,6688],borderColor:CL['Havells'],backgroundColor:'transparent'},
+  {label:'Apar',data:[5104,5210,5480,6603],borderColor:CL['Apar'],backgroundColor:'transparent'}
+],' Cr');
+line('c_trend2',qtrLbls,[
+  {label:'KEI',data:[2550,2720,2989,3476],borderColor:CL['KEI'],backgroundColor:'transparent'},
+  {label:'RR Kabel',data:[1980,2200,2640,2964],borderColor:CL['RR Kabel'],backgroundColor:'transparent'},
+  {label:'Finolex',data:[1350,1400,1599,1951],borderColor:CL['Finolex'],backgroundColor:'transparent'}
+],' Cr');
+
+// FY26 annual growth & margin
+bar('c_fy26g',['Polycab','KEI','RR Kabel','Havells','Apar','Finolex'],[29,21,28,5,23,19],[CL['Polycab'],CL['KEI'],CL['RR Kabel'],CL['Havells'],CL['Apar'],CL['Finolex']],'%');
+bar('c_fy26m',['Polycab','KEI','RR Kabel','Havells','Finolex','Apar'],[13.9,11.8,8.8,10.9,9.5,9.0],[CL['Polycab'],CL['KEI'],CL['RR Kabel'],CL['Havells'],CL['Finolex'],CL['Apar']],'%');
+
+function sw(t){
+  const ids=['ov','perf','seg','an','risk','cbassist'];
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('on',ids[i]===t);
+  });
+  document.querySelectorAll('.pane').forEach(p=>{
+    p.classList.toggle('on',p.id==='p'+t);
+  });
+}
+
+function toggleQA(card){card.classList.toggle('open');}
+
+async function sendCBA(){
+  const input=document.getElementById('cbaInput');
+  const msgs=document.getElementById('cbaMsgs');
+  const btn=document.getElementById('cbaSendBtn');
+  const typing=document.getElementById('cbaTyping');
+  const q=input.value.trim();
+  if(!q)return;
+  const uMsg=document.createElement('div');
+  uMsg.className='cmsg u';uMsg.textContent=q;
+  msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';
+  msgs.scrollTop=msgs.scrollHeight;
+
+  const sys=`You are CB Assist, an expert financial research assistant for Cauvery Business (EIL Research). You specialise in the Indian Cables & Wires sector.
+
+MANDATORY: Always answer in BOTH English AND Tamil. Format: full English answer first, then a "---" separator line, then Tamil answer starting with "தமிழில்:".
+
+Key Q4 FY26 data (all actuals unless noted):
+- Polycab: Revenue ₹8,864 Cr (+27% YoY), PAT ₹773 Cr (+7%), EBITDA 13.1%, FY26 Rev ₹28,884 Cr, FY26 PAT ₹2,708 Cr, Net Cash ₹4,190 Cr, Market Share 30-31%, Div ₹47/sh
+- KEI: Revenue ₹3,476 Cr (+19% YoY), PAT ₹284 Cr (+21%), EBITDA 10.9%, FY26 Rev ₹11,748 Cr, FY26 PAT ₹918 Cr, Net Debt Negative, Order Book ₹3,585 Cr
+- RR Kabel: Revenue ₹2,964 Cr (+34% YoY), PAT ₹168 Cr (+30%), EBITDA 8.8%, FY26 Rev ₹9,722 Cr, FY26 PAT ₹487 Cr, Inventory days 64 vs 56 PY, FMEG loss -₹33 Cr
+- Havells: Revenue ₹6,688 Cr (+2.4% YoY), PAT ₹734 Cr (+41% incl ₹283 Cr Goldi Solar one-time gain), Core EBITDA down 4.4%, Lloyd -19% YoY into operating loss
+- Finolex: Q4 FY26 Revenue ₹1,951 Cr (+22.4% YoY, all-time high), Standalone PAT ₹161 Cr (+6.1%), Consolidated PAT ₹224 Cr (+17%), EBITDA ~9.3% (compressed from 10.7% PY due to copper spike), FY26 Revenue ₹6,321 Cr (+18.9%), FY26 PAT ₹623 Cr standalone, Div ₹9/share; Debt-free, Net Cash; Promoter dispute Orbit Electricals vs Finolex family ongoing
+- Apar: Q4 FY26 Revenue ₹6,603 Cr (+26.7% YoY, all-time high), PAT ₹254 Cr (+1.4% reported, adjusted +14% excl. one-offs: new wage code gratuity, MTM ECB loan, old legal provision), EBITDA 8.8%; FY26 Revenue ₹22,902 Cr (+23.3%), FY26 EBITDA ₹2,067 Cr (9.0%), FY26 PAT ₹977 Cr (+19%), Capex FY27 ₹1,500 Cr; Div ₹60/share recommended; US business Q4 recovered +28.8% YoY (vs Q3 FY26 which was -51%); Domestic revenue Q4 +33.6% YoY; Export mix 27.6% in Q4 FY26
+
+Sector context: Copper prices +25% FY26; Middle East disruption hurt exports; PGCIL ₹3.5L Cr 5-year plan; India housing boom; China+1 sourcing tailwind; US 26% tariff headwind.
+
+Be rigorous, analytical, and non-elementary. Address strategy, risks, valuation, and competitive dynamics. Never give investment advice — provide analysis.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:1000,
+        system:sys,
+        messages:[{role:"user",content:q}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:"Unable to process response.";
+    typing.style.display='none';
+    const bMsg=document.createElement('div');
+    bMsg.className='cmsg b';
+    const fmt=text
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/---/g,'<hr style="border:none;border-top:1px dashed var(--border);margin:8px 0;">')
+      .replace(/\n/g,'<br>');
+    bMsg.innerHTML=fmt;
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');
+    eMsg.className='cmsg b';
+    eMsg.textContent='CB Assist is temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

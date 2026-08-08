@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Dairy Sector — Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --her:#1a5276;--her-s:#eaf0f6;
+  --hat:#2d8b3e;--hat-s:#e8f5ec;
+  --dod:#c8202a;--dod-s:#fdeaea;
+  --par:#7b3fa0;--par-s:#f3ebfa;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-s:#fdf5e0;
+  --sh:0 1px 8px rgba(24,21,17,.07);--sh2:0 4px 20px rgba(24,21,17,.10);
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#0d1c2e;padding:0 32px;display:flex;align-items:stretch;justify-content:space-between;min-height:68px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;line-height:1.15;padding:16px 0 4px;}
+.hdr .sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;padding-bottom:16px;}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 0;}
+.chip{padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;}
+.chip-her{background:var(--her);}.chip-hat{background:var(--hat);}.chip-dod{background:var(--dod);}
+.chip-par{background:var(--par);}
+.chip-date{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;padding:0 32px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:13px 13px 11px;font-size:11.5px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--her);font-weight:700;}
+.main{padding:22px 32px 48px;max-width:1480px;margin:0 auto;}
+.panel{display:none;animation:fi .18s ease;}
+.panel.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sec-note{font-size:10.5px;color:var(--muted);font-weight:400;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
+.card-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.her::before{background:var(--her);}.co-card.hat::before{background:var(--hat);}
+.co-card.dod::before{background:var(--dod);}.co-card.par::before{background:var(--par);}
+.co-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:9px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center;}
+.m-lbl{font-size:11px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text);}
+.badge-row{margin-top:10px;display:flex;gap:4px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-neg{background:#fee2e2;color:#b91c1c;}.b-warn{background:#fff7ed;color:#c2410c;}.b-neu{background:#f3f4f6;color:#4b5563;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:20px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.kpi.her-a{border-left:4px solid var(--her);}.kpi.hat-a{border-left:4px solid var(--hat);}
+.kpi.dod-a{border-left:4px solid var(--dod);}.kpi.par-a{border-left:4px solid var(--par);}
+.kpi .kl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+.kpi .kv{font-size:1rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:9.5px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+th{background:#0d1c2e;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:10px 12px;text-align:left;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap;vertical-align:middle;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;color:var(--text);}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;color:var(--text);}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.val-co{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text);}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
+.swot-cell{padding:11px 13px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-s);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.6;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:9px;padding-bottom:5px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:7px;}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;box-shadow:var(--sh);margin-bottom:12px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);}
+.rat-pill{padding:3px 11px;border-radius:20px;font-size:10.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef9c3;color:#a16207;}.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.15rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:2px;}
+.ac-cmp{font-size:10.5px;color:var(--muted);margin-bottom:7px;}
+.ac-text{font-size:11.5px;color:var(--text);line-height:1.6;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh2);margin-bottom:16px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:9px;}
+.verdict-body{font-size:12.5px;line-height:1.7;color:var(--text);}
+.trojan-card{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:2px solid var(--warn);border-radius:var(--r);padding:20px 24px;margin-bottom:16px;}
+.trojan-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--warn);margin-bottom:9px;}
+.rm-box{background:#fff0ef;border:1.5px solid #c8202a;border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.65;}
+.grp-hdr{padding:7px 13px;border-left:4px solid;border-radius:0 7px 7px 0;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:10.5px;color:var(--muted);margin-bottom:10px;}
+.seg-row{margin-bottom:12px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;}
+.seg-bar{height:8px;border-radius:20px;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--her);border-radius:var(--r);padding:18px 20px;}
+.cbassist-title{font-weight:800;font-size:12px;color:var(--her);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.cbassist-title span{width:7px;height:7px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:100px;max-height:360px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:9px;}
+.chat-msg{padding:9px 13px;border-radius:10px;font-size:12px;max-width:92%;line-height:1.55;}
+.chat-msg.user{background:#0d1c2e;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;color:var(--text);}
+.chat-msg.bot strong{color:var(--her);}
+.chat-input-row{display:flex;gap:7px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;}
+.chat-input:focus{border-color:var(--her);}
+.chat-send{background:var(--her);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:7px 11px;}
+.typing-ind span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.lang-hdr{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);padding:5px 10px;background:var(--surface2);border-radius:5px;margin-bottom:8px;display:inline-block;}
+.preset-tab{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 5px 0;}
+.pt-her.on{background:var(--her);border-color:var(--her);color:#fff;}
+.pt-hat.on{background:var(--hat);border-color:var(--hat);color:#fff;}
+.pt-dod.on{background:var(--dod);border-color:var(--dod);color:#fff;}
+.pt-par.on{background:var(--par);border-color:var(--par);color:#fff;}
+.pt-sector.on{background:var(--gold);border-color:var(--gold);color:#fff;}
+.pqs{display:none;}.pqs.on{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.pq{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:8px;line-height:1.45;color:var(--text);}
+.pq:hover{border-color:var(--her);background:var(--her-s);}
+.co-sel{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:12px;}
+.co-sel-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.sep{width:1px;height:22px;background:var(--border);display:inline-block;margin:0 4px;}
+.per-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.co-sec{display:none;}.co-sec.on{display:block;}
+.qtr-v{display:block;}.annual-v{display:none;}
+.cat-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;box-shadow:var(--sh);}
+.cat-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.cat-btn.on{background:#0d1c2e;color:#fff;border-color:#0d1c2e;}
+.qtr-sel{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 14px;background:var(--her-s);border:1.5px solid var(--her);border-radius:var(--r);margin-bottom:12px;}
+.qtr-sel label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--her);}
+.qtr-sel select{border:1.5px solid var(--her);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text);background:var(--surface);cursor:pointer;font-weight:700;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:12px 32px;border-top:1px solid var(--border);margin-top:24px;line-height:1.7;}
+.cb-wm{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);border:1.5px solid var(--border);border-radius:28px;padding:6px 13px 6px 7px;box-shadow:0 4px 18px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:26px;height:26px;background:var(--her);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.8rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:10.5px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.process-flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;margin-bottom:16px;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.pf-step{background:var(--surface);border-right:1px solid var(--border);padding:12px 14px;flex:1;min-width:140px;position:relative;}
+.pf-step:last-child{border-right:none;}
+.pf-step::after{content:'▶';position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);z-index:2;}
+.pf-step:last-child::after{display:none;}
+.pf-num{font-size:9px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.pf-title{font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.pf-desc{font-size:10.5px;color:var(--muted);line-height:1.5;}
+#tab-outlook td, #tab-risks td, #tab-swot td, #tab-analyst td{white-space:normal;}
+@media(max-width:860px){.main{padding:12px 12px 40px;}.hdr{padding:0 14px;flex-wrap:wrap;}.tab-nav{padding:0 6px;}.g2,.g3,.g4,.kpi-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.g2,.g3,.g4,.kpi-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<div class="hdr">
+  <div><h1>India Dairy Sector — Intelligence Dashboard</h1><div class="sub">Heritage Foods · Hatsun Agro · Dodla Dairy · Parag Milk Foods · Q4 FY26 · CB Research</div></div>
+  <div class="hdr-right">
+    <span class="chip chip-her">HERITAGE</span>
+    <span class="chip chip-hat">HATSUN</span>
+    <span class="chip chip-dod">DODLA</span>
+    <span class="chip chip-par">PARAG</span>
+    <span class="chip chip-date">Q4 FY26 · 18 Jun 2026</span>
+  </div>
+</div>
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="showTab('companies',this)">Companies</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Company Charts</button>
+  <button class="tab-btn" onclick="showTab('compare',this)">Compare All</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('milkchain',this)" style="color:#2d8b3e;font-weight:800;">Milk Chain</button>
+  <button class="tab-btn" onclick="showTab('sector',this)" style="color:#7c3aed;font-weight:800;">Sector Dynamics</button>
+  <button class="tab-btn" onclick="showTab('lean',this)" style="color:#ea580c;font-weight:800;">Lean Season &amp; Pricing</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT &amp; Moat</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analysts</button>
+  <button class="tab-btn" onclick="showTab('outlook',this)" style="color:#c2410c;font-weight:800;">FY27 Outlook</button>
+  <button class="tab-btn" onclick="showTab('cb',this)" style="color:var(--her);font-weight:800;">CB Assist</button>
+</nav>
+
+<div class="main">
+
+<!-- ═══════════════ TAB 1: OVERVIEW ═══════════════ -->
+<div class="panel active" id="tab-overview">
+  <div class="sec-hdr">Overview <span class="sec-note">· Q4 FY26 Actuals · 4 Listed Dairy Companies · CB Research · Jan–Mar 2026</span></div>
+
+  <div class="kpi-grid">
+    <div class="kpi her-a"><div class="kl">Heritage Foods</div><div class="kv">₹840 Cr</div><div class="kc pos">Q4 Revenue</div></div>
+    <div class="kpi hat-a"><div class="kl">Hatsun Agro</div><div class="kv">₹2,218 Cr</div><div class="kc pos">Q4 Revenue</div></div>
+    <div class="kpi dod-a"><div class="kl">Dodla Dairy</div><div class="kv">₹868 Cr</div><div class="kc pos">Q4 Revenue</div></div>
+    <div class="kpi par-a"><div class="kl">Parag Milk Foods</div><div class="kv">₹861 Cr</div><div class="kc pos">Q4 Revenue</div></div>
+  </div>
+
+  <div class="g4" style="margin-bottom:16px;">
+    <div class="co-card her">
+      <div class="co-name">Heritage Foods</div>
+      <div class="co-seg">NSE: HERITGFOOD · South-focused · Milk + Ice Cream</div>
+      <div class="m-row"><span class="m-lbl">Q4 FY26 Revenue</span><span class="m-val pos">₹840 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹41 Cr (+58%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">~8.4%</span></div>
+      <div class="m-row"><span class="m-lbl">Milk Procurement (FY26)</span><span class="m-val">~37 LLPD</span></div>
+      <div class="m-row"><span class="m-lbl">Value-Added Products</span><span class="m-val warn">~25% revenue</span></div>
+      <div class="badge-row"><span class="badge b-pos">South India leader</span><span class="badge b-warn">VAP scaling</span></div>
+    </div>
+    <div class="co-card hat">
+      <div class="co-name">Hatsun Agro Products</div>
+      <div class="co-seg">NSE: HATSUN · South TN/AP · Arun Ice Cream · Ibaco</div>
+      <div class="m-row"><span class="m-lbl">Q4 FY26 Revenue</span><span class="m-val pos">₹2,218 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹59 Cr (+24%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">~11.2%</span></div>
+      <div class="m-row"><span class="m-lbl">Milk Procurement (FY26)</span><span class="m-val">~34 LLPD</span></div>
+      <div class="m-row"><span class="m-lbl">Ice Cream / VAP Mix</span><span class="m-val pos">~40% revenue</span></div>
+      <div class="badge-row"><span class="badge b-pos">Highest VAP mix</span><span class="badge b-pos">Debt reducing</span></div>
+    </div>
+    <div class="co-card dod">
+      <div class="co-name">Dodla Dairy</div>
+      <div class="co-seg">NSE: DODLA · South India + East Africa expansion</div>
+      <div class="m-row"><span class="m-lbl">Q4 FY26 Revenue</span><span class="m-val pos">₹868 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹56 Cr (+19%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">~9.8%</span></div>
+      <div class="m-row"><span class="m-lbl">Milk Procurement (FY26)</span><span class="m-val">~14 LLPD</span></div>
+      <div class="m-row"><span class="m-lbl">Africa Biz Revenue</span><span class="m-val pos">~₹110 Cr</span></div>
+      <div class="badge-row"><span class="badge b-pos">Africa growth</span><span class="badge b-neu">Low D/E</span></div>
+    </div>
+    <div class="co-card par">
+      <div class="co-name">Parag Milk Foods</div>
+      <div class="co-seg">NSE: PARAGMILK · Pride of Cows · Gowardhan · Go Cheese</div>
+      <div class="m-row"><span class="m-lbl">Q4 FY26 Revenue</span><span class="m-val pos">₹861 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val">₹24 Cr (+15%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">~7.2%</span></div>
+      <div class="m-row"><span class="m-lbl">Cheese / Whey Protein</span><span class="m-val pos">~38% revenue</span></div>
+      <div class="m-row"><span class="m-lbl">B2B / Exports</span><span class="m-val">~28% revenue</span></div>
+      <div class="badge-row"><span class="badge b-pos">Cheese leader</span><span class="badge b-warn">Margin recovery</span></div>
+    </div>
+  </div>
+
+  <div class="verdict-card">
+    <div class="verdict-title">🥛 Q4 FY26 Sector Verdict — CB Research</div>
+    <div class="verdict-body">Q4 FY26 (Jan–Mar 2026) marks the <strong>peak procurement season</strong> for Indian dairy — milk availability is high, raw milk prices are softer, and processors benefit from better margins. All four listed companies reported <strong>YoY PAT growth of 15–58%</strong>. Hatsun continues to lead on value-added product (VAP) mix (~40%) and is the only South Indian private dairy operating at a national scale. Heritage Foods is accelerating its ice cream and flavoured milk push. Dodla Dairy's Africa business is quietly becoming a meaningful ₹400 Cr annualised revenue stream. Parag Milk Foods is the nation's cheese/whey protein innovator — though margin recovery remains a work in progress. Sector-wide, <strong>milk procurement prices softened 4–8% in Q4 FY26</strong> vs Q3 (winter flush), which directly expanded EBITDA margins for all four. The key watch for FY27 is how the lean season (Apr–Jun) procurement cost spike is managed and whether VAP pricing holds to offset it.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">All 4 Companies — Q4 FY26 Quick Reference (₹ Crore)</div>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Company</th><th>Q4 Revenue</th><th>YoY%</th><th>Q4 PAT</th><th>PAT%</th><th>EBITDA Margin</th><th>Milk Proc. (LLPD)</th><th>VAP Mix</th><th>FY26 Revenue</th><th>FY26 PAT</th><th>Key Differentiator</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--her)"></span>Heritage</td><td class="num">₹840</td><td class="tpos">+12%</td><td class="tpos">₹41 Cr</td><td class="tpos">+58%</td><td class="num">~8.4%</td><td class="num">~37 LLPD</td><td class="warn">~25%</td><td class="num">₹3,165 Cr</td><td class="tpos">₹139 Cr</td><td>South India milk network; Ice Cream expansion</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hat)"></span>Hatsun</td><td class="num">₹2,218</td><td class="tpos">+14%</td><td class="tpos">₹59 Cr</td><td class="tpos">+24%</td><td class="tpos">~11.2%</td><td class="num">~34 LLPD</td><td class="tpos">~40%</td><td class="num">₹8,282 Cr</td><td class="tpos">₹217 Cr</td><td>Arun/Ibaco ice cream; highest VAP mix</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--dod)"></span>Dodla</td><td class="num">₹868</td><td class="tpos">+16%</td><td class="tpos">₹56 Cr</td><td class="tpos">+19%</td><td class="tpos">~9.8%</td><td class="num">~14 LLPD</td><td class="num">~30%</td><td class="num">₹3,044 Cr</td><td class="tpos">₹195 Cr</td><td>East Africa operations; lean supply chain</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--par)"></span>Parag</td><td class="num">₹861</td><td class="tpos">+9%</td><td class="num">₹24 Cr</td><td class="tpos">+15%</td><td class="warn">~7.2%</td><td class="num">~11 LLPD</td><td class="tpos">~38%</td><td class="num">₹3,273 Cr</td><td class="warn">₹73 Cr</td><td>Cheese, whey protein, Pride of Cows premium</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 2: COMPANIES ═══════════════ -->
+<div class="panel" id="tab-companies">
+  <div class="sec-hdr">Companies <span class="sec-note">· Select Company · Quarter &amp; Annual View · Milk Chain · Value-Added Products · Geography · Management</span></div>
+
+  <!-- Quarter selector for future Q1 FY27 readiness -->
+  <div class="qtr-sel">
+    <label>📅 Data Period</label>
+    <select id="qtrDropdown" onchange="handleQtrChange(this.value)">
+      <option value="q4fy26" selected>Q4 FY26 (Jan–Mar 2026) — Current</option>
+      <option value="q1fy27" disabled>Q1 FY27 (Apr–Jun 2026) — Results Expected Aug 2026</option>
+      <option value="q2fy27" disabled>Q2 FY27 (Jul–Sep 2026) — Upcoming</option>
+    </select>
+    <span id="qtrNote" style="font-size:10.5px;color:var(--her);font-weight:700;">Showing Q4 FY26 actuals. Q1 FY27 results expected Aug 2026 — dropdown will be enabled on update.</span>
+  </div>
+
+  <div class="co-sel">
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Company</span>
+    <button class="co-sel-btn" id="cobtn-her" onclick="showCo('her',this)" style="background:var(--her);color:#fff;border-color:var(--her);">Heritage Foods</button>
+    <button class="co-sel-btn" id="cobtn-hat" onclick="showCo('hat',this)">Hatsun Agro</button>
+    <button class="co-sel-btn" id="cobtn-dod" onclick="showCo('dod',this)">Dodla Dairy</button>
+    <button class="co-sel-btn" id="cobtn-par" onclick="showCo('par',this)">Parag Milk Foods</button>
+    <span class="sep"></span>
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Period</span>
+    <button class="per-btn" id="perbtn-qtr" onclick="showPer('qtr',this)" style="background:#0d1c2e;color:#fff;border-color:#0d1c2e;">Quarter</button>
+    <button class="per-btn" id="perbtn-annual" onclick="showPer('annual',this)">Annual</button>
+  </div>
+
+  <!-- ── HERITAGE FOODS ── -->
+  <div class="co-sec on" id="co-her">
+    <div class="grp-hdr" style="background:var(--her-s);border-color:var(--her);color:var(--her);">Heritage Foods Ltd — NSE: HERITGFOOD · Founded 1992 by N. Chandrababu Naidu · HQ: Hyderabad · South India Milk + Ice Cream + Retail · CMD: N. Brahmani Reddy</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tpos">₹840 Cr</td><td class="num">₹798 Cr</td><td class="num">₹750 Cr</td><td class="tpos">+12%</td></tr>
+              <tr><td>EBITDA</td><td class="tpos">₹70.6 Cr</td><td class="num">₹60.2 Cr</td><td class="num">₹55.1 Cr</td><td class="tpos">+28.1%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">8.4%</td><td class="num">7.5%</td><td class="num">7.3%</td><td class="tpos">+110 bps</td></tr>
+              <tr><td>PAT</td><td class="tpos">₹41 Cr</td><td class="num">₹28 Cr</td><td class="num">₹26 Cr</td><td class="tpos">+57.7%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">4.9%</td><td class="num">3.5%</td><td class="num">3.5%</td><td class="tpos">+140 bps</td></tr>
+              <tr><td>Raw Milk Cost (avg Q4)</td><td class="tpos">₹34–36/litre</td><td class="num">₹37–39/litre</td><td class="num">₹35–37/litre</td><td class="tpos">Flush season benefit</td></tr>
+              <tr><td>VAP Revenue Share</td><td class="num">~25%</td><td class="num">~23%</td><td class="num">~20%</td><td class="tpos">Scaling up</td></tr>
+              <tr><td>Ice Cream Revenue</td><td class="tpos">₹68 Cr</td><td class="warn">₹22 Cr (off-season)</td><td class="num">₹58 Cr</td><td class="tpos">+17%</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Milk Operations &amp; Distribution</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">Note</th></tr></thead>
+            <tbody>
+              <tr><td>Milk Procurement (avg)</td><td class="num">~37 LLPD</td><td class="num">~34 LLPD</td><td>Lakh Litres Per Day</td></tr>
+              <tr><td>Farmer Vendor Count</td><td class="tpos">~3.5 lakh farmers</td><td class="num">~3.2 lakh</td><td>AP, TG, KA, TN</td></tr>
+              <tr><td>Chilling Centres</td><td class="num">~2,700</td><td class="num">~2,500</td><td>Village-level</td></tr>
+              <tr><td>Processing Plants</td><td class="num">12 plants</td><td class="num">11 plants</td><td>South India focus</td></tr>
+              <tr><td>Processing Capacity</td><td class="num">~52 LLPD</td><td class="num">~48 LLPD</td><td>Utilisation ~71%</td></tr>
+              <tr><td>Retail Outlets (Heritage Fresh)</td><td class="num">~278 stores</td><td class="num">~240 stores</td><td>Hyderabad-centric</td></tr>
+              <tr><td>Distribution (Routes)</td><td class="num">~12,500</td><td class="num">~11,200</td><td>Direct-to-home + trade</td></tr>
+              <tr><td>Net Debt</td><td class="tpos">~₹95 Cr (low)</td><td class="num">~₹130 Cr</td><td>Improving</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Management &amp; Promoters</div>
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Background</th></tr></thead>
+            <tbody>
+              <tr><td class="tb">N. Brahmani Reddy</td><td>CMD / Promoter</td><td>Daughter of N. Chandrababu Naidu; MBA — Young Turk driving VAP transformation</td></tr>
+              <tr><td class="tb">Srideep Kesavan</td><td>CEO</td><td>Former Britannia and ITC; FMCG distribution expertise</td></tr>
+              <tr><td class="tb">Promoter Holding</td><td>~53%</td><td>Naidu family; strong political linkage in AP/TG (viewed as both risk and advantage)</td></tr>
+              <tr><td class="tb">FII / DII Holding</td><td>~25% / ~12%</td><td>Institutional confidence building; FII up from 18% in FY24</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Value-Added Products Portfolio</div>
+          <div class="seg-row"><div class="seg-lbl"><span>Liquid Milk (pasteurised)</span><span>~75%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:75%;background:var(--her)"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Ice Cream (summer peak)</span><span>~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:#2979ff"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Curd / Buttermilk / Lassi</span><span>~9%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:9%;background:#22c55e"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Flavoured Milk / SMP / Butter</span><span>~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:#ff6a00"></div></div></div>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">Heritage is on a <strong>VAP journey</strong> — currently ~25% VAP, targeting 35% by FY28. The Heritage Fresh retail chain (Hyderabad) is a unique moat providing direct consumer shelf-space. Ice cream is highly seasonal — Q4 (Jan–Mar) and Q1 (Apr–Jun) are peak; Q2/Q3 are lean for ice cream.</p>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue</td><td class="tpos">₹3,165 Cr</td><td class="num">₹2,842 Cr</td><td class="num">₹2,634 Cr</td><td class="tpos">+11.4%</td></tr>
+              <tr><td>EBITDA</td><td class="tpos">₹240 Cr</td><td class="num">₹188 Cr</td><td class="num">₹162 Cr</td><td class="tpos">+27.7%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">7.6%</td><td class="num">6.6%</td><td class="num">6.1%</td><td class="tpos">+100 bps</td></tr>
+              <tr><td>PAT</td><td class="tpos">₹139 Cr</td><td class="num">₹96 Cr</td><td class="num">₹73 Cr</td><td class="tpos">+44.8%</td></tr>
+              <tr><td>EPS (₹)</td><td class="tpos">₹34.7</td><td class="num">₹24.0</td><td class="num">₹18.2</td><td class="tpos">+44.6%</td></tr>
+              <tr><td>Milk Procurement (avg)</td><td class="num">~35 LLPD</td><td class="num">~32 LLPD</td><td class="num">~30 LLPD</td><td class="tpos">+9.4%</td></tr>
+              <tr><td>Capex</td><td class="num">~₹180 Cr</td><td class="num">~₹140 Cr</td><td class="num">~₹110 Cr</td><td class="num">Processing expansion</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Geographic Presence</div>
+          <div class="seg-row"><div class="seg-lbl"><span>Telangana &amp; Andhra Pradesh</span><span>~55%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:55%;background:var(--her)"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Karnataka</span><span>~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:#2979ff"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Tamil Nadu</span><span>~12%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:12%;background:#22c55e"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Other States</span><span>~11%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:11%;background:#ff6a00"></div></div></div>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">Heritage's geographic concentration is both a strength (deep AP/TG roots, no.1 brand in Hyderabad) and a risk (exposed to AP/TG milk price regulations). West India expansion is at early stages.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HATSUN AGRO ── -->
+  <div class="co-sec" id="co-hat">
+    <div class="grp-hdr" style="background:var(--hat-s);border-color:var(--hat);color:var(--hat);">Hatsun Agro Products Ltd — NSE: HATSUN · Founded 1970 by R.G. Chandramogan · HQ: Chennai · India's Largest Private Dairy · Arun Ice Cream · Ibaco</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tpos">₹2,218 Cr</td><td class="num">₹1,994 Cr</td><td class="num">₹1,947 Cr</td><td class="tpos">+13.9%</td></tr>
+              <tr><td>EBITDA</td><td class="tpos">₹248 Cr</td><td class="num">₹208 Cr</td><td class="num">₹197 Cr</td><td class="tpos">+25.9%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">11.2%</td><td class="num">10.4%</td><td class="num">10.1%</td><td class="tpos">+110 bps</td></tr>
+              <tr><td>PBT</td><td class="tpos">₹88 Cr</td><td class="num">₹64 Cr</td><td class="num">₹62 Cr</td><td class="tpos">+41.9%</td></tr>
+              <tr><td>PAT</td><td class="tpos">₹59 Cr</td><td class="num">₹44 Cr</td><td class="num">₹48 Cr</td><td class="tpos">+22.9%</td></tr>
+              <tr><td>PAT Margin</td><td class="num">2.7%</td><td class="num">2.2%</td><td class="num">2.5%</td><td class="tpos">+20 bps</td></tr>
+              <tr><td>Raw Milk Cost (avg)</td><td class="tpos">₹33–35/litre</td><td class="num">₹36–38/litre</td><td class="num">₹33–35/litre</td><td class="tpos">Flush benefit</td></tr>
+              <tr><td>Ice Cream + VAP Revenue</td><td class="tpos">~₹887 Cr (~40%)</td><td class="warn">~₹558 Cr (~28%)</td><td class="num">~₹780 Cr</td><td class="tpos">Summer pickup</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Procurement, Capacity &amp; Reach</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">Note</th></tr></thead>
+            <tbody>
+              <tr><td>Milk Procurement</td><td class="num">~34 LLPD</td><td class="num">~30 LLPD</td><td>India's largest private dairy by procurement</td></tr>
+              <tr><td>Farmer Connections</td><td class="tpos">~5.5 lakh farmers</td><td class="num">~5.0 lakh</td><td>TN, AP, KA, MH</td></tr>
+              <tr><td>Milk Chilling Units</td><td class="num">~8,000+</td><td class="num">~7,200</td><td>Deepest rural network</td></tr>
+              <tr><td>Processing Capacity</td><td class="num">~55 LLPD</td><td class="num">~50 LLPD</td><td>Multi-site TN + AP + KA</td></tr>
+              <tr><td>Ibaco Ice Cream Parlours</td><td class="tpos">~410 parlours</td><td class="num">~370</td><td>Premium urban channel</td></tr>
+              <tr><td>Hatsun Milk (Arokya) outlets</td><td class="tpos">~1.3 lakh outlets</td><td class="num">~1.15 lakh</td><td>South India retail</td></tr>
+              <tr><td>Net Debt (Mar 2026)</td><td class="warn">~₹1,850 Cr</td><td class="num">~₹2,100 Cr</td><td>Declining; watch interest cost</td></tr>
+              <tr><td>Interest Cost (Q4)</td><td class="warn">~₹62 Cr</td><td class="num">~₹68 Cr</td><td>High but declining</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Management &amp; Promoters</div>
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Background</th></tr></thead>
+            <tbody>
+              <tr><td class="tb">R.G. Chandramogan</td><td>Chairman &amp; MD</td><td>Founder; bootstrapped from ₹50K in 1970 to India's largest private dairy. Legendary dairy entrepreneur.</td></tr>
+              <tr><td class="tb">K.S. Thangaraj</td><td>MD (Designate)</td><td>Son-in-law; operational expertise; succession plan in progress</td></tr>
+              <tr><td class="tb">Promoter Holding</td><td>~74.1%</td><td>Chandramogan family; negligible pledging</td></tr>
+              <tr><td class="tb">Key Strength</td><td>Innovation culture</td><td>First Indian dairy to introduce Arokya 1-litre pouches; Ibaco premium ice cream</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Value-Added Products Portfolio (Hatsun)</div>
+          <div class="seg-row"><div class="seg-lbl"><span>Liquid Milk (Arokya, HAP brands)</span><span>~42%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:42%;background:var(--hat)"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Ice Cream (Arun + Ibaco)</span><span>~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:#2979ff"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Curd / Yogurt / Lassi</span><span>~12%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:12%;background:#22c55e"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Skimmed Milk Powder (SMP)</span><span>~10%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:10%;background:#ff6a00"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Butter / Ghee / Paneer</span><span>~14%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:14%;background:#b8911e"></div></div></div>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;"><strong>Debt remains the key overhang</strong> for Hatsun. Despite the highest EBITDA margins in the peer group, high interest costs compress reported PAT. FY27 interest cost moderation (₹220–240 Cr target) could deliver disproportionate PAT growth.</p>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue</td><td class="tpos">₹8,282 Cr</td><td class="num">₹7,274 Cr</td><td class="num">₹6,898 Cr</td><td class="tpos">+13.9%</td></tr>
+            <tr><td>EBITDA</td><td class="tpos">₹891 Cr</td><td class="num">₹706 Cr</td><td class="num">₹634 Cr</td><td class="tpos">+26.2%</td></tr>
+            <tr><td>EBITDA Margin</td><td class="tpos">10.8%</td><td class="num">9.7%</td><td class="num">9.2%</td><td class="tpos">+110 bps</td></tr>
+            <tr><td>PAT</td><td class="tpos">₹217 Cr</td><td class="num">₹163 Cr</td><td class="num">₹128 Cr</td><td class="tpos">+33.1%</td></tr>
+            <tr><td>EPS (₹)</td><td class="tpos">₹20.0</td><td class="num">₹15.0</td><td class="num">₹11.8</td><td class="tpos">+33.3%</td></tr>
+            <tr><td>Interest Cost</td><td class="warn">₹268 Cr</td><td class="num">₹302 Cr</td><td class="num">₹320 Cr</td><td class="tpos">Declining</td></tr>
+            <tr><td>Net Debt</td><td class="warn">~₹1,850 Cr</td><td class="num">~₹2,100 Cr</td><td class="num">~₹2,350 Cr</td><td class="tpos">Structural reduction</td></tr>
+            <tr><td>Capex</td><td class="num">~₹420 Cr</td><td class="num">~₹380 Cr</td><td class="num">~₹340 Cr</td><td class="num">Ice cream + processing</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DODLA DAIRY ── -->
+  <div class="co-sec" id="co-dod">
+    <div class="grp-hdr" style="background:var(--dod-s);border-color:var(--dod);color:var(--dod);">Dodla Dairy Ltd — NSE: DODLA · Founded 1995 · HQ: Hyderabad · South India + East Africa Operations · MD: Sunil Reddy</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tpos">₹868 Cr</td><td class="num">₹774 Cr</td><td class="num">₹748 Cr</td><td class="tpos">+16.0%</td></tr>
+              <tr><td>EBITDA</td><td class="tpos">₹85 Cr</td><td class="num">₹72 Cr</td><td class="num">₹68 Cr</td><td class="tpos">+25.0%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="tpos">9.8%</td><td class="num">9.3%</td><td class="num">9.1%</td><td class="tpos">+70 bps</td></tr>
+              <tr><td>PAT</td><td class="tpos">₹56 Cr</td><td class="num">₹43 Cr</td><td class="num">₹47 Cr</td><td class="tpos">+19.1%</td></tr>
+              <tr><td>PAT Margin</td><td class="tpos">6.4%</td><td class="num">5.6%</td><td class="num">6.3%</td><td class="tpos">+10 bps</td></tr>
+              <tr><td>Africa Subsidiary Revenue</td><td class="tpos">~₹110 Cr</td><td class="num">~₹98 Cr</td><td class="num">~₹78 Cr</td><td class="tpos">+41%</td></tr>
+              <tr><td>Africa EBITDA Margin</td><td class="tpos">~12–13%</td><td class="num">~11%</td><td class="num">~10%</td><td class="tpos">Superior to India</td></tr>
+              <tr><td>Raw Milk Cost (India)</td><td class="tpos">₹33–35/litre</td><td class="num">₹36–38/litre</td><td class="num">₹34–36/litre</td><td class="tpos">Flush benefit</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Milk Chain &amp; Africa Business</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">Note</th></tr></thead>
+            <tbody>
+              <tr><td>India Milk Procurement</td><td class="num">~14 LLPD</td><td class="num">~12.5 LLPD</td><td>AP, TG, KA, TN</td></tr>
+              <tr><td>Africa Milk Procurement</td><td class="tpos">~2.5 LLPD</td><td class="num">~1.9 LLPD</td><td>Uganda, Kenya, Ethiopia</td></tr>
+              <tr><td>Farmer Connections (India)</td><td class="num">~1.5 lakh</td><td class="num">~1.3 lakh</td><td>Asset-light model</td></tr>
+              <tr><td>Processing Plants (India)</td><td class="num">10 plants</td><td class="num">9</td><td>Lean, efficient</td></tr>
+              <tr><td>Processing Capacity (India)</td><td class="num">~25 LLPD</td><td class="num">~22 LLPD</td><td>~56% utilisation</td></tr>
+              <tr><td>Africa Plants</td><td class="tpos">4 plants</td><td class="num">3</td><td>Uganda, Kenya, Ethiopia</td></tr>
+              <tr><td>Africa Revenue (FY26 ann.)</td><td class="tpos">~₹400 Cr</td><td class="num">~₹290 Cr</td><td>+38% YoY — key growth</td></tr>
+              <tr><td>Net Debt</td><td class="tpos">~₹80 Cr (minimal)</td><td class="num">~₹120 Cr</td><td>Among lowest in sector</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Management &amp; Promoters</div>
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Background</th></tr></thead>
+            <tbody>
+              <tr><td class="tb">Sunil Reddy</td><td>MD &amp; Promoter</td><td>Second-generation; drove Africa expansion since 2014; PE background helps capital allocation thinking</td></tr>
+              <tr><td class="tb">Dodla Family</td><td>Promoter Group</td><td>~56% holding; Hyderabad-based agri-business family</td></tr>
+              <tr><td class="tb">TPG Capital</td><td>PE Investor (exited at IPO)</td><td>IPO in 2021; strong governance post-PE backing</td></tr>
+              <tr><td class="tb">FII / DII</td><td>~18% / ~14%</td><td>Strong post-IPO institutional interest</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Revenue Mix &amp; Africa Business Model</div>
+          <div class="seg-row"><div class="seg-lbl"><span>Liquid Milk (India)</span><span>~55%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:55%;background:var(--dod)"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Value-Added Products (India)</span><span>~30%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:#2979ff"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Africa Dairy Operations</span><span>~13%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:13%;background:#22c55e"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>By-products / SMP / Export</span><span>~2%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:2%;background:#ff6a00"></div></div></div>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;"><strong>Africa is Dodla's unique differentiator.</strong> The East Africa business (Uganda, Kenya, Ethiopia) operates at 12–13% EBITDA margins vs India's 9–10%, benefits from underpenetrated markets, and provides a natural hedge against India's milk price cycles. Target: Africa to become 20% of revenue by FY28.</p>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue (Consolidated)</td><td class="tpos">₹3,044 Cr</td><td class="num">₹2,618 Cr</td><td class="num">₹2,442 Cr</td><td class="tpos">+16.3%</td></tr>
+            <tr><td>EBITDA</td><td class="tpos">₹299 Cr</td><td class="num">₹236 Cr</td><td class="num">₹208 Cr</td><td class="tpos">+26.7%</td></tr>
+            <tr><td>EBITDA Margin</td><td class="tpos">9.8%</td><td class="num">9.0%</td><td class="num">8.5%</td><td class="tpos">+80 bps</td></tr>
+            <tr><td>PAT (Consol)</td><td class="tpos">₹195 Cr</td><td class="num">₹160 Cr</td><td class="num">₹142 Cr</td><td class="tpos">+21.9%</td></tr>
+            <tr><td>Africa Revenue (FY26)</td><td class="tpos">~₹390 Cr</td><td class="num">~₹280 Cr</td><td class="num">~₹210 Cr</td><td class="tpos">+39%</td></tr>
+            <tr><td>Net Debt</td><td class="tpos">~₹80 Cr</td><td class="num">~₹120 Cr</td><td class="num">~₹170 Cr</td><td class="tpos">Structural decline</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PARAG MILK FOODS ── -->
+  <div class="co-sec" id="co-par">
+    <div class="grp-hdr" style="background:var(--par-s);border-color:var(--par);color:var(--par);">Parag Milk Foods Ltd — NSE: PARAGMILK · Founded 1992 · HQ: Pune · Gowardhan · Go Cheese · Pride of Cows · Avvatar Whey · MD: Pritam Shah</div>
+    <div class="qtr-v">
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Profit &amp; Loss</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue from Operations</td><td class="tpos">₹861 Cr</td><td class="num">₹804 Cr</td><td class="num">₹790 Cr</td><td class="tpos">+9.0%</td></tr>
+              <tr><td>EBITDA</td><td class="tpos">₹62 Cr</td><td class="num">₹50 Cr</td><td class="num">₹50 Cr</td><td class="tpos">+24.0%</td></tr>
+              <tr><td>EBITDA Margin</td><td class="warn">7.2%</td><td class="warn">6.2%</td><td class="warn">6.3%</td><td class="tpos">+90 bps (recovery)</td></tr>
+              <tr><td>PAT</td><td class="num">₹24 Cr</td><td class="num">₹16 Cr</td><td class="num">₹21 Cr</td><td class="tpos">+14.3%</td></tr>
+              <tr><td>PAT Margin</td><td class="warn">2.8%</td><td class="warn">2.0%</td><td class="warn">2.7%</td><td class="tpos">Slow recovery</td></tr>
+              <tr><td>Cheese Revenue (Go Cheese)</td><td class="tpos">~₹165 Cr</td><td class="num">~₹145 Cr</td><td class="num">~₹138 Cr</td><td class="tpos">+19.6%</td></tr>
+              <tr><td>Whey Protein (Avvatar)</td><td class="tpos">₹32 Cr</td><td class="num">₹27 Cr</td><td class="num">₹22 Cr</td><td class="tpos">+45.5%</td></tr>
+              <tr><td>Pride of Cows (premium)</td><td class="tpos">₹28 Cr</td><td class="num">₹24 Cr</td><td class="num">₹24 Cr</td><td class="tpos">+16.7%</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Q4 FY26 — Procurement &amp; Business Model</div>
+          <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">Note</th></tr></thead>
+            <tbody>
+              <tr><td>Milk Procurement</td><td class="num">~11 LLPD</td><td class="num">~10.2 LLPD</td><td>Maharashtra, Rajasthan focus</td></tr>
+              <tr><td>Processing Capacity</td><td class="num">~20 LLPD</td><td class="num">~18 LLPD</td><td>Manchar plant (Pune)</td></tr>
+              <tr><td>Capacity Utilisation</td><td class="warn">~55%</td><td class="warn">~57%</td><td>Headroom remains</td></tr>
+              <tr><td>Go Cheese — Market share</td><td class="tpos">~28% organised</td><td class="num">~25%</td><td>No.2 in India cheese (organised)</td></tr>
+              <tr><td>Avvatar Whey Protein</td><td class="tpos">Growing fast +45%</td><td class="num">+32% then</td><td>₹100+ Cr FY26 annualised</td></tr>
+              <tr><td>Pride of Cows</td><td class="tpos">₹28 Cr Q4; ₹95 Cr FY26</td><td class="num">₹82 Cr FY25</td><td>India's costliest milk brand</td></tr>
+              <tr><td>B2B / Exports</td><td class="num">~28% of revenue</td><td class="num">~30%</td><td>HoReCa + Institutional</td></tr>
+              <tr><td>Net Debt</td><td class="warn">~₹640 Cr</td><td class="num">~₹710 Cr</td><td>Still elevated; management focus</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="g2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-lbl">Management &amp; Promoters</div>
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Background</th></tr></thead>
+            <tbody>
+              <tr><td class="tb">Devendra Shah</td><td>Chairman</td><td>Founder; built Parag from a single chilling centre in 1992; visionary on cheese and proteins</td></tr>
+              <tr><td class="tb">Pritam Shah</td><td>MD &amp; CEO</td><td>Son of Devendra; CA + MBA; driving brand transformation; strong on product innovation</td></tr>
+              <tr><td class="tb">Akshali Shah</td><td>Executive Director</td><td>Daughter of Devendra; HBS alumni; Pride of Cows architect; brand-building focus</td></tr>
+              <tr><td class="tb">Promoter Holding</td><td>~46.5%</td><td>Shah family; partially pledged — a risk to watch</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-lbl">Revenue Mix — VAP Intensity Leader</div>
+          <div class="seg-row"><div class="seg-lbl"><span>Cheese &amp; Cheese Products (Go Cheese)</span><span>~19%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:19%;background:var(--par)"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Ghee / Butter (Gowardhan)</span><span>~28%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:28%;background:#2979ff"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Liquid Milk + Curd (B2C)</span><span>~25%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:25%;background:#22c55e"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Whey Protein (Avvatar)</span><span>~4%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:4%;background:#ff6a00"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>Pride of Cows (premium milk)</span><span>~3%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:3%;background:#b8911e"></div></div></div>
+          <div class="seg-row"><div class="seg-lbl"><span>B2B / Institutional / HoReCa</span><span>~21%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:21%;background:#6b7280"></div></div></div>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">Parag has the <strong>most differentiated product portfolio</strong> in Indian listed dairy — but margin execution remains the weak link. Whey protein (Avvatar) is emerging as a high-growth, high-margin category. Debt reduction is the #1 management priority for FY27.</p>
+        </div>
+      </div>
+    </div>
+    <div class="annual-v" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-lbl">FY26 Full Year vs FY25 vs FY24</div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">FY26 YoY</th></tr></thead>
+          <tbody>
+            <tr><td>Revenue</td><td class="tpos">₹3,273 Cr</td><td class="num">₹3,044 Cr</td><td class="num">₹2,809 Cr</td><td class="tpos">+7.5%</td></tr>
+            <tr><td>EBITDA</td><td class="tpos">₹218 Cr</td><td class="num">₹174 Cr</td><td class="num">₹178 Cr</td><td class="tpos">+25.3%</td></tr>
+            <tr><td>EBITDA Margin</td><td class="warn">6.7%</td><td class="warn">5.7%</td><td class="num">6.3%</td><td class="tpos">+100 bps recovery</td></tr>
+            <tr><td>PAT</td><td class="warn">₹73 Cr</td><td class="tneg">₹39 Cr</td><td class="num">₹72 Cr</td><td class="tpos">+87% recovery</td></tr>
+            <tr><td>Net Debt</td><td class="warn">~₹640 Cr</td><td class="num">~₹710 Cr</td><td class="num">~₹730 Cr</td><td class="tpos">Declining slowly</td></tr>
+            <tr><td>Go Cheese Revenue</td><td class="tpos">~₹600 Cr</td><td class="num">~₹510 Cr</td><td class="num">~₹440 Cr</td><td class="tpos">+17.6%</td></tr>
+            <tr><td>Avvatar Whey Protein</td><td class="tpos">~₹110 Cr</td><td class="num">~₹72 Cr</td><td class="num">~₹48 Cr</td><td class="tpos">+52.8%</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 3: CHARTS ═══════════════ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Company Charts <span class="sec-note">· Revenue, EBITDA, PAT, Milk Procurement Trends · All 4 Companies</span></div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card">
+      <h3>Q4 Revenue Comparison (₹ Cr)</h3><p class="sub">Q4 FY24 · Q4 FY25 · Q4 FY26</p>
+      <canvas id="revChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Q4 PAT Comparison (₹ Cr)</h3><p class="sub">Q4 FY24 · Q4 FY25 · Q4 FY26</p>
+      <canvas id="patChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card">
+      <h3>EBITDA Margin Trend (%)</h3><p class="sub">Q2 FY26 · Q3 FY26 · Q4 FY26</p>
+      <canvas id="ebitdaChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Milk Procurement (LLPD)</h3><p class="sub">FY24 · FY25 · FY26 Annual Average</p>
+      <canvas id="milkChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="chart-card" style="margin-bottom:16px;">
+    <h3>FY26 Full Year Revenue (₹ Cr)</h3><p class="sub">Annual Revenue Comparison Across 4 Companies</p>
+    <canvas id="annRevChart" height="140"></canvas>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 4: COMPARE ALL ═══════════════ -->
+<div class="panel" id="tab-compare">
+  <div class="sec-hdr">Compare All <span class="sec-note">· FY26 Full Year · All 4 Companies · Revenue · PAT · Margins · Milk · VAP Mix</span></div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">FY26 Full Year Comparative — Revenue · EBITDA · PAT (₹ Crore)</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>FY26 Revenue</th><th>YoY%</th><th>EBITDA</th><th>EBITDA%</th><th>FY26 PAT</th><th>PAT%</th><th>Net Debt</th><th>Key Note</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--her)"></span>Heritage Foods</td><td class="num">₹3,165 Cr</td><td class="tpos">+11.4%</td><td class="tpos">₹240 Cr</td><td class="tpos">7.6%</td><td class="tpos">₹139 Cr</td><td class="tpos">+44.8%</td><td class="tpos">~₹95 Cr (low)</td><td>VAP journey; ice cream scaling; Heritage Fresh moat</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hat)"></span>Hatsun Agro</td><td class="num">₹8,282 Cr</td><td class="tpos">+13.9%</td><td class="tpos">₹891 Cr</td><td class="tpos">10.8%</td><td class="tpos">₹217 Cr</td><td class="tpos">+33.1%</td><td class="warn">~₹1,850 Cr</td><td>Best EBITDA%; debt reducing; ice cream moat</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--dod)"></span>Dodla Dairy</td><td class="num">₹3,044 Cr</td><td class="tpos">+16.3%</td><td class="tpos">₹299 Cr</td><td class="tpos">9.8%</td><td class="tpos">₹195 Cr</td><td class="tpos">+21.9%</td><td class="tpos">~₹80 Cr (minimal)</td><td>Africa business +39%; cleanest balance sheet</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--par)"></span>Parag Milk</td><td class="num">₹3,273 Cr</td><td class="tpos">+7.5%</td><td class="warn">₹218 Cr</td><td class="warn">6.7%</td><td class="warn">₹73 Cr</td><td class="tpos">+87% (recovery)</td><td class="warn">~₹640 Cr</td><td>Cheese + Whey protein growth; margin recovery in progress</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">3-Year PAT Trajectory — FY24 → FY25 → FY26 (₹ Crore)</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th style="text-align:right">FY24 PAT</th><th style="text-align:right">FY25 PAT</th><th style="text-align:right">FY26 PAT</th><th>Pattern</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--her)"></span>Heritage Foods</td><td class="num">₹73 Cr</td><td class="num">₹96 Cr</td><td class="tpos">₹139 Cr</td><td><span class="badge b-pos">Steady compounding</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hat)"></span>Hatsun Agro</td><td class="num">₹128 Cr</td><td class="num">₹163 Cr</td><td class="tpos">₹217 Cr</td><td><span class="badge b-pos">Consistent growth; debt declining</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--dod)"></span>Dodla Dairy</td><td class="num">₹142 Cr</td><td class="num">₹160 Cr</td><td class="tpos">₹195 Cr</td><td><span class="badge b-pos">Steady; Africa accelerating</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--par)"></span>Parag Milk</td><td class="num">₹72 Cr</td><td class="tneg">₹39 Cr</td><td class="warn">₹73 Cr</td><td><span class="badge b-warn">Dip FY25; recovery FY26</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="card-lbl">Milk Procurement, VAP Mix &amp; Geographic Reach Comparison</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Company</th><th>Milk Proc. (LLPD)</th><th>Farmer Network</th><th>Processing Capacity</th><th>VAP Mix</th><th>Ice Cream</th><th>International Biz</th><th>Key Markets</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--her)"></span>Heritage</td><td class="num">~35 avg LLPD</td><td class="num">~3.5 lakh</td><td class="num">~52 LLPD</td><td class="warn">~25%</td><td>Yes (Heritage Ice Cream)</td><td class="num">No</td><td>AP, TG, KA, TN</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hat)"></span>Hatsun</td><td class="tpos">~34 avg LLPD</td><td class="tpos">~5.5 lakh</td><td class="tpos">~55 LLPD</td><td class="tpos">~40%</td><td>Yes (Arun, Ibaco — ~22% rev)</td><td class="num">No</td><td>TN, AP, KA, MH (national)</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--dod)"></span>Dodla</td><td class="num">~14 avg LLPD</td><td class="num">~1.5 lakh</td><td class="num">~25 LLPD</td><td class="num">~30%</td><td>Limited</td><td class="tpos">Yes (Uganda, Kenya, Ethiopia ~13% rev)</td><td>AP, TG, KA; East Africa</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--par)"></span>Parag</td><td class="num">~11 avg LLPD</td><td class="num">~1.0 lakh</td><td class="num">~20 LLPD</td><td class="tpos">~38%</td><td>No</td><td class="num">Exports (~5%)</td><td>MH, Rajasthan; national cheese</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 5: VALUATIONS ═══════════════ -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuations <span class="sec-note">· All 4 Companies · CMP · Market Cap · P/E · EV/EBITDA · Dividend Yield · Jun 2026</span></div>
+  <div class="g4" style="margin-bottom:14px;">
+    <div class="val-card"><div class="val-co" style="color:var(--her)">Heritage Foods</div>
+      <div class="val-row"><span class="val-lbl">CMP (Jun 2026)</span><span class="val-num">~₹480</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹1,928 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num pos">₹139 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~13.9×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~8.8×</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num">~0.6%</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk Range</span><span class="val-num">₹388 – ₹548</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">South Dairy · VAP growth</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--hat)">Hatsun Agro</div>
+      <div class="val-row"><span class="val-lbl">CMP (Jun 2026)</span><span class="val-num">~₹1,015</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹11,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num pos">₹217 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num warn">~50.7× (premium)</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num warn">~14.5×</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num">~0.3%</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk Range</span><span class="val-num">₹790 – ₹1,120</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">India's largest pvt dairy</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--dod)">Dodla Dairy</div>
+      <div class="val-row"><span class="val-lbl">CMP (Jun 2026)</span><span class="val-num">~₹1,210</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹6,436 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num pos">₹195 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~33.0×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~22×</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num">~0.4%</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk Range</span><span class="val-num">₹980 – ₹1,340</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">Africa growth story</span></div>
+    </div>
+    <div class="val-card"><div class="val-co" style="color:var(--par)">Parag Milk Foods</div>
+      <div class="val-row"><span class="val-lbl">CMP (Jun 2026)</span><span class="val-num">~₹215</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹1,978 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 PAT</span><span class="val-num warn">₹73 Cr (recovery)</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~27.1×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num warn">~13.3×</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend Yield</span><span class="val-num">~0.5%</span></div>
+      <div class="val-row"><span class="val-lbl">52-wk Range</span><span class="val-num">₹162 – ₹265</span></div>
+      <div class="val-row"><span class="val-lbl">Category</span><span class="val-num">Cheese + Whey protein play</span></div>
+    </div>
+  </div>
+  <div class="verdict-card">
+    <div class="verdict-title">💹 Valuation Context — CB Research Note</div>
+    <div class="verdict-body">Indian listed dairy companies trade at a <strong>significant premium to global dairy peers</strong> (global dairies trade at 8–12× P/E vs India's 14–50×). This premium reflects India's structural consumption growth story, low dairy penetration in value-added products, and the early-stage nature of branded dairy expansion. <strong>Hatsun commands the highest premium</strong> (~50× P/E) justified by its position as India's largest private dairy, iconic ice cream brands, and systematic debt reduction. <strong>Heritage is the cheapest in the peer group</strong> (~14× P/E) with the fastest PAT growth rate in FY26 (+45%). <strong>Dodla's Africa moat</strong> explains its premium over revenue multiples. <strong>Parag's cheese and whey protein</strong> make it a potential re-rating candidate if margins normalise to 9–10%. Note: These are data observations — CB Research makes no buy/sell/hold recommendations.</div>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 6: MILK CHAIN ═══════════════ -->
+<div class="panel" id="tab-milkchain">
+  <div class="sec-hdr">Milk Chain <span class="sec-note">· From Farmer to Consumer · Collection · Processing · Distribution · Cold Chain</span></div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">🐄 The Indian Dairy Value Chain — Procurement to Consumer</div>
+    <div class="process-flow">
+      <div class="pf-step">
+        <div class="pf-num">Step 1</div>
+        <div class="pf-title">🐄 Farm / Farmer</div>
+        <div class="pf-desc">Small-holder farmers (avg 2–5 cows). Morning + evening milking (~10–12 litres/day). Cost: ₹33–42/litre depending on season and location.</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">Step 2</div>
+        <div class="pf-title">🏠 Village Chilling Centre</div>
+        <div class="pf-desc">Bulk Milk Coolers (BMC) at village level. Milk cooled to 4°C within 2 hours. Quality tested (fat, SNF). Farmer payment linked to fat content.</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">Step 3</div>
+        <div class="pf-title">🚛 Cold Chain Transport</div>
+        <div class="pf-desc">Insulated tankers collect from multiple BMCs. Transported to processing plant within 8–12 hours. Temperature maintained at 4–6°C throughout.</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">Step 4</div>
+        <div class="pf-title">🏭 Processing Plant</div>
+        <div class="pf-desc">Pasteurisation (72°C/15 sec or UHT). Standardisation (fat adjustment). Separation into cream, SMP, butter, cheese, curd. Quality grading. FSSAI-certified.</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">Step 5</div>
+        <div class="pf-title">📦 Packaging</div>
+        <div class="pf-desc">Pouched milk (1L, 500ml, 200ml). Tetra Pak for flavoured milk/UHT. Tubs for ice cream/curd. Cartons for paneer/cheese. SKU rationalisation is key to margin.</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">Step 6</div>
+        <div class="pf-title">🏬 Distribution</div>
+        <div class="pf-desc">Direct-to-home (milk routes), Modern Trade (Reliance, DMart), General Trade (local kirana). Institutional (HoReCa, hospitals, catering). Quick commerce (Blinkit, Swiggy Instamart) emerging.</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">Step 7</div>
+        <div class="pf-title">👨‍👩‍👧 Consumer</div>
+        <div class="pf-desc">India's per capita milk consumption: ~450 gm/day (global avg: ~290 gm). Growing demand for curd, cheese, yogurt, paneer, ice cream. Premium brands (Pride of Cows, Ibaco) growing fastest.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-lbl">Company-wise Milk Chain Depth Comparison</div>
+      <table>
+        <thead><tr><th>Company</th><th>Farmer Reach</th><th>Chilling Units</th><th>Processing Plants</th><th>Route-to-Market</th><th>Cold Chain Strength</th></tr></thead>
+        <tbody>
+          <tr><td class="tb"><span class="dot" style="background:var(--her)"></span>Heritage</td><td class="num">~3.5 lakh farmers</td><td class="num">~2,700 BMCs</td><td class="num">12 plants (S. India)</td><td>Heritage Fresh stores; 12,500 routes; DTH</td><td class="tpos">Strong in AP/TG</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--hat)"></span>Hatsun</td><td class="tpos">~5.5 lakh farmers</td><td class="tpos">~8,000+ BMCs</td><td class="tpos">Multi-state plants</td><td>Arokya routes; 1.3L outlets; Ibaco parlours</td><td class="tpos">Best-in-class nationally</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--dod)"></span>Dodla</td><td class="num">~1.5 lakh + Africa</td><td class="num">~1,800 BMCs India</td><td class="num">10 India + 4 Africa</td><td>South India trade; Africa modern trade</td><td class="tpos">Africa: growing rapidly</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--par)"></span>Parag</td><td class="num">~1.0 lakh farmers</td><td class="num">~900 BMCs</td><td class="num">2 large plants (MH)</td><td>B2B dominant; Gowardhan trade; E-comm</td><td class="warn">West India-centric</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Milk Economics — Key Numbers (FY26)</div>
+      <table>
+        <thead><tr><th>Parameter</th><th>Q4 FY26 (Flush)</th><th>Q2 FY27 (Lean)</th><th>Difference</th></tr></thead>
+        <tbody>
+          <tr><td>Raw Milk Procurement Cost</td><td class="tpos">₹33–36/litre</td><td class="tneg">₹40–45/litre</td><td class="tneg">+₹7–9/litre</td></tr>
+          <tr><td>Average Selling Price (pouched milk)</td><td class="num">₹54–58/litre</td><td class="num">₹56–62/litre</td><td class="tpos">+₹2–4 (partial pass-through)</td></tr>
+          <tr><td>Gross Margin (liquid milk)</td><td class="tpos">~₹18–22/litre</td><td class="warn">~₹12–16/litre</td><td class="tneg">Compresses in lean</td></tr>
+          <tr><td>VAP (Curd) gross margin</td><td class="tpos">~₹28–35/kg</td><td class="warn">~₹20–26/kg</td><td class="tneg">Input cost drives down</td></tr>
+          <tr><td>Ice Cream margin</td><td class="tpos">High (~40–50% gross)</td><td class="num">Moderate (summer peak)</td><td class="tpos">Ice cream benefits lean Q2</td></tr>
+          <tr><td>India Milk Production (seasonal)</td><td class="tpos">Peak (flush season)</td><td class="tneg">Trough (lean season)</td><td>~15–20% seasonal swing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">Value Addition Ladder — Milk to Margin</div>
+    <table>
+      <thead><tr><th>Product Category</th><th>% of Milk Used</th><th>Gross Margin Band</th><th>Who Leads</th><th>Growth Rate (FY26)</th></tr></thead>
+      <tbody>
+        <tr><td>Pasteurised Liquid Milk (pouch)</td><td class="num">~55%</td><td class="warn">8–12%</td><td>All four</td><td class="num">+8–12%</td></tr>
+        <tr><td>Curd / Buttermilk / Lassi</td><td class="num">~12%</td><td class="num">15–22%</td><td>Heritage, Hatsun</td><td class="tpos">+18–22%</td></tr>
+        <tr><td>Ice Cream</td><td class="num">~6%</td><td class="tpos">35–48%</td><td>Hatsun (Arun, Ibaco)</td><td class="tpos">+22–28%</td></tr>
+        <tr><td>Cheese (processed + natural)</td><td class="num">~8%</td><td class="tpos">28–38%</td><td>Parag (Go Cheese)</td><td class="tpos">+18–22%</td></tr>
+        <tr><td>Paneer</td><td class="num">~5%</td><td class="num">18–25%</td><td>Heritage, Hatsun, Parag</td><td class="tpos">+20–25%</td></tr>
+        <tr><td>Ghee / Butter</td><td class="num">~7%</td><td class="num">12–18%</td><td>Parag (Gowardhan), Heritage</td><td class="num">+10–14%</td></tr>
+        <tr><td>SMP (Skimmed Milk Powder)</td><td class="num">~5%</td><td class="warn">5–10%</td><td>Hatsun (bulk export)</td><td class="num">Volatile (export price-linked)</td></tr>
+        <tr><td>Whey Protein (Avvatar etc)</td><td class="num">~2%</td><td class="tpos">45–55%</td><td>Parag (Avvatar)</td><td class="tpos">+45–55%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 7: SECTOR DYNAMICS ═══════════════ -->
+<div class="panel" id="tab-sector">
+  <div class="sec-hdr">Sector Dynamics <span class="sec-note">· Tailwinds · Market Structure · Competitive Landscape · Organised vs Unorganised</span></div>
+
+  <div class="verdict-card">
+    <div class="verdict-title">🚀 10 Major Tailwinds — India Dairy Sector (FY26–FY30)</div>
+    <div class="verdict-body">
+      <strong>1. India is the World's Largest Milk Producer</strong> — 240 MT in FY26 (~24% of global output), growing at ~3.5% CAGR. This gives Indian processors unparalleled raw material access.<br><br>
+      <strong>2. Low Per-Capita VAP Consumption</strong> — India's per capita cheese consumption is ~220 gm/year vs 18 kg in Europe. Yogurt, ice cream, and specialty dairy are early-stage, implying 15–20 year runway for VAP growth.<br><br>
+      <strong>3. Organised Sector Gaining Share</strong> — Organised players (~35% of market) are growing at 15–18% vs 5–7% for unorganised, driven by FSSAI enforcement, cold chain, and urban preference for quality-assured products.<br><br>
+      <strong>4. Rising Disposable Incomes + Urbanisation</strong> — 500+ million middle class consumers upgrading from loose milk to pouched, then to value-added products. Tier 2/3 city demand accelerating in FY26.<br><br>
+      <strong>5. Protein Awareness Driving Premium Products</strong> — Post-COVID fitness culture driving whey protein, Greek yogurt, high-protein milk. Avvatar (Parag), Ibaco, and premium milk segments are beneficiaries.<br><br>
+      <strong>6. Quick Commerce Expanding Dairy Reach</strong> — Blinkit, Swiggy Instamart, Zepto now deliver dairy in 10 minutes. This unlocks new consumer cohorts and increases impulse purchase of ice cream and specialty products.<br><br>
+      <strong>7. Government Support — Pradhan Mantri Matsya Sampada, Animal Husbandry Infrastructure Development Fund</strong> — ₹15,000 Cr government schemes for cold chain, processing, and cattle improvement directly benefit listed dairy companies.<br><br>
+      <strong>8. Export Opportunity</strong> — India is a competitive exporter of SMP, casein, and ghee. Parag and Hatsun are building export capabilities. East Africa (Dodla) proves Indian dairy brands can scale abroad.<br><br>
+      <strong>9. Technology in Procurement (NDDB model spreading)</strong> — AI-based milk testing, IoT-enabled BMCs, and digital farmer payments reducing procurement costs 3–5% and improving quality — benefiting listed players disproportionately.<br><br>
+      <strong>10. Demographic Dividend</strong> — India adds ~18 million people/year, most in dairy-consuming age groups (children, young adults). Simply serving existing consumption growth at higher quality is a multi-decade opportunity.
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-lbl">India Dairy Market Structure (FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Unorganised (loose milk, local halwais)</span><span>~65%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:65%;background:#dc2626"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Cooperatives (Amul, Mother Dairy etc)</span><span>~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:#b8911e"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Private Listed Companies (our 4)</span><span>~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:var(--her)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Other Private Players</span><span>~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:#6b7280"></div></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">India's dairy market is ~₹10–11 lakh crore by full value (farm-to-consumer). The organised private sector has enormous headroom to grow. Amul (GCMMF) alone does ~₹80,000 Cr but is a cooperative — the listed universe is only a small slice of a massive market.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Listed Dairy — Competitive Positioning Map</div>
+      <table>
+        <thead><tr><th>Company</th><th>Volume Scale</th><th>VAP Focus</th><th>Margin Profile</th><th>Growth Engine</th><th>Unique Moat</th></tr></thead>
+        <tbody>
+          <tr><td class="tb"><span class="dot" style="background:var(--her)"></span>Heritage</td><td class="num">Large (S. India)</td><td class="warn">Medium (25%)</td><td class="warn">Medium (7.6%)</td><td>Ice cream + VAP</td><td>Heritage Fresh retail stores</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--hat)"></span>Hatsun</td><td class="tpos">Largest private</td><td class="tpos">High (40%)</td><td class="tpos">Highest (10.8%)</td><td>Ice cream + brand</td><td>Arun/Ibaco + farmer network</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--dod)"></span>Dodla</td><td class="num">Mid-size</td><td class="num">Medium (30%)</td><td class="tpos">Good (9.8%)</td><td>Africa expansion</td><td>Only Indian dairy in Africa</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--par)"></span>Parag</td><td class="warn">Smaller (MH)</td><td class="tpos">High (38%)</td><td class="warn">Low (6.7%)</td><td>Cheese + Whey protein</td><td>Go Cheese + Pride of Cows</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 8: LEAN SEASON ═══════════════ -->
+<div class="panel" id="tab-lean">
+  <div class="sec-hdr">Lean Season &amp; Pricing <span class="sec-note">· Seasonal Milk Cycles · Procurement Cost Dynamics · Pricing Power · Margin Impact</span></div>
+
+  <div class="trojan-card">
+    <div class="trojan-title">⚠️ Lean Season — The Dairy Sector's Q2 Headwind</div>
+    <p style="font-size:12.5px;line-height:1.7;color:var(--text);">India's dairy sector has a <strong>structural seasonal cost cycle</strong> that mirrors the monsoon calendar. Q4 (Jan–Mar) and Q3 (Oct–Dec) are the "flush seasons" — milk production is high, cows calve in large numbers, procurement prices soften to ₹33–37/litre. Q1 (Apr–Jun) and Q2 (Jul–Sep) are "lean seasons" — milk production dips 15–20%, procurement prices spike to ₹40–46/litre, and EBITDA margins compress 200–400 basis points for all dairy companies. This is <strong>unlike the oil sector</strong> which is driven by global commodity prices — dairy seasonality is entirely India-driven and predictable. Companies that manage lean season well (via VAP pricing, SMP inventory carry, price hikes, and ice cream revenue in Q1) outperform. Q1 FY27 results will be the real test of FY27 margin trajectory.</p>
+  </div>
+
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-lbl">Seasonal Calendar — India Dairy</div>
+      <table>
+        <thead><tr><th>Quarter</th><th>Season</th><th>Milk Availability</th><th>Proc. Cost (est.)</th><th>EBITDA Impact</th><th>Ice Cream Sales</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Q1 (Apr–Jun)</td><td class="warn">Lean + Summer</td><td class="tneg">Low (−15 to −20%)</td><td class="tneg">₹40–46/litre</td><td class="tneg">−150 to −300 bps</td><td class="tpos">Peak (summer)</td></tr>
+          <tr><td class="tb">Q2 (Jul–Sep)</td><td class="tneg">Lean (Monsoon)</td><td class="tneg">Very low</td><td class="tneg">₹42–46/litre</td><td class="tneg">Worst margins</td><td class="num">Low (rainy)</td></tr>
+          <tr><td class="tb">Q3 (Oct–Dec)</td><td class="tpos">Flush begins</td><td class="tpos">Rising (+5–10%)</td><td class="tpos">₹36–40/litre</td><td class="tpos">Improving</td><td class="warn">Off-season</td></tr>
+          <tr><td class="tb">Q4 (Jan–Mar)</td><td class="tpos">Full Flush</td><td class="tpos">Peak (+15–20%)</td><td class="tpos">₹33–37/litre</td><td class="tpos">Best margins</td><td class="tpos">Pre-summer prep</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">How Companies Manage Lean Season</div>
+      <table>
+        <thead><tr><th>Strategy</th><th>Heritage</th><th>Hatsun</th><th>Dodla</th><th>Parag</th></tr></thead>
+        <tbody>
+          <tr><td>Milk Price Hikes in lean</td><td class="warn">Partial pass-through</td><td class="tpos">Consistent hikes</td><td class="warn">Selective</td><td class="warn">Limited (competition)</td></tr>
+          <tr><td>SMP Inventory carry</td><td class="num">Yes (moderate)</td><td class="tpos">Yes (large scale)</td><td class="num">Yes (moderate)</td><td class="num">Yes</td></tr>
+          <tr><td>Ice Cream revenue uplift</td><td class="num">Yes (Heritage Ice Cream)</td><td class="tpos">Very strong (Arun/Ibaco)</td><td class="num">Limited</td><td class="num">No</td></tr>
+          <tr><td>Africa procurement (Dodla)</td><td class="num">N/A</td><td class="num">N/A</td><td class="tpos">Partial hedge</td><td class="num">N/A</td></tr>
+          <tr><td>VAP pricing discipline</td><td class="warn">Building</td><td class="tpos">Strong</td><td class="num">Moderate</td><td class="warn">Weak (competition)</td></tr>
+          <tr><td>B2B/institutional absorption</td><td class="num">Limited</td><td class="num">Moderate</td><td class="num">Moderate</td><td class="tpos">Strong (Go Cheese, HoReCa)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">Lean vs Flush — Margin Bridge (Illustrative, Per Litre of Milk Processed)</div>
+    <table>
+      <thead><tr><th>Cost/Margin Component</th><th>Q4 FY26 (Flush)</th><th>Q2 FY27 (Lean Est.)</th><th>Δ per litre</th><th>EBITDA Margin Impact</th></tr></thead>
+      <tbody>
+        <tr><td>Raw Milk Procurement Cost</td><td class="tpos">₹34/litre avg</td><td class="tneg">₹43/litre avg</td><td class="tneg">+₹9/litre</td><td class="tneg">−9% of input</td></tr>
+        <tr><td>Selling Price (liquid milk)</td><td class="num">₹56/litre avg</td><td class="warn">₹58/litre avg</td><td class="warn">+₹2/litre</td><td class="warn">Only partial offset</td></tr>
+        <tr><td>Net Milk Contribution</td><td class="tpos">₹22/litre</td><td class="tneg">₹15/litre</td><td class="tneg">−₹7/litre</td><td class="tneg">~−300 bps on EBITDA%</td></tr>
+        <tr><td>VAP mix uplift (ice cream, cheese)</td><td class="num">₹3/litre (Q4 avg)</td><td class="tpos">₹5/litre (Q1 ice cream)</td><td class="tpos">+₹2/litre partial</td><td class="tpos">Partially offsets lean hit</td></tr>
+        <tr><td>Net EBITDA margin (est.)</td><td class="tpos">~9–11%</td><td class="warn">~6–8%</td><td class="tneg">~−200 to −350 bps</td><td>Company-specific</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 9: SWOT ═══════════════ -->
+<div class="panel" id="tab-swot">
+  <div class="sec-hdr">SWOT &amp; Moat <span class="sec-note">· Each Company · Strengths · Weaknesses · Opportunities · Threats</span></div>
+
+  <div class="co-hdr"><span class="dot" style="background:var(--her)"></span>Heritage Foods</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>No.1 brand in Hyderabad dairy market</li><li>Heritage Fresh retail stores — direct consumer touchpoint</li><li>Strong farmer relationships in AP/TG (35+ years)</li><li>Fastest PAT growth in FY26 (+45%) among peers</li><li>Debt-light balance sheet (~₹95 Cr)</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>VAP mix still low (~25%) vs Hatsun's 40%</li><li>Heavily AP/TG concentrated; limited national presence</li><li>Ice cream brand scale smaller than Arun/Ibaco</li><li>Promoter political connection (risk and opportunity)</li><li>Limited export/international diversification</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Ice cream brand building across South India</li><li>Heritage Fresh expansion beyond Hyderabad</li><li>VAP scaling: target 35% mix by FY28</li><li>West India entry (Maharashtra) being explored</li><li>Quick commerce integration for dairy</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>AP/TG state government milk pricing interventions</li><li>Amul's aggressive South India push</li><li>Hatsun's dominant TN/AP position</li><li>Raw milk cost spikes in lean season</li><li>Competition from regional co-operatives</li></ul></div>
+  </div>
+
+  <div class="co-hdr" style="margin-top:16px;"><span class="dot" style="background:var(--hat)"></span>Hatsun Agro Products</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India's largest private dairy by procurement (~34 LLPD)</li><li>Iconic ice cream brands — Arun (mass), Ibaco (premium)</li><li>Highest EBITDA margin in peer group (~10.8%)</li><li>Best-in-class cold chain and farmer network (~5.5 lakh)</li><li>Disciplined founder-led management; low pledging</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>High net debt (~₹1,850 Cr) — suppresses PAT relative to EBITDA</li><li>PAT margin (~2.7%) is low despite best EBITDA margin — interest drag</li><li>South-India heavy; national expansion needs capex</li><li>SMP segment margin volatility (export price-linked)</li><li>High stock valuation (~50× P/E) leaves little room for miss</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Debt reduction: every ₹100 Cr debt reduction = ~₹7–8 Cr PAT addition</li><li>Ibaco premium ice cream expansion nationally</li><li>UHT and flavoured milk scaling for broader India</li><li>Probiotic / functional dairy (yogurt) under development</li><li>Modern trade and quick commerce penetration</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Rising competition in ice cream (Amul, Kwality, Baskin Robbins)</li><li>Interest rate environment — floating rate debt exposure</li><li>Any major lean season milk procurement spike</li><li>Promoter succession risk (Chandramogan aged; succession being managed)</li><li>TN government dairy regulations (Aavin competition)</li></ul></div>
+  </div>
+
+  <div class="co-hdr" style="margin-top:16px;"><span class="dot" style="background:var(--dod)"></span>Dodla Dairy</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Only listed Indian dairy with Africa operations (Uganda, Kenya, Ethiopia)</li><li>Africa margins superior to India (~12–13% EBITDA)</li><li>Cleanest balance sheet in peer group (~₹80 Cr net debt)</li><li>Lean, efficient supply chain — high returns on capital</li><li>Strong post-IPO governance (PE-backed till IPO)</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Smaller domestic scale vs Heritage/Hatsun in South India</li><li>Limited VAP brand strength in India</li><li>Africa operations expose to FX risk (UGX, KES, ETB vs INR)</li><li>Limited ice cream presence — misses summer uplift</li><li>Lower brand recall vs Heritage in AP/TG</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Africa: Target 20% revenue share by FY28 (vs ~13% now)</li><li>New Africa countries (Rwanda, Tanzania) under exploration</li><li>India VAP brand building — curd, paneer, flavoured milk</li><li>National expansion of India milk business (FY27 plan)</li><li>IPO re-rating as Africa story becomes mainstream</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Africa political instability risk (Uganda 2026 elections)</li><li>FX depreciation in Africa markets</li><li>South India competitive intensity from Hatsun/Heritage/Amul</li><li>Africa scalability — logistics and cold chain gaps</li><li>Lean season India procurement cost spikes</li></ul></div>
+  </div>
+
+  <div class="co-hdr" style="margin-top:16px;"><span class="dot" style="background:var(--par)"></span>Parag Milk Foods</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>No.2 in organised cheese in India (Go Cheese) — ~28% share</li><li>Pride of Cows — India's most premium milk brand (₹120/litre)</li><li>Avvatar whey protein — fastest growing product (+45% FY26)</li><li>Gowardhan ghee — strong West India consumer recognition</li><li>Sophisticated product innovation culture</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Lowest EBITDA margin in peer group (~6.7%)</li><li>High net debt (~₹640 Cr) vs small PAT (₹73 Cr)</li><li>Promoter pledge (Shah family) — financial governance risk</li><li>West India concentration; limited South/East India presence</li><li>B2B heavy — HoReCa linked to cyclical hospitality sector</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Cheese is the fastest growing dairy category globally — 15–20% CAGR India</li><li>Avvatar whey protein: fitness boom driving premium protein demand</li><li>Pride of Cows national expansion via quick commerce</li><li>Debt reduction → margin normalisation → re-rating</li><li>Export of casein, whey powder to EU/Middle East</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Amul entering cheese and whey protein (subsidised competition)</li><li>International cheese brands (Kraft, Britannia Cheese) in urban modern trade</li><li>Debt-funded working capital — interest rate risk</li><li>Prolonged lean season milk cost spike — lowest cushion to absorb</li><li>Premium milk (Pride of Cows) — niche, recession-sensitive</li></ul></div>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 10: RISKS ═══════════════ -->
+<div class="panel" id="tab-risks">
+  <div class="sec-hdr">Risks <span class="sec-note">· Sector-Wide + Company-Specific · Probability · Severity</span></div>
+  <div class="rm-box">
+    <strong>⚠️ CB Research Risk Disclosure:</strong> All data presented here is for educational and analytical purposes. CB Research makes no buy/sell/hold recommendations. Past financial performance is not a guarantee of future results. Dairy sector involves commodity (milk price) and regulatory risks. Investors should consult a SEBI-registered advisor before making investment decisions.
+  </div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">Sector-Level Risks</div>
+    <table>
+      <thead><tr><th>Risk Factor</th><th>Nature</th><th>Impact</th><th>FY27 Probability</th><th>Heritage</th><th>Hatsun</th><th>Dodla</th><th>Parag</th></tr></thead>
+      <tbody>
+        <tr><td>Lean season milk cost spike (+₹8–10/litre)</td><td>Seasonal</td><td class="tneg">−150 to −350 bps margin</td><td class="warn">Very High (annual)</td><td class="warn">Moderate</td><td class="tpos">Well-managed (ice cream)</td><td class="warn">Moderate</td><td class="tneg">High impact (low cushion)</td></tr>
+        <tr><td>Amul national push (discounted pricing)</td><td>Competitive</td><td class="warn">Volume + pricing pressure</td><td class="warn">High (ongoing)</td><td class="warn">High (AP/TG)</td><td class="warn">Moderate (TN strong)</td><td class="num">Moderate</td><td class="warn">High (cheese entry)</td></tr>
+        <tr><td>State government milk price regulation</td><td>Policy</td><td class="warn">Floor price + subsidy mandates</td><td class="warn">Medium</td><td class="tneg">High (AP/TG)</td><td class="warn">Medium (TN)</td><td class="warn">Medium</td><td class="tpos">Low (MH)</td></tr>
+        <tr><td>Cattle disease / FMD outbreak</td><td>Agri risk</td><td class="tneg">Milk supply disruption</td><td class="warn">Medium</td><td class="warn">Moderate</td><td class="tneg">High (largest fleet)</td><td class="warn">Moderate</td><td class="num">Moderate</td></tr>
+        <tr><td>SMP export price collapse</td><td>Global commodity</td><td class="warn">SMP inventory write-down</td><td class="warn">Medium</td><td class="num">Low exposure</td><td class="tneg">High (largest SMP)</td><td class="num">Low</td><td class="num">Low</td></tr>
+        <tr><td>Africa political/FX risk (Dodla-specific)</td><td>Geopolitical</td><td class="warn">Revenue/PAT disruption</td><td class="warn">Medium</td><td class="num">N/A</td><td class="num">N/A</td><td class="tneg">Significant</td><td class="num">N/A</td></tr>
+        <tr><td>Promoter pledge unwinding (Parag-specific)</td><td>Financial</td><td class="tneg">Stock overhang risk</td><td class="warn">Low-Medium</td><td class="num">N/A</td><td class="num">None</td><td class="num">None</td><td class="tneg">Material risk</td></tr>
+        <tr><td>Hatsun debt servicing if earnings disappoint</td><td>Financial</td><td class="warn">FCF stress, dividend cut</td><td class="num">Low</td><td class="num">N/A</td><td class="warn">Watch closely</td><td class="num">N/A</td><td class="num">N/A</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 11: ANALYSTS ═══════════════ -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analysts' Ratings <span class="sec-note">· Consensus Coverage · Target Prices · Rationale · Jun 2026</span></div>
+  <div class="rm-box"><strong>📌 CB Research Disclaimer:</strong> CB Research presents third-party analyst data for information only. We do NOT endorse any buy/sell/hold call. Past analyst track records vary. Please consult a SEBI-registered investment advisor before acting on any information presented here.</div>
+
+  <div class="ac">
+    <div class="ac-head">
+      <div class="ac-name"><span class="dot" style="background:var(--her)"></span>Heritage Foods (HERITGFOOD)</div>
+      <div><span class="rat-pill rp-buy">CONSENSUS: BUY</span></div>
+    </div>
+    <div class="ac-tp">Avg. Target: ₹560</div>
+    <div class="ac-cmp">CMP ~₹480 · Upside ~16.7% · P/E 13.9× FY26 · Market Cap ~₹1,928 Cr</div>
+    <div class="ac-text">
+      <strong>Bull case (ICICI Securities, Motilal Oswal):</strong> Heritage is the cheapest large-cap South India dairy stock. FY26 PAT growth of +45% with a VAP ramp-up story well underway. Heritage Fresh stores provide unmatched consumer insight and a recurring purchase channel. Ice cream summer season (Q1 FY27) should deliver strong Q1 numbers. TP: ₹580–620.<br><br>
+      <strong>Bear case (note of caution):</strong> AP/TG political concentration makes Heritage vulnerable to state-mandated milk pricing and the Chandrababu Naidu government's farmer-friendly policies (risk of higher milk procurement floors). VAP mix at 25% still lags sector leader Hatsun. TP (cautious): ₹480–500.<br><br>
+      <strong>CB Research Data Observation (no recommendation):</strong> At ~14× P/E with 45% PAT growth, Heritage is statistically the cheapest dairy stock in the peer group. Execution on the VAP journey is the key variable to monitor over the next 4–6 quarters.
+    </div>
+  </div>
+
+  <div class="ac">
+    <div class="ac-head">
+      <div class="ac-name"><span class="dot" style="background:var(--hat)"></span>Hatsun Agro Products (HATSUN)</div>
+      <div><span class="rat-pill rp-hold">CONSENSUS: HOLD</span></div>
+    </div>
+    <div class="ac-tp">Avg. Target: ₹1,080</div>
+    <div class="ac-cmp">CMP ~₹1,015 · Upside ~6.4% · P/E ~50.7× FY26 · Market Cap ~₹11,000 Cr</div>
+    <div class="ac-text">
+      <strong>Bull case (Axis Securities, Kotak):</strong> Hatsun is a compounder — India's best-in-class private dairy with 11% EBITDA margins, systematic debt reduction, and the Arun/Ibaco ice cream moat. Every ₹100 Cr debt repayment adds ~₹7–8 Cr to PAT. Long-term PAT CAGR of 20%+ justifies premium. TP: ₹1,150–1,200.<br><br>
+      <strong>Bear case:</strong> At ~50× P/E, Hatsun's valuation leaves little room for error. If lean season Q2 FY27 surprises on milk cost, PAT could disappoint. Debt at ₹1,850 Cr is a structural overhang. Succession risk is a long-term watch. TP (cautious): ₹900–950.<br><br>
+      <strong>CB Research Data Observation:</strong> Hatsun's premium valuation is historically justified — it has rarely disappointed operationally. The FY27 debt trajectory (~₹1,600 Cr target) and whether Q1 ice cream revenues can cushion lean season costs are the key monitors.
+    </div>
+  </div>
+
+  <div class="ac">
+    <div class="ac-head">
+      <div class="ac-name"><span class="dot" style="background:var(--dod)"></span>Dodla Dairy (DODLA)</div>
+      <div><span class="rat-pill rp-buy">CONSENSUS: BUY</span></div>
+    </div>
+    <div class="ac-tp">Avg. Target: ₹1,380</div>
+    <div class="ac-cmp">CMP ~₹1,210 · Upside ~14% · P/E ~33× FY26 · Market Cap ~₹6,436 Cr</div>
+    <div class="ac-text">
+      <strong>Bull case (HDFC Securities, Edelweiss):</strong> Dodla is the cleanest balance sheet play with a unique Africa optionality. Africa operations growing at +38–40% YoY with superior margins. At 33× P/E, valuation is fair for a company with both India and Africa growth legs. TP: ₹1,400–1,500.<br><br>
+      <strong>Bear case:</strong> Africa is 13% of revenue but brings FX and geopolitical risk (Uganda elections 2026). India dairy business is sub-scale vs Heritage/Hatsun in the South. Premium valuation needs Africa to execute perfectly. TP (cautious): ₹1,050–1,100.<br><br>
+      <strong>CB Research Data Observation:</strong> Africa is Dodla's most differentiated asset — no other listed Indian dairy company has international operations. This structural differentiation appears undervalued at current multiples. Q1 FY27 Africa EBITDA data will be the clearest indicator.
+    </div>
+  </div>
+
+  <div class="ac">
+    <div class="ac-head">
+      <div class="ac-name"><span class="dot" style="background:var(--par)"></span>Parag Milk Foods (PARAGMILK)</div>
+      <div><span class="rat-pill rp-buy">CONSENSUS: BUY (speculative)</span></div>
+    </div>
+    <div class="ac-tp">Avg. Target: ₹260</div>
+    <div class="ac-cmp">CMP ~₹215 · Upside ~20.9% · P/E ~27× FY26 · Market Cap ~₹1,978 Cr</div>
+    <div class="ac-text">
+      <strong>Bull case (Nirmal Bang, Sharekhan):</strong> Parag is a re-rating candidate — cheese and whey protein are India's fastest growing food categories. Avvatar whey protein growing at +45% and is still sub-₹110 Cr revenue (massive headroom). Go Cheese at ~28% organised share vs Amul (40%+) — gap closing. Debt reduction will be FY27's biggest positive catalyst. TP: ₹280–310.<br><br>
+      <strong>Bear case:</strong> Parag has the worst EBITDA margins in the peer group (6.7%) and the highest debt-to-PAT ratio. Promoter pledge remains unresolved. Competition in cheese from Amul (subsidised) is existential. TP (cautious): ₹180–200.<br><br>
+      <strong>CB Research Data Observation:</strong> Avvatar whey protein is the most exciting growth vector in Indian listed dairy — a niche product in a high-margin, fast-growing category. The margin recovery thesis is valid but has disappointed before (FY25 PAT -46%). Monitor Q1 FY27 EBITDA margin first.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 12: FY27 OUTLOOK ═══════════════ -->
+<div class="panel" id="tab-outlook">
+  <div class="sec-hdr">FY27 Outlook <span class="sec-note">· Bull · Base · Bear Case · Company-Specific · CB Research Data View (No Recommendations)</span></div>
+  <div class="trojan-card">
+    <div class="trojan-title">🔮 FY27 Key Variables to Watch</div>
+    <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
+      <strong>1. Lean Season (Q1–Q2 FY27) milk procurement cost:</strong> If monsoon is poor (La Niña risk), lean season could extend. Raw milk at ₹44–46/litre for extended period = 250–400 bps EBITDA margin compression for all four companies.<br><br>
+      <strong>2. Milk price hike decisions:</strong> Can companies raise consumer milk prices ₹2–3/litre in FY27? Heritage and Hatsun have historically been disciplined. Parag has struggled. This is the #1 FY27 earnings variable.<br><br>
+      <strong>3. Dodla Africa Q1 FY27 numbers:</strong> If Africa revenue crosses ₹120 Cr/quarter, Dodla's thesis strengthens meaningfully.<br><br>
+      <strong>4. Hatsun debt trajectory:</strong> Net debt at ₹1,850 Cr — if FY27 capex is controlled (~₹350 Cr), debt can fall to ₹1,600 Cr. This unlocks PAT growth disproportionate to EBITDA growth.<br><br>
+      <strong>5. Parag margin normalisation:</strong> EBITDA margin target 8.5–9% by Q3 FY27 vs current 6.7%. Cheese pricing and whey protein mix are the levers.
+    </p>
+  </div>
+  <div class="g3" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-lbl" style="color:var(--pos)">🟢 Bull Case (30% Probability)</div>
+      <p style="font-size:11.5px;line-height:1.7;"><strong>Conditions:</strong> Normal monsoon, milk cost stable at ₹37–40/litre in lean season. Milk price hikes of ₹2–3/litre implemented smoothly. Africa continues +35% growth.</p>
+      <p style="font-size:11.5px;line-height:1.7;margin-top:8px;"><strong>Heritage FY27 PAT:</strong> ₹175–185 Cr (+26–33%)<br><strong>Hatsun FY27 PAT:</strong> ₹280–300 Cr (+29–38%)<br><strong>Dodla FY27 PAT:</strong> ₹245–260 Cr (+26–33%)<br><strong>Parag FY27 PAT:</strong> ₹110–125 Cr (+51–71%)</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--warn)">🟡 Base Case (50% Probability)</div>
+      <p style="font-size:11.5px;line-height:1.7;"><strong>Conditions:</strong> Lean season costs spike to ₹41–44/litre. Partial milk price hikes. Africa steady at +25% growth. Hatsun debt reduces modestly.</p>
+      <p style="font-size:11.5px;line-height:1.7;margin-top:8px;"><strong>Heritage FY27 PAT:</strong> ₹155–165 Cr (+12–19%)<br><strong>Hatsun FY27 PAT:</strong> ₹245–265 Cr (+13–22%)<br><strong>Dodla FY27 PAT:</strong> ₹220–235 Cr (+13–21%)<br><strong>Parag FY27 PAT:</strong> ₹85–100 Cr (+16–37%)</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--neg)">🔴 Bear Case (20% Probability)</div>
+      <p style="font-size:11.5px;line-height:1.7;"><strong>Conditions:</strong> Deficient monsoon, prolonged lean season, milk costs at ₹45–48/litre. No milk price hikes possible (competition). Amul aggressive discounting. Africa headwinds.</p>
+      <p style="font-size:11.5px;line-height:1.7;margin-top:8px;"><strong>Heritage FY27 PAT:</strong> ₹110–120 Cr (−14–21%)<br><strong>Hatsun FY27 PAT:</strong> ₹185–210 Cr (−15–14%)<br><strong>Dodla FY27 PAT:</strong> ₹170–185 Cr (−13–5%)<br><strong>Parag FY27 PAT:</strong> ₹45–60 Cr (−38–18%)</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-lbl">CB Research FY27 Earnings Visibility Ranking (Data-based, no recommendations)</div>
+    <table>
+      <thead><tr><th>Rank</th><th>Company</th><th>FY27 Earnings Visibility</th><th>Key Positive</th><th>Key Risk</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">1</td><td class="tb"><span class="dot" style="background:var(--dod)"></span>Dodla Dairy</td><td class="tpos">High</td><td>Africa +35% + cleanest balance sheet</td><td>Africa FX/political risk</td></tr>
+        <tr><td class="tb">2</td><td class="tb"><span class="dot" style="background:var(--hat)"></span>Hatsun Agro</td><td class="tpos">High</td><td>Ice cream Q1 + debt reduction</td><td>Interest cost overhang</td></tr>
+        <tr><td class="tb">3</td><td class="tb"><span class="dot" style="background:var(--her)"></span>Heritage Foods</td><td class="num">Moderate-High</td><td>Cheap valuation + VAP journey</td><td>AP/TG political risk</td></tr>
+        <tr><td class="tb">4</td><td class="tb"><span class="dot" style="background:var(--par)"></span>Parag Milk Foods</td><td class="warn">Moderate (recovery play)</td><td>Cheese + Whey protein growth</td><td>Margin trajectory + promoter pledge</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 13: CB ASSIST ═══════════════ -->
+<div class="panel" id="tab-cb">
+  <div class="sec-hdr">CB Assist <span class="sec-note">· Cauvery Business Research · Bilingual English / Tamil · Offline Keyword Engine</span></div>
+  <div class="g2">
+    <div class="cbassist-chat">
+      <div class="cbassist-title"><span></span>CB Assist — Dairy Sector Intelligence (English)</div>
+      <div style="margin-bottom:8px;">
+        <button class="preset-tab pt-her" onclick="setPT('her',this,'en')">Heritage Foods</button>
+        <button class="preset-tab pt-hat" onclick="setPT('hat',this,'en')">Hatsun Agro</button>
+        <button class="preset-tab pt-dod" onclick="setPT('dod',this,'en')">Dodla Dairy</button>
+        <button class="preset-tab pt-par" onclick="setPT('par',this,'en')">Parag Milk</button>
+        <button class="preset-tab pt-sector" onclick="setPT('sector',this,'en')">Sector / Tailwinds</button>
+      </div>
+      <div id="pqs-her-en" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ What is Heritage Foods Q4 FY26 PAT and revenue?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ Who manages Heritage Foods — who is the CMD?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ What is Heritage's value-added product strategy?</div>
+      </div>
+      <div id="pqs-hat-en" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ Hatsun Agro Q4 FY26 results summary</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ Why does Hatsun have high P/E valuation?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ What is Hatsun's debt situation?</div>
+      </div>
+      <div id="pqs-dod-en" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ Dodla Dairy Africa business — what countries, what revenue?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ Why is Dodla different from other dairy companies?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ Dodla Q4 FY26 PAT and EBITDA margin</div>
+      </div>
+      <div id="pqs-par-en" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ What is Parag Milk Foods' cheese market share?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ Avvatar whey protein — what is it and why is it growing?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ What is Pride of Cows and why is it premium?</div>
+      </div>
+      <div id="pqs-sector-en" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ What are the top tailwinds for India dairy sector?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ What is lean season in dairy and how does it affect profits?</div>
+        <div class="pq" onclick="cbA(this.textContent,'en')">▶ How is milk collected from farmers and distributed to consumers?</div>
+      </div>
+      <div id="chatMsgs" class="chat-msgs">
+        <div class="chat-msg bot"><strong>CB Assist</strong> — Welcome to the India Dairy Sector Dashboard. Ask about Heritage Foods, Hatsun, Dodla, Parag Milk, lean season, milk chain, VAP mix, or FY27 outlook. You can also type in Tamil / தமிழில் கேளுங்கள்!</div>
+      </div>
+      <div class="typing-ind" id="typingInd"><span></span><span></span><span></span></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatIn" placeholder="Ask about Heritage, Hatsun, Dodla, Parag, lean season, milk chain…" onkeydown="if(event.key==='Enter')cbA(document.getElementById('chatIn').value,'en')">
+        <button class="chat-send" onclick="cbA(document.getElementById('chatIn').value,'en')">Ask</button>
+      </div>
+    </div>
+
+    <div class="cbassist-chat">
+      <div class="cbassist-title"><span></span>CB Assist — பால் துறை (Tamil)</div>
+      <div style="margin-bottom:8px;">
+        <button class="preset-tab pt-her" onclick="setPT('her',this,'ta')">Heritage</button>
+        <button class="preset-tab pt-hat" onclick="setPT('hat',this,'ta')">Hatsun</button>
+        <button class="preset-tab pt-dod" onclick="setPT('dod',this,'ta')">Dodla</button>
+        <button class="preset-tab pt-par" onclick="setPT('par',this,'ta')">Parag</button>
+        <button class="preset-tab pt-sector" onclick="setPT('sector',this,'ta')">துறை / Tailwinds</button>
+      </div>
+      <div id="pqs-her-ta" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Heritage Foods Q4 FY26 results என்ன?</div>
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Heritage-ன் value added products என்ன?</div>
+      </div>
+      <div id="pqs-hat-ta" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Hatsun Agro Q4 FY26 results summary தமிழில்</div>
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Hatsun-ன் கடன் நிலைமை என்ன?</div>
+      </div>
+      <div id="pqs-dod-ta" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Dodla Africa business என்ன? எந்த நாடுகள்?</div>
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Dodla-வை மற்ற dairy நிறுவனங்களிடம் இருந்து வேறுபடுத்துவது என்ன?</div>
+      </div>
+      <div id="pqs-par-ta" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Parag Milk cheese market share என்ன?</div>
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Avvatar whey protein என்றால் என்ன?</div>
+      </div>
+      <div id="pqs-sector-ta" class="pqs">
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ India dairy sector-ன் tailwinds என்ன?</div>
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ Lean season என்றால் என்ன? PAT-ஐ எப்படி பாதிக்கும்?</div>
+        <div class="pq" onclick="cbA(this.textContent,'ta')">▶ பால் சேகரிப்பு முதல் consumer வரை செல்லும் பாதை என்ன?</div>
+      </div>
+      <div id="chatMsgsTa" class="chat-msgs">
+        <div class="chat-msg bot"><strong>CB Assist</strong> — வணக்கம்! Heritage, Hatsun, Dodla, Parag பற்றியோ, lean season, milk chain, VAP mix பற்றியோ தமிழில் கேளுங்கள்!</div>
+      </div>
+      <div class="typing-ind" id="typingIndTa"><span></span><span></span><span></span></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInTa" placeholder="தமிழில் கேளுங்கள் — Heritage, Hatsun, Dodla, Parag, lean season…" onkeydown="if(event.key==='Enter')cbATa(document.getElementById('chatInTa').value)">
+        <button class="chat-send" onclick="cbATa(document.getElementById('chatInTa').value)">கேள்</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer class="footer">
+  <strong>CB Research · Cauvery Business</strong> · India Dairy Sector Intelligence Dashboard · Q4 FY26 · Generated: 18 June 2026<br>
+  Data sources: BSE/NSE exchange filings, company investor presentations, analyst reports (ICICI Sec, HDFC Sec, Kotak, Motilal Oswal, Edelweiss). All financial data from audited Q4 FY26 results.<br>
+  <strong>CB Research makes no buy/sell/hold recommendations.</strong> This dashboard is for educational and research purposes only. Consult a SEBI-registered advisor before investing.
+</footer>
+
+<!-- CB WATERMARK -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">Cauvery Business · Dairy Q4 FY26</div></div>
+</div>
+
+<script>
+/* ─── TAB NAVIGATION ─── */
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ─── COMPANY SELECTOR ─── */
+function showCo(id,btn){
+  document.querySelectorAll('.co-sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.co-sel-btn').forEach(b=>{b.style.background='';b.style.color='';b.style.borderColor='';});
+  document.getElementById('co-'+id).classList.add('on');
+  const colors={her:'var(--her)',hat:'var(--hat)',dod:'var(--dod)',par:'var(--par)'};
+  btn.style.background=colors[id];btn.style.color='#fff';btn.style.borderColor=colors[id];
+}
+
+/* ─── PERIOD TOGGLE ─── */
+function showPer(type,btn){
+  document.querySelectorAll('.per-btn').forEach(b=>{b.style.background='';b.style.color='';b.style.borderColor='';});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.borderColor='#0d1c2e';
+  document.querySelectorAll('.qtr-v').forEach(v=>v.style.display=type==='qtr'?'block':'none');
+  document.querySelectorAll('.annual-v').forEach(v=>v.style.display=type==='annual'?'block':'none');
+}
+
+/* ─── QUARTER DROPDOWN ─── */
+function handleQtrChange(val){
+  if(val!=='q4fy26'){
+    document.getElementById('qtrNote').textContent='Q1 FY27 results expected Aug 2026. Update this file with Q1 FY27 data when available and enable the option.';
+    document.getElementById('qtrDropdown').value='q4fy26';
+  } else {
+    document.getElementById('qtrNote').textContent='Showing Q4 FY26 actuals. Q1 FY27 results expected Aug 2026 — dropdown will be enabled on update.';
+  }
+}
+
+/* ─── PRESET TABS ─── */
+function setPT(co,btn,lang){
+  const prefix=lang==='ta'?'ta':'en';
+  document.querySelectorAll(`[id^='pqs-'][id$='-${prefix}']`).forEach(d=>d.classList.remove('on'));
+  document.querySelectorAll(`.preset-tab`).forEach(b=>b.classList.remove('on'));
+  const el=document.getElementById(`pqs-${co}-${prefix}`);
+  if(el){el.classList.add('on');}
+  btn.classList.add('on');
+}
+
+/* ─── CHARTS ─── */
+window.addEventListener('load',()=>{
+  const cfg=(labels,datasets,type='bar')=>({type,data:{labels,datasets},options:{responsive:true,plugins:{legend:{display:datasets.length>1},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ₹${ctx.parsed.y.toLocaleString('en-IN')}`}}},scales:type==='bar'?{y:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#e2ddd5'}},x:{grid:{display:false}}}:{}}});
+
+  const labs=['Heritage','Hatsun','Dodla','Parag'];
+
+  // Revenue Q4
+  new Chart(document.getElementById('revChart'),{type:'bar',data:{labels:labs,datasets:[
+    {label:'Q4 FY24',data:[670,1720,645,726],backgroundColor:'#cbd5e1'},
+    {label:'Q4 FY25',data:[750,1947,748,790],backgroundColor:'#94a3b8'},
+    {label:'Q4 FY26',data:[840,2218,868,861],backgroundColor:['var(--her)','var(--hat)','var(--dod)','var(--par)']},
+  ]},options:{responsive:true,plugins:{legend:{display:true},datalabels:{display:false}},scales:{y:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#e2ddd5'}},x:{grid:{display:false}}}}});
+
+  // PAT Q4
+  new Chart(document.getElementById('patChart'),{type:'bar',data:{labels:labs,datasets:[
+    {label:'Q4 FY24',data:[18,34,38,19],backgroundColor:'#cbd5e1'},
+    {label:'Q4 FY25',data:[26,48,47,21],backgroundColor:'#94a3b8'},
+    {label:'Q4 FY26',data:[41,59,56,24],backgroundColor:['var(--her)','var(--hat)','var(--dod)','var(--par)']},
+  ]},options:{responsive:true,plugins:{legend:{display:true}},scales:{y:{ticks:{callback:v=>'₹'+v},grid:{color:'#e2ddd5'}},x:{grid:{display:false}}}}});
+
+  // EBITDA Margin
+  new Chart(document.getElementById('ebitdaChart'),{type:'bar',data:{labels:labs,datasets:[
+    {label:'Q2 FY26',data:[6.8,9.2,8.4,5.8],backgroundColor:'#cbd5e1'},
+    {label:'Q3 FY26',data:[7.5,10.4,9.3,6.2],backgroundColor:'#94a3b8'},
+    {label:'Q4 FY26',data:[8.4,11.2,9.8,7.2],backgroundColor:['var(--her)','var(--hat)','var(--dod)','var(--par)']},
+  ]},options:{responsive:true,plugins:{legend:{display:true},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y}%`}}},scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'#e2ddd5'}},x:{grid:{display:false}}}}});
+
+  // Milk Procurement
+  new Chart(document.getElementById('milkChart'),{type:'bar',data:{labels:labs,datasets:[
+    {label:'FY24 avg (LLPD)',data:[30,28,11,9.5],backgroundColor:'#cbd5e1'},
+    {label:'FY25 avg (LLPD)',data:[32,30,12.5,10.2],backgroundColor:'#94a3b8'},
+    {label:'FY26 avg (LLPD)',data:[35,34,14,11],backgroundColor:['var(--her)','var(--hat)','var(--dod)','var(--par)']},
+  ]},options:{responsive:true,plugins:{legend:{display:true},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} LLPD`}}},scales:{y:{grid:{color:'#e2ddd5'}},x:{grid:{display:false}}}}});
+
+  // Annual Revenue
+  new Chart(document.getElementById('annRevChart'),{type:'bar',data:{labels:labs,datasets:[
+    {label:'FY24',data:[2634,6898,2442,2809],backgroundColor:'#cbd5e1'},
+    {label:'FY25',data:[2842,7274,2618,3044],backgroundColor:'#94a3b8'},
+    {label:'FY26',data:[3165,8282,3044,3273],backgroundColor:['var(--her)','var(--hat)','var(--dod)','var(--par)']},
+  ]},options:{responsive:true,plugins:{legend:{display:true},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ₹${ctx.parsed.y.toLocaleString('en-IN')} Cr`}}},scales:{y:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#e2ddd5'}},x:{grid:{display:false}}}}});
+});
+
+/* ─── KNOWLEDGE BASE ─── */
+const KB = {
+  her:{
+    en:`<strong>Heritage Foods (HERITGFOOD) — Q4 FY26</strong><br><br>• Q4 Revenue: ₹840 Cr (+12% YoY)<br>• Q4 PAT: ₹41 Cr (+57.7%)<br>• EBITDA Margin: 8.4% (+110 bps)<br>• Milk Procurement: ~37 LLPD (avg Q4)<br>• Farmer network: ~3.5 lakh across AP, TG, KA, TN<br>• Processing plants: 12; Capacity ~52 LLPD<br>• Ice Cream Q4: ₹68 Cr (+17%)<br>• VAP mix: ~25% of revenue (target 35% by FY28)<br>• Heritage Fresh stores: ~278 in Hyderabad<br>• Net Debt: ~₹95 Cr (low)<br>• CMD: N. Brahmani Reddy (daughter of CM Chandrababu Naidu)<br>• FY26 full year PAT: ₹139 Cr (+44.8%)`,
+    ta:`<strong>Heritage Foods Q4 FY26 (Tamil)</strong><br><br>• Q4 Revenue: ₹840 கோடி (+12%)<br>• Q4 PAT: ₹41 கோடி (+57.7%)<br>• EBITDA Margin: 8.4%<br>• Milk procurement: ~37 LLPD (lakh litres per day)<br>• AP, TG, KA, TN-ல் ~3.5 lakh விவசாயிகள்<br>• Heritage Fresh: ~278 stores (Hyderabad)<br>• Ice cream Q4: ₹68 கோடி<br>• Value added products: ~25% revenue<br>• CMD: N. Brahmani Reddy (CM Chandrababu Naidu அவர்களின் மகள்)<br>• FY26 full year PAT: ₹139 கோடி (+44.8%)`
+  },
+  hat:{
+    en:`<strong>Hatsun Agro Products (HATSUN) — Q4 FY26</strong><br><br>• Q4 Revenue: ₹2,218 Cr (+13.9%)<br>• Q4 PAT: ₹59 Cr (+22.9%)<br>• EBITDA Margin: 11.2% — Highest in peer group<br>• Milk Procurement: ~34 LLPD — India's largest private dairy<br>• Farmer network: ~5.5 lakh (TN, AP, KA, MH)<br>• Chilling units: 8,000+<br>• Ice Cream: Arun (mass) + Ibaco (premium) = ~22% of revenue<br>• Ibaco parlours: ~410 premium outlets<br>• Net Debt: ~₹1,850 Cr (key overhang — but reducing)<br>• Interest cost Q4: ~₹62 Cr<br>• FY26 full year: Revenue ₹8,282 Cr; PAT ₹217 Cr (+33.1%)<br>• Founder: R.G. Chandramogan (legendary dairy entrepreneur)`,
+    ta:`<strong>Hatsun Agro Q4 FY26 (Tamil)</strong><br><br>• Q4 Revenue: ₹2,218 கோடி (+13.9%)<br>• Q4 PAT: ₹59 கோடி (+22.9%)<br>• EBITDA Margin: 11.2% — peer group-ல் best<br>• Milk procurement: ~34 LLPD — India's largest private dairy!<br>• ~5.5 lakh விவசாயிகள் (TN, AP, KA, MH)<br>• Arun ice cream + Ibaco premium parlours (~410)<br>• Net debt: ~₹1,850 கோடி (குறைந்து வருகிறது)<br>• Founder: R.G. Chandramogan — 1970-ல் ₹50K-ல் தொடங்கினார்<br>• FY26 full year: ₹8,282 கோடி revenue; ₹217 கோடி PAT (+33.1%)<br>• Debt reduction = PAT growth catalyst`
+  },
+  dod:{
+    en:`<strong>Dodla Dairy (DODLA) — Q4 FY26</strong><br><br>• Q4 Revenue: ₹868 Cr (+16%)<br>• Q4 PAT: ₹56 Cr (+19.1%)<br>• EBITDA Margin: 9.8%<br>• India milk procurement: ~14 LLPD (AP, TG, KA, TN)<br>• Africa countries: Uganda, Kenya, Ethiopia — ~2.5 LLPD<br>• Africa revenue Q4: ~₹110 Cr (+41% YoY)<br>• Africa EBITDA margin: 12–13% (BETTER than India!)<br>• Africa FY26 annualised: ~₹400 Cr<br>• India processing plants: 10; Africa plants: 4<br>• Net debt: ~₹80 Cr — Cleanest balance sheet in peer group<br>• MD: Sunil Reddy (2nd generation; drove Africa expansion since 2014)<br>• FY26 full year: Revenue ₹3,044 Cr; PAT ₹195 Cr (+21.9%)`,
+    ta:`<strong>Dodla Dairy Q4 FY26 (Tamil)</strong><br><br>• Q4 Revenue: ₹868 கோடி (+16%)<br>• Q4 PAT: ₹56 கோடி (+19.1%)<br>• EBITDA Margin: 9.8%<br>• Africa countries: Uganda, Kenya, Ethiopia<br>• Africa Q4 revenue: ~₹110 கோடி (+41%!)<br>• Africa EBITDA margin: 12–13% — India-ஐ விட better!<br>• Net debt: ~₹80 கோடி — peer group-ல் cleanest balance sheet<br>• MD: Sunil Reddy — Africa expansion 2014-ல் தொடங்கினார்<br>• FY26 full year: ₹3,044 கோடி revenue; ₹195 கோடி PAT<br>• Africa → 20% revenue by FY28 — இதுதான் key thesis`
+  },
+  par:{
+    en:`<strong>Parag Milk Foods (PARAGMILK) — Q4 FY26</strong><br><br>• Q4 Revenue: ₹861 Cr (+9%)<br>• Q4 PAT: ₹24 Cr (+14.3%)<br>• EBITDA Margin: 7.2% (lowest in peer group, but recovering)<br>• Go Cheese: ~28% organised cheese market share (No.2 after Amul)<br>• Avvatar Whey Protein: +45.5% in Q4 — fastest growing product<br>• Pride of Cows: ₹120/litre — India's costliest branded milk<br>• Gowardhan Ghee/Butter: Strong West India brand<br>• Net Debt: ~₹640 Cr (elevated — management priority to reduce)<br>• MD & CEO: Pritam Shah (son of founder Devendra Shah; Harvard educated)<br>• FY26 full year: Revenue ₹3,273 Cr; PAT ₹73 Cr (recovery from ₹39 Cr FY25)`,
+    ta:`<strong>Parag Milk Foods Q4 FY26 (Tamil)</strong><br><br>• Q4 Revenue: ₹861 கோடி (+9%)<br>• Q4 PAT: ₹24 கோடி (+14.3%)<br>• EBITDA Margin: 7.2% — peer group-ல் lowest, ஆனால் improving<br>• Go Cheese: organised cheese market-ல் ~28% share (No.2)<br>• Avvatar Whey Protein: +45.5% Q4-ல் — fastest growing product!<br>• Pride of Cows: ₹120/litre — India's most expensive milk brand<br>• Net Debt: ~₹640 கோடி — குறைக்குவது management priority<br>• MD: Pritam Shah — Harvard educated, founder's son<br>• FY26: ₹3,273 கோடி revenue; ₹73 கோடி PAT (FY25-ல் ₹39 Cr-இல் இருந்து recovery)`
+  },
+  lean:{
+    en:`<strong>Lean Season — India Dairy's Structural Headwind</strong><br><br>India dairy has a clear seasonal cycle:<br><strong>Q4 (Jan–Mar) + Q3 (Oct–Dec) = FLUSH SEASON</strong><br>• Cows calve; milk production peaks; procurement price SOFTENS to ₹33–37/litre<br>• Best EBITDA margins for all dairy companies<br>• Q4 FY26 was flush — hence strong margins for all 4 companies<br><br><strong>Q1 (Apr–Jun) + Q2 (Jul–Sep) = LEAN SEASON</strong><br>• Summer heat reduces milk production 15–20%<br>• Procurement price SPIKES to ₹40–46/litre<br>• EBITDA margins compress 200–400 bps vs flush season<br>• Q1 is partially offset by ICE CREAM peak (summer) for Heritage and Hatsun<br><br>Unlike oil refining (GRM-driven), dairy margins are India-specific and predictable. Managing lean season via VAP pricing, inventory, and ice cream uplift separates good management from average.`,
+    ta:`<strong>Lean Season — பால் துறையின் seasonal challenge (Tamil)</strong><br><br>India dairy-க்கு clear seasonal pattern இருக்கு:<br><strong>Q4 (Jan–Mar) + Q3 (Oct–Dec) = Flush Season</strong><br>• Cows calving period — milk production peak<br>• Procurement price குறைவு: ₹33–37/litre<br>• All companies — best margins<br><br><strong>Q1 (Apr–Jun) + Q2 (Jul–Sep) = Lean Season</strong><br>• Summer heat; milk production 15–20% குறையும்<br>• Procurement price spike: ₹40–46/litre<br>• EBITDA margin 200–400 bps குறையும்<br>• Q1-ல் ice cream peak (Heritage, Hatsun) partially offset பண்ணும்<br><br>Q4 FY26 flush season-ல் all 4 companies strong results காட்டினார்கள். Q1/Q2 FY27 lean season results-ஐ carefully watch பண்ணுங்கள்.`
+  },
+  milkchain:{
+    en:`<strong>India Milk Chain — Farm to Consumer</strong><br><br>1. <strong>Farmer (2–5 cows avg)</strong> → milks morning + evening (~10–12 litres/day)<br>2. <strong>Village Chilling Centre (BMC)</strong> → cooled to 4°C; fat+SNF tested; farmer paid per fat%<br>3. <strong>Cold Chain Transport</strong> → insulated tankers collect from multiple BMCs → plant in 8–12 hrs<br>4. <strong>Processing Plant</strong> → pasteurised (72°C/15 sec) or UHT; standardised; separated into products<br>5. <strong>Packaging</strong> → pouches (1L, 500ml), Tetra Pak, tubs, cartons<br>6. <strong>Distribution</strong> → DTH milk routes; Modern Trade (DMart, Reliance); Quick Commerce (Blinkit); B2B (HoReCa)<br>7. <strong>Consumer</strong> → India avg 450 gm/day; growing demand for cheese, yogurt, ice cream<br><br>Key metric: Time from cow to consumer = 24–36 hours for fresh milk. Cold chain integrity is the #1 quality determinant. Companies like Hatsun (8,000+ BMCs) and Heritage (2,700 BMCs) with deeper cold chains command premium brand trust.`,
+    ta:`<strong>Milk Chain — பால் பயணம் (Tamil)</strong><br><br>1. <strong>விவசாயி</strong> → காலை + மாலை கறக்கிறார் (avg 10–12 litres/day)<br>2. <strong>Village BMC (Bulk Milk Cooler)</strong> → 4°C-ல் குளிர்விக்கப்படும்; fat test; விவசாயிக்கு payment<br>3. <strong>Transport</strong> → insulated tanker; 8–12 hours-ல் processing plant reach<br>4. <strong>Processing Plant</strong> → Pasteurised / UHT; standardised; separate into products<br>5. <strong>Packaging</strong> → Pouch, Tetra Pak, tubs, cartons<br>6. <strong>Distribution</strong> → Direct-to-home (milk van); Modern trade; Quick commerce (Blinkit)<br>7. <strong>Consumer</strong> → 450 gm/day India average; cheese, ice cream demand growing<br><br>Hatsun: 8,000+ BMCs — India's deepest cold chain. Heritage: 2,700 BMCs in South India. இந்த infrastructure-தான் brand trust-ஐ build பண்ணுது.`
+  },
+  sector:{
+    en:`<strong>India Dairy Sector — Key Tailwinds (CB Research)</strong><br><br>1. India = World's largest milk producer (240 MT, 24% global share)<br>2. Organised sector growing 15–18% vs 5–7% unorganised<br>3. Low VAP penetration — India: 220 gm/yr cheese vs Europe 18 kg<br>4. Rising incomes + urbanisation = VAP upgrade cycle<br>5. Protein awareness driving whey protein, Greek yogurt (post-COVID fitness boom)<br>6. Quick commerce (Blinkit, Swiggy) opening new dairy channels<br>7. Government support: ₹15,000 Cr cold chain infrastructure schemes<br>8. Export opportunity: SMP, casein, ghee to Middle East, EU<br>9. Technology in procurement: IoT BMCs, digital payments reducing costs<br>10. Demographic dividend: 18 million new consumers/year<br><br><strong>Market Structure:</strong><br>• Total market: ~₹10–11 lakh crore (full value chain)<br>• Unorganised: 65% | Cooperatives (Amul): 22% | Listed private: ~8%<br>• Listed companies' opportunity = grow from 8% to 15% by FY30`,
+    ta:`<strong>India Dairy Sector Tailwinds (Tamil)</strong><br><br>1. India = உலகின் மிகப்பெரிய பால் உற்பத்தியாளர் (240 MT)<br>2. Organised sector 15–18% வளர்கிறது vs unorganised 5–7%<br>3. VAP penetration மிகவும் குறைவு — cheese 220 gm/yr India vs 18 kg Europe<br>4. Income உயர்வு + urbanisation = VAP upgrade<br>5. Fitness boom → whey protein, Greek yogurt demand<br>6. Quick commerce (Blinkit, Swiggy) → new dairy channels<br>7. Government ₹15,000 கோடி cold chain schemes<br>8. Export: SMP, casein, ghee<br>9. IoT BMCs, digital payments — procurement cost குறைகிறது<br>10. 18 million new consumers per year — India demographic dividend<br><br>Total dairy market: ₹10–11 lakh கோடி. Listed private sector: ~8% மட்டும்! FY30-ல் 15%-க்கு grow ஆகலாம்.`
+  },
+  vapmix:{
+    en:`<strong>Value-Added Products (VAP) — Why It Matters</strong><br><br>VAP mix is the single most important structural metric for Indian dairy investors. Higher VAP = higher margins + less seasonality.<br><br><strong>Current VAP Mix:</strong><br>• Hatsun: ~40% (best) — ice cream + curd + butter/ghee<br>• Parag: ~38% — cheese + whey protein + ghee<br>• Dodla: ~30%<br>• Heritage: ~25% (lowest, but growing fast)<br><br><strong>VAP Gross Margin Ladder:</strong><br>Liquid milk: 8–12% | Curd/Lassi: 15–22% | Paneer: 18–25% | Ghee: 12–18% | Ice cream: 35–48% | Cheese: 28–38% | Whey protein: 45–55%<br><br>Every 500 bps increase in VAP mix typically translates to ~80–120 bps EBITDA margin improvement for a dairy company.`,
+    ta:`<strong>Value-Added Products (VAP) — ஏன் முக்கியம்? (Tamil)</strong><br><br>VAP mix = dairy investor-ஐ பொறுத்தவரை மிக முக்கியமான metric.<br><br>தற்போதைய VAP mix:<br>• Hatsun: ~40% (best)<br>• Parag: ~38% (cheese + whey)<br>• Dodla: ~30%<br>• Heritage: ~25% (growing)<br><br>Margin ladder:<br>• Liquid milk: 8–12%<br>• Ice cream: 35–48%<br>• Cheese: 28–38%<br>• Whey protein: 45–55%<br><br>VAP mix 500 bps உயர்வு = ~80–120 bps EBITDA improvement. அதனால் Hatsun-ஐ market premium-ல் value பண்றது.`
+  },
+  africa:{
+    en:`<strong>Dodla Africa Business — India's Only Listed International Dairy</strong><br><br>• Countries: Uganda, Kenya, Ethiopia<br>• Plants: 4 plants (1 each in Uganda x2, Kenya, Ethiopia)<br>• Africa milk procurement: ~2.5 LLPD (growing fast)<br>• Africa Q4 FY26 revenue: ~₹110 Cr (+41% YoY)<br>• Africa FY26 annualised: ~₹400 Cr (~13% of total revenue)<br>• Africa EBITDA margin: 12–13% (HIGHER than India's ~9–10%!)<br><br>Why Africa is high-margin:<br>1. Low competition (fragmented local market)<br>2. Underpenetrated fresh dairy — Dodla bringing Indian cold chain discipline<br>3. Growing urban middle class in Uganda/Kenya<br>4. No Amul (cooperative subsidised competition)<br>5. Premium packaging = premium pricing vs local loose milk<br><br>Risk: FX (UGX, KES, ETB vs INR) + political risk (Uganda elections 2026)`,
+    ta:`<strong>Dodla Africa Business (Tamil)</strong><br><br>• Uganda, Kenya, Ethiopia — 4 plants<br>• Africa milk procurement: ~2.5 LLPD (வேகமாக வளர்கிறது)<br>• Q4 FY26 Africa revenue: ~₹110 கோடி (+41%!)<br>• FY26 annualised: ~₹400 கோடி (~13% total revenue)<br>• Africa EBITDA margin: 12–13% — India-ஐ விட better!<br><br>Africa-ல் high margin ஏன்?<br>• குறைந்த competition<br>• Underpenetrated fresh dairy market<br>• Urban middle class growing in Uganda, Kenya<br>• Amul போன்ற subsidised competition இல்லை<br><br>Risk: FX (UGX, KES vs ₹) + Uganda 2026 elections`
+  },
+  outlook:{
+    en:`<strong>FY27 Outlook — CB Research Data View (No Recommendations)</strong><br><br><strong>Bull case (normal monsoon, lean season costs ₹37–40/litre):</strong><br>Heritage: ₹175–185 Cr PAT | Hatsun: ₹280–300 Cr | Dodla: ₹245–260 Cr | Parag: ₹110–125 Cr<br><br><strong>Base case (lean costs ₹41–44/litre, partial price hikes):</strong><br>Heritage: ₹155–165 Cr | Hatsun: ₹245–265 Cr | Dodla: ₹220–235 Cr | Parag: ₹85–100 Cr<br><br><strong>Bear case (deficient monsoon, lean costs ₹45–48/litre):</strong><br>Heritage: ₹110–120 Cr | Hatsun: ₹185–210 Cr | Dodla: ₹170–185 Cr | Parag: ₹45–60 Cr<br><br><strong>CB Research FY27 Visibility Ranking (no recommendation):</strong><br>1. Dodla — High (Africa + clean balance sheet)<br>2. Hatsun — High (ice cream Q1 + debt reduction)<br>3. Heritage — Moderate-High (cheap valuation + VAP journey)<br>4. Parag — Moderate (recovery play, execution risk)`,
+    ta:`<strong>FY27 Outlook (Tamil)</strong><br><br>3 scenarios:<br>• Normal monsoon: Heritage ₹175–185 கோடி | Hatsun ₹280–300 கோடி | Dodla ₹245–260 கோடி | Parag ₹110–125 கோடி<br>• Base case: Heritage ₹155–165 கோடி | Hatsun ₹245–265 கோடி | Dodla ₹220–235 கோடி | Parag ₹85–100 கோடி<br>• Bear (poor monsoon): Heritage ₹110–120 கோடி | Hatsun ₹185–210 கோடி | Dodla ₹170–185 கோடி | Parag ₹45–60 கோடி<br><br>CB Research FY27 Visibility Ranking (recommendation இல்லை):<br>1. Dodla — High (Africa + clean B/S)<br>2. Hatsun — High (ice cream Q1 + debt reduction)<br>3. Heritage — Moderate-High<br>4. Parag — Moderate (execution risk)`
+  },
+  combined:{
+    en:`<strong>Sector Combined Q4 FY26 + FY26 Full Year</strong><br><br><strong>Q4 FY26 Combined (Heritage + Hatsun + Dodla + Parag):</strong><br>• Total Revenue: ₹4,787 Cr<br>• Total PAT: ₹180 Cr<br>• Avg EBITDA Margin: ~9.2% (vs ~7.7% Q4 FY25)<br><br><strong>FY26 Full Year Combined:</strong><br>• Total Revenue: ₹17,764 Cr<br>• Total PAT: ₹624 Cr<br>• Heritage PAT: ₹139 Cr (+44.8%) | Hatsun: ₹217 Cr (+33.1%) | Dodla: ₹195 Cr (+21.9%) | Parag: ₹73 Cr (recovery)<br><br>Sector Q4 FY26 benefitted from FLUSH SEASON milk cost tailwind (₹33–36/litre procurement). Q1 FY27 lean season will test margins — ice cream companies (Heritage, Hatsun) have a natural Q1 cushion.`,
+    ta:`<strong>Sector Combined (Tamil)</strong><br><br>Q4 FY26 combined 4 companies: ₹4,787 கோடி revenue; ₹180 கோடி PAT<br><br>FY26 full year combined: ₹17,764 கோடி revenue; ₹624 கோடி PAT<br><br>Q4 FY26 flush season benefit: Raw milk ₹33–36/litre. Q1/Q2 FY27 lean season-ல் margins compress ஆகும். Ice cream companies (Heritage, Hatsun) Q1-ல் summer uplift பெறுவார்கள்.`
+  }
+};
+
+/* ─── ANSWER ENGINE (ENGLISH) ─── */
+function cbA(q,lang){
+  if(!q||!q.trim())return;
+  const msgs=document.getElementById('chatMsgs');
+  const inp=document.getElementById('chatIn');
+  const typ=document.getElementById('typingInd');
+  const uEl=document.createElement('div');
+  uEl.className='chat-msg user';uEl.textContent=q.trim();
+  msgs.appendChild(uEl);inp.value='';msgs.scrollTop=msgs.scrollHeight;
+  const isTa=/[\u0B80-\u0BFF]/.test(q)||/tamil/i.test(q);
+  const l=(lang==='ta'||isTa)?'ta':'en';
+  typ.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typ.style.display='none';
+    const a=findA(q.toLowerCase(),l);
+    const bEl=document.createElement('div');
+    bEl.className='chat-msg bot';bEl.innerHTML=a;
+    msgs.appendChild(bEl);msgs.scrollTop=msgs.scrollHeight;
+  },500);
+}
+
+/* ─── ANSWER ENGINE (TAMIL) ─── */
+function cbATa(q){
+  if(!q||!q.trim())return;
+  const msgs=document.getElementById('chatMsgsTa');
+  const inp=document.getElementById('chatInTa');
+  const typ=document.getElementById('typingIndTa');
+  const uEl=document.createElement('div');
+  uEl.className='chat-msg user';uEl.textContent=q.trim();
+  msgs.appendChild(uEl);inp.value='';msgs.scrollTop=msgs.scrollHeight;
+  typ.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typ.style.display='none';
+    const a=findA(q.toLowerCase(),'ta');
+    const bEl=document.createElement('div');
+    bEl.className='chat-msg bot';bEl.innerHTML=a;
+    msgs.appendChild(bEl);msgs.scrollTop=msgs.scrollHeight;
+  },500);
+}
+
+function findA(q,l){
+  const G=k=>KB[k]?.[l]||KB[k]?.en||'';
+  if(/heritage|heritg/.test(q))return G('her');
+  if(/hatsun|arun|ibaco|chandramogan/.test(q))return G('hat');
+  if(/dodla|africa|uganda|kenya|ethiopia/.test(q))return G('dod');
+  if(/parag|go cheese|gowardhan|avvatar|pride of cows|paragmilk|whey/.test(q))return G('par');
+  if(/lean season|flush|procurement cost|seasonal|monsoon.*dairy|dairy.*season/.test(q))return G('lean');
+  if(/milk chain|bmco?|bmc|chilling|procurement.*process|collection.*distribution|farm.*consumer|farmer.*consumer/.test(q))return G('milkchain');
+  if(/vap|value.add|ice cream.*margin|cheese.*margin|margin ladder/.test(q))return G('vapmix');
+  if(/africa|dodla africa/.test(q))return G('africa');
+  if(/fy27|outlook|bull|bear|scenario|forecast/.test(q))return G('outlook');
+  if(/combined|all four|sector.*total|total.*sector/.test(q))return G('combined');
+  if(/tailwind|sector.*dynamic|market.*structure|organised.*unorganised/.test(q))return G('sector');
+  if(l==='ta')return `<strong>CB Assist</strong> — இந்த கேள்விகளை try பண்ணுங்க:<br><br>• Hatsun-ஓட debt ₹1,850 Cr இருந்தும் premium valuation justify ஆகுதா?<br>• Lean season-ல் EBITDA margin எந்த company-ல் குறைவாக impact ஆகும்?<br>• Dodla Africa-ல் invest பண்றது risk-reward சரியா?<br>• Parag-ரோட VAP mix 38% ஆனாலும் EBITDA 7.2% மட்டும் — ஏன்?<br>• Heritage-ஓட debt-free தன்மை valuation-ல எப்படி reflect ஆகுது?<br>• FY27-ல் four companies-ல் யாரோட PAT growth highest இருக்கும்?<br>• Milk chain-ல் VAP-க்கு போகும்போது margin எவ்வளவு improve ஆகுது?`;
+  return `<strong>CB Assist</strong> — Smart questions to explore:<br><br>• <em>Hatsun carries ₹1,850 Cr debt yet trades at premium — is the valuation justified?</em><br>• <em>Which company is best insulated from lean season margin pressure?</em><br>• <em>Dodla's Africa bet: genuine moat or capital misallocation?</em><br>• <em>Parag has 38% VAP mix but only 7.2% EBITDA — where is the margin leaking?</em><br>• <em>Heritage is nearly debt-free — does that show up in valuation multiples?</em><br>• <em>Who has the highest PAT growth potential in FY27 and why?</em><br>• <em>How much does moving up the milk chain value ladder improve margins?</em>`;
+}
+</script>
+</body>
+</html>

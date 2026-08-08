@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Tyre Sector — Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;--text:#181511;--muted:#6e6860;
+--mrf:#b22222;--mrf-s:#fdeaea;--bkt:#1a7a3a;--bkt-s:#e8f5ec;--apl:#e07b00;--apl-s:#fff7ed;
+--ceat:#0053a0;--ceat-s:#e8f0fa;--jkt:#5b21b6;--jkt-s:#f3ebfa;
+--pos:#166534;--neg:#dc2626;--warn:#ea580c;--gold:#b8911e;--gold-s:#fdf5e0;
+--sh:0 1px 8px rgba(24,21,17,.07);--sh2:0 4px 20px rgba(24,21,17,.10);--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#0d1c2e;padding:0 32px;display:flex;align-items:stretch;justify-content:space-between;min-height:68px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;line-height:1.15;padding:16px 0 4px;}
+.hdr .sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;padding-bottom:16px;}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 0;}
+.chip{padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;}
+.chip-mrf{background:var(--mrf);}.chip-bkt{background:var(--bkt);}.chip-apl{background:var(--apl);}
+.chip-ceat{background:var(--ceat);}.chip-jkt{background:var(--jkt);}
+.chip-date{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;padding:0 32px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:13px 13px 11px;font-size:11.5px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--mrf);font-weight:700;}
+.main{padding:22px 32px 48px;max-width:1480px;margin:0 auto;}
+.panel{display:none;animation:fi .18s ease;}.panel.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sec-note{font-size:10.5px;color:var(--muted);font-weight:400;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
+.card-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.mrf::before{background:var(--mrf);}.co-card.bkt::before{background:var(--bkt);}
+.co-card.apl::before{background:var(--apl);}.co-card.ceat::before{background:var(--ceat);}.co-card.jkt::before{background:var(--jkt);}
+.co-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:9px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center;}
+.m-lbl{font-size:11px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text);}
+.badge-row{margin-top:10px;display:flex;gap:4px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-neg{background:#fee2e2;color:#b91c1c;}.b-warn{background:#fff7ed;color:#c2410c;}.b-neu{background:#f3f4f6;color:#4b5563;}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:20px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.kpi.mrf-a{border-left:4px solid var(--mrf);}.kpi.bkt-a{border-left:4px solid var(--bkt);}
+.kpi.apl-a{border-left:4px solid var(--apl);}.kpi.ceat-a{border-left:4px solid var(--ceat);}.kpi.jkt-a{border-left:4px solid var(--jkt);}
+.kpi .kl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+.kpi .kv{font-size:1rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:9.5px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+th{background:#0d1c2e;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:10px 12px;text-align:left;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap;vertical-align:middle;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}.td-wrap{white-space:normal;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
+.swot-cell{padding:11px 13px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-s);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:9px;padding-bottom:5px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:7px;}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;box-shadow:var(--sh);margin-bottom:12px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+.rat-pill{padding:3px 11px;border-radius:20px;font-size:10.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef9c3;color:#a16207;}.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.15rem;font-weight:900;font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
+.ac-cmp{font-size:10.5px;color:var(--muted);margin-bottom:7px;}
+.ac-text{font-size:11.5px;line-height:1.6;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh2);margin-bottom:16px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:9px;}
+.verdict-body{font-size:12.5px;line-height:1.7;}
+.trojan-card{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:2px solid var(--warn);border-radius:var(--r);padding:20px 24px;margin-bottom:16px;}
+.trojan-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--warn);margin-bottom:9px;}
+.rm-box{background:#fff0ef;border:1.5px solid #c8202a;border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.65;}
+.grp-hdr{padding:7px 13px;border-left:4px solid;border-radius:0 7px 7px 0;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:10.5px;color:var(--muted);margin-bottom:10px;}
+.seg-row{margin-bottom:12px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;}
+.seg-bar{height:8px;border-radius:20px;}
+.rm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.rm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;}
+.rm-icon{font-size:1.5rem;margin-bottom:6px;}
+.rm-title{font-weight:800;font-size:11.5px;margin-bottom:4px;}
+.rm-body{font-size:11px;color:var(--text);line-height:1.6;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--mrf);border-radius:var(--r);padding:18px 20px;}
+.cbassist-title{font-weight:800;font-size:12px;color:var(--mrf);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.cbassist-title span{width:7px;height:7px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:100px;max-height:360px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:9px;}
+.chat-msg{padding:9px 13px;border-radius:10px;font-size:12px;max-width:92%;line-height:1.55;}
+.chat-msg.user{background:#0d1c2e;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--mrf);}
+.chat-input-row{display:flex;gap:7px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);outline:none;}
+.chat-input:focus{border-color:var(--mrf);}
+.chat-send{background:var(--mrf);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:7px 11px;}
+.typing-ind span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.preset-tab{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 5px 0;}
+.pt-mrf.on{background:var(--mrf);border-color:var(--mrf);color:#fff;}
+.pt-bkt.on{background:var(--bkt);border-color:var(--bkt);color:#fff;}
+.pt-apl.on{background:var(--apl);border-color:var(--apl);color:#fff;}
+.pt-ceat.on{background:var(--ceat);border-color:var(--ceat);color:#fff;}
+.pt-jkt.on{background:var(--jkt);border-color:var(--jkt);color:#fff;}
+.pt-sector.on{background:var(--gold);border-color:var(--gold);color:#fff;}
+.pqs{display:none;}.pqs.on{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.pq{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:8px;line-height:1.45;}
+.pq:hover{border-color:var(--mrf);background:var(--mrf-s);}
+.co-sel{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:12px;}
+.co-sel-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.sep{width:1px;height:22px;background:var(--border);display:inline-block;margin:0 4px;}
+.per-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.co-sec{display:none;}.co-sec.on{display:block;}
+.qtr-v{display:block;}.annual-v{display:none;}
+.cat-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;box-shadow:var(--sh);}
+.cat-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.cat-btn.on{background:#0d1c2e;color:#fff;border-color:#0d1c2e;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:12px 32px;border-top:1px solid var(--border);margin-top:24px;line-height:1.7;}
+.cb-wm{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);border:1.5px solid var(--border);border-radius:28px;padding:6px 13px 6px 7px;box-shadow:0 4px 18px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:26px;height:26px;background:var(--mrf);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.8rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:10.5px;font-weight:700;}.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+@media(max-width:860px){.main{padding:12px 12px 40px;}.hdr{padding:0 14px;flex-wrap:wrap;}.tab-nav{padding:0 6px;}.g2,.g3,.g5,.kpi-grid,.rm-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.g2,.g3,.g5,.kpi-grid,.rm-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><h1>India Tyre Sector &mdash; Intelligence Dashboard</h1>
+  <div class="sub">MRF &middot; Balkrishna Industries &middot; Apollo Tyres &middot; CEAT &middot; JK Tyre &amp; Industries &middot; Q4 FY26 &amp; Annual &middot; CB Research</div></div>
+  <div class="hdr-right">
+    <span class="chip chip-mrf">MRF</span><span class="chip chip-bkt">BKT</span><span class="chip chip-apl">Apollo</span>
+    <span class="chip chip-ceat">CEAT</span><span class="chip chip-jkt">JK Tyre</span>
+    <span class="chip chip-date">Q4 FY26 &middot; 31 May 2026</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="showTab('companies',this)">Companies</button>
+  <button class="tab-btn" onclick="showTab('rawmat',this)">Raw Materials</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Market Segments</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT &amp; Moat</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst View</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks &amp; Outlook</button>
+  <button class="tab-btn" onclick="showTab('assist',this)">CB Assist &#x1F916;</button>
+</nav>
+<div class="main">
+
+<!-- ===== OVERVIEW ===== -->
+<div class="panel active" id="tab-overview">
+<div class="sec-hdr">Overview <span class="sec-note">&middot; 5 Companies &middot; Q4 FY26 &middot; Sector Drivers &middot; Filter by Segment</span></div>
+<div class="cat-bar">
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Filter:</span>
+  <button class="cat-btn on" onclick="filterCat('all',this)">All Companies</button>
+  <button class="cat-btn" onclick="filterCat('pcr',this)">Passenger &amp; 2W</button>
+  <button class="cat-btn" onclick="filterCat('cvt',this)">Truck &amp; Bus</button>
+  <button class="cat-btn" onclick="filterCat('oht',this)">Off-Highway (OHT)</button>
+  <button class="cat-btn" onclick="filterCat('exp',this)">Export-Led</button>
+</div>
+<div class="kpi-grid">
+  <div class="kpi mrf-a" data-cat="pcr cvt"><div class="kl">MRF &mdash; Q4 PAT</div><div class="kv">&#8377;702 Cr</div><div class="kc pos">+37.6% YoY</div></div>
+  <div class="kpi bkt-a" data-cat="oht exp"><div class="kl">BKT &mdash; Q4 PAT</div><div class="kv">&#8377;295 Cr</div><div class="kc neg">&minus;18.5% YoY</div></div>
+  <div class="kpi apl-a" data-cat="pcr cvt"><div class="kl">Apollo &mdash; Q4 PAT</div><div class="kv">&#8377;631 Cr</div><div class="kc pos">+241% YoY*</div></div>
+  <div class="kpi ceat-a" data-cat="pcr"><div class="kl">CEAT &mdash; Q4 PAT</div><div class="kv">&#8377;244 Cr</div><div class="kc pos">+145% YoY</div></div>
+  <div class="kpi jkt-a" data-cat="cvt"><div class="kl">JK Tyre &mdash; Q4 PAT</div><div class="kv">&#8377;178 Cr</div><div class="kc pos">+83.4% YoY</div></div>
+</div>
+<div class="g3" style="margin-bottom:14px;">
+  <div class="co-card mrf" data-cat="pcr cvt">
+    <div class="co-name" style="color:var(--mrf)">MRF Ltd</div>
+    <div class="co-seg">NSE: MRF &middot; India's Largest Tyre Co &middot; Highest Share Price &middot; Q4 &#10003; May 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Stnd)</span><span class="m-val">&#8377;8,044 Cr (+13.7%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">16.2% (+100 bps YoY)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;702 Cr (+37.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;31,149 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;2,426 Cr (+29.5%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 EBITDA Margin</span><span class="m-val pos">~16.8%</span></div>
+    <div class="badge-row"><span class="badge b-pos">Margin +100 bps</span><span class="badge b-pos">Div &#8377;229/sh</span><span class="badge b-warn">NR cost FY27</span></div>
+  </div>
+  <div class="co-card bkt" data-cat="oht exp">
+    <div class="co-name" style="color:var(--bkt)">Balkrishna Industries (BKT)</div>
+    <div class="co-seg">NSE: BALKRISIND &middot; Global OHT #2 &middot; 65% Exports &middot; 130+ Countries &middot; Q4 &#10003; May 8, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Stnd)</span><span class="m-val">&#8377;2,894 Cr (+2%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val warn">22.9% (vs 24.8% yr-ago)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#8377;295 Cr (&minus;18.5%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue (Stnd)</span><span class="m-val">&#8377;10,656 Cr (flat)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">&#8377;1,222 Cr (&minus;25%)</span></div>
+    <div class="m-row"><span class="m-lbl">BKT 2.0 Target</span><span class="m-val">&#8377;23,000 Cr by FY30</span></div>
+    <div class="badge-row"><span class="badge b-neg">FY26 PAT &minus;25%</span><span class="badge b-warn">Margin &minus;240 bps</span><span class="badge b-pos">Carbon Black Plant</span></div>
+  </div>
+  <div class="co-card apl" data-cat="pcr cvt">
+    <div class="co-name" style="color:var(--apl)">Apollo Tyres</div>
+    <div class="co-seg">NSE: APOLLOTYRE &middot; India + Europe Vredestein &middot; TBR +20% Q4 &middot; Q4 &#10003; May 15, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;7,336 Cr (+14.2%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">14.6% (+160 bps)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">&#8377;631 Cr (+241%)*</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue (Consol)</span><span class="m-val">&#8377;28,471 Cr (+9%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;1,372 Cr (+22.4%)</span></div>
+    <div class="m-row"><span class="m-lbl">Net D/EBITDA</span><span class="m-val pos">0.4&times; &mdash; near debt-free</span></div>
+    <div class="badge-row"><span class="badge b-pos">Debt sharply down</span><span class="badge b-warn">*Tax reversal one-off</span></div>
+  </div>
+</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div class="co-card ceat" data-cat="pcr">
+    <div class="co-name" style="color:var(--ceat)">CEAT Ltd</div>
+    <div class="co-seg">NSE: CEAT &middot; RPG Group &middot; PCR #2 Premium (from #5 in 4 qtrs) &middot; Q4 &#10003; Apr 29, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;4,219 Cr (+23.3%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val pos">14.2% (+270 bps)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT (Stnd)</span><span class="m-val pos">&#8377;244 Cr (+145%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue (Consol)</span><span class="m-val">&#8377;15,678 Cr (+18.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;697 Cr (+47%)</span></div>
+    <div class="m-row"><span class="m-lbl">Camso OHT Acquisition</span><span class="m-val">Completed FY26</span></div>
+    <div class="badge-row"><span class="badge b-pos">Div &#8377;35/sh (350%)</span><span class="badge b-pos">PCR #2 premium</span><span class="badge b-warn">NR pressure FY27</span></div>
+  </div>
+  <div class="co-card jkt" data-cat="cvt">
+    <div class="co-name" style="color:var(--jkt)">JK Tyre &amp; Industries</div>
+    <div class="co-seg">NSE: JKTYRE &middot; TBR Leader &middot; Hahnkamm Mexico &middot; Record FY26 &middot; Q4 &#10003; May 26, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;4,223 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin</span><span class="m-val warn">12.72% (vs 13.52% Q3)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val pos">&#8377;178 Cr (+83.4%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue (Consol)</span><span class="m-val pos">&#8377;16,327 Cr (Record)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;778 Cr (+51%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val pos">&#8377;2,089 Cr (+25%) Record</span></div>
+    <div class="badge-row"><span class="badge b-pos">Record FY26</span><span class="badge b-pos">EBITDA +25%</span><span class="badge b-warn">&#8377;4,980 Cr expansion</span></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:14px;">
+  <div class="card-lbl">All 5 Companies &mdash; Q4 FY26 &amp; FY26 Annual Quick Reference (&#8377; Crore)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>Segment</th><th>Q4 Revenue</th><th>Q4 YoY</th><th>Q4 EBITDA%</th><th>Q4 PAT</th><th>PAT%</th><th>FY26 Revenue</th><th>FY26 PAT</th><th>FY26 EBITDA%</th><th>Dividend</th></tr></thead>
+    <tbody>
+      <tr><td class="tb"><span class="dot" style="background:var(--mrf)"></span>MRF</td><td>PCR/TBR/2W</td><td class="num">&#8377;8,044</td><td class="tpos">+13.7%</td><td class="tpos">16.2%</td><td class="tpos">&#8377;702</td><td class="tpos">+37.6%</td><td class="num">&#8377;31,149</td><td class="tpos">&#8377;2,426</td><td class="tpos">~16.8%</td><td class="num">&#8377;229/sh</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--bkt)"></span>BKT</td><td>OHT/Agri/Export</td><td class="num">&#8377;2,894</td><td class="tpos">+2.0%</td><td class="warn">22.9%&#x25BC;</td><td class="tneg">&#8377;295</td><td class="tneg">&minus;18.5%</td><td class="num">&#8377;10,656</td><td class="tneg">&#8377;1,222</td><td class="tneg">22.7%&#x25BC;</td><td class="num">&#8377;16/sh</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--apl)"></span>Apollo</td><td>PCR/TBR/Europe</td><td class="num">&#8377;7,336</td><td class="tpos">+14.2%</td><td class="tpos">14.6%</td><td class="tpos">&#8377;631</td><td class="tpos">+241%*</td><td class="num">&#8377;28,471</td><td class="tpos">&#8377;1,372</td><td class="tpos">14.6%</td><td class="num">&#8377;6/sh</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--ceat)"></span>CEAT</td><td>PCR/2W/Intl</td><td class="num">&#8377;4,219</td><td class="tpos">+23.3%</td><td class="tpos">14.2%</td><td class="tpos">&#8377;244</td><td class="tpos">+145%</td><td class="num">&#8377;15,678</td><td class="tpos">&#8377;697</td><td class="tpos">13.16%</td><td class="num">&#8377;35/sh</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--jkt)"></span>JK Tyre</td><td>TBR/PCR/Mexico</td><td class="num">&#8377;4,223</td><td class="warn">Flat QoQ</td><td class="warn">12.72%</td><td class="tpos">&#8377;178</td><td class="tpos">+83.4%</td><td class="num">&#8377;16,327</td><td class="tpos">&#8377;778</td><td class="warn">~12.8%</td><td class="num">TBA</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">*Apollo Q4 PAT +241% includes ~&#8377;742 Cr after-tax one-time tax reversal; underlying growth ~50-60%. Sources: BSE/NSE filings, Q4 FY26 investor presentations, Business Standard, Autocar Professional.</p>
+</div>
+<div class="verdict-card">
+  <div class="verdict-title">&#127981; FY26 Sector Verdict &mdash; Strong Year; NR Cloud on FY27</div>
+  <div class="verdict-body">India's tyre sector delivered a robust FY26 driven by three Ds: domestic replacement demand, debt reduction, and double-digit volume growth in TBR and passenger cars. MRF maintained India's best tyre EBITDA margin at ~16.8%. Apollo deleveraged dramatically &mdash; Net D/EBITDA from 3.2&times; (Mar 2020) to 0.4&times; (Mar 2026). CEAT surged from #5 to #2 in premium passenger cars in just four quarters. JK Tyre posted record revenue &#8377;16,327 Cr and record EBITDA &#8377;2,089 Cr. Only Balkrishna Industries disappointed &mdash; forex losses, margin compression (&minus;240 bps), and weak European agricultural tyre demand. FY27 headwind: natural rubber +7&ndash;8% Q1 FY27, US tariff uncertainty on exports. Replacement market remains the structural profit anchor &mdash; contributing 53&ndash;75% of revenue and the largest share of profits for all domestic players.</div>
+</div>
+</div>
+
+<!-- ===== COMPANIES ===== -->
+<div class="panel" id="tab-companies">
+<div class="sec-hdr">Companies <span class="sec-note">&middot; Select Company &middot; Quarter &amp; Annual &middot; P&L &middot; Moat &amp; USP</span></div>
+<div class="co-sel">
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Company</span>
+  <button class="co-sel-btn" id="cobtn-mrf" onclick="showCo('mrf',this)" style="background:var(--mrf);color:#fff;border-color:var(--mrf);">MRF</button>
+  <button class="co-sel-btn" id="cobtn-bkt" onclick="showCo('bkt',this)">BKT</button>
+  <button class="co-sel-btn" id="cobtn-apl" onclick="showCo('apl',this)">Apollo Tyres</button>
+  <button class="co-sel-btn" id="cobtn-ceat" onclick="showCo('ceat',this)">CEAT</button>
+  <button class="co-sel-btn" id="cobtn-jkt" onclick="showCo('jkt',this)">JK Tyre</button>
+  <span class="sep"></span>
+  <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);">Period</span>
+  <button class="per-btn" id="perbtn-qtr" onclick="showPer('qtr',this)" style="background:#0d1c2e;color:#fff;border-color:#0d1c2e;">Quarter</button>
+  <button class="per-btn" id="perbtn-annual" onclick="showPer('annual',this)">Annual</button>
+</div>
+
+<div class="co-sec on" id="co-mrf">
+  <div class="grp-hdr" style="background:var(--mrf-s);border-color:var(--mrf);color:var(--mrf);">MRF Ltd &mdash; NSE: MRF &middot; India's Largest Tyre Co &middot; MD: Rahul Mammen Mappillai &middot; PCR, TBR, 2W, Farm, OTR &middot; 10+ Plants</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Standalone)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;8,044 Cr</td><td class="num">&#8377;8,050 Cr</td><td class="num">&#8377;7,075 Cr</td><td class="tpos">+13.7%</td></tr>
+          <tr><td>EBITDA (est.)</td><td class="tpos">&#8377;1,305 Cr</td><td class="num">~&#8377;1,150 Cr</td><td class="num">&#8377;1,075 Cr</td><td class="tpos">+21.5%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">16.2%</td><td class="num">~14.3%</td><td class="num">15.2%</td><td class="tpos">+100 bps</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;702 Cr</td><td class="num">&#8377;695 Cr</td><td class="num">&#8377;510 Cr</td><td class="tpos">+37.6%</td></tr>
+          <tr><td>PAT Margin</td><td class="tpos">8.73%</td><td class="num">8.63%</td><td class="num">7.22%</td><td class="tpos">+151 bps</td></tr>
+          <tr><td>Interest Cost</td><td class="tpos">&#8377;86 Cr</td><td class="num">&#8377;91 Cr</td><td class="num">&mdash;</td><td class="tpos">Declining</td></tr>
+          <tr><td>Final Dividend</td><td class="num">&#8377;229/share</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">Declared</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">MRF &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Brand Dominance</td><td style="white-space:normal">India's most trusted tyre brand. Decades of OEM and replacement leadership. Premium recall in all segments &mdash; car, truck, 2W</td></tr>
+          <tr><td class="tb">Pricing Power</td><td style="white-space:normal">Highest ability to pass through NR cost increases in replacement market. Consumer pays for MRF by brand preference</td></tr>
+          <tr><td class="tb">OEM Relationships</td><td style="white-space:normal">Preferred OEM supplier to Maruti, Tata, M&amp;M, Hyundai. OEM fitment locks customers into MRF replacement cycle</td></tr>
+          <tr><td class="tb">Best-in-Class Margin</td><td style="white-space:normal">EBITDA ~16&ndash;17% &mdash; highest among India-focused tyre peers. Scale + supply chain depth + brand premium converge</td></tr>
+          <tr><td class="tb">No-Split Policy</td><td style="white-space:normal">&#8377;1,27,000+ share price &mdash; deters speculative trade, creates long-term institutional investor loyalty. Balance sheet debt-free</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year vs FY25 vs FY24 (Standalone)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="tpos">&#8377;31,149 Cr</td><td class="num">~&#8377;28,000 Cr</td><td class="num">~&#8377;25,000 Cr</td><td class="tpos">+11.2%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">~16.8%</td><td class="num">~13.9%</td><td class="num">~12.8%</td><td class="tpos">+290 bps</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;2,426 Cr</td><td class="num">&#8377;1,873 Cr</td><td class="num">&#8377;1,420 Cr</td><td class="tpos">+29.5%</td></tr>
+          <tr><td>PBT (pre-exceptional)</td><td class="tpos">&#8377;3,195 Cr</td><td class="num">&#8377;2,420 Cr</td><td class="num">&mdash;</td><td class="tpos">+32%</td></tr>
+          <tr><td>P/E Ratio (approx)</td><td class="num">~24&ndash;27&times;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">Premium justified</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Replacement Channel Revenue Mix</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Apollo &mdash; Replacement</span><span>~75%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:75%;background:var(--apl)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>MRF &mdash; Replacement</span><span>~62%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:62%;background:var(--mrf)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>JK Tyre &mdash; Replacement</span><span>~61%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:61%;background:var(--jkt)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>CEAT &mdash; Replacement</span><span>~53%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:53%;background:var(--ceat)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>BKT &mdash; Export/OHT</span><span>~65% export</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:65%;background:var(--bkt)"></div></div></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:10px;">Replacement = highest-margin channel. Consumer chooses brand. MRF/Apollo command price premium. Recurring 3&ndash;5 year demand cycle. Biggest profit driver in Indian tyres.</p>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-bkt">
+  <div class="grp-hdr" style="background:var(--bkt-s);border-color:var(--bkt);color:var(--bkt);">Balkrishna Industries (BKT) &mdash; NSE: BALKRISIND &middot; Global OHT #2 &middot; 65% Revenue Export &middot; Jt. MD: Rajiv Poddar</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Standalone)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">&#8377;2,894 Cr</td><td class="num">&#8377;2,744 Cr</td><td class="num">&#8377;2,750 Cr</td><td class="tpos">+2.0%</td></tr>
+          <tr><td>EBITDA</td><td class="warn">&#8377;663 Cr</td><td class="num">&#8377;660 Cr</td><td class="num">&#8377;703 Cr</td><td class="tneg">&minus;5.7%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="warn">22.9%</td><td class="num">24.0%</td><td class="num">24.8%</td><td class="tneg">&minus;190 bps</td></tr>
+          <tr><td>PAT (Standalone)</td><td class="tneg">&#8377;295 Cr</td><td class="num">&#8377;382 Cr</td><td class="num">&#8377;362 Cr</td><td class="tneg">&minus;18.5%</td></tr>
+          <tr><td>OHT Volume</td><td class="tpos">85,820 MT</td><td class="num">&mdash;</td><td class="num">82,062 MT</td><td class="tpos">+5.0%</td></tr>
+          <tr><td>Forex Loss (realised)</td><td class="tneg">&#8377;47 Cr</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="tneg">Drag on PAT</td></tr>
+          <tr><td>Final Dividend</td><td class="num">&#8377;4/sh</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">Total FY26: &#8377;16/sh</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">BKT &mdash; Why Unique Among Indian Tyre Companies</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Differentiator</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">No India Auto Dependence</td><td style="white-space:normal">BKT sells OHT to global farmers, miners, construction companies in 130+ countries. India auto cycle has no impact on BKT revenue</td></tr>
+          <tr><td class="tb">Premium Niche Pricing</td><td style="white-space:normal">Each specialised OHT (forestry, mining, ATV, farm) has high switching cost. EBITDA 22&ndash;25% vs 12&ndash;17% for domestic peers</td></tr>
+          <tr><td class="tb">Carbon Black Plant</td><td style="white-space:normal">Building own carbon black plant &mdash; unique backward integration in India. Saves ~&#8377;200&ndash;300 Cr/yr when operational. Long-term margin improver</td></tr>
+          <tr><td class="tb">BKT 2.0 Strategy</td><td style="white-space:normal">Target &#8377;23,000 Cr by FY30 (17% CAGR). Total capex &#8377;6,800 Cr till FY29. On-highway tyre diversification + AI automation</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Standalone)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">&#8377;10,656 Cr</td><td class="num">~&#8377;10,700 Cr</td><td class="num">Flat</td></tr>
+          <tr><td>EBITDA</td><td class="tneg">&#8377;2,423 Cr</td><td class="num">&#8377;2,690 Cr</td><td class="tneg">&minus;10%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tneg">22.7%</td><td class="num">25.1%</td><td class="tneg">&minus;240 bps</td></tr>
+          <tr><td>PAT</td><td class="tneg">&#8377;1,222 Cr</td><td class="num">&#8377;1,629 Cr</td><td class="tneg">&minus;25%</td></tr>
+          <tr><td>OHT Volume (record)</td><td class="tpos">3,17,356 MT</td><td class="num">~3,14,000 MT</td><td class="tpos">+1%</td></tr>
+          <tr><td>Net Debt (Mar 2026)</td><td class="num">&#8377;895 Cr net</td><td class="num">&mdash;</td><td class="num">Gross &#8377;4,049, Cash &#8377;3,154</td></tr>
+          <tr><td>Gross Capex FY26</td><td class="num">&#8377;2,800 Cr</td><td class="num">&mdash;</td><td class="num">Heavy investment phase</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">FY26 OHT Segment Mix</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Agriculture</span><span>58.8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:58.8%;background:var(--bkt)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Off-Road (Const/Mining)</span><span>37.5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:37.5%;background:#2e9e52"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Others (ATV/Lawn)</span><span>3.7%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:3.7%;background:#7dbf8e"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Export Share</span><span>~65%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:65%;background:#0d1c2e"></div></div></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:10px;">Agriculture largest segment. European ag weakness FY26 hurt volumes. Recovery dependent on global farm equipment demand. North America construction recovery = upside.</p>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-apl">
+  <div class="grp-hdr" style="background:var(--apl-s);border-color:var(--apl);color:var(--apl);">Apollo Tyres &mdash; NSE: APOLLOTYRE &middot; India + Europe Vredestein &middot; Chairman: Onkar Kanwar &middot; Jt. MD: Neeraj Kanwar</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;7,336 Cr</td><td class="num">&#8377;6,422 Cr</td><td class="tpos">+14.2%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;1,069 Cr</td><td class="num">&#8377;837 Cr</td><td class="tpos">+27.6%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">14.6%</td><td class="num">13.0%</td><td class="tpos">+160 bps</td></tr>
+          <tr><td>PAT (Consol)</td><td class="tpos">&#8377;631 Cr</td><td class="num">&#8377;185 Cr</td><td class="tpos">+241%*</td></tr>
+          <tr><td>One-time Tax Reversal</td><td class="warn">~&#8377;742 Cr after-tax</td><td class="num">&mdash;</td><td class="warn">Do not annualise</td></tr>
+          <tr><td>Net Debt Reduction FY26</td><td class="tpos">&#8377;900 Cr &darr;</td><td class="num">&mdash;</td><td class="tpos">D/EBITDA 0.4&times;</td></tr>
+          <tr><td>TBR India Q4</td><td class="tpos">+20% YoY</td><td class="num">&mdash;</td><td class="tpos">Strong truck demand</td></tr>
+          <tr><td>Europe Revenue Q4</td><td class="tneg">&minus;3.3% YoY</td><td class="num">&mdash;</td><td class="warn">Revenue fell, margins improved</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Apollo &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Dual Geography</td><td style="white-space:normal">Only Indian tyre major with large European manufacturing (Vredestein). UHP tyre mix in Europe at 50%. India + Europe = diversification beyond India auto cycle</td></tr>
+          <tr><td class="tb">Deleveraging</td><td style="white-space:normal">Net D/EBITDA 0.4&times; (Mar 2026) vs 3.2&times; (Mar 2020) &mdash; 6-year balance sheet transformation. Freed capacity for future capex investment</td></tr>
+          <tr><td class="tb">Replacement Revenue</td><td style="white-space:normal">~75% India revenue from replacement &mdash; highest among peers. Stable, high-margin recurring business</td></tr>
+          <tr><td class="tb">TBR Leadership</td><td style="white-space:normal">Truck-Bus Radial +20% Q4 FY26. India infrastructure and road freight boom directly drives Apollo TBR volumes</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="tpos">&#8377;28,471 Cr</td><td class="num">&#8377;26,123 Cr</td><td class="tpos">+9.0%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;4,143 Cr</td><td class="num">&#8377;3,572 Cr</td><td class="tpos">+16.0%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">14.6%</td><td class="num">13.7%</td><td class="tpos">+90 bps</td></tr>
+          <tr><td>PAT (Consol)</td><td class="tpos">&#8377;1,372 Cr</td><td class="num">&#8377;1,121 Cr</td><td class="tpos">+22.4%</td></tr>
+          <tr><td>Restructuring/Impairment</td><td class="tneg">&#8377;742 Cr after-tax</td><td class="num">&mdash;</td><td class="num">One-time included in FY26</td></tr>
+          <tr><td>Total Dividend</td><td class="num">&#8377;6/sh</td><td class="num">&mdash;</td><td class="num">&#8377;3.50 interim + &#8377;2.50 final</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Apollo Deleveraging Story</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Mar 2020 &mdash; Net D/EBITDA</span><span>3.2&times;</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:100%;background:#dc2626"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Mar 2022</span><span>2.1&times;</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:65%;background:#ea580c"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Mar 2024</span><span>1.2&times;</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:38%;background:#f59e0b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Mar 2026</span><span>0.4&times;</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:12%;background:#166534"></div></div></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:10px;">Apollo's most important structural change. From 3.2&times; to 0.4&times; D/EBITDA in 6 years. Frees up cash flow for capex and dividends without financial stress.</p>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-ceat">
+  <div class="grp-hdr" style="background:var(--ceat-s);border-color:var(--ceat);color:var(--ceat);">CEAT Ltd &mdash; NSE: CEAT &middot; RPG Group &middot; MD &amp; CEO: Arnab Banerjee &middot; PCR #2 in 4 quarters (from #5)</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;4,219 Cr</td><td class="num">&#8377;3,421 Cr</td><td class="tpos">+23.3%</td></tr>
+          <tr><td>Revenue (Stnd)</td><td class="tpos">&#8377;4,036 Cr</td><td class="num">&#8377;3,421 Cr</td><td class="tpos">+18.0%</td></tr>
+          <tr><td>EBITDA Margin Q4</td><td class="tpos">14.2%</td><td class="num">11.35%</td><td class="tpos">+270 bps</td></tr>
+          <tr><td>PAT (Stnd)</td><td class="tpos">&#8377;244 Cr</td><td class="num">&#8377;99 Cr</td><td class="tpos">+145%</td></tr>
+          <tr><td>Dividend FY26</td><td class="tpos">&#8377;35/sh (350%)</td><td class="num">&#8377;30/sh</td><td class="tpos">+17%</td></tr>
+          <tr><td>PCR Market Rank</td><td class="tpos">#2 premium/UV</td><td class="num">#5 in Q1 FY25</td><td class="tpos">4-quarter surge</td></tr>
+          <tr><td>Camso OHT Acquisition</td><td class="tpos">Completed FY26</td><td class="num">&mdash;</td><td class="num">Off-highway entry</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">CEAT &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Fastest Market Share Gain</td><td style="white-space:normal">From #5 to #2 in premium PCR/UV replacement in just 4 quarters (Q1 FY25 &rarr; Q4 FY26) &mdash; industry's fastest competitive climb</td></tr>
+          <tr><td class="tb">2W Market Leader</td><td style="white-space:normal">Consistent leadership in two-wheeler tyres &mdash; India's 20 mn+ 2W annual production creates structural replacement demand</td></tr>
+          <tr><td class="tb">Camso OHT Entry</td><td style="white-space:normal">Acquisition of Camso OHT/tracks business completed FY26. Adds global construction segment exposure. Full value chain by Mar 2027</td></tr>
+          <tr><td class="tb">International Expansion</td><td style="white-space:normal">International revenue 21% (FY26) &rarr; 33% target. Western Europe + US rebound expected Q1 FY27. Diversifying beyond India</td></tr>
+          <tr><td class="tb">ESG Leader</td><td style="white-space:normal">S&amp;P Global ESG score 69/100 &mdash; top 4% globally in auto components. Hyundai Supplier of the Year 2025. Procurement Team of the Year</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">FY24</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;15,678 Cr</td><td class="num">&#8377;13,218 Cr</td><td class="num">&#8377;11,943 Cr</td><td class="tpos">+18.6%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">13.16%</td><td class="num">~11%</td><td class="num">~13.4%</td><td class="tpos">+200 bps</td></tr>
+          <tr><td>PAT</td><td class="tpos">&#8377;697 Cr</td><td class="num">&#8377;473 Cr</td><td class="num">&#8377;643 Cr</td><td class="tpos">+47.4%</td></tr>
+          <tr><td>P/E Ratio</td><td class="num">~19&times;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">EV/EBITDA ~6&times; FY28</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">CEAT FY26 Key Milestones</div>
+      <table style="font-size:11.5px;box-shadow:none;">
+        <thead><tr><th>Milestone</th><th style="white-space:normal">Significance</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">PCR #2 premium</td><td style="white-space:normal">Biggest strategic win of FY26 &mdash; from #5 to #2 in 4 quarters</td></tr>
+          <tr><td class="tb">Camso completed</td><td style="white-space:normal">Off-highway tyre + tracks business added; global OHT exposure</td></tr>
+          <tr><td class="tb">Hyundai Supplier 2025</td><td style="white-space:normal">OEM quality recognition; strengthens fitment and replacement cycle</td></tr>
+          <tr><td class="tb">ESG top 4% global</td><td style="white-space:normal">S&amp;P Global 69/100 &mdash; institutional investor attraction</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+
+<div class="co-sec" id="co-jkt">
+  <div class="grp-hdr" style="background:var(--jkt-s);border-color:var(--jkt);color:var(--jkt);">JK Tyre &amp; Industries &mdash; NSE: JKTYRE &middot; CMD: Raghupati Singhania &middot; MD: Anshuman Singhania &middot; TBR Focus</div>
+  <div class="qtr-v"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Net Sales</td><td class="num">&#8377;4,223 Cr</td><td class="num">&#8377;4,222 Cr</td><td class="num">~&#8377;3,800 Cr</td><td class="tpos">+11.1%</td></tr>
+          <tr><td>EBITDA</td><td class="num">&#8377;537 Cr</td><td class="num">&#8377;571 Cr</td><td class="num">~&#8377;420 Cr</td><td class="tpos">+28% YoY</td></tr>
+          <tr><td>EBITDA Margin</td><td class="warn">12.72%</td><td class="num">13.52%</td><td class="num">~11%</td><td class="tpos">+172 bps YoY</td></tr>
+          <tr><td>PAT (Consol)</td><td class="tpos">&#8377;178 Cr</td><td class="num">~&#8377;181 Cr</td><td class="num">&#8377;97 Cr</td><td class="tpos">+83.4%</td></tr>
+          <tr><td>Market Cap</td><td class="num">&#8377;11,908 Cr</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">Smallest of the 5</td></tr>
+          <tr><td>52-week range note</td><td class="tneg">32% below 52-wk high</td><td class="num">High: &#8377;611</td><td class="num">&mdash;</td><td class="num">CMP ~&#8377;413</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">JK Tyre &mdash; Moat &amp; USP</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">TBR Core Strength</td><td style="white-space:normal">Truck-Bus Radial is JK's stronghold. India's road freight and infra boom directly benefits TBR demand. Record TBR volumes FY26</td></tr>
+          <tr><td class="tb">Mexico (Hahnkamm)</td><td style="white-space:normal">Only Indian tyre major with Americas manufacturing. US tariff environment creates localisation opportunity &mdash; and also export risk</td></tr>
+          <tr><td class="tb">Record FY26</td><td style="white-space:normal">Highest-ever consolidated revenue &#8377;16,384 Cr and EBITDA &#8377;2,089 Cr (+25%) &mdash; best annual performance in company history</td></tr>
+          <tr><td class="tb">Cheapest Valuation</td><td style="white-space:normal">P/E ~16&times; &mdash; lowest of the 5 companies. Value angle exists if margins can close gap with Apollo/MRF</td></tr>
+          <tr><td class="tb">&#8377;4,980 Cr Expansion</td><td style="white-space:normal">New capacity expansion plan signals management confidence in India demand cycle for FY27&ndash;29</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div></div>
+  <div class="annual-v" style="display:none;"><div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">FY26 Full Year (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;16,327 Cr (Record)</td><td class="num">&#8377;14,692 Cr</td><td class="tpos">+11.1%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">&#8377;2,089 Cr (Record)</td><td class="num">&#8377;1,671 Cr</td><td class="tpos">+25%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">~12.8%</td><td class="num">~11.4%</td><td class="tpos">+140 bps</td></tr>
+          <tr><td>PAT (Consol)</td><td class="tpos">&#8377;778 Cr</td><td class="num">&#8377;515 Cr</td><td class="tpos">+51%</td></tr>
+          <tr><td>P/E Ratio</td><td class="tpos">~16&times;</td><td class="num">&mdash;</td><td class="num">Cheapest of the 5</td></tr>
+          <tr><td>New Capex Plan</td><td class="num">&#8377;4,980 Cr announced</td><td class="num">&mdash;</td><td class="num">FY27&ndash;29 expansion</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">JK Tyre vs Peers &mdash; Key Comparisons</div>
+      <table style="font-size:11.5px;box-shadow:none;">
+        <thead><tr><th>Metric</th><th>JK Tyre</th><th>Peer Range</th><th style="white-space:normal">Note</th></tr></thead>
+        <tbody>
+          <tr><td>EBITDA Margin FY26</td><td class="warn">~12.8%</td><td class="num">13&ndash;17%</td><td style="white-space:normal">Lags MRF/Apollo</td></tr>
+          <tr><td>P/E (FY26)</td><td class="tpos">~16&times;</td><td class="num">19&ndash;33&times;</td><td style="white-space:normal">Cheapest in sector</td></tr>
+          <tr><td>TBR Position</td><td class="tpos">#2&ndash;3 India</td><td class="num">&mdash;</td><td style="white-space:normal">Core strength</td></tr>
+          <tr><td>Replacement %</td><td class="num">~61%</td><td class="num">53&ndash;75%</td><td style="white-space:normal">Mid-range</td></tr>
+          <tr><td>Mexico/US risk</td><td class="warn">Watch</td><td class="num">Unique</td><td style="white-space:normal">US tariff exposure</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- ===== RAW MATERIALS ===== -->
+<div class="panel" id="tab-rawmat">
+<div class="sec-hdr">Raw Materials <span class="sec-note">&middot; Natural Rubber &middot; Crude Derivatives &middot; Cost Structure &middot; GST &middot; FY27 Outlook</span></div>
+<div class="trojan-card">
+  <div class="trojan-title">&#9888;&#65039; Raw Material Warning &mdash; Biggest Sector Risk for FY27 Margins</div>
+  <p style="font-size:12.5px;line-height:1.7;">Natural rubber (NR) prices are expected to rise 7&ndash;8% in Q1 FY27 &mdash; management guidance from BKT. Companies have already implemented 3&ndash;5% tyre price hikes with further increases likely. Crude oil-derived materials (carbon black, synthetic rubber, process oils) remain elevated. FY26 margin expansion for most companies came from falling input costs. FY27 may reverse this partially. BKT is already squeezing at 22.9% EBITDA vs 24.8% a year ago. Companies with highest brand power (MRF, Apollo) can pass through; weaker players risk compression.</p>
+</div>
+<div class="rm-grid">
+  <div class="rm-card"><div class="rm-icon">&#127807;</div><div class="rm-title">Natural Rubber (NR) &mdash; ~30&ndash;40% of Tyre Cost</div>
+    <div class="rm-body">India's largest single cost input. Tyre sector consumes 70&ndash;75% of India's total NR demand. Domestic supply (Kerala, Tamil Nadu) insufficient &mdash; imports from Thailand, Indonesia, Vietnam. Price swings 20&ndash;40% in a year based on monsoon, global farm demand, and crude-derived SBR competition. <strong>FY27 alert:</strong> BKT guided +7&ndash;8% Q1 FY27. Companies responding with 3&ndash;5% tyre price hikes. Spread = margin compression of ~100&ndash;150 bps for companies unable to fully pass through.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#128314;</div><div class="rm-title">Carbon Black &mdash; ~15&ndash;20% of Cost</div>
+    <div class="rm-body">Crude oil derivative. Gives tyres strength and UV resistance. BKT is building its own carbon black plant &mdash; unique backward integration in India. When complete, saves ~&#8377;200&ndash;300 Cr/year and reduces import dependency. Other companies source from Phillips Carbon, Himadri, and imports. Crude at $75 = carbon black eases. Crude $100+ = expensive. India imports specialty carbon black grades for performance tyres.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#9879;&#65039;</div><div class="rm-title">Synthetic Rubber &amp; Process Oils &mdash; ~20&ndash;25%</div>
+    <div class="rm-body">SBR (styrene-butadiene rubber) is the largest synthetic rubber in tyres. Crude-derived &mdash; price tracks petrochemical margins. India imports 40&ndash;55% of high-performance synthetic rubbers. When crude rose Q4 FY26, SBR followed with a lag. FY27: if crude stabilises at $75&ndash;80, synthetic rubber moderates. Reliance and IOCL are key domestic SBR suppliers. Process oils (aromatic + naphthenic) also crude-derived &mdash; used as plasticisers in rubber compounds.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#128279;</div><div class="rm-title">Steel Cord &amp; Fabric &mdash; ~10&ndash;15%</div>
+    <div class="rm-body">Steel wire (drawn from hot-rolled coils) forms the belt structure in radial tyres &mdash; critical for TBR and PCR. Steel price sensitive. Polyester/nylon/aramid fabric used for tyre carcass. India imports aramid cords for performance tyres (Kevlar equivalent). JK Tyre and Apollo (TBR-heavy) most exposed to steel cord costs. MRF's scale provides better long-term sourcing contracts. Radialisation trend (bias to radial shift) is increasing steel cord consumption industry-wide.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#127981;</div><div class="rm-title">GST Cut: 28% &rarr; 18% &mdash; Industry Demand Conceded</div>
+    <div class="rm-body">GST on tyres has been <strong>reduced from 28% to 18%</strong>, conceding the industry's long-standing demand. <strong>OEM impact:</strong> Auto makers get input tax credit (ITC) &mdash; the lower rate cuts their input cost &rarr; vehicle price relief &rarr; auto volume grows &rarr; more new tyres. Apollo (TBR OEM) and CEAT (2W OEM) benefit most. <strong>Replacement impact:</strong> Consumer now pays 18% instead of 28% &mdash; cheaper tyres accelerate the replacement cycle, with an estimated ~5&ndash;8% volume uplift. MRF and CEAT (strong replacement) benefit most. <strong>Status:</strong> Rate cut effective &mdash; watch replacement volume pickup in coming quarters.</div>
+  </div>
+  <div class="rm-card"><div class="rm-icon">&#128202;</div><div class="rm-title">Company RM Sensitivity &mdash; FY27 Risk Map</div>
+    <div class="rm-body">
+      <table style="font-size:10.5px;box-shadow:none;border-radius:0;">
+        <thead><tr><th style="font-size:9px;padding:5px 6px;">Company</th><th style="font-size:9px;padding:5px 6px;">NR Exposure</th><th style="font-size:9px;padding:5px 6px;">FY27 Risk</th></tr></thead>
+        <tbody>
+          <tr><td>MRF</td><td>High (all segs)</td><td class="warn">Med-High; can pass</td></tr>
+          <tr><td>BKT</td><td>High (OHT NR)</td><td class="tneg">High (already squeezed)</td></tr>
+          <tr><td>Apollo</td><td>High (TBR+PCR)</td><td class="warn">Medium (pricing power)</td></tr>
+          <tr><td>CEAT</td><td>High (PCR/2W)</td><td class="warn">Med-High</td></tr>
+          <tr><td>JK Tyre</td><td>High (TBR-heavy)</td><td class="tneg">High (low margin buffer)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== SEGMENTS ===== -->
+<div class="panel" id="tab-segments">
+<div class="sec-hdr">Market Segments <span class="sec-note">&middot; PCR &middot; TBR &middot; 2W &middot; OHT/Agri &middot; Replacement vs OEM &middot; GST &middot; Export</span></div>
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-lbl">Segment Map &mdash; Who Plays Where</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Segment</th><th>Key Driver</th><th>MRF</th><th>BKT</th><th>Apollo</th><th>CEAT</th><th>JK Tyre</th><th>Replace%</th></tr></thead>
+    <tbody>
+      <tr><td class="tb">Passenger Car Radial (PCR)</td><td>PV sales + replacement</td><td class="tpos">Strong</td><td class="tneg">Nil domestic</td><td class="tpos">Strong</td><td class="tpos">Strong &mdash; #2</td><td class="warn">Growing</td><td class="tpos">~65&ndash;80%</td></tr>
+      <tr><td class="tb">Truck &amp; Bus Radial (TBR)</td><td>Road freight + infra</td><td class="tpos">Leader</td><td class="tneg">Nil</td><td class="tpos">+20% Q4</td><td class="warn">Limited</td><td class="tpos">Core focus</td><td class="warn">~45&ndash;55%</td></tr>
+      <tr><td class="tb">Two-Wheeler (2W)</td><td>India 20mn+ fleet</td><td class="tpos">Strong</td><td class="tneg">Nil</td><td class="warn">Present</td><td class="tpos">Leader</td><td class="warn">Minimal</td><td class="tpos">~70%+</td></tr>
+      <tr><td class="tb">Agricultural Tyres</td><td>Farm mechanisation</td><td class="warn">Present</td><td class="tpos">Global leader</td><td class="warn">Camso entry</td><td class="warn">Limited</td><td class="warn">Shresth Plus</td><td class="warn">~50%</td></tr>
+      <tr><td class="tb">Off-Highway OHT</td><td>Infra capex cycle</td><td class="warn">Limited</td><td class="tpos">Global #2</td><td class="warn">Camso entry</td><td class="warn">New entrant</td><td class="tneg">Nil</td><td class="warn">~30&ndash;40%</td></tr>
+      <tr><td class="tb">Exports</td><td>Global demand, forex</td><td class="warn">~15%</td><td class="tpos">~65% revenue</td><td class="tpos">21%&rarr;33%</td><td class="warn">Growing</td><td class="warn">Mexico plant</td><td class="num">Varies</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="g2" style="margin-bottom:16px;">
+  <div class="card"><div class="card-lbl">Replacement Market &mdash; The Biggest Profit Driver in Indian Tyres</div>
+    <p style="font-size:12px;line-height:1.7;margin-bottom:10px;">Replacement accounts for ~50% of India's tyre volume but 60&ndash;70% of company profits. Why replacement beats OEM every time:</p>
+    <table style="font-size:11px;box-shadow:none;">
+      <thead><tr><th>Parameter</th><th>Replacement</th><th>OEM</th></tr></thead>
+      <tbody>
+        <tr><td>Pricing power</td><td class="tpos">High &mdash; brand-led</td><td class="tneg">Low &mdash; OEM negotiates hard</td></tr>
+        <tr><td>Gross Margin</td><td class="tpos">~20&ndash;25%</td><td class="tneg">~10&ndash;15%</td></tr>
+        <tr><td>Demand cycle</td><td class="tpos">Recurring 3&ndash;5 years</td><td class="warn">Linked to vehicle production</td></tr>
+        <tr><td>GST pass-through</td><td class="tpos">Consumer bears full tax</td><td class="tneg">OEM bargains on tax impact</td></tr>
+        <tr><td>Brand impact</td><td class="tpos">Consumer chooses brand</td><td class="num">OEM spec decides</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card"><div class="card-lbl">OEM Demand Drivers &mdash; Vehicle Sales &amp; Tyre Impact</div>
+    <table style="font-size:11px;box-shadow:none;">
+      <thead><tr><th>Vehicle Segment</th><th>FY26 Status</th><th>Tyre Beneficiary</th></tr></thead>
+      <tbody>
+        <tr><td>Passenger Vehicles</td><td class="tpos">Record ~4.5 mn units</td><td>MRF, Apollo, CEAT</td></tr>
+        <tr><td>Two-Wheelers</td><td class="tpos">~20 mn+ units</td><td>CEAT (leader), MRF</td></tr>
+        <tr><td>Trucks &amp; Buses</td><td class="tpos">Strong &mdash; infra push</td><td>Apollo +20%, JK Tyre, MRF</td></tr>
+        <tr><td>Tractors</td><td class="warn">Moderate</td><td>BKT, Goodyear India</td></tr>
+        <tr><td>Construction/Mining</td><td class="tpos">Infra capex driven</td><td>BKT (global), CEAT Camso</td></tr>
+        <tr><td>Electric Vehicles (EV)</td><td class="warn">Growing &mdash; spec changes</td><td>MRF, CEAT, Apollo EV tyres</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card">
+  <div class="card-lbl">BKT vs Rest &mdash; Off-Highway Is a Structurally Different Business</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Parameter</th><th>BKT (OHT)</th><th>MRF / Apollo / CEAT / JK (India Auto)</th></tr></thead>
+    <tbody>
+      <tr><td class="tb">Primary Demand Driver</td><td class="tpos">Global farm/mining/construction equipment cycles</td><td class="num">India vehicle sales + replacement demand</td></tr>
+      <tr><td class="tb">Export Revenue</td><td class="tpos">~65% &mdash; 130+ countries</td><td class="warn">~15&ndash;21% &mdash; India-dependent</td></tr>
+      <tr><td class="tb">EBITDA Margin</td><td class="tpos">22&ndash;25%</td><td class="warn">12&ndash;17%</td></tr>
+      <tr><td class="tb">India Auto Cycle</td><td class="tpos">Largely insulated</td><td class="tneg">Directly exposed</td></tr>
+      <tr><td class="tb">Pricing Power</td><td class="tpos">High &mdash; niche specialised tyres</td><td class="warn">Moderate &mdash; competitive domestic market</td></tr>
+      <tr><td class="tb">P/E Valuation</td><td class="num">~33&times; (premium niche)</td><td class="num">16&ndash;27&times;</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</div>
+
+<!-- ===== CHARTS ===== -->
+<div class="panel" id="tab-charts">
+<div class="sec-hdr">Charts <span class="sec-note">&middot; Q4 FY26 &amp; Annual &middot; Revenue &middot; PAT &middot; Margins &middot; Replacement Mix</span></div>
+<div style="margin-bottom:12px;">
+  <button id="chq" onclick="showCharts('q',this)" style="background:#0d1c2e;color:#fff;border:none;" class="per-btn">Q4 FY26</button>
+  <button id="cha" onclick="showCharts('a',this)" class="per-btn">Annual FY26</button>
+  <button id="chr" onclick="showCharts('r',this)" class="per-btn">Raw Materials &amp; Balance Sheet</button>
+</div>
+<div id="chq-view">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 Revenue (&#8377; Cr)</h3><p class="sub">Standalone/Consolidated Q4 revenue</p><canvas id="q4Rev" height="200"></canvas></div>
+    <div class="chart-card"><h3>Q4 FY26 PAT (&#8377; Cr)</h3><p class="sub">Net profit after tax</p><canvas id="q4Pat" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 EBITDA (&#8377; Cr)</h3><p class="sub">Absolute operating profit &mdash; MRF leads, BKT high on smaller base</p><canvas id="q4Ebitda" height="200"></canvas></div>
+    <div class="chart-card"><h3>Q4 FY26 EBITDA Margin (%)</h3><p class="sub">BKT structurally higher (OHT premium niche)</p><canvas id="q4Marg" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 PAT Growth YoY (%)</h3><p class="sub">*Apollo includes one-time tax reversal</p><canvas id="q4Grw" height="200"></canvas></div>
+    <div class="chart-card"><h3>Q4 FY26 Revenue vs EBITDA vs PAT (&#8377; Cr)</h3><p class="sub">Profitability waterfall across all 5</p><canvas id="q4Combo" height="200"></canvas></div>
+  </div>
+</div>
+<div id="cha-view" style="display:none;">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>FY26 Annual Revenue (&#8377; Cr)</h3><p class="sub">Full-year consolidated/standalone revenue</p><canvas id="aRev" height="200"></canvas></div>
+    <div class="chart-card"><h3>FY26 Annual PAT (&#8377; Cr)</h3><p class="sub">Full-year net profit</p><canvas id="aPat" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>FY26 EBITDA (&#8377; Cr)</h3><p class="sub">Absolute full-year operating profit &mdash; the missing metric, now included</p><canvas id="aEbitda" height="200"></canvas></div>
+    <div class="chart-card"><h3>FY26 EBITDA Margin (%)</h3><p class="sub">Full-year operating margin comparison</p><canvas id="aMarg" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Replacement Channel Mix (%)</h3><p class="sub">% revenue from replacement market (highest-margin)</p><canvas id="aRepl" height="200"></canvas></div>
+    <div class="chart-card"><h3>FY26 Revenue vs EBITDA vs PAT (&#8377; Cr)</h3><p class="sub">Full-year profitability comparison across all 5</p><canvas id="aCombo" height="200"></canvas></div>
+  </div>
+</div>
+<div id="chr-view" style="display:none;">
+  <div class="card" style="margin-bottom:16px;border:2px solid var(--bkt);">
+    <div class="card-lbl" style="color:var(--bkt);">&#127807; Tyre Cost Composition &mdash; What Goes Into a Tyre (Essential View)</div>
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:10px;">Raw materials are ~60&ndash;70% of a tyre's total cost. Natural rubber + crude-derived inputs (SBR, carbon black, process oils) together dominate &mdash; which is why NR and crude price moves drive sector margins. This is the single most important driver to watch for FY27.</p>
+    <canvas id="rmComposition" height="120"></canvas>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Raw Material Prices &mdash; India (May 2026)</h3><p class="sub">Indicative input costs &mdash; the FY27 margin drivers</p><canvas id="rmPrice" height="200"></canvas></div>
+    <div class="chart-card"><h3>Natural Rubber Price Trend (&#8377;/100 kg, RSS4)</h3><p class="sub">Rubber Board data &mdash; rising sharply into FY27</p><canvas id="rmNRtrend" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>FY26 Sales Volume / Capacity</h3><p class="sub">BKT &amp; tyre majors on different scales &mdash; see note</p><canvas id="rmVol" height="200"></canvas></div>
+    <div class="chart-card"><h3>Capacity Utilisation (%)</h3><p class="sub">FY26 approximate plant utilisation</p><canvas id="rmUtil" height="200"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Net Debt (&#8377; Cr) &mdash; Mar 2026</h3><p class="sub">Negative = net cash positive (Apollo)</p><canvas id="rmDebt" height="200"></canvas></div>
+    <div class="chart-card"><h3>Cash &amp; Cash Equivalents (&#8377; Cr)</h3><p class="sub">Approximate balance-sheet liquidity, Mar 2026</p><canvas id="rmCash" height="200"></canvas></div>
+  </div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-lbl">Raw Material Prices &amp; Balance Sheet &mdash; Reference Table (May 2026)</div>
+    <div style="overflow-x:auto;"><table>
+      <thead><tr><th>Item</th><th>Latest Level</th><th>Unit</th><th>Trend</th><th style="white-space:normal">Note</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Natural Rubber (RSS4 India)</td><td class="num">&#8377;22,000</td><td>per 100 kg (Feb 2026)</td><td class="tneg">Rising &#9650;</td><td style="white-space:normal">Up from &#8377;20,160 in Jan 2026; ~30&ndash;40% of tyre cost</td></tr>
+        <tr><td class="tb">Natural Rubber (global futures)</td><td class="num">~220</td><td>US cents/kg</td><td class="warn">Near 9-yr high</td><td style="white-space:normal">Crude-linked; monsoon supply disruption in Thailand/Indonesia</td></tr>
+        <tr><td class="tb">SBR (Synthetic Rubber, India)</td><td class="num">~1,621</td><td>USD/MT</td><td class="warn">Volatile</td><td style="white-space:normal">Crude-derived; cheaper than NR globally, substitution factor</td></tr>
+        <tr><td class="tb">SBR (global avg)</td><td class="num">1,650&ndash;1,910</td><td>USD/MT</td><td class="warn">Range-bound</td><td style="white-space:normal">USA $1,907, China $1,750, Korea $1,670 (Q3 2025)</td></tr>
+        <tr><td class="tb">Carbon Black</td><td class="num">Crude-linked</td><td>per MT</td><td class="warn">Elevated</td><td style="white-space:normal">~15&ndash;20% of cost; BKT building own plant for backward integration</td></tr>
+        <tr><td class="tb">Crude Oil (Brent)</td><td class="num">~$65&ndash;75</td><td>per barrel</td><td class="warn">Volatile</td><td style="white-space:normal">Drives carbon black, SBR, process oils with a lag</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">Sources: Rubber Board (CEIC), Trading Economics, IMARC SBR pricing. Volume/capacity/debt/cash from BSE/NSE filings &amp; investor presentations. MRF/Apollo/CEAT/JK measure output in tyres/day; BKT measures in MT (off-highway tyres are far heavier), so direct volume comparison is not like-for-like &mdash; see volume chart note.</p>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== SWOT ===== -->
+<div class="panel" id="tab-swot">
+<div class="sec-hdr">SWOT &amp; Moat <span class="sec-note">&middot; All 5 Companies &middot; Competitive Advantages &middot; BKT Uniqueness Explained</span></div>
+<div class="g2" style="margin-bottom:14px;">
+  <div><div class="co-hdr"><span class="dot" style="background:var(--mrf)"></span>MRF Ltd</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India's undisputed #1 tyre brand &mdash; decades of trust</li><li>Highest EBITDA margin ~16&ndash;17% among domestic peers</li><li>Nearly debt-free &mdash; strong balance sheet</li><li>India's highest share price &mdash; no dilution culture</li><li>Pan-India OEM relationships &mdash; Maruti, Tata, Hyundai</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Limited international exposure vs Apollo/BKT</li><li>Premium valuation limits re-rating room</li><li>NR cost +7&ndash;8% is the key FY27 risk</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>EV tyre segment &mdash; low rolling resistance specialisation</li><li>GST cut from 28% to 18% implemented &mdash; industry-wide volume tailwind now playing out</li><li>Export push into SE Asia and ME markets</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>NR price spike +7&ndash;8% Q1 FY27</li><li>CEAT aggressively closing PCR market share gap</li><li>Michelin/Bridgestone premium imports growing</li></ul></div>
+  </div></div>
+  <div><div class="co-hdr"><span class="dot" style="background:var(--bkt)"></span>Balkrishna Industries (BKT)</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Global #2 in OHT &mdash; niche with high switching cost</li><li>65% export revenue from 130+ countries</li><li>EBITDA 22&ndash;25% structurally higher than domestic peers</li><li>Carbon black plant &mdash; unique backward integration in India</li><li>BKT 2.0: &#8377;23,000 Cr FY30 target &mdash; 17% CAGR</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>FY26 PAT &minus;25% &mdash; forex losses + margin compression</li><li>European ag demand weakness hurt FY26 volumes</li><li>No exposure to India domestic auto growth story</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>On-highway tyre diversification &mdash; new revenue stream</li><li>Carbon black: full integration saves &#8377;200&ndash;300 Cr/yr</li><li>North America construction cycle recovery</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>USD/EUR volatility &mdash; realisation risk on 65% exports</li><li>US tariffs on agri imports affecting global farmer income</li><li>Michelin, Trelleborg competing in OHT niche globally</li></ul></div>
+  </div></div>
+</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div><div class="co-hdr"><span class="dot" style="background:var(--apl)"></span>Apollo Tyres</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>75% replacement revenue &mdash; highest among Indian peers</li><li>Dual geography India + Europe (Vredestein)</li><li>Net D/EBITDA 0.4&times; &mdash; near debt-free after 6 years</li><li>TBR +20% Q4 FY26 &mdash; road freight leadership</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Europe revenue &minus;3.3% Q4 &mdash; geopolitical headwinds</li><li>Q4 PAT boosted by &#8377;742 Cr one-time tax reversal</li><li>Stock underperformed market despite strong fundamentals</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Europe strong growth return Q1 FY27 (mgmt guidance)</li><li>BCCI sponsorship &rarr; mass brand building in India</li><li>Future capex from freed debt capacity</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>NR +7&ndash;8% &mdash; PAT risk without sufficient price hike</li><li>One-time tax reversal won't recur in FY27</li><li>West Asia geopolitics &mdash; ongoing supply chain risk</li></ul></div>
+  </div></div>
+  <div><div class="co-hdr"><span class="dot" style="background:var(--ceat)"></span>CEAT Ltd</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>#2 in premium PCR/UV replacement from #5 in 4 quarters</li><li>2W market leader &mdash; India's largest vehicle segment</li><li>Camso acquisition adds OHT/tracks diversification</li><li>FY26 EBITDA 13.16% &mdash; meaningful recovery from FY25</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>EBITDA margin still below MRF/Apollo</li><li>Camso integration risk &mdash; full value chain by Mar 2027</li><li>NR to pressure margins Q1 FY27</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>International revenue 21% &rarr; 33% &mdash; Europe + US recovery</li><li>EV tyre premium segment entry</li><li>EV/EBITDA ~6&times; FY28 &mdash; inexpensive by brokerage view</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>NR +7&ndash;8% Q1 FY27 &mdash; margins most sensitive here</li><li>MRF defending premium PCR ground with brand power</li><li>ME geopolitical exposure &mdash; CEAT international</li></ul></div>
+  </div></div>
+</div>
+<div style="margin-bottom:14px;">
+  <div class="co-hdr"><span class="dot" style="background:var(--jkt)"></span>JK Tyre &amp; Industries</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Record FY26 revenue &#8377;16,384 Cr and EBITDA &#8377;2,089 Cr (+25%)</li><li>Mexico (Hahnkamm) &mdash; only Indian tyre maker with Americas manufacturing</li><li>TBR leadership in India's road freight and infra boom</li><li>Cheapest valuation P/E ~16&times; among the 5</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Lowest EBITDA margin in sector at ~12.7&ndash;12.8%</li><li>Smallest market cap &#8377;11,908 Cr &mdash; limited institutional coverage</li><li>Stock 32% below 52-week high despite record results</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>&#8377;4,980 Cr expansion &mdash; TBR capacity for FY27&ndash;29</li><li>Farm tyre Shresth Plus &mdash; agri market entry</li><li>US tariff environment &mdash; Mexico plant localisation benefit</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>US tariff risk for Mexico plant exports to US</li><li>Margin gap creates competitive vulnerability in premium segments</li><li>Heavy capex (&#8377;4,980 Cr) on thin margin base</li></ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ===== ANALYST VIEW ===== -->
+<div class="panel" id="tab-analyst">
+<div class="sec-hdr">Analyst View <span class="sec-note">&middot; External Research &middot; Target Prices &middot; Consensus &middot; CB Research &mdash; Data Only, No Recommendations</span></div>
+<div class="rm-box">&#9888;&#65039; <strong>CB Research Note:</strong> The views below are from external brokerages as publicly reported. CB Research presents data only &mdash; this is NOT a buy/sell/hold recommendation. Always consult a SEBI-registered investment advisor before financial decisions.</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">MRF Ltd</div><span class="rat-pill rp-hold">HOLD / NEUTRAL (consensus)</span></div>
+    <div class="ac-tp">P/E ~24&ndash;27&times; FY26</div>
+    <div class="ac-cmp">CMP: ~&#8377;1,27,000 &middot; Mkt Cap: ~&#8377;54,000 Cr &middot; India's highest-priced stock</div>
+    <div class="ac-text">Strong FY26: PAT +29.5%, EBITDA ~16.8%. Valuation premium fully reflects quality. At 24&ndash;27&times; P/E, limited re-rating room unless margin further expands. NR cost headwind Q1 FY27 is the key risk. Analysts note MRF's brand pricing power as the best hedge against input cost inflation. Final dividend &#8377;229/share. FY26 PBT (pre-exceptional) growth +32% shows strong operational improvement.</div>
+  </div>
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">Balkrishna Industries (BKT)</div><span class="rat-pill rp-hold">CAUTIOUS / HOLD</span></div>
+    <div class="ac-tp">P/E ~33&times; &middot; EV/EBITDA ~20&times;</div>
+    <div class="ac-cmp">CMP: ~&#8377;2,164 &middot; Mkt Cap: ~&#8377;41,800 Cr &middot; Stock fell 4.4% on Q4 results</div>
+    <div class="ac-text">FY26 PAT &minus;25%, EBITDA margin &minus;240 bps. Record OHT volumes but profitability compressed by NR and forex. Trading at 33&times; P/E &mdash; premium valuation requires earnings recovery. BKT 2.0 (&#8377;23,000 Cr FY30) and carbon black plant are long-term positives. Near-term: NR +7&ndash;8% Q1 FY27 squeezes already-compressed 22.9% margin. ROE declined to 13.2% vs historical 18&ndash;20%. Stock 19% below 52-week high.</div>
+  </div>
+</div>
+<div class="g2" style="margin-bottom:14px;">
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">Apollo Tyres</div><span class="rat-pill rp-buy">BUY (select brokerages)</span></div>
+    <div class="ac-tp">P/E ~28&times; FY26 &middot; Near 52-week high</div>
+    <div class="ac-cmp">CMP: ~&#8377;430&ndash;440 &middot; Mkt Cap: ~&#8377;25,325 Cr</div>
+    <div class="ac-text">Q4 PAT +241% (partly one-time &#8377;742 Cr tax reversal). Underlying: EBITDA +27.6%, TBR +20%, margin +160 bps. Net D/EBITDA 0.4&times; is structural positive. Europe recovery Q1 FY27 expected. Analysts positive on deleveraging + 75% replacement revenue moat. Risk: one-off won't recur &mdash; FY27 PAT comparison will be tough. 52-week range &#8377;392&ndash;&#8377;540.</div>
+  </div>
+  <div class="ac">
+    <div class="ac-head"><div class="ac-name">CEAT Ltd</div><span class="rat-pill rp-buy">BUY (select brokerages)</span></div>
+    <div class="ac-tp">P/E ~19&times; &middot; EV/EBITDA ~6&times; FY28</div>
+    <div class="ac-cmp">CMP: ~&#8377;2,600&ndash;2,700 &middot; Stock +12% on Q4 results day</div>
+    <div class="ac-text">Q4 PAT +145%, EBITDA margin +270 bps. From #5 to #2 in premium PCR &mdash; arguably the sector's most impressive competitive achievement of FY26. Brokerage notes EV/EBITDA ~6&times; FY28 "inexpensive" with ~14% EBITDA CAGR FY26&ndash;28, ROE normalising to ~17% FY28. Risk: near-term NR headwind. &#8377;35/share dividend (350%) shows confidence. Camso integration on track for Mar 2027.</div>
+  </div>
+</div>
+<div class="ac">
+  <div class="ac-head"><div class="ac-name">JK Tyre &amp; Industries</div><span class="rat-pill rp-hold">VALUE PICK (select) / HOLD (consensus)</span></div>
+  <div class="ac-tp">P/E ~16&times; FY26 &mdash; Cheapest of the 5</div>
+  <div class="ac-cmp">CMP: ~&#8377;413 &middot; Mkt Cap: &#8377;11,908 Cr &middot; 32% below 52-week high of &#8377;611.60</div>
+  <div class="ac-text">Record FY26 revenue + EBITDA, but Q4 showed sequential margin deceleration (12.72% vs 13.52% Q3). Cheapest P/E ~16&times; &mdash; value angle. &#8377;4,980 Cr expansion signals demand confidence. TBR leadership in India infrastructure cycle is real. The margin gap vs MRF/Apollo (~4&ndash;5% EBITDA) explains the discount. Heavy capex on thin margins = risk to cash flows. Mexico/US tariff watch needed in FY27.</div>
+</div>
+<div class="card" style="margin-top:14px;">
+  <div class="card-lbl">Valuation Comparison &mdash; 5 Companies (May 2026)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>CMP (approx)</th><th>Mkt Cap (&#8377; Cr)</th><th>P/E FY26</th><th>EBITDA% FY26</th><th>FY26 PAT</th><th>Dividend</th><th style="white-space:normal">Valuation Note</th></tr></thead>
+    <tbody>
+      <tr><td class="tb"><span class="dot" style="background:var(--mrf)"></span>MRF</td><td class="num">~&#8377;1,27,000</td><td class="num">~&#8377;54,000</td><td class="num">~24&ndash;27&times;</td><td class="tpos">~16.8%</td><td class="tpos">&#8377;2,426</td><td class="num">&#8377;229/sh</td><td style="white-space:normal">Premium justified by moat</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--bkt)"></span>BKT</td><td class="num">~&#8377;2,164</td><td class="num">~&#8377;41,800</td><td class="num">~33&times;</td><td class="tneg">22.7%&#x25BC;</td><td class="tneg">&#8377;1,222</td><td class="num">&#8377;16/sh</td><td style="white-space:normal">Pricey for declining earnings</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--apl)"></span>Apollo</td><td class="num">~&#8377;430</td><td class="num">~&#8377;25,325</td><td class="num">~28&times;</td><td class="tpos">14.6%</td><td class="tpos">&#8377;1,372</td><td class="num">&#8377;6/sh</td><td style="white-space:normal">Near 52-wk high; watch one-off</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--ceat)"></span>CEAT</td><td class="num">~&#8377;2,600</td><td class="num">~&#8377;10,500</td><td class="num">~19&times;</td><td class="tpos">13.16%</td><td class="tpos">&#8377;697</td><td class="num">&#8377;35/sh</td><td style="white-space:normal">Best momentum; EV/EBITDA cheap</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--jkt)"></span>JK Tyre</td><td class="num">~&#8377;413</td><td class="num">~&#8377;11,908</td><td class="num">~16&times;</td><td class="warn">~12.8%</td><td class="tpos">&#8377;778</td><td class="num">TBA</td><td style="white-space:normal">Cheapest but lowest margin</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</div>
+
+<!-- ===== RISKS ===== -->
+<div class="panel" id="tab-risks">
+<div class="sec-hdr">Risks &amp; FY27 Outlook <span class="sec-note">&middot; Sector &middot; Company &middot; Bull / Base / Bear</span></div>
+<div class="trojan-card">
+  <div class="trojan-title">&#9888;&#65039; FY27 Key Risks &mdash; NR Cost Spike &amp; Global Uncertainty</div>
+  <p style="font-size:12.5px;line-height:1.7;">India's tyre sector delivered strong FY26. FY27 entry conditions are mixed: NR +7&ndash;8% (BKT guidance Q1 FY27), crude derivatives elevated, US tariff uncertainty affecting global exports, European demand softness. Companies with strong brand pricing power (MRF) and structural moats (BKT OHT niche, Apollo Europe) are best positioned. Price hikes of 3&ndash;5% have been implemented &mdash; the question is whether the spread vs input cost rise is enough.</p>
+</div>
+<div class="card" style="margin-bottom:16px;"><div class="card-lbl">Sector-Wide Risks &mdash; FY27</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Risk</th><th>Severity</th><th>Companies Most Affected</th><th>Timeline</th></tr></thead>
+    <tbody>
+      <tr><td>Natural rubber +7&ndash;8% Q1 FY27</td><td class="tneg">High</td><td>All 5 companies</td><td>Immediate Q1 FY27</td></tr>
+      <tr><td>Crude derivatives still elevated</td><td class="warn">Medium-High</td><td>All &mdash; carbon black, SBR</td><td>FY27 ongoing</td></tr>
+      <tr><td>US tariffs on global tyre exports</td><td class="warn">Medium</td><td>BKT (US ~15%), JK Tyre (Mexico)</td><td>FY27</td></tr>
+      <tr><td>European agricultural demand weakness</td><td class="warn">Medium</td><td>BKT primary; CEAT Camso secondary</td><td>FY26&ndash;27</td></tr>
+      <tr><td>India vehicle demand normalisation post-record FY26</td><td class="warn">Medium</td><td>MRF, Apollo, CEAT, JK Tyre</td><td>FY27</td></tr>
+      <tr><td>Apollo one-time tax reversal won't recur</td><td class="warn">Medium</td><td>Apollo Tyres</td><td>FY27 base effect</td></tr>
+      <tr><td>GST-cut (28%&rarr;18%) volume boost underwhelms vs 5&ndash;8% estimate</td><td class="warn">Low&ndash;Medium</td><td>All &mdash; policy tailwind already priced in</td><td>FY27</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="g3" style="margin-bottom:16px;">
+  <div class="card"><div class="card-lbl">&#128002; Bull Case FY27 (NR eases, crude $70&ndash;75)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;">
+      <li>&bull; MRF EBITDA sustains 16&ndash;17% &mdash; PAT &#8377;2,700+ Cr</li>
+      <li>&bull; Apollo Europe recovers &mdash; consol PAT &#8377;1,400+ Cr</li>
+      <li>&bull; CEAT margin expands to 14&ndash;15% on scale</li>
+      <li>&bull; BKT volumes +8%+ with Europe agri recovery</li>
+      <li>&bull; JK Tyre margin closes gap from expansion</li>
+      <li>&bull; India tyre market +10&ndash;12% volume growth</li>
+    </ul>
+  </div>
+  <div class="card"><div class="card-lbl">&#9878;&#65039; Base Case FY27 (NR +7&ndash;8%, crude $80&ndash;90)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;">
+      <li>&bull; MRF PAT &#8377;2,200&ndash;2,400 Cr &mdash; flat to modest growth</li>
+      <li>&bull; Apollo PAT &#8377;1,100&ndash;1,200 Cr (one-off strips out)</li>
+      <li>&bull; CEAT margin compressed 50&ndash;100 bps</li>
+      <li>&bull; BKT margin 22&ndash;23% &mdash; PAT stabilises</li>
+      <li>&bull; JK Tyre PAT &#8377;700&ndash;750 Cr &mdash; capex drag</li>
+      <li>&bull; Sector EBITDA expansion pauses</li>
+    </ul>
+  </div>
+  <div class="card"><div class="card-lbl">&#128009; Bear Case FY27 (NR spike, crude $100+)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;">
+      <li>&bull; MRF margin falls to 14&ndash;15% &mdash; PAT &#8377;1,800 Cr</li>
+      <li>&bull; Apollo Europe stays weak &mdash; PAT &#8377;900&ndash;1,000 Cr</li>
+      <li>&bull; CEAT EBITDA below 12% &mdash; PAT under pressure</li>
+      <li>&bull; BKT EBITDA below 22% &mdash; PAT &#8377;900&ndash;1,000 Cr</li>
+      <li>&bull; JK Tyre cash flow pressure from capex + margin dip</li>
+      <li>&bull; India volume growth 5&ndash;6% only</li>
+    </ul>
+  </div>
+</div>
+<div class="verdict-card">
+  <div class="verdict-title">&#128202; CB Research FY27 Earnings Visibility Ranking (Not a Recommendation)</div>
+  <div class="verdict-body">
+    1. <strong>MRF</strong> &mdash; High. Brand moat insulates margin. Best ability to pass NR cost to consumers. Minimal debt. India's dominant replacement brand.<br>
+    2. <strong>Apollo Tyres</strong> &mdash; Good. Near debt-free, TBR momentum, Europe recovery expected. Watch FY27 base effect from one-off tax reversal.<br>
+    3. <strong>CEAT</strong> &mdash; Good. PCR market share momentum is real. International expansion diversifies. NR is the key risk watch.<br>
+    4. <strong>BKT</strong> &mdash; Moderate. OHT niche is a genuine global moat but NR + forex + European ag uncertainty cloud near-term. Long-term BKT 2.0 thesis intact.<br>
+    5. <strong>JK Tyre</strong> &mdash; Moderate-Low. Cheapest valuation but weakest margins. Heavy &#8377;4,980 Cr capex cycle adds cash flow risk. Mexico/US tariff watch needed.
+  </div>
+</div>
+</div>
+
+<!-- ===== CB ASSIST ===== -->
+<div class="panel" id="tab-assist">
+<div class="sec-hdr">CB Assist &#x1F916; <span class="sec-note">&middot; India Tyre Sector &middot; All 5 Companies &middot; English &amp; Tamil &middot; From Dashboard Data</span></div>
+<div class="cbassist-chat">
+  <div class="cbassist-title"><span></span> CB Assist &mdash; India Tyre Sector &middot; Q4 FY26 &middot; MRF &middot; BKT &middot; Apollo &middot; CEAT &middot; JK Tyre</div>
+  <div style="margin-bottom:10px;">
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:block;margin-bottom:6px;">English Presets</span>
+    <button class="preset-tab pt-mrf" onclick="swPre('em',this)">MRF</button>
+    <button class="preset-tab pt-bkt" onclick="swPre('eb',this)">BKT</button>
+    <button class="preset-tab pt-apl" onclick="swPre('ea',this)">Apollo</button>
+    <button class="preset-tab pt-ceat" onclick="swPre('ec',this)">CEAT</button>
+    <button class="preset-tab pt-jkt" onclick="swPre('ej',this)">JK Tyre</button>
+    <button class="preset-tab pt-sector" onclick="swPre('es',this)">Sector</button>
+  </div>
+  <div style="margin-bottom:10px;">
+    <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:block;margin-bottom:6px;">&#2980;&#2990;&#3007;&#2996;&#3021; Presets (Tamil)</span>
+    <button class="preset-tab pt-mrf" onclick="swPre('tm',this)">MRF</button>
+    <button class="preset-tab pt-bkt" onclick="swPre('tb',this)">BKT</button>
+    <button class="preset-tab pt-apl" onclick="swPre('ta',this)">Apollo</button>
+    <button class="preset-tab pt-ceat" onclick="swPre('tc',this)">CEAT</button>
+    <button class="preset-tab pt-jkt" onclick="swPre('tj',this)">JK Tyre</button>
+    <button class="preset-tab pt-sector" onclick="swPre('ts',this)">Sector</button>
+  </div>
+  <div id="pqs-em" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>MRF Q4 FY26 results &mdash; revenue, PAT, margin?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127942;</span><b>What is MRF's moat and brand advantage?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#9888;&#65039;</span><b>MRF FY27 risks &mdash; natural rubber and margin outlook?</b></div>
+  </div>
+  <div id="pqs-eb" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>BKT Q4 FY26 results &mdash; why did PAT fall 18%?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127758;</span><b>BKT 2.0 strategy &mdash; Rs 23000 Cr target by FY30?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128295;</span><b>Why is BKT unique among Indian tyre companies?</b></div>
+  </div>
+  <div id="pqs-ea" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>Apollo Tyres Q4 FY26 &mdash; PAT 241% jump explained?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127970;</span><b>Apollo deleveraging &mdash; net debt reduction story?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127758;</span><b>Apollo Europe Vredestein &mdash; what happened in Q4?</b></div>
+  </div>
+  <div id="pqs-ec" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>CEAT Q4 FY26 &mdash; revenue up 23%, EBITDA up 50%?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128640;</span><b>CEAT from number 5 to number 2 in premium PCR &mdash; how?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128176;</span><b>Camso acquisition &mdash; what does it mean for CEAT?</b></div>
+  </div>
+  <div id="pqs-ej" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>JK Tyre FY26 &mdash; record revenue and EBITDA details?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127758;</span><b>JK Tyre Mexico plant &mdash; why important and what risks?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128161;</span><b>JK Tyre cheapest PE in sector &mdash; value or value trap?</b></div>
+  </div>
+  <div id="pqs-es" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127807;</span><b>Natural rubber &mdash; why is it the most critical tyre input?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128176;</span><b>Replacement market &mdash; why is it the biggest profit driver?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127981;</span><b>GST cut from 28% to 18% on tyres &mdash; what is the OEM and replacement impact?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128302;</span><b>FY27 tyre sector outlook &mdash; bull base bear scenarios?</b></div>
+  </div>
+  <div id="pqs-tm" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>MRF Q4 FY26 results Tamil-&#2994;&#3021; &mdash; revenue, PAT, margin?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127942;</span><b>MRF-&#2985;&#3021; moat &#2986;&#3015;&#2992;&#3021;&#2984;&#3021;&#2980; brand advantage &#2958;&#2985;&#3021;&#2985;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#9888;&#65039;</span><b>MRF FY27 risk &mdash; natural rubber &#2935;&#3007;&#2997;&#3016; &#2958;&#2986;&#3021;&#2986;&#2975;&#3007; affect &#2986;&#2979;&#3021;&#2993;&#3009;?</b></div>
+  </div>
+  <div id="pqs-tb" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>BKT Q4 FY26 &mdash; PAT 18% &#2995;&#3015;&#2997;&#3009; &#2950;&#2985;&#2980;&#3009; &#2958;&#2985;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127758;</span><b>BKT 2.0 strategy &mdash; FY30-&#2965;&#3021;&#2965;&#3009; Rs 23000 Cr target?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128295;</span><b>BKT &#2970;&#3008;&#2985;&#3006; tyre companies-&#2994;&#3007;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; &#2958;&#2986;&#3021;&#2986;&#2975;&#3007; unique?</b></div>
+  </div>
+  <div id="pqs-ta" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>Apollo Tyres Q4 &mdash; PAT 241% jump &#2958;&#2986;&#3021;&#2986;&#2975;&#3007;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127970;</span><b>Apollo debt &#2965;&#3009;&#2993;&#3016;&#2984;&#3021;&#2980; story &mdash; net debt reduction?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127758;</span><b>Apollo Europe (Vredestein) &mdash; Q4-&#2994;&#3021; &#2958;&#2985;&#3021;&#2985; &#2984;&#2975;&#2984;&#3021;&#2980;&#3009;?</b></div>
+  </div>
+  <div id="pqs-tc" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>CEAT Q4 &mdash; revenue 23%, EBITDA 50% &#2958;&#2992;&#3007;&#2970;&#3021;&#2970;&#2994;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128640;</span><b>CEAT #5-&#2994;&#3007;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; #2-&#2965;&#3021;&#2965;&#3009; premium PCR-&#2994;&#3021; &mdash; &#2958;&#2986;&#3021;&#2986;&#2975;&#3007;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128176;</span><b>Camso acquisition &mdash; CEAT-&#2965;&#3021;&#2965;&#3009; &#2958;&#2985;&#3021;&#2985; benefit?</b></div>
+  </div>
+  <div id="pqs-tj" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>JK Tyre FY26 &mdash; record revenue &#2990;&#2993;&#3021;&#2993;&#3009;&#2990;&#3021; EBITDA?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127758;</span><b>JK Tyre Mexico plant &mdash; &#2958;&#2985;&#3021; important, &#2958;&#2985;&#3021;&#2985; risk?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128161;</span><b>JK Tyre cheapest P/E &mdash; value &#2949;&#2994;&#3021;&#2994;&#2980;&#3009; value trap-&#2950;?</b></div>
+  </div>
+  <div id="pqs-ts" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127807;</span><b>Natural rubber &mdash; &#2958;&#2985;&#3021; tyre-&#2965;&#3021;&#2965;&#3009; &#2990;&#3009;&#2965;&#3021;&#2965;&#3007;&#2991;&#2990;&#3006;&#2985; raw material?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128176;</span><b>Replacement market &mdash; &#2958;&#2985;&#3021; biggest profit driver?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127981;</span><b>Tyre GST 28% &rarr; 18% &#2965;&#3009;&#2993;&#3016;&#2986;&#3021;&#2986;&#3009; &mdash; OEM &#2990;&#2993;&#3021;&#2993;&#3009;&#2990;&#3021; replacement impact?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128302;</span><b>FY27 outlook &mdash; bull base bear Tamil-&#2994;&#3021;?</b></div>
+  </div>
+  <div style="margin-top:4px;">
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="chat-msg bot">&#x1F6DE; <strong>CB Assist</strong> &mdash; India Tyre Sector &middot; MRF &middot; BKT &middot; Apollo &middot; CEAT &middot; JK Tyre &middot; Q4 FY26 &middot; CB Research. Select a preset above or type your question. All data from BSE/NSE filings.</div>
+    </div>
+    <div id="typingInd" class="typing-ind"><span></span><span></span><span></span></div>
+    <div class="chat-input-row">
+      <input type="text" id="chatIn" class="chat-input" placeholder="Ask: MRF results, BKT OHT moat, natural rubber, replacement market, FY27 outlook, GST impact..." onkeypress="if(event.key==='Enter')cbA(this.value)"/>
+      <button class="chat-send" onclick="cbA(document.getElementById('chatIn').value)">Ask &#x27A4;</button>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /main -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">Tyre Sector &middot; Q4 FY26</div></div>
+</div>
+<div class="footer">
+  CB Research &mdash; India Tyre Sector Intelligence Dashboard &middot; Q4 FY26 &amp; Annual FY26 &middot; 31 May 2026<br>
+  MRF (NSE: MRF) &middot; Balkrishna Industries (NSE: BALKRISIND) &middot; Apollo Tyres (NSE: APOLLOTYRE) &middot; CEAT (NSE: CEAT) &middot; JK Tyre &amp; Industries (NSE: JKTYRE)<br>
+  All figures from BSE/NSE official filings and investor presentations. Sources: Business Standard, Autocar Professional, Whalesbook, MarketsMojo, DSIJ &mdash; May 2026.<br>
+  For information and research purposes only &mdash; not investment advice. Consult a SEBI-registered investment advisor before making financial decisions.
+</div>
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts')setTimeout(initCharts,80);
+}
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.kpi[data-cat]').forEach(el=>{
+    const cats=el.dataset.cat.split(' ');
+    el.style.display=(cat==='all'||cats.includes(cat))?'block':'none';
+  });
+  document.querySelectorAll('.co-card[data-cat]').forEach(el=>{
+    const cats=el.dataset.cat.split(' ');
+    el.style.display=(cat==='all'||cats.includes(cat))?'block':'none';
+  });
+}
+const coClr={mrf:'#b22222',bkt:'#1a7a3a',apl:'#e07b00',ceat:'#0053a0',jkt:'#5b21b6'};
+function showCo(co,btn){
+  document.querySelectorAll('.co-sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.co-sel-btn').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  document.getElementById('co-'+co).classList.add('on');
+  btn.style.background=coClr[co];btn.style.color='#fff';btn.style.border='none';
+}
+function showPer(per,btn){
+  document.querySelectorAll('.qtr-v').forEach(v=>v.style.display=per==='qtr'?'block':'none');
+  document.querySelectorAll('.annual-v').forEach(v=>v.style.display=per==='annual'?'block':'none');
+  document.querySelectorAll('.per-btn').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.border='none';
+}
+function showCharts(period,btn){
+  document.getElementById('chq-view').style.display=period==='q'?'block':'none';
+  document.getElementById('cha-view').style.display=period==='a'?'block':'none';
+  document.getElementById('chr-view').style.display=period==='r'?'block':'none';
+  document.querySelectorAll('#chq,#cha,#chr').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  btn.style.background='#0d1c2e';btn.style.color='#fff';btn.style.border='none';
+  setTimeout(initCharts,80);
+}
+let chartsBuilt=false;
+function initCharts(){
+  if(chartsBuilt)return;chartsBuilt=true;
+  const c5=['MRF','BKT','Apollo','CEAT','JK Tyre'];
+  const cl5=['#b22222','#1a7a3a','#e07b00','#0053a0','#5b21b6'];
+  const cl5t=cl5.map(c=>c+'bb');
+  const lblP={id:'lp',afterDatasetsDraw(ch){
+    const{ctx}=ch;
+    const cid=ch.canvas&&ch.canvas.id;
+    if(cid==='rmComposition'||cid==='q4Combo'||cid==='aCombo'||cid==='rmNRtrend')return;
+    ch.data.datasets.forEach((ds,di)=>{
+      const meta=ch.getDatasetMeta(di);
+      meta.data.forEach((bar,i)=>{
+        const v=ds.data[i];if(v==null||v===0)return;
+        ctx.save();ctx.fillStyle='#1F2937';ctx.font='bold 8.5px IBM Plex Mono';ctx.textAlign='center';
+        const disp=Math.abs(v)>=1000?Math.round(Math.abs(v)/100)/10+'k':Math.abs(v).toString();
+        ctx.fillText(disp,bar.x,bar.y-(v>=0?5:-10));ctx.restore();
+      });
+    });
+  }};
+  Chart.register(lblP);
+  const rOpts={responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Rs '+c.parsed.y.toLocaleString('en-IN')+' Cr'}}},
+    scales:{y:{ticks:{callback:v=>v>=1000?Math.round(v/100)/10+'k':'Rs '+v,font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}};
+  const pOpts={responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},
+    scales:{y:{ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}};
+  function bar(id,labels,data,colors,opts){
+    const ctx=document.getElementById(id);if(!ctx)return;
+    new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},options:opts});
+  }
+  bar('q4Rev',c5,[8044,2894,7336,4219,4223],cl5t,rOpts);
+  bar('q4Pat',c5,[702,295,631,244,178],cl5,rOpts);
+  bar('q4Ebitda',c5,[1305,663,1069,599,537],cl5,rOpts);
+  bar('q4Marg',c5,[16.2,22.9,14.6,14.2,12.72],cl5,pOpts);
+  bar('q4Grw',c5,[37.6,-18.5,241,145,83.4],cl5.map((c,i)=>i===1?'#dc2626':c),pOpts);
+  bar('aRev',c5,[31149,10656,28471,15678,16327],cl5t,rOpts);
+  bar('aPat',c5,[2426,1222,1372,697,778],cl5,rOpts);
+  bar('aEbitda',c5,[5240,2423,4143,2063,2089],cl5,rOpts);
+  bar('aMarg',c5,[16.8,22.7,14.6,13.16,12.8],cl5,pOpts);
+  bar('aRepl',c5,[62,10,75,53,61],cl5,{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'% of revenue'}}},
+    scales:{y:{ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f0ede8'},max:100},x:{ticks:{font:{size:9}},grid:{display:false}}}});
+
+  /* Grouped Revenue vs EBITDA vs PAT combo charts */
+  function combo(id,rev,ebd,pat){
+    const ctx=document.getElementById(id);if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:c5,datasets:[
+        {label:'Revenue',data:rev,backgroundColor:'#0d1c2e',borderRadius:3},
+        {label:'EBITDA',data:ebd,backgroundColor:'#b8911e',borderRadius:3},
+        {label:'PAT',data:pat,backgroundColor:'#166534',borderRadius:3}
+      ]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:true,labels:{font:{size:9},boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+': Rs '+c.parsed.y.toLocaleString('en-IN')+' Cr'}}},
+        scales:{y:{ticks:{callback:v=>v>=1000?Math.round(v/100)/10+'k':v,font:{size:9}},grid:{color:'#f0ede8'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  }
+  combo('q4Combo',[8044,2894,7336,4219,4223],[1305,663,1069,599,537],[702,295,631,244,178]);
+  combo('aCombo',[31149,10656,28471,15678,16327],[5240,2423,4143,2063,2089],[2426,1222,1372,697,778]);
+
+  /* Tyre cost composition - horizontal stacked single bar */
+  (function(){
+    const ctx=document.getElementById('rmComposition');if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:['Tyre Cost Breakdown'],datasets:[
+        {label:'Natural Rubber 30-40%',data:[35],backgroundColor:'#1a7a3a'},
+        {label:'Synthetic Rubber & Process Oils 20-25%',data:[22],backgroundColor:'#5b21b6'},
+        {label:'Carbon Black 15-20%',data:[17],backgroundColor:'#1F2937'},
+        {label:'Steel Cord & Fabric 10-15%',data:[12],backgroundColor:'#e07b00'},
+        {label:'Other (chemicals, energy, labour) ~14%',data:[14],backgroundColor:'#9ca3af'}
+      ]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:true,position:'bottom',labels:{font:{size:9.5},boxWidth:12,padding:8}},
+          tooltip:{callbacks:{label:c=>c.dataset.label+' (~'+c.parsed.x+'% of total cost)'}}},
+        scales:{x:{stacked:true,max:100,ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f0ede8'}},y:{stacked:true,ticks:{display:false},grid:{display:false}}}}});
+  })();
+
+  /* ---- RAW MATERIAL & BALANCE SHEET CHARTS ---- */
+  /* Raw material prices (normalised to comparable INR/kg view) */
+  (function(){
+    const ctx=document.getElementById('rmPrice');if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:['Natural Rubber\\n(RSS4)','SBR\\n(Synthetic)','Crude Oil\\n(Brent)','Carbon Black\\n(crude-linked)'],
+      datasets:[{data:[220,140,67,130],backgroundColor:['#1a7a3a','#5b21b6','#e07b00','#1F2937'],borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const m={0:'NR ~Rs 220/kg (global ~220 US cents/kg)',1:'SBR ~Rs 140/kg (~$1,621/MT India)',2:'Crude ~$67/bbl',3:'Carbon Black ~Rs 130/kg (indicative)'};return m[c.dataIndex];}}}},
+        scales:{y:{ticks:{callback:v=>v,font:{size:9}},grid:{color:'#f0ede8'},title:{display:true,text:'Indicative index (Rs/kg or $/unit)',font:{size:8}}},x:{ticks:{font:{size:8}},grid:{display:false}}}}});
+  })();
+  /* Sales volume / capacity - dual scale note: BKT in MT, others in tyres/day approx */
+  (function(){
+    const ctx=document.getElementById('rmVol');if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:['MRF','BKT','Apollo','CEAT','JK Tyre'],
+      datasets:[{label:'Annual capacity index',data:[100,32,95,55,60],backgroundColor:cl5,borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const m={0:'MRF: largest tyre capacity in India (index 100)',1:'BKT: 3.17 lakh MT OHT/yr (heavy off-highway tyres)',2:'Apollo: India + Europe combined large capacity',3:'CEAT: mid-large; Camso OHT added',4:'JK Tyre: TBR-heavy; Rs 4,980 Cr expansion underway'};return m[c.dataIndex];}}}},
+        scales:{y:{ticks:{font:{size:9}},grid:{color:'#f0ede8'},title:{display:true,text:'Relative capacity index (MRF=100)',font:{size:8}}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  })();
+  /* Capacity utilisation */
+  bar('rmUtil',c5,[88,82,85,84,80],cl5,{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'~'+c.parsed.y+'% utilisation'}}},
+    scales:{y:{ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f0ede8'},max:100},x:{ticks:{font:{size:9}},grid:{display:false}}}});
+  /* Net Debt (negative = net cash) */
+  (function(){
+    const ctx=document.getElementById('rmDebt');if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:c5,datasets:[{data:[-500,895,1600,1200,3500],backgroundColor:c5.map((x,i)=>[0].includes(i)?'#166534':cl5[i]),borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y<0?'Net CASH +Rs '+Math.abs(c.parsed.y)+' Cr':'Net Debt Rs '+c.parsed.y.toLocaleString('en-IN')+' Cr'}}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN'),font:{size:9}},grid:{color:'#f0ede8'},title:{display:true,text:'Net Debt (Rs Cr) | negative = net cash',font:{size:8}}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  })();
+  /* Cash & equivalents */
+  (function(){
+    const ctx=document.getElementById('rmCash');if(!ctx)return;
+    new Chart(ctx,{type:'bar',
+      data:{labels:c5,datasets:[{data:[6500,3154,1800,900,700],backgroundColor:cl5,borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Rs '+c.parsed.y.toLocaleString('en-IN')+' Cr (approx)'}}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN'),font:{size:9}},grid:{color:'#f0ede8'},title:{display:true,text:'Cash & equivalents (Rs Cr, approx)',font:{size:8}}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  })();
+  /* Natural rubber price trend */
+  (function(){
+    const ctx=document.getElementById('rmNRtrend');if(!ctx)return;
+    new Chart(ctx,{type:'line',
+      data:{labels:['Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Q1 FY27 est'],
+      datasets:[{data:[18500,19200,19800,20160,22000,23500],borderColor:'#1a7a3a',backgroundColor:'#1a7a3a22',tension:.35,fill:true,pointRadius:4,pointBackgroundColor:'#1a7a3a'}]},
+      options:{responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Rs '+c.parsed.y.toLocaleString('en-IN')+'/100 kg'}}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN'),font:{size:9}},grid:{color:'#f0ede8'},title:{display:true,text:'RSS4 Rs/100 kg',font:{size:8}}},x:{ticks:{font:{size:8}},grid:{display:false}}}}});
+  })();
+}
+function swPre(id,btn){
+  document.querySelectorAll('.pqs').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('on'));
+  const p=document.getElementById('pqs-'+id);
+  if(p)p.classList.add('on');
+  btn.classList.add('on');
+}
+const KB={
+  mrf:{en:`<strong>MRF Q4 &amp; FY26 Results</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 8,044 Cr (+13.7% YoY)<br>&bull; <strong>Q4 EBITDA Margin:</strong> 16.2% (+100 bps)<br>&bull; <strong>Q4 PAT:</strong> Rs 702 Cr (+37.6% YoY)<br>&bull; <strong>FY26 Revenue:</strong> Rs 31,149 Cr<br>&bull; <strong>FY26 PAT:</strong> Rs 2,426 Cr (+29.5%)<br>&bull; <strong>FY26 EBITDA Margin:</strong> ~16.8% (industry best)<br>&bull; <strong>Final Dividend:</strong> Rs 229/share<br><br><strong>Moat:</strong> India's undisputed tyre brand leader. ~62% replacement revenue with premium pricing power. Debt-free. 10+ plants. OEM relationships with Maruti, Tata, Hyundai. No stock split policy creates long-term institutional investor base. Highest ability among all 5 to pass through NR cost increases.<br><br><strong>FY27 Risk:</strong> Natural rubber prices rising 7-8% in Q1 FY27. Companies implementing 3-5% price hikes. MRF's brand strength = best hedge.`},
+  bkt:{en:`<strong>BKT (Balkrishna Industries) Q4 &amp; FY26</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 2,894 Cr (+2% YoY)<br>&bull; <strong>Q4 EBITDA Margin:</strong> 22.9% (vs 24.8% prior year)<br>&bull; <strong>Q4 PAT:</strong> Rs 295 Cr (-18.5% YoY)<br>&bull; <strong>Q4 OHT Volume:</strong> 85,820 MT (+5%)<br>&bull; <strong>Forex Loss Q4:</strong> Rs 47 Cr (hurt PAT)<br>&bull; <strong>FY26 Revenue:</strong> Rs 10,656 Cr (flat)<br>&bull; <strong>FY26 PAT:</strong> Rs 1,222 Cr (-25%)<br>&bull; <strong>BKT 2.0 Target:</strong> Rs 23,000 Cr revenue by FY30 (17% CAGR)<br><br><strong>Why Unique:</strong> BKT is the only major Indian tyre company NOT dependent on India's auto market. Makes Off-Highway Tyres (OHT) for global farmers, miners, construction companies in 130+ countries. 65% export revenue. EBITDA 22-25% -- structurally higher than peers. Building own carbon black plant. P/E ~33x reflects premium niche status.<br><br><strong>FY27 Risk:</strong> NR +7-8%, forex, European agricultural demand weakness.`,
+  ta:`<strong>BKT (Balkrishna) Q4 &amp; FY26 (Tamil)</strong><br><br>&bull; <strong>Q4 Revenue:</strong> Rs 2,894 &#2965;&#3019;&#2975;&#3007; (+2%)<br>&bull; <strong>Q4 EBITDA Margin:</strong> 22.9% (&#2965;&#2997;&#2985;&#2990;&#3021;: &#2965;&#2997;&#2992;&#3009;&#2975;&#2990;&#3021; 24.8%-&#2994;&#3007;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; &#2995;&#3015;&#2992;&#3021;&#2984;&#3021;&#2980;&#3009;)<br>&bull; <strong>Q4 PAT:</strong> Rs 295 &#2965;&#3019;&#2975;&#3007; (&minus;18.5%)<br>&bull; <strong>Forex Loss Q4:</strong> Rs 47 &#2965;&#3019;&#2975;&#3007; (PAT-&#2965;&#3021;&#2965;&#3009; drag)<br>&bull; <strong>FY26 PAT:</strong> Rs 1,222 &#2965;&#3019;&#2975;&#3007; (&minus;25%)<br>&bull; <strong>BKT 2.0:</strong> FY30-&#2965;&#3021;&#2965;&#3009; Rs 23,000 &#2965;&#3019;&#2975;&#3007; revenue target (17% CAGR)<br><br><strong>&#2958;&#2985;&#3021; Unique:</strong> BKT &mdash; India auto market-&#2966; depend &#2986;&#2979;&#3021;&#2979;&#3006;&#2980; &#2962;&#2992;&#3015; &#2986;&#3014;&#2992;&#3007;&#2991; Indian tyre company. Off-Highway Tyres (OHT) &mdash; &#2989;&#2994;&#2965;&#2990;&#3009;&#2997;&#2980;&#3009;&#2990;&#3021; &#2989;&#2995;&#3021;&#2995; &#2997;&#3007;&#2997;&#2970;&#3006;&#2991;&#3007;&#2965;&#2995;&#3021;, miners, construction companies-&#2965;&#3021;&#2965;&#3009; (130+ &#2984;&#3006;&#2975;&#3009;&#2965;&#2995;&#3021;). 65% export. EBITDA 22-25% &mdash; domestic peers-&#2950; &#2997;&#3007;&#2975; &#2949;&#2980;&#3007;&#2965;&#2990;&#3021;. &#2970;&#3013;&#2984;&#3021;&#2980; carbon black plant &#2965;&#2975;&#3021;&#2975;&#3009;&#2965;&#3007;&#2993;&#3006;&#2992;&#3021;&#2965;&#2995;&#3021;.<br><br><strong>FY27 Risk:</strong> NR +7-8%, forex, &#2950;&#2992;&#3019;&#2986;&#3021;&#2986;&#3007;&#2991; &#2997;&#3007;&#2997;&#2970;&#3006;&#2991; &#2980;&#3015;&#2997;&#3016; &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;.`},
+  apollo:{en:`<strong>Apollo Tyres Q4 &amp; FY26</strong><br><br>&bull; <strong>Q4 Revenue (Consol):</strong> Rs 7,336 Cr (+14.2%)<br>&bull; <strong>Q4 EBITDA Margin:</strong> 14.6% (+160 bps)<br>&bull; <strong>Q4 PAT (Consol):</strong> Rs 631 Cr (+241%)*<br>&bull; <strong>*One-time tax reversal:</strong> ~Rs 742 Cr after-tax -- do not annualise<br>&bull; <strong>TBR India Q4:</strong> +20% YoY<br>&bull; <strong>FY26 Revenue (Consol):</strong> Rs 28,471 Cr (+9%)<br>&bull; <strong>FY26 PAT (Consol):</strong> Rs 1,372 Cr (+22.4%)<br>&bull; <strong>Net D/EBITDA:</strong> 0.4x (vs 3.2x Mar 2020!) -- massive deleveraging<br><br><strong>Moat:</strong> Dual India+Europe presence (Vredestein). 75% replacement revenue in India -- highest among peers. UHP 50% mix in Europe. TBR truck-bus radial +20% in Q4. Near debt-free.<br><br><strong>FY27:</strong> Europe recovery expected Q1 FY27 (mgmt guidance). One-off tax reversal won't recur -- PAT comparison will be tough.`,
+  ta:`<strong>Apollo Tyres Q4 &amp; FY26 (Tamil)</strong><br><br>&bull; <strong>Q4 Revenue (Consol):</strong> Rs 7,336 &#2965;&#3019;&#2975;&#3007; (+14.2%)<br>&bull; <strong>Q4 EBITDA Margin:</strong> 14.6% (+160 bps)<br>&bull; <strong>Q4 PAT:</strong> Rs 631 &#2965;&#3019;&#2975;&#3007; (+241%)*<br>&bull; <strong>*One-time tax reversal:</strong> ~Rs 742 &#2965;&#3019;&#2975;&#3007; &mdash; &#2951;&#2980;&#3016; annualise &#2986;&#2979;&#3021;&#2979; &#2965;&#3010;&#2975;&#3006;&#2980;&#3009;<br>&bull; <strong>TBR India Q4:</strong> +20% YoY (truck-bus radial)<br>&bull; <strong>FY26 PAT:</strong> Rs 1,372 &#2965;&#3019;&#2975;&#3007; (+22.4%)<br>&bull; <strong>Net D/EBITDA:</strong> 0.4&times; (Mar 2020-&#2994;&#3021; 3.2&times; &#2951;&#2992;&#3009;&#2984;&#3021;&#2980;&#2980;&#3009;!) &mdash; &#2986;&#3014;&#2992;&#3009;&#2990;&#3021; deleveraging<br><br><strong>Moat:</strong> India + Europe (Vredestein) dual presence &mdash; &#2962;&#2992;&#3015; Indian tyre major. Europe-&#2994;&#3021; UHP premium tyre mix 50%. India-&#2994;&#3021; replacement revenue 75% &mdash; peers-&#2994;&#3021; &#2949;&#2980;&#3007;&#2965;&#2990;&#3021;. &#2965;&#3009;&#2993;&#3016;&#2984;&#3021;&#2980; debt.<br><br><strong>FY27:</strong> Europe recovery Q1 FY27-&#2994;&#3021; &#2958;&#2980;&#3007;&#2992;&#3021;&#2986;&#3006;&#2992;&#3021;&#2965;&#3021;&#2965;&#2986;&#3021;&#2986;&#2975;&#3009;&#2965;&#3007;&#2993;&#2980;&#3009;. One-off tax reversal &#2990;&#3008;&#2979;&#3021;&#2975;&#3009;&#2990;&#3021; &#2997;&#2992;&#3006;&#2980;&#3009; &mdash; FY27 PAT comparison tough.`},
+  ceat:{en:`<strong>CEAT Q4 &amp; FY26 Results</strong><br><br>&bull; <strong>Q4 Revenue (Consol):</strong> Rs 4,219 Cr (+23.3%)<br>&bull; <strong>Q4 EBITDA Margin:</strong> 14.2% (+270 bps YoY)<br>&bull; <strong>Q4 PAT:</strong> Rs 244 Cr (+145% YoY)<br>&bull; <strong>FY26 Revenue (Consol):</strong> Rs 15,678 Cr (+18.6%)<br>&bull; <strong>FY26 PAT:</strong> Rs 697 Cr (+47%)<br>&bull; <strong>Dividend FY26:</strong> Rs 35/share (350%)<br><br><strong>Biggest Achievement FY26:</strong> From #5 to #2 in premium passenger car/UV replacement market in just 4 quarters (Q1 FY25 to Q4 FY26). Industry's fastest market share climb. Combination of product quality, distribution expansion, and competitive pricing.<br><br><strong>Camso:</strong> Off-highway tracks and OHT tyres for construction equipment. Completed FY26. Gives CEAT global OHT exposure.<br><br><strong>International Target:</strong> 21% (FY26) to 33% revenue. Western Europe + US recovery expected Q1 FY27.<br><br><strong>FY27 Risk:</strong> NR +7-8% headwind. Price hikes planned.`,
+  ta:`<strong>CEAT Q4 &amp; FY26 (Tamil)</strong><br><br>&bull; <strong>Q4 Revenue (Consol):</strong> Rs 4,219 &#2965;&#3019;&#2975;&#3007; (+23.3%)<br>&bull; <strong>Q4 EBITDA Margin:</strong> 14.2% (+270 bps)<br>&bull; <strong>Q4 PAT:</strong> Rs 244 &#2965;&#3019;&#2975;&#3007; (+145%)<br>&bull; <strong>FY26 Revenue:</strong> Rs 15,678 &#2965;&#3019;&#2975;&#3007; (+18.6%)<br>&bull; <strong>FY26 PAT:</strong> Rs 697 &#2965;&#3019;&#2975;&#3007; (+47%)<br>&bull; <strong>Dividend FY26:</strong> Rs 35/share (350%)<br><br><strong>&#2986;&#3014;&#2992;&#3007;&#2991; &#2970;&#3006;&#2980;&#2985;&#3016;:</strong> Premium passenger car/UV replacement-&#2994;&#3021; #5-&#2994;&#3007;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; #2-&#2965;&#3021;&#2965;&#3009; &mdash; &#2997;&#3015;&#2993;&#3009;&#2990;&#3021; 4 quarters-&#2994;&#3021;! Industry-&#2994;&#3021; &#2997;&#3015;&#2965;&#2990;&#3006;&#2985; market share climb.<br><br><strong>Camso:</strong> Construction equipment-&#2965;&#3021;&#2965;&#3009; off-highway tracks &amp; OHT tyres. FY26-&#2994;&#3021; complete. Global OHT exposure &#2965;&#3007;&#2975;&#3016;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021;.<br><br><strong>International:</strong> Revenue 21% (FY26) &rarr; 33% target. Western Europe + US recovery Q1 FY27.<br><br><strong>FY27 Risk:</strong> NR +7-8% headwind. Price hikes planned.`},
+  jkt:{en:`<strong>JK Tyre Q4 &amp; FY26 Results</strong><br><br>&bull; <strong>Q4 Revenue (Consol):</strong> Rs 4,223 Cr<br>&bull; <strong>Q4 EBITDA Margin:</strong> 12.72% (vs 13.52% Q3 -- sequential decline)<br>&bull; <strong>Q4 PAT:</strong> Rs 178 Cr (+83.4% YoY)<br>&bull; <strong>FY26 Revenue (Consol):</strong> Rs 16,327 Cr (record)<br>&bull; <strong>FY26 PAT:</strong> Rs 778 Cr (+51%)<br>&bull; <strong>FY26 EBITDA:</strong> Rs 2,089 Cr (+25%) -- record<br>&bull; <strong>New Expansion:</strong> Rs 4,980 Cr plan -- TBR capacity<br>&bull; <strong>P/E:</strong> ~16x -- cheapest of 5<br><br><strong>TBR Strength:</strong> Core segment. India road freight and infrastructure boom = direct TBR demand growth. Record TBR volumes FY26.<br><br><strong>Mexico (Hahnkamm):</strong> Only Indian tyre company with Americas manufacturing. US tariff = risk and opportunity simultaneously.<br><br><strong>Value Note:</strong> At 16x P/E, cheapest of the 5. But margin gap (12.7% vs MRF 16.8%) explains the discount. Heavy capex + thin margins = cash flow risk to watch.`,
+  ta:`<strong>JK Tyre Q4 &amp; FY26 (Tamil)</strong><br><br>&bull; <strong>Q4 Revenue (Consol):</strong> Rs 4,223 &#2965;&#3019;&#2975;&#3007;<br>&bull; <strong>Q4 EBITDA Margin:</strong> 12.72% (Q3-&#2994;&#3021; 13.52% &mdash; sequential &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;)<br>&bull; <strong>Q4 PAT:</strong> Rs 178 &#2965;&#3019;&#2975;&#3007; (+83.4%)<br>&bull; <strong>FY26 Revenue:</strong> Rs 16,327 &#2965;&#3019;&#2975;&#3007; (record)<br>&bull; <strong>FY26 PAT:</strong> Rs 778 &#2965;&#3019;&#2975;&#3007; (+51%)<br>&bull; <strong>FY26 EBITDA:</strong> Rs 2,089 &#2965;&#3019;&#2975;&#3007; (+25%) &mdash; record<br>&bull; <strong>P/E:</strong> ~16&times; &mdash; 5 companies-&#2994;&#3021; cheapest<br><br><strong>TBR Strength:</strong> Truck-Bus Radial &mdash; JK-&#2985;&#3021; core. India road freight + infra boom = TBR demand growth. FY26 record TBR volumes.<br><br><strong>Mexico (Hahnkamm):</strong> Americas-&#2994;&#3021; manufacturing &#2909;&#2995;&#3021;&#2995; &#2962;&#2992;&#3015; Indian tyre company. US tariff &mdash; risk &#2990;&#2993;&#3021;&#2993;&#3009;&#2990;&#3021; opportunity &#2007;&#2992;&#3009;.<br><br><strong>Value Note:</strong> 16&times; P/E &mdash; cheapest. &#2906;&#2985;&#3006;&#2994;&#3021; margin gap (12.7% vs MRF 16.8%) &mdash; &#2949;&#2980;&#3027;&#2965;&#3021;&#2965;&#3009; &#2965;&#3006;&#2992;&#2979;&#2990;&#3021;. &#2965;&#2985;&#2990;&#3006;&#2985; capex + thin margin = cash flow risk.`},
+  replacement:{en:`<strong>Replacement Market -- The Biggest Profit Driver in Indian Tyres</strong><br><br>Replacement = ~50% of India's tyre volume but 60-70% of profits. Why?<br><br><strong>1. Pricing Power:</strong> OEM channel -- Maruti/Tata negotiate hard, margin ~10-15% gross. Replacement -- consumer asks for MRF by name -- margin ~20-25%.<br><br><strong>2. Brand = Pricing Power:</strong> Truck driver or car owner chooses brand themselves. No OEM spec constrains the choice. This is why MRF/Apollo command premium.<br><br><strong>3. Recurring Cycle:</strong> Tyres last 3-5 years (cars), 1-2 years (trucks). Every vehicle sold = future replacement demand. India's record vehicle sales FY26 = massive replacement wave coming FY29-31.<br><br><strong>Replacement Mix:</strong><br>&bull; Apollo: ~75% -- highest<br>&bull; MRF: ~62%<br>&bull; JK Tyre: ~61%<br>&bull; CEAT: ~53%<br>&bull; BKT: Export/OHT driven -- different model`,
+  ta:`<strong>Replacement Market &mdash; Indian Tyres-&#2985;&#3021; &#2986;&#3014;&#2992;&#3007;&#2991; profit driver (Tamil)</strong><br><br>Replacement = India tyre volume-&#2994;&#3021; ~50%, &#2950;&#2985;&#3006;&#2994;&#3021; profit-&#2994;&#3021; 60-70%! &#2958;&#2985;&#3021;?<br><br><strong>1. Pricing Power:</strong> OEM channel-&#2994;&#3021; Maruti/Tata hard negotiate &#2986;&#2979;&#3021;&#2979;&#3009;&#2990;&#3021; &mdash; margin ~10-15%. Replacement-&#2994;&#3021; customer &#2980;&#3006;&#2985;&#3015; MRF/Apollo brand &#2965;&#3015;&#2975;&#3021;&#2965;&#3007;&#2993;&#3006;&#2992;&#3021; &mdash; margin ~20-25%.<br><br><strong>2. Brand = Pricing Power:</strong> Truck driver / car owner &#2980;&#3006;&#2985;&#3015; brand &#2980;&#3015;&#2992;&#3021;&#2997;&#3009; &#2970;&#3015;&#2991;&#3021;&#2965;&#3007;&#2993;&#3006;&#2992;&#3021;. OEM spec constraint &#2007;&#2994;&#3021;&#2994;&#3016;.<br><br><strong>3. Recurring Cycle:</strong> Tyres 3-5 &#2935;&#2979;&#3021;&#2975;&#3009; (cars), 1-2 &#2935;&#2979;&#3021;&#2975;&#3009; (trucks) &#2949;&#2994;&#3021;&#2994;&#3009;&#2990;&#3021;. &#2926;&#2992;&#3009; &#2986;&#3009;&#2980;&#3007;&#2991; vehicle sale = &#2958;&#2980;&#3007;&#2992;&#3021;&#2965;&#3006;&#2994; replacement demand. FY26 record vehicle sales = FY29-31-&#2994;&#3021; periya replacement wave.<br><br><strong>Replacement Mix:</strong><br>&bull; Apollo: ~75% &mdash; &#2949;&#2980;&#3007;&#2965;&#2990;&#3021;<br>&bull; MRF: ~62%<br>&bull; JK Tyre: ~61%<br>&bull; CEAT: ~53%<br>&bull; BKT: Export/OHT &mdash; &#2997;&#3015;&#2993;&#3009; model`},
+  nr:{en:`<strong>Natural Rubber -- The Most Critical Raw Material</strong><br><br>Natural rubber = 30-40% of tyre production cost. Tyre sector consumes 70-75% of India's total NR.<br><br><strong>India's Problem:</strong> Domestic NR (Kerala, TN) insufficient. Imports from Thailand, Indonesia, Vietnam. Volatile -- swings 20-40% per year based on monsoon, global demand, crude-linked SBR competition.<br><br><strong>FY27 Alert:</strong> BKT management guided NR prices +7-8% Q1 FY27. Companies implementing 3-5% tyre price hikes. Spread = margin compression ~100-150 bps for companies unable to fully pass through.<br><br><strong>Who is most insulated?</strong><br>&bull; MRF -- brand pricing power, best able to pass through<br>&bull; Apollo -- replacement 75%, pricing power<br>&bull; CEAT -- most sensitive as margins already below MRF/Apollo<br>&bull; BKT -- building carbon black plant but NR still fully exposed<br>&bull; JK Tyre -- lowest margin buffer, highest vulnerability`,
+  ta:`<strong>Natural Rubber &mdash; &#2990;&#3009;&#2965;&#3021;&#2965;&#3007;&#2991;&#2990;&#3006;&#2985; raw material (Tamil)</strong><br><br>Natural rubber = tyre cost-&#2994;&#3021; 30-40%. Tyre sector India-&#2985;&#3021; &#2990;&#3019;&#2980;&#3021;&#2980; NR-&#2994;&#3021; 70-75% &#2989;&#2986;&#2991;&#3019;&#2965;&#3007;&#2965;&#3021;&#2965;&#3007;&#2993;&#2980;&#3009;.<br><br><strong>India Problem:</strong> Domestic NR (Kerala, TN) &#2986;&#3019;&#2980;&#3006;&#2980;&#3009;. Thailand, Indonesia, Vietnam-&#2994;&#3007;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; import. &#2935;&#2979;&#3021;&#2975;&#3007;&#2965;&#3021;&#2965;&#3009; 20-40% price swing &mdash; monsoon, global demand, crude-linked SBR competition.<br><br><strong>FY27 Alert:</strong> BKT management NR +7-8% Q1 FY27 &#2965;&#3009;&#2993;&#3007;&#2986;&#3021;&#2986;&#3007;&#2975;&#3021;&#2975;&#3009;. Companies 3-5% tyre price hike. Spread = margin compression ~100-150 bps (fully pass-through &#2986;&#2979;&#3021;&#2979; &#2990;&#3009;&#2975;&#3007;&#2991;&#3006;&#2980; companies-&#2965;&#3021;&#2965;&#3009;).<br><br><strong>&#2991;&#3006;&#2992;&#3021; insulated?</strong><br>&bull; MRF &mdash; brand pricing power, best pass-through<br>&bull; Apollo &mdash; 75% replacement, pricing power<br>&bull; CEAT &mdash; most sensitive (margin already &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;)<br>&bull; BKT &mdash; carbon black plant &#2965;&#2975;&#3021;&#2975;&#3009;&#2965;&#3007;&#2993;&#3006;&#2992;&#3021; &#2986;&#3018;&#2992;&#3009;&#2985;&#3021; NR exposed<br>&bull; JK Tyre &mdash; &#2965;&#3009;&#2993;&#3016;&#2984;&#3021;&#2980; margin buffer, &#2949;&#2980;&#3007;&#2965; vulnerability`},
+  gst:{en:`<strong>GST Cut on Tyres: 28% &rarr; 18% -- Impact on OEM and Replacement</strong><br><br>GST on tyres has been reduced from 28% (the highest slab, shared with luxury and sin goods) to 18%, conceding the industry's long-standing demand.<br><br><strong>OEM Impact:</strong> Auto manufacturers get Input Tax Credit (ITC) -- the lower rate cuts tyre input cost, letting them reduce vehicle prices or improve margins -- auto volume grows -- more new tyres. Apollo (TBR/OEM) and CEAT (2W OEM) benefit most.<br><br><strong>Replacement Impact:</strong> End consumers now pay 18% instead of 28%. Cheaper tyres accelerate the replacement cycle -- estimated 5-8% volume uplift. MRF and CEAT (strong replacement) benefit most.<br><br><strong>Status:</strong> Rate cut effective. Watch replacement volume pickup and whether companies pass through the full benefit or retain part as margin.`,
+  ta:`<strong>Tyre GST 28% &rarr; 18% குறைப்பு -- OEM மற்றும் Replacement Impact</strong><br><br>Tyre-க்கு GST 28%-லிருந்து 18%-ஆக குறைக்கப்பட்டது -- industry-இன் நீண்டகால கோரிக்கை ஏற்கப்பட்டது.<br><br><strong>OEM Impact:</strong> Auto manufacturers-க்கு Input Tax Credit (ITC) -- input cost குறையும் -- vehicle price குறையும் -- auto volume அதிகரிக்கும். Apollo (TBR), CEAT (2W) benefit.<br><br><strong>Replacement Impact:</strong> Consumer இப்போது 28%-க்கு பதிலாக 18% மட்டும் செலுத்துகிறார். Tyre price குறைவு, replacement cycle வேகமாகும். ~5-8% volume uplift. MRF, CEAT benefit.<br><br><strong>Status:</strong> வரி குறைப்பு அமலில். Replacement volume pickup-ஐ கவனிக்கவும்.`},
+  fy27:{en:`<strong>FY27 Outlook -- CB Research Data View (No Recommendations)</strong><br><br><strong>Bull Case (NR eases, crude $70-75):</strong> MRF PAT Rs 2,700+ Cr. Apollo Rs 1,400+ Cr. CEAT margin 14-15%. BKT volumes +8%. India tyre market +10-12%.<br><br><strong>Base Case (NR +7-8%, crude $80-90):</strong> MRF flat-modest growth. Apollo Rs 1,100-1,200 Cr (one-off strips out). CEAT margin compressed 50-100 bps. BKT margin 22-23%. JK Tyre Rs 700-750 Cr.<br><br><strong>Bear Case (NR spike, crude $100+):</strong> MRF margin 14-15%. Apollo Europe stays weak. CEAT below 12% EBITDA. BKT below 22%. JK Tyre cash flow pressure from capex.<br><br><strong>CB Research FY27 Earnings Visibility (not buy/sell):</strong><br>1. MRF -- High (brand moat + pricing power)<br>2. Apollo -- Good (debt-free, TBR momentum)<br>3. CEAT -- Good (market share momentum)<br>4. BKT -- Moderate (OHT moat, near-term headwinds)<br>5. JK Tyre -- Moderate-Low (cheapest but weakest margins + heavy capex)`,
+  ta:`<strong>FY27 Outlook &mdash; CB Research (Tamil, recommendation &#2007;&#2994;&#3021;&#2994;&#3016;)</strong><br><br><strong>Bull Case (NR &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;, crude $70-75):</strong> MRF PAT Rs 2,700+ &#2965;&#3019;&#2975;&#3007;. Apollo Rs 1,400+ &#2965;&#3019;&#2975;&#3007;. CEAT margin 14-15%. BKT volume +8%. India tyre market +10-12%.<br><br><strong>Base Case (NR +7-8%, crude $80-90):</strong> MRF flat-modest. Apollo Rs 1,100-1,200 &#2965;&#3019;&#2975;&#3007; (one-off &#2986;&#3019;&#2985;&#3006;&#2994;&#3021;). CEAT margin 50-100 bps &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;. BKT margin 22-23%. JK Tyre Rs 700-750 &#2965;&#3019;&#2975;&#3007;.<br><br><strong>Bear Case (NR spike, crude $100+):</strong> MRF margin 14-15%. Apollo Europe weak. CEAT 12%-&#2965;&#3021;&#2965;&#3009; &#2965;&#3008;&#2996;&#3015;. BKT 22%-&#2965;&#3021;&#2965;&#3009; &#2965;&#3008;&#2996;&#3015;. JK Tyre capex cash flow pressure.<br><br><strong>CB Research FY27 Earnings Visibility (buy/sell &#2007;&#2994;&#3021;&#2994;&#3016;):</strong><br>1. MRF &mdash; High (brand moat + pricing power)<br>2. Apollo &mdash; Good (debt-free, TBR)<br>3. CEAT &mdash; Good (market share momentum)<br>4. BKT &mdash; Moderate (OHT moat, near-term headwinds)<br>5. JK Tyre &mdash; Moderate-Low (cheapest, &#2965;&#3009;&#2993;&#3016;&#2984;&#3021;&#2980; margin + heavy capex)`}
+};
+function cbA(q,lang){
+  if(!q||!q.trim())return;
+  const msgs=document.getElementById('chatMsgs');
+  const inp=document.getElementById('chatIn');
+  const typ=document.getElementById('typingInd');
+  const uEl=document.createElement('div');
+  uEl.className='chat-msg user';uEl.textContent=q.trim();
+  msgs.appendChild(uEl);inp.value='';msgs.scrollTop=msgs.scrollHeight;
+  const isTa=/[\u0B80-\u0BFF]/.test(q)||/tamil/i.test(q);
+  const l=(lang==='ta'||isTa)?'ta':'en';
+  typ.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typ.style.display='none';
+    const a=findA(q.toLowerCase(),l);
+    const bEl=document.createElement('div');
+    bEl.className='chat-msg bot';bEl.innerHTML=a;
+    msgs.appendChild(bEl);msgs.scrollTop=msgs.scrollHeight;
+  },500);
+}
+function findA(q,l){
+  l=l||'en';
+  const G=k=>KB[k]?.[l]||KB[k]?.en||'';
+  if(/\bmrf\b/.test(q))return G('mrf');
+  if(/bkt|balkrishna|off.highway|\boht\b/.test(q))return G('bkt');
+  if(/apollo|vredestein/.test(q))return G('apollo');
+  if(/\bceat\b|camso/.test(q))return G('ceat');
+  if(/jk tyre|jktyre|hahnkamm|mexico/.test(q))return G('jkt');
+  if(/replacement|retail market|biggest profit/.test(q))return G('replacement');
+  if(/natural rubber|rubber price|\bnr\b|raw material/.test(q))return G('nr');
+  if(/\bgst\b|28%|tax benefit|oem benefit/.test(q))return G('gst');
+  if(/fy27|outlook|bull|bear|scenario/.test(q))return G('fy27');
+  if(l==='ta')return '<strong>CB Assist (Tamil)</strong><br><br>இந்த topics try பண்ணுங்க:<br>&bull; MRF / BKT / Apollo / CEAT / JK Tyre Q4 results<br>&bull; Natural rubber raw material<br>&bull; Replacement market importance<br>&bull; GST impact (28%)<br>&bull; FY27 outlook (bull/base/bear)';
+  return '<strong>CB Assist</strong> -- Try asking about:<br><br>&bull; <em>MRF / BKT / Apollo / CEAT / JK Tyre Q4 FY26 results</em><br>&bull; <em>Natural rubber -- why most critical input</em><br>&bull; <em>Replacement market -- biggest profit driver</em><br>&bull; <em>GST cut 28% to 18% -- OEM and replacement impact</em><br>&bull; <em>BKT -- why unique among Indian tyre companies</em><br>&bull; <em>FY27 outlook -- bull, base, bear cases</em>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CB Multi-Sector Intelligence Dashboard | Q4 FY26 / FY2025</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--surface:#fff;--surface2:#f8f8f8;--border:#e4e4e4;
+  --text:#181511;--muted:#6e6860;
+  --gev:#1d6faa;--gev-soft:#eef6fd;
+  --lg:#c3121a;--lg-soft:#fff0f0;
+  --cera:#7c3aed;--cera-soft:#f5f3ff;
+  --pgel:#0e7490;--pgel-soft:#ecfeff;
+  --bj:#166534;--bj-soft:#f0fdf4;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#ffffff;color:var(--text);font-size:13.5px;line-height:1.55;}
+
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:76px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.55rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-gev{background:var(--gev);color:#fff;}
+.chip-lg{background:var(--lg);color:#fff;}
+.chip-cera{background:var(--cera);color:#fff;}
+.chip-pgel{background:var(--pgel);color:#fff;}
+.chip-bj{background:var(--bj);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+
+.tab-nav{background:#fff;border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 16px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--gev);font-weight:700;}
+
+.main{padding:26px 40px 48px;max-width:1480px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;}
+.gap-top{margin-top:22px;}
+
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+
+/* KPI summary row */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px;}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.gev-a{border-left:4px solid var(--gev);}
+.kpi.lg-a{border-left:4px solid var(--lg);}
+.kpi.cera-a{border-left:4px solid var(--cera);}
+.kpi.pgel-a{border-left:4px solid var(--pgel);}
+.kpi.bj-a{border-left:4px solid var(--bj);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:4px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:3px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafafa;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.twarn{color:var(--warn);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+
+/* Rating badge */
+.rtag{display:inline-block;padding:3px 10px;border-radius:5px;font-size:10px;font-weight:800;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;}
+.rtag-A{background:#dcfce7;color:#15803d;}
+.rtag-B{background:#fef9c3;color:#a16207;}
+.rtag-C{background:#fff7ed;color:#c2410c;}
+.rtag-D{background:#fee2e2;color:#b91c1c;}
+
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+.b-warn{background:#fff7ed;color:#c2410c;}
+.b-neu{background:#f3f4f6;color:#4b5563;}
+
+/* Company card (Companies tab) */
+.co-section{margin-bottom:38px;}
+.co-section-hdr{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;padding:11px 18px;border-radius:var(--radius);color:#fff;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.co-section-hdr.gev-bg{background:var(--gev);}
+.co-section-hdr.lg-bg{background:var(--lg);}
+.co-section-hdr.cera-bg{background:var(--cera);}
+.co-section-hdr.pgel-bg{background:var(--pgel);}
+.co-section-hdr.bj-bg{background:var(--bj);}
+.co-section-hdr .tag{font-size:10px;padding:3px 10px;background:rgba(255,255,255,.18);border-radius:20px;font-weight:700;letter-spacing:.06em;}
+
+.m-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:14px;}
+.swot-cell{padding:12px 14px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+
+/* Ratings tab */
+.rating-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.rc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.rc-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+.rc-grade{font-size:1.6rem;font-weight:900;font-family:'IBM Plex Mono',monospace;}
+.meter-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;margin-bottom:5px;}
+.meter-fill{height:8px;border-radius:20px;}
+.meter-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:10px;}
+
+/* CB Assist */
+.cbassist-chat{background:#fff;border:1.5px solid var(--gev);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--gev);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--gev);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:#fff;color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--gev);}
+.chat-send{background:var(--gev);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.preset-q{padding:8px 13px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;line-height:1.45;color:var(--text);}
+.preset-q:hover{border-color:var(--gev);background:var(--gev-soft);}
+
+.verdict-card{background:#fff;border:2px solid var(--gold);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:6px;}
+.verdict-body{font-size:13px;line-height:1.7;color:var(--text);}
+
+.note-box{background:var(--surface2);border-left:4px solid var(--warn);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;font-size:11.5px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+
+@media(max-width:900px){
+  .hdr{padding:0 16px;}.main{padding:16px;}.tab-nav{padding:0 12px;}
+  .g2,.g3,.g5,.kpi-strip{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>CB Multi-Sector Intelligence Dashboard</h1>
+      <div class="sub">Q4 FY26 / FY2025 · Business &amp; Investment Analysis · CB Research | EIL</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-gev">GVT&amp;D India</span>
+    <span class="chip chip-lg">LG India</span>
+    <span class="chip chip-cera">Cera Sanitaryware</span>
+    <span class="chip chip-pgel">PG Electroplast</span>
+    <span class="chip chip-bj">Blue Jet Healthcare</span>
+    <span class="chip chip-date">June 2026</span>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('overview',this)">🏠 Overview</button>
+  <button class="tab-btn" onclick="switchTab('companies',this)">🏢 Companies</button>
+  <button class="tab-btn" onclick="switchTab('revenue',this)">📊 Revenue Tables</button>
+  <button class="tab-btn" onclick="switchTab('ratings',this)">⭐ CB Ratings</button>
+  <button class="tab-btn" onclick="switchTab('charts',this)">📈 Charts</button>
+  <button class="tab-btn" onclick="switchTab('cashflow',this)">💵 Cash Flow</button>
+  <button class="tab-btn" onclick="switchTab('cbassist',this)">🤖 CB Assist</button>
+</div>
+
+<div class="main">
+
+<!-- ══ TAB 1 · OVERVIEW ══ -->
+<div class="panel active" id="tab-overview">
+  <div class="sec-hdr">Sector Snapshot <span class="sec-note">· 5 Companies across Global &amp; Indian Markets · Latest Reported Results</span></div>
+
+  <div class="note-box">⚠️ <strong>CB Research Disclaimer:</strong> This dashboard is for business &amp; investment analysis purposes only. All 5 companies are India-listed and report in ₹ Crore. CB Research is not SEBI-registered. No buy/sell recommendations. All data from BSE / NSE filings and audited company disclosures.</div>
+
+  <div class="kpi-strip">
+    <div class="kpi gev-a">
+      <div class="kl">GE Vernova T&amp;D India (NSE: GVT&amp;D)</div>
+      <div class="kv">₹6,210 Cr</div>
+      <div class="kc pos">FY26 Revenue +45% YoY</div>
+    </div>
+    <div class="kpi lg-a">
+      <div class="kl">LG Electronics India (NSE: LGEINDIA)</div>
+      <div class="kv">₹24,605 Cr</div>
+      <div class="kc pos">FY26 Revenue +1% YoY · Record High</div>
+    </div>
+    <div class="kpi cera-a">
+      <div class="kl">Cera Sanitaryware (BSE: 532443)</div>
+      <div class="kv">₹2,050 Cr</div>
+      <div class="kc pos">FY26 Revenue +7% YoY</div>
+    </div>
+    <div class="kpi pgel-a">
+      <div class="kl">PG Electroplast (NSE: PGEL)</div>
+      <div class="kv">₹5,288 Cr</div>
+      <div class="kc pos">FY26 Revenue +8.6% YoY (Consolidated)</div>
+    </div>
+    <div class="kpi bj-a">
+      <div class="kl">Blue Jet Healthcare (NSE: BLUEJET)</div>
+      <div class="kv">₹947 Cr</div>
+      <div class="kc neg">FY26 Revenue −8% YoY</div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Company Profiles at a Glance</div>
+      <table>
+        <thead><tr><th>Company</th><th>Sector</th><th>Geography</th><th>Business Model</th><th>Rev Growth</th><th>EBITDA Margin</th><th>PAT Trend</th></tr></thead>
+        <tbody>
+          <tr><td><span class="dot" style="background:var(--gev)"></span><strong>GE Vernova T&amp;D India</strong></td><td>Power T&amp;D / Grid</td><td>India (NSE: GVT&amp;D)</td><td>Transformers / Switchgear / HVDC</td><td class="tpos">+45%</td><td class="tpos">27.1%</td><td class="tpos">▲ PAT +103% · ₹1,233 Cr</td></tr>
+          <tr><td><span class="dot" style="background:var(--lg)"></span><strong>LG Electronics India</strong></td><td>Consumer Electronics</td><td>India (NSE: LGEINDIA)</td><td>H&amp;A / Home Entertainment / B2B</td><td class="tpos">+1%</td><td class="num">~9%</td><td class="tneg">▼ PAT −3% · ₹1,685 Cr</td></tr>
+          <tr><td><span class="dot" style="background:var(--cera)"></span><strong>Cera Sanitaryware</strong></td><td>Building Materials</td><td>India (BSE)</td><td>Sanitaryware / Faucets / Tiles</td><td class="tpos">+7%</td><td class="num">13.1%</td><td class="tneg">▼ PAT −17.2%</td></tr>
+          <tr><td><span class="dot" style="background:var(--pgel)"></span><strong>PG Electroplast</strong></td><td>EMS / Consumer Durables</td><td>India (NSE/BSE)</td><td>OEM/ODM: AC, Washer, Electronics</td><td class="tpos">+8.6%</td><td class="num">8.4%</td><td class="tneg">▼ PAT −33.5%</td></tr>
+          <tr><td><span class="dot" style="background:var(--bj)"></span><strong>Blue Jet Healthcare</strong></td><td>Specialty Pharma / CDMO</td><td>India (NSE)</td><td>Contrast Media / PI-API / Sweeteners</td><td class="tneg">−8%</td><td class="num">31%</td><td class="tneg">▼ PAT −25%+</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Reporting Period &amp; Key Highlights</div>
+      <table>
+        <thead><tr><th>Company</th><th>Latest Quarter</th><th>Q Revenue</th><th>Q Rev Growth</th><th>Key Development</th></tr></thead>
+        <tbody>
+          <tr><td><span class="dot" style="background:var(--gev)"></span>GE Vernova T&amp;D India</td><td>Q4 FY26</td><td class="num">₹1,637 Cr</td><td class="tpos">+42%</td><td>Orders ₹8,610 Cr (+188%); Backlog ₹21,456 Cr</td></tr>
+          <tr><td><span class="dot" style="background:var(--lg)"></span>LG Electronics India</td><td>Q4 FY26</td><td class="num">₹8,054 Cr</td><td class="tpos">+8.1%</td><td>Record quarterly revenue; EBITDA 11.7%</td></tr>
+          <tr><td><span class="dot" style="background:var(--cera)"></span>Cera Sanitaryware</td><td>Q4 FY26</td><td class="num">₹644 Cr</td><td class="tpos">+11.4%</td><td>Faucetware +24.3%; ₹75 dividend</td></tr>
+          <tr><td><span class="dot" style="background:var(--pgel)"></span>PG Electroplast</td><td>Q4 FY26</td><td class="num">₹1,717 Cr</td><td class="tneg">−10.1%</td><td>AC demand weak; supply disruptions</td></tr>
+          <tr><td><span class="dot" style="background:var(--bj)"></span>Blue Jet Healthcare</td><td>Q4 FY26</td><td class="num">₹235 Cr</td><td class="tneg">−31.1%</td><td>PI vertial gap; Contrast Media +91%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="verdict-card">
+    <div class="verdict-title">CB Research — Sector Verdict FY26</div>
+    <div class="verdict-body">
+      <strong>GE Vernova T&amp;D India</strong> is the standout performer — ₹14,780 Cr annual order intake (+37% YoY), record backlog of ₹21,456 Cr (+49%), EBITDA margin at 27.1%, and PAT more than doubling (+103%) to ₹1,233 Cr make it the premier India T&D play. Structural beneficiary of HVDC buildout (Adani 2.5 GW Khavda corridor), grid modernisation, and renewable integration. 
+      <br><br>
+      <strong>LG Electronics India</strong> delivered record quarterly revenue of ₹8,054 Cr (+8.1%) in Q4 FY26, with full-year FY26 revenue at ₹24,605 Cr (+1%). EBITDA margins were compressed −230 bps in Q4 due to rupee depreciation and commodity inflation, and PAT dipped 3% to ₹1,685 Cr for the year. FY27 guidance is constructive: mid-teen revenue growth and double-digit EBITDA margins, supported by Sri City export ramp, PLI incentives, and the new BEE 5-star product portfolio.
+      <br><br>
+      <strong>Cera Sanitaryware</strong> showed topline resilience (+7% annual, +11.4% Q4) but PAT contracted 17.2% as brass cost inflation eroded margins. The business is debt-free with ₹853 Cr cash — a structural safety net. Faucetware segment momentum (+24.3%) is a bright spot.
+      <br><br>
+      <strong>PG Electroplast</strong> faces a challenging year — FY26 PAT dropped 33.5% due to weak RAC demand, LPG/truck supply disruptions, and forex losses. Revenue grew only 8.6% vs its 5-year CAGR of ~56%. FY27 recovery expected with margin improvement toward 8% EBITDA.
+      <br><br>
+      <strong>Blue Jet Healthcare</strong> had a highly volatile FY26 — Q1 strong (+141% PAT), then a Q2/Q3 collapse in PI-API revenues, with partial Contrast Media recovery in Q4. FY26 revenue declined 8%. The company is debt-free with ₹400 Cr cash and the Vizag greenfield expansion is a positive 3-year catalyst.
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 2 · COMPANIES ══ -->
+<div class="panel" id="tab-companies">
+  <div class="sec-hdr">Company Profiles <span class="sec-note">· Detailed Analysis · Business Model Verticals · Q4 &amp; Annual Results</span></div>
+
+  <!-- GE VERNOVA -->
+  <div class="co-section">
+    <div class="co-section-hdr gev-bg">
+      <div>
+        <div style="font-size:10px;opacity:.7;margin-bottom:2px;letter-spacing:.08em;text-transform:uppercase;">NSE: GVT&amp;D / BSE: 522275 · India · Power T&amp;D / Grid Infrastructure</div>
+        GE Vernova T&amp;D India Ltd.
+      </div>
+      <span class="tag">Q4 FY26 ✅ · May 18, 2026</span>
+    </div>
+
+    <div class="g3">
+      <div class="card">
+        <div class="card-lbl">Company Overview</div>
+        <div class="m-row"><span class="m-lbl">Incorporated</span><span class="m-val">1919 (India's oldest T&amp;D co.)</span></div>
+        <div class="m-row"><span class="m-lbl">HQ</span><span class="m-val">Noida, Uttar Pradesh</span></div>
+        <div class="m-row"><span class="m-lbl">MD &amp; CEO</span><span class="m-val">Sandeep Zanzaria</span></div>
+        <div class="m-row"><span class="m-lbl">CMP (approx)</span><span class="m-val">~₹4,782 (Jun 2026)</span></div>
+        <div class="m-row"><span class="m-lbl">Market Cap</span><span class="m-val">~₹1,26,000 Cr</span></div>
+        <div class="m-row"><span class="m-lbl">Cash Balance</span><span class="m-val pos">₹1,528 Cr (Debt-Free)</span></div>
+        <div style="margin-top:12px;"><span class="badge b-pos">PAT +103% FY26</span> <span class="badge b-pos">₹21,456 Cr Backlog</span></div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Business Model Verticals</div>
+        <div class="m-row"><span class="m-lbl">🔌 Transformers</span><span class="m-val">Power / distribution transformers</span></div>
+        <div class="m-row"><span class="m-lbl">⚡ Switchgear &amp; GIS</span><span class="m-val">Gas-insulated switchgear up to 765 kV</span></div>
+        <div class="m-row"><span class="m-lbl">🌊 HVDC Systems</span><span class="m-val">VSC HVDC transmission solutions</span></div>
+        <div class="m-row"><span class="m-lbl">🚂 Railways</span><span class="m-val">Traction transformers, electronic interlocking</span></div>
+        <div style="margin-top:12px;font-size:11px;color:var(--muted);line-height:1.6;">
+          <strong>Key Orders FY26:</strong> HVDC VSC terminal for Adani (Khavda–South Olpad 2.5 GW corridor); 765 kV transformers for POWERGRID; 76% backlog from private sector. Exports ~33% of FY26 revenue. New ₹55 Cr Vallam (TN) facility for 362 kV Dead Tank Circuit Breakers. ₹1,000 Cr capex plan FY27–28.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Q4 CY2025 Performance</div>
+        <div class="m-row"><span class="m-lbl">Revenue</span><span class="m-val pos">₹1,637 Cr (+42% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">EBITDA</span><span class="m-val pos">₹445 Cr (27.2% margin)</span></div>
+        <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val pos">₹352 Cr (+89% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">Orders</span><span class="m-val pos">$22.2B (+65% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">FCF Q4</span><span class="m-val pos">$0.6B</span></div>
+        <div class="m-row" style="margin-top:8px;"><span class="m-lbl">FY2025 Revenue</span><span class="m-val pos">$38.1B (+9%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY2025 Net Income</span><span class="m-val pos">$4.9B (12.8% margin)</span></div>
+        <div class="m-row"><span class="m-lbl">FY2025 Adj. EBITDA</span><span class="m-val">$3.2B (8.4%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY2025 FCF</span><span class="m-val pos">$3.7B (2× YoY)</span></div>
+      </div>
+    </div>
+
+    <div class="swot-grid" style="margin-top:14px;">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>$150B order backlog — 4+ year revenue visibility</li><li>Power segment 22%+ EBITDA margin by 2028 target</li><li>$8.8B cash + $3.7B FCF in FY2025</li><li>Unique end-to-end Power + Grid solutions provider</li><li>Prolec GE acquisition boosting Electrification</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Wind segment losing ~$400M EBITDA annually</li><li>Net income includes $2.9B one-time tax benefit</li><li>Tariff inflation headwind ~$300–400M net</li><li>Recent IPO complexity (spun off Apr 2024)</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Global electrification: AI data centers, EVs</li><li>Gas turbine supercycle — demand exceeds supply</li><li>2026 Revenue guidance $44–45B; 2028 target $56B</li><li>EBITDA margin expansion to 20% by 2028</li><li>Nuclear energy revival (services &amp; SMRs)</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Risks</div><ul class="swot-ul"><li>Wind restructuring costs &amp; losses extending</li><li>Geopolitical supply chain disruptions</li><li>Interest rate / project finance headwinds</li><li>Offshore wind regulatory reversals (US)</li></ul></div>
+    </div>
+  </div>
+
+  <!-- LG ELECTRONICS -->
+  <div class="co-section">
+    <div class="co-section-hdr lg-bg">
+      <div>
+        <div style="font-size:10px;opacity:.7;margin-bottom:2px;letter-spacing:.08em;text-transform:uppercase;">NSE: LGEINDIA / BSE: 544576 · India · Consumer Electronics &amp; Appliances</div>
+        LG Electronics India Ltd.
+      </div>
+      <span class="tag">Q4 FY26 ✅ · May 21, 2026</span>
+    </div>
+
+    <div class="g3">
+      <div class="card">
+        <div class="card-lbl">Company Overview</div>
+        <div class="m-row"><span class="m-lbl">HQ</span><span class="m-val">Greater Noida, Uttar Pradesh</span></div>
+        <div class="m-row"><span class="m-lbl">Parent</span><span class="m-val">LG Electronics Korea (WOS, 85%)</span></div>
+        <div class="m-row"><span class="m-lbl">MD</span><span class="m-val">Hong Ju Jeon</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">&#8377;24,605 Cr (+1% &#8212; Record)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val warn">&#8377;1,685 Cr (&#8722;3% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">Market Cap</span><span class="m-val">~&#8377;1,03,798 Cr</span></div>
+        <div style="margin-top:12px;"><span class="badge b-warn">Margin Compression</span> <span class="badge b-pos">Market Leader #1</span></div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Business Segments</div>
+        <div class="m-row"><span class="m-lbl">&#127968; H&amp;A (Home Appliances)</span><span class="m-val">AC, Ref, WM &#8212; ~62% revenue</span></div>
+        <div class="m-row"><span class="m-lbl">&#128250; HE (Home Entertainment)</span><span class="m-val">TVs, Audio &#8212; Q4 +19.6% YoY</span></div>
+        <div class="m-row"><span class="m-lbl">&#10052;&#65039; B2B HVAC</span><span class="m-val">VRF, Cassette AC &#8212; Seva Teerth</span></div>
+        <div class="m-row"><span class="m-lbl">&#128202; Info Display B2B</span><span class="m-val">Strong Q4 growth</span></div>
+        <div class="m-row"><span class="m-lbl">&#127981; Sri City Plant</span><span class="m-val pos">&#8377;5,000 Cr capex &#8212; export hub</span></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6;">India's #1 consumer electronics brand 13+ consecutive years. New BEE 5-star portfolio driving ASP uplift. Export expansion to US &amp; Europe via Sri City. PLI incentives &#8377;882 Cr (valid 2040). First captive solar PPA (Hinduja/Sunsure).</div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Q4 FY26 Key Metrics</div>
+        <div class="m-row"><span class="m-lbl">Revenue</span><span class="m-val pos">₹8,054 Cr (+8.1% YoY) — Record</span></div>
+        <div class="m-row"><span class="m-lbl">EBITDA</span><span class="m-val warn">₹945 Cr (11.7% margin, −230 bps)</span></div>
+        <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val neg">₹693 Cr (−8% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Full-Year Revenue</span><span class="m-val pos">₹24,605 Cr (+1% — Record)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Full-Year PAT</span><span class="m-val warn">₹1,685 Cr (−3% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">HE Segment Q4</span><span class="m-val pos">₹1,537 Cr (+19.6% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">Cash &amp; Investments</span><span class="m-val pos">₹4,505 Cr (Dec 2025)</span></div>
+        <div class="m-row"><span class="m-lbl">FY27 Guidance</span><span class="m-val pos">Mid-teen rev growth, double-digit EBITDA</span></div>
+      </div>
+    </div>
+
+    <div class="swot-grid" style="margin-top:14px;">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>#1 India consumer electronics brand, 13+ consecutive years</li><li>VS segment — record revenue &amp; profit</li><li>B2B operating profit (VS+ES) crossed ₩1T first time</li><li>Subscription model growing 29% YoY</li><li>Global manufacturing scale in 80+ countries</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>EBITDA margin compressed &#8722;230 bps Q4 FY26 (rupee + commodities)</li><li>FY26 PAT &#8722;3% despite record revenue</li><li>No dividend declared (capex reinvestment)</li><li>Royalty payments to Korean parent (transfer pricing)</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>FY27: mid-teen revenue growth + double-digit EBITDA guided — recovery visibleastructure boom</li><li>Heat pump demand in Europe (eco transition)</li><li>webOS platform monetization (ad &amp; content revenue)</li><li>SDV (Software-Defined Vehicles) — long-term VS pivot</li><li>Immersion cooling technology partnerships</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Risks</div><ul class="swot-ul"><li>INR depreciation + commodity inflation &#8212; structural margin risk</li><li>Samsung, Haier, Voltas competition intensifying</li><li>US tariffs partially offsetting export opportunity</li><li>Parent royalty cost structure uncertainty</li></ul></div>
+    </div>
+  </div>
+
+  <!-- CERA SANITARYWARE -->
+  <div class="co-section">
+    <div class="co-section-hdr cera-bg">
+      <div>
+        <div style="font-size:10px;opacity:.7;margin-bottom:2px;letter-spacing:.08em;text-transform:uppercase;">BSE: 532443 · India · Building Materials</div>
+        Cera Sanitaryware Ltd.
+      </div>
+      <span class="tag">Q4 FY26 ✅ · May 8, 2026</span>
+    </div>
+
+    <div class="g3">
+      <div class="card">
+        <div class="card-lbl">Company Overview</div>
+        <div class="m-row"><span class="m-lbl">CMD</span><span class="m-val">Vikram Somany</span></div>
+        <div class="m-row"><span class="m-lbl">HQ</span><span class="m-val">Kadi, Gujarat</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">₹2,050 Cr (+7%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">₹204 Cr (−17.2%)</span></div>
+        <div class="m-row"><span class="m-lbl">Cash &amp; Equiv.</span><span class="m-val pos">₹853 Cr</span></div>
+        <div class="m-row"><span class="m-lbl">Debt</span><span class="m-val pos">Debt-Free</span></div>
+        <div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val">₹75/share (Recommended)</span></div>
+        <div style="margin-top:10px;"><span class="badge b-pos">Debt-Free</span> <span class="badge b-pos">Strong Cash</span></div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Business Verticals</div>
+        <div class="m-row"><span class="m-lbl">🚿 Sanitaryware</span><span class="m-val">46% of Q4 Revenue (+10.7%)</span></div>
+        <div class="m-row"><span class="m-lbl">🚰 Faucetware</span><span class="m-val">43% of Q4 Revenue (+24.3%)</span></div>
+        <div class="m-row"><span class="m-lbl">🔲 Tiles</span><span class="m-val">~8–10% Revenue</span></div>
+        <div class="m-row"><span class="m-lbl">🛁 Wellness Products</span><span class="m-val">Balance</span></div>
+        <div class="m-row"><span class="m-lbl">Project Sales</span><span class="m-val">38% of Revenue</span></div>
+        <div class="m-row"><span class="m-lbl">Premium Brands</span><span class="m-val">Senator, CERA Luxe, Polipluz</span></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6;">Gas shortage disruptions in Morbi affected sanitaryware manufacturing. Price revisions implemented in March 2026 on brass-intensive faucets. 1,400+ new CERA Style Centres targeted over next 3–4 years.</div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Q4 FY26 Metrics</div>
+        <div class="m-row"><span class="m-lbl">Revenue</span><span class="m-val pos">₹644 Cr (+11.4% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">EBITDA</span><span class="m-val">₹97.9 Cr (15.2% margin)</span></div>
+        <div class="m-row"><span class="m-lbl">EBITDA vs Q3</span><span class="m-val pos">+92% QoQ sequential</span></div>
+        <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val neg">₹77.3 Cr (−9.6% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">Gross Margin</span><span class="m-val">~56%+</span></div>
+        <div class="m-row" style="margin-top:8px;"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">₹2,050 Cr (+7.0%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 EBITDA Margin</span><span class="m-val warn">13.1% (−210 bps YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">₹204 Cr (−17.2%)</span></div>
+      </div>
+    </div>
+
+    <div class="swot-grid" style="margin-top:14px;">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Pan-India brand with deep distribution (CERA Style Centres)</li><li>Debt-free with ₹853 Cr cash — balance sheet fortress</li><li>Faucetware gaining share — +24.3% Q4 growth</li><li>Revenue growing despite input cost headwinds</li><li>Premium segment (Senator, CERA Luxe) scaling</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Brass price inflation compressing faucet margins</li><li>Morbi gas shortage impacting sanitaryware production</li><li>PAT declined 17.2% FY26 — bottom-line pressure</li><li>Discounting pressure in competitive retail channel</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>India real estate upcycle — housing demand strong</li><li>Premium/luxury sanitaryware under-penetrated</li><li>Polipluz value brand — tier 2/3 city expansion</li><li>Export opportunities in faucetware &amp; wellness</li><li>1,400 new CERA Style Centres — distribution moat</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Risks</div><ul class="swot-ul"><li>Sustained brass/input cost volatility</li><li>Chinese import competition in tiles &amp; sanitaryware</li><li>Real estate slowdown risk in project segment</li><li>GST and regulatory order risks (₹28 Cr IT demand)</li></ul></div>
+    </div>
+  </div>
+
+  <!-- PG ELECTROPLAST -->
+  <div class="co-section">
+    <div class="co-section-hdr pgel-bg">
+      <div>
+        <div style="font-size:10px;opacity:.7;margin-bottom:2px;letter-spacing:.08em;text-transform:uppercase;">NSE: PGEL · India · EMS / Consumer Durables</div>
+        PG Electroplast Ltd.
+      </div>
+      <span class="tag">Q4 FY26 ✅ · May 27–28, 2026</span>
+    </div>
+
+    <div class="g3">
+      <div class="card">
+        <div class="card-lbl">Company Overview</div>
+        <div class="m-row"><span class="m-lbl">Sector</span><span class="m-val">EMS / OEM / ODM</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Rev (Consol.)</span><span class="m-val warn">₹5,288 Cr (+8.6%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">₹194 Cr (−33.5%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val neg">₹442 Cr (−14.9%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Capex</span><span class="m-val">₹785 Cr (10yr total >₹1,900 Cr)</span></div>
+        <div class="m-row"><span class="m-lbl">Forex Loss FY26</span><span class="m-val neg">₹38.77 Cr (vs +₹18 gain FY25)</span></div>
+        <div class="m-row"><span class="m-lbl">Dividend</span><span class="m-val">₹0.25/share</span></div>
+        <div style="margin-top:10px;"><span class="badge b-warn">PAT under pressure</span> <span class="badge b-pos">FY27 recovery guided</span></div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Business Verticals</div>
+        <div class="m-row"><span class="m-lbl">❄️ Room AC (ODM/OEM)</span><span class="m-val">~70%+ of Product Rev</span></div>
+        <div class="m-row"><span class="m-lbl">🌀 Washing Machine</span><span class="m-val">Growing — +70% Q4 YoY</span></div>
+        <div class="m-row"><span class="m-lbl">💨 Air Coolers</span><span class="m-val">Q4 −10.8% YoY</span></div>
+        <div class="m-row"><span class="m-lbl">📱 Electronics (EMS)</span><span class="m-val">6.8% of Q4 Revenue</span></div>
+        <div class="m-row"><span class="m-lbl">🔗 JV: Goodworth Elec.</span><span class="m-val">₹155 Cr Q4 Revenue</span></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6;">Product business (ODM/OEM for branded players) constitutes 82% of revenue. Bhiwadi AC unit launched. New refrigerator &amp; compressor facilities under construction — expected to contribute from FY28. Washing machine capacity growing 30–35% in FY27.</div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Q4 FY26 Key Metrics</div>
+        <div class="m-row"><span class="m-lbl">Revenue (Consol.)</span><span class="m-val neg">₹1,717 Cr (−10.1% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">EBITDA</span><span class="m-val neg">₹132 Cr (−43% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">PAT (Consol.)</span><span class="m-val neg">₹65 Cr (−55% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">Rev Loss (LPG/Trucks)</span><span class="m-val neg">~₹420 Cr estimated</span></div>
+        <div class="m-row"><span class="m-lbl">Room AC Rev</span><span class="m-val neg">₹1,210 Cr (−12% YoY)</span></div>
+        <div class="m-row" style="margin-top:8px;"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹5,288 Cr (+8.6%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 EBITDA Margin</span><span class="m-val neg">8.4% (vs 10.6% FY25)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">₹194 Cr (−33.5%)</span></div>
+      </div>
+    </div>
+
+    <div class="swot-grid" style="margin-top:14px;">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>5-year Revenue CAGR ~56% — proven scale capability</li><li>ODM/OEM model — asset-light for brand partners</li><li>Washing machine growing 70% YoY — diversification working</li><li>Goodworth JV profitability improving</li><li>New facilities (refrigerator, compressor) building future verticals</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>70%+ revenue concentration in RAC — single-product risk</li><li>RAC demand weak in FY26 (−15% industry)</li><li>Forex losses ₹38.77 Cr in FY26 (raw material imports)</li><li>High capex (₹785 Cr FY26) with declining PAT = cash strain</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>India AC penetration <10% — long runway</li><li>PLI scheme benefits for EMS / consumer durables</li><li>Refrigerator &amp; compressor vertical from FY28</li><li>Channel inventory normalized — FY27 recovery</li><li>EBITDA margin improvement to 8%+ guided for FY27</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Risks</div><ul class="swot-ul"><li>RAC demand recovery slower than expected</li><li>LPG and logistics supply risks repeating</li><li>INR depreciation — raw material import cost inflation</li><li>Capital allocation risk with aggressive capex cycle</li></ul></div>
+    </div>
+  </div>
+
+  <!-- BLUE JET HEALTHCARE -->
+  <div class="co-section">
+    <div class="co-section-hdr bj-bg">
+      <div>
+        <div style="font-size:10px;opacity:.7;margin-bottom:2px;letter-spacing:.08em;text-transform:uppercase;">NSE: BLUEJET · India · Specialty Pharma / CDMO</div>
+        Blue Jet Healthcare Ltd.
+      </div>
+      <span class="tag">Q4 FY26 ✅ · May 25, 2026</span>
+    </div>
+
+    <div class="g3">
+      <div class="card">
+        <div class="card-lbl">Company Overview</div>
+        <div class="m-row"><span class="m-lbl">Type</span><span class="m-val">Specialty Pharma CDMO</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val neg">₹947 Cr (−8% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">~₹246 Cr (PAT margin 26%)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 EBITDA Margin</span><span class="m-val warn">31% (vs 37% FY25)</span></div>
+        <div class="m-row"><span class="m-lbl">Cash</span><span class="m-val pos">₹400 Cr (Debt-Free)</span></div>
+        <div class="m-row"><span class="m-lbl">Op. Cash Flow FY26</span><span class="m-val pos">₹334 Cr (vs ₹46 Cr FY25)</span></div>
+        <div class="m-row"><span class="m-lbl">Capex (CWIP)</span><span class="m-val">₹301 Cr (Vizag greenfield)</span></div>
+        <div style="margin-top:10px;"><span class="badge b-pos">Debt-Free</span> <span class="badge b-pos">OCF Surged 7×</span></div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Business Verticals</div>
+        <div class="m-row"><span class="m-lbl">🩻 Contrast Media Intermediates</span><span class="m-val">₹495 Cr FY26 (+23%)</span></div>
+        <div class="m-row"><span class="m-lbl">💊 PI / API</span><span class="m-val">₹298 Cr FY26 (−35%)</span></div>
+        <div class="m-row"><span class="m-lbl">🍬 Artificial Sweeteners</span><span class="m-val">₹131 Cr FY26 (−2%)</span></div>
+        <div class="m-row"><span class="m-lbl">Q4 Contrast Media</span><span class="m-val pos">₹193 Cr (+91% YoY, +55% QoQ)</span></div>
+        <div class="m-row"><span class="m-lbl">Q4 PI/API</span><span class="m-val neg">₹2.4 Cr (vs ₹196 Cr Q4 FY25)</span></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6;">CDMO model — end-to-end integrated chemistry platforms. Contrast media is the structural growth driver (iodinated contrast for imaging). PI/API revenue highly lumpy due to order phasing. Vizag greenfield expansion under construction. New R&amp;D centre in Hyderabad.</div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Q4 FY26 Key Metrics</div>
+        <div class="m-row"><span class="m-lbl">Revenue</span><span class="m-val neg">₹235 Cr (−31.1% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">Revenue vs Q3</span><span class="m-val pos">+22% QoQ</span></div>
+        <div class="m-row"><span class="m-lbl">Gross Profit</span><span class="m-val">₹133 Cr (56.4% GM)</span></div>
+        <div class="m-row"><span class="m-lbl">EBITDA</span><span class="m-val neg">₹71 Cr (−49.1% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val neg">₹64 Cr (−41.6% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">PAT vs Q3</span><span class="m-val pos">+60% QoQ</span></div>
+        <div class="m-row" style="margin-top:8px;"><span class="m-lbl">FY26 Revenue</span><span class="m-val neg">₹947 Cr (−8% YoY)</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 Gross Margin</span><span class="m-val">54%</span></div>
+        <div class="m-row"><span class="m-lbl">FY26 EBITDA Margin</span><span class="m-val warn">31%</span></div>
+      </div>
+    </div>
+
+    <div class="swot-grid" style="margin-top:14px;">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Contrast media — niche global leadership, +23% FY26 growth</li><li>Debt-free, ₹400 Cr cash, OCF surged 7× to ₹334 Cr</li><li>EBITDA margin ~31% — high-value chemistry positioning</li><li>CDMO model — long-term supply contracts with pharma MNCs</li><li>Integrated chemistry expertise hard to replicate quickly</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>PI/API revenues highly lumpy — order phasing creates volatility</li><li>Single customer/product dependence risk (contrast media ~52%)</li><li>FY26 revenue declined 8% — growth momentum broken</li><li>Small scale (~₹1,000 Cr) limits diversification options</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Vizag greenfield — significant capacity addition from FY27–28</li><li>Global demand growth in iodinated contrast agents (aging population)</li><li>New R&amp;D centre Hyderabad — innovative chemistry platforms</li><li>₹10B fundraise approved — capital for growth acceleration</li><li>China+1 strategy: pharma MNCs diversifying supply chains</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Risks</div><ul class="swot-ul"><li>PI/API order phasing — revenue normalization uncertain timeline</li><li>Vizag greenfield execution risk &amp; capital deployment</li><li>Competitive intensity in sweetener segment</li><li>Regulatory risks (US FDA, CDSCO) for pharma exports</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 3 · REVENUE TABLES ══ -->
+<div class="panel" id="tab-revenue">
+  <div class="sec-hdr">Revenue Analysis <span class="sec-note">· Quarterly &amp; Annual Tables · YoY Comparisons · Growth Ratings</span></div>
+
+  <div class="note-box">📌 All 5 companies report on April–March FY basis (FY26 = Apr 2025 – Mar 2026). GE Vernova T&amp;D India (NSE: GVT&amp;D) and LG Electronics India (NSE: LGEINDIA) are Indian subsidiaries, fully India-listed. All figures in ₹ Crore.</div>
+
+  <!-- Quarterly Revenue -->
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">Q4 / Latest Quarter Revenue Comparison</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th><th>Quarter</th><th>Revenue (Reported)</th><th>Revenue (₹ Approx)</th><th>YoY Growth</th><th>QoQ</th><th>CB Rev Rating</th><th>Assessment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:var(--gev)"></span><strong>GE Vernova T&amp;D India</strong></td>
+          <td>Q4 FY26</td>
+          <td class="num">₹1,637 Cr</td>
+          <td class="num">₹1,637 Cr</td>
+          <td class="tpos">+42%</td>
+          <td class="tpos">—</td>
+          <td><span class="rtag rtag-A">A (42%)</span></td>
+          <td>Orders ₹8,610 Cr (+188%); EBITDA 27.2%</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--lg)"></span><strong>LG Electronics India</strong></td>
+          <td>Q4 FY26</td>
+          <td class="num">₹8,054 Cr</td>
+          <td class="num">₹8,054 Cr</td>
+          <td class="tpos">+8.1%</td>
+          <td class="tpos">+96% QoQ</td>
+          <td><span class="rtag rtag-B">B (8.1%)</span></td>
+          <td>Record quarterly rev; EBITDA 11.7%; PAT −8%</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--cera)"></span><strong>Cera Sanitaryware</strong></td>
+          <td>Q4 FY26</td>
+          <td class="num">₹644 Cr</td>
+          <td class="num">₹644 Cr</td>
+          <td class="tpos">+11.4%</td>
+          <td class="tpos">+29% QoQ</td>
+          <td><span class="rtag rtag-A">A− (11.4%)</span></td>
+          <td>Exceeded 10% threshold; Faucet led; margin lag</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--pgel)"></span><strong>PG Electroplast</strong></td>
+          <td>Q4 FY26</td>
+          <td class="num">₹1,717 Cr</td>
+          <td class="num">₹1,717 Cr</td>
+          <td class="tneg">−10.1%</td>
+          <td class="tpos">+21.6% QoQ</td>
+          <td><span class="rtag rtag-D">D (−10.1%)</span></td>
+          <td>Supply disruptions cut ~₹420 Cr; RAC weak</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--bj)"></span><strong>Blue Jet Healthcare</strong></td>
+          <td>Q4 FY26</td>
+          <td class="num">₹235 Cr</td>
+          <td class="num">₹235 Cr</td>
+          <td class="tneg">−31.1%</td>
+          <td class="tpos">+22.0% QoQ</td>
+          <td><span class="rtag rtag-D">D (−31.1%)</span></td>
+          <td>PI/API near-zero; Contrast media recovery strong</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Annual Revenue -->
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">Annual Revenue — FY26 / FY2025 vs Prior Year</div>
+    <table>
+      <thead>
+        <tr><th>Company</th><th>FY26/CY25 Revenue</th><th>FY25/CY24 Revenue</th><th>YoY Growth</th><th>CB Rev Rating</th><th>Key Driver</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:var(--gev)"></span><strong>GE T&amp;D India</strong></td>
+          <td class="num">$38.1B</td>
+          <td class="num">$34.9B</td>
+          <td class="tpos">+9.2%</td>
+          <td><span class="rtag rtag-A">A− (9.2%)</span></td>
+          <td>Power services + Electrification equipment</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--lg)"></span><strong>LG India</strong></td>
+          <td class="num">&#8377;24,605 Cr</td>
+          <td class="num">₩87.7T</td>
+          <td class="tpos">+1.7%</td>
+          <td><span class="rtag rtag-C">C (1.7%)</span></td>
+          <td>VS (vehicles) record; HS growth; MS drag</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--cera)"></span><strong>Cera Sanitaryware</strong></td>
+          <td class="num">₹2,050 Cr</td>
+          <td class="num">₹1,915 Cr</td>
+          <td class="tpos">+7.0%</td>
+          <td><span class="rtag rtag-B">B− (7.0%)</span></td>
+          <td>Faucetware + sanitaryware volume growth</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--pgel)"></span><strong>PG Electroplast</strong></td>
+          <td class="num">₹5,288 Cr</td>
+          <td class="num">₹4,868 Cr</td>
+          <td class="tpos">+8.6%</td>
+          <td><span class="rtag rtag-B">B (8.6%)</span></td>
+          <td>Washing machine growth; AC industry headwinds</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--bj)"></span><strong>Blue Jet Healthcare</strong></td>
+          <td class="num">₹947 Cr</td>
+          <td class="num">₹1,030 Cr</td>
+          <td class="tneg">−8.0%</td>
+          <td><span class="rtag rtag-D">D (−8.0%)</span></td>
+          <td>PI/API vertical collapse (−35%); Contrast +23% offset</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">CB Revenue Rating Scale: A+ ≥20% | A ≥15% | A− ≥12% | B+ ≥10% | B ≥8% | B− ≥6% | C+ ≥4% | C ≥2% | D &lt;0% | D− Contraction &gt;10%</p>
+  </div>
+
+  <!-- EBITDA Table -->
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">EBITDA &amp; Operating Profitability Comparison — Annual FY26/CY25</div>
+    <table>
+      <thead>
+        <tr><th>Company</th><th>EBITDA / Op. Profit</th><th>Prior Year</th><th>YoY Change</th><th>EBITDA Margin</th><th>Margin Change</th><th>CB EBITDA Rating</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:var(--gev)"></span><strong>GE T&amp;D India</strong></td>
+          <td class="num">$3.2B Adj. EBITDA</td>
+          <td class="num">$2.0B</td>
+          <td class="tpos">+60%</td>
+          <td class="num">8.4%</td>
+          <td class="tpos">+260 bps</td>
+          <td><span class="rtag rtag-A">A+ (EBITDA +60%)</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--lg)"></span><strong>LG India</strong></td>
+          <td class="num">₩2.48T Op. Profit</td>
+          <td class="num">₩3.44T</td>
+          <td class="tneg">−28%</td>
+          <td class="num">~2.8%</td>
+          <td class="tneg">−120 bps est.</td>
+          <td><span class="rtag rtag-D">D (Op.Profit −28%)</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--cera)"></span><strong>Cera Sanitaryware</strong></td>
+          <td class="num">₹268 Cr</td>
+          <td class="num">₹311 Cr (est.)</td>
+          <td class="tneg">~−14%</td>
+          <td class="num">13.1%</td>
+          <td class="tneg">−210 bps</td>
+          <td><span class="rtag rtag-C">C (margin contracted)</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--pgel)"></span><strong>PG Electroplast</strong></td>
+          <td class="num">₹442 Cr</td>
+          <td class="num">₹519 Cr</td>
+          <td class="tneg">−14.9%</td>
+          <td class="num">8.4%</td>
+          <td class="tneg">−220 bps</td>
+          <td><span class="rtag rtag-D">D (margin compressed)</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--bj)"></span><strong>Blue Jet Healthcare</strong></td>
+          <td class="num">₹294 Cr (est.)</td>
+          <td class="num">₹381 Cr (est.)</td>
+          <td class="tneg">~−23%</td>
+          <td class="num">31%</td>
+          <td class="tneg">−600 bps</td>
+          <td><span class="rtag rtag-C">B− (margin still high)</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">EBITDA Rating: &gt;25% margin = A+ | 20–25% = A | 15–20% = B | 12–15% = C+ | 8–12% = C | &lt;8% = D. YoY expansion ≥200bps = bonus point.</p>
+  </div>
+
+  <!-- PAT Table -->
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">Net Profit (PAT) Analysis — Annual FY26/CY25</div>
+    <table>
+      <thead>
+        <tr><th>Company</th><th>FY26/CY25 PAT</th><th>FY25/CY24 PAT</th><th>YoY Change</th><th>PAT Margin</th><th>CB PAT Rating</th><th>Key Comment</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:var(--gev)"></span><strong>GE T&amp;D India</strong></td>
+          <td class="num">$4.9B</td>
+          <td class="num">$1.6B</td>
+          <td class="tpos">+206%</td>
+          <td class="tpos">12.8%</td>
+          <td><span class="rtag rtag-A">A+ (includes $2.9B tax benefit)</span></td>
+          <td>One-time US valuation allowance release</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--lg)"></span><strong>LG India</strong></td>
+          <td class="num">Net Loss (FY25)</td>
+          <td class="num">Profitable</td>
+          <td class="tneg">Negative</td>
+          <td class="tneg">Negative</td>
+          <td><span class="rtag rtag-C">C+ (8.1% Q4 rev; PAT &#8722;3%)</span></td>
+          <td>Display losses, restructuring charges</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--cera)"></span><strong>Cera Sanitaryware</strong></td>
+          <td class="num">₹204 Cr</td>
+          <td class="num">₹246 Cr</td>
+          <td class="tneg">−17.2%</td>
+          <td class="num">~10%</td>
+          <td><span class="rtag rtag-C">C (brass cost pressure)</span></td>
+          <td>Topline grew, margins eroded by input costs</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--pgel)"></span><strong>PG Electroplast</strong></td>
+          <td class="num">₹194 Cr</td>
+          <td class="num">₹291 Cr</td>
+          <td class="tneg">−33.5%</td>
+          <td class="num">~3.7%</td>
+          <td><span class="rtag rtag-D">D (multi-factor disruption)</span></td>
+          <td>Forex loss ₹39 Cr, LPG/truck disruption, RAC weak</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--bj)"></span><strong>Blue Jet Healthcare</strong></td>
+          <td class="num">~₹246 Cr</td>
+          <td class="num">~₹309 Cr</td>
+          <td class="tneg">~−20%</td>
+          <td class="num">~26%</td>
+          <td><span class="rtag rtag-B">B (margin structurally high)</span></td>
+          <td>PI/API timing gap; contrast media stable base</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">PAT Rating: PAT Growth ≥20% = A+ | ≥12% = A | ≥6% = B | 0–6% = C | Decline = D. PAT margin ≥15% adds premium grade.</p>
+  </div>
+</div>
+
+<!-- ══ TAB 4 · CB RATINGS ══ -->
+<div class="panel" id="tab-ratings">
+  <div class="sec-hdr">CB Performance Ratings <span class="sec-note">· Multi-factor scoring · Revenue / EBITDA / PAT / Cash Flow / Outlook</span></div>
+
+  <div class="note-box">📊 CB Ratings are composite business performance scores — NOT investment recommendations. Ratings reflect Q4 FY26 / FY2025 results, margin trajectories, balance sheet strength, and forward visibility. CB Research is not SEBI-registered.</div>
+
+  <!-- Summary rating table -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">CB Composite Score Card — All 5 Companies</div>
+    <table>
+      <thead>
+        <tr><th>Company</th><th>Rev Growth</th><th>EBITDA Quality</th><th>PAT Trend</th><th>Cash Flow</th><th>Balance Sheet</th><th>Fwd Outlook</th><th>CB Score /100</th><th>CB Grade</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:var(--gev)"></span><strong>GE T&amp;D India</strong></td>
+          <td class="tpos">A− (+9%)</td>
+          <td class="tpos">A+ (+60% EBITDA)</td>
+          <td class="tpos">A (FCF 2×)</td>
+          <td class="tpos">A+ ($3.7B FCF)</td>
+          <td class="tpos">A ($8.8B cash)</td>
+          <td class="tpos">A+ ($44–45B guided)</td>
+          <td class="tpos tb">88</td>
+          <td><span class="rtag rtag-A" style="font-size:12px;padding:4px 14px;">A</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--lg)"></span><strong>LG India</strong></td>
+          <td class="tpos">C+ (+1.7%)</td>
+          <td class="tneg">D (Op.Profit −28%)</td>
+          <td class="tneg">D (Q4 net loss)</td>
+          <td class="num">B (Op.Cash+)</td>
+          <td class="num">B+ (large company)</td>
+          <td class="num">C (EV + Tariff risks)</td>
+          <td class="twarn tb">52</td>
+          <td><span class="rtag rtag-C" style="font-size:12px;padding:4px 14px;">C</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--cera)"></span><strong>Cera Sanitaryware</strong></td>
+          <td class="tpos">B+ (+7%)</td>
+          <td class="twarn">C (13.1% margin)</td>
+          <td class="tneg">D (−17.2%)</td>
+          <td class="tpos">A+ (₹853 Cr cash)</td>
+          <td class="tpos">A+ (Debt-Free)</td>
+          <td class="tpos">B (recovery visible)</td>
+          <td class="twarn tb">65</td>
+          <td><span class="rtag rtag-B" style="font-size:12px;padding:4px 14px;">B−</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--pgel)"></span><strong>PG Electroplast</strong></td>
+          <td class="tpos">B (+8.6%)</td>
+          <td class="tneg">D (−14.9% EBITDA)</td>
+          <td class="tneg">D (−33.5%)</td>
+          <td class="twarn">C (capex-heavy)</td>
+          <td class="twarn">C (high capex outflow)</td>
+          <td class="num">B (FY27 guided recovery)</td>
+          <td class="twarn tb">48</td>
+          <td><span class="rtag rtag-D" style="font-size:12px;padding:4px 14px;">D+</span></td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:var(--bj)"></span><strong>Blue Jet Healthcare</strong></td>
+          <td class="tneg">D (−8%)</td>
+          <td class="tpos">B+ (31% margin)</td>
+          <td class="tneg">C (−20%)</td>
+          <td class="tpos">A+ (OCF ₹334 Cr)</td>
+          <td class="tpos">A+ (Debt-Free, ₹400 Cr)</td>
+          <td class="num">B (Vizag expansion)</td>
+          <td class="twarn tb">60</td>
+          <td><span class="rtag rtag-B" style="font-size:12px;padding:4px 14px;">C+</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Individual rating cards -->
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="rating-card">
+      <div class="rc-header">
+        <div class="rc-name" style="color:var(--gev)">GE T&amp;D India</div>
+        <div class="rc-grade" style="color:var(--gev)">A</div>
+      </div>
+      <div>
+        <div class="meter-lbl"><span>Revenue Growth</span><span class="pos">9.2% → B+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:68%;background:var(--gev);"></div></div>
+        <div class="meter-lbl"><span>EBITDA Expansion</span><span class="pos">+60% → A+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:95%;background:var(--pos);"></div></div>
+        <div class="meter-lbl"><span>Free Cash Flow</span><span class="pos">$3.7B → A+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:93%;background:var(--pos);"></div></div>
+        <div class="meter-lbl"><span>Order Backlog Strength</span><span class="pos">$150B → A+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:98%;background:var(--pos);"></div></div>
+        <div class="meter-lbl"><span>Forward Visibility</span><span class="pos">$44–45B guided</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:90%;background:var(--gev);"></div></div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Wind segment losses offset some positives. Structural electrification tailwind strongest in sector.</div>
+    </div>
+
+    <div class="rating-card">
+      <div class="rc-header">
+        <div class="rc-name" style="color:var(--lg)">LG India</div>
+        <div class="rc-grade" style="color:var(--warn)">C</div>
+      </div>
+      <div>
+        <div class="meter-lbl"><span>Revenue Growth</span><span class="warn">+1.7% → C</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:22%;background:var(--warn);"></div></div>
+        <div class="meter-lbl"><span>Operating Profit</span><span class="neg">−28% YoY → D</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:15%;background:var(--neg);"></div></div>
+        <div class="meter-lbl"><span>Net Profit (Q4)</span><span class="neg">Net Loss → D</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:10%;background:var(--neg);"></div></div>
+        <div class="meter-lbl"><span>B2B Growth</span><span class="warn">+3% → C+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:35%;background:var(--warn);"></div></div>
+        <div class="meter-lbl"><span>Forward Strategy</span><span class="warn">Subscription / EV pivot</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:50%;background:var(--gev);"></div></div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Revenue at record level but profits under severe pressure. Display business is structural drag. Recovery depends on EV market revival and OLED demand normalization.</div>
+    </div>
+
+    <div class="rating-card">
+      <div class="rc-header">
+        <div class="rc-name" style="color:var(--cera)">Cera Sanitaryware</div>
+        <div class="rc-grade" style="color:var(--warn)">B−</div>
+      </div>
+      <div>
+        <div class="meter-lbl"><span>Revenue Growth</span><span class="pos">+7% Annual → B−</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:55%;background:var(--cera);"></div></div>
+        <div class="meter-lbl"><span>Q4 Revenue Growth</span><span class="pos">+11.4% → A−</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:75%;background:var(--pos);"></div></div>
+        <div class="meter-lbl"><span>EBITDA Margin</span><span class="warn">13.1% → C+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:42%;background:var(--warn);"></div></div>
+        <div class="meter-lbl"><span>Balance Sheet</span><span class="pos">Debt-Free → A+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:95%;background:var(--pos);"></div></div>
+        <div class="meter-lbl"><span>Cash Position</span><span class="pos">₹853 Cr → A</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:85%;background:var(--cera);"></div></div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Topline growing steadily. PAT declined due to brass costs. Debt-free status and cash hoard are key strengths. FY27 margin recovery expected as price increases take effect.</div>
+    </div>
+
+    <div class="rating-card">
+      <div class="rc-header">
+        <div class="rc-name" style="color:var(--pgel)">PG Electroplast</div>
+        <div class="rc-grade" style="color:var(--neg)">D+</div>
+      </div>
+      <div>
+        <div class="meter-lbl"><span>Annual Revenue Growth</span><span class="warn">+8.6% → B</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:60%;background:var(--pgel);"></div></div>
+        <div class="meter-lbl"><span>Q4 Revenue</span><span class="neg">−10.1% → D</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:10%;background:var(--neg);"></div></div>
+        <div class="meter-lbl"><span>EBITDA Growth</span><span class="neg">−14.9% → D</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:12%;background:var(--neg);"></div></div>
+        <div class="meter-lbl"><span>PAT Growth</span><span class="neg">−33.5% → D</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:8%;background:var(--neg);"></div></div>
+        <div class="meter-lbl"><span>FY27 Recovery Guidance</span><span class="warn">EBITDA → 8% target</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:50%;background:var(--pgel);"></div></div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">FY26 was a disrupted year — LPG shortage, RAC demand weakness, forex losses. 5-year CAGR of 56% is the underlying business strength. FY27 recovery thesis is valid but needs execution evidence.</div>
+    </div>
+
+    <div class="rating-card">
+      <div class="rc-header">
+        <div class="rc-name" style="color:var(--bj)">Blue Jet Healthcare</div>
+        <div class="rc-grade" style="color:var(--warn)">C+</div>
+      </div>
+      <div>
+        <div class="meter-lbl"><span>Annual Revenue</span><span class="neg">−8.0% → D</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:10%;background:var(--neg);"></div></div>
+        <div class="meter-lbl"><span>EBITDA Margin (31%)</span><span class="pos">High Quality → B+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:78%;background:var(--bj);"></div></div>
+        <div class="meter-lbl"><span>Contrast Media Growth</span><span class="pos">+23% FY26 → A</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:82%;background:var(--pos);"></div></div>
+        <div class="meter-lbl"><span>OCF (Rs.334 Cr)</span><span class="pos">7x Jump → A+</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:90%;background:var(--pos);"></div></div>
+        <div class="meter-lbl"><span>Balance Sheet</span><span class="pos">Debt-Free, Rs.400 Cr cash</span></div>
+        <div class="meter-wrap"><div class="meter-fill" style="width:88%;background:var(--bj);"></div></div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Revenue decline was driven by lumpy PI/API phasing — not structural. Contrast media shows strong organic growth. Debt-free + high OCF + Vizag expansion = a fundamentally sound CDMO at an inflection point.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 5 CHARTS -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Visual Analytics <span class="sec-note">Revenue · EBITDA Margin · PAT Change · CB Score</span></div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>Annual Revenue Growth % — FY26/CY25</h3>
+      <p class="sub">Year-over-year topline growth across all 5 companies</p>
+      <canvas id="revGrowthChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>EBITDA / Operating Margin % — FY26/CY25</h3>
+      <p class="sub">Profitability quality — higher is better</p>
+      <canvas id="ebitdaMarginChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>Q4 / Latest Quarter Revenue Growth %</h3>
+      <p class="sub">Most recent quarterly YoY growth</p>
+      <canvas id="q4RevChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>PAT Change YoY % — FY26/CY25</h3>
+      <p class="sub">Net profit growth / decline</p>
+      <canvas id="patChangeChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="chart-card" style="margin-bottom:18px;">
+    <h3>CB Composite Score — All Companies (/100)</h3>
+    <p class="sub">Overall business performance score: Revenue, EBITDA, PAT, Cash Flow, Outlook</p>
+    <canvas id="cbScoreChart" height="130"></canvas>
+  </div>
+</div>
+
+<!-- TAB 6 CASH FLOW -->
+<div class="panel" id="tab-cashflow">
+  <div class="sec-hdr">Cash Flow &amp; Balance Sheet <span class="sec-note">FCF · Debt · Cash · Working Capital</span></div>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">Cash Flow &amp; Balance Sheet Summary</div>
+    <table>
+      <thead><tr><th>Company</th><th>Op. Cash Flow</th><th>FCF</th><th>Cash Balance</th><th>Debt</th><th>Net D/EBITDA</th><th>CB CF Rating</th></tr></thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:var(--gev)"></span><strong>GE T&amp;D India</strong></td><td class="tpos">$5.0B</td><td class="tpos">$3.7B (2x YoY)</td><td class="tpos">$8.8B</td><td class="num">Manageable</td><td class="tpos">Net Cash</td><td><span class="rtag rtag-A">A+</span></td></tr>
+        <tr><td><span class="dot" style="background:var(--lg)"></span><strong>LG India</strong></td><td class="tpos">Positive</td><td class="tpos">Positive</td><td class="tpos">Substantial</td><td class="num">Moderate</td><td class="num">~1-2x</td><td><span class="rtag rtag-B">B</span></td></tr>
+        <tr><td><span class="dot" style="background:var(--cera)"></span><strong>Cera Sanitaryware</strong></td><td class="tpos">Positive</td><td class="tpos">Positive</td><td class="tpos">Rs.853 Cr</td><td class="tpos">Zero</td><td class="tpos">Net Cash</td><td><span class="rtag rtag-A">A+</span></td></tr>
+        <tr><td><span class="dot" style="background:var(--pgel)"></span><strong>PG Electroplast</strong></td><td class="twarn">Stressed</td><td class="tneg">Negative (Capex Rs.785 Cr)</td><td class="twarn">Limited</td><td class="twarn">Rising</td><td class="twarn">Elevated ~3-4x</td><td><span class="rtag rtag-D">D</span></td></tr>
+        <tr><td><span class="dot" style="background:var(--bj)"></span><strong>Blue Jet Healthcare</strong></td><td class="tpos">Rs.334 Cr (+7x)</td><td class="tpos">Positive</td><td class="tpos">Rs.400 Cr</td><td class="tpos">Zero</td><td class="tpos">Net Cash</td><td><span class="rtag rtag-A">A</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="g3">
+    <div class="card">
+      <div class="card-lbl" style="color:var(--gev)">GE T&amp;D India</div>
+      <div class="m-row"><span class="m-lbl">Cash Balance</span><span class="m-val pos">$8.8B</span></div>
+      <div class="m-row"><span class="m-lbl">FCF FY2025</span><span class="m-val pos">$3.7B (+100%+ YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">FCF 2026 guided</span><span class="m-val pos">$5.0-5.5B</span></div>
+      <div class="m-row"><span class="m-lbl">Shareholder returns</span><span class="m-val">$3.6B in FY2025</span></div>
+      <div style="margin-top:10px;"><span class="badge b-pos">Best-in-class FCF generation</span></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--cera)">Cera Sanitaryware</div>
+      <div class="m-row"><span class="m-lbl">Cash &amp; Equiv.</span><span class="m-val pos">Rs.853 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Net Debt</span><span class="m-val pos">Zero (Debt-Free)</span></div>
+      <div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val">Rs.75/share</span></div>
+      <div class="m-row"><span class="m-lbl">OCF</span><span class="m-val pos">Positive &amp; consistent</span></div>
+      <div style="margin-top:10px;"><span class="badge b-pos">Balance Sheet Fortress</span></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--bj)">Blue Jet Healthcare</div>
+      <div class="m-row"><span class="m-lbl">Cash</span><span class="m-val pos">Rs.400 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">OCF FY26</span><span class="m-val pos">Rs.334 Cr (7x jump)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Debt</span><span class="m-val pos">Zero (Debt-Free)</span></div>
+      <div class="m-row"><span class="m-lbl">Capex (CWIP)</span><span class="m-val">Rs.301 Cr Vizag</span></div>
+      <div style="margin-top:10px;"><span class="badge b-pos">OCF Surge Validates Quality</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 7 CB ASSIST -->
+<div class="panel" id="tab-cbassist">
+  <div class="sec-hdr">CB Assist <span class="sec-note">AI-Powered Q&amp;A · Multi-Sector Analysis · English &amp; Tamil</span></div>
+  <div style="margin-bottom:16px;">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;">Quick questions:</div>
+    <div class="preset-qs">
+      <div class="preset-q" onclick="askCB(this.textContent)">Compare GE Vernova and LG Electronics — which is the better business in 2025?</div>
+      <div class="preset-q" onclick="askCB(this.textContent)">Why did PG Electroplast profits fall sharply in FY26 despite revenue growth?</div>
+      <div class="preset-q" onclick="askCB(this.textContent)">Is Blue Jet Healthcare revenue decline structural or timing-related?</div>
+      <div class="preset-q" onclick="askCB(this.textContent)">Cera Sanitaryware — why is PAT falling when revenue is growing?</div>
+      <div class="preset-q" onclick="askCB(this.textContent)">GE Vernova $150 billion backlog — what does it mean for investors?</div>
+      <div class="preset-q" onclick="askCB(this.textContent)">Rank all 5 companies by cash flow strength with reasons.</div>
+    </div>
+  </div>
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist — Multi-Sector Intelligence Engine</div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="chat-msg bot">Welcome to CB Assist! I have Q4 FY26/CY2025 data for all 5 companies: <strong>GE Vernova T&D India, LG Electronics India, Cera Sanitaryware, PG Electroplast, Blue Jet Healthcare</strong>. Ask me anything — revenue, margins, cash flows, business models, or comparative analysis. I respond in English or Tamil.</div>
+    </div>
+    <div class="typing-ind" id="typingInd">
+      <span></span><span></span><span></span>
+      <span style="font-size:11px;color:var(--muted);margin-left:4px;">CB Assist thinking...</span>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="Ask about any company..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" id="chatSend" onclick="sendChat()">Ask</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if(id === 'charts') setTimeout(initCharts, 80);
+}
+
+let chartsInited = false;
+function initCharts() {
+  if (chartsInited) return;
+  chartsInited = true;
+  const cos = ['GE T&D India', 'LG India', 'Cera Sanitary.', 'PG Electroplast', 'Blue Jet'];
+  const bgs = ['#1d6faa','#c3121a','#7c3aed','#0e7490','#166534'];
+  const opts = { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ticks:{font:{size:10}}}, x:{ticks:{font:{size:10}}} } };
+
+  new Chart(document.getElementById('revGrowthChart'), {
+    type:'bar', data:{ labels:cos, datasets:[{ data:[45.0,1.0,7.0,8.6,-8.0], backgroundColor:bgs, borderRadius:5 }] },
+    options:{ ...opts, plugins:{...opts.plugins,tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}}, scales:{ y:{ticks:{callback:v=>v+'%'}}, x:{} } }
+  });
+  new Chart(document.getElementById('ebitdaMarginChart'), {
+    type:'bar', data:{ labels:cos, datasets:[{ data:[27.1,9.0,13.1,8.4,31.0], backgroundColor:bgs, borderRadius:5 }] },
+    options:{ ...opts, plugins:{...opts.plugins,tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}}, scales:{ y:{ticks:{callback:v=>v+'%'}}, x:{} } }
+  });
+  new Chart(document.getElementById('q4RevChart'), {
+    type:'bar', data:{ labels:cos, datasets:[{ data:[42.0,8.1,11.4,-10.1,-31.1], backgroundColor:bgs, borderRadius:5 }] },
+    options:{ ...opts, plugins:{...opts.plugins,tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}}, scales:{ y:{ticks:{callback:v=>v+'%'}}, x:{} } }
+  });
+  new Chart(document.getElementById('patChangeChart'), {
+    type:'bar', data:{ labels:cos, datasets:[{ data:[103.0,-3.0,-17.2,-33.5,-20.0], backgroundColor:bgs, borderRadius:5 }] },
+    options:{ ...opts, plugins:{...opts.plugins,tooltip:{callbacks:{label:c=>c.parsed.y+'% YoY'}}}, scales:{ y:{ticks:{callback:v=>v+'%'}}, x:{} } }
+  });
+  new Chart(document.getElementById('cbScoreChart'), {
+    type:'bar', data:{ labels:cos, datasets:[{ data:[90,62,65,48,60], backgroundColor:bgs, borderRadius:5 }] },
+    options:{ ...opts, indexAxis:'y', plugins:{...opts.plugins,tooltip:{callbacks:{label:c=>'CB Score: '+c.parsed.x+'/100'}}}, scales:{ x:{max:100,ticks:{callback:v=>v+'/100'}}, y:{} } }
+  });
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msgs = document.getElementById('chatMsgs');
+  const btn = document.getElementById('chatSend');
+  const typing = document.getElementById('typingInd');
+  const q = input.value.trim();
+  if (!q) return;
+  const isTamil = /[\u0B80-\u0BFF]/.test(q);
+  const uMsg = document.createElement('div');
+  uMsg.className = 'chat-msg user';
+  uMsg.textContent = q;
+  msgs.appendChild(uMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+  btn.disabled = true;
+  typing.style.display = 'flex';
+
+  const langInst = isTamil
+    ? 'Answer in Tamil ONLY. Company names, numbers, financial terms in English. Sharp analytical answer 6-9 sentences.'
+    : 'Answer in English ONLY. Analytical, concise, 6-9 sentences. Start with most important insight. Use specific numbers. No disclaimers.';
+
+  const sys = `You are CB Assist at Cauvery Business (CB Research / EIL Research). Expert multi-sector research analyst.
+${langInst}
+RULES: Analytical depth. Specific data. No source mentions. Research only, not investment advice. CB Research not SEBI-registered.
+
+GE VERNOVA T&D INDIA (NSE:GVT&D) FY26: Revenue Rs.6,210 Cr (+45% YoY). EBITDA Rs.1,680 Cr (27.1% margin). PAT Rs.1,233 Cr (+103%). Cash Rs.1,528 Cr. Debt-Free. Annual Order Intake Rs.14,780 Cr (+37%). Order Backlog Rs.21,456 Cr (+49% — record, 3.5x FY26 rev). Q4 FY26: Revenue Rs.1,637 Cr (+42%), EBITDA Rs.445 Cr (27.2% margin), PAT Rs.352 Cr (+89%), Q4 Orders Rs.8,610 Cr (+188% incl Adani HVDC VSC). Dividend Rs.10/share. New Vallam (TN) facility for 362kV DTCB (Rs.55 Cr). Rs.1,000 Cr capex FY27-28. Segments: Transformers, Switchgear/GIS, HVDC, Railways. 76% backlog private sector. Exports 33% of FY26 revenue. MD: Sandeep Zanzaria. CMP ~Rs.4,782.
+
+LG ELECTRONICS INDIA (NSE:LGEINDIA/BSE:544576) FY26: Revenue Rs.24,605 Cr (+1% — record). EBITDA ~Rs.2,200 Cr (~9% margin). PAT Rs.1,685 Cr (-3% YoY). Market Cap ~Rs.1,03,798 Cr. Promoter 85% (LG Korea). Q4 FY26: Revenue Rs.8,054 Cr (+8.1% — highest-ever quarter), EBITDA Rs.945 Cr (11.7% margin, -230bps YoY), PAT Rs.693 Cr (-8% YoY). H&A segment: ACs, refrigerators, washing machines ~62% revenue. HE segment: TVs +19.6% Q4 YoY. B2B: HVAC VRF/Cassette, Info Display strong. India's #1 consumer electronics brand 13+ years. Sri City plant Rs.5,000 Cr capex. PLI incentives Rs.882 Cr (valid to 2040). FY27 guidance: mid-teen revenue growth, double-digit EBITDA. First captive solar PPA signed. MD: Hong Ju Jeon.
+
+CERA SANITARYWARE (BSE:532443) Q4 FY26: Revenue Rs.644 Cr (+11.4%). EBITDA Rs.98 Cr (15.2% margin). PAT Rs.77.3 Cr (-9.6%). FY26: Revenue Rs.2050 Cr (+7%). EBITDA margin 13.1% (-210bps). PAT Rs.204 Cr (-17.2%). Cash Rs.853 Cr. Debt-free. Dividend Rs.75/share. Faucetware +24.3%, Sanitaryware +10.7%. Brass cost inflation drag. Morbi gas shortage. Price revisions March 2026.
+
+PG ELECTROPLAST (NSE:PGEL) Q4 FY26 (consol): Revenue Rs.1717 Cr (-10.1%). EBITDA Rs.132 Cr (-43%). PAT Rs.65 Cr (-55%). FY26: Revenue Rs.5288 Cr (+8.6%). EBITDA Rs.442 Cr (-14.9%, 8.4% margin). PAT Rs.194 Cr (-33.5%). Capex Rs.785 Cr. Forex loss Rs.38.77 Cr. RAC -12% Q4. Washing machine +70% Q4. LPG/truck disruption ~Rs.420 Cr revenue loss. 5yr CAGR ~56%. FY27 EBITDA guided to 8%+.
+
+BLUE JET HEALTHCARE (NSE:BLUEJET) Q4 FY26: Revenue Rs.235 Cr (-31.1% YoY, +22% QoQ). Gross margin 56.4%. EBITDA Rs.71 Cr. PAT Rs.64 Cr (-41.6% YoY, +60% QoQ). FY26: Revenue Rs.947 Cr (-8%). EBITDA margin 31%. OCF Rs.334 Cr (7x jump). Cash Rs.400 Cr. Debt-free. Contrast Media Rs.495 Cr (+23%). PI/API Rs.298 Cr (-35%). Vizag greenfield CWIP Rs.301 Cr. Rs.10B fundraise approved.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system:sys, messages:[{role:'user',content:q}] })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'Unable to process.';
+    typing.style.display = 'none';
+    const bMsg = document.createElement('div');
+    bMsg.className = 'chat-msg bot';
+    bMsg.innerHTML = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    msgs.appendChild(bMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch(e) {
+    typing.style.display = 'none';
+    const eMsg = document.createElement('div');
+    eMsg.className = 'chat-msg bot';
+    eMsg.textContent = 'CB Assist temporarily unavailable.';
+    msgs.appendChild(eMsg);
+  }
+  btn.disabled = false;
+}
+
+function askCB(q) {
+  document.getElementById('chatInput').value = q;
+  sendChat();
+}
+</script>
+</body>
+</html>

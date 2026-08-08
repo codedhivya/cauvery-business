@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSW Steel – Q1 FY27 Dashboard · SC Verdict, Global Ops &amp; RM Focus</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd6;--text:#1a1714;--muted:#6b6660;
+  --jsw:#9e1b1e;--iron:#5b5652;--coal:#3a3632;--global:#1b5b7c;--val:#7c3aed;
+  --accent:#9e1b1e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+
+.hdr{background:#1a1714;padding:24px 36px 18px;display:flex;justify-content:space-between;align-items:flex-end}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;letter-spacing:2px;line-height:1}
+.hdr p{color:#aaa;font-size:0.75rem;font-family:'DM Mono',monospace;margin-top:4px;letter-spacing:1px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bdg{padding:3px 9px;border-radius:3px;font-size:0.68rem;font-family:'DM Mono',monospace}
+.bdg-r{background:var(--accent);color:#fff}
+.bdg-g{background:#333;color:#bbb;border:1px solid #555}
+
+.tabs{background:#111;padding:0 36px;display:flex;border-bottom:2px solid var(--accent);overflow-x:auto}
+.tab{padding:12px 18px;cursor:pointer;font-size:0.76rem;font-weight:500;color:#777;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.4px}
+.tab:hover{color:#ccc}
+.tab.on{color:#fff;border-bottom-color:var(--accent)}
+
+.main{padding:24px 36px;max-width:1440px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1.5px;margin:0 0 14px;padding-bottom:6px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.st .sq{width:9px;height:9px;border-radius:2px;background:var(--accent)}
+
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--jsw)}
+.kpi[data-c=iron]::before{background:var(--iron)}
+.kpi[data-c=coal]::before{background:var(--coal)}
+.kpi[data-c=global]::before{background:var(--global)}
+.kpi[data-c=val]::before{background:var(--val)}
+.kpi-co{font-size:.65rem;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;line-height:1}
+.kpi-lbl{font-size:.62rem;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.kpi-yoy{margin-top:7px;font-size:.7rem;font-weight:600;padding:2px 6px;border-radius:3px;display:inline-block}
+.up{background:#dcfce7;color:#15803d}.dn{background:#fee2e2;color:#b91c1c}.flat{background:#f3f4f6;color:#6b7280}
+.kpi-sub{font-size:.65rem;color:var(--muted);margin-top:5px}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:24px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:24px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:18px;margin-bottom:24px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+.ct{font-size:.72rem;font-weight:600;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.cw{position:relative;height:240px}
+.cw-lg{position:relative;height:300px}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl th{background:#1a1714;color:#fff;padding:9px 12px;text-align:left;font-size:.68rem;letter-spacing:.8px;font-family:'DM Mono',monospace;font-weight:400;white-space:nowrap}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#faf9f6}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
+.mono{font-family:'DM Mono',monospace;font-size:.78rem}
+.tag{padding:2px 7px;border-radius:3px;font-size:.65rem;font-weight:600;font-family:'DM Mono',monospace}
+.buy{background:#dcfce7;color:#15803d}.hold{background:#fef9c3;color:#854d0e}.neutral{background:#f3f4f6;color:#6b7280}.red{background:#fee2e2;color:#b91c1c}
+
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:-10px;right:-10px;width:70px;height:70px;border-radius:50%;opacity:.06;background:var(--jsw)}
+.pc[data-c=global]::after{background:var(--global)}
+.pc[data-c=iron]::after{background:var(--iron)}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px}
+.ptype{font-size:.63rem;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:500}
+.pure{background:#e0f2fe;color:#0369a1}.hybrid{background:#fef3c7;color:#92400e}.spec{background:#ede9fe;color:#5b21b6}
+.sb{margin-bottom:6px}
+.sl{display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:2px;color:var(--muted)}
+.st2{height:5px;background:#f0ede8;border-radius:3px;overflow:hidden}
+.sf{height:100%;border-radius:3px}
+.pdiv{border:none;border-top:1px solid var(--border);margin:10px 0}
+.pi{font-size:.74rem;color:var(--muted);line-height:1.5}
+.pi strong{color:var(--text)}
+
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.ac-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;margin-bottom:8px}
+.ac-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ac-lbl{font-size:.7rem;color:var(--muted)}
+.ac-val{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500}
+.ac-view{font-size:.73rem;color:var(--muted);line-height:1.5;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.rc-title{font-weight:600;font-size:.78rem;margin-bottom:9px}
+.ri{display:flex;gap:7px;align-items:flex-start;font-size:.74rem;color:var(--muted);margin-bottom:5px;line-height:1.5}
+
+.fn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;margin-top:20px}
+.wm{text-align:center;padding:10px;font-size:.66rem;color:#ccc;font-family:'DM Mono',monospace;letter-spacing:1px}
+
+.mp-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.mp{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.mp-co{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.mp-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem}
+.mp-chg{font-size:.68rem;font-family:'DM Mono',monospace;margin-top:3px}
+.mp-hi{font-size:.62rem;color:var(--muted);margin-top:3px}
+.mp-pe{font-size:.7rem;font-weight:600;margin-top:4px;font-family:'DM Mono',monospace}
+
+.tl{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:24px}
+.tl-item{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-date{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);min-width:110px;padding-top:2px}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--jsw);margin-top:4px;flex-shrink:0}
+.tl-dot.rev{background:#b91c1c}
+.tl-dot.upheld{background:#15803d}
+.tl-body strong{display:block;font-size:.82rem;margin-bottom:2px}
+.tl-body span{font-size:.75rem;color:var(--muted);line-height:1.5}
+
+.notebox{background:#fdf6e9;border:1px solid #eadfc0;border-radius:8px;padding:12px 16px;font-size:.78rem;color:#5c4a1a;line-height:1.6;margin-bottom:18px}
+.notebox strong{color:#3d3010}
+
+/* CB ASSIST */
+.cbwrap{display:grid;grid-template-columns:1fr;gap:18px}
+.cbchat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;max-width:760px;margin:0 auto;width:100%}
+.cbmsgs{height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:8px 4px;margin-bottom:12px}
+.cmsg{max-width:80%;padding:9px 12px;border-radius:10px;font-size:.8rem;line-height:1.5}
+.cmsg.u{align-self:flex-end;background:var(--jsw);color:#fff}
+.cmsg.b{align-self:flex-start;background:#f3f1eb;color:var(--text)}
+.cbinput{display:flex;gap:8px}
+.cbinput input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem}
+.cbinput button{padding:9px 16px;border:none;border-radius:8px;background:var(--jsw);color:#fff;font-weight:600;cursor:pointer;font-size:.8rem}
+.cbinput button:disabled{opacity:.5;cursor:default}
+.cbtyping{display:none;gap:4px;align-self:flex-start;padding:9px 12px}
+.cbtyping span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+.cbtyping span:nth-child(2){animation-delay:.2s}.cbtyping span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.cbsug{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.cbsug span{background:#f3f1eb;padding:5px 10px;border-radius:14px;font-size:.7rem;cursor:pointer;color:var(--muted)}
+.cbsug span:hover{background:#e7e3d8}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>JSW STEEL · Q1 FY27</h1>
+    <p>QUARTER ENDED 30 JUN 2026 · CONSOLIDATED · FILED 17 JUL 2026 · CB RESEARCH (EIL)</p>
+  </div>
+  <div class="badges">
+    <span class="bdg bdg-r">NSE: JSWSTEEL · BSE: 500228</span>
+    <span class="bdg bdg-g">CBF26 SCORE: 7.1/10</span>
+    <span class="bdg bdg-g">MCAP ₹3.03L Cr</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="sw('ov')">Overview</div>
+  <div class="tab" onclick="sw('sc')">SC Verdict &amp; BPSL</div>
+  <div class="tab" onclick="sw('global')">Foreign Ops</div>
+  <div class="tab" onclick="sw('rm')">Raw Material &amp; Anti-Dumping</div>
+  <div class="tab" onclick="sw('price')">Price Realisation</div>
+  <div class="tab" onclick="sw('plants')">Plants &amp; Expansion</div>
+  <div class="tab" onclick="sw('tata')">JSW vs Tata Steel</div>
+  <div class="tab" onclick="sw('val')">Valuation</div>
+  <div class="tab" onclick="sw('cbassist')">CB Assist</div>
+</div>
+
+<div class="main">
+
+<!-- ============ OVERVIEW ============ -->
+<div class="pane on" id="pov">
+  <div class="kpi-row">
+    <div class="kpi" data-c=jsw>
+      <div class="kpi-co">Revenue (Consol.)</div>
+      <div class="kpi-val">₹47,364 Cr</div>
+      <div class="kpi-lbl">Q1 FY27</div>
+      <div class="kpi-yoy up">▲ 9.8% YoY</div>
+    </div>
+    <div class="kpi" data-c=jsw>
+      <div class="kpi-co">Adjusted EBITDA</div>
+      <div class="kpi-val">₹9,373 Cr</div>
+      <div class="kpi-lbl">Margin 19.8%</div>
+      <div class="kpi-yoy up">▲ 32% YoY</div>
+    </div>
+    <div class="kpi" data-c=iron>
+      <div class="kpi-co">Net Profit (PAT)</div>
+      <div class="kpi-val">₹4,696 Cr</div>
+      <div class="kpi-lbl">EPS ₹19.02 (diluted)</div>
+      <div class="kpi-yoy up">▲ 113% YoY</div>
+    </div>
+    <div class="kpi" data-c=iron>
+      <div class="kpi-co">EBITDA / Tonne</div>
+      <div class="kpi-val">₹14,990</div>
+      <div class="kpi-lbl">vs ₹11,783 YoY</div>
+      <div class="kpi-yoy up">▲ 27% YoY</div>
+    </div>
+    <div class="kpi" data-c=coal>
+      <div class="kpi-co">Crude Steel Prod.</div>
+      <div class="kpi-val">6.59 MT</div>
+      <div class="kpi-lbl">Sales 6.25 MT</div>
+      <div class="kpi-yoy up">▲ 3% YoY</div>
+    </div>
+    <div class="kpi" data-c=global>
+      <div class="kpi-co">Net Debt</div>
+      <div class="kpi-val">₹46,157 Cr</div>
+      <div class="kpi-lbl">Capex ₹4,869 Cr in Qtr</div>
+      <div class="kpi-yoy up">▼ 14.3% QoQ</div>
+    </div>
+  </div>
+
+  <div class="notebox"><strong>Reader's note (QoQ):</strong> PAT fell 75.6% sequentially from ₹19,243 Cr in Q4 FY26 — that quarter carried a one-off ₹17,888 Cr exceptional tax-credit gain unrelated to operations. On a like-for-like operating basis, Q1 FY27 EBITDA actually rose 8% QoQ and EBITDA/tonne improved, so the headline PAT decline overstates any operational weakness.</div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Revenue &amp; EBITDA Trend (₹ Cr)</div>
+      <div class="cw-lg"><canvas id="c_revebitda"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Revenue Mix — India vs Overseas</div>
+      <div class="cw"><canvas id="c_geomix"></canvas></div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="cc">
+      <div class="ct">Segment / Entity PAT (₹ Cr)</div>
+      <div class="cw"><canvas id="c_entitypat"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Sales Volume Mix (6.25 MT)</div>
+      <div class="cw"><canvas id="c_volmix"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Net Debt Trend (₹ Cr)</div>
+      <div class="cw"><canvas id="c_debt"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>Q4 FY26</th><th>YoY</th><th>QoQ</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue from Operations</td><td class="mono">₹47,364 Cr</td><td class="mono">₹43,147 Cr</td><td class="mono">₹46,624 Cr</td><td class="mono">+9.8%</td><td class="mono">+1.6%</td></tr>
+      <tr><td>Reported EBITDA</td><td class="mono">₹9,383 Cr</td><td class="mono">₹6,816 Cr</td><td class="mono">₹7,590 Cr (est.)</td><td class="mono">+38%</td><td class="mono">+24%</td></tr>
+      <tr><td>EBITDA Margin</td><td class="mono">19.8%</td><td class="mono">17.6%</td><td class="mono">~16.3%</td><td class="mono">+220 bps</td><td class="mono">+350 bps</td></tr>
+      <tr><td>PBT (before exceptional)</td><td class="mono">₹6,160 Cr</td><td class="mono">₹3,072 Cr</td><td class="mono">n/a†</td><td class="mono">+100.5%</td><td class="mono">n/a†</td></tr>
+      <tr><td>PAT (owners)</td><td class="mono">₹4,696 Cr</td><td class="mono">₹2,209 Cr</td><td class="mono">₹19,243 Cr†</td><td class="mono">+112.6%</td><td class="mono">-75.6%†</td></tr>
+      <tr><td>Diluted EPS</td><td class="mono">₹19.02</td><td class="mono">₹8.95</td><td class="mono">₹67.07†</td><td class="mono">+112.5%</td><td class="mono">-71.6%†</td></tr>
+      <tr><td>Consolidated Crude Steel Production</td><td class="mono">6.59 MT</td><td class="mono">6.38 MT (adj.)</td><td class="mono">6.48 MT</td><td class="mono">+3%</td><td class="mono">+2%</td></tr>
+      <tr><td>Steel Sales Volume</td><td class="mono">6.25 MT</td><td class="mono">6.03 MT</td><td class="mono">7.07 MT</td><td class="mono">+4%</td><td class="mono">-12%</td></tr>
+      <tr><td>Net Debt</td><td class="mono">₹46,157 Cr</td><td class="mono">n/a</td><td class="mono">₹53,870 Cr</td><td class="mono">n/a</td><td class="mono">-14.3%</td></tr>
+      <tr><td>Capex (Consolidated)</td><td class="mono">₹4,869 Cr</td><td class="mono">n/a</td><td class="mono">n/a</td><td class="mono">n/a</td><td class="mono">FY27E guidance ₹22,000-24,000 Cr</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">† Q4 FY26 PAT/EPS included a one-time ₹17,888 Cr exceptional tax-credit gain; not comparable to Q1 FY27's clean operating quarter. Figures per company Q1 FY27 investor presentation and BSE/NSE filings, 17 Jul 2026. Unverified/estimated cells marked n/a or flagged with †. No buy/sell/hold view is offered by CB Research; third-party broker views (Valuation tab) are attributed explicitly.</div>
+</div>
+
+<!-- ============ SC VERDICT & BPSL ============ -->
+<div class="pane" id="psc">
+  <div class="notebox"><strong>Where it stands today (20 Jul 2026):</strong> JSW Steel's ₹19,700 Cr resolution plan for Bhushan Power &amp; Steel Ltd (BPSL) is judicially settled in JSW's favour. The Supreme Court's 26 Sep 2025 ruling upheld the plan and reversed its own earlier liquidation order — restoring the "commercial wisdom of the CoC" doctrine that underpins India's IBC framework. BPSL is now itself being deconsolidated into a 50:50 JV with Japan's JFE Steel.</div>
+
+  <div class="tl">
+    <div class="ct" style="margin-bottom:14px">Litigation Timeline — Kalyani Transco vs. Bhushan Power &amp; Steel</div>
+    <div class="tl-item">
+      <div class="tl-date">Mar 2021</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>Acquisition completed</strong><span>JSW Steel completes acquisition of BPSL via the IBC resolution process, becoming India's largest steelmaker at the time. Insolvency had begun in 2017 over dues exceeding ₹47,000 Cr.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2 May 2025</div>
+      <div class="tl-dot rev"></div>
+      <div class="tl-body"><strong>SC quashes the resolution plan</strong><span>A bench (Justices B.M. Trivedi, S.C. Sharma) set aside JSW's plan citing IBC violations, ordered BPSL's liquidation, and directed lenders to return ~₹19,350 Cr already disbursed — putting ~₹34,000 Cr of bank exposure at risk and shaking IBC-framework confidence.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">26 May 2025</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>Status quo ordered</strong><span>SC pauses NCLT liquidation action on JSW's plea, opening a window for a review petition.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">31 Jul 2025</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>Recall order</strong><span>SC recalls its own May 2 judgment for fresh consideration, observing the earlier ruling may not correctly reflect settled legal position on CoC commercial wisdom.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">11 Aug 2025</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>Fresh hearing, reserved</strong><span>Special bench led by CJI B.R. Gavai (with Justices Satish Chandra Sharma, K. Vinod Chandran) rehears the matter and reserves judgment.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">26 Sep 2025</div>
+      <div class="tl-dot upheld"></div>
+      <div class="tl-body"><strong>Resolution plan upheld — reversal complete</strong><span>SC reverses its own May 2 verdict, holds delay was not attributable to CoC or the successful resolution applicant, and notes JSW had turned BPSL profitable and safeguarded jobs. Objections from former promoter Sanjay Singhal and dissenting creditors rejected.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Dec 2025</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>JFE Steel JV signed</strong><span>JSW agrees to sell 50% of BPSL to JFE Steel Corp for ₹15,700 Cr cash (two tranches by mid-2026), implying BPSL enterprise value of ~₹53,000-53,100 Cr — well above JSW's earlier internal estimate of ₹40,500 Cr.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Q1 FY27</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>JV completed; stake raised to 50:50</strong><span>JFE Steel completes acquisition of an additional 25% in JSW JFE Kalinga Steel Ltd (making it a 50:50 JV) with the second ₹7,875 Cr tranche received by June-end. BPSL business was transferred to the JV via slump sale in March 2026, so FY26/FY27 production bases have been retrospectively adjusted for comparability.</span></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Why the Reversal Matters — Systemic Reading</div>
+      <div class="pi">The episode became a stress test for the credibility of India's Insolvency and Bankruptcy Code itself, not just for JSW. Had the May 2 liquidation order stood, it would have been the largest liquidation by debt size under the IBC, forced banks to reverse recoveries and take fresh provisions, and cast doubt on the finality of court-approved resolution plans generally — a risk flagged by the Department of Financial Services as it consulted lenders in early 2026. The September reversal restored the principle that a resolution plan, once approved through the CoC's commercial wisdom and upheld by NCLT/NCLAT, should not be reopened years later absent clear illegality — legal commentators framed it as sharpening the line between insolvency law and later regulatory second-guessing.</div>
+    </div>
+    <div class="cc">
+      <div class="ct">Residual Risk for JSW Steel</div>
+      <div class="pi"><strong>Not fully closed:</strong> some creditor and promoter-side parties may still pursue further remedies, and the amalgamation of BMM Ispat Ltd with JSW Steel — a separate matter — remains subject to regulatory approvals with no financial impact yet recognised. The BPSL matter itself is treated by the company and most brokerages as resolved, but investors should track any residual review/curative petitions given the case's unusual two-reversal history. Dutch prosecutors separately summoned Tata Steel's Ijmuiden unit in Jul 2026 over pollution allegations — unrelated to JSW, but a reminder that legal/regulatory tail-risk in steel is not confined to one company.</div>
+    </div>
+  </div>
+  <div class="fn">Sources: Supreme Court orders in Civil Appeal No. 1808/2020 (Kalyani Transco vs. BPSL &amp; Ors.) as logged on ibbi.gov.in; Business Standard, The Tribune, Stocktwits coverage of the 26 Sep 2025 judgment; JSW Steel Q1 FY27 investor presentation on the JFE JV. This is a factual case summary, not legal advice.</div>
+</div>
+
+<!-- ============ FOREIGN OPS ============ -->
+<div class="pane" id="pglobal">
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Consolidated Crude Steel Production by Geography (MT)</div>
+      <div class="cw-lg"><canvas id="c_geoprod"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">India vs Overseas EBITDA Contribution</div>
+      <div class="cw-lg"><canvas id="c_geoebitda"></canvas></div>
+    </div>
+  </div>
+
+  <div class="pg">
+    <div class="pc" data-c=global>
+      <div class="pc-top"><div class="pc-name">USA — Ohio (EAF)</div><span class="ptype pure">Coated / Electrical Steel</span></div>
+      <div class="pi"><strong>0.24 MT</strong> crude steel production in Q1 FY27 — flat YoY but up ~60% QoQ off a low Q4 FY26 base. Management reports the Ohio unit turned <strong>EBITDA-positive</strong> this quarter on higher production, aided by US flat-steel tariff protection supporting domestic (US) realisations. Historically volatile — EBITDA has swung from small profits to losses of several $mn/quarter depending on US HRC spreads and utilisation.</div>
+    </div>
+    <div class="pc" data-c=global>
+      <div class="pc-top"><div class="pc-name">Italy — Piombino</div><span class="ptype hybrid">Special / Rail Steel (Long)</span></div>
+      <div class="pi">JSW's Italian long-products unit (via JSW Steel Italy) reported <strong>lower production</strong> in the quarter due to its scheduled annual maintenance shutdown, but <strong>EBITDA still improved</strong> YoY — indicating better per-tonne spreads even on lower throughput. Piombino makes rail and special-bar-quality steel largely for the European market and carries EU energy-cost and carbon-cost exposure as structural headwinds.</div>
+    </div>
+    <div class="pc" data-c=iron>
+      <div class="pc-top"><div class="pc-name">Exports from India</div><span class="ptype spec">~5-10% of Sales</span></div>
+      <div class="pi">Exports from Indian operations rose sharply YoY in Q1 FY27 (management commentary cites a 46% YoY increase per some broker notes) off a low base, but remain a small share of the sales mix — domestic demand (auto, infra, construction) is the primary growth engine. India's steel exports as a category have faced pressure historically from Chinese oversupply pushing global prices down and from anti-dumping/safeguard actions by importing countries.</div>
+    </div>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>Overseas Unit</th><th>Product</th><th>Q1 FY27 Trend</th><th>Key Driver</th><th>Key Risk</th></tr></thead>
+    <tbody>
+      <tr><td>JSW Steel USA (Ohio)</td><td class="mono">EAF flat / electrical steel</td><td><span class="tag buy">EBITDA positive</span></td><td class="mono">Section 232-style US tariff protection; higher utilisation</td><td class="mono">US HRC spread volatility, energy cost</td></tr>
+      <tr><td>US Plate &amp; Pipe Mill</td><td class="mono">Plate, pipe</td><td class="mono">Not separately disclosed this qtr</td><td class="mono">US infra/energy pipe demand</td><td class="mono">Tariff-policy shifts, input steel cost</td></tr>
+      <tr><td>Italy (Piombino)</td><td class="mono">Rail, SBQ long products</td><td><span class="tag hold">EBITDA up YoY, volume down</span></td><td class="mono">Better realisations despite maintenance shutdown</td><td class="mono">EU energy/carbon cost, weak EU construction demand</td></tr>
+      <tr><td>India exports</td><td class="mono">Flat, long — mixed</td><td><span class="tag buy">Sharply up YoY off low base</span></td><td class="mono">Competitive domestic cost base, new capacity</td><td class="mono">Anti-dumping/safeguard actions by destination countries; freight</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">Geographic EBITDA splits for overseas units are disclosed with varying granularity across quarters; where the company has not broken out a precise ₹/$ figure for Q1 FY27 in public filings, directional commentary from the investor presentation and post-results broker notes is used and flagged accordingly.</div>
+</div>
+
+<!-- ============ RAW MATERIAL & ANTI-DUMPING ============ -->
+<div class="pane" id="prm">
+  <div class="notebox"><strong>Net read:</strong> Coking coal costs rose ~$17/tonne and iron ore rose over ₹200/tonne in Q1 FY27, yet EBITDA/tonne still expanded 27% YoY to ₹14,990 — proof that price realisation gains and mix improvement more than offset input-cost inflation this quarter. Imported coking coal held near $244/tonne through June 2026, with global iron ore near 2026 lows around $92/tonne, per Nomura's tracking — a relatively benign RM backdrop by historical standards even after the sequential uptick.</div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Key Input Cost Trend (Illustrative, Indexed)</div>
+      <div class="cw-lg"><canvas id="c_rmtrend"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Raw Material Basket (Est. Split)</div>
+      <div class="cw-lg"><canvas id="c_rmmix"></canvas></div>
+    </div>
+  </div>
+
+  <div class="ct" style="margin:6px 0 14px">India's Anti-Dumping / Safeguard Actions on Steel — China Focus</div>
+  <table class="tbl" style="margin-bottom:24px">
+    <thead><tr><th>Date / Status</th><th>Product</th><th>Origin</th><th>Measure</th><th>Relevance to JSW</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Apr–Nov 2025</td><td>Broad flat steel products</td><td class="mono">Mainly China</td><td>Temporary 12% safeguard duty for 200 days (expired early Nov 2025)</td><td>Import protection cut rolled-steel imports 34% YoY in first 7 months of FY26</td></tr>
+      <tr><td class="mono">Dec 2025 (proposal)</td><td>Structured steel safeguard</td><td class="mono">All origins, China-focused</td><td>Proposed 11-12% duty, 3-yr tenor, tapering 1%/yr</td><td>Under government consideration for a more durable safeguard regime</td></tr>
+      <tr><td class="mono">Dec 2025 — imposed</td><td>Cold-rolled non-oriented (CRNO) electrical steel</td><td class="mono">China</td><td>Anti-dumping duty $223.82–$414.92/tonne for 5 years</td><td>JSW-JFE electrical steel JV (grain-oriented steel) targets EV/transformer demand — adjacent product category benefits from firmer floor</td></tr>
+      <tr><td class="mono">Dec 2025 (extension)</td><td>Seamless alloy/non-alloy steel pipes</td><td class="mono">China</td><td>AD duty $961.33–$1,610.67/tonne extended to Jan 2027</td><td>Protects domestic pipe makers (Jindal Saw, Maharashtra Seamless etc.); indirect read-through to JSW's plate/pipe exposure</td></tr>
+      <tr><td class="mono">17 Jul 2026 — ongoing</td><td>Seamless tubes of iron/alloy/non-alloy steel</td><td class="mono">China</td><td>Extension of applicability of existing AD duties under review by DGTR</td><td>Continuing trade-defence posture ahead of India's 300 MT by FY31 capacity goal</td></tr>
+      <tr><td class="mono">25 Jun 2026 — new probe</td><td>Hot-rolled coil (HRC)</td><td class="mono">China, Japan, Russia</td><td>Anti-dumping investigation launched</td><td>Directly material — JSW is a major HRC producer; a positive finding would tighten India's flat-steel import floor further</td></tr>
+      <tr><td class="mono">Jun 2026 — new probe</td><td>Cold-rolled grain-oriented (CRGO) electrical steel</td><td class="mono">Multiple origins</td><td>New investigation opened</td><td>Overlaps with JSW-JFE's GOES JV strategy</td></tr>
+      <tr><td class="mono">Structural, 2025-26</td><td>All flat steel categories</td><td class="mono">China primarily</td><td>Layered approach: safeguard + anti-dumping stacked by product/origin</td><td>India's posture has shifted from reactive single measures to a systematic, multi-layer trade-defence framework</td></tr>
+    </tbody>
+  </table>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Structural Caveat — the "Re-Export" Loophole</div>
+      <div class="pi">Even with BIS-certification requirements structurally limiting direct commercial sale of Chinese HRC into India, the advance-authorisation re-export scheme remains a channel through which Chinese material can still reach the Indian market — a regulatory carve-out that an anti-dumping determination cannot automatically close without separate policy intervention. This is the key reason JSW Steel (jointly with SAIL, RINL and Usha Martin in earlier filings) continues to press for both anti-dumping and safeguard cover simultaneously rather than relying on either alone.</div>
+    </div>
+    <div class="cc">
+      <div class="ct">Net Impact for JSW Steel</div>
+      <div class="pi">Layered trade defence (safeguard + anti-dumping, stacked across flat-product categories) supports domestic HRC/CRC price floors precisely as JSW ramps ~12-13 MT of new capacity toward its FY30 targets — reducing the risk that new volumes get absorbed only via price cuts. The June 2026 HRC anti-dumping probe against China, Japan and Russia is the single most consequential pending action to watch, given JSW's scale in flat products; a final affirmative finding (typically 12-18 months after initiation) would be a structural tailwind, while continued delay leaves flat-steel pricing exposed to global oversupply cycles.</div>
+    </div>
+  </div>
+  <div class="fn">Sources: DGTR (dgtr.gov.in) case log; Ministry of Finance notifications via Business Standard/Deccan Herald/GMK Center reporting; Discovery Alert steel-trade analysis (Jul 2026). Duty figures are those recommended/notified as of source-report dates; final applicability can vary by exporter and is not tax/trade advice.</div>
+</div>
+
+<!-- ============ PRICE REALISATION ============ -->
+<div class="pane" id="pprice">
+  <div class="notebox"><strong>Bifurcated pricing environment:</strong> flat steel (HRC) realisations held firm — HRC spot was steady around ₹58,200/tonne for the week ending 3 Jul 2026, with spot margins near ₹34,285/tonne in Jun 2026, above the 2-year median — while long products (rebar, structurals) saw prices fall sharply, down roughly ₹7,000-8,000/tonne during the quarter on weak construction-season demand and monsoon disruption. JSW's flat-heavy portfolio (Vijayanagar, Dolvi, BPSL coated) meant the company was better insulated than pure long-products players.</div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">HRC Spot Price &amp; Spread Trend (Illustrative, ₹/tonne)</div>
+      <div class="cw-lg"><canvas id="c_hrc"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Flat vs Long Product Price Direction, Q1 FY27</div>
+      <div class="cw-lg"><canvas id="c_flatlong"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>Driver</th><th>Direction in Q1 FY27</th><th>Reader Impact</th></tr></thead>
+    <tbody>
+      <tr><td>Sales realisation (blended)</td><td><span class="tag buy">Higher YoY</span></td><td class="mono">Primary driver of 113% PAT growth per company/broker commentary</td></tr>
+      <tr><td>HRC (flat) price</td><td><span class="tag hold">Broadly stable</span></td><td class="mono">₹58,200/t (early Jul '26); spot margin ₹34,285/t — above 2-yr median</td></tr>
+      <tr><td>Rebar / long products</td><td><span class="tag red">Down ₹7,000-8,000/t in the quarter</span></td><td class="mono">Drags blended realisation for long-heavy peers more than JSW</td></tr>
+      <tr><td>Sales mix (auto/coated premium)</td><td><span class="tag buy">Improved</span></td><td class="mono">Higher-margin coated/auto-grade volumes support EBITDA/tonne</td></tr>
+      <tr><td>Domestic vs export mix</td><td><span class="tag hold">Exports up off low base, still small share</span></td><td class="mono">Domestic demand remains the dominant swing factor</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">HRC and margin figures per Nomura tracking cited in Whalesbook (Jul 2026); long-product price decline range per JSW Steel's own Q1 FY27 investor presentation as reported by Investing.com. "Price realisation" chart directions are illustrative visualisations of the qualitative commentary above, not tick-by-tick market data.</div>
+</div>
+
+<!-- ============ PLANTS & EXPANSION ============ -->
+<div class="pane" id="pplants">
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Installed Capacity by Plant (MTPA, approx.)</div>
+      <div class="cw-lg"><canvas id="c_capacity"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">India Capacity Roadmap — FY26 to FY31 (MTPA)</div>
+      <div class="cw-lg"><canvas id="c_roadmap"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl" style="margin-bottom:24px">
+    <thead><tr><th>Plant / Unit</th><th>State</th><th>Current Capacity</th><th>Expansion in Progress</th><th>Target Completion</th></tr></thead>
+    <tbody>
+      <tr><td>Vijayanagar (flagship)</td><td class="mono">Karnataka</td><td class="mono">~15 MTPA (BF3 upgraded 3.0→4.5 MTPA, hot metal from 23 Jun 2026)</td><td class="mono">Phase-II brownfield, 15→26 MTPA; ₹33,000+ Cr capex approved</td><td class="mono">FY30</td></tr>
+      <tr><td>Dolvi Works</td><td class="mono">Maharashtra</td><td class="mono">10 MTPA</td><td class="mono">Phase-III brownfield, 10→15 MTPA</td><td class="mono">Sep 2027</td></tr>
+      <tr><td>BPSL / JSW-JFE Kalinga (50:50 JV)</td><td class="mono">Odisha</td><td class="mono">~5 MTPA (deconsolidating into JV)</td><td class="mono">JFE stake raised to 50% in Q1 FY27; slump-sale of BPSL business completed Mar 2026</td><td class="mono">Ongoing JV ramp-up</td></tr>
+      <tr><td>JSW Vijayanagar Metallics (JVML)</td><td class="mono">Karnataka</td><td class="mono">Ramping toward full utilisation</td><td class="mono">Phase-II 5 MTPA expansion, equipment ordering in progress</td><td class="mono">FY30</td></tr>
+      <tr><td>JSW Utkal Steel (greenfield)</td><td class="mono">Odisha (Jagatsinghpur)</td><td class="mono">Greenfield — not yet operational</td><td class="mono">2× 8 MTPA pellet plants; 5 MTPA BF; 6 MTPA SMS; 6 MTPA HSM-2; ₹31,600 Cr capex; scalable to 13.2 MTPA</td><td class="mono">FY28 (pellet), FY30 (integrated plant)</td></tr>
+      <tr><td>Odisha slurry pipeline</td><td class="mono">Odisha</td><td class="mono">30 MTPA, 302 km — under construction</td><td class="mono">Raw-material security for Utkal complex</td><td class="mono">Mar 2027</td></tr>
+      <tr><td>Salem Works</td><td class="mono">Tamil Nadu</td><td class="mono">~1 MTPA (special/long steel)</td><td class="mono">No major expansion disclosed this quarter</td><td class="mono">—</td></tr>
+      <tr><td>Raigarh</td><td class="mono">Chhattisgarh</td><td class="mono">Long products base</td><td class="mono">New 1 MTPA structural &amp; rail mill</td><td class="mono">Under execution</td></tr>
+      <tr><td>Downstream — CRNO/galvanising</td><td class="mono">Vijayanagar, Khopoli, Rajpura</td><td class="mono">Value-added coated/electrical lines</td><td class="mono">0.55 MTPA CRNO plant (Vijayanagar); multiple new CGL lines</td><td class="mono">Mar 2028</td></tr>
+      <tr><td>JSW Steel USA (Ohio)</td><td class="mono">USA</td><td class="mono">EAF, coated/electrical</td><td class="mono">No major capacity addition flagged this quarter</td><td class="mono">—</td></tr>
+      <tr><td>Piombino</td><td class="mono">Italy</td><td class="mono">Long/rail products</td><td class="mono">No major capacity addition flagged this quarter</td><td class="mono">—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">POSCO Greenfield JV (Newly Announced)</div>
+      <div class="pi">JSW Steel has announced a joint venture with South Korea's POSCO to set up a <strong>greenfield 6 MTPA integrated steel plant at Dhenkanal, Odisha</strong> — adding a second Odisha growth vector alongside the wholly-owned Utkal project. Details on capex split, timelines and product focus are still emerging as of Q1 FY27 disclosures; this materially raises JSW's medium-term capacity trajectory beyond the ~50 MTPA India roadmap if it proceeds on schedule.</div>
+    </div>
+    <div class="cc">
+      <div class="ct">Capex Discipline &amp; Funding</div>
+      <div class="pi">FY27 consolidated capex guidance stands at <strong>₹22,000-24,000 Cr</strong>, against Q1 FY27 spend of ₹4,869 Cr — tracking broadly in line for the year. The BPSL-JFE JV cash inflow (₹15,700 Cr total, second ₹7,875 Cr tranche received by June-end) plus a proposed ₹811 Cr OFS in the JSW One Platforms IPO are explicit balance-sheet-funding levers management is using alongside operating cash flow to fund this multi-year, multi-site expansion without over-leveraging — net debt fell 14.3% QoQ this quarter even as gross capex continued.</div>
+    </div>
+  </div>
+  <div class="fn">Capacity and expansion figures per JSW Steel Q1 FY27 investor presentation (Investing.com summary), Biltrax Media capex-approval reporting, and company production-update releases. "MTPA" = million tonnes per annum, nameplate/target capacity unless noted as current installed.</div>
+</div>
+
+<!-- ============ JSW vs TATA STEEL ============ -->
+<div class="pane" id="ptata">
+  <div class="notebox"><strong>Timing caveat:</strong> Tata Steel's Q1 FY27 financial results are scheduled for board approval on 30 Jul 2026 — after JSW's 17 Jul 2026 release. The comparison below uses Tata Steel's Q1 FY27 <em>production/delivery</em> update (already disclosed) alongside its last reported full financials (Q4 FY26/Q1 FY26) for like-for-like context; financial-metric comparisons will sharpen once Tata's Q1 FY27 numbers land.</div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">India Production Growth, Q1 FY27 (YoY)</div>
+      <div class="cw"><canvas id="c_prodcompare"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Scale — Consolidated Revenue Trend (₹ Cr)</div>
+      <div class="cw"><canvas id="c_revcompare"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl" style="margin-bottom:24px">
+    <thead><tr><th>Metric</th><th>JSW Steel (Q1 FY27)</th><th>Tata Steel (latest available)</th><th>Read</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue (consolidated)</td><td class="mono">₹47,364 Cr</td><td class="mono">₹53,178 Cr (Q1 FY26, last comparable qtr)</td><td class="mono">Tata larger on revenue — includes European ops</td></tr>
+      <tr><td>India crude steel production growth</td><td class="mono">+3% YoY (headline); +~15% ex-BF3 shutdown base</td><td class="mono">+11% YoY (Q1 FY27 production update)</td><td class="mono">Tata India grew faster headline YoY this quarter</td></tr>
+      <tr><td>PAT growth YoY (last comparable qtr)</td><td class="mono">+113% (Q1 FY27)</td><td class="mono">+116% (Q1 FY26)</td><td class="mono">Both delivering strong YoY profit recovery on cost/price tailwinds</td></tr>
+      <tr><td>EBITDA margin</td><td class="mono">19.8%</td><td class="mono">~14% (Q1 FY26); India-only segment historically 20%+</td><td class="mono">JSW's India-heavy, higher value-added mix supports superior blended margin</td></tr>
+      <tr><td>Geographic footprint</td><td class="mono">India + USA (Ohio) + Italy (Piombino)</td><td class="mono">India + UK (in EAF transition) + Netherlands</td><td class="mono">Tata carries larger, structurally loss-making European legacy exposure (UK blast-furnace exit, Dutch pollution probe)</td></tr>
+      <tr><td>Net debt trajectory</td><td class="mono">₹46,157 Cr, down 14.3% QoQ</td><td class="mono">Historically higher gross debt given European legacy liabilities</td><td class="mono">JSW deleveraging faster, aided by BPSL-JFE JV proceeds</td></tr>
+      <tr><td>PE (trailing, recent)</td><td class="mono">~40-47x (elevated, earnings-recovery-distorted)</td><td class="mono">Historically low/negative PE in loss years, now normalising</td><td class="mono">Both PEs distorted by lumpy exceptional items; use EV/EBITDA for cleaner comparison</td></tr>
+      <tr><td>Market cap</td><td class="mono">~₹3.03 lakh Cr (Jul 2026)</td><td class="mono">~₹2.32 lakh Cr (per Screener, recent)</td><td class="mono">JSW currently the larger-cap Indian steel major</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ct" style="margin:6px 0 14px">How JSW Could Out-Execute Tata Steel From Here — Reader Framework</div>
+  <div class="pg">
+    <div class="pc" data-c=jsw>
+      <div class="pc-top"><div class="pc-name">Geographic Simplicity</div><span class="ptype pure">Structural</span></div>
+      <div class="pi">JSW's overseas footprint (Ohio + Piombino) is small relative to consolidated scale and both units are EBITDA-positive/improving this quarter. Tata Steel continues to carry a much larger, structurally challenged European base (UK electric-arc-furnace transition costs, a Dutch pollution-related prosecutorial summons issued 8 Jul 2026 to Tata Steel Ijmuiden). <strong>Lever:</strong> JSW's cleaner geography means more of every incremental rupee of India volume growth converts to consolidated profit, without European drag diluting it.</div>
+    </div>
+    <div class="pc" data-c=iron>
+      <div class="pc-top"><div class="pc-name">Product-Mix Premiumisation</div><span class="ptype hybrid">Execution</span></div>
+      <div class="pi">JSW's ongoing downstream buildout — CRNO electrical steel, new galvanising lines, the JFE electrical-steel JV targeting EV/transformer demand — pushes the portfolio toward higher-value, less commoditised products where Chinese anti-dumping actions (CRNO, HRC probe) provide a firmer pricing floor. <strong>Lever:</strong> continuing to out-invest peers in value-added downstream capacity converts capacity growth into margin growth, not just volume growth.</div>
+    </div>
+    <div class="pc" data-c=global>
+      <div class="pc-top"><div class="pc-name">Balance-Sheet Optionality</div><span class="ptype spec">Financial</span></div>
+      <div class="pi">The BPSL-JFE monetisation (₹15,700 Cr) and the JSW One Platforms OFS (up to ₹811 Cr) show JSW actively using non-core/partial monetisation to fund its ~50 MTPA India roadmap and the new POSCO JV without relying solely on fresh debt. <strong>Lever:</strong> sustaining this "monetise-and-reinvest" discipline — rather than pure leverage — would let JSW keep expanding capacity while continuing to deleverage, a combination Tata Steel's more debt-laden European legacy makes structurally harder to replicate at the same pace.</div>
+    </div>
+  </div>
+  <div class="fn">Tata Steel Q1 FY27 India production update per Screener/company filing (11% YoY growth, deliveries 5.17 MT); Tata Steel Q1 FY26 financials used as last comparable full P&amp;L set at time of writing since Q1 FY27 results are pending (board meeting 30 Jul 2026). This section synthesises publicly reported facts into an execution framework; it is analysis, not a recommendation to buy, sell or hold either stock.</div>
+</div>
+
+<!-- ============ VALUATION ============ -->
+<div class="pane" id="pval">
+  <div class="mp-row">
+    <div class="mp">
+      <div class="mp-co">Share Price</div>
+      <div class="mp-price">₹1,233</div>
+      <div class="mp-chg" style="color:#15803d">as of 17 Jul 2026</div>
+      <div class="mp-hi">52W: ₹1,017 – ₹1,328</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Market Cap</div>
+      <div class="mp-price">₹3.03L Cr</div>
+      <div class="mp-chg">~US$ 35-36 bn equiv.</div>
+      <div class="mp-hi">World's most valuable listed steelmaker (Jan 2026, per Bloomberg-cited report)</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Trailing PE</div>
+      <div class="mp-price">~46.7x</div>
+      <div class="mp-chg" style="color:#b91c1c">Elevated</div>
+      <div class="mp-hi">Distorted by lumpy exceptional gains in trailing four quarters</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">P/B Ratio</div>
+      <div class="mp-price">~3.5x†</div>
+      <div class="mp-hi">† Screener-reported figure appears anomalous (350x) — likely a data error; treat with caution and verify at source</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">ROE (3-yr avg)</div>
+      <div class="mp-price">8.97%</div>
+      <div class="mp-chg">Below best-in-class metals ROE</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Net Debt / EBITDA</div>
+      <div class="mp-price">~1.2x†</div>
+      <div class="mp-hi">† Estimated on trailing 4Q adjusted EBITDA run-rate; company does not disclose the ratio directly each quarter</div>
+    </div>
+  </div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Broker Target Prices — Post-BPSL-JFE JV / Recent Notes</div>
+      <div class="cw-lg"><canvas id="c_targets"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">JSW vs Tata Steel — 1-Year Stock Return</div>
+      <div class="cw-lg"><canvas id="c_return"></canvas></div>
+    </div>
+  </div>
+
+  <div class="ct" style="margin:6px 0 14px">Third-Party Broker Views (attributed — not a CB Research recommendation)</div>
+  <div class="ag">
+    <div class="ac">
+      <div class="ac-name">Emkay Global</div>
+      <div class="ac-row"><span class="ac-lbl">Call</span><span class="tag buy">Add</span></div>
+      <div class="ac-row"><span class="ac-lbl">Target</span><span class="ac-val">₹1,200</span></div>
+      <div class="ac-view">Views the JFE JV as value-unlocking and balance-sheet-strengthening; values BPSL at ~₹53,000 Cr (11.8x FY27E EV/EBITDA), above its own prior ₹40,500 Cr estimate.</div>
+    </div>
+    <div class="ac">
+      <div class="ac-name">Motilal Oswal</div>
+      <div class="ac-row"><span class="ac-lbl">Call</span><span class="tag buy">Buy</span></div>
+      <div class="ac-row"><span class="ac-lbl">Target</span><span class="ac-val">₹1,350</span></div>
+      <div class="ac-view">Estimates double-digit revenue growth in FY26/FY27 driven by new-capacity ramp-up and price recovery; constructive on the capacity roadmap.</div>
+    </div>
+    <div class="ac">
+      <div class="ac-name">Nuvama Institutional Equities</div>
+      <div class="ac-row"><span class="ac-lbl">Call</span><span class="tag hold">Reduce</span></div>
+      <div class="ac-row"><span class="ac-lbl">Target</span><span class="ac-val">₹1,050</span></div>
+      <div class="ac-view">Cautious given the stock's expensive valuation and potential earnings-estimate downgrade risk if steel prices stay soft — though it still calls the BPSL-JFE deal "value-accretive."</div>
+    </div>
+  </div>
+
+  <table class="tbl" style="margin-top:20px">
+    <thead><tr><th>Valuation Angle</th><th>Bull Case</th><th>Bear Case</th></tr></thead>
+    <tbody>
+      <tr><td>Earnings quality</td><td class="mono">Operating EBITDA/tonne genuinely up 27% YoY on realisation + mix, not just one-offs</td><td class="mono">Headline PAT growth partly flatters vs a soft Q1 FY26 base; trailing PE distorted by Q4 FY26 exceptional gain</td></tr>
+      <tr><td>Capacity growth</td><td class="mono">Credible path to ~50 MTPA India capacity by FY30-31, plus new POSCO JV optionality</td><td class="mono">Execution risk across 7+ simultaneous projects (Vijayanagar, Dolvi, Utkal, JVML, downstream); India steel demand growth (7-9% FY27E) must hold to absorb new supply without margin erosion</td></tr>
+      <tr><td>Trade-defence tailwind</td><td class="mono">Layered anti-dumping/safeguard measures on Chinese flat steel support domestic price floor as new capacity comes online</td><td class="mono">Re-export loophole via advance-authorisation scheme partially blunts the protection; pending HRC probe outcome (China/Japan/Russia) not yet finalised</td></tr>
+      <tr><td>Legal/regulatory overhang</td><td class="mono">BPSL matter judicially resolved in JSW's favour (26 Sep 2025); JFE JV monetised the asset at a premium to internal estimates</td><td class="mono">Residual review/curative-petition risk given the case's unusual double-reversal history; BMM Ispat amalgamation still pending approvals</td></tr>
+      <tr><td>Balance sheet</td><td class="mono">Net debt down 14.3% QoQ; JFE and JSW One Platforms proceeds fund growth without pure leverage</td><td class="mono">FY27 capex guidance of ₹22,000-24,000 Cr is large relative to quarterly operating cash flow; global steel-price cycle risk remains</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">Broker views attributed to Emkay Global, Motilal Oswal and Nuvama as reported by Business Standard (Dec 2025) — views may have been updated since; verify current targets before acting. Market cap, PE and 52-week range per NSE/Screener/Bajaj Broking data points dated 13-17 Jul 2026. This dashboard presents third-party views for reference only; CB Research does not issue its own buy/sell/hold recommendation.</div>
+</div>
+
+<!-- ============ CB ASSIST ============ -->
+<div class="pane" id="pcbassist">
+  <div class="cbwrap">
+    <div class="cbchat">
+      <div class="ct" style="margin-bottom:10px">CB Assist — JSW Steel Q1 FY27 (English / தமிழ்)</div>
+      <div class="cbsug">
+        <span onclick="askQ('Why did PAT fall QoQ despite strong EBITDA growth?')">Why did PAT fall QoQ?</span>
+        <span onclick="askQ('What exactly did the Supreme Court decide on Bhushan Power?')">SC verdict on BPSL?</span>
+        <span onclick="askQ('How does JSW compare with Tata Steel right now?')">JSW vs Tata Steel?</span>
+        <span onclick="askQ('Explain the anti-dumping duties on Chinese steel and how they affect JSW.')">Anti-dumping impact?</span>
+      </div>
+      <div class="cbmsgs" id="cbaMsgs">
+        <div class="cmsg b">Hi! I'm CB Assist — ask me anything about JSW Steel's Q1 FY27 results, the BPSL Supreme Court case, raw materials, plants, or valuation. நான் தமிழிலும் பதிலளிக்க முடியும்.</div>
+      </div>
+      <div class="cbtyping" id="cbaTyping"><span></span><span></span><span></span></div>
+      <div class="cbinput">
+        <input id="cbaInput" type="text" placeholder="Ask about JSW Steel Q1 FY27..." onkeydown="if(event.key==='Enter')sendCBA()">
+        <button id="cbaSendBtn" onclick="sendCBA()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wm">CB RESEARCH · CAUVERY BUSINESS (EIL) · JSW STEEL Q1 FY27 · FOR EDUCATIONAL PURPOSES ONLY · NOT INVESTMENT ADVICE · SEBI-REGISTERED RESEARCH ANALYST</div>
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.plugins.datalabels.display=false;
+const CL={jsw:'#9e1b1e',jsw2:'rgba(158,27,30,.55)',iron:'#5b5652',coal:'#3a3632',global:'#1b5b7c',val:'#7c3aed',green:'#15803d',red:'#b91c1c',grey:'#d1cdc4'};
+
+function bar(id,labels,data,suffix,colors){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderRadius:4}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',font:{family:'DM Mono',size:10},formatter:v=>v+suffix,color:'#1a1714'}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9.5}}},y:{grid:{color:'#eee'},ticks:{font:{family:'DM Mono',size:9.5}},beginAtZero:true}}}});
+}
+function line(id,labels,datasets,suffix){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'line',data:{labels:labels,datasets:datasets.map(d=>({...d,tension:.3,pointRadius:3}))},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:9.5},boxWidth:10}},datalabels:{display:false}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9.5}}},y:{grid:{color:'#eee'},ticks:{font:{family:'DM Mono',size:9.5}}}}}});
+}
+function doughnut(id,labels,data,colors){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:9.5},boxWidth:10,padding:10}},datalabels:{display:true,color:'#fff',font:{family:'DM Mono',size:10,weight:'600'},formatter:v=>v+'%'}},cutout:'58%'}});
+}
+function grouped(id,labels,datasets,suffix){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'bar',data:{labels:labels,datasets:datasets},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:9.5},boxWidth:10}},datalabels:{display:true,anchor:'end',align:'top',font:{family:'DM Mono',size:9},formatter:v=>v+suffix,color:'#1a1714'}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9.5}}},y:{grid:{color:'#eee'},ticks:{font:{family:'DM Mono',size:9.5}},beginAtZero:true}}}});
+}
+
+// — Overview —
+const QTR=['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'];
+line('c_revebitda',QTR,[
+  {label:'Revenue (₹ Cr)',data:[43147,45152,46624,51180,47364],borderColor:CL.jsw,backgroundColor:'transparent',yAxisID:'y'},
+  {label:'EBITDA (₹ Cr, adj.)',data:[6816,7849,8643,8643,9383],borderColor:CL.green,backgroundColor:'transparent',yAxisID:'y'}
+],' Cr');
+
+doughnut('c_geomix',['India Ops ~91%','USA + Italy ~9% (est.)'],[91,9],[CL.jsw,CL.global]);
+
+bar('c_entitypat',['JSW Steel (Standalone)','JVML','JSW Coated Products','BPSL-JFE JV (JSW share)'],[2826,1223,354,'—'.length?0:0],' Cr',[CL.jsw,CL.iron,CL.coal,CL.grey]);
+// override bar to correct values since template above miscalculated placeholder
+(function(){const c=Chart.getChart('c_entitypat');if(c){c.data.datasets[0].data=[2826,1223,354,0];c.update();}})();
+
+doughnut('c_volmix',['Domestic ~90%','Exports ~10% (est.)'],[90,10],[CL.jsw,CL.iron]);
+
+bar('c_debt',['Q1 FY26','Q4 FY26','Q1 FY27'],['—','53870','46157'].map(v=>v==='—'?null:+v),' Cr',[CL.grey,CL.iron,CL.jsw]);
+
+// — SC tab has no charts (timeline only) —
+
+// — Foreign Ops —
+grouped('c_geoprod',['India','USA (Ohio)'],[
+  {label:'Q1 FY26',data:[6.14,0.24],backgroundColor:CL.grey},
+  {label:'Q1 FY27',data:[6.35,0.24],backgroundColor:CL.jsw}
+],' MT');
+
+doughnut('c_geoebitda',['India ~97%','USA + Italy ~3% (est.)'],[97,3],[CL.jsw,CL.global]);
+
+// — Raw Material —
+line('c_rmtrend',['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'],[
+  {label:'Coking coal (indexed)',data:[100,92,88,90,97],borderColor:CL.coal,backgroundColor:'transparent'},
+  {label:'Iron ore (indexed)',data:[100,95,90,93,101],borderColor:CL.iron,backgroundColor:'transparent'},
+  {label:'JSW EBITDA/tonne (indexed)',data:[100,101,107,105,127],borderColor:CL.jsw,backgroundColor:'transparent',borderDash:[6,4]}
+],'');
+
+doughnut('c_rmmix',['Iron ore ~35%','Coking coal ~30%','Other (ferro-alloys, power, freight)~35%'],[35,30,35],[CL.iron,CL.coal,CL.grey]);
+
+// — Price Realisation —
+line('c_hrc',['Apr','May','Jun','1-7 Jul'],[
+  {label:'HRC spot (₹/tonne, indexed to Jul)',data:[97,98,99,100],borderColor:CL.jsw,backgroundColor:'transparent'},
+  {label:'Spot margin (₹/tonne, indexed)',data:[92,95,101,100],borderColor:CL.global,backgroundColor:'transparent'}
+],'');
+
+bar('c_flatlong',['HRC (Flat)','CRC (Flat)','Rebar (Long)','Structurals (Long)'],[1,0.5,-8,-6],' (₹\'000/t chg, illus.)',[CL.jsw,CL.jsw,CL.red,CL.red]);
+
+// — Plants & Expansion —
+bar('c_capacity',['Vijayanagar','Dolvi','BPSL/JV','JVML','Salem','Utkal (planned)'],[15,10,5,5,1,13.2],' MTPA',[CL.jsw,CL.iron,CL.coal,CL.global,CL.grey,CL.val]);
+
+line('c_roadmap',['FY26','FY27','FY28','FY29','FY30','FY31'],[
+  {label:'India capacity (MTPA)',data:[28,30,34,40,46,50],borderColor:CL.jsw,backgroundColor:'rgba(158,27,30,.08)',fill:true}
+],' MTPA');
+
+// — vs Tata Steel —
+bar('c_prodcompare',['JSW Steel India','Tata Steel India'],[3,11],'% YoY',[CL.jsw,CL.global]);
+
+line('c_revcompare',['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'],[
+  {label:'JSW Steel (₹ Cr)',data:[43147,45152,46624,51180,47364],borderColor:CL.jsw,backgroundColor:'transparent'},
+  {label:'Tata Steel (₹ Cr)',data:[53178,58689,null,null,null],borderColor:CL.global,backgroundColor:'transparent'}
+],' Cr');
+
+// — Valuation —
+bar('c_targets',['Nuvama (Reduce)','Emkay (Add)','Motilal Oswal (Buy)','CMP (17 Jul \'26)'],[1050,1200,1350,1233],'',[CL.red,CL.jsw,CL.green,CL.iron]);
+
+line('c_return',['Jul \'25','Oct \'25','Jan \'26','Apr \'26','Jul \'26'],[
+  {label:'JSW Steel',data:[100,108,118,122,114],borderColor:CL.jsw,backgroundColor:'transparent'},
+  {label:'Tata Steel',data:[100,97,101,99,97],borderColor:CL.global,backgroundColor:'transparent'}
+],' (indexed)');
+
+function sw(t){
+  const ids=['ov','sc','global','rm','price','plants','tata','val','cbassist'];
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('on',ids[i]===t);
+  });
+  document.querySelectorAll('.pane').forEach(p=>{
+    p.classList.toggle('on',p.id==='p'+t);
+  });
+}
+
+function askQ(q){document.getElementById('cbaInput').value=q;sendCBA();}
+
+async function sendCBA(){
+  const input=document.getElementById('cbaInput');
+  const msgs=document.getElementById('cbaMsgs');
+  const btn=document.getElementById('cbaSendBtn');
+  const typing=document.getElementById('cbaTyping');
+  const q=input.value.trim();
+  if(!q)return;
+  const uMsg=document.createElement('div');
+  uMsg.className='cmsg u';uMsg.textContent=q;
+  msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';
+  msgs.scrollTop=msgs.scrollHeight;
+
+  const sys=`You are CB Assist, an expert financial research assistant for Cauvery Business (EIL Research). You specialise in JSW Steel and the Indian steel sector, with deep focus on the BPSL Supreme Court case, raw materials, and capacity expansion.
+
+MANDATORY: Always answer in BOTH English AND Tamil. Format: full English answer first, then a "---" separator line, then Tamil answer starting with "தமிழில்:".
+
+JSW Steel Q1 FY27 actuals (quarter ended 30 Jun 2026, filed 17 Jul 2026, consolidated):
+- Revenue ₹47,364 Cr (+9.8% YoY vs ₹43,147 Cr; +1.6% QoQ). Adjusted EBITDA ₹9,373 Cr (+32% YoY), margin 19.8% (+220 bps YoY). Reported EBITDA ₹9,383 Cr (+38% YoY)
+- PAT (owners) ₹4,696 Cr (+112.6% YoY from ₹2,209 Cr), but DOWN 75.6% QoQ from ₹19,243 Cr in Q4 FY26 — that quarter had a one-off ₹17,888 Cr exceptional tax-credit gain, so the QoQ fall is a base-effect, not operating weakness. Diluted EPS ₹19.02
+- EBITDA/tonne ₹14,990, up 27% YoY from ₹11,783. Crude steel production 6.59 MT (+3% YoY, +2% QoQ); ex-BF3-shutdown-base growth ~15% YoY. Steel sales 6.25 MT (+4% YoY, -12% QoQ on seasonality)
+- Indian operations: revenue ₹42,894 Cr, EBITDA margin 21.2%. JVML PAT ₹1,223 Cr (EBITDA ₹1,821 Cr). JSW Steel Coated Products PAT ₹354 Cr on revenue ₹9,991 Cr, EBITDA +25% to ₹698 Cr
+- Net debt ₹46,157 Cr, down 14.3% QoQ (₹7,713 Cr). Capex ₹4,869 Cr in quarter; FY27 guidance ₹22,000-24,000 Cr
+- Raw material cost pressure: coking coal costs up ~$17/tonne, iron ore up over ₹200/tonne QoQ — offset by better realisation and mix
+- JSW Steel USA (Ohio): 0.24 MT production (flat YoY, +60% QoQ), turned EBITDA-positive. Italy (Piombino): lower production due to scheduled annual maintenance shutdown, but EBITDA improved YoY
+- Long product prices fell ₹7,000-8,000/tonne in the quarter; HRC (flat) held broadly stable around ₹58,200/tonne (early Jul '26), spot margin ~₹34,285/tonne (above 2-yr median)
+
+BPSL SUPREME COURT CASE (Kalyani Transco vs Bhushan Power & Steel, Civil Appeal 1808/2020):
+- 2 May 2025: SC (Justices Trivedi, S.C. Sharma) quashed JSW's ₹19,700 Cr resolution plan for BPSL, ordered liquidation, directed lenders to return ~₹19,350 Cr already disbursed
+- 26 May 2025: SC ordered status quo on liquidation pending review
+- 31 Jul 2025: SC recalled its own May 2 judgment for fresh consideration
+- 11 Aug 2025: fresh hearing before special bench (CJI Gavai, Justices S.C. Sharma, K.V. Chandran), judgment reserved
+- 26 SEP 2025: SC REVERSED ITSELF AGAIN and UPHELD JSW's resolution plan — noted JSW had turned BPSL profitable, delay not attributable to CoC/SRA, restored CoC commercial-wisdom doctrine. This is the CURRENT, FINAL status as of Jul 2026
+- Dec 2025: JSW signed 50:50 JV with JFE Steel Corp for BPSL — ₹15,700 Cr cash in two tranches, implying BPSL EV of ~₹53,000-53,100 Cr. In Q1 FY27, JFE completed acquiring the additional 25% (making it 50:50); second ₹7,875 Cr tranche received by June-end; BPSL business transferred to JV via slump sale in Mar 2026
+- Separately, BMM Ispat Ltd amalgamation with JSW Steel remains pending regulatory approvals, no financial impact recognised yet
+
+ANTI-DUMPING / TRADE DEFENCE ON CHINESE STEEL:
+- Apr-Nov 2025: temporary 12% safeguard duty on steel imports (200 days, expired Nov 2025); cut rolled steel imports 34.1% YoY in first 7 months FY26
+- Dec 2025: 5-year anti-dumping duty imposed on Chinese cold-rolled non-oriented (CRNO) electrical steel: $223.82-$414.92/tonne
+- Dec 2025: seamless steel pipes AD duty from China extended to Jan 2027 ($961.33-$1,610.67/tonne)
+- 25 Jun 2026: NEW anti-dumping investigation launched into hot-rolled coil (HRC) imports from China, Japan, Russia — most consequential pending action for JSW given its flat-steel scale
+- Jun 2026: new investigation into cold-rolled grain-oriented (CRGO) electrical steel
+- Structural loophole: advance-authorisation re-export scheme still allows some Chinese material in despite BIS-certification barriers and AD duties
+- JSW (with SAIL, RINL, Usha Martin historically) has jointly filed for AD protection on various products
+
+CAPACITY & EXPANSION:
+- Vijayanagar (Karnataka): flagship, BF3 upgraded 3.0→4.5 MTPA (hot metal from 23 Jun 2026); Phase-II brownfield 15→26 MTPA approved (~₹33,000+ Cr capex), target FY30
+- Dolvi (Maharashtra): 10 MTPA, Phase-III expansion to 15 MTPA targeted Sep 2027
+- BPSL/JSW-JFE Kalinga JV (Odisha): ~5 MTPA, now 50:50 with JFE
+- JVML: Phase-II 5 MTPA expansion, equipment ordering in progress, FY30
+- JSW Utkal Steel (Jagatsinghpur, Odisha): greenfield, 2×8 MTPA pellet plants (FY28), 5 MTPA BF + 6 MTPA SMS + 6 MTPA HSM-2 (FY30), ₹31,600 Cr capex, scalable to 13.2 MTPA. Supported by 30 MTPA/302km slurry pipeline (Mar 2027)
+- Downstream: 0.55 MTPA CRNO plant at Vijayanagar (Mar 2028), new CGL lines at Vijayanagar/Khopoli/Rajpura, 1 MTPA structural & rail mill at Raigarh
+- NEW: JV with POSCO announced for greenfield 6 MTPA integrated plant at Dhenkanal, Odisha — details still emerging
+- Overall roadmap: ~50 MTPA India capacity targeted by FY30-31 (from 28 MTPA FY26); investor presentation references a 62 MT longer-term aspiration including overseas
+
+JSW vs TATA STEEL (comparison, Tata Q1 FY27 financials pending board approval 30 Jul 2026):
+- Tata Steel India production +11% YoY in Q1 FY27 production update vs JSW's headline +3% YoY (JSW's BF3 shutdown-adjusted growth ~15% YoY)
+- JSW EBITDA margin 19.8% vs Tata's ~14% (Q1 FY26, last full comparable quarter) — JSW's India-heavy, higher-value-mix supports better blended margin
+- Tata carries larger European legacy exposure (UK EAF transition, Dutch prosecutors summoned Tata Steel Ijmuiden on 8 Jul 2026 over pollution allegations) vs JSW's smaller, EBITDA-positive US/Italy units
+- JSW market cap ~₹3.03 lakh Cr vs Tata ~₹2.32 lakh Cr (Jul 2026) — JSW currently larger cap
+- JSW net debt down 14.3% QoQ, aided by BPSL-JFE monetisation
+
+VALUATION (as of mid-Jul 2026):
+- Share price ~₹1,233 (17 Jul 2026), 52-week range ₹1,017-₹1,328
+- Market cap ~₹3.03 lakh Cr; trailing PE ~46.7x (elevated/distorted by exceptional items in trailing quarters)
+- ROE (3-yr avg) 8.97%
+- Broker targets: Emkay Global 'Add' ₹1,200; Motilal Oswal 'Buy' ₹1,350; Nuvama 'Reduce' ₹1,050 (views from Dec 2025, may have been updated since)
+- JSW Steel was reported as world's most valuable listed steelmaker by market cap (~$30.3bn) as of early 2026
+
+Be rigorous, analytical, and non-elementary. Address the SC/BPSL case, raw materials, anti-dumping, foreign ops, plants/expansion, Tata Steel comparison, and valuation using ONLY the facts given above. Never give investment advice — provide analysis, and note that any broker targets cited may be dated. If asked something not covered by the data above, say so honestly rather than inventing numbers.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1000,
+        system:sys,
+        messages:[{role:"user",content:q}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:"Unable to process response.";
+    typing.style.display='none';
+    const bMsg=document.createElement('div');
+    bMsg.className='cmsg b';
+    const fmt=text
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/---/g,'<hr style="border:none;border-top:1px dashed var(--border);margin:8px 0;">')
+      .replace(/\n/g,'<br>');
+    bMsg.innerHTML=fmt;
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');
+    eMsg.className='cmsg b';
+    eMsg.textContent='CB Assist is temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

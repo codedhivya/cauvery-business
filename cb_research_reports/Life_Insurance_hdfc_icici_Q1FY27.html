@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICICI Prudential Life vs HDFC Life — Q1 FY27 Intelligence Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --icici:#c84b2f;--icici-soft:#fef3f0;
+  --hdfc:#be123c;--hdfc-soft:#fff1f2;
+  --star:#7c3aed;--star-soft:#f5f3ff;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;flex-wrap:wrap;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.5rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-icici{background:var(--icici);color:#fff;}.chip-hdfc{background:var(--hdfc);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--star);font-weight:700;}
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.gap-top{margin-top:22px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.icici::before{background:var(--icici);}.co-card.hdfc::before{background:var(--hdfc);}
+.co-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}.b-spec{background:#f3f4f6;color:#4b5563;}
+.b-watch{background:#fff7ed;color:#c2410c;}.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}.b-info{background:#dbeafe;color:#1d4ed8;}
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.icici-a{border-left:4px solid var(--icici);}.kpi.hdfc-a{border-left:4px solid var(--hdfc);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef9c3;color:#a16207;}.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-bar{background:var(--surface2);border-radius:20px;height:6px;overflow:hidden;margin-bottom:10px;}
+.ac-fill{height:6px;border-radius:20px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--star);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--star);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--star);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--star);}
+.chat-send{background:var(--star);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.preset-tab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 6px 0;}
+.preset-tab:hover{border-color:var(--text);color:var(--text);}
+.pt-icici.active{background:var(--icici);border-color:var(--icici);color:#fff;}
+.pt-hdfc.active{background:var(--hdfc);border-color:var(--hdfc);color:#fff;}
+.pt-sector.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.presets-panel{display:none;}.presets-panel.active{display:block;}
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.preset-q{padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:9px;line-height:1.45;}
+.preset-q:hover{border-color:var(--star);background:var(--star-soft);}
+.pq-en{font-weight:600;color:var(--text);}
+.metric-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+.m-btn{padding:6px 14px;font-size:11px;font-weight:700;border:1.5px solid var(--border);border-radius:20px;background:var(--surface);cursor:pointer;transition:all .15s;color:var(--muted);}
+.m-btn.active,.m-btn:hover{background:#181511;color:#fff;border-color:#181511;}
+.cat-tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-right:4px;}
+.cat-life{background:#dbeafe;color:#1d4ed8;}
+.fnote{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-top:20px;font-size:11px;color:var(--muted);line-height:1.7;}
+.fnote strong{color:var(--text);}
+.inv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px;}
+.inv-head{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1.5px solid var(--border);}
+.inv-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px;}
+.inv-row:last-child{border-bottom:none;}
+.reg-card{background:var(--gold-soft);border:1.5px solid #e9c46a;border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;}
+.footer{text-align:center;font-size:11px;color:var(--muted);padding:20px 40px;border-top:1px solid var(--border);margin-top:20px;background:var(--surface);}
+.cb-wm{position:fixed;bottom:16px;right:16px;background:#181511;color:#fff;border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:11px;opacity:.45;pointer-events:none;z-index:50;}
+.cb-wm-logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.1rem;color:var(--gold);}
+.cb-wm-name{font-weight:700;letter-spacing:.04em;}.cb-wm-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.06em;}
+.cat-section-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;padding:10px 16px;border-radius:8px;margin:20px 0 14px;display:flex;align-items:center;gap:10px;}
+.cat-life-bg{background:#eff6ff;border-left:4px solid #1d4ed8;color:#1d4ed8;}
+.lang-section{margin-bottom:20px;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.lang-section-hdr{background:#f5f3ff;padding:10px 16px;font-size:12px;font-weight:800;color:var(--star);border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+.lang-section-hdr.ta-hdr{background:#f0fdf4;color:#15803d;}
+.lang-section-body{padding:12px 16px;}
+.qa-item{margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed var(--border);}
+.qa-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.qa-q{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;display:flex;gap:8px;}
+.qa-a{font-size:11.5px;color:var(--muted);line-height:1.65;margin-left:20px;}
+.qa-co{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;padding:2px 7px;border-radius:4px;background:var(--icici-soft);color:var(--icici);}.qa-co.hdfc-co{background:var(--hdfc-soft);color:var(--hdfc);}
+.verdict-hero{background:linear-gradient(135deg,#181511,#2a241c);color:#fff;border-radius:var(--radius);padding:24px 26px;margin-bottom:20px;}
+.verdict-hero h2{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:8px;color:var(--gold);}
+.verdict-hero p{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.7;max-width:900px;}
+.cbf-badge{display:inline-block;padding:4px 12px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:800;margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left"><div>
+    <h1>ICICI Prudential Life vs HDFC Life</h1>
+    <div class="sub">Q1 FY27 (Apr–Jun 2026) · Business &amp; Investment Analysis · CB Research · Cauvery Business · Elango Industries</div>
+  </div></div>
+  <div class="hdr-right">
+    <span class="chip chip-icici">ICICI Pru Life</span>
+    <span class="chip chip-hdfc">HDFC Life</span>
+    <span class="chip chip-date">16 Jul 2026</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">📊 Dashboard</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">💰 Financials</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">📈 Charts</button>
+  <button class="tab-btn" onclick="showTab('business',this)">🏢 Business Profile</button>
+  <button class="tab-btn" onclick="showTab('investments',this)">🏦 Investments &amp; EV</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">🔍 SWOT</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">🎯 Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">🛡️ Moats</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('school',this)" style="color:#15803d;font-weight:800;">🎓 School</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--star);font-weight:800;">🤖 CB Assist</button>
+</nav>
+<div class="main">
+
+<!-- ══ DASHBOARD ══ -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">&middot; Q1 FY27 actuals &middot; Life Insurance &middot; Cauvery Business Research</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi icici-a"><div class="kl">ICICI Pru PAT &#10003;</div><div class="kv">&#8377;386 Cr</div><div class="kc pos">&#9650; 27.8% YoY</div></div>
+    <div class="kpi icici-a"><div class="kl">ICICI Pru VNB &#10003;</div><div class="kv">&#8377;571 Cr</div><div class="kc pos">&#9650; 24.9% YoY</div></div>
+    <div class="kpi icici-a"><div class="kl">ICICI Pru VNB Margin</div><div class="kv">26.7%</div><div class="kc pos">&#9650; 220 bps</div></div>
+    <div class="kpi hdfc-a"><div class="kl">HDFC Life PAT &#10003;</div><div class="kv">&#8377;611 Cr</div><div class="kc pos">&#9650; 11.9% YoY</div></div>
+    <div class="kpi hdfc-a"><div class="kl">HDFC Life VNB &#10003;</div><div class="kv">&#8377;879 Cr</div><div class="kc pos">&#9650; 9% YoY</div></div>
+    <div class="kpi hdfc-a"><div class="kl">HDFC Life VNB Margin</div><div class="kv">25.0%</div><div class="kc neg">&#9660; 10 bps</div></div>
+  </div>
+
+  <div class="cat-section-title cat-life-bg">&#128737; Life Insurance &mdash; Q1 FY27 Results Snapshot</div>
+
+  <div class="g2" style="margin-bottom:22px;">
+    <div class="co-card icici">
+      <div class="co-name" style="color:var(--icici)">ICICI Prudential Life</div>
+      <div class="co-seg"><span class="cat-tag cat-life">Life</span> Private &middot; ICICI Bank Promoted &middot; ULIP-Heavy &middot; Proposed rename: ICICI Life</div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 PAT &#10003;</span><span class="m-val">&#8377;386.2 Cr (+27.8%)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Premium Income</span><span class="m-val">&#8377;9,749 Cr (+14.7%)</span></div>
+      <div class="m-row"><span class="m-lbl">APE</span><span class="m-val pos">&#8377;2,136 Cr (+14.6%)</span></div>
+      <div class="m-row"><span class="m-lbl">VNB</span><span class="m-val pos">&#8377;571 Cr (+24.9%)</span></div>
+      <div class="m-row"><span class="m-lbl">VNB Margin</span><span class="m-val pos">26.7% (was 24.5%)</span></div>
+      <div class="m-row"><span class="m-lbl">Solvency Ratio</span><span class="m-val pos">225.4% (was 212.3%)</span></div>
+      <div class="m-row"><span class="m-lbl">AUM</span><span class="m-val">&#8377;3.34 lakh Cr (+2.9%)</span></div>
+      <div class="badge-row"><span class="badge b-pos">Retail Protection +60.4%</span><span class="badge b-pos">VNB Margin +220bps</span><span class="badge b-watch">13m Persistency -230bps</span></div>
+    </div>
+    <div class="co-card hdfc">
+      <div class="co-name" style="color:var(--hdfc)">HDFC Life Insurance</div>
+      <div class="co-seg"><span class="cat-tag cat-life">Life</span> Private &middot; HDFC Bank Promoted &middot; India's Largest Private Life Insurer</div>
+      <div class="m-row"><span class="m-lbl">Q1 FY27 PAT (Consol.) &#10003;</span><span class="m-val">&#8377;611 Cr (+11.5%)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Premium Income</span><span class="m-val">&#8377;16,728 Cr (+15.1%)</span></div>
+      <div class="m-row"><span class="m-lbl">APE</span><span class="m-val pos">&#8377;2,970 Cr (+9%)</span></div>
+      <div class="m-row"><span class="m-lbl">VNB</span><span class="m-val pos">&#8377;879 Cr (+9%)</span></div>
+      <div class="m-row"><span class="m-lbl">VNB Margin</span><span class="m-val warn">25.0% (was 25.1%)</span></div>
+      <div class="m-row"><span class="m-lbl">Solvency Ratio</span><span class="m-val pos">185% (was 177%)</span></div>
+      <div class="m-row"><span class="m-lbl">AUM (Standalone)</span><span class="m-val">&#8377;4.01 lakh Cr (+13%)</span></div>
+      <div class="badge-row"><span class="badge b-pos">Retail Protection +42%</span><span class="badge b-pos">AUM Crossed &#8377;4L Cr</span><span class="badge b-watch">&#8377;265 Cr GST Demand</span></div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Sector Quick Snapshot</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Common Themes — Q1 FY27</div>
+      <div class="ac-text">Both insurers opened FY27 on a firm footing, led by <strong>protection-led growth</strong> following the 0% GST regime on term products (effective Sep 2025), which has now delivered three-plus consecutive quarters of 40%+ retail protection APE growth industry-wide. Both companies also strengthened solvency buffers during the quarter — ICICI Pru organically to 225.4%, HDFC Life via a &#8377;1,000 Cr preferential capital infusion from HDFC Bank to 185%. Persistency and GST input-tax-credit disputes remain the key watch items across the sector.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Divergence</div>
+      <div class="ac-text">ICICI Pru delivered <strong>faster VNB and PAT growth off a smaller base</strong> (VNB +24.9%, PAT +27.8%), aided by a weaker Q1 FY26 comparison and sharp protection mix improvement (10.5% of APE vs 7.5%). HDFC Life delivered <strong>larger absolute scale</strong> (APE ~1.4x, VNB ~1.5x, AUM ~1.2x of ICICI Pru) with steadier, lower-variance growth (VNB/PAT +9%/+11.9%), but its VNB margin dipped 10 bps YoY on GST drag versus ICICI Pru's 220 bps expansion.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FINANCIALS ══ -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Financial Results — Q1 FY27 <span class="sec-note">Standalone/Consolidated as reported &middot; YoY comparison</span></div>
+
+  <table style="margin-bottom:24px;">
+    <tr><th>Metric</th><th style="text-align:right">ICICI Pru Life Q1FY27</th><th style="text-align:right">Q1FY26</th><th style="text-align:right">YoY</th><th style="text-align:right">HDFC Life Q1FY27</th><th style="text-align:right">Q1FY26</th><th style="text-align:right">YoY</th></tr>
+    <tr><td class="tb">PAT (&#8377; Cr)</td><td class="num">386.2</td><td class="num">302.1</td><td class="tpos">+27.8%</td><td class="num">611.2*</td><td class="num">548.0*</td><td class="tpos">+11.5%</td></tr>
+    <tr><td class="tb">Net Premium Income (&#8377; Cr)</td><td class="num">9,749</td><td class="num">8,500</td><td class="tpos">+14.7%</td><td class="num">16,728*</td><td class="num">14,539*</td><td class="tpos">+15.1%</td></tr>
+    <tr><td class="tb">Total Premium Income (&#8377; Cr)</td><td class="num">10,251</td><td class="num">8,954</td><td class="tpos">+14.5%</td><td class="num">33,542**</td><td class="num">29,278**</td><td class="tpos">+14.5%</td></tr>
+    <tr><td class="tb">New Business Premium (&#8377; Cr)</td><td class="num">4,866</td><td class="num">4,012</td><td class="tpos">+21.3%</td><td class="num">8,140</td><td class="num">7,268</td><td class="tpos">+12.0%</td></tr>
+    <tr><td class="tb">Renewal Premium (&#8377; Cr)</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">9,020</td><td class="num">7,580</td><td class="tpos">+19.0%</td></tr>
+    <tr><td class="tb">APE (&#8377; Cr)</td><td class="num">2,136</td><td class="num">1,864</td><td class="tpos">+14.6%</td><td class="num">2,970</td><td class="num">2,725</td><td class="tpos">+9.0%</td></tr>
+    <tr><td class="tb">VNB (&#8377; Cr)</td><td class="num">571</td><td class="num">457</td><td class="tpos">+24.9%</td><td class="num">879</td><td class="num">806</td><td class="tpos">+9.0%</td></tr>
+    <tr><td class="tb">VNB Margin</td><td class="num">26.7%</td><td class="num">24.5%</td><td class="tpos">+220bps</td><td class="num">25.0%</td><td class="num">25.1%</td><td class="tneg">-10bps</td></tr>
+    <tr><td class="tb">Solvency Ratio</td><td class="num">225.4%</td><td class="num">212.3%</td><td class="tpos">+1310bps</td><td class="num">185%</td><td class="num">177%^</td><td class="tpos">+800bps</td></tr>
+    <tr><td class="tb">AUM (&#8377; lakh Cr)</td><td class="num">3.34</td><td class="num">3.25</td><td class="tpos">+2.9%</td><td class="num">4.01</td><td class="num">3.55</td><td class="tpos">+13.0%</td></tr>
+  </table>
+  <div class="fnote">*HDFC Life PAT/premium figures are consolidated (incl. HDFC Pension Fund Mgmt). Standalone PAT was &#8377;611 Cr (+11.9% YoY, ex-GST underlying +17%). **Total income including investment income; volatile QoQ due to swings in MTM/investment gains. ^HDFC Life Q1FY26 comparative solvency shown as at Mar-26 (177%) for reference; June-26 print of 185% follows a &#8377;1,000 Cr preferential equity infusion from HDFC Bank completed 16 Jun 2026. All figures in &#8377; en-IN Cr format, sourced from company exchange filings and investor presentations for the quarter ended 30 Jun 2026.</div>
+
+  <div class="sec-hdr gap-top">APE Product Mix — Q1 FY27</div>
+  <table>
+    <tr><th>Segment</th><th style="text-align:right">ICICI Pru APE (&#8377; Cr)</th><th style="text-align:right">YoY</th><th style="text-align:right">% of APE</th><th>Segment</th><th style="text-align:right">HDFC Life</th><th style="text-align:right">% of APE</th></tr>
+    <tr><td class="tb">Protection (Retail)</td><td class="num">596</td><td class="tpos">+45.7%</td><td class="num">10.5% (retail-only)</td><td class="tb">Non-Par Savings</td><td class="num">&mdash;</td><td class="num">22%</td></tr>
+    <tr><td class="tb">Savings</td><td class="num">1,408</td><td class="tpos">+3.8%</td><td class="num">65.9%</td><td class="tb">ULIP</td><td class="num">&mdash;</td><td class="num">44%</td></tr>
+    <tr><td class="tb">Annuity</td><td class="num">133</td><td class="tpos">+33.0%</td><td class="num">6.2%</td><td class="tb">Annuity</td><td class="num">&mdash;</td><td class="num">10% (was 5%)</td></tr>
+    <tr><td class="tb">Group Business</td><td class="num">&mdash;</td><td class="tpos">+38.8%</td><td class="num">22.9%</td><td class="tb">Retail Protection (incl. riders)</td><td class="num">&mdash;</td><td class="num">~11%</td></tr>
+  </table>
+  <div class="fnote">ICICI Pru retail protection was 10.5% of APE, up from 7.5% a year earlier — third straight quarter of &gt;40% YoY retail protection growth industry-wide post the term-insurance GST exemption. HDFC Life's protection mix (retail + riders) reached ~11% of retail APE, up ~200bps YoY; its annuity share doubled to 10% of total APE following the launch of variable-annuity products.</div>
+</div>
+
+<!-- ══ CHARTS ══ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Interactive Charts <span class="sec-note">ICICI Pru Life vs HDFC Life &middot; Q1 FY27</span></div>
+  <div class="metric-sel" id="lifeMetricSel">
+    <button class="m-btn active" onclick="switchLifeMetric('pat',this)">PAT</button>
+    <button class="m-btn" onclick="switchLifeMetric('ape',this)">APE</button>
+    <button class="m-btn" onclick="switchLifeMetric('vnb',this)">VNB</button>
+    <button class="m-btn" onclick="switchLifeMetric('vnbm',this)">VNB Margin</button>
+    <button class="m-btn" onclick="switchLifeMetric('solv',this)">Solvency Ratio</button>
+    <button class="m-btn" onclick="switchLifeMetric('aum',this)">AUM</button>
+  </div>
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-lbl" id="lifeChartTitle">Q1 FY27 Profit After Tax (&#8377; Cr)</div>
+    <canvas id="lifeChart" style="min-height:380px;"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">YoY Growth Comparison — Key Metrics (%)</div>
+    <canvas id="growthChart" style="min-height:380px;"></canvas>
+  </div>
+</div>
+
+<!-- ══ BUSINESS PROFILE ══ -->
+<div class="panel" id="tab-business">
+  <div class="sec-hdr">Business Profile <span class="sec-note">What each company does &middot; Distribution &middot; Product mix &middot; Promoter structure</span></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="co-hdr-swot" style="color:var(--icici)">ICICI Prudential Life</div>
+      <div class="ac-text">A joint venture between <strong>ICICI Bank</strong> and UK-based <strong>Prudential Corporation Holdings</strong>, ICICI Pru Life is among India's largest private life insurers, historically skewed toward ULIP savings products (~66% of Q1FY27 APE). It distributes through 52 bank partnerships (26,800+ branches), 1,500+ non-bank tie-ups and 2.44 lakh+ advisors, alongside a growing group and online/proprietary channel (22.9% of APE from group business in Q1FY27). The company is mid-transition: its board has approved renaming the entity to <strong>ICICI Life Insurance Limited</strong>, following Prudential's reclassification from promoter to investor and a plan to cut its stake from 21.91% toward below 10% after Prudential's separate acquisition of Bharti Life. Strategic focus for FY27 is on growing absolute VNB via a richer protection and group mix, and reviving the agency channel through a micro-market strategy (agency APE had declined 3.4% YoY in Q4FY26).</div>
+    </div>
+    <div class="card">
+      <div class="co-hdr-swot" style="color:var(--hdfc)">HDFC Life Insurance</div>
+      <div class="ac-text">Promoted by <strong>HDFC Bank</strong> (stake raised via a &#8377;1,000 Cr preferential allotment completed 16 Jun 2026), HDFC Life is India's largest private life insurer by several scale metrics, with 500+ distribution partnerships spanning banks, NBFCs, MFIs, SFBs and brokers. It runs a more diversified channel mix than peers, with the agency channel (700+ branches, 260+ opened since FY24) growing 21% YoY in Q1FY27 and reducing dependence on the HDFC Bank counter. Product mix remains ULIP-heavy (44% of APE) with non-par savings at 22% and a fast-scaling annuity book (10% of APE, up from 5%) following new variable-annuity launches. The company crossed &#8377;4 lakh Cr standalone AUM in the quarter (group AUM, including HDFC Pension Fund Management, &#8377;5.76 lakh Cr) and continues to target VNB growth broadly in line with APE growth for FY27.</div>
+    </div>
+  </div>
+
+  <div class="sec-hdr gap-top">Distribution &amp; Scale Comparison</div>
+  <table>
+    <tr><th>Parameter</th><th>ICICI Prudential Life</th><th>HDFC Life</th></tr>
+    <tr><td class="tb">Promoter</td><td>ICICI Bank + Prudential Corp Holdings (reducing stake)</td><td>HDFC Bank (stake increasing)</td></tr>
+    <tr><td class="tb">MD &amp; CEO</td><td>Anup Bagchi</td><td>Vibha Padalkar</td></tr>
+    <tr><td class="tb">Bank Partnerships</td><td>52 (26,800+ branches)</td><td>Part of 500+ total distribution partnerships</td></tr>
+    <tr><td class="tb">Agency / Advisors</td><td>2.44 lakh+ advisors</td><td>700+ agency branches (260+ new since FY24)</td></tr>
+    <tr><td class="tb">Policies sold (Q1FY27)</td><td>&mdash;</td><td>2.82 lakh individual policies (+13% YoY)</td></tr>
+    <tr><td class="tb">In-force/New Sum Assured</td><td>Total in-force &#8377;48.06 lakh Cr; retail NB SA +45.9% to &#8377;1.13 lakh Cr</td><td>Total insurance cover +31% YoY to &#8377;1.27 lakh Cr (Q1FY27 sales)</td></tr>
+    <tr><td class="tb">Claim Settlement Ratio</td><td>99.3%</td><td>&mdash; (not disclosed this release)</td></tr>
+    <tr><td class="tb">Corporate Action</td><td>Board approved rename to "ICICI Life Insurance Limited"</td><td>&#8377;1,000 Cr preferential allotment to HDFC Bank (Jun-26)</td></tr>
+  </table>
+</div>
+
+<!-- ══ INVESTMENTS & EV ══ -->
+<div class="panel" id="tab-investments">
+  <div class="sec-hdr">Investments, Embedded Value &amp; Capital Position <span class="sec-note">Solvency &middot; EV &middot; AUM &middot; Cost Ratios</span></div>
+
+  <div class="g2">
+    <div class="inv-card">
+      <div class="inv-head" style="color:var(--icici)">ICICI Prudential Life</div>
+      <div class="inv-row"><span>AUM</span><span class="m-val">&#8377;3.34 lakh Cr (+2.9% YoY)</span></div>
+      <div class="inv-row"><span>Solvency Ratio</span><span class="m-val pos">225.4% (vs 212.3% YoY, min. req. 150%)</span></div>
+      <div class="inv-row"><span>Savings Cost-to-Premium</span><span class="m-val pos">13.6% (-50bps YoY)</span></div>
+      <div class="inv-row"><span>Total Cost-to-Premium</span><span class="m-val warn">21.8% (vs 21.2% YoY, protection-mix led)</span></div>
+      <div class="inv-row"><span>13th-Month Persistency</span><span class="m-val warn">80.2% (vs 82.5% YoY)</span></div>
+      <div class="inv-row"><span>61st-Month Persistency</span><span class="m-val pos">61.5% (vs 58.6% YoY)</span></div>
+      <div class="inv-row"><span>Death Claims Paid</span><span class="m-val">&#8377;1,306 Cr</span></div>
+      <div class="inv-row"><span>Maturity/Survival Benefits Paid</span><span class="m-val">&#8377;3,360 Cr</span></div>
+    </div>
+    <div class="inv-card">
+      <div class="inv-head" style="color:var(--hdfc)">HDFC Life</div>
+      <div class="inv-row"><span>Standalone AUM</span><span class="m-val pos">&#8377;4,00,870 Cr (+13% YoY, crossed &#8377;4L Cr)</span></div>
+      <div class="inv-row"><span>Group AUM (incl. Pension Fund)</span><span class="m-val pos">&#8377;5,75,700 Cr</span></div>
+      <div class="inv-row"><span>Solvency Ratio</span><span class="m-val pos">185% (vs 177% Mar-26, min. req. 150%)</span></div>
+      <div class="inv-row"><span>Indian Embedded Value (IEV)</span><span class="m-val pos">&#8377;65,860 Cr (from &#8377;62,140 Cr, Mar-26)</span></div>
+      <div class="inv-row"><span>EV Operating Profit (EVOP, 12m rolling)</span><span class="m-val pos">14.7%</span></div>
+      <div class="inv-row"><span>5-Year EV CAGR</span><span class="m-val pos">18%</span></div>
+      <div class="inv-row"><span>Underwriting Profit</span><span class="m-val pos">&#8377;360 Cr (+15% YoY)</span></div>
+      <div class="inv-row"><span>Shareholder Surplus</span><span class="m-val">&#8377;260 Cr (vs &#8377;240 Cr YoY)</span></div>
+    </div>
+  </div>
+
+  <div class="sec-hdr gap-top">HDFC Life — EV Walk (Mar-26 to Jun-26, &#8377; Cr)</div>
+  <table>
+    <tr><th>Component</th><th style="text-align:right">&#8377; Cr</th></tr>
+    <tr><td>Opening IEV (31 Mar 2026)</td><td class="num">62,140</td></tr>
+    <tr><td>Unwind</td><td class="tpos">+1,250</td></tr>
+    <tr><td>VNB (Q1 FY27)</td><td class="tpos">+880</td></tr>
+    <tr><td>Investment Variance</td><td class="tpos">+580</td></tr>
+    <tr><td>Net Capital Movement (incl. &#8377;1,000 Cr preferential issue)</td><td class="tpos">+1,010</td></tr>
+    <tr><td class="tb">Closing IEV (30 Jun 2026)</td><td class="num tb">65,860</td></tr>
+  </table>
+  <div class="fnote">ICICI Pru does not disclose a quarterly IEV walk; FY26 year-end Embedded Value stood at &#8377;52,989 Cr (+10.5% YoY), with the Jun-26 quarter update expected at H1 FY27 reporting. Both insurers remain comfortably above IRDAI's 150% minimum solvency requirement; HDFC Life's improvement was capital-assisted (promoter infusion), while ICICI Pru's was organic, purely from retained surplus and business mix.</div>
+</div>
+
+<!-- ══ SWOT ══ -->
+<div class="panel" id="tab-swot">
+  <div class="sec-hdr">SWOT Analysis <span class="sec-note">Q1 FY27 lens</span></div>
+
+  <div class="co-hdr-swot" style="color:var(--icici)">ICICI Prudential Life</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Sharp VNB margin expansion (+220bps to 26.7%)</li><li>Retail protection APE +60.4% — 3rd straight quarter &gt;40%</li><li>Solvency at 225.4%, well above requirement</li><li>ICICI Bank distribution backbone</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>13th-month persistency slipped to 80.2% (-230bps)</li><li>Savings APE growth muted at just 3.8%</li><li>Agency channel still recovering (-3.4% APE in Q4FY26)</li><li>Total cost-to-premium up 60bps YoY</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Protection under-penetration in India (~3% GDP vs 7% global)</li><li>Group business scaling fast (+38.8% YoY)</li><li>Rebrand to "ICICI Life" may sharpen bank-led identity</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Promoter stake dilution (Prudential exit) creates overhang</li><li>GST input-tax-credit disputes industry-wide</li><li>ULIP-heavy book sensitive to equity market volatility</li></ul></div>
+  </div>
+
+  <div class="co-hdr-swot gap-top" style="color:var(--hdfc)">HDFC Life</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Largest scale — AUM crossed &#8377;4 lakh Cr</li><li>Diversified channel mix; agency +21% reduces bank dependence</li><li>Consistent VNB-in-line-with-APE discipline</li><li>Fresh capital cushion from HDFC Bank (solvency 185%)</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>VNB margin dipped 10bps YoY on GST drag</li><li>Solvency improvement partly capital-infusion assisted, not fully organic</li><li>&#8377;265 Cr fresh GST demand order received</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Annuity book scaling fast (10% of APE, was 5%)</li><li>New Tier 2/3 agency branches (260+ since FY24) still ramping</li><li>Non-par savings mix improving toward mid-20s</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>ULIP concentration (44% of APE) ties revenue to equity markets</li><li>Surrender value regulation could pressure persistency/margins</li><li>Historic HDFC Bank counter-share dependency (~60s%)</li></ul></div>
+  </div>
+</div>
+
+<!-- ══ ANALYST RATINGS ══ -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Ratings &amp; Targets <span class="sec-note">Consensus from brokerage notes around Q1 FY27 results &middot; Jul 2026</span></div>
+
+  <div class="analyst-card">
+    <div class="ac-head">
+      <div class="ac-name" style="color:var(--icici)">ICICI Prudential Life <span style="font-size:10px;color:var(--muted);font-weight:500;">NSE: ICICIPRULI</span></div>
+      <span class="rat-pill rp-buy">BUY (Nuvama)</span>
+    </div>
+    <div class="ac-tp">Target: &#8377;750</div>
+    <div class="ac-cmp">CMP ~&#8377;523 (close, 15 Jul 2026) &middot; Implied upside ~43%</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:70%;background:var(--pos);"></div></div>
+    <div class="ac-text">Nuvama values ICICI Pru at FY27E/FY28E P/EV of 1.4x/1.2x. Two-year individual APE CAGR of ~2.5% (total APE CAGR ~8.4%) is flagged as tracking below the private-market pace, though April-26 monthly business data showed 24% APE growth off a weak base. VNB margin expansion and the protection-led mix shift are the key positives cited.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head">
+      <div class="ac-name" style="color:var(--hdfc)">HDFC Life <span style="font-size:10px;color:var(--muted);font-weight:500;">NSE: HDFCLIFE</span></div>
+      <span class="rat-pill rp-buy">BUY (Nuvama / Motilal Oswal / Nomura)</span>
+    </div>
+    <div class="ac-tp">Targets: &#8377;850 (Nuvama) &middot; &#8377;730 (Nomura) &middot; &#8377;690 (Motilal Oswal)</div>
+    <div class="ac-cmp">CMP ~&#8377;569–579 (post-results, 15–16 Jul 2026) &middot; Implied upside range ~19–49%</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:82%;background:var(--pos);"></div></div>
+    <div class="ac-text">Nuvama's most bullish target (&#8377;850) is based on FY27E/FY28E P/EV of 1.9x/1.6x, citing individual APE CAGR of ~13.4% over two years and steady VNB-in-line-with-APE execution. Nomura recently upgraded to Buy (TP &#8377;730) citing a weak banca channel now being offset by an improving agency channel and attractive valuation after the stock's ~24% YTD decline. Motilal Oswal (TP &#8377;690) points to steady growth, better product mix and resilient VNB margins as the core thesis.</div>
+  </div>
+
+  <div class="fnote">Brokerage views reflect third-party research available around the Q1 FY27 result dates and are reproduced for informational purposes only — this is not a buy/sell recommendation from Cauvery Business / CB Research, which does not provide investment advice under its SEBI Research Analyst registration. Coverage samples are illustrative, not exhaustive; investors should refer to full broker reports and consult a licensed advisor before acting.</div>
+</div>
+
+<!-- ══ MOATS ══ -->
+<div class="panel" id="tab-moats">
+  <div class="sec-hdr">Moats &amp; USPs <span class="sec-note">Structural competitive advantages</span></div>
+  <div class="cat-section-title cat-life-bg">&#128737; Life Insurance Moats</div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="moat-card" style="border-color:#f0d5cc;">
+      <div class="moat-co" style="color:var(--icici)">ICICI Prudential Life</div>
+      <div class="moat-title">&#127970; ICICI Bank Integration + EV Lock-In</div>
+      <div class="moat-body">Co-distribution with one of India's most tech-advanced private banks gives ICICI Pru a low-cost acquisition engine across 26,800+ branches. iProtect Smart remains among India's most-sold online term plans, and the retail protection surge (+60.4% YoY) shows this brand-tech combo converting the GST tailwind faster than most peers. FY26 embedded value of ₹52,989 Cr represents locked-in future cash flows from the in-force book — profit that keeps flowing even without a single new policy sold. A 225.4% solvency ratio, built organically this quarter, adds a conservative capital moat.</div>
+      <span class="moat-tag" style="background:var(--icici-soft);color:var(--icici);">BANCASSURANCE + EV LOCK-IN</span>
+    </div>
+    <div class="moat-card" style="border-color:#fbcfe0;">
+      <div class="moat-co" style="color:var(--hdfc)">HDFC Life Insurance</div>
+      <div class="moat-title">&#127970; HDFC Bank Distribution + Diversification Moat</div>
+      <div class="moat-body">HDFC Life's historic moat was near-exclusive access to HDFC Bank's franchise; its current moat-building move is diversification away from that single-channel dependence — 500+ total distribution partnerships and an agency channel now growing 21% YoY through 700+ branches (260+ opened since FY24, mostly in Tier 2/3 markets). This reduces counter-party concentration risk while retaining the HDFC brand-trust advantage. Group AUM crossing ₹5.76 lakh Cr and an 18% five-year EV CAGR reflect a scale moat few private peers can match.</div>
+      <span class="moat-tag" style="background:var(--hdfc-soft);color:var(--hdfc);">HDFC BRAND + CHANNEL DIVERSIFICATION</span>
+    </div>
+  </div>
+  <div class="card" style="max-width:960px;">
+    <div class="card-lbl">Moat Comparison — Q1 FY27 Lens</div>
+    <table>
+      <thead><tr><th>Moat Dimension</th><th>ICICI Prudential Life</th><th>HDFC Life</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Bank Distribution</td><td>52 bank partnerships, 26,800+ branches</td><td>500+ total partnerships; reducing single-bank dependence</td></tr>
+        <tr><td class="tb">Brand Equity</td><td>ICICI franchise trust; proposed rebrand to "ICICI Life"</td><td>HDFC brand halo; strongest private life brand recall</td></tr>
+        <tr><td class="tb">Capital Cushion</td><td>225.4% solvency (organic)</td><td>185% solvency (capital-assisted)</td></tr>
+        <tr><td class="tb">Value Lock-In</td><td>EV ₹52,989 Cr (FY26)</td><td>EV ₹65,860 Cr (Jun-26), 18% 5yr CAGR</td></tr>
+        <tr><td class="tb">Emerging Edge</td><td>Retail protection momentum (+60.4%)</td><td>Agency channel scale-up + annuity ramp</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ VERDICT ══ -->
+<div class="panel" id="tab-verdict">
+  <div class="verdict-hero">
+    <h2>&#127942; Verdict — Q1 FY27</h2>
+    <p>ICICI Prudential Life delivered the <strong>sharper quarter-on-quarter improvement</strong> — faster VNB/PAT growth, wider margin expansion and stronger organic solvency build, aided by a softer year-ago base and an aggressive protection-mix pivot. HDFC Life delivered the <strong>steadier, larger-scale performance</strong> — bigger absolute APE/VNB/AUM, more diversified distribution, and a fast-growing annuity franchise, but with a slightly compressed margin and capital-assisted solvency gain. Both remain squarely in "protection-led growth, GST normalisation" mode heading into FY27.</p>
+    <span class="cbf-badge" style="background:var(--icici-soft);color:var(--icici);">ICICI Pru — Momentum &amp; Margin Leader (Q1FY27)</span>
+    <span class="cbf-badge" style="background:var(--hdfc-soft);color:var(--hdfc);">HDFC Life — Scale &amp; Distribution Leader (Q1FY27)</span>
+  </div>
+
+  <div class="sec-hdr">Business &amp; Investment Analysis — Side by Side</div>
+  <table>
+    <tr><th>Lens</th><th>ICICI Prudential Life</th><th>HDFC Life</th></tr>
+    <tr><td class="tb">Growth momentum (VNB/PAT YoY)</td><td class="tpos">Faster (+24.9% / +27.8%)</td><td>Steadier (+9% / +11.9%)</td></tr>
+    <tr><td class="tb">Margin trend</td><td class="tpos">Expanding (+220bps)</td><td class="tneg">Marginally compressing (-10bps)</td></tr>
+    <tr><td class="tb">Absolute scale (APE/VNB/AUM)</td><td>Smaller</td><td class="tpos">~1.2–1.5x larger</td></tr>
+    <tr><td class="tb">Capital position</td><td class="tpos">Organic build (225.4%)</td><td>Infusion-assisted (185%)</td></tr>
+    <tr><td class="tb">Persistency trend</td><td class="tneg">13m down, 61m up (mixed)</td><td>Not disclosed this release</td></tr>
+    <tr><td class="tb">Corporate action overhang</td><td class="tneg">Promoter (Prudential) stake reduction</td><td class="tpos">Promoter (HDFC Bank) stake increase</td></tr>
+    <tr><td class="tb">Brokerage coverage breadth</td><td>Limited sample (1 note reviewed)</td><td>Broader sample (3 notes reviewed)</td></tr>
+  </table>
+
+  <div class="fnote"><strong>Disclaimer:</strong> This is a research and educational dashboard prepared by CB Research (Cauvery Business), a SEBI-registered Research Analyst entity. It presents factual results and third-party brokerage views for informational purposes and does not constitute investment advice or a recommendation to buy, sell or hold any security. Please consult your financial advisor before making investment decisions.</div>
+</div>
+
+<!-- ══ SCHOOL ══ -->
+<div class="panel" id="tab-school">
+  <div style="background:linear-gradient(135deg,#f0fdf4 0%,#eff6ff 100%);border:2px solid #86efac;border-radius:12px;padding:20px 26px;margin-bottom:24px;display:flex;align-items:center;gap:18px;">
+    <div style="font-size:2.5rem;line-height:1;">&#127891;</div>
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#166534;line-height:1.2;">Life Insurance School</div>
+      <div style="font-size:12px;color:#15803d;margin-top:4px;">Every metric in this dashboard — explained simply, with real ICICI Pru / HDFC Life numbers and a Manufacturing comparison</div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">&#127891; Insurance Metrics &mdash; Explained Simply <span class="sec-note">&middot; With real-world examples &middot; Manufacturing comparison</span></div>
+
+  <div class="g2" style="margin-bottom:22px;">
+    <div class="card">
+      <div class="card-lbl">&#127981; Manufacturing vs Insurance — The Analogy</div>
+      <table>
+        <thead><tr><th>Manufacturing Term</th><th>Insurance Equivalent</th><th>Why Same?</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue / Sales</td><td><span class="badge b-info">GWP / Premium Income</span></td><td>Premium = money coming in</td></tr>
+          <tr><td class="tb">Future Order Profitability</td><td><span class="badge b-info">VNB</span></td><td>Value of business written today, paid over years</td></tr>
+          <tr><td class="tb">Gross Margin %</td><td><span class="badge b-info">VNB Margin</span></td><td>Profit per &#8377;100 of premium written</td></tr>
+          <tr><td class="tb">Net Worth / Book Value</td><td><span class="badge b-info">Embedded Value (EV)</span></td><td>Worth today + locked future profits</td></tr>
+          <tr><td class="tb">ROE</td><td><span class="badge b-info">RoEV / EVOP</span></td><td>Return on capital deployed</td></tr>
+          <tr><td class="tb">Raw Material Cost</td><td><span class="badge b-info">Claims</span></td><td>The "cost" the insurer cannot avoid</td></tr>
+          <tr><td class="tb">Customer Repeat Business</td><td><span class="badge b-info">Persistency</span></td><td>% customers renewing — stickiness</td></tr>
+          <tr><td class="tb">Capital Adequacy (CRAR)</td><td><span class="badge b-info">Solvency Ratio</span></td><td>Safety buffer for unexpected claims</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;padding:10px 12px;background:#f0fdf4;border-left:3px solid #15803d;border-radius:6px;font-size:11.5px;color:#166534;line-height:1.65;">
+        <strong>Key difference:</strong> Manufacturing companies are judged mainly on <em>current profits</em>. Life insurers are judged on <em>future profitability</em> (VNB), <em>capital strength</em> (Solvency), and <em>customer retention</em> (Persistency) — which is why HDFC Life's larger PAT doesn't automatically make it the "better" business this quarter; ICICI Pru's faster VNB growth and margin expansion matter just as much.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">&#128270; Quick Reference — What to Watch for a Life Insurer</div>
+      <table>
+        <thead><tr><th>Metric</th><th>ICICI Pru Q1FY27</th><th>HDFC Life Q1FY27</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">VNB Growth</td><td class="num tpos">+24.9%</td><td class="num">+9.0%</td></tr>
+          <tr><td class="tb">VNB Margin</td><td class="num tpos">26.7%</td><td class="num warn">25.0%</td></tr>
+          <tr><td class="tb">13th Month Persistency</td><td class="num warn">80.2%</td><td class="num">n/a this release</td></tr>
+          <tr><td class="tb">Solvency Ratio</td><td class="num tpos">225.4%</td><td class="num">185%</td></tr>
+          <tr><td class="tb">EV Growth (rolling)</td><td class="num">FY26: +10.5%</td><td class="num tpos">EVOP 14.7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="cat-section-title cat-life-bg" style="margin-bottom:16px;">&#127891; Key Metrics — Explained with Examples</div>
+  <div class="g3" style="margin-bottom:16px;">
+
+    <div style="background:var(--surface);border:1.5px solid #f0d5cc;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="background:var(--icici-soft);color:var(--icici);font-weight:900;font-size:1.1rem;padding:6px 12px;border-radius:8px;font-family:'IBM Plex Mono',monospace;">APE</div>
+        <div><div style="font-weight:800;font-size:12.5px;">Annualised Premium Equivalent</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">Standardised New Business Measure</div></div>
+      </div>
+      <div style="font-size:12px;line-height:1.7;color:var(--text);margin-bottom:10px;"><strong>Formula:</strong> Regular Annual Premium + 10% of Single Premium.<br><strong>Why 10%?</strong> A single &#8377;10 Cr premium is economically equivalent to ~&#8377;1 Cr/year regular premium — both are compared on the same basis.</div>
+      <div style="background:#fef3f0;border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.65;border-left:3px solid var(--icici);">
+        <strong>&#128161; Example:</strong> ICICI Pru's Q1FY27 APE of &#8377;2,136 Cr blends regular premium from savings/protection policies with 10% of single-premium collections — this is why APE (not raw premium) is used to compare insurers with different single-vs-regular premium mixes.
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1.5px solid #f0d5cc;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="background:var(--icici-soft);color:var(--icici);font-weight:900;font-size:1.1rem;padding:6px 12px;border-radius:8px;font-family:'IBM Plex Mono',monospace;">VNB</div>
+        <div><div style="font-weight:800;font-size:12.5px;">Value of New Business</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">= Future Order Profitability</div></div>
+      </div>
+      <div style="font-size:12px;line-height:1.7;color:var(--text);margin-bottom:10px;"><strong>What it is:</strong> Present value of all future profits expected from policies sold during the period. It is the single most important life insurance profitability metric — more important than reported PAT.</div>
+      <div style="background:#fef3f0;border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.65;border-left:3px solid var(--icici);">
+        <strong>&#128161; Example:</strong> ICICI Pru wrote &#8377;2,136 Cr of APE in Q1FY27 and expects &#8377;571 Cr of that to become profit over the life of those policies (VNB margin 26.7%). HDFC Life wrote more APE (&#8377;2,970 Cr) but a slightly lower share (25.0%) converts to future profit — showing bigger volume doesn't always mean better unit economics.
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1.5px solid #fbcfe0;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="background:var(--hdfc-soft);color:var(--hdfc);font-weight:900;font-size:.85rem;padding:6px 10px;border-radius:8px;font-family:'IBM Plex Mono',monospace;">EV</div>
+        <div><div style="font-weight:800;font-size:12.5px;">Embedded Value</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">= Net Worth + Locked Future Profit</div></div>
+      </div>
+      <div style="font-size:12px;line-height:1.7;color:var(--text);margin-bottom:10px;"><strong>What it is:</strong> Shareholders' net worth today, plus the present value of profits locked in from all in-force policies (not just this year's new business). Think of it as book value + a claim on decades of future cash flow.</div>
+      <div style="background:#fff1f2;border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.65;border-left:3px solid var(--hdfc);">
+        <strong>&#128161; Example:</strong> HDFC Life's IEV grew from &#8377;62,140 Cr to &#8377;65,860 Cr in just one quarter — &#8377;1,250 Cr came from "unwind" (the discount on last year's future profits simply getting one quarter closer), &#8377;880 Cr from new VNB, and the rest from investment gains and fresh capital. This is why life insurers are valued on P/EV, not P/E.
+      </div>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-bottom:16px;">
+    <div style="background:var(--surface);border:1.5px solid #f0d5cc;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="background:var(--icici-soft);color:var(--icici);font-weight:900;font-size:.85rem;padding:6px 10px;border-radius:8px;font-family:'IBM Plex Mono',monospace;">PERS</div>
+        <div><div style="font-weight:800;font-size:12.5px;">Persistency Ratio</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">= Customer Renewal Rate</div></div>
+      </div>
+      <div style="font-size:12px;line-height:1.7;color:var(--text);margin-bottom:10px;"><strong>What it is:</strong> % of policyholders who keep paying premiums after a given number of months (13th month = after year 1; 61st month = after year 5). A policy that lapses stops generating future profit — so falling persistency directly threatens VNB and EV.</div>
+      <div style="background:#fef3f0;border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.65;border-left:3px solid var(--icici);">
+        <strong>&#128161; Example:</strong> ICICI Pru's 13th-month persistency dipped to 80.2% from 82.5% — meaning nearly 1 in 5 new policyholders didn't pay their year-2 premium. That's a metric worth watching even though headline PAT and VNB both grew strongly this quarter.
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1.5px solid #e9c46a;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="background:var(--gold-soft);color:var(--gold);font-weight:900;font-size:.9rem;padding:6px 10px;border-radius:8px;font-family:'IBM Plex Mono',monospace;">SOLV</div>
+        <div><div style="font-weight:800;font-size:12.5px;">Solvency Ratio</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">= Capital Adequacy (like CRAR for banks)</div></div>
+      </div>
+      <div style="font-size:12px;line-height:1.7;color:var(--text);margin-bottom:10px;"><strong>Formula:</strong> Available Capital ÷ Required Capital. <strong>IRDAI mandates minimum 150%.</strong> Below this = regulatory action; above = safety cushion.</div>
+      <div style="background:var(--gold-soft);border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.65;border-left:3px solid var(--gold);">
+        <strong>&#128161; Example:</strong> Think of it as a dam. IRDAI requires a dam 10 metres high (150%). ICICI Pru's dam is 22.5 metres (225.4%) — built organically from retained surplus. HDFC Life's dam is 18.5 metres (185%) — partly built by HDFC Bank pouring in extra concrete (a &#8377;1,000 Cr capital infusion) this quarter.
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1.5px solid #fbcfe0;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="background:var(--hdfc-soft);color:var(--hdfc);font-weight:900;font-size:.85rem;padding:6px 10px;border-radius:8px;font-family:'IBM Plex Mono',monospace;">P/EV</div>
+        <div><div style="font-weight:800;font-size:12.5px;">Price to Embedded Value</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">= The Life Insurer's "P/E"</div></div>
+      </div>
+      <div style="font-size:12px;line-height:1.7;color:var(--text);margin-bottom:10px;"><strong>What it is:</strong> Market cap ÷ Embedded Value. Life insurers are valued this way instead of P/E because current-year PAT understates true economic value (locked-in future profit sits in EV, not in the P&amp;L).</div>
+      <div style="background:#fff1f2;border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.65;border-left:3px solid var(--hdfc);">
+        <strong>&#128161; Example:</strong> Nuvama values HDFC Life at FY27E/28E P/EV of 1.9x/1.6x and ICICI Pru at a lower 1.4x/1.2x — the market is willing to pay more per rupee of embedded value for HDFC Life's larger scale and channel diversification, even though ICICI Pru grew VNB and margin faster this quarter.
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL INSIGHT BOX -->
+  <div style="background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1.5px solid #86efac;border-radius:12px;padding:20px 24px;margin-top:8px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#166534;margin-bottom:10px;">&#129504; How to Read a Life Insurer's Quarter in 60 Seconds</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:11.5px;line-height:1.7;">
+      <div style="background:#fff;border-radius:8px;padding:12px 14px;border:1px solid #bbf7d0;">
+        <div style="font-weight:800;color:var(--icici);margin-bottom:6px;">Checklist — ask of every insurer</div>
+        <div>1. Is APE growing? (&gt;10% = healthy)</div>
+        <div>2. Is VNB Margin expanding or contracting?</div>
+        <div>3. Is EV/IEV growing at &gt;15% a year (or per-quarter EVOP strong)?</div>
+        <div>4. Is 13th-month persistency above 80%?</div>
+        <div>5. Is solvency growth organic or capital-infusion led?</div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:12px 14px;border:1px solid #bbf7d0;">
+        <div style="font-weight:800;color:var(--hdfc);margin-bottom:6px;">Applying it to Q1 FY27</div>
+        <div>ICICI Pru: APE +14.6% &#10003; &middot; VNB margin expanding &#10003; &middot; persistency softening &#10007;</div>
+        <div>HDFC Life: APE +9% &#10003; &middot; VNB margin flat/slightly down &#10007; &middot; solvency capital-assisted &#9888;&#65039;</div>
+        <div style="margin-top:6px;color:var(--muted);">Neither scorecard is a clean sweep — that's normal for two well-run, mature private insurers in the same quarter.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CB ASSIST ══ -->
+<div class="panel" id="tab-cbassist">
+  <div class="sec-hdr">&#129302; CB Assist — ICICI Pru Life vs HDFC Life <span class="sec-note">AI Research Assistant &middot; English &amp; Tamil &middot; Cauvery Business</span></div>
+
+  <div class="preset-tab pt-icici active" onclick="switchInsPreset('icici',this)">ICICI Pru Life</div>
+  <div class="preset-tab pt-hdfc" onclick="switchInsPreset('hdfc',this)">HDFC Life</div>
+  <div class="preset-tab pt-sector" onclick="switchInsPreset('sector',this)">Sector / Compare</div>
+
+  <div class="presets-panel active" id="ins-preset-icici">
+    <div class="preset-qs">
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">Why did ICICI Pru's VNB margin jump so much this quarter?</span></div>
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">What is driving the retail protection surge?</span></div>
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">Why is ICICI Pru changing its name?</span></div>
+    </div>
+  </div>
+  <div class="presets-panel" id="ins-preset-hdfc">
+    <div class="preset-qs">
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">Why did HDFC Life's solvency jump to 185%?</span></div>
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">How is HDFC Life reducing HDFC Bank dependence?</span></div>
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">What does the &#8377;265 Cr GST demand mean?</span></div>
+    </div>
+  </div>
+  <div class="presets-panel" id="ins-preset-sector">
+    <div class="preset-qs">
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">Which insurer had the better Q1 FY27?</span></div>
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">How is the GST reform affecting both companies?</span></div>
+      <div class="preset-q" onclick="askInsPreset(this)"><span class="pq-en">Compare embedded value trends of both companies</span></div>
+    </div>
+  </div>
+
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist &mdash; Live Research Q&amp;A</div>
+    <div class="chat-msgs" id="cbInsMsgs">
+      <div class="chat-msg bot">Ask me anything about ICICI Prudential Life or HDFC Life's Q1 FY27 results — business performance, VNB, margins, solvency, or valuation context. Kேள்வியை தமிழிலும் கேட்கலாம்.</div>
+    </div>
+    <div class="typing-ind" id="cbInsTyping"><span></span><span></span><span></span></div>
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="cbInsInput" placeholder="Ask about ICICI Pru Life / HDFC Life Q1 FY27..." onkeypress="if(event.key==='Enter')sendInsChat()">
+      <button class="chat-send" id="cbInsSend" onclick="sendInsChat()">Ask</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">CB Research &middot; Cauvery Business &middot; Elango Industries &middot; Data sourced from company exchange filings, investor presentations and earnings calls for the quarter ended 30 Jun 2026. Not investment advice.</div>
+<div class="cb-wm"><span class="cb-wm-logo">C</span><div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">CAUVERY BUSINESS</div></div></div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+const LIFE_LABELS = {
+  pat:'Q1 FY27 Profit After Tax (&#8377; Cr)',
+  ape:'Q1 FY27 APE — Annualised Premium Equivalent (&#8377; Cr)',
+  vnb:'Q1 FY27 Value of New Business (&#8377; Cr)',
+  vnbm:'Q1 FY27 VNB Margin (%)',
+  solv:'Solvency Ratio (%)',
+  aum:'Assets Under Management (&#8377; lakh Cr)'
+};
+const LIFE_DATA = {
+  pat:[386.2, 611.2],
+  ape:[2136, 2970],
+  vnb:[571, 879],
+  vnbm:[26.7, 25.0],
+  solv:[225.4, 185],
+  aum:[3.34, 4.01]
+};
+const LIFE_COLORS = ['#c84b2f', '#be123c'];
+const LIFE_LABELS_X = ['ICICI Prudential Life', 'HDFC Life'];
+
+const valueLabelPlugin = {
+  id:'valueLabel',
+  afterDatasetsDraw(chart) {
+    const {ctx} = chart;
+    chart.data.datasets.forEach((ds, i) => {
+      const meta = chart.getDatasetMeta(i);
+      meta.data.forEach((bar, idx) => {
+        const val = ds.data[idx];
+        ctx.save();
+        ctx.font = '700 11px IBM Plex Mono, monospace';
+        ctx.fillStyle = '#181511';
+        ctx.textAlign = 'center';
+        ctx.fillText(val.toLocaleString('en-IN'), bar.x, bar.y - 8);
+        ctx.restore();
+      });
+    });
+  }
+};
+
+let lifeChart;
+function initLifeChart() {
+  const ctx = document.getElementById('lifeChart').getContext('2d');
+  lifeChart = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: LIFE_LABELS_X,
+      datasets:[{ label:'Q1 FY27 PAT', data: LIFE_DATA.pat, backgroundColor: LIFE_COLORS, borderRadius:6, barPercentage:0.5 }]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{display:false} },
+      scales:{ y:{ beginAtZero:true, grid:{color:'#e2ddd5'} }, x:{ grid:{display:false} } }
+    },
+    plugins:[valueLabelPlugin]
+  });
+}
+
+function switchLifeMetric(metric, btn) {
+  document.querySelectorAll('#lifeMetricSel .m-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('lifeChartTitle').innerHTML = LIFE_LABELS[metric];
+  lifeChart.data.datasets[0].data = LIFE_DATA[metric];
+  lifeChart.data.datasets[0].label = LIFE_LABELS[metric];
+  lifeChart.update();
+}
+
+let growthChart;
+function initGrowthChart() {
+  const ctx = document.getElementById('growthChart').getContext('2d');
+  growthChart = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['PAT', 'APE', 'VNB', 'Net Premium', 'AUM', 'Solvency (pts)'],
+      datasets:[
+        { label:'ICICI Prudential Life', data:[27.8, 14.6, 24.9, 14.7, 2.9, 13.1], backgroundColor:'#c84b2f', borderRadius:6 },
+        { label:'HDFC Life', data:[11.9, 9.0, 9.0, 15.1, 13.0, 8.0], backgroundColor:'#be123c', borderRadius:6 }
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ position:'top', labels:{ font:{size:11} } } },
+      scales:{ y:{ beginAtZero:true, grid:{color:'#e2ddd5'}, title:{display:true,text:'YoY Growth %'} }, x:{ grid:{display:false} } }
+    }
+  });
+}
+
+initLifeChart();
+initGrowthChart();
+
+function switchInsPreset(id, btn) {
+  document.querySelectorAll('.presets-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ins-preset-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function askInsPreset(el) {
+  const txt = el.querySelector('.pq-en') ? el.querySelector('.pq-en').innerText : el.innerText;
+  document.getElementById('cbInsInput').value = txt;
+  sendInsChat();
+}
+
+const INS_SYS = `You are CB Assist, expert research analyst at Cauvery Business (EIL Research). You specialise in Indian life insurance sector, focused on ICICI Prudential Life and HDFC Life Q1 FY27 (Apr-Jun 2026) results.
+
+If the question contains Tamil script, answer in Tamil ONLY. Company names, numbers, technical terms can stay in English.
+If the question is in English, answer in English only. Be concise 5-8 sentences. Lead with key insight. Use specific numbers.
+
+RULES: Keep SHORT (5-8 sentences). Start with key insight. Use specific numbers. Do NOT mention data sources. Research analysis only, no investment advice, no buy/sell recommendation.
+
+ICICI PRUDENTIAL LIFE (NSE: ICICIPRULI) Q1 FY27: PAT Rs386.2 Cr (+27.8% YoY from Rs302.1 Cr). Net premium income Rs9,749 Cr (+14.7%). Total premium Rs10,251 Cr (+14.5%). New business premium Rs4,866 Cr (+21.3%). APE Rs2,136 Cr (+14.6%). VNB Rs571 Cr (+24.9% from Rs457 Cr). VNB margin 26.7% (+220bps from 24.5%). Savings APE Rs1,408 Cr (+3.8%). Annuity APE Rs133 Cr (+33%). Protection APE Rs596 Cr (+45.7%). Retail protection APE +60.4% YoY, now 10.5% of APE (was 7.5%) - third consecutive quarter of >40% growth post GST exemption on term insurance. Group business +38.8% YoY, 22.9% of APE. Solvency ratio 225.4% (was 212.3%), well above 150% regulatory minimum. 13th month persistency 80.2% (down from 82.5%). 61st month persistency 61.5% (up from 58.6%). Savings cost-to-premium 13.6% (-50bps). Total cost-to-premium 21.8% (up from 21.2%). AUM Rs3.34 lakh Cr (+2.9%). Retail new business sum assured +45.9% to Rs1.13 lakh Cr. Total in-force sum assured Rs48.06 lakh Cr. Claim settlement ratio 99.3%. Death claims settled Rs1,306 Cr, maturity/survival benefits Rs3,360 Cr. Board approved renaming company to "ICICI Life Insurance Limited" after Prudential Corporation Holdings reclassified from promoter to investor and plans to cut stake from 21.91% below 10% (following Prudential's Bharti Life acquisition). MD & CEO Anup Bagchi. Distribution: 2.44 lakh+ advisors, 52 bank partnerships (26,800+ branches), 1,500+ non-bank partnerships. FY26 full year: Embedded Value Rs52,989 Cr (+10.5%), FY26 VNB margin 24.7% (+190bps). Nuvama: BUY, target Rs750, FY27E/28E P/EV 1.4x/1.2x. Stock closed ~Rs523 on results day (15 Jul 2026), up ~3.8-4.2%.
+
+HDFC LIFE (NSE: HDFCLIFE) Q1 FY27: Consolidated PAT Rs611.2 Cr (+11.5% YoY from Rs548 Cr, +22.9% QoQ). Standalone PAT Rs611 Cr (+11.9% YoY from Rs546 Cr). Excluding GST impact, underlying PAT growth 17%. Net premium income consolidated Rs16,728 Cr (+15.05%), standalone Rs16,548 Cr (+14.39% from Rs14,466 Cr). Renewal premium Rs9,020 Cr (+19%). New business premium Rs8,140 Cr (+12%). APE Rs2,970 Cr (+9% YoY, 2-year CAGR 11%). VNB Rs879 Cr (+9% YoY, in line with APE growth). VNB margin 25.0% (vs 25.1% Q1FY26; ex-GST 25.6%). Retail protection +42% YoY, now ~8% of retail APE (+200bps), ~11% including riders. Retail sum assured +31% YoY. Total insurance cover sold +31% to Rs1.27 lakh Cr. Policies sold 2.82 lakh (+13%). Standalone AUM crossed Rs4 lakh Cr, at Rs4,00,870 Cr (+13% YoY). Group AUM (incl. HDFC Pension Fund Mgmt) Rs5,75,700 Cr. Solvency ratio 185% (from 177% Mar-26), boosted by Rs1,000 Cr preferential equity allotment to HDFC Bank completed 16 Jun 2026. Indian Embedded Value Rs65,860 Cr (Rs658.6 billion), up from Rs62,140 Cr Mar-26. EVOP (rolling 12m) 14.7%. 5-year EV CAGR 18%. Agency channel +21% YoY, 700+ branches (260+ new since FY24), new branches now 15% of agency APE (was 11%). Annuity 10% of APE (was 5%) after variable annuity product launch. Non-par savings 22% of APE, ULIP 44%. Underwriting profit Rs360 Cr (+15%), driven by Rs1,870 Cr backbook surplus offset by Rs1,520 Cr new business strain. Shareholder surplus Rs260 Cr (was Rs240 Cr). Fresh GST demand order of Rs265 Cr received. MD & CEO Vibha Padalkar, CFO Niraj Shah. Nuvama: BUY target Rs850 (FY27E/28E P/EV 1.9x/1.6x). Nomura: upgraded to BUY, target Rs730. Motilal Oswal: BUY, target Rs690. Stock rose ~2.4% post results to ~Rs569-579; down ~24% YTD, ~15% over past year.
+
+SECTOR CONTEXT: 0% GST on term life insurance products effective Sep 2025 has driven 3+ consecutive quarters of >40% YoY retail protection growth across the industry. India life insurance penetration ~3% of GDP vs ~7% global average. IRDAI minimum solvency requirement 150% for all insurers. Both ICICI Pru and HDFC Life comfortably exceed this. Comparison: ICICI Pru is smaller in absolute scale (APE ~72% of HDFC Life's, VNB ~65%, AUM ~83%) but grew faster in Q1FY27 (VNB +24.9% vs +9%, PAT +27.8% vs +11.9%) off a weaker year-ago base, with margin expanding vs HDFC Life's slight margin compression. HDFC Life's capital position improvement was aided by a promoter capital infusion while ICICI Pru's was organic.`;
+
+async function sendInsChat() {
+  const input = document.getElementById('cbInsInput');
+  const msgs = document.getElementById('cbInsMsgs');
+  const btn = document.getElementById('cbInsSend');
+  const typing = document.getElementById('cbInsTyping');
+  const q = input.value.trim(); if(!q) return;
+
+  const uMsg = document.createElement('div'); uMsg.className='chat-msg user'; uMsg.textContent=q;
+  msgs.appendChild(uMsg); msgs.scrollTop=msgs.scrollHeight;
+  input.value=''; btn.disabled=true; typing.style.display='flex'; msgs.scrollTop=msgs.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:INS_SYS,messages:[{role:'user',content:q}]})
+    });
+    const data = await res.json();
+    const text = data.content&&data.content[0]&&data.content[0].text ? data.content[0].text : 'Unable to process.';
+    typing.style.display='none';
+    const bMsg = document.createElement('div'); bMsg.className='chat-msg bot';
+    bMsg.innerHTML = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    msgs.appendChild(bMsg); msgs.scrollTop=msgs.scrollHeight;
+  } catch(e) {
+    typing.style.display='none';
+    const eMsg = document.createElement('div'); eMsg.className='chat-msg bot';
+    eMsg.textContent='CB Assist temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg); msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

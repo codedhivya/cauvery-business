@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Solar Sector — Intelligence Dashboard | Q4 FY26</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --surface2: #f2f0eb;
+  --border: #e2ddd5;
+  --text: #181511;
+  --muted: #6e6860;
+  /* Business Model Colors */
+  --mfr: #bf3a0a;     /* Manufacturer */
+  --mfr-soft: #fbeee8;
+  --ipp: #0f6640;     /* IPP/Developer */
+  --ipp-soft: #e5f3ec;
+  --epc: #4a2d82;     /* EPC */
+  --epc-soft: #f0eaf8;
+  --c2c: #0a4d7a;     /* C&I / B2C */
+  --c2c-soft: #e5f0f8;
+  --gold: #b8911e;
+  --gold-soft: #fdf5e0;
+  --pos: #0f6640;
+  --neg: #bf3a0a;
+  --shadow: 0 1px 8px rgba(24,21,17,0.07);
+  --shadow-md: 0 4px 20px rgba(24,21,17,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 13.5px; line-height: 1.55; }
+
+.top-header { background: #181511; color: #fff; padding: 0 40px; display: flex; align-items: stretch; justify-content: space-between; gap: 0; min-height: 70px; }
+.top-header-left { display: flex; align-items: center; padding: 16px 0; }
+.top-header-left h1 { font-family: 'Playfair Display', serif; font-size: 1.55rem; letter-spacing: -0.01em; color: #fff; line-height: 1.15; }
+.top-header-left .sub { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.45); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+.top-header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 16px 0; }
+.chip { padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.chip-mfr { background: var(--mfr); color: #fff; }
+.chip-ipp { background: var(--ipp); color: #fff; }
+.chip-epc { background: var(--epc); color: #fff; }
+.chip-c2c { background: var(--c2c); color: #fff; }
+.chip-date { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.12); }
+.chip-warn { background: var(--gold); color: #181511; }
+
+.biz-legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 10px 40px; background: #fff; border-bottom: 2px solid var(--border); font-size: 11px; align-items: center; }
+.biz-legend span { font-weight: 600; color: var(--muted); }
+.bl-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; }
+.bl-sq { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+.tab-nav { background: var(--surface); border-bottom: 2px solid var(--border); display: flex; align-items: center; padding: 0 40px; gap: 0; overflow-x: auto; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(24,21,17,0.06); }
+.tab-nav::-webkit-scrollbar { height: 0; }
+.tab-btn { padding: 14px 18px 12px; font-size: 12px; font-weight: 600; color: var(--muted); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; letter-spacing: 0.02em; transition: color 0.18s, border-color 0.18s; margin-bottom: -2px; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--mfr); font-weight: 700; }
+
+.main { padding: 28px 40px 48px; max-width: 1440px; margin: 0 auto; }
+.panel { display: none; animation: fadeIn 0.22s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.sec-heading { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+.sec-heading h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+.sec-heading .sec-note { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.g5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+.gap-top { margin-top: 22px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; box-shadow: var(--shadow); }
+.card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 14px; }
+
+/* Company banner */
+.company-banner { border-radius: 14px; padding: 20px 22px; border: 1.5px solid; box-shadow: var(--shadow-md); }
+.banner-mfr { border-color: var(--mfr); background: #fff; }
+.banner-ipp { border-color: var(--ipp); background: #fff; }
+.banner-epc { border-color: var(--epc); background: #fff; }
+.banner-c2c { border-color: var(--c2c); background: #fff; }
+.co-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.co-badge-mfr { background: var(--mfr); color: #fff; }
+.co-badge-ipp { background: var(--ipp); color: #fff; }
+.co-badge-epc { background: var(--epc); color: #fff; }
+.co-badge-c2c { background: var(--c2c); color: #fff; }
+.biz-tag { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-left: 6px; }
+.btag-mfr { background: var(--mfr-soft); color: var(--mfr); }
+.btag-ipp { background: var(--ipp-soft); color: var(--ipp); }
+.btag-epc { background: var(--epc-soft); color: var(--epc); }
+.btag-c2c { background: var(--c2c-soft); color: var(--c2c); }
+.btag-hybrid { background: var(--gold-soft); color: var(--gold); }
+
+.company-banner h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 2px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.company-banner .tagline { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+.co-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.co-meta span { font-size: 11px; color: var(--muted); }
+.co-meta strong { color: var(--text); }
+.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.metric-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; }
+.mb-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.mb-val { font-size: 1rem; font-weight: 800; color: var(--text); line-height: 1.2; margin: 2px 0 2px; }
+.mb-chg { font-size: 9.5px; font-weight: 700; }
+.pos { color: var(--pos); } .neg { color: var(--neg); } .neu { color: var(--muted); }
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.pill { padding: 3px 10px; border-radius: 20px; font-size: 10.5px; font-weight: 600; background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+
+/* Moat card */
+.moat-section { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
+.moat-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+.moat-body { font-size: 11px; color: var(--text); line-height: 1.5; }
+
+/* KPI */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); }
+.kpi.mfr-accent { border-left: 4px solid var(--mfr); }
+.kpi.ipp-accent { border-left: 4px solid var(--ipp); }
+.kpi.epc-accent { border-left: 4px solid var(--epc); }
+.kpi.c2c-accent { border-left: 4px solid var(--c2c); }
+.kpi .kl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 5px; }
+.kpi .kv { font-size: 1.2rem; font-weight: 800; color: var(--text); }
+.kpi .kc { font-size: 10px; font-weight: 700; margin-top: 2px; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--surface2); }
+.tn { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-align: right; }
+.tb { font-weight: 700; }
+.tpos { color: var(--pos); font-weight: 700; }
+.tneg { color: var(--neg); font-weight: 700; }
+
+/* Biz model comparison */
+.bm-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 20px; }
+.bm-card { border-radius: 12px; padding: 18px; border: 1.5px solid; }
+.bm-mfr { border-color: var(--mfr); background: var(--mfr-soft); }
+.bm-ipp { border-color: var(--ipp); background: var(--ipp-soft); }
+.bm-epc { border-color: var(--epc); background: var(--epc-soft); }
+.bm-c2c { border-color: var(--c2c); background: var(--c2c-soft); }
+.bm-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 6px; }
+.bm-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+.bm-list { list-style: none; font-size: 11px; line-height: 1.7; }
+.bm-list li::before { content: "→ "; color: var(--muted); }
+
+/* USP grid */
+.usp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.usp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.usp-co { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.usp-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.usp-body { font-size: 11px; color: var(--muted); line-height: 1.55; }
+.usp-tag { display: inline-block; margin-top: 8px; padding: 2px 9px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.utag-mfr { background: var(--mfr-soft); color: var(--mfr); }
+.utag-ipp { background: var(--ipp-soft); color: var(--ipp); }
+.utag-epc { background: var(--epc-soft); color: var(--epc); }
+.utag-c2c { background: var(--c2c-soft); color: var(--c2c); }
+
+/* Scorecard */
+.score-row td { text-align: center; }
+.score-co { text-align: left !important; font-weight: 700; }
+.s-good { color: var(--ipp); font-weight: 800; }
+.s-warn { color: var(--gold); font-weight: 800; }
+.s-bad { color: var(--neg); font-weight: 800; }
+
+/* SVG charts */
+svg.chart { display: block; width: 100%; }
+.cl { font-family: 'Inter', sans-serif; font-size: 10.5px; fill: var(--muted); }
+.cv { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: #181511; }
+
+/* Watermark */
+.wm { text-align: center; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--border); padding: 16px; }
+.disclaimer { text-align: center; font-size: 10.5px; color: var(--muted); padding: 14px 40px 4px; border-top: 1px solid var(--border); margin-top: 28px; }
+.cb-watermark { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.92); border: 1.5px solid var(--border); border-radius: 30px; padding: 7px 14px 7px 8px; box-shadow: 0 4px 20px rgba(24,21,17,0.12); backdrop-filter: blur(8px); }
+.cb-wm-logo { width: 28px; height: 28px; background: #c8420f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 0.85rem; font-weight: 900; color: #fff; flex-shrink: 0; }
+.cb-wm-text { display: flex; flex-direction: column; line-height: 1.2; }
+.cb-wm-name { font-size: 11px; font-weight: 700; color: var(--text); }
+.cb-wm-sub { font-size: 9px; font-weight: 500; color: var(--muted); text-transform: uppercase; }
+
+/* CB Assist */
+.cbassist-chat { background: var(--surface); border: 1.5px solid #c8420f; border-radius: 14px; padding: 20px 22px; margin-top: 22px; }
+.cbassist-chat-title { font-weight: 800; font-size: 12.5px; color: #c8420f; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.cbassist-chat-title span { width: 8px; height: 8px; background: #0f6640; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+.chat-messages { min-height: 120px; max-height: 340px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
+.chat-msg { padding: 9px 13px; border-radius: 10px; font-size: 12px; max-width: 88%; line-height: 1.55; }
+.chat-msg.user { background: #181511; color: #fff; align-self: flex-end; border-radius: 10px 10px 2px 10px; }
+.chat-msg.bot { background: var(--surface2); border: 1px solid var(--border); align-self: flex-start; border-radius: 10px 10px 10px 2px; }
+.chat-msg.bot strong { color: #c8420f; }
+.chat-input-row { display: flex; gap: 8px; }
+.chat-input { flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 12px; font-family: 'Inter', sans-serif; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.2s; }
+.chat-input:focus { border-color: #c8420f; }
+.chat-send { background: #c8420f; color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+.typing-indicator { display: none; align-items: center; gap: 5px; padding: 8px 12px; }
+.typing-indicator span { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: bounce 1.2s infinite; }
+.typing-indicator span:nth-child(2){animation-delay:.2s;} .typing-indicator span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+/* Capacity bar */
+.cap-bar-wrap { margin: 6px 0 2px; }
+.cap-bar { height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+.cap-fill { height: 100%; border-radius: 5px; }
+
+@media (max-width: 860px) {
+  .main { padding: 14px 16px 40px; }
+  .top-header { padding: 0 16px; flex-wrap: wrap; }
+  .tab-nav { padding: 0 8px; }
+  .g2,.g3,.g4,.g5,.kpi-row,.metric-grid,.usp-grid,.bm-grid,.infog-strip { grid-template-columns: 1fr; }
+  .biz-legend { padding: 8px 16px; }
+}
+/* ── INFOGRAPHIC STRIPS ── */
+.infog-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:22px;}
+.infog-card{border-radius:12px;padding:14px 12px;text-align:center;border:1px solid var(--border);background:var(--surface);}
+.infog-num{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;line-height:1.1;}
+.infog-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--muted);margin-top:4px;}
+.infog-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+/* ── SECTION ICON ── */
+.sec-icon-wrap{display:flex;align-items:center;gap:12px;}
+/* ── CB ASSIST V2 ── */
+.preset-tab{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all 0.15s;margin:2px 2px 6px 0;}
+.preset-tab:hover{border-color:var(--text);color:var(--text);}
+.preset-tab.pt-sector.active{background:#b8911e;border-color:#b8911e;color:#fff;}
+.preset-tab.pt-mfr.active{background:var(--mfr);border-color:var(--mfr);color:#fff;}
+.preset-tab.pt-ipp.active{background:var(--ipp);border-color:var(--ipp);color:#fff;}
+.preset-tab.pt-epc.active{background:var(--epc);border-color:var(--epc);color:#fff;}
+.preset-tab.pt-c2c.active{background:var(--c2c);border-color:var(--c2c);color:#fff;}
+.presets-panel{display:none;}.presets-panel.active{display:block;}
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.preset-q{padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:9px;font-size:11.5px;cursor:pointer;transition:all 0.15s;display:flex;align-items:flex-start;gap:10px;line-height:1.45;}
+.preset-q:hover{border-color:#c8420f;background:var(--mfr-soft);}
+.pq-icon{font-size:13px;flex-shrink:0;margin-top:1px;}
+.pq-en{font-weight:600;color:var(--text);}
+.pq-ta{font-size:10px;color:var(--muted);font-style:italic;margin-top:2px;}
+.lang-toggle{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;}
+.lang-btn{padding:3px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+/* ── SWOT ── */
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:14px 16px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:#fdf5e0;}
+.swot-label{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;}
+.swot-sl{color:#0f6640;}.swot-wl{color:#bf3a0a;}.swot-ol{color:#4a2d82;}.swot-tl{color:#b8911e;}
+.swot-list{list-style:none;font-size:11px;line-height:1.65;color:var(--text);}
+.swot-list li::before{content:"• ";color:var(--muted);}
+.swot-co-hdr{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+/* ── ANALYST RATINGS ── */
+.rat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.rat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);}
+.rat-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+.rat-action{font-size:1.4rem;font-weight:900;font-family:'Playfair Display',serif;margin-bottom:2px;}
+.rat-buy{color:#0f6640;}.rat-hold{color:#b8911e;}.rat-sell{color:#bf3a0a;}
+.rat-tp{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;}
+.rat-bar-wrap{background:var(--surface2);border-radius:20px;height:6px;margin-bottom:6px;overflow:hidden;}
+.rat-bar{height:6px;border-radius:20px;}
+.rat-meta{font-size:10px;color:var(--muted);line-height:1.55;}
+.rat-consensus{display:flex;gap:16px;padding:12px 16px;background:var(--surface2);border-radius:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;}
+.rat-cons-item{text-align:center;}
+.rat-cons-num{font-size:1.3rem;font-weight:900;font-family:'Playfair Display',serif;}
+.rat-cons-lbl{font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="top-header">
+  <div class="top-header-left">
+    <div>
+      <h1>Indian Solar Sector — Intelligence Dashboard v2</h1>
+      <div class="sub">Business Model · Financial Intelligence · Moat Analysis · CB Assist Bilingual v2 · Q4 FY26 Actuals</div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <span class="chip chip-mfr">🏭 Manufacturers</span>
+    <span class="chip chip-ipp">⚡ IPP Developers</span>
+    <span class="chip chip-epc">🔧 EPC Players</span>
+    <span class="chip chip-c2c">🏢 C&amp;I / CPP</span>
+    <span class="chip chip-date">21 May 2026 · EIL Research v2</span>
+  </div>
+</div>
+
+<div class="biz-legend">
+  <span>Business Model Key →</span>
+  <span class="bl-dot"><span class="bl-sq" style="background:var(--mfr);"></span> Pure Manufacturer (sells modules/cells)</span>
+  <span class="bl-dot"><span class="bl-sq" style="background:var(--ipp);"></span> IPP / Developer (generates &amp; sells power)</span>
+  <span class="bl-dot"><span class="bl-sq" style="background:var(--epc);"></span> EPC Contractor (builds projects for others)</span>
+  <span class="bl-dot"><span class="bl-sq" style="background:var(--c2c);"></span> C&amp;I / B2C (corporate/retail energy solutions)</span>
+  <span class="bl-dot"><span class="bl-sq" style="background:var(--gold);"></span> Integrated / Hybrid Model</span>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('snapshot',this)">Company Snapshots</button>
+  <button class="tab-btn" onclick="showTab('bizmodel',this)">Business Models</button>
+  <button class="tab-btn" onclick="showTab('quarterly',this)">Quarterly Results</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Revenue Chart</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">Moats &amp; USPs</button>
+  <button class="tab-btn" onclick="showTab('capacity',this)">Capacity &amp; Scale</button>
+  <button class="tab-btn" onclick="showTab('bizanalysis',this)">Business Analysis</button>
+  <button class="tab-btn" onclick="showTab('ratings',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('scorecard',this)">Scorecard</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks &amp; Outlook</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:#c8420f;font-weight:800;">🤖 CB Assist</button>
+</nav>
+
+<div class="main">
+
+<!-- ═══════════════════ TAB 1 · COMPANY SNAPSHOTS ═══════════════════ -->
+<div class="panel active" id="tab-snapshot">
+  <div class="sec-heading">
+    <h2>Company Snapshots</h2>
+    <span class="sec-note">9 Solar companies · Grouped by business model · Q4 FY26 Actuals</span>
+  </div>
+
+  <!-- GROUP 1: MANUFACTURERS -->
+  <div style="margin-bottom:8px;padding:6px 14px;background:var(--mfr-soft);border-left:4px solid var(--mfr);border-radius:0 8px 8px 0;font-size:11px;font-weight:800;color:var(--mfr);text-transform:uppercase;letter-spacing:0.1em;">
+    🏭 Group 1 — Solar Module / Cell Manufacturers &nbsp;|&nbsp; Revenue = Selling physical product. Margin at risk from Chinese ASP pressure.
+  </div>
+  <div class="g3" style="margin-bottom:24px;">
+    <!-- WAAREE -->
+    <div class="company-banner banner-mfr">
+      <span class="co-badge co-badge-mfr">WAAREEENER · NSE</span>
+      <h2>Waaree Energies <span class="biz-tag btag-mfr">Manufacturer</span><span class="biz-tag btag-hybrid">+EPC +IPP</span></h2>
+      <div class="tagline">India's largest solar module manufacturer (~26 GW capacity). Transitioning to integrated 'Waaree 2.0': module + cell + EPC + IPP. World's largest non-Chinese solar module producer.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~₹3,238</strong></span>
+        <span>Mkt Cap <strong>~₹93,000 Cr</strong></span>
+        <span>FY26 Rev <strong>₹26,537 Cr</strong></span>
+        <span class="pos" style="font-weight:700;">PAT doubled YoY</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹8,480 Cr</div><div class="mb-chg pos">▲ 112% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹1,126 Cr</div><div class="mb-chg pos">▲ 75% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 PAT</div><div class="mb-val">₹3,884 Cr</div><div class="mb-chg pos">▲ 101% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 EBITDA Margin</div><div class="mb-val">18.6%</div><div class="mb-chg neu">EBITDA ₹1,577 Cr</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 Capacity</div><div class="mb-val">~26 GW</div><div class="mb-chg neu">Module + Cell</div></div>
+        <div class="metric-box"><div class="mb-label">Order Book</div><div class="mb-val">₹53,000 Cr</div><div class="mb-chg pos">100+ GW pipeline</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">Scale (26 GW) = lowest LCOE outside China. 10 GW ingot-wafer plant under construction. US market anchor: non-Chinese module premium.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">FY27 EBITDA Guidance ₹7,000–7,700 Cr</span>
+        <span class="pill">Dividend ₹2/sh</span>
+        <span class="pill">Backward integration</span>
+        <span class="pill">33% exports</span>
+      </div>
+    </div>
+
+    <!-- PREMIER ENERGIES -->
+    <div class="company-banner banner-mfr">
+      <span class="co-badge co-badge-mfr">PREMIERENE · NSE</span>
+      <h2>Premier Energies <span class="biz-tag btag-mfr">Manufacturer</span></h2>
+      <div class="tagline">Hyderabad-based integrated solar cell + module manufacturer. India's second-largest cell manufacturer. Positioned as pure-play domestic ALMM-beneficiary supplier.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~₹989</strong></span>
+        <span>FY26 Rev <strong>~₹7,500+ Cr</strong></span>
+        <span>ROCE <strong>33.5%</strong></span>
+        <span class="pos" style="font-weight:700;">ROE 42.4%</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹2,230 Cr</div><div class="mb-chg pos">▲ 37.6% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹457 Cr</div><div class="mb-chg pos">▲ 64.5% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 EBITDA</div><div class="mb-val">₹713 Cr</div><div class="mb-chg pos">▲ 21% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT Margin</div><div class="mb-val">20.1%</div><div class="mb-chg pos">Expanding</div></div>
+        <div class="metric-box"><div class="mb-label">Module Output Q4</div><div class="mb-val">918 MW</div><div class="mb-chg pos">▲ 37% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Order Book</div><div class="mb-val">₹14,010 Cr</div><div class="mb-chg neu">12–15 mo visibility</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">India's only large-scale integrated cell+module player outside Adani/Reliance. 84% cell utilisation. ALMM compliance = pricing power over importers.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Cell capacity 2,268 MW FY26</span>
+        <span class="pill">₹5,000 Cr fundraise approved</span>
+        <span class="pill">100% domestic revenue mix</span>
+        <span class="pill">84% cell utilization</span>
+      </div>
+    </div>
+
+    <!-- FUJIYAMA (UTL Solar) -->
+    <div class="company-banner banner-mfr">
+      <span class="co-badge co-badge-mfr">UTLSOLAR · NSE</span>
+      <h2>Fujiyama Power Systems <span class="biz-tag btag-mfr">Manufacturer</span><span class="biz-tag btag-c2c">+B2C</span></h2>
+      <div class="tagline">UTL Solar brand. India's leading rooftop solar manufacturer & B2C solutions provider (Tier-2/3 cities). Vertically integrating into solar cells + inverters + batteries.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~₹286</strong></span>
+        <span>FY26 Rev <strong>₹2,655 Cr</strong></span>
+        <span>Module Cap <strong>3,568 MW</strong></span>
+        <span class="pos" style="font-weight:700;">PAT +94.5%</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹901 Cr</div><div class="mb-chg pos">▲ 87.5% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹106 Cr</div><div class="mb-chg pos">▲ 107% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 PAT</div><div class="mb-val">₹304 Cr</div><div class="mb-chg pos">▲ 94.5% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 EBITDA Margin</div><div class="mb-val">18.5%</div><div class="mb-chg pos">vs 16.1% FY25</div></div>
+        <div class="metric-box"><div class="mb-label">Cell Plant</div><div class="mb-val">1 GW</div><div class="mb-chg neu">Commissioned Jan 2026</div></div>
+        <div class="metric-box"><div class="mb-label">Channel Partners</div><div class="mb-val">8,900+</div><div class="mb-chg pos">▲ Added 80 dist Q4</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">Brand loyalty in underserved Tier-2/3 markets (PM Surya Ghar scheme demand). 8,900+ channel partner network = distribution moat. Cell captive use drives cost edge.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">PM Surya Ghar beneficiary</span>
+        <span class="pill">1.2 GW TOPCon plant planned</span>
+        <span class="pill">₹350 Cr cell capex</span>
+        <span class="pill">B2C rooftop leader</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP 2: IPP / DEVELOPERS -->
+  <div style="margin-bottom:8px;padding:6px 14px;background:var(--ipp-soft);border-left:4px solid var(--ipp);border-radius:0 8px 8px 0;font-size:11px;font-weight:800;color:var(--ipp);text-transform:uppercase;letter-spacing:0.1em;">
+    ⚡ Group 2 — IPP / Renewable Energy Developers &nbsp;|&nbsp; Revenue = Long-term PPA annuity (25-yr visibility). Margin risk = high debt, interest burden.
+  </div>
+  <div class="g3" style="margin-bottom:24px;">
+    <!-- ADANI GREEN -->
+    <div class="company-banner banner-ipp">
+      <span class="co-badge co-badge-ipp">ADANIGREEN · NSE</span>
+      <h2>Adani Green Energy <span class="biz-tag btag-ipp">IPP</span><span class="biz-tag btag-ipp">+BESS</span></h2>
+      <div class="tagline">India's largest renewable energy IPP. 19,294 MW operational (Mar 2026). Building world's largest single-site 30 GW project at Khavda. Target: 50 GW by 2030.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~₹1,337</strong></span>
+        <span>Mkt Cap <strong>~₹2,11,000 Cr</strong></span>
+        <span>Capacity <strong>19,294 MW ★</strong></span>
+        <span class="pos" style="font-weight:700;">FY26 EBITDA ₹10,865 Cr</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹3,094 Cr</div><div class="mb-chg pos">▲ 16% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹514 Cr</div><div class="mb-chg pos">▲ 34% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 EBITDA</div><div class="mb-val">₹10,865 Cr</div><div class="mb-chg pos">▲ 23% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Capacity Added FY26</div><div class="mb-val">5,051 MW</div><div class="mb-chg pos">Highest globally excl. China</div></div>
+        <div class="metric-box"><div class="mb-label">Energy Sold FY26</div><div class="mb-val">37,567 MU</div><div class="mb-chg pos">▲ 34% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">BESS Commissioned</div><div class="mb-val">1,376 MWh</div><div class="mb-chg neu">Khavda, Gujarat</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">Khavda mega-project (30 GW single site) = unbeatable scale advantage. 25-yr PPA-backed annuity streams. Parent Adani Group's infra/logistics network. TotalEnergies 19.75% stake = international credibility.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">19,735 MW as of May 2026</span>
+        <span class="pill">50 GW target 2030</span>
+        <span class="pill">106% PPA compliance</span>
+        <span class="pill">Risk: US DoJ probe overhang</span>
+      </div>
+    </div>
+
+    <!-- ACME SOLAR -->
+    <div class="company-banner banner-ipp">
+      <span class="co-badge co-badge-ipp">ACMESOLAR · NSE</span>
+      <h2>ACME Solar Holdings <span class="biz-tag btag-ipp">IPP</span><span class="biz-tag btag-ipp">+BESS Pioneer</span></h2>
+      <div class="tagline">Pure-play renewable IPP. Pioneer in Firm & Dispatchable Renewable Energy (FDRE). India's largest BESS operator (2.3 GWh). Focus on central offtakers (SECI, NTPC).</div>
+      <div class="co-meta">
+        <span>CMP <strong>~₹283</strong></span>
+        <span>Mkt Cap <strong>~₹17,128 Cr</strong></span>
+        <span>Capacity <strong>2,990 MW</strong></span>
+        <span class="neg" style="font-weight:700;">Interest burden risk</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹705 Cr</div><div class="mb-chg pos">▲ 30.7% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹138 Cr</div><div class="mb-chg pos">▲ 13.3% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 PAT</div><div class="mb-val">₹498 Cr</div><div class="mb-chg pos">▲ 99% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 EBITDA Margin</div><div class="mb-val">90.3%</div><div class="mb-chg pos">IPP-typical high margin</div></div>
+        <div class="metric-box"><div class="mb-label">BESS Daily Revenue</div><div class="mb-val">₹2.2 Cr/day</div><div class="mb-chg pos">New revenue stream</div></div>
+        <div class="metric-box"><div class="mb-label">Total Portfolio</div><div class="mb-val">8,071 MW</div><div class="mb-chg pos">incl. ~17 GWh BESS</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">India's FDRE/BESS first-mover — ACME is ahead of peers in firm dispatchable RE, commanding premium tariffs (₹4.4/kWh UC vs ₹3.4/kWh operational). Central offtaker focus = payment security.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">5,081 MW under construction</span>
+        <span class="pill">BESS ₹22 Mn/day</span>
+        <span class="pill">Debt ₹15,000 Cr tied up</span>
+        <span class="pill">DSO: 14 days (vs 181 in FY23)</span>
+      </div>
+    </div>
+
+    <!-- NTPC GREEN -->
+    <div class="company-banner banner-ipp">
+      <span class="co-badge co-badge-ipp">NTPCGREEN · NSE</span>
+      <h2>NTPC Green Energy <span class="biz-tag btag-ipp">PSU IPP</span></h2>
+      <div class="tagline">NTPC's listed renewable arm. PSU-backed development model — sovereign balance sheet, AAA-rated debt, government-mandated offtake. 10,516 MW operational (May 2026). Q4 results due May 22, 2026.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~₹108</strong></span>
+        <span>Mkt Cap <strong>~₹91,000 Cr</strong></span>
+        <span>Capacity <strong>10,516 MW</strong></span>
+        <span class="neu">Q4 FY26 results: 22 May 2026</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q3 Revenue (Latest)</div><div class="mb-val">₹653 Cr</div><div class="mb-chg neu">Q4 results May 22</div></div>
+        <div class="metric-box"><div class="mb-label">Q3 PAT (Latest)</div><div class="mb-val">₹17.5 Cr</div><div class="mb-chg neg">▼ 73% YoY (Q3)</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 Revenue (TTM)</div><div class="mb-val">~₹2,570 Cr</div><div class="mb-chg pos">Strong growth</div></div>
+        <div class="metric-box"><div class="mb-label">Capacity FY26</div><div class="mb-val">10,516 MW</div><div class="mb-chg pos">▲ ~3x in 2 yrs</div></div>
+        <div class="metric-box"><div class="mb-label">P/E Ratio</div><div class="mb-val">~159x</div><div class="mb-chg neg">Growth priced in</div></div>
+        <div class="metric-box"><div class="mb-label">Debt/Equity</div><div class="mb-val">115%</div><div class="mb-chg neg">High leverage phase</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">Sovereign guarantee = cheapest cost of capital (AAA, sub-7% debt). Ministry-backed PPA allocation pipeline. Green hydrogen + pumped hydro diversification. ONGC NTPC JV for green ammonia.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">₹5,000 Cr NCD fundraise planned FY27</span>
+        <span class="pill">Green hydrogen roadmap</span>
+        <span class="pill">ONGC JV</span>
+        <span class="pill">Q4 results 22 May 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP 3: EPC -->
+  <div style="margin-bottom:8px;padding:6px 14px;background:var(--epc-soft);border-left:4px solid var(--epc);border-radius:0 8px 8px 0;font-size:11px;font-weight:800;color:var(--epc);text-transform:uppercase;letter-spacing:0.1em;">
+    🔧 Group 3 — Solar EPC Contractors &nbsp;|&nbsp; Revenue = Project execution fees. Margin risk = commodity price volatility, working capital, order delays.
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <!-- STERLING & WILSON -->
+    <div class="company-banner banner-epc">
+      <span class="co-badge co-badge-epc">SWSOLAR · NSE</span>
+      <h2>Sterling &amp; Wilson Renewable <span class="biz-tag btag-epc">EPC</span><span class="biz-tag btag-epc">+O&amp;M</span></h2>
+      <div class="tagline">Reliance Industries-backed global solar EPC + O&M. 27.3 GWp EPC portfolio executed. 13.5 GW O&M portfolio. India & international presence. Recovering from litigation losses.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~₹188</strong></span>
+        <span>Mkt Cap <strong>~₹4,560 Cr</strong></span>
+        <span>FY26 Rev <strong>₹7,548 Cr</strong></span>
+        <span class="neg" style="font-weight:700;">FY26 Net Loss ₹296 Cr (exceptional charges)</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹1,946 Cr</div><div class="mb-chg neg">▼ 22.8% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹135 Cr</div><div class="mb-chg pos">Doubled YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 Op. EBITDA</div><div class="mb-val">₹444 Cr</div><div class="mb-chg pos">▲ 53% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 Order Inflow</div><div class="mb-val">₹10,062 Cr</div><div class="mb-chg pos">▲ 43% YoY · Record</div></div>
+        <div class="metric-box"><div class="mb-label">Unexecuted Order Val.</div><div class="mb-val">₹11,813 Cr</div><div class="mb-chg pos">Highest since COVID</div></div>
+        <div class="metric-box"><div class="mb-label">O&amp;M Portfolio</div><div class="mb-val">13.5 GW</div><div class="mb-chg pos">Annuity revenue base</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">27.3 GWp global EPC track record = credibility that new entrants can't replicate. Reliance parentage = balance sheet backstop + access to mega-project pipeline. O&M recurring income (13.5 GW).</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">L1 for Coal India 1.2 GW DC project</span>
+        <span class="pill">Reliance 32.5% stake</span>
+        <span class="pill">31 GW bid pipeline</span>
+        <span class="pill">FY26 net loss: exceptional charges only</span>
+      </div>
+    </div>
+
+    <!-- WAAREE RENEWABLE (EPC arm) -->
+    <div class="company-banner banner-epc">
+      <span class="co-badge co-badge-epc">WRTL · NSE</span>
+      <h2>Waaree Renewable Technologies <span class="biz-tag btag-epc">EPC</span><span class="biz-tag btag-c2c">+C&amp;I</span></h2>
+      <div class="tagline">Waaree Group's EPC arm. Utility + C&I + rooftop solar EPC. Order book 2.83 GWp. Expanding into power transmission (Associated Power Structures acquisition). Fastest-growing mid-cap solar EPC.</div>
+      <div class="co-meta">
+        <span>NSE: WRTL</span>
+        <span>FY26 Rev <strong>₹3,331 Cr</strong></span>
+        <span>FY26 PAT <strong>₹479 Cr</strong></span>
+        <span class="pos" style="font-weight:700;">Stock +13.5% on results day</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹1,102 Cr</div><div class="mb-chg pos">▲ 131% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹156 Cr</div><div class="mb-chg pos">▲ 66% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 PAT</div><div class="mb-val">₹479 Cr</div><div class="mb-chg pos">▲ 109% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 EBITDA Margin</div><div class="mb-val">18.76%</div><div class="mb-chg pos">vs guided 14–16%</div></div>
+        <div class="metric-box"><div class="mb-label">Order Book</div><div class="mb-val">2.83 GWp</div><div class="mb-chg neu">12–15 mo visibility</div></div>
+        <div class="metric-box"><div class="mb-label">Transmission Acq.</div><div class="mb-val">₹1,225 Cr</div><div class="mb-chg neu">55% stake APS</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">Captive module supply from parent Waaree Energies = cost advantage over EPC peers. Expanding into transmission infra (APS acquisition) differentiates beyond pure EPC. 18%+ EPC margin beats industry average of 5-8%.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Parent: Waaree Energies (module supply)</span>
+        <span class="pill">Transmission infra expansion</span>
+        <span class="pill">C&amp;I + rooftop + utility</span>
+        <span class="pill">Margin > EPC peers</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP 4: C&I / B2C -->
+  <div style="margin-bottom:8px;padding:6px 14px;background:var(--c2c-soft);border-left:4px solid var(--c2c);border-radius:0 8px 8px 0;font-size:11px;font-weight:800;color:var(--c2c);text-transform:uppercase;letter-spacing:0.1em;">
+    🏢 Group 4 — C&amp;I / B2C Solar Solutions &nbsp;|&nbsp; Revenue = OPEX model energy sales + service contracts. Low upfront for customer. Recurring long-term income for company.
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <!-- CLEANMAX -->
+    <div class="company-banner banner-c2c">
+      <span class="co-badge co-badge-c2c">CLEANMAX · NSE Listed</span>
+      <h2>CleanMax Enviro Energy <span class="biz-tag btag-c2c">C&amp;I Solar</span><span class="biz-tag btag-ipp">+IPP</span></h2>
+      <div class="tagline">India's largest B2B renewable energy provider for corporates & data centres. OPEX model — no capex burden on customer. ~42% of contracted portfolio from Data/AI sector. Osaka Gas partnership.</div>
+      <div class="co-meta">
+        <span>NSE Listed</span>
+        <span>FY26 Rev <strong>₹1,913 Cr</strong></span>
+        <span>Contracted Cap <strong>5.7 GW</strong></span>
+        <span class="pos" style="font-weight:700;">PAT +4.4x YoY</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q4 Revenue</div><div class="mb-val">₹557 Cr</div><div class="mb-chg pos">▲ 25% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 PAT</div><div class="mb-val">₹45 Cr</div><div class="mb-chg pos">▲ 165% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">FY26 EBITDA</div><div class="mb-val">₹1,295 Cr</div><div class="mb-chg pos">▲ 28% · All-time high</div></div>
+        <div class="metric-box"><div class="mb-label">Operational Capacity</div><div class="mb-val">~3.1 GW</div><div class="mb-chg pos">▲ 80% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Data/AI Share</div><div class="mb-val">42%</div><div class="mb-chg pos">▲ 10x in 2 yrs</div></div>
+        <div class="metric-box"><div class="mb-label">Contracted Pipeline</div><div class="mb-val">2.6 GW</div><div class="mb-chg pos">Unexecuted backlog</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">OPEX model shifts performance risk to CleanMax (not customer) — creating sticky corporate relationships. Data centre boom (hyperscaler demand) is structural tailwind. First-mover in AI/data centre RE contracting in India.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Data centre RE = AI-era moat</span>
+        <span class="pill">Osaka Gas JV</span>
+        <span class="pill">Tata Comms 26% SPV stake</span>
+        <span class="pill">6.5 GW total portfolio</span>
+      </div>
+    </div>
+
+    <!-- KPI GREEN (listed on NSE, user said "API Green") -->
+    <div class="company-banner banner-c2c">
+      <span class="co-badge co-badge-c2c">KPIGREEN · NSE</span>
+      <h2>KPI Green Energy <span class="biz-tag btag-c2c">Captive IPP</span><span class="biz-tag btag-ipp">+Utility IPP</span></h2>
+      <div class="tagline">Gujarat-based dual-model solar IPP: Independent Power Producer (IPP) model for state utility + Captive Power Producer (CPP) model for industrial consumers. India's most capital-efficient mid-cap solar developer.</div>
+      <div class="co-meta">
+        <span>NSE: KPIGREEN</span>
+        <span>Gujarat focused</span>
+        <span>Mkt Cap <strong>~₹7,800 Cr</strong></span>
+        <span class="pos" style="font-weight:700;">ROCE ~20%+</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">FY25 Revenue</div><div class="mb-val">₹980 Cr</div><div class="mb-chg neu">Q4 FY26 data pending</div></div>
+        <div class="metric-box"><div class="mb-label">Operational Capacity</div><div class="mb-val">~1,200 MW</div><div class="mb-chg pos">FY26 est.</div></div>
+        <div class="metric-box"><div class="mb-label">Business Model</div><div class="mb-val">IPP + CPP</div><div class="mb-chg neu">Dual model</div></div>
+        <div class="metric-box"><div class="mb-label">Promoter Holding</div><div class="mb-val">~72%</div><div class="mb-chg neu">Stable</div></div>
+        <div class="metric-box"><div class="mb-label">Market</div><div class="mb-val">Gujarat</div><div class="mb-chg neu">Expanding to Rajasthan</div></div>
+        <div class="metric-box"><div class="mb-label">Asset-light edge</div><div class="mb-val">CPP model</div><div class="mb-chg pos">Customer co-invests</div></div>
+      </div>
+      <div class="moat-section">
+        <div class="moat-title">⚡ Core Moat</div>
+        <div class="moat-body">Unique CPP model: industrial customers co-fund assets — KPI retains operational control while sharing capex burden. Near-monopoly in Gujarat's industrial solar C&I segment. Renewable Purchase Obligation compliance tailwind.</div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Gujarat industrial base</span>
+        <span class="pill">CPP model = shared capex risk</span>
+        <span class="pill">RPO compliance driver</span>
+        <span class="pill">Note: referred as "API Green" by some users</span>
+      </div>
+    </div>
+  </div>
+</div><!-- /tab-snapshot -->
+
+<!-- ═══════════════════ TAB 2 · BUSINESS MODELS ═══════════════════ -->
+<div class="panel" id="tab-bizmodel">
+  <div class="sec-heading">
+    <h2>Business Model Differentiation</h2>
+    <span class="sec-note">How each company makes money · Revenue structure · Risk profile · Investor lens</span>
+  </div>
+
+  <div class="bm-grid">
+    <div class="bm-card bm-mfr">
+      <div class="bm-title" style="color:var(--mfr);">🏭 Manufacturer</div>
+      <div class="bm-sub">Waaree Energies, Premier Energies, Fujiyama</div>
+      <ul class="bm-list">
+        <li>Sells physical solar modules/cells to installers, EPC companies, utilities</li>
+        <li>Revenue = Volume (GW) × Average Selling Price (₹/W)</li>
+        <li>Margin risk: Chinese ASP competition, BCD/ALMM policy dependence</li>
+        <li>Capital: Heavy — manufacturing plants ₹5,000–10,000+ Cr capex</li>
+        <li>Working capital intensive; 60–90 day receivables</li>
+        <li>USP: Scale + ALMM compliance + backward integration</li>
+        <li>Investor thesis: Volume growth × margin expansion</li>
+      </ul>
+    </div>
+    <div class="bm-card bm-ipp">
+      <div class="bm-title" style="color:var(--ipp);">⚡ IPP / Developer</div>
+      <div class="bm-sub">Adani Green, ACME Solar, NTPC Green</div>
+      <ul class="bm-list">
+        <li>Builds, owns & operates solar/wind/hybrid power plants</li>
+        <li>Revenue = Units generated × PPA tariff (25-yr contract)</li>
+        <li>Margin: EBITDA 85–93% (IPP typical) but interest eats profit</li>
+        <li>Capital: Very heavy — ₹4–6 Cr/MW project capex, 70:30 D:E</li>
+        <li>Risk: project execution delays, state discom payment risk</li>
+        <li>USP: PPA annuity visibility, BESS/FDRE premium tariffs</li>
+        <li>Investor thesis: Capacity MW × PLF × tariff − debt cost</li>
+      </ul>
+    </div>
+    <div class="bm-card bm-epc">
+      <div class="bm-title" style="color:var(--epc);">🔧 EPC Contractor</div>
+      <div class="bm-sub">Sterling &amp; Wilson, Waaree Renewable Tech.</div>
+      <ul class="bm-list">
+        <li>Builds solar projects for IPPs, utilities, C&I customers for a fee</li>
+        <li>Revenue = Order book execution × billing milestones</li>
+        <li>Margin: Thin, 3–8% net (S&W) to 18%+ (WRTL with captive modules)</li>
+        <li>Capital: Working capital intensive (negative WC possible)</li>
+        <li>Risk: commodity price spikes, liquidated damages, order delays</li>
+        <li>USP: Track record GW executed, O&M recurring income</li>
+        <li>Investor thesis: Order inflow → revenue recognition → margin improvement</li>
+      </ul>
+    </div>
+    <div class="bm-card bm-c2c">
+      <div class="bm-title" style="color:var(--c2c);">🏢 C&amp;I / B2C</div>
+      <div class="bm-sub">CleanMax, KPI Green, Fujiyama (B2C)</div>
+      <ul class="bm-list">
+        <li>OPEX model: Builds + owns + operates, customer pays per unit consumed</li>
+        <li>Revenue = Long-term energy supply agreements (ESA) + O&M fees</li>
+        <li>Margin: Better than EPC (~20–30% EBITDA at operating level)</li>
+        <li>Capital: Asset ownership but shared/subsidized by customer PPAs</li>
+        <li>Risk: Customer churn, credit risk of corporate off-takers</li>
+        <li>USP: Corporate RE target fulfillment + RPO compliance</li>
+        <li>Investor thesis: Contracted capacity × tariff × customer stickiness</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Business Model Comparison Matrix — Key Attributes</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Business Type</th>
+          <th>Revenue Driver</th>
+          <th>EBITDA Margin</th>
+          <th>Capital Intensity</th>
+          <th>Revenue Visibility</th>
+          <th>China Risk Exposure</th>
+          <th>Policy Dependency</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Waaree Energies</td><td><span class="biz-tag btag-mfr">Mfr + EPC + IPP</span></td><td>Module volume × ASP</td><td class="tn">18–22%</td><td class="tn">Very High</td><td class="tn">Medium</td><td class="tn tpos">High — BCD/ALMM</td><td class="tn">BCD / ALMM</td></tr>
+        <tr><td class="tb">Premier Energies</td><td><span class="biz-tag btag-mfr">Pure Mfr</span></td><td>Module + Cell volume</td><td class="tn">31%</td><td class="tn">High</td><td class="tn">Medium</td><td class="tn tpos">High — ALMM</td><td class="tn">ALMM critical</td></tr>
+        <tr><td class="tb">Fujiyama Power</td><td><span class="biz-tag btag-mfr">Mfr + B2C</span></td><td>Rooftop modules + install</td><td class="tn">18.5%</td><td class="tn">Medium</td><td class="tn">Medium-High</td><td class="tn">Medium</td><td class="tn">PM Surya Ghar</td></tr>
+        <tr><td class="tb">Adani Green</td><td><span class="biz-tag btag-ipp">Pure IPP</span></td><td>25-yr PPA kWh</td><td class="tn">88%+</td><td class="tn">Very High</td><td class="tn">Very High</td><td class="tn tpos">Low</td><td class="tn">Regulatory/PPA</td></tr>
+        <tr><td class="tb">ACME Solar</td><td><span class="biz-tag btag-ipp">IPP + BESS</span></td><td>PPA + BESS merchant</td><td class="tn">90.3%</td><td class="tn">Very High</td><td class="tn">High</td><td class="tn tpos">Low</td><td class="tn">FDRE/SECI</td></tr>
+        <tr><td class="tb">NTPC Green</td><td><span class="biz-tag btag-ipp">PSU IPP</span></td><td>Regulated PPA + RoE</td><td class="tn">75–80%</td><td class="tn">Very High</td><td class="tn">Very High</td><td class="tn tpos">Low</td><td class="tn">Government mandated</td></tr>
+        <tr><td class="tb">Sterling &amp; Wilson</td><td><span class="biz-tag btag-epc">EPC + O&amp;M</span></td><td>Order execution fees</td><td class="tn">5.9%</td><td class="tn">Low-Medium</td><td class="tn">Medium</td><td class="tn">Medium</td><td class="tn">Tender policy</td></tr>
+        <tr><td class="tb">Waaree Renewable</td><td><span class="biz-tag btag-epc">EPC + C&amp;I</span></td><td>Order execution fees</td><td class="tn">18.76%</td><td class="tn">Low-Medium</td><td class="tn">Medium</td><td class="tn">Low (captive modules)</td><td class="tn">Tender policy</td></tr>
+        <tr><td class="tb">CleanMax</td><td><span class="biz-tag btag-c2c">C&amp;I OPEX</span></td><td>Energy ₹/unit long-term</td><td class="tn">67%</td><td class="tn">High</td><td class="tn">Very High</td><td class="tn tpos">Low</td><td class="tn">RPO / corporates</td></tr>
+        <tr><td class="tb">KPI Green</td><td><span class="biz-tag btag-c2c">IPP + CPP</span></td><td>PPA + CPP fees</td><td class="tn">~25–30%</td><td class="tn">Medium</td><td class="tn">High</td><td class="tn tpos">Low</td><td class="tn">RPO compliance</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 3 · QUARTERLY RESULTS ═══════════════════ -->
+<div class="panel" id="tab-quarterly">
+  <div class="sec-heading">
+    <h2>Quarterly Financial Results</h2>
+    <span class="sec-note">Q4 FY26 Actuals where declared · Q3 FY26 used for NTPC Green (Q4 pending 22 May 2026) · ₹ Crore</span>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-label">All Companies — Q4 FY26 Consolidated Results Summary (₹ Crore)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Type</th>
+          <th class="tn">Q4 Revenue</th>
+          <th class="tn">YoY</th>
+          <th class="tn">Q4 PAT</th>
+          <th class="tn">YoY</th>
+          <th class="tn">Q4 EBITDA%</th>
+          <th class="tn">FY26 Revenue</th>
+          <th class="tn">FY26 PAT</th>
+          <th class="tn">FY26 PAT Growth</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tb" style="color:var(--mfr);">Waaree Energies</td>
+          <td><span class="biz-tag btag-mfr">Mfr</span></td>
+          <td class="tn tb">8,480</td>
+          <td class="tn tpos">▲ 112%</td>
+          <td class="tn tb">1,126</td>
+          <td class="tn tpos">▲ 75%</td>
+          <td class="tn">18.6%</td>
+          <td class="tn">26,537</td>
+          <td class="tn">3,884</td>
+          <td class="tn tpos">▲ 101%</td>
+        </tr>
+        <tr>
+          <td class="tb" style="color:var(--mfr);">Premier Energies</td>
+          <td><span class="biz-tag btag-mfr">Mfr</span></td>
+          <td class="tn tb">2,230</td>
+          <td class="tn tpos">▲ 37.6%</td>
+          <td class="tn tb">457</td>
+          <td class="tn tpos">▲ 64.5%</td>
+          <td class="tn">32% (EBITDA)</td>
+          <td class="tn">~8,000+</td>
+          <td class="tn">~1,400+</td>
+          <td class="tn tpos">Strong</td>
+        </tr>
+        <tr>
+          <td class="tb" style="color:var(--mfr);">Fujiyama Power (UTL)</td>
+          <td><span class="biz-tag btag-mfr">Mfr+B2C</span></td>
+          <td class="tn tb">901</td>
+          <td class="tn tpos">▲ 87.5%</td>
+          <td class="tn tb">106</td>
+          <td class="tn tpos">▲ 107%</td>
+          <td class="tn">~18.5%</td>
+          <td class="tn">2,655</td>
+          <td class="tn">304</td>
+          <td class="tn tpos">▲ 94.5%</td>
+        </tr>
+        <tr style="background:var(--ipp-soft);">
+          <td class="tb" style="color:var(--ipp);">Adani Green Energy</td>
+          <td><span class="biz-tag btag-ipp">IPP</span></td>
+          <td class="tn tb">3,094</td>
+          <td class="tn tpos">▲ 16%</td>
+          <td class="tn tb">514</td>
+          <td class="tn tpos">▲ 34%</td>
+          <td class="tn">95%+</td>
+          <td class="tn">~12,000</td>
+          <td class="tn">~1,600</td>
+          <td class="tn tpos">▲ 35%</td>
+        </tr>
+        <tr style="background:var(--ipp-soft);">
+          <td class="tb" style="color:var(--ipp);">ACME Solar</td>
+          <td><span class="biz-tag btag-ipp">IPP</span></td>
+          <td class="tn tb">705</td>
+          <td class="tn tpos">▲ 30.7%</td>
+          <td class="tn tb">138</td>
+          <td class="tn tpos">▲ 13.3%</td>
+          <td class="tn">90.2%</td>
+          <td class="tn">2,507</td>
+          <td class="tn">498</td>
+          <td class="tn tpos">▲ 99%</td>
+        </tr>
+        <tr style="background:var(--ipp-soft);">
+          <td class="tb" style="color:var(--ipp);">NTPC Green Energy ★Q3</td>
+          <td><span class="biz-tag btag-ipp">PSU IPP</span></td>
+          <td class="tn tb">653 ★</td>
+          <td class="tn neu">Q4 due 22 May</td>
+          <td class="tn tb">17.5 ★</td>
+          <td class="tn tneg">▼ 73% (Q3)</td>
+          <td class="tn">76.5%</td>
+          <td class="tn">~2,570</td>
+          <td class="tn">~55</td>
+          <td class="tn neg">Capex phase</td>
+        </tr>
+        <tr style="background:var(--epc-soft);">
+          <td class="tb" style="color:var(--epc);">Sterling &amp; Wilson</td>
+          <td><span class="biz-tag btag-epc">EPC</span></td>
+          <td class="tn tb">1,946</td>
+          <td class="tn tneg">▼ 22.8%</td>
+          <td class="tn tb">135</td>
+          <td class="tn tpos">2× YoY</td>
+          <td class="tn">9.6%</td>
+          <td class="tn">7,548</td>
+          <td class="tn tneg">-296 (excl.)</td>
+          <td class="tn tneg">Except. charges</td>
+        </tr>
+        <tr style="background:var(--epc-soft);">
+          <td class="tb" style="color:var(--epc);">Waaree Renewable Tech.</td>
+          <td><span class="biz-tag btag-epc">EPC</span></td>
+          <td class="tn tb">1,102</td>
+          <td class="tn tpos">▲ 131%</td>
+          <td class="tn tb">156</td>
+          <td class="tn tpos">▲ 66%</td>
+          <td class="tn">18.76%</td>
+          <td class="tn">3,331</td>
+          <td class="tn">479</td>
+          <td class="tn tpos">▲ 109%</td>
+        </tr>
+        <tr style="background:var(--c2c-soft);">
+          <td class="tb" style="color:var(--c2c);">CleanMax</td>
+          <td><span class="biz-tag btag-c2c">C&amp;I</span></td>
+          <td class="tn tb">557</td>
+          <td class="tn tpos">▲ 25%</td>
+          <td class="tn tb">45</td>
+          <td class="tn tpos">▲ 165%</td>
+          <td class="tn">~63%</td>
+          <td class="tn">1,913</td>
+          <td class="tn">85.6</td>
+          <td class="tn tpos">▲ 4.4× YoY</td>
+        </tr>
+        <tr style="background:var(--c2c-soft);">
+          <td class="tb" style="color:var(--c2c);">KPI Green Energy</td>
+          <td><span class="biz-tag btag-c2c">CPP+IPP</span></td>
+          <td class="tn tb">~250</td>
+          <td class="tn tpos">Growing</td>
+          <td class="tn tb">~50</td>
+          <td class="tn tpos">Growing</td>
+          <td class="tn">~28%</td>
+          <td class="tn">~980+</td>
+          <td class="tn">~200+</td>
+          <td class="tn tpos">Steady</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">★ NTPC Green Q3 FY26 actuals used; Q4 FY26 due 22 May 2026. All figures consolidated. Waaree Renewable is a separate listed subsidiary (WRTL). Sterling &amp; Wilson FY26 net loss due solely to ₹611 Cr exceptional charges (arbitration/litigation); operational profitability is positive. KPI Green figures are FY25 actuals + FY26 estimates.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 4 · REVENUE CHART ═══════════════════ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-heading">
+    <h2>Revenue &amp; PAT Visual Comparison</h2>
+    <span class="sec-note">Q4 FY26 Revenue (₹ Crore) · Colour coded by business model · Legend in chart</span>
+  </div>
+
+  <div class="g2">
+    <!-- REVENUE CHART — wider bars, legend in top-right empty space -->
+    <div class="card">
+      <div class="card-label">Q4 FY26 Revenue — All Companies (₹ Crore)</div>
+      <svg viewBox="0 0 640 330" class="chart">
+        <!-- Grid lines extend to x=470 (bar area) -->
+        <line x1="60" y1="18" x2="470" y2="18" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="68" x2="470" y2="68" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="118" x2="470" y2="118" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="168" x2="470" y2="168" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="218" x2="470" y2="218" stroke="#c8bfb4" stroke-width="1.1"/>
+        <!-- Y-axis labels -->
+        <text x="56" y="21" class="cl" text-anchor="end">9,000</text>
+        <text x="56" y="71" class="cl" text-anchor="end">6,750</text>
+        <text x="56" y="121" class="cl" text-anchor="end">4,500</text>
+        <text x="56" y="171" class="cl" text-anchor="end">2,250</text>
+        <text x="56" y="221" class="cl" text-anchor="end">0</text>
+        <!-- Waaree: 8480 → h=201 -->
+        <rect x="66" y="17" width="36" height="201" fill="var(--mfr)" rx="3"/>
+        <text x="84" y="13" class="cv" text-anchor="middle" font-weight="700" font-size="8.5">8,480</text>
+        <text x="84" y="234" class="cl" text-anchor="middle" font-size="8.5">Waaree</text>
+        <!-- Premier: 2230 → h=53 -->
+        <rect x="108" y="165" width="36" height="53" fill="var(--mfr)" opacity="0.72" rx="3"/>
+        <text x="126" y="161" class="cv" text-anchor="middle" font-size="8.5">2,230</text>
+        <text x="126" y="234" class="cl" text-anchor="middle" font-size="8.5">Premier</text>
+        <!-- Fujiyama: 901 → h=21 -->
+        <rect x="150" y="197" width="36" height="21" fill="var(--mfr)" opacity="0.45" rx="3"/>
+        <text x="168" y="193" class="cv" text-anchor="middle" font-size="8.5">901</text>
+        <text x="168" y="234" class="cl" text-anchor="middle" font-size="8.5">Fujiyama</text>
+        <!-- DIVIDER Mfr | IPP -->
+        <line x1="192" y1="18" x2="192" y2="218" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- Adani: 3094 → h=73 -->
+        <rect x="196" y="145" width="36" height="73" fill="var(--ipp)" rx="3"/>
+        <text x="214" y="141" class="cv" text-anchor="middle" font-size="8.5">3,094</text>
+        <text x="214" y="234" class="cl" text-anchor="middle" font-size="8.5">Adani Grn</text>
+        <!-- ACME: 705 → h=17 -->
+        <rect x="238" y="201" width="36" height="17" fill="var(--ipp)" opacity="0.72" rx="3"/>
+        <text x="256" y="197" class="cv" text-anchor="middle" font-size="8.5">705</text>
+        <text x="256" y="234" class="cl" text-anchor="middle" font-size="8.5">ACME</text>
+        <!-- NTPC: 653 Q3 → h=16 -->
+        <rect x="280" y="202" width="36" height="16" fill="var(--ipp)" opacity="0.48" rx="3"/>
+        <text x="298" y="198" class="cv" text-anchor="middle" font-size="8.5">653★</text>
+        <text x="298" y="234" class="cl" text-anchor="middle" font-size="8.5">NTPC Grn</text>
+        <!-- DIVIDER IPP | EPC -->
+        <line x1="324" y1="18" x2="324" y2="218" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- S&W: 1946 → h=46 -->
+        <rect x="328" y="172" width="36" height="46" fill="var(--epc)" rx="3"/>
+        <text x="346" y="168" class="cv" text-anchor="middle" font-size="8.5">1,946</text>
+        <text x="346" y="234" class="cl" text-anchor="middle" font-size="8.5">S&amp;W</text>
+        <!-- WRTL: 1102 → h=26 -->
+        <rect x="370" y="192" width="36" height="26" fill="var(--epc)" opacity="0.65" rx="3"/>
+        <text x="388" y="188" class="cv" text-anchor="middle" font-size="8.5">1,102</text>
+        <text x="388" y="234" class="cl" text-anchor="middle" font-size="8.5">WRTL</text>
+        <!-- DIVIDER EPC | C&I -->
+        <line x1="414" y1="18" x2="414" y2="218" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- CleanMax: 557 → h=13 -->
+        <rect x="418" y="205" width="36" height="13" fill="var(--c2c)" rx="3"/>
+        <text x="436" y="201" class="cv" text-anchor="middle" font-size="8.5">557</text>
+        <text x="436" y="234" class="cl" text-anchor="middle" font-size="8.5">CleanMax</text>
+        <!-- LEGEND — well inside viewBox at x=480 -->
+        <rect x="482" y="14" width="150" height="136" rx="7" fill="white" stroke="#e2ddd5" stroke-width="1.2"/>
+        <text x="492" y="30" class="cl" font-weight="800" font-size="9.5" fill="#181511">LEGEND</text>
+        <rect x="492" y="38" width="10" height="10" fill="var(--mfr)" rx="2"/>
+        <text x="506" y="47" class="cl" font-size="9">Manufacturer</text>
+        <rect x="492" y="55" width="10" height="10" fill="var(--ipp)" rx="2"/>
+        <text x="506" y="64" class="cl" font-size="9">IPP Developer</text>
+        <rect x="492" y="72" width="10" height="10" fill="var(--epc)" rx="2"/>
+        <text x="506" y="81" class="cl" font-size="9">EPC Contractor</text>
+        <rect x="492" y="89" width="10" height="10" fill="var(--c2c)" rx="2"/>
+        <text x="506" y="98" class="cl" font-size="9">C&amp;I / CPP</text>
+        <line x1="492" y1="106" x2="625" y2="106" stroke="#e2ddd5" stroke-width="0.8"/>
+        <text x="492" y="118" class="cl" font-size="8" fill="var(--muted)">★ NTPC = Q3 FY26</text>
+        <text x="492" y="130" class="cl" font-size="8" fill="var(--muted)">(Q4 due 22 May 2026)</text>
+        <text x="492" y="142" class="cl" font-size="8" fill="var(--muted)">| = Group boundary</text>
+        <!-- Group labels bottom -->
+        <text x="126" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--mfr)">🏭 Manufacturers</text>
+        <text x="256" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--ipp)">⚡ IPP Developers</text>
+        <text x="358" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--epc)">🔧 EPC</text>
+        <text x="436" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--c2c)">🏢 C&amp;I</text>
+      </svg>
+    </div>
+
+    <!-- PAT CHART — wider bars, legend in top-right -->
+    <div class="card">
+      <div class="card-label">Q4 FY26 PAT — All Companies (₹ Crore, S&amp;W excl. exceptional)</div>
+      <svg viewBox="0 0 640 330" class="chart">
+        <line x1="60" y1="18" x2="470" y2="18" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="68" x2="470" y2="68" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="118" x2="470" y2="118" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="168" x2="470" y2="168" stroke="#ede9e0" stroke-width="0.7"/>
+        <line x1="60" y1="218" x2="470" y2="218" stroke="#c8bfb4" stroke-width="1.1"/>
+        <text x="56" y="21" class="cl" text-anchor="end">1,200</text>
+        <text x="56" y="71" class="cl" text-anchor="end">900</text>
+        <text x="56" y="121" class="cl" text-anchor="end">600</text>
+        <text x="56" y="171" class="cl" text-anchor="end">300</text>
+        <text x="56" y="221" class="cl" text-anchor="end">0</text>
+        <!-- Waaree PAT: 1126 → h=188 -->
+        <rect x="66" y="30" width="36" height="188" fill="var(--mfr)" rx="3"/>
+        <text x="84" y="26" class="cv" text-anchor="middle" font-weight="700" font-size="8.5">1,126</text>
+        <text x="84" y="234" class="cl" text-anchor="middle" font-size="8.5">Waaree</text>
+        <!-- Premier: 457 → h=76 -->
+        <rect x="108" y="142" width="36" height="76" fill="var(--mfr)" opacity="0.72" rx="3"/>
+        <text x="126" y="138" class="cv" text-anchor="middle" font-size="8.5">457</text>
+        <text x="126" y="234" class="cl" text-anchor="middle" font-size="8.5">Premier</text>
+        <!-- Fujiyama: 106 → h=18 -->
+        <rect x="150" y="200" width="36" height="18" fill="var(--mfr)" opacity="0.45" rx="3"/>
+        <text x="168" y="196" class="cv" text-anchor="middle" font-size="8.5">106</text>
+        <text x="168" y="234" class="cl" text-anchor="middle" font-size="8.5">Fujiyama</text>
+        <line x1="192" y1="18" x2="192" y2="218" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- Adani: 514 → h=86 -->
+        <rect x="196" y="132" width="36" height="86" fill="var(--ipp)" rx="3"/>
+        <text x="214" y="128" class="cv" text-anchor="middle" font-size="8.5">514</text>
+        <text x="214" y="234" class="cl" text-anchor="middle" font-size="8.5">Adani Grn</text>
+        <!-- ACME: 138 → h=23 -->
+        <rect x="238" y="195" width="36" height="23" fill="var(--ipp)" opacity="0.72" rx="3"/>
+        <text x="256" y="191" class="cv" text-anchor="middle" font-size="8.5">138</text>
+        <text x="256" y="234" class="cl" text-anchor="middle" font-size="8.5">ACME</text>
+        <!-- NTPC: 17.5 Q3 → h=3 -->
+        <rect x="280" y="215" width="36" height="3" fill="var(--ipp)" opacity="0.48" rx="3"/>
+        <text x="298" y="211" class="cv" text-anchor="middle" font-size="8.5">17.5★</text>
+        <text x="298" y="234" class="cl" text-anchor="middle" font-size="8.5">NTPC Grn</text>
+        <line x1="324" y1="18" x2="324" y2="218" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- S&W: 135 → h=23 -->
+        <rect x="328" y="195" width="36" height="23" fill="var(--epc)" rx="3"/>
+        <text x="346" y="191" class="cv" text-anchor="middle" font-size="8.5">135</text>
+        <text x="346" y="234" class="cl" text-anchor="middle" font-size="8.5">S&amp;W</text>
+        <!-- WRTL: 156 → h=26 -->
+        <rect x="370" y="192" width="36" height="26" fill="var(--epc)" opacity="0.65" rx="3"/>
+        <text x="388" y="188" class="cv" text-anchor="middle" font-size="8.5">156</text>
+        <text x="388" y="234" class="cl" text-anchor="middle" font-size="8.5">WRTL</text>
+        <line x1="414" y1="18" x2="414" y2="218" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- CleanMax: 45 → h=8 -->
+        <rect x="418" y="210" width="36" height="8" fill="var(--c2c)" rx="3"/>
+        <text x="436" y="206" class="cv" text-anchor="middle" font-size="8.5">45</text>
+        <text x="436" y="234" class="cl" text-anchor="middle" font-size="8.5">CleanMax</text>
+        <!-- LEGEND — well inside viewBox -->
+        <rect x="482" y="14" width="150" height="148" rx="7" fill="white" stroke="#e2ddd5" stroke-width="1.2"/>
+        <text x="492" y="30" class="cl" font-weight="800" font-size="9.5" fill="#181511">LEGEND</text>
+        <rect x="492" y="38" width="10" height="10" fill="var(--mfr)" rx="2"/>
+        <text x="506" y="47" class="cl" font-size="9">Manufacturer</text>
+        <rect x="492" y="55" width="10" height="10" fill="var(--ipp)" rx="2"/>
+        <text x="506" y="64" class="cl" font-size="9">IPP Developer</text>
+        <rect x="492" y="72" width="10" height="10" fill="var(--epc)" rx="2"/>
+        <text x="506" y="81" class="cl" font-size="9">EPC Contractor</text>
+        <rect x="492" y="89" width="10" height="10" fill="var(--c2c)" rx="2"/>
+        <text x="506" y="98" class="cl" font-size="9">C&amp;I / CPP</text>
+        <line x1="492" y1="106" x2="625" y2="106" stroke="#e2ddd5" stroke-width="0.8"/>
+        <text x="492" y="118" class="cl" font-size="8" fill="var(--muted)">★ NTPC = Q3 FY26</text>
+        <text x="492" y="130" class="cl" font-size="8" fill="var(--muted)">(Q4 due 22 May 2026)</text>
+        <text x="492" y="142" class="cl" font-size="8" fill="var(--muted)">S&amp;W PAT = excl.</text>
+        <text x="492" y="154" class="cl" font-size="8" fill="var(--muted)">exceptional charges</text>
+        <!-- Group labels -->
+        <text x="126" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--mfr)">🏭 Manufacturers</text>
+        <text x="256" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--ipp)">⚡ IPP Developers</text>
+        <text x="358" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--epc)">🔧 EPC</text>
+        <text x="436" y="318" class="cl" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--c2c)">🏢 C&amp;I</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- EBITDA MARGIN HORIZONTAL BAR CHART -->
+  <div class="card gap-top">
+    <div class="card-label">EBITDA Margin by Business Model — Why Model Choice Determines Margin</div>
+    <svg viewBox="0 0 720 175" class="chart" style="max-height:175px;">
+      <text x="8" y="18" class="cl" font-size="9.5" font-weight="700" fill="#181511">EBITDA Margin % (Q4/FY26)</text>
+      <!-- ACME 90.3 → width at max 500px = 90.3% of 500 = 451 -->
+      <text x="8" y="42" class="cl" font-size="9">ACME Solar (IPP+BESS)</text>
+      <rect x="160" y="30" width="451" height="16" fill="var(--ipp)" rx="3"/>
+      <text x="616" y="42" class="cv" font-weight="700" fill="var(--ipp)" font-size="9.5">90.3%</text>
+      <!-- Adani 88 → 440 -->
+      <text x="8" y="62" class="cl" font-size="9">Adani Green (IPP)</text>
+      <rect x="160" y="50" width="440" height="16" fill="var(--ipp)" rx="3" opacity="0.75"/>
+      <text x="605" y="62" class="cv" font-weight="700" fill="var(--ipp)" font-size="9.5">~88%</text>
+      <!-- NTPC 76.5 → 382 -->
+      <text x="8" y="82" class="cl" font-size="9">NTPC Green (PSU IPP)</text>
+      <rect x="160" y="70" width="382" height="16" fill="var(--ipp)" rx="3" opacity="0.55"/>
+      <text x="547" y="82" class="cv" font-weight="700" fill="var(--ipp)" font-size="9.5">76.5%</text>
+      <!-- CleanMax 67 → 335 -->
+      <text x="8" y="102" class="cl" font-size="9">CleanMax (C&amp;I OPEX)</text>
+      <rect x="160" y="90" width="335" height="16" fill="var(--c2c)" rx="3"/>
+      <text x="500" y="102" class="cv" font-weight="700" fill="var(--c2c)" font-size="9.5">~67%</text>
+      <!-- Premier 32 → 160 -->
+      <text x="8" y="122" class="cl" font-size="9">Premier Energies (Mfr)</text>
+      <rect x="160" y="110" width="160" height="16" fill="var(--mfr)" rx="3" opacity="0.8"/>
+      <text x="325" y="122" class="cv" font-weight="700" fill="var(--mfr)" font-size="9.5">32%</text>
+      <!-- Waaree 18.6 → 93 -->
+      <text x="8" y="142" class="cl" font-size="9">Waaree Energies (Mfr)</text>
+      <rect x="160" y="130" width="93" height="16" fill="var(--mfr)" rx="3" opacity="0.6"/>
+      <text x="258" y="142" class="cv" font-weight="700" fill="var(--mfr)" font-size="9.5">18.6%</text>
+      <!-- S&W 5.9 → 29 -->
+      <text x="8" y="162" class="cl" font-size="9">Sterling &amp; Wilson (EPC)</text>
+      <rect x="160" y="150" width="29" height="16" fill="var(--epc)" rx="3"/>
+      <text x="194" y="162" class="cv" font-weight="700" fill="var(--epc)" font-size="9.5">5.9%</text>
+    </svg>
+    <div style="font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.6;">IPP model commands 85–93% EBITDA because once the plant is built, operating cost is near-zero (sunlight is free). EPC earns only 5–8% because it bears commodity &amp; execution risk on behalf of others. Manufacturers range 18–32% depending on cell integration depth and ALMM protection.</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ TAB 5 · MOATS & USPs ═══════════════════ -->
+<div class="panel" id="tab-moats">
+  <div class="sec-heading">
+    <h2>Moats, USPs &amp; Competitive Advantages</h2>
+    <span class="sec-note">What protects each company's market position · Structural advantages · Key differentiators</span>
+  </div>
+  <div class="usp-grid">
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--mfr);">Waaree Energies</div>
+      <div class="usp-title">Scale + Backward Integration + Non-China Premium</div>
+      <div class="usp-body">India's largest non-Chinese module manufacturer at ~26 GW. Commenced India's largest 10 GW ingot-wafer facility (Nagpur, ₹6,200 Cr). US market presence = BCD/tariff-exempt premium. FY27 EBITDA guided ₹7,000–7,700 Cr. 33% export revenue insulates from domestic policy swings.</div>
+      <span class="usp-tag utag-mfr">Scale Moat · Integration · Export Moat</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--mfr);">Premier Energies</div>
+      <div class="usp-title">India's Only Large-Scale Integrated Cell Maker (Private)</div>
+      <div class="usp-body">84% cell capacity utilisation + 73% module utilisation. ALMM registration makes competitors reliant on imports at a disadvantage under current policy. ROCE 33.5% and ROE 42.4% are class-leading for manufacturing. Zero export reliance — pure India growth play.</div>
+      <span class="usp-tag utag-mfr">ALMM Moat · Integration · High ROCE</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--mfr);">Fujiyama Power (UTL Solar)</div>
+      <div class="usp-title">B2C Distribution Moat in Tier-2/3 Cities</div>
+      <div class="usp-body">8,900+ channel partners across Tier-2/3 India — impossible for organised EPC players to replicate quickly. PM Surya Ghar scheme (2 Cr households target) = multi-year demand runway. In-house cell manufacturing (1 GW Dadri) = cost edge in ALMM-mandated segment.</div>
+      <span class="usp-tag utag-mfr">Distribution Moat · PM Surya Ghar</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--ipp);">Adani Green Energy</div>
+      <div class="usp-title">Khavda Mega-Project + Lowest Cost of Capital in Sector</div>
+      <div class="usp-body">Khavda (30 GW single site) is the world's largest renewable energy park — scale creates per-MW cost advantages unbeatable for a decade. TotalEnergies 19.75% stake brings ESG capital globally. 25-yr PPA annuities on 19,294 MW. BESS adds storage arbitrage revenue.</div>
+      <span class="usp-tag utag-ipp">Scale Moat · PPA Annuity · BESS</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--ipp);">ACME Solar</div>
+      <div class="usp-title">FDRE/BESS First-Mover = Premium Tariff Capture</div>
+      <div class="usp-body">India's pioneer in Firm & Dispatchable Renewable Energy — ACME's under-construction portfolio carries ₹4.4/kWh tariff vs ₹3.4/kWh for older projects. 2.3 GWh BESS (India's largest operator) delivers ₹2.2 Cr/day. DSO improved from 181 days (FY23) to 14 days (FY26) = operational transformation.</div>
+      <span class="usp-tag utag-ipp">FDRE Pioneer · BESS Revenue · DSO Reform</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--ipp);">NTPC Green Energy</div>
+      <div class="usp-title">Sovereign Balance Sheet = Cheapest Debt in Sector</div>
+      <div class="usp-body">AAA rating means NTPC Green borrows at 6.8–7.2% vs private peers at 8.5–10%. On a 4–6 Cr/MW project, 150 bps cost advantage = ₹6–9 lakh/MW/year in savings. Government-mandated RPO targets ensure PPA pipeline. Green hydrogen + pumped hydro diversification ahead of all private peers.</div>
+      <span class="usp-tag utag-ipp">Sovereign Moat · AAA Debt Cost</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--epc);">Sterling &amp; Wilson</div>
+      <div class="usp-title">27.3 GWp Global Track Record + Reliance Backstop</div>
+      <div class="usp-body">27.3 GWp EPC portfolio executed across 5 continents — largest track record of any listed Indian solar EPC. 13.5 GW O&M provides ~₹268 Cr annuity base. Reliance parentage = credibility for mega-projects. L1 for Coal India 1.2 GW project signals domestic pipeline recovery.</div>
+      <span class="usp-tag utag-epc">Track Record · O&M Annuity · Reliance</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--epc);">Waaree Renewable Technologies</div>
+      <div class="usp-title">Captive Module Advantage = Industry-Best EPC Margins</div>
+      <div class="usp-body">18.76% EBITDA margin vs ~5–7% for pure EPC peers — entirely attributable to captive module supply from parent Waaree Energies. Transmission infra (APS acquisition) extends beyond solar EPC into power transmission — a growing ₹3 lakh Cr opportunity. Waaree brand equity opens doors.</div>
+      <span class="usp-tag utag-epc">Captive Module Moat · Diversification</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--c2c);">CleanMax</div>
+      <div class="usp-title">AI/Data Centre RE First-Mover = Pricing Power</div>
+      <div class="usp-body">42% contracted portfolio from Data &amp; AI sector — hyperscalers (Google, Amazon, Microsoft) need 24x7 green power with long-term contracts. CleanMax's 5.7 GW contracted (3.1 GW operational) positions it as India's go-to corporate RE partner. OPEX model = 0 capex for customer = sticky relationships.</div>
+      <span class="usp-tag utag-c2c">AI/Data Centre · OPEX Model · B2B Moat</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-co" style="color:var(--c2c);">KPI Green Energy</div>
+      <div class="usp-title">CPP Model + Gujarat Industrial Base = Asset-Light Growth</div>
+      <div class="usp-body">Unique Captive Power Producer (CPP) model: industrial customers co-invest in the project while KPI owns &amp; operates — shared risk, reliable returns. Near-monopoly among Gujarat industrial consumers who need renewable power for RPO compliance. High promoter holding (72%) signals conviction.</div>
+      <span class="usp-tag utag-c2c">CPP Model · Gujarat Monopoly · RPO</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 6 · CAPACITY ═══════════════════ -->
+<div class="panel" id="tab-capacity">
+  <div class="sec-heading">
+    <h2>Capacity, Scale &amp; Growth Trajectory</h2>
+    <span class="sec-note">Manufacturing capacity, operational MW, and pipeline visibility</span>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-label">Capacity &amp; Scale — All Companies FY26</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Type</th>
+          <th class="tn">Current Capacity / Scale</th>
+          <th class="tn">FY26 Addition</th>
+          <th class="tn">Pipeline / Order Book</th>
+          <th class="tn">FY27 Target / Guidance</th>
+          <th class="tn">Key Milestone</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--mfr);">Waaree Energies</td><td><span class="biz-tag btag-mfr">Mfr</span></td><td class="tn">~26 GW module + cell capacity</td><td class="tn tpos">12.6 GW modules produced FY26</td><td class="tn">₹53,000 Cr order book; 100+ GW pipeline</td><td class="tn">EBITDA ₹7,000–7,700 Cr</td><td>10 GW ingot-wafer at Nagpur started</td></tr>
+        <tr><td class="tb" style="color:var(--mfr);">Premier Energies</td><td><span class="biz-tag btag-mfr">Mfr</span></td><td class="tn">~4+ GW module; ~3 GW cell</td><td class="tn tpos">3,570 MW module; 2,268 MW cell FY26</td><td class="tn">₹14,010 Cr order book</td><td class="tn">Expand cell capacity</td><td>₹5,000 Cr equity fundraise approved</td></tr>
+        <tr><td class="tb" style="color:var(--mfr);">Fujiyama Power</td><td><span class="biz-tag btag-mfr">Mfr+B2C</span></td><td class="tn">3,568 MW module; 1 GW cell</td><td class="tn tpos">2 GW Ratlam facility commissioned</td><td class="tn">8,900+ channel partners; order pipeline</td><td class="tn">1.2 GW TOPCon cell by Q4 FY27</td><td>1 GW MonoPERC cell plant Jan 2026</td></tr>
+        <tr style="background:var(--ipp-soft);"><td class="tb" style="color:var(--ipp);">Adani Green</td><td><span class="biz-tag btag-ipp">IPP</span></td><td class="tn">19,735 MW operational (May 2026)</td><td class="tn tpos">5,051 MW added FY26 (global #1 excl. China)</td><td class="tn">Khavda 30 GW mega-park; 50 GW target 2030</td><td class="tn">6–7 GW addition FY27</td><td>1,376 MWh BESS at Khavda commissioned</td></tr>
+        <tr style="background:var(--ipp-soft);"><td class="tb" style="color:var(--ipp);">ACME Solar</td><td><span class="biz-tag btag-ipp">IPP+BESS</span></td><td class="tn">2,990 MW + 2.3 GWh BESS</td><td class="tn tpos">~1,401 MW additions FY26</td><td class="tn">8,071 MW total portfolio; 5,081 MW UC</td><td class="tn">~17 GWh total BESS portfolio target</td><td>India's largest BESS operator</td></tr>
+        <tr style="background:var(--ipp-soft);"><td class="tb" style="color:var(--ipp);">NTPC Green</td><td><span class="biz-tag btag-ipp">PSU IPP</span></td><td class="tn">10,516 MW operational (May 2026)</td><td class="tn tpos">~3x capacity in 2 yrs</td><td class="tn">60 GW target by 2032; MoU with PTC India</td><td class="tn">~₹5,000 Cr NCD raise FY27</td><td>ONGC NTPC Green JV for green hydrogen</td></tr>
+        <tr style="background:var(--epc-soft);"><td class="tb" style="color:var(--epc);">Sterling &amp; Wilson</td><td><span class="biz-tag btag-epc">EPC+O&M</span></td><td class="tn">27.3 GWp EPC executed; 13.5 GW O&M</td><td class="tn tpos">₹10,062 Cr order inflow FY26 (record)</td><td class="tn">₹11,813 Cr unexecuted; 31 GW bid pipeline</td><td class="tn">20% orders from BESS targeted</td><td>L1 for Coal India ~1.2 GW DC project</td></tr>
+        <tr style="background:var(--epc-soft);"><td class="tb" style="color:var(--epc);">Waaree Renewable</td><td><span class="biz-tag btag-epc">EPC</span></td><td class="tn">2.83 GWp current order book</td><td class="tn tpos">Revenue 2× YoY</td><td class="tn">Transmission infra APS 55% stake</td><td class="tn">Diversify into power T&D</td><td>APS acquisition ₹1,225 Cr</td></tr>
+        <tr style="background:var(--c2c-soft);"><td class="tb" style="color:var(--c2c);">CleanMax</td><td><span class="biz-tag btag-c2c">C&amp;I IPP</span></td><td class="tn">~3.1 GW operational; 5.7 GW contracted</td><td class="tn tpos">1.4 GW commissioned FY26 (incl. 525 MWp CTU Bikaner)</td><td class="tn">2.6 GW unexecuted contracted; 6.5 GW total</td><td class="tn">&gt;1.5 GW annual commissioning FY27</td><td>Data/AI share: 42% of portfolio</td></tr>
+        <tr style="background:var(--c2c-soft);"><td class="tb" style="color:var(--c2c);">KPI Green Energy</td><td><span class="biz-tag btag-c2c">CPP+IPP</span></td><td class="tn">~1,200 MW est. operational</td><td class="tn tpos">Steady expansion</td><td class="tn">Gujarat + Rajasthan expansion</td><td class="tn">Diversify geographically</td><td>RPO compliance wave driving demand</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 7 · BUSINESS ANALYSIS — SWOT ═══════════════════ -->
+<div class="panel" id="tab-bizanalysis">
+  <div class="sec-heading">
+    <h2>Business Analysis — SWOT</h2>
+    <span class="sec-note">Strengths · Weaknesses · Opportunities · Threats · All 9 companies · Q4 FY26 lens</span>
+  </div>
+
+  <!-- GROUP 1: MANUFACTURERS -->
+  <div class="grp-hdr" style="background:var(--mfr-soft);border-color:var(--mfr);color:var(--mfr);margin-bottom:12px;">🏭 Manufacturers</div>
+  <div class="g3" style="margin-bottom:22px;">
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-mfr" style="font-size:9px;padding:2px 8px;">WAAREE</span> Waaree Energies</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>World's largest non-China module maker (26 GW)</li><li>Backward integrated: ingot-wafer-cell-module</li><li>Diversified: 33% US export reduces India policy risk</li><li>FY26 PAT doubled to ₹3,884 Cr</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>EBITDA margin only 18.6% — thin for capital deployed</li><li>Cash flow weaker than PAT growth suggests</li><li>Heavy capex: ₹6,200 Cr Nagpur + ₹3,900 Cr glass</li><li>Customer concentration in top IPP clients</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>Non-China premium demand in US/Europe rising</li><li>PM Surya Ghar: 2 Cr household rooftop demand</li><li>FY27 EBITDA guidance ₹7,000–7,700 Cr</li><li>Captive EPC + IPP arms reduce module sales dependency</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Chinese ASP dumping post-BCD review</li><li>US Section 201/301 tariff on solar imports</li><li>ALMM policy dilution reduces domestic pricing power</li><li>Over-capacity industry-wide by FY28</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-mfr" style="font-size:9px;padding:2px 8px;">PREMIER</span> Premier Energies</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>India's only large-scale private cell+module maker</li><li>Extraordinary ROCE 33.5%, ROE 42.4%</li><li>84% cell utilisation — very efficient assets</li><li>100% domestic revenue = zero tariff/export risk</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>Entire moat rests on ALMM policy continuation</li><li>Q4 EBITDA margin declined from 35% to 32%</li><li>Net debt turning positive (₹1,047 Cr)</li><li>Single-geography concentration (Hyderabad)</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>₹5,000 Cr fundraise to scale cell capacity</li><li>TOPCon upgrade: higher efficiency modules = premium ASP</li><li>India's domestic cell shortage: demand >> supply for years</li><li>Potential export play post-capacity expansion</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>ALMM reversal = existential threat to pricing power</li><li>Waaree's 10 GW ingot-wafer threatens cell supply moat</li><li>New private entrants (Adani, Reliance) in cell manufacturing</li><li>Technology shift to TOPCon could strand PERC capacity</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-mfr" style="font-size:9px;padding:2px 8px;">FUJIYAMA</span> Fujiyama Power (UTL)</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>8,900+ channel partners — Tier-2/3 distribution moat</li><li>B2C brand loyalty in underserved markets</li><li>Revenue +87.5%, PAT +107% Q4 FY26</li><li>PM Surya Ghar direct beneficiary</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>EBITDA margin 18.5% — lower than Premier/WRTL</li><li>Ratlam inverter/battery lines delayed to FY27</li><li>Fire/safety risk at manufacturing facilities noted</li><li>Smaller scale limits bargaining power with suppliers</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>PM Surya Ghar: 2 Cr households = multi-year runway</li><li>1.2 GW TOPCon cell planned — margin expansion</li><li>Inverter + battery vertical = high-margin add-on</li><li>Rural electrification still largely untapped</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Larger players (Waaree, Premier) entering B2C retail</li><li>Chinese low-cost inverters undercutting on price</li><li>Subsidy disbursement delays in PM Surya Ghar</li><li>TOPCon execution risk on new cell plant</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP 2: IPP -->
+  <div class="grp-hdr" style="background:var(--ipp-soft);border-color:var(--ipp);color:var(--ipp);margin-bottom:12px;">⚡ IPP Developers</div>
+  <div class="g3" style="margin-bottom:22px;">
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-ipp" style="font-size:9px;padding:2px 8px;">ADANI GREEN</span> Adani Green Energy</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>19,735 MW operational — India's #1 RE IPP</li><li>Khavda 30 GW site: per-MW cost unbeatable for a decade</li><li>5,051 MW added FY26 — world #1 excl. China</li><li>25-yr PPA annuities: locked-in revenue decades ahead</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>US DoJ case ongoing — governance overhang</li><li>Very high leverage — interest burden suppresses PAT</li><li>Grid curtailment risk in Rajasthan overbuilding zones</li><li>Conglomerate discount from Adani group complexity</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>BESS 1,376 MWh at Khavda — storage monetisation</li><li>Green hydrogen / ammonia — new revenue vertical</li><li>TotalEnergies 19.75% stake = ESG capital access</li><li>50 GW target 2030 — massive pipeline visibility</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>US DoJ resolution could include penalties or debarment</li><li>India grid infrastructure lagging capacity additions</li><li>DISCOM financial health risk for PPA continuity</li><li>Rising interest rates magnify leverage disadvantage</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-ipp" style="font-size:9px;padding:2px 8px;">ACME</span> ACME Solar Holdings</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>India's FDRE first-mover: ₹4.4/kWh UC portfolio vs ₹3.4 operational</li><li>Largest BESS operator: 2.3 GWh → ₹2.2 Cr/day</li><li>DSO improved 181 days (FY23) → 14 days (FY26)</li><li>EBITDA margin 90.3% — hallmark of IPP model</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>₹337 Cr quarterly interest — growing faster than EBITDA</li><li>FII stake declining 3 consecutive quarters</li><li>Other income ₹157 Cr = 82% of Q4 PBT — quality concern</li><li>PAT growth (13.3%) lagging revenue growth (30.7%)</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>5,081 MW under construction at higher ₹4.4/kWh tariff</li><li>~17 GWh BESS portfolio — India's storage market pioneer</li><li>FDRE tariff premium sustainable as grid needs reliability</li><li>Cash ROE 20.1% — superior capital return metric</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Interest cost could exceed EBITDA growth if rates spike</li><li>BESS technology risk (degradation, warranty claims)</li><li>SECI/government offtake delays on under-construction projects</li><li>New FDRE entrants reducing ACME's premium tariff advantage</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-ipp" style="font-size:9px;padding:2px 8px;">NTPC GREEN</span> NTPC Green Energy</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>AAA sovereign rating = borrowing at 6.8–7.2% vs peers 8.5–10%</li><li>10,516 MW operational — ~3× in 2 years</li><li>Government-mandated pipeline ensures capacity certainty</li><li>ONGC JV: green hydrogen/ammonia first-mover</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>Q3 PAT ₹17.5 Cr — near-zero despite massive capacity</li><li>D/E ratio 115% — heavy capex-phase leverage</li><li>P/E ~159× — all future growth already priced in</li><li>PSU decision-making speed slower than private peers</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>60 GW target by 2032 — India's largest RE pipeline</li><li>Cheapest debt = structural per-MW cost advantage forever</li><li>Green hydrogen vertical with ONGC = new revenue</li><li>PAT inflection expected as capex phase matures FY28+</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Valuation (159× P/E) leaves no margin for execution slippage</li><li>Transmission infrastructure bottlenecks delay monetisation</li><li>Political risk: PSU management changes affect strategy</li><li>Interest rate rise reduces sovereign debt advantage gap</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP 3: EPC -->
+  <div class="grp-hdr" style="background:var(--epc-soft);border-color:var(--epc);color:var(--epc);margin-bottom:12px;">🔧 EPC Contractors</div>
+  <div class="g2" style="margin-bottom:22px;">
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-epc" style="font-size:9px;padding:2px 8px;">S&amp;W</span> Sterling &amp; Wilson Renewable</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>27.3 GWp global EPC track record — irreplicable credential</li><li>13.5 GW O&M portfolio = recurring annuity income</li><li>Reliance 32.5% stake = balance sheet backstop</li><li>Record order inflow ₹10,062 Cr FY26; UOV ₹11,813 Cr</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swut-wl" style="color:#bf3a0a;">Weaknesses</div><ul class="swot-list"><li>Operating margin only 5.9% — structurally thin EPC model</li><li>FY26 net loss ₹296 Cr (exceptional charges ₹611 Cr)</li><li>Q4 revenue fell 22.8% despite record orders — execution gap</li><li>Litigation history creates periodic exceptional hits</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>Coal India + PSU 15+ GW tender pipeline FY27–28</li><li>BESS EPC — 20% of order pipeline already storage</li><li>O&M scale-up: every GW built adds recurring revenue</li><li>International markets: Middle East, Africa expansion</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Steel/copper/glass commodity spikes crush thin margins</li><li>Larger IPPs in-sourcing EPC work (Adani captive EPC)</li><li>New domestic EPC competitors (WRTL scaling fast)</li><li>Liquidated damages risk on delayed projects</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-epc" style="font-size:9px;padding:2px 8px;">WRTL</span> Waaree Renewable Technologies</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>18.76% EBITDA margin — 3× industry average for EPC</li><li>Captive module supply from parent Waaree = cost edge</li><li>FY26 PAT ₹479 Cr (+109%) — fastest-growing EPC in India</li><li>APS acquisition: entry into power transmission (new vertical)</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>Order book 2.83 GWp — concentrated, limited diversification</li><li>APS (₹1,225 Cr) integration risk: new sector, new skills</li><li>Parent dependency: margin moat disappears if captive supply ends</li><li>Smaller global footprint vs S&W's 27+ GWp track record</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>Transmission infra (APS) = ₹3 lakh Cr+ sector opportunity</li><li>Waaree brand opens large developer project doors</li><li>C&I solar segment growth from corporate RE mandates</li><li>Potential to cross-sell EPC + T&D as integrated offering</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Parent Waaree scaling its own EPC: internal competition risk</li><li>If Waaree module ASP falls, captive supply margin advantage narrows</li><li>APS transmission assets are regulated — returns capped by CERC</li><li>Large IPPs building internal EPC capability reduces demand</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP 4: C&I -->
+  <div class="grp-hdr" style="background:var(--c2c-soft);border-color:var(--c2c);color:var(--c2c);margin-bottom:12px;">🏢 C&amp;I / CPP</div>
+  <div class="g2" style="margin-bottom:8px;">
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-c2c" style="font-size:9px;padding:2px 8px;">CLEANMAX</span> CleanMax Enviro Energy</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>42% portfolio from AI/data centres — structural demand</li><li>OPEX model: zero capex for customer = sticky relationships</li><li>3.1 GW operational; 5.7 GW contracted (visibility)</li><li>FY26 EBITDA ₹1,295 Cr — all-time high</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>PAT ₹85.6 Cr on EBITDA ₹1,295 Cr — only 6.6% conversion</li><li>Heavy depreciation + interest eats EBITDA entirely</li><li>Unlisted/private — limited capital market access</li><li>further expansion ongoing — equity value locked for investors</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>AI/hyperscaler RE demand doubling every 18 months</li><li>Osaka Gas JV: access to Japanese patient capital</li><li>Corporate RPO compliance: legal mandatory demand driver</li><li>IPO could unlock ₹8,000–12,000 Cr valuation potential</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Hyperscalers building own RE assets (Amazon, Google)</li><li>Corporate credit risk if customer goes bankrupt</li><li>OPEX contracts have 10–25 yr lock-in: tariff revision risk</li><li>Larger IPPs (Adani, NTPC) entering C&I segment aggressively</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="swot-co-hdr"><span class="co-badge co-badge-c2c" style="font-size:9px;padding:2px 8px;">KPI GREEN</span> KPI Green Energy</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-label swot-sl">Strengths</div><ul class="swot-list"><li>Unique CPP model: customer co-invests, KPI operates</li><li>Near-monopoly in Gujarat industrial solar C&I segment</li><li>ROCE ~20%+ — capital-efficient despite asset-heavy model</li><li>72% promoter holding = aligned, long-term oriented</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-label swot-wl">Weaknesses</div><ul class="swot-list"><li>Geographic concentration: 90%+ in Gujarat</li><li>Smaller scale (~1,200 MW) limits institutional attention</li><li>CPP model: customers co-own assets, limiting KPI's equity upside</li><li>Limited track record outside Gujarat industrial belt</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-label swot-ol">Opportunities</div><ul class="swot-list"><li>Rajasthan expansion: replicating Gujarat model</li><li>RPO compliance mandatory by law — industrial demand floor</li><li>Gujarat's new industrial parks (semicon, defence) = fresh demand</li><li>CPP model can scale capital-efficiently with customer funding</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-label swot-tl">Threats</div><ul class="swot-list"><li>Gujarat grid congestion limiting new project approvals</li><li>National players (CleanMax, Adani) entering Gujarat C&I market</li><li>RPO policy changes could reduce compliance urgency</li><li>Industrial customers renegotiating CPP tariffs on renewal</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 8 · ANALYST RATINGS ═══════════════════ -->
+<div class="panel" id="tab-ratings">
+  <div class="sec-heading">
+    <h2>Analyst Ratings &amp; Consensus</h2>
+    <span class="sec-note">Consensus view · Target prices · Buy/Hold/Sell · Research purposes only · Not investment advice</span>
+  </div>
+
+  <!-- Sector consensus summary -->
+  <div class="rat-consensus">
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-right:8px;">Consensus ↓</div>
+    <div class="rat-cons-item"><div class="rat-cons-num rat-buy">6</div><div class="rat-cons-lbl">Buy / Outperform</div></div>
+    <div class="rat-cons-item"><div class="rat-cons-num rat-hold">2</div><div class="rat-cons-lbl">Hold / Neutral</div></div>
+    <div class="rat-cons-item"><div class="rat-cons-num rat-sell">1</div><div class="rat-cons-lbl">Underperform</div></div>
+    <div style="flex:1;font-size:10.5px;color:var(--muted);line-height:1.55;">Ratings reflect consensus analyst views on FY26–27 fundamentals. Not investment advice.</div>
+  </div>
+
+  <div class="rat-grid">
+    <!-- WAAREE -->
+    <div class="rat-card" style="border-top:3px solid var(--mfr);">
+      <div class="rat-co" style="color:var(--mfr);">Waaree Energies · WAAREEENER</div>
+      <div class="rat-action rat-buy">BUY</div>
+      <div class="rat-tp">Target: ₹3,800–4,200 · CMP ~₹3,238</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:85%;background:var(--ipp);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> FY27 EBITDA ₹7,000–7,700 Cr; 26 GW scale; non-China US premium.<br>
+        <strong>Bear case:</strong> Chinese ASP collapse; US tariff Section 201/301; margin compression.<br>
+        <strong>Key trigger:</strong> Nagpur ingot-wafer ramp (10 GW) → full backward integration.
+      </div>
+    </div>
+    <!-- PREMIER -->
+    <div class="rat-card" style="border-top:3px solid var(--mfr);">
+      <div class="rat-co" style="color:var(--mfr);">Premier Energies · PREMIERENE</div>
+      <div class="rat-action rat-buy">BUY</div>
+      <div class="rat-tp">Target: ₹1,200–1,350 · CMP ~₹989</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:80%;background:var(--ipp);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> ROCE 33.5%; ALMM moat; only private cell maker; ₹5,000 Cr capacity expansion.<br>
+        <strong>Bear case:</strong> ALMM reversal = existential; margin normalisation as peers add capacity.<br>
+        <strong>Key trigger:</strong> TOPCon cell ramp + ₹5,000 Cr fundraise deployment.
+      </div>
+    </div>
+    <!-- FUJIYAMA -->
+    <div class="rat-card" style="border-top:3px solid var(--mfr);">
+      <div class="rat-co" style="color:var(--mfr);">Fujiyama Power · UTLSOLAR</div>
+      <div class="rat-action rat-hold">HOLD</div>
+      <div class="rat-tp">Target: ₹310–360 · CMP ~₹286</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:55%;background:var(--gold);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> PM Surya Ghar multi-year demand; 8,900 channel network; PAT +107% Q4.<br>
+        <strong>Bear case:</strong> Ratlam execution delays; fire risk; margin below peers; Tier-2 market commoditisation.<br>
+        <strong>Key trigger:</strong> TOPCon plant commissioning Q4 FY27; PM Surya Ghar subsidy disbursement pace.
+      </div>
+    </div>
+    <!-- ADANI GREEN -->
+    <div class="rat-card" style="border-top:3px solid var(--ipp);">
+      <div class="rat-co" style="color:var(--ipp);">Adani Green Energy · ADANIGREEN</div>
+      <div class="rat-action rat-hold">HOLD</div>
+      <div class="rat-tp">Target: ₹1,450–1,700 · CMP ~₹1,337</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:52%;background:var(--gold);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> 50 GW by 2030; Khavda scale moat; TotalEnergies backing; BESS monetisation.<br>
+        <strong>Bear case:</strong> US DoJ case unresolved; leverage; grid curtailment Rajasthan; governance discount.<br>
+        <strong>Key trigger:</strong> DoJ resolution (positive = re-rating; negative = sharp de-rating).
+      </div>
+    </div>
+    <!-- ACME SOLAR -->
+    <div class="rat-card" style="border-top:3px solid var(--ipp);">
+      <div class="rat-co" style="color:var(--ipp);">ACME Solar Holdings · ACMESOLAR</div>
+      <div class="rat-action rat-buy">BUY</div>
+      <div class="rat-tp">Target: ₹340–400 · CMP ~₹283</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:72%;background:var(--ipp);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> FDRE ₹4.4/kWh UC portfolio; BESS ₹2.2 Cr/day; Cash ROE 20.1%; DSO transformation.<br>
+        <strong>Bear case:</strong> ₹337 Cr quarterly interest burden; FII selling; other income quality.<br>
+        <strong>Key trigger:</strong> 5,081 MW UC projects commissioning FY27 at premium tariffs.
+      </div>
+    </div>
+    <!-- NTPC GREEN -->
+    <div class="rat-card" style="border-top:3px solid var(--ipp);">
+      <div class="rat-co" style="color:var(--ipp);">NTPC Green Energy · NTPCGREEN</div>
+      <div class="rat-action rat-buy">BUY (Long-term)</div>
+      <div class="rat-tp">Target: ₹135–160 · CMP ~₹108</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:68%;background:var(--ipp);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> AAA sovereign; cheapest debt in sector; 60 GW target; PAT inflection FY28.<br>
+        <strong>Bear case:</strong> 159× P/E; near-zero current PAT; slow PSU execution; transmission delays.<br>
+        <strong>Key trigger:</strong> Q4 FY26 results (22 May 2026) — any PAT surprise = re-rating catalyst.
+      </div>
+    </div>
+    <!-- S&W -->
+    <div class="rat-card" style="border-top:3px solid var(--epc);">
+      <div class="rat-co" style="color:var(--epc);">Sterling &amp; Wilson · SWSOLAR</div>
+      <div class="rat-action rat-buy">BUY (Recovery)</div>
+      <div class="rat-tp">Target: ₹240–290 · CMP ~₹188</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:65%;background:var(--ipp);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> Record ₹10,062 Cr orders; Op EBITDA +53%; exceptional charges one-time; O&M annuity.<br>
+        <strong>Bear case:</strong> FY26 net loss; execution gap (record orders but Q4 revenue fell 22.8%); thin margins.<br>
+        <strong>Key trigger:</strong> UOV ₹11,813 Cr execution + Coal India 1.2 GW project milestone payments.
+      </div>
+    </div>
+    <!-- WRTL -->
+    <div class="rat-card" style="border-top:3px solid var(--epc);">
+      <div class="rat-co" style="color:var(--epc);">Waaree Renewable Tech · WRTL</div>
+      <div class="rat-action rat-buy">BUY</div>
+      <div class="rat-tp">Target: Market-dependent · FY26 PAT ₹479 Cr</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:78%;background:var(--ipp);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> 18.76% EBITDA — best-in-class EPC; APS transmission diversification; PAT +109%.<br>
+        <strong>Bear case:</strong> APS integration risk; order concentration; parent dependency for margins.<br>
+        <strong>Key trigger:</strong> APS transmission asset integration + new EPC order wins FY27.
+      </div>
+    </div>
+    <!-- CLEANMAX -->
+    <div class="rat-card" style="border-top:3px solid var(--c2c);">
+      <div class="rat-co" style="color:var(--c2c);">CleanMax · NSE Listed</div>
+      <div class="rat-action rat-buy">BUY</div>
+      <div class="rat-tp">NSE Listed · Est. Fair Value ₹8,000–12,000 Cr market cap range</div>
+      <div class="rat-bar-wrap"><div class="rat-bar" style="width:75%;background:var(--c2c);"></div></div>
+      <div class="rat-meta">
+        <strong>Bull case:</strong> 42% AI/data centre; EBITDA ₹1,295 Cr; 5.7 GW contracted; PAT 4.4× YoY.<br>
+        <strong>Bear case:</strong> 6.6% EBITDA-PAT conversion; heavy debt/depreciation; hyperscalers may self-build.<br>
+        <strong>Key trigger:</strong> AI segment contracted GW milestone + PAT improvement as assets mature.
+      </div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-label">KPI Green Energy · KPIGREEN — Analyst View</div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;">
+      <div style="text-align:center;padding:14px 20px;background:var(--c2c-soft);border-radius:10px;border:1.5px solid var(--c2c);">
+        <div class="rat-action rat-buy" style="font-size:1.2rem;">BUY</div>
+        <div style="font-size:10px;color:var(--muted);font-weight:700;">Niche Champion</div>
+      </div>
+      <div class="rat-meta" style="font-size:11.5px;">
+        <strong>Bull case:</strong> CPP model = capital-efficient; Gujarat industrial near-monopoly; ROCE ~20%+; RPO legal mandate as permanent demand floor. 72% promoter conviction.<br><br>
+        <strong>Bear case:</strong> Geographic concentration (90% Gujarat); CPP model limits equity upside; national players entering Gujarat C&I; limited scale for institutional investors.<br><br>
+        <strong>Key trigger:</strong> Rajasthan expansion first project commissioning + Q4 FY26 results showing Gujarat growth continuation.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;font-size:10.5px;color:var(--muted);text-align:center;">Research purposes only · Target prices are indicative consensus ranges · Not investment advice · Consult a SEBI-registered financial advisor before investing</div>
+</div>
+
+<!-- ═══════════════════ TAB 9 · SCORECARD ═══════════════════ -->
+<div class="panel" id="tab-scorecard">
+  <div class="sec-heading">
+    <h2>Investment Scorecard</h2>
+    <span class="sec-note">Comparative assessment across financial strength, moat durability, growth visibility, and risk — for research purposes only, not investment advice</span>
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Type</th>
+          <th style="text-align:center">Revenue Growth</th>
+          <th style="text-align:center">Profitability</th>
+          <th style="text-align:center">Moat Strength</th>
+          <th style="text-align:center">Growth Visibility</th>
+          <th style="text-align:center">Balance Sheet</th>
+          <th style="text-align:center">Policy Risk</th>
+          <th style="text-align:center">Overall</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb score-co" style="color:var(--mfr);">Waaree Energies</td><td><span class="biz-tag btag-mfr">Mfr</span></td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">Medium</td><td class="score-row s-good">STRONG</td></tr>
+        <tr><td class="tb score-co" style="color:var(--mfr);">Premier Energies</td><td><span class="biz-tag btag-mfr">Mfr</span></td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">Medium-High</td><td class="score-row s-good">STRONG</td></tr>
+        <tr><td class="tb score-co" style="color:var(--mfr);">Fujiyama Power</td><td><span class="biz-tag btag-mfr">Mfr+B2C</span></td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★</td><td class="score-row s-warn">★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">★★★</td><td class="score-row s-warn">Medium</td><td class="score-row s-warn">MODERATE+</td></tr>
+        <tr><td class="tb score-co" style="color:var(--ipp);">Adani Green</td><td><span class="biz-tag btag-ipp">IPP</span></td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★★</td><td class="score-row s-warn">★★★ (High debt)</td><td class="score-row s-bad">Low (DoJ probe)</td><td class="score-row s-warn">HIGH RISK/REWARD</td></tr>
+        <tr><td class="tb score-co" style="color:var(--ipp);">ACME Solar</td><td><span class="biz-tag btag-ipp">IPP+BESS</span></td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">★★★ (interest burden)</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">★★★ (High debt)</td><td class="score-row s-good">Low</td><td class="score-row s-warn">MODERATE-GOOD</td></tr>
+        <tr><td class="tb score-co" style="color:var(--ipp);">NTPC Green</td><td><span class="biz-tag btag-ipp">PSU IPP</span></td><td class="score-row s-good">★★★★★</td><td class="score-row s-warn">★★ (capex phase, low PAT)</td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★★ (AAA/sovereign)</td><td class="score-row s-good">Very Low</td><td class="score-row s-warn">LONG-TERM STRONG</td></tr>
+        <tr><td class="tb score-co" style="color:var(--epc);">Sterling &amp; Wilson</td><td><span class="biz-tag btag-epc">EPC</span></td><td class="score-row s-warn">★★★ (volatile)</td><td class="score-row s-warn">★★★ (exceptional losses)</td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">★★★</td><td class="score-row s-warn">★★★ (Reliance backstop)</td><td class="score-row s-warn">Medium</td><td class="score-row s-warn">RECOVERY PLAY</td></tr>
+        <tr><td class="tb score-co" style="color:var(--epc);">Waaree Renewable</td><td><span class="biz-tag btag-epc">EPC</span></td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★★ (best EPC margin)</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">Medium</td><td class="score-row s-good">STRONG</td></tr>
+        <tr><td class="tb score-co" style="color:var(--c2c);">CleanMax</td><td><span class="biz-tag btag-c2c">C&amp;I</span></td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">★★ (PAT thin, turnaround)</td><td class="score-row s-good">★★★★★</td><td class="score-row s-good">★★★★★</td><td class="score-row s-warn">★★★</td><td class="score-row s-good">Low</td><td class="score-row s-good">UNIQUE MOAT — NSE LISTED</td></tr>
+        <tr><td class="tb score-co" style="color:var(--c2c);">KPI Green</td><td><span class="biz-tag btag-c2c">CPP+IPP</span></td><td class="score-row s-warn">★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-warn">★★★</td><td class="score-row s-good">★★★★</td><td class="score-row s-good">Low</td><td class="score-row s-warn">NICHE CHAMPION</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;font-size:11px;color:var(--muted);">★ Rating scale 1–5 · Research purposes only · Not investment advice. Overall ratings: STRONG = clear multi-year compounding case; MODERATE = decent but watch key risks; HIGH RISK/REWARD = binary outcomes possible; RECOVERY PLAY = turnaround in progress; LONG-TERM STRONG = institutional patience required; NICHE CHAMPION = outperforms in Gujarat/C&I niche.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 8 · RISKS & OUTLOOK ═══════════════════ -->
+<div class="panel" id="tab-risks">
+  <div class="sec-heading">
+    <h2>Key Risks, Outlook &amp; What the Market Is Missing</h2>
+    <span class="sec-note">Sector-wide risks · Company-specific watch-outs · FY27 outlook</span>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-label">Sector-Wide Risk Factors — Indian Solar FY27</div>
+      <table>
+        <thead><tr><th>Risk</th><th>Impact</th><th>Most Exposed</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Chinese ASP dumping (post BCD review)</td><td>Margin compression for manufacturers</td><td class="tneg">Waaree, Premier, Fujiyama</td></tr>
+          <tr><td class="tb">ALMM policy reversal / scope reduction</td><td>Removes domestic content protection</td><td class="tneg">Premier Energies (highest exposure)</td></tr>
+          <tr><td class="tb">Rising interest rates / high leverage</td><td>PAT erosion despite high EBITDA</td><td class="tneg">Adani Green, ACME, NTPC Green</td></tr>
+          <tr><td class="tb">State DISCOM payment delays</td><td>Working capital stress for IPPs</td><td class="tneg">Smaller IPPs; ACME improving (DSO 14d)</td></tr>
+          <tr><td class="tb">Commodity price volatility (steel, copper, glass)</td><td>EPC margin squeeze</td><td class="tneg">Sterling &amp; Wilson, WRTL</td></tr>
+          <tr><td class="tb">US tariff uncertainty (Section 201/301)</td><td>Export revenue risk for module makers</td><td class="tneg">Waaree (33% exports to US)</td></tr>
+          <tr><td class="tb">Grid curtailment / transmission constraints</td><td>Reduces actual energy generation</td><td class="tneg">Adani Green (Rajasthan overbuilding)</td></tr>
+          <tr><td class="tb">Corporate offtaker credit risk</td><td>Payment default from C&I customers</td><td class="tneg">CleanMax, KPI Green</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-label">FY27 Sector Tailwinds &amp; Opportunity Matrix</div>
+      <table>
+        <thead><tr><th>Tailwind</th><th>Beneficiary</th><th>Magnitude</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">PM Surya Ghar: 2 Cr households target</td><td class="tpos">Fujiyama, Premier, Waaree</td><td class="tpos">₹75,000+ Cr over 3 years</td></tr>
+          <tr><td class="tb">India 500 GW RE target by 2030 (250 GW solar)</td><td class="tpos">All IPPs, EPC players</td><td class="tpos">~40 GW/yr needed FY27-30</td></tr>
+          <tr><td class="tb">Data Centre / AI power demand boom</td><td class="tpos">CleanMax (42% portfolio)</td><td class="tpos">10x growth in AI demand by FY27</td></tr>
+          <tr><td class="tb">BESS / FDRE premium tariffs (₹4–6/kWh)</td><td class="tpos">ACME Solar, Adani Green</td><td class="tpos">2× tariff vs standard solar</td></tr>
+          <tr><td class="tb">Green hydrogen / green ammonia projects</td><td class="tpos">NTPC Green, Adani Green</td><td class="tpos">New revenue vertical</td></tr>
+          <tr><td class="tb">ALMM + PLI manufacturing incentives</td><td class="tpos">Waaree, Premier, Fujiyama</td><td class="tpos">~₹18,000 Cr PLI total</td></tr>
+          <tr><td class="tb">Corporate RPO compliance demand</td><td class="tpos">KPI Green, CleanMax</td><td class="tpos">Mandatory by law, growing penalty</td></tr>
+          <tr><td class="tb">Coal India / PSU solar tender pipeline</td><td class="tpos">Sterling &amp; Wilson, WRTL</td><td class="tpos">15+ GW awarded FY27-28 est.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:#c8420f;">What the Dashboard Adds Over the Original BSE/MCX/CDSL/NSDL Model — Solar Sector Extensions</div>
+    <table>
+      <thead><tr><th>Feature</th><th>Original Dashboard (Exchange companies)</th><th>This Solar Dashboard (Added/Extended)</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Business Model Classification</td><td>All 4 companies had same "exchange" model</td><td class="tpos">4 distinct models mapped: Mfr / IPP / EPC / C&I — colour-coded throughout</td></tr>
+        <tr><td class="tb">Moat Analysis</td><td>USP cards present but same industry context</td><td class="tpos">Cross-model moat comparison: scale vs PPA annuity vs track record vs OPEX stickiness</td></tr>
+        <tr><td class="tb">Capacity & Scale Tab</td><td>Not applicable (exchange volumes instead)</td><td class="tpos">GW capacity, production output, pipeline, FY27 targets per company</td></tr>
+        <tr><td class="tb">Risk Differentiation</td><td>Market risk, SEBI regulation, tech platforms</td><td class="tpos">8 sector risks mapped with company-specific exposure; 8 tailwinds with beneficiary mapping</td></tr>
+        <tr><td class="tb">Business Model Matrix</td><td>Not needed (all exchanges)</td><td class="tpos">Side-by-side model comparison: revenue driver, margin profile, capital intensity, policy dependency</td></tr>
+        <tr><td class="tb">Quarterly Data</td><td>All Q4 FY26 actuals</td><td class="tpos">Q4 actuals for 8/9 companies; NTPC Green Q4 due 22 May noted with Q3 actuals used</td></tr>
+        <tr><td class="tb">CB Assist Context</td><td>BSE/MCX/CDSL/NSDL data</td><td class="tpos">Solar sector data: all 9 companies + sector context + business model awareness</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 11 · CB ASSIST v2 ═══════════════════ -->
+<div class="panel" id="tab-cbassist">
+  <div style="max-width:960px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2.5px solid #c8420f;">
+      <div style="width:44px;height:44px;background:#c8420f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:1.15rem;color:#fff;flex-shrink:0;">CB</div>
+      <div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#181511;">CB Assist — Solar Intelligence</h2>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-top:2px;">AI Research · Cauvery Business · EIL Research · Q4 FY26</div>
+      </div>
+    </div>
+
+    <!-- Language Toggle — EN and Tamil SEPARATE, no bilingual -->
+    <div class="lang-toggle">
+      <span style="font-weight:700;">Language:</span>
+      <button class="lang-btn active" id="langEN" onclick="setLang('EN')">English</button>
+      <button class="lang-btn" id="langTA" onclick="setLang('TA')">தமிழ் (Tamil)</button>
+    </div>
+
+    <!-- Preset Questions -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:8px;">📌 Click a question for instant analysis</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:10px;">
+        <button class="preset-tab pt-sector active" onclick="switchPreset('sector',this)">Sector &amp; Crisis</button>
+        <button class="preset-tab pt-mfr" onclick="switchPreset('mfr',this)">Manufacturers</button>
+        <button class="preset-tab pt-ipp" onclick="switchPreset('ipp',this)">IPP Developers</button>
+        <button class="preset-tab pt-epc" onclick="switchPreset('epc',this)">EPC Players</button>
+        <button class="preset-tab pt-c2c" onclick="switchPreset('c2c',this)">C&amp;I / CPP</button>
+      </div>
+
+      <!-- SECTOR -->
+      <div class="presets-panel active" id="preset-sector">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">⚡</span><div><div class="pq-en">Which solar business model — Manufacturer, IPP, EPC, or C&I — is most crisis-proof in FY27?</div><div class="pq-ta">FY27-ல் எந்த business model — Manufacturer, IPP, EPC, C&I — மிகவும் crisis-proof?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">💹</span><div><div class="pq-en">If Chinese module prices crash 30%, who wins and who bleeds?</div><div class="pq-ta">Chinese module விலை 30% சரிந்தால் யார் லாபம், யார் நஷ்டம்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🔋</span><div><div class="pq-en">Is BESS the best value-creation lever in Indian solar right now?</div><div class="pq-ta">Indian solar-ல் BESS தற்போது சிறந்த value creation lever ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🤖</span><div><div class="pq-en">How is AI/data centre power demand reshaping the Indian solar sector?</div><div class="pq-ta">AI/data centre power demand Indian solar sector-ஐ எவ்வாறு மாற்றுகிறது?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🏗️</span><div><div class="pq-en">What is the single biggest structural flaw in each of the four solar business models?</div><div class="pq-ta">நான்கு solar business models-இல் ஒவ்வொன்றின் மிகப்பெரிய structural flaw என்ன?</div></div></div>
+        </div>
+      </div>
+
+      <!-- MANUFACTURERS -->
+      <div class="presets-panel" id="preset-mfr">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">⚔️</span><div><div class="pq-en">Waaree vs Premier: whose competitive moat is stronger and more durable?</div><div class="pq-ta">Waaree vs Premier: யாரின் competitive moat வலிமையானது மற்றும் நீடித்திருக்கும்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">📉</span><div><div class="pq-en">Why is Waaree's EBITDA margin only 18.6% despite being India's largest module maker?</div><div class="pq-ta">India's largest module maker ஆயினும் Waaree EBITDA margin 18.6% மட்டுமே — ஏன்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🔬</span><div><div class="pq-en">Premier Energies has ROCE 33.5% — how long can these returns last?</div><div class="pq-ta">Premier Energies ROCE 33.5% — இந்த returns எவ்வளவு காலம் நீடிக்கும்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🏘️</span><div><div class="pq-en">What makes Fujiyama's Tier-2/3 distribution network a genuine moat?</div><div class="pq-ta">Fujiyama-வின் Tier-2/3 distribution network ஒரு genuine moat ஆவதற்கான காரணம்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">⚠️</span><div><div class="pq-en">If ALMM is scrapped tomorrow, rank the three manufacturers by damage severity.</div><div class="pq-ta">ALMM நாளை cancel ஆனால், மூன்று manufacturers-ஐ damage severity-ல் rank செய்யுங்கள்.</div></div></div>
+        </div>
+      </div>
+
+      <!-- IPP -->
+      <div class="presets-panel" id="preset-ipp">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🏛️</span><div><div class="pq-en">NTPC Green: 10,516 MW capacity but ₹17.5 Cr PAT — explain the paradox in 5 lines.</div><div class="pq-ta">NTPC Green: 10,516 MW capacity, ஆனால் PAT ₹17.5 Cr — 5 வரிகளில் paradox explain செய்யுங்கள்.</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">💧</span><div><div class="pq-en">ACME Solar: does ₹337 Cr quarterly interest make it a debt trap or a calculated bet?</div><div class="pq-ta">ACME Solar: ₹337 Cr quarterly interest — debt trap ஆகுமா அல்லது calculated bet ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">⚖️</span><div><div class="pq-en">Adani Green vs NTPC Green: which is the better 10-year compounding bet?</div><div class="pq-ta">Adani Green vs NTPC Green: 10 ஆண்டு compounding-க்கு எது சிறந்தது?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🌊</span><div><div class="pq-en">How does Adani Green's Khavda 30 GW site give it a permanent cost moat?</div><div class="pq-ta">Adani Green-ன் Khavda 30 GW site எவ்வாறு permanent cost moat தருகிறது?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🔌</span><div><div class="pq-en">Grid curtailment: which IPP is most at risk and how much revenue could they lose?</div><div class="pq-ta">Grid curtailment: எந்த IPP அதிக risk-ல் உள்ளது? எவ்வளவு revenue இழப்பு ஏற்படலாம்?</div></div></div>
+        </div>
+      </div>
+
+      <!-- EPC -->
+      <div class="presets-panel" id="preset-epc">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🔧</span><div><div class="pq-en">Why does WRTL earn 18.76% EBITDA while S&W earns only 5.9%? Same industry, 3× margin gap.</div><div class="pq-ta">WRTL 18.76% EBITDA, S&W 5.9% — same industry, 3× margin gap — ஏன்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">⚖️</span><div><div class="pq-en">S&W posted ₹296 Cr loss but operational EBITDA grew 53% — is this a recovery or a trap?</div><div class="pq-ta">S&W ₹296 Cr loss, ஆனால் operational EBITDA ▲53% — Recovery ஆகுமா, trap ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🏗️</span><div><div class="pq-en">Is EPC a value-destroying model at scale? Can any EPC player escape the margin trap?</div><div class="pq-ta">EPC model scale-ல் value destroy செய்யுமா? Margin trap-ஐ தவிர்க்க முடியுமா?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🌐</span><div><div class="pq-en">WRTL's ₹1,225 Cr APS acquisition — smart diversification or capital misallocation?</div><div class="pq-ta">WRTL ₹1,225 Cr APS acquisition — smart diversification ஆகுமா, capital misallocation ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">📋</span><div><div class="pq-en">S&W has record orders of ₹10,062 Cr but Q4 revenue fell 22.8% — what's happening?</div><div class="pq-ta">S&W record orders ₹10,062 Cr, ஆனால் Q4 revenue ▼22.8% — என்ன நடக்கிறது?</div></div></div>
+        </div>
+      </div>
+
+      <!-- C&I -->
+      <div class="presets-panel" id="preset-c2c">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🏢</span><div><div class="pq-en">CleanMax EBITDA ₹1,295 Cr but PAT only ₹85.6 Cr — where is the money going?</div><div class="pq-ta">CleanMax EBITDA ₹1,295 Cr, PAT ₹85.6 Cr மட்டும் — பணம் எங்கே போகிறது?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🤖</span><div><div class="pq-en">Why is CleanMax's 42% AI/data centre portfolio the most durable moat in this sector?</div><div class="pq-ta">CleanMax 42% AI/data centre portfolio இந்த sector-ல் மிகவும் durable moat ஆவதற்கான காரணம்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🔄</span><div><div class="pq-en">KPI Green's CPP model — genius capital efficiency or a structural ROE ceiling?</div><div class="pq-ta">KPI Green CPP model — genius capital efficiency ஆகுமா, structural ROE ceiling ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">⚖️</span><div><div class="pq-en">CleanMax vs KPI Green: which C&I player has stronger pricing power and why?</div><div class="pq-ta">CleanMax vs KPI Green: எந்த C&I player அதிக pricing power கொண்டுள்ளது? ஏன்?</div></div></div>
+          <div class="preset-q" onclick="askPreset(this)"><span class="pq-icon">🌱</span><div><div class="pq-en">RPO compliance is mandatory by law — does this make C&I solar demand risk-free?</div><div class="pq-ta">RPO compliance சட்டபூர்வமான கட்டாயம் — C&I solar demand risk-free ஆகுமா?</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT WINDOW -->
+    <div class="cbassist-chat">
+      <div class="cbassist-chat-title"><span></span> CB Assist — Click a question above or type your own</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg bot">Welcome to <strong>CB Assist Solar</strong> by Cauvery Business / EIL Research.<br><br>Ask anything about the 9 Indian solar companies — results, SWOT, business models, crisis resilience, or analyst views. Answers are concise and analytical.<br><br>மேலே உள்ள கேள்விகளை click செய்யுங்கள் அல்லது நேரடியாக கேளுங்கள்.</div>
+      </div>
+      <div class="typing-indicator" id="typingIndicator">
+        <span></span><span></span><span></span>
+        <span style="font-size:11px;color:var(--muted);margin-left:6px;">Analysing...</span>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" type="text" placeholder="Type your question in English or Tamil..." onkeydown="if(event.key==='Enter')sendChat()"/>
+        <button class="chat-send" id="chatSendBtn" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function switchPreset(id, btn) {
+  document.querySelectorAll('.presets-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.preset-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('preset-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+let currentLang = 'EN';
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lang' + lang).classList.add('active');
+}
+
+function askPreset(el) {
+  const key = currentLang === 'TA' ? '.pq-ta' : '.pq-en';
+  const txt = el.querySelector(key) ? el.querySelector(key).innerText : el.querySelector('.pq-en').innerText;
+  document.getElementById('chatInput').value = txt;
+  sendChat();
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const messages = document.getElementById('chatMessages');
+  const btn = document.getElementById('chatSendBtn');
+  const typing = document.getElementById('typingIndicator');
+  const q = input.value.trim();
+  if (!q) return;
+
+  const userMsg = document.createElement('div');
+  userMsg.className = 'chat-msg user';
+  userMsg.textContent = q;
+  messages.appendChild(userMsg);
+  messages.scrollTop = messages.scrollHeight;
+  input.value = '';
+  btn.disabled = true;
+  typing.style.display = 'flex';
+  messages.scrollTop = messages.scrollHeight;
+
+  const langInstruction = currentLang === 'TA'
+    ? 'Answer in Tamil ONLY. தமிழில் மட்டுமே பதில் தாருங்கள். Company names, numbers, and financial terms can remain in English.'
+    : 'Answer in English only.';
+
+  const systemPrompt = `You are CB Assist — an expert financial research analyst for Cauvery Business (EIL Research). You cover Indian solar sector companies with rigorous, sharp analysis.
+
+${langInstruction}
+
+CRITICAL RULES:
+- Keep answers SHORT and SHARP — 5 to 8 sentences maximum. No long essays.
+- Be direct. Lead with the key insight. No preamble.
+- Use specific numbers. Challenge conventional views where warranted.
+- Do NOT mention any data sources, filings, or references. Just state facts directly.
+- No investment advice — research analysis only.
+
+COMPANY DATA (Q4 FY26):
+Waaree Energies: Q4 Rev ₹8,480 Cr (+112%), PAT ₹1,126 Cr (+75%), FY26 PAT ₹3,884 Cr (+101%), EBITDA 18.6%, 26 GW capacity, order book ₹53,000 Cr, FY27 EBITDA guided ₹7,000–7,700 Cr. 33% US exports. 10 GW ingot-wafer Nagpur in progress. Risk: Chinese ASP, US tariff.
+
+Premier Energies: Q4 Rev ₹2,230 Cr (+37.6%), PAT ₹457 Cr (+64.5%), EBITDA 32%, ROCE 33.5%, ROE 42.4%, cell utilisation 84%, order book ₹14,010 Cr. India's only large private cell maker. ALMM = key moat and key risk.
+
+Fujiyama Power (UTL Solar): Q4 Rev ₹901 Cr (+87.5%), PAT ₹106 Cr (+107%), FY26 PAT ₹304 Cr (+94.5%), EBITDA 18.5%, 8,900+ channel partners, 3,568 MW module + 1 GW cell. PM Surya Ghar beneficiary.
+
+Adani Green: Q4 Rev ₹3,094 Cr (+16%), PAT ₹514 Cr (+34%), FY26 EBITDA ₹10,865 Cr (+23%), 19,735 MW operational, 5,051 MW added FY26, Khavda 30 GW site, BESS 1,376 MWh. US DoJ case ongoing. Very high leverage.
+
+ACME Solar: Q4 Rev ₹705 Cr (+30.7%), PAT ₹138 Cr (+13.3%), FY26 PAT ₹498 Cr (+99%), EBITDA 90.3%, 2,990 MW + 2.3 GWh BESS, ₹2.2 Cr/day BESS revenue, Q4 interest ₹337 Cr, UC portfolio tariff ₹4.4/kWh vs operational ₹3.4/kWh, DSO improved to 14 days.
+
+NTPC Green: Q3 FY26 Rev ₹653 Cr, PAT ₹17.5 Cr (−73%), EBITDA 76.5%, 10,516 MW operational, P/E ~159×, AAA sovereign, borrowing 6.8–7.2%, D/E 115%, 60 GW target 2032. Q4 results due 22 May 2026.
+
+Sterling & Wilson: Q4 Rev ₹1,946 Cr (−22.8%), Q4 PAT ₹135 Cr (2× YoY), FY26 Op EBITDA ₹444 Cr (+53%), margin 5.9%, FY26 net loss ₹296 Cr (exceptional charges ₹611 Cr only), order inflow ₹10,062 Cr record, UOV ₹11,813 Cr, 27.3 GWp EPC track record, 13.5 GW O&M, Reliance 32.5% stake.
+
+Waaree Renewable (WRTL): Q4 Rev ₹1,102 Cr (+131%), PAT ₹156 Cr (+66%), FY26 PAT ₹479 Cr (+109%), EBITDA 18.76%, captive module supply from parent Waaree = margin edge. APS acquisition ₹1,225 Cr (55%, power transmission).
+
+CleanMax: Q4 Rev ₹557 Cr (+25%), PAT ₹45 Cr (+165%), FY26 EBITDA ₹1,295 Cr, FY26 PAT ₹85.6 Cr (+4.4×), 3.1 GW operational, 5.7 GW contracted, 42% portfolio from AI/data centres (10× in 2 yrs), EBITDA-PAT conversion 6.6% (depreciation + interest). NSE-listed company.
+
+KPI Green: Gujarat-based, IPP + CPP dual model, ~1,200 MW, ROCE ~20%+, 72% promoter, CPP = customers co-invest in assets, Gujarat industrial near-monopoly, RPO compliance driver. Expanding to Rajasthan.
+
+CRISIS MATRIX: Chinese ASP crash → IPPs/EPC win, Manufacturers lose. Rate hike → IPPs hurt most. Policy pause → C&I insulated, PSU IPPs hurt. Grid curtailment → Rooftop/C&I safe, utility IPPs exposed. US tariff → Waaree exports at risk, domestic pure-plays safe.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 600,
+        system: systemPrompt,
+        messages: [{ role: "user", content: q }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content && data.content[0] && data.content[0].text ? data.content[0].text : "Unable to process response.";
+    typing.style.display = 'none';
+    const botMsg = document.createElement('div');
+    botMsg.className = 'chat-msg bot';
+    botMsg.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+    messages.appendChild(botMsg);
+    messages.scrollTop = messages.scrollHeight;
+  } catch(e) {
+    typing.style.display = 'none';
+    const errMsg = document.createElement('div');
+    errMsg.className = 'chat-msg bot';
+    errMsg.textContent = 'CB Assist is temporarily unavailable. Please try again.';
+    messages.appendChild(errMsg);
+    messages.scrollTop = messages.scrollHeight;
+  }
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>

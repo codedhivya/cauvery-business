@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr Reddy's Laboratories — Q1 FY27 Investment Analysis · CBF26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f4f8; --card: #ffffff; --card2: #f8fafc;
+    --border: #e2e8f0; --accent: #0369a1; --green: #16a34a;
+    --amber: #d97706; --red: #dc2626; --purple: #7c3aed;
+    --text: #0f172a; --muted: #64748b; --light: #e0f2fe;
+    --cdmo: #0891b2; --ncdmo: #7c3aed;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  /* Header */
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 60%,#0891b2 100%);color:#fff;padding:28px 32px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+  .header h1{font-size:1.7rem;font-weight:700;letter-spacing:-.3px}
+  .header p{opacity:.85;margin-top:4px;font-size:.88rem}
+  .badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+  .b-q4{background:rgba(22,163,74,.3);color:#bbf7d0}
+  .b-q3{background:rgba(217,119,6,.3);color:#fde68a}
+  .b-est{background:rgba(99,102,241,.3);color:#c7d2fe}
+  /* Nav */
+  nav{background:#fff;border-bottom:2px solid var(--border);display:flex;gap:0;overflow-x:auto;position:sticky;top:88px;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+  nav button{padding:13px 20px;border:none;background:none;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);background:#f0f9ff}
+  nav button:hover:not(.active){color:var(--text);background:var(--bg)}
+  /* Tab panes */
+  .tab{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+  .tab.active{display:block}
+  /* Cards */
+  .section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-bottom:28px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .2s,transform .15s}
+  .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+  .card-name{font-size:1.05rem;font-weight:700}
+  .card-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .tag{padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700}
+  .tag-cdmo{background:#cffafe;color:#0e7490}
+  .tag-hybrid{background:#fef3c7;color:#92400e}
+  .tag-generic{background:#ede9fe;color:#5b21b6}
+  .tag-q4{background:#dcfce7;color:#166534}
+  .tag-q3{background:#fef9c3;color:#854d0e}
+  .tag-est{background:#e0e7ff;color:#3730a3}
+  /* CBF26 Earnings Rating badges */
+  .cbr{padding:2px 9px;border-radius:10px;font-size:.72rem;font-weight:800;white-space:nowrap;letter-spacing:.2px}
+  .cbr-a{background:#dcfce7;color:#166534}
+  .cbr-b{background:#cffafe;color:#0e7490}
+  .cbr-c{background:#fef9c3;color:#854d0e}
+  .cbr-d{background:#ffedd5;color:#9a3412}
+  .cbr-e{background:#fee2e2;color:#991b1b}
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .metric{background:var(--card2);border-radius:8px;padding:8px 10px;text-align:center}
+  .metric-val{font-size:1rem;font-weight:700;color:var(--accent)}
+  .metric-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+  .metric-green .metric-val{color:var(--green)}
+  .metric-amber .metric-val{color:var(--amber)}
+  .metric-red .metric-val{color:var(--red)}
+  .usp-row{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .usp-row strong{color:var(--text)}
+  /* Debt bar */
+  .debt-bar-wrap{margin-top:8px}
+  .debt-label{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px}
+  .debt-bar{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+  .debt-fill{height:100%;border-radius:3px;transition:width .8s ease}
+  .debt-low{background:var(--green)}
+  .debt-mid{background:var(--amber)}
+  .debt-high{background:var(--red)}
+  /* Filter bar */
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .filter-bar button{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--muted);transition:all .15s}
+  .filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* CDMO section */
+  .cdmo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+  @media(max-width:700px){.cdmo-grid{grid-template-columns:1fr}}
+  .cdmo-box{background:var(--card);border-radius:12px;border:2px solid;padding:18px}
+  .cdmo-box.cdmo-col{border-color:var(--cdmo)}
+  .cdmo-box.ncdmo-col{border-color:var(--ncdmo)}
+  .cdmo-head{font-size:1rem;font-weight:700;margin-bottom:4px}
+  .cdmo-head.cdmo-t{color:var(--cdmo)}
+  .cdmo-head.ncdmo-t{color:var(--ncdmo)}
+  .cdmo-list{list-style:none;margin-top:10px}
+  .cdmo-list li{padding:8px 0;border-bottom:1px solid var(--border);font-size:.83rem;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .cdmo-list li:last-child{border-bottom:none}
+  .cdmo-co{font-weight:700}
+  .cdmo-desc{color:var(--muted);text-align:right;font-size:.76rem;max-width:55%}
+  /* Charts */
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:22px;margin-bottom:28px}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .chart-title{font-size:.9rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+  .chart-wrap{position:relative;height:280px}
+  /* Table */
+  .tbl-wrap{overflow-x:auto;margin-bottom:28px}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  thead tr{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff}
+  th{padding:11px 12px;text-align:left;font-size:.78rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+  th:hover{background:rgba(255,255,255,.15)}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#f8fafc}
+  tr:hover td{background:#f0f9ff}
+  .sort-icon{opacity:.6;font-size:.7rem;margin-left:4px}
+  .td-green{color:var(--green);font-weight:700}
+  .td-red{color:var(--red);font-weight:700}
+  .td-amber{color:var(--amber);font-weight:700}
+  /* Ranking */
+  .rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+  @media(max-width:700px){.rank-grid{grid-template-columns:1fr}}
+  .rank-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .rank-num{font-size:1.6rem;font-weight:900;min-width:42px;text-align:center;line-height:1}
+  .rank-1 .rank-num{color:#f59e0b}
+  .rank-2 .rank-num{color:#94a3b8}
+  .rank-3 .rank-num{color:#b45309}
+  .rank-4 .rank-num,.rank-5 .rank-num{color:var(--accent)}
+  .rank-other .rank-num{color:var(--muted)}
+  .rank-info h3{font-size:.95rem;font-weight:700;margin-bottom:4px}
+  .rank-info p{font-size:.78rem;color:var(--muted);line-height:1.5}
+  /* Score bars */
+  .score-wrap{margin:8px 0}
+  .score-row{display:grid;grid-template-columns:110px 1fr 36px;gap:6px;align-items:center;margin-bottom:5px}
+  .score-lbl{font-size:.73rem;color:var(--muted);text-align:right}
+  .score-bg{background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden}
+  .score-bar{height:100%;border-radius:4px;width:0;transition:width 1s ease}
+  .score-val{font-size:.73rem;font-weight:700;color:var(--text)}
+  /* Analyst */
+  .analyst-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .analyst-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .analyst-name{font-weight:700;font-size:.9rem;margin-bottom:6px}
+  .analyst-rec{padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;display:inline-block;margin-bottom:6px}
+  .rec-buy{background:#dcfce7;color:#166534}
+  .rec-hold{background:#fef9c3;color:#854d0e}
+  .rec-sell{background:#fee2e2;color:#991b1b}
+  .analyst-tp{font-size:.8rem;color:var(--muted)}
+  .analyst-note{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.5}
+  /* Info boxes */
+  .info-box{background:var(--light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .warn-box{background:#fffbeb;border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  /* Geo table */
+  .geo-table{width:100%;border-collapse:collapse;margin-bottom:20px}
+  .geo-table thead tr{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff}
+  .geo-table th{background:transparent;color:#fff;padding:8px 12px;text-align:left;font-size:.78rem;font-weight:700;border-bottom:2px solid var(--border)}
+  .geo-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:.8rem}
+  .geo-table tr:hover td{background:#f8fafc}
+  .progress-mini{display:inline-block;height:8px;background:var(--accent);border-radius:4px;vertical-align:middle;margin-right:4px}
+  /* Responsive */
+  @media(max-width:600px){
+    .header h1{font-size:1.2rem}
+    .metrics{grid-template-columns:1fr 1fr}
+    .chart-grid{grid-template-columns:1fr}
+    nav button{padding:10px 13px;font-size:.78rem}
+    .tab{padding:16px 14px}
+  }
+  /* ── NEW SECTIONS ── */
+  /* Valuations */
+  .val-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:28px}
+  .val-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .val-name{font-weight:700;font-size:.88rem;margin-bottom:8px;color:var(--text)}
+  .val-row{display:flex;justify-content:space-between;font-size:.78rem;padding:3px 0;border-bottom:1px solid #f1f5f9}
+  .val-row:last-child{border-bottom:none}
+  .val-lbl{color:var(--muted)}
+  .val-num{font-weight:700}
+  /* SWOT */
+  .swot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  @media(max-width:600px){.swot-wrap{grid-template-columns:1fr}}
+  .swot-box{border-radius:8px;padding:12px;font-size:.78rem;line-height:1.65}
+  .swot-s{background:#dcfce7;border-left:4px solid var(--green)}
+  .swot-w{background:#fee2e2;border-left:4px solid var(--red)}
+  .swot-o{background:#dbeafe;border-left:4px solid var(--accent)}
+  .swot-t{background:#fef9c3;border-left:4px solid var(--amber)}
+  .swot-head{font-weight:700;margin-bottom:6px;font-size:.82rem}
+  .swot-s .swot-head{color:var(--green)}
+  .swot-w .swot-head{color:var(--red)}
+  .swot-o .swot-head{color:var(--accent)}
+  .swot-t .swot-head{color:var(--amber)}
+  /* Accordion */
+  .acc-item{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+  .acc-head{background:#f8fafc;padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.88rem}
+  .acc-head:hover{background:#e0f2fe}
+  .acc-body{display:none;padding:16px;border-top:1px solid var(--border)}
+  .acc-body.open{display:block}
+  /* Q&A */
+  .qa-item{border:1px solid var(--border);border-radius:8px;margin-bottom:7px;overflow:hidden}
+  .qa-q{background:#f8fafc;padding:10px 14px;cursor:pointer;font-size:.81rem;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+  .qa-q:hover{background:#e0f2fe}
+  .qa-a{display:none;padding:10px 14px;font-size:.79rem;color:var(--muted);line-height:1.65;border-top:1px solid var(--border)}
+  .qa-a.open{display:block}
+  /* Custom Q chat */
+  .qa-chat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:22px}
+  .qa-chat-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .qa-sel{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.8rem;font-weight:600;background:#fff}
+  .qa-inp{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.8rem;outline:none}
+  .qa-inp:focus{border-color:var(--accent)}
+  .qa-btn{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700}
+  .qa-resp{padding:12px;background:#f8fafc;border-radius:8px;font-size:.79rem;line-height:1.7;display:none;margin-top:6px}
+  /* CB Research Branding */
+  .cb-logo{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .cb-logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#fff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#0369a1;letter-spacing:-.5px;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+  .cb-logo-text{font-size:.78rem;line-height:1.35;color:rgba(255,255,255,.9)}
+  .cb-logo-text strong{font-size:.88rem;color:#fff;display:block;letter-spacing:.3px}
+  .cb-watermark{position:fixed;bottom:18px;right:18px;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:7px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.18);border-radius:30px;padding:5px 12px 5px 8px;backdrop-filter:blur(4px)}
+  .cb-watermark-icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0369a1,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+  .cb-watermark-text{font-size:.68rem;color:var(--muted);font-weight:600;white-space:nowrap}
+  .cb-watermark-text span{color:var(--accent)}
+  .lang-bar{background:#fff;border-bottom:1px solid var(--border);padding:6px 28px;display:flex;align-items:center;gap:10px;font-size:.79rem;color:var(--muted)}
+  .lbtn{padding:3px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;background:#fff;color:var(--muted)}
+  .lbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .en{display:block}.ta{display:none}
+  body.tm .en{display:none}body.tm .ta{display:block}
+  /* Champion */
+  .champion{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #f59e0b;border-radius:14px;padding:22px;margin-bottom:28px}
+  .champion h2{font-size:1.15rem;font-weight:900;text-align:center;color:#92400e;margin:8px 0 14px}
+  .champion p{font-size:.82rem;line-height:1.8;color:var(--text)}
+  /* Projects */
+  .proj-card{background:#fff;border:2px solid var(--cdmo);border-radius:12px;padding:18px;margin-bottom:16px}
+  .proj-head{font-weight:700;font-size:.95rem;color:var(--cdmo);margin-bottom:10px}
+  .proj-body{font-size:.81rem;color:var(--muted);line-height:1.75}
+  .proj-body strong{color:var(--text)}
+  /* Acquisitions */
+  .acq-item{background:var(--card);border-left:4px solid var(--purple);border-radius:0 10px 10px 0;padding:13px 16px;margin-bottom:11px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .acq-head{font-weight:700;font-size:.86rem;color:var(--purple);margin-bottom:5px}
+  .acq-body{font-size:.78rem;color:var(--muted);line-height:1.7}
+  .acq-body strong{color:var(--text)}
+  /* Moats */
+  .moat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:28px}
+  .moat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .moat-name{font-weight:700;margin-bottom:5px;font-size:.9rem}
+  .moat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;margin-bottom:6px;background:#dbeafe;color:#1e40af}
+  .moat-pts{font-size:.77rem;color:var(--muted);line-height:1.7}
+  /* Geo dropdown */
+  .geo-filter{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .geo-sel{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.81rem;background:#fff;font-weight:600}
+  /* ── Q1 FY27 sub-tab system ── */
+  .subnav{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:14px}
+  .subnav button{padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--muted);transition:all .15s}
+  .subnav button.sub-active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .subnav button:hover:not(.sub-active){background:var(--bg);color:var(--text)}
+  .subtab{display:none}
+  .subtab.sub-active-pane{display:block}
+  .q1-banner{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .q1-banner strong{color:#bae6fd}
+  .pending-tag{background:#f1f5f9;color:var(--muted);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700}
+  .poor-box{background:#fef2f2;border:2px solid var(--red);border-radius:12px;padding:16px 18px;margin-bottom:20px}
+  .poor-box h3{color:#991b1b;font-size:1rem;margin-bottom:10px}
+  .poor-box ol{margin-left:18px;font-size:.83rem;line-height:1.9;color:var(--text)}
+  .poor-box ol li strong{color:#991b1b}
+  /* Tariff tab */
+  .tariff-timeline{display:flex;flex-direction:column;gap:0;margin-bottom:22px}
+  .tl-item{display:flex;gap:14px;padding:12px 0;border-left:3px solid var(--accent);padding-left:18px;margin-left:8px;position:relative}
+  .tl-item::before{content:'';position:absolute;left:-8px;top:16px;width:13px;height:13px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent)}
+  .tl-item.tl-red::before{background:var(--red);box-shadow:0 0 0 2px var(--red)}
+  .tl-item.tl-amber::before{background:var(--amber);box-shadow:0 0 0 2px var(--amber)}
+  .tl-item.tl-green::before{background:var(--green);box-shadow:0 0 0 2px var(--green)}
+  .tl-date{font-weight:800;font-size:.78rem;color:var(--accent);min-width:120px}
+  .tl-body{font-size:.83rem;line-height:1.6;color:var(--text)}
+  .impact-a{background:#fee2e2;color:#991b1b}
+  .impact-b{background:#ffedd5;color:#9a3412}
+  .impact-c{background:#fef9c3;color:#854d0e}
+  .impact-d{background:#cffafe;color:#0e7490}
+  .impact-e{background:#dcfce7;color:#166534}
+  .impact-pill{padding:3px 10px;border-radius:10px;font-size:.72rem;font-weight:800;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💊 Dr Reddy's Laboratories — Q1 FY27 Investment Analysis</h1>
+  <p>Standalone Deep-Dive · Quarter Ended 30 Jun 2026 · Business &amp; Investment Analysis · US Generic Tariff Sector Context</p>
+  <div class="badge-row">
+    <span class="badge" style="background:rgba(220,38,38,.35);color:#fecaca">🔻 Q1 FY27: Poor Quarter (CB-E)</span>
+    <span class="badge b-q4">Q4 FY26 &amp; FY26 reference data included</span>
+    <span class="badge b-est">⭐ CBF26 Earnings Rating</span>
+    <span style="background:rgba(255,255,255,.15);color:#e0f2fe;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600">Updated: 23 Jul 2026, 11:20 IST</span>
+  </div>
+  <div class="cb-logo">
+    <div class="cb-logo-mark">CB</div>
+    <div class="cb-logo-text"><strong>CB Research</strong>Company Deep-Dive · Cauvery Business</div>
+  </div>
+</div>
+
+<div class="cb-watermark">
+  <div class="cb-watermark-icon">CB</div>
+  <div class="cb-watermark-text"><span>CB Research</span> · Dr Reddy's Q1 FY27 · CBF26</div>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="switchTab('snapshot',this)">📊 Snapshot</button>
+  <button onclick="switchTab('results',this)">📄 Q1 FY27 Results</button>
+  <button onclick="switchTab('poor',this)">🔻 Why It Was Poor</button>
+  <button onclick="switchTab('segment',this)">🌍 Segment Mix</button>
+  <button onclick="switchTab('tariff',this)" style="color:#dc2626">🇺🇸 US Tariff — Sector Impact</button>
+  <button onclick="switchTab('analysts',this)">🧑‍💼 Analysts &amp; Management</button>
+  <button onclick="switchTab('verdict',this)">🏆 Verdict</button>
+</nav>
+<div class="lang-bar">
+  🌐 Language / மொழி:
+  <button class="lbtn on" onclick="setLang('en',this)">English</button>
+  <button class="lbtn" onclick="setLang('ta',this)">தமிழ்</button>
+</div>
+
+<!-- ═══════════════════════════════════ SNAPSHOT ═══════════════════════════════════ -->
+<div id="tab-snapshot" class="tab active">
+  <div class="q1-banner"><strong>Quarter at a glance:</strong> Dr Reddy's Laboratories reported a weak Q1 FY27 (Apr–Jun 2026) on 22 Jul 2026 — revenue down modestly but profitability collapsed, driven chiefly by the fading gRevlimid (lenalidomide) exclusivity window in North America and a one-off provision. This report walks through the numbers, the five reasons behind the miss, the segment mix, and — importantly — how the newly announced US generic-drug tariff schedule reshapes the competitive picture for Dr Reddy's and every other Indian pharma exporter.</div>
+
+  <div class="grid" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-head"><div><div class="card-name">Dr Reddy's Laboratories</div><div class="card-sub">BSE: 500124 · NSE: DRREDDY · NYSE: RDY</div></div><span class="cbr cbr-e">CB-E · Weak</span></div>
+      <div class="metrics">
+        <div class="metric metric-red"><div class="metric-val">₹8,070.5 Cr</div><div class="metric-lbl">Revenue (−5.5% YoY)</div></div>
+        <div class="metric metric-red"><div class="metric-val">12.5%</div><div class="metric-lbl">EBITDA Margin</div></div>
+        <div class="metric metric-red"><div class="metric-val">₹443.5 Cr</div><div class="metric-lbl">PAT (−69% YoY)</div></div>
+      </div>
+      <div class="usp-row"><strong>QoQ:</strong> Revenue +7%, PAT +97% off a weak Q4 FY26 base &nbsp;|&nbsp; <strong>EPS:</strong> ₹5.32 &nbsp;|&nbsp; <strong>PBT:</strong> ₹552.6 Cr (−71.0% YoY)</div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-name">Balance Sheet Snapshot</div><div class="card-sub">As of 30 Jun 2026</div></div></div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+        Cash &amp; investments: <strong style="color:var(--text)">₹9,150.8 Cr</strong><br>
+        Equity: <strong style="color:var(--text)">₹38,673.5 Cr</strong><br>
+        Balance sheet remains net-debt-light despite the weak quarter — this is not a solvency story, it is an earnings-quality story concentrated in one molecule (lenalidomide) and one region (North America).
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">📌 Five-Second Summary</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px">
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">📉 Revenue</div><div style="font-size:.82rem;color:var(--muted);line-height:1.6">₹8,070.5 Cr, down 5.5% YoY. North America fell 35%; India, Europe and Emerging Markets all grew double digits.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">📉 Profitability</div><div style="font-size:.82rem;color:var(--muted);line-height:1.6">EBITDA margin nearly halved to 12.5% from 26.7% a year ago — the sharpest margin compression of any large-cap in this coverage universe this quarter.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--amber);margin-bottom:6px">⚠️ One-off</div><div style="font-size:.82rem;color:var(--muted);line-height:1.6">A ₹239.7 Cr semaglutide (GLP-1) API provision flatters the YoY comparison slightly worse than the underlying run-rate.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">✅ Offset</div><div style="font-size:.82rem;color:var(--muted);line-height:1.6">India +17%, Emerging Markets +31%, Europe +13% — diversification is doing real work, just not enough to offset the NA collapse this quarter.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🇺🇸 Tariff overhang</div><div style="font-size:.82rem;color:var(--muted);line-height:1.6">The new US generic tariff schedule (0%→100%→200%, from Aug 2026) adds a second, structural headwind on top of ordinary price erosion — see the dedicated tab.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--purple);margin-bottom:6px">🧑‍💼 Street view</div><div style="font-size:.82rem;color:var(--muted);line-height:1.6">Consensus has moved to HOLD with TP cuts of 8-15%; base business ex-Revlimid is viewed as intact.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ RESULTS ═══════════════════════════════════ -->
+<div id="tab-results" class="tab">
+  <div class="info-box">Consolidated, IFRS basis (Dr Reddy's reports both IFRS and Ind AS; IFRS figures used below for consistency with prior-quarter comparisons). All figures unaudited, as furnished to BSE/NSE/SEC (Form 6-K) on 22 Jul 2026.</div>
+
+  <div class="section-title">📄 Q1 FY27 P&amp;L — vs Q1 FY26 and Q4 FY26 (₹ Cr)</div>
+  <div class="tbl-wrap" style="margin-bottom:24px">
+    <table>
+      <thead><tr><th>Line Item</th><th>Q1 FY27 (Jun-26)</th><th>Q1 FY26 (Jun-25)</th><th>YoY</th><th>Q4 FY26 (Mar-26)</th><th>QoQ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue from Operations</strong></td><td class="td-red">8,070.5</td><td>8,545.2</td><td class="td-red">−5.5%</td><td>7,516.0</td><td class="td-green">+7.4%</td></tr>
+        <tr><td>Gross Margin %</td><td class="td-red">46.5%</td><td>56.9%</td><td class="td-red">−10.4 pp</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>EBITDA</strong></td><td class="td-red">1,008.8</td><td>2,278.4</td><td class="td-red">−55.7%</td><td>981.0</td><td class="td-green">+2.8%</td></tr>
+        <tr><td>EBITDA Margin %</td><td class="td-red">12.5%</td><td>26.7%</td><td class="td-red">−14.2 pp</td><td>13.0%*</td><td>—</td></tr>
+        <tr><td><strong>Profit Before Tax</strong></td><td class="td-red">552.6</td><td>1,904.7*</td><td class="td-red">−71.0%</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>PAT (Equity Holders)</strong></td><td class="td-red">443.5</td><td>1,417.8</td><td class="td-red">−68.7%</td><td>220.0</td><td class="td-green">+96.6%</td></tr>
+        <tr><td>EPS (Diluted, ₹)</td><td class="td-red">5.32</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Total Expenses</td><td class="td-red">7,902.0</td><td>6,957.6</td><td class="td-red">+13.6%</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="info-box" style="font-size:.78rem">*PBT and PAT figures per company IFRS filing; a separately reported Ind AS consolidated figure shows PAT of ₹1,290 Cr for Q1 FY26 and ₹1,290 Cr context differs slightly from the IFRS ₹1,417.8 Cr due to GAAP treatment differences — both confirm the same directional ~69-70% YoY decline in Q1 FY27 PAT. Figures above use the IFRS 6-K filing as primary source.</div>
+
+  <div class="section-title">🌍 Segment-wise Revenue (₹ Cr)</div>
+  <div class="tbl-wrap" style="margin-bottom:24px">
+    <table>
+      <thead><tr><th>Segment</th><th>Q1 FY27</th><th>YoY</th><th>% of Group Revenue</th><th>Sources</th></tr></thead>
+      <tbody>
+        <tr><td><strong>North America</strong></td><td class="td-red">2,205</td><td class="td-red">−35%</td><td>27.3%</td><td>Company filing</td></tr>
+        <tr><td><strong>India</strong></td><td class="td-green">1,718</td><td class="td-green">+17%</td><td>21.3%</td><td>Company filing</td></tr>
+        <tr><td><strong>Emerging Markets</strong></td><td class="td-green">1,833</td><td class="td-green">+31%</td><td>22.7%</td><td>Company filing</td></tr>
+        <tr><td><strong>Europe</strong></td><td class="td-green">1,444</td><td class="td-green">+13%</td><td>17.9%</td><td>Company filing</td></tr>
+        <tr><td>Global Generics (total segment)</td><td>7,199.3</td><td class="td-red">−4.8%</td><td>89.2%</td><td>Company filing</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">📈 Trend — Last 3 Quarters</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Revenue (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="drlRevChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA Margin %</div>
+      <div class="chart-wrap"><canvas id="drlEbitdaChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">PAT (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="drlPatChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q1 FY27 Revenue by Region (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="drlGeoChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-title">🚀 Q1 FY27 Business Highlights</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:10px">
+    <div class="card" style="font-size:.81rem;color:var(--muted);line-height:1.7">Launched <strong>Bosutinib Tablets 400mg</strong> in the US with 180-day generic exclusivity.</div>
+    <div class="card" style="font-size:.81rem;color:var(--muted);line-height:1.7">Introduced generic <strong>semaglutide injections in Canada</strong> and <strong>semaglutide tablets in India</strong>.</div>
+    <div class="card" style="font-size:.81rem;color:var(--muted);line-height:1.7">Launched <strong>Celevida GLP+</strong> in partnership with Nestlé Health Science.</div>
+    <div class="card" style="font-size:.81rem;color:var(--muted);line-height:1.7"><strong>Toripalimab</strong> crossed ₹100 Cr in cumulative India revenue.</div>
+    <div class="card" style="font-size:.81rem;color:var(--muted);line-height:1.7">Signed agreement with <strong>Innoviva Specialty Therapeutics</strong> for XACDURO.</div>
+    <div class="card" style="font-size:.81rem;color:var(--muted);line-height:1.7">Received <strong>USFDA Fast Track designation</strong> for partnered ALS therapy COYA 302.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ WHY POOR ═══════════════════════════════════ -->
+<div id="tab-poor" class="tab">
+  <div class="poor-box">
+    <h3>🔻 Dr Reddy's Q1 FY27 — a poor quarter. The five reasons, in order of impact.</h3>
+    <ol>
+      <li><strong>gRevlimid (lenalidomide) cliff deepened.</strong> North America revenue fell ~35% YoY to ₹2,205 Cr as competitive intensity on lenalidomide stepped up further and the volume-tranche advantage Dr Reddy's enjoyed through FY26 shrank. This single molecule was the swing factor behind both the revenue miss and the margin collapse — lenalidomide has historically been one of DRL's highest-margin US products, so losing volume/price on it disproportionately hits EBITDA, not just revenue.</li>
+      <li><strong>One-time ₹239.7 Cr semaglutide API provision.</strong> A charge tied to semaglutide (GLP-1) API inventory and related costs alone shaved roughly 3 percentage points off gross, EBITDA and PBT margins in the quarter. Excluding this item, EBITDA margin would have been closer to ~15.4% — still weak on a YoY basis, but meaningfully better than the reported 12.5%, which somewhat overstates the underlying deterioration.</li>
+      <li><strong>Gross margin compression.</strong> Gross margin fell sharply from 56.9% to 46.5% YoY. This reflects a North America product-mix shift away from high-margin, limited-competition launches (like lenalidomide was) toward base-business generics facing multiple ANDA holders and therefore much thinner pricing.</li>
+      <li><strong>Base-business US generic price erosion.</strong> Beyond lenalidomide specifically, ordinary US generics price erosion continued across the rest of the North America portfolio — a structural, sector-wide headwind (see the US Tariff — Sector Impact tab) that hits Dr Reddy's harder than most domestic-focused peers because North America is still ~27-28% of group revenue, one of the higher NA weightings in the sector.</li>
+      <li><strong>Unfavourable operating leverage.</strong> Total expenses rose 13.6% YoY even as revenue fell, so SG&amp;A and R&amp;D spend — funding new launches, the biosimilars pipeline, the Nestlé/Celevida GLP+ partnership, and the XACDURO in-licensing deal — landed on a smaller revenue base than planned, further compressing margins below what revenue alone would suggest.</li>
+    </ol>
+  </div>
+
+  <div class="section-title">✅ Why It Wasn't Worse — the Offsetting Positives</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">India +17% YoY</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">₹1,718 Cr — the domestic branded business continues to compound at a healthy clip, insulated from every US-specific issue on this page.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">Emerging Markets +31% YoY</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">₹1,833 Cr — the fastest-growing segment in the group, now roughly the same size as North America.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">Europe +13% YoY</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">₹1,444 Cr — new launches and a favourable currency both contributed.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">Sequential recovery</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">PAT nearly doubled QoQ (+97%) off a weak Q4 FY26 base — the trajectory within the quarter was improving, not deteriorating further.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">Balance sheet intact</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">Cash &amp; investments of ₹9,150.8 Cr — this is an earnings-quality issue in one molecule/region, not a solvency or balance-sheet issue.</div></div>
+  </div>
+
+  <div class="info-box">📊 <strong>The takeaway:</strong> This was not a broad-based operational breakdown — it was a concentrated hit from one fading exclusivity window (lenalidomide) plus one accounting provision (semaglutide API), landing in a quarter where the rest of the business (India, EM, Europe) was actually performing well. The read-through for FY27 hinges almost entirely on how fast the North America base stabilises from here, which is why Q2/Q3 FY27 are being watched closely by the Street (see the Analysts &amp; Management tab).</div>
+</div>
+
+<!-- ═══════════════════════════════════ SEGMENT MIX ═══════════════════════════════════ -->
+<div id="tab-segment" class="tab">
+  <div class="section-title">🌍 Geographic Revenue Mix — Q1 FY27 vs Q1 FY26</div>
+  <div class="tbl-wrap" style="margin-bottom:24px">
+    <table>
+      <thead><tr><th>Region</th><th>Q1 FY27 (₹ Cr)</th><th>% of Revenue</th><th>YoY Growth</th><th>Direction</th><th>Sources</th></tr></thead>
+      <tbody>
+        <tr style="background:#fef2f2"><td><strong>North America</strong></td><td class="td-red">2,205</td><td>27.3%</td><td class="td-red">−35%</td><td>📉 Sharp decline — lenalidomide</td><td>Company filing</td></tr>
+        <tr><td><strong>Emerging Markets</strong></td><td class="td-green">1,833</td><td>22.7%</td><td class="td-green">+31%</td><td>📈 Fastest growing</td><td>Company filing</td></tr>
+        <tr><td><strong>India</strong></td><td class="td-green">1,718</td><td>21.3%</td><td class="td-green">+17%</td><td>📈 Steady compounding</td><td>Company filing</td></tr>
+        <tr><td><strong>Europe</strong></td><td class="td-green">1,444</td><td>17.9%</td><td class="td-green">+13%</td><td>📈 Launch + currency tailwind</td><td>Company filing</td></tr>
+        <tr><td>PSAI / Other</td><td>870.5</td><td>10.8%</td><td>—</td><td>—</td><td>Company filing (residual)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box"><strong>The mix shift in one line:</strong> A year ago North America was comfortably Dr Reddy's largest and most profitable region; this quarter it is still the largest by revenue but the weakest by growth, while Emerging Markets and India — lower-margin-per-unit but far more stable — are converging toward it in absolute size. This is a healthier long-run mix (less concentration risk) but a worse near-term margin mix, since NA carried disproportionate profitability.</div>
+
+  <div class="section-title">🏰 What Diversification Is (and Isn't) Buying Dr Reddy's</div>
+  <div class="swot-wrap" style="margin-top:10px">
+    <div class="swot-box swot-s"><div class="swot-head">✅ What it buys</div>Revenue resilience — group revenue fell only 5.5% despite a 35% NA collapse, precisely because three other regions are now large enough to matter. It also reduces single-market regulatory/tariff concentration risk over time.</div>
+    <div class="swot-box swot-w"><div class="swot-head">❌ What it doesn't (yet) buy</div>Margin resilience — India/EM/Europe growth, while strong, has not been enough to offset the margin mix-shift away from high-margin NA exclusivity products. EBITDA margin nearly halved even though revenue only dipped slightly.</div>
+    <div class="swot-box swot-o"><div class="swot-head">🔭 Opportunity</div>Biosimilars (Toripalimab, semaglutide GLP-1 franchise) and the Nestlé Celevida partnership are positioned to become the next NA/global margin engine as lenalidomide fades — timing and ramp-up speed are the key variables to track.</div>
+    <div class="swot-box swot-t"><div class="swot-head">⚠️ Threat</div>The new US generic tariff schedule (see next tab) adds a second structural pressure on the NA segment specifically, on top of ordinary post-exclusivity price erosion.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ US TARIFF SECTOR IMPACT ═══════════════════════════════════ -->
+<div id="tab-tariff" class="tab">
+  <div class="info-box" style="border-left-color:var(--red);background:#fef2f2">
+    <strong>🇺🇸 Why this belongs in a Dr Reddy's report.</strong> On 22 Jul 2026 — the same week as Dr Reddy's results — President Trump announced a phased tariff schedule specifically for imported generic drugs, on top of the 100% tariff already in force on patented/branded pharmaceuticals since 2 Apr 2026. Dr Reddy's derives ~27-28% of revenue from North America, almost entirely generics — so this policy sits directly on top of the same segment that just delivered the weak Q1. This tab places Dr Reddy's within the full 20-company sector picture: who gets hurt most, and — importantly for balance — which business models (India-domestic, CDMO/API) are largely untouched.
+  </div>
+
+  <div class="section-title">🗓️ Policy Timeline — Two Separate Pharma Tariff Tracks</div>
+  <div class="tariff-timeline">
+    <div class="tl-item tl-amber"><div class="tl-date">2 Apr 2026</div><div class="tl-body"><strong>Section 232 Proclamation — Patented/Branded Drugs.</strong> 100% tariff on imported patented pharmaceutical products and select APIs. <strong>Generics and biosimilars explicitly exempted "at this time."</strong> Effective 31 Jul 2026 for 17 large drugmakers named in Annex III; 29 Sep 2026 for everyone else.</div></div>
+    <div class="tl-item tl-red"><div class="tl-date">22 Jul 2026</div><div class="tl-body"><strong>Generic Drug Tariff Schedule announced.</strong> All generic drug imports remain at <strong>0% tariff for two years starting 1 Aug 2026</strong>, then <strong>100% for one year (from ~Aug 2028)</strong>, then <strong>200% thereafter (from ~Aug 2029)</strong>. Framed as a "penalty" for companies that don't build US manufacturing capacity within the two-year window. Branded/patented drug policy is unchanged.</div></div>
+    <div class="tl-item tl-amber"><div class="tl-date">Now → Aug 2028</div><div class="tl-body"><strong>The window.</strong> Two years of zero-tariff generic imports — the period every India-to-US generics exporter, Dr Reddy's included, has to either commit capital to US manufacturing, diversify revenue further away from US generics, or accept margin risk from Aug 2028 onward.</div></div>
+    <div class="tl-item"><div class="tl-date">Aug 2028 – Jul 2029</div><div class="tl-body">100% tariff on non-onshored generic imports.</div></div>
+    <div class="tl-item tl-red"><div class="tl-date">From Aug 2029</div><div class="tl-body">200% tariff — near-prohibitive for companies still exporting finished generics to the US from India without a domestic manufacturing presence.</div></div>
+  </div>
+  <div class="warn-box">⚠️ Section 232 authority allows the rate/timeline to be "expressly reduced, modified, or terminated" — trade lawyers and India's Commerce Ministry are already flagging this as a negotiating lever amid ongoing India-US trade talks, not a locked-in three-year outcome.</div>
+
+  <div class="section-title">💊 Dr Reddy's Specifically — Where It Sits</div>
+  <div class="card" style="margin-bottom:24px;border-left:4px solid var(--red)">
+    <div style="font-size:.85rem;line-height:1.8;color:var(--text)">
+      Dr Reddy's is rated <span class="impact-pill impact-b">Impact-B</span> on the sector scale below. It has no major dedicated US manufacturing base — supply to North America is predominantly India-manufactured and exported — so its ~27-28%-of-revenue NA segment sits inside the tariff's target zone once the 2028 step-up arrives. The silver lining is that this NA segment is <em>already</em> under pressure from ordinary post-exclusivity price erosion (lenalidomide, base generics), so the incremental tariff risk is layering onto a business Dr Reddy's is already working to de-risk through India/EM/Europe growth and its biosimilars pipeline — rather than hitting a business that was otherwise firing on all cylinders.
+    </div>
+  </div>
+
+  <div class="section-title">📊 Full Sector Impact Rating — All 20 Companies</div>
+  <div class="info-box">Rating logic: US-generics revenue exposure weighed against existing US/EU manufacturing footprint and CDMO mix (contract manufacturing under long-term MSAs sits largely outside the "imported generic for resale" tariff bucket). <strong>Impact-A = most affected, Impact-E = least/not affected.</strong> Qualitative CB Research house view, not a broker rating.</div>
+  <div class="tbl-wrap" style="margin-bottom:24px">
+    <table>
+      <thead><tr><th>Company</th><th>Business Model</th><th>US Exposure</th><th>Impact Rating</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Aurobindo Pharma</td><td>Pure Generics</td><td class="td-red">98% export</td><td><span class="impact-pill impact-a">Impact-A</span></td><td>Highest export dependence, generics-heavy mix, no major US plant yet.</td></tr>
+        <tr><td>Zydus Lifesciences</td><td>Generics + Novel</td><td class="td-red">US ~35-40% of revenue</td><td><span class="impact-pill impact-a">Impact-A</span></td><td>Core generics supply is India-sourced despite recent US brand M&amp;A.</td></tr>
+        <tr><td>Natco Pharma</td><td>Oncology Generics</td><td class="td-red">US ~55% of revenue</td><td><span class="impact-pill impact-a">Impact-A</span></td><td>India-manufactured US oncology generics, already normalising post-gRevlimid windfall.</td></tr>
+        <tr style="background:#fff7ed"><td><strong>Dr Reddy's</strong></td><td>Generics + Biosimilars</td><td class="td-amber">NA ~27-28% of revenue</td><td><span class="impact-pill impact-b">Impact-B</span></td><td>Large but not dominant US exposure; already under pressure from lenalidomide erosion this quarter.</td></tr>
+        <tr><td>Lupin</td><td>Generics</td><td class="td-amber">US ~35-40% of revenue</td><td><span class="impact-pill impact-b">Impact-B</span></td><td>Building US-based specialty/complex-generic manufacturing (inhalers, injectables) — partial mitigant.</td></tr>
+        <tr><td>Alembic Pharma</td><td>Generics + API</td><td class="td-amber">US ~30% of revenue</td><td><span class="impact-pill impact-b">Impact-B</span></td><td>India-manufactured, no disclosed US on-shoring plan yet.</td></tr>
+        <tr><td>Glenmark Pharma</td><td>Innovative + Generics</td><td class="td-amber">~48% export (US+EU mix)</td><td><span class="impact-pill impact-b">Impact-B</span></td><td>Growing innovative pipeline and EU mix dilute pure US-generic tariff risk.</td></tr>
+        <tr><td>Cipla</td><td>Branded Generics</td><td class="td-amber">NA ~25-27% of revenue</td><td><span class="impact-pill impact-c">Impact-C</span></td><td>Large India/South Africa base plus US biosimilar launches offset generics exposure.</td></tr>
+        <tr><td>Sun Pharma</td><td>Specialty + Generics</td><td class="td-amber">US ~30%, specialty-heavy</td><td><span class="impact-pill impact-c">Impact-C</span></td><td>US book increasingly branded/specialty, not commodity generic; Organon deal adds US/EU branded base.</td></tr>
+        <tr><td>Gland Pharma</td><td>Injectables + CDMO</td><td class="td-c" style="background:#fef9c3;color:#854d0e">56% export, 46% CDMO revenue</td><td><span class="impact-pill impact-c">Impact-C</span></td><td>Roughly half CDMO (outside scope); Europe manufacturing via Cenexi is a partial hedge.</td></tr>
+        <tr class="q1-domestic"><td><strong>Alkem Laboratories</strong></td><td><strong>India Branded (Domestic)</strong></td><td class="td-e" style="background:#dcfce7;color:#166534">US ~21% of revenue</td><td><span class="impact-pill impact-c">Impact-C</span></td><td>India branded (64% of revenue) is the dominant, tariff-immune segment.</td></tr>
+        <tr class="q1-domestic"><td><strong>Torrent Pharma</strong></td><td><strong>India + Germany Branded (Domestic)</strong></td><td class="td-e" style="background:#dcfce7;color:#166534">US minimal</td><td><span class="impact-pill impact-d">Impact-D</span></td><td>Branded India + Germany model largely sidesteps the US generic-tariff issue entirely.</td></tr>
+        <tr class="q1-domestic"><td><strong>Mankind Pharma</strong></td><td><strong>India Branded (Domestic)</strong></td><td class="td-e" style="background:#dcfce7;color:#166534">US ~10%, 82% India</td><td><span class="impact-pill impact-e">Impact-E</span></td><td>Purest domestic-branded model in the sector — close to tariff-immune.</td></tr>
+        <tr class="q1-domestic"><td><strong>Eris Lifesciences</strong></td><td><strong>India Branded (Domestic)</strong></td><td class="td-e" style="background:#dcfce7;color:#166534">US ~2%, 95% India</td><td><span class="impact-pill impact-e">Impact-E</span></td><td>Effectively tariff-immune; India chronic-therapy branded model.</td></tr>
+        <tr class="q1-cdmo"><td><strong>Divi's Laboratories</strong></td><td><strong>API + CDMO</strong></td><td class="td-d" style="background:#cffafe;color:#0e7490">95% export, contract manufacturing</td><td><span class="impact-pill impact-d">Impact-D</span></td><td>Contract manufacturing for global innovators, not "imported generic for US resale" — largely outside scope.</td></tr>
+        <tr class="q1-cdmo"><td><strong>Laurus Labs</strong></td><td><strong>ARV + CDMO</strong></td><td class="td-d" style="background:#cffafe;color:#0e7490">92% export, growing CDMO mix</td><td><span class="impact-pill impact-d">Impact-D</span></td><td>CDMO mix (targeting 50%+ of revenue) provides structural insulation.</td></tr>
+        <tr class="q1-cdmo"><td><strong>Neuland Labs</strong></td><td><strong>API + CDMO</strong></td><td class="td-d" style="background:#cffafe;color:#0e7490">76% export</td><td><span class="impact-pill impact-d">Impact-D</span></td><td>Pure API/CDMO supplier — not itself an importer of finished generic dosage.</td></tr>
+        <tr class="q1-cdmo"><td><strong>Supriya Lifescience</strong></td><td><strong>Pure API</strong></td><td class="td-d" style="background:#cffafe;color:#0e7490">82% export</td><td><span class="impact-pill impact-d">Impact-D</span></td><td>API exports (not finished formulations); Europe/Asia/LATAM as large as US — diversified and upstream of tariff focus.</td></tr>
+        <tr class="q1-cdmo"><td><strong>Sai Life Sciences</strong></td><td><strong>Pure CRDMO</strong></td><td class="td-e" style="background:#dcfce7;color:#166534">98% export, contract manufacturing</td><td><span class="impact-pill impact-e">Impact-E</span></td><td>Pure-play CRDMO for global innovators — essentially outside the tariff's target.</td></tr>
+        <tr class="q1-cdmo"><td><strong>Anthem Biosciences</strong></td><td><strong>Biologics CRDMO</strong></td><td class="td-e" style="background:#dcfce7;color:#166534">98% export, contract manufacturing</td><td><span class="impact-pill impact-e">Impact-E</span></td><td>Biologics contract manufacturing, not finished small-molecule generics — tariff-immune model.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">🇮🇳 Domestic Players — Largely Untouched</div>
+  <div class="card" style="margin-bottom:20px;border-left:4px solid var(--green)">
+    <div style="font-size:.85rem;line-height:1.8;color:var(--text)">
+      <strong>Mankind Pharma, Eris Lifesciences, Torrent Pharma and Alkem Laboratories</strong> sell overwhelmingly into the India domestic branded-generics market (IPM) — priced, regulated (NPPA/DPCO) and consumed entirely within India. This policy is a US import-tariff on drugs entering the United States; it has no jurisdiction over what these companies sell to Indian patients through Indian pharmacies. For Mankind (82% India) and Eris (95% India) in particular, the entire tariff schedule — 0% today, 100% in 2028, 200% in 2029 — is close to a non-event. Their earnings drivers stay exactly what they were before 22 Jul 2026: chronic-therapy volume growth, price realisation under DPCO, and branded-portfolio expansion (Mankind's BSV vaccines integration, Eris's Kinedex/Oaknet dermatology and nutraceuticals additions, Torrent's JB Pharma synergy). <strong>Relative to Dr Reddy's and the US-export-heavy names, this is where the sector's earnings certainty now sits.</strong>
+    </div>
+  </div>
+
+  <div class="section-title">🔬 CDMO / API Players — Largely Untouched</div>
+  <div class="card" style="margin-bottom:24px;border-left:4px solid var(--cdmo)">
+    <div style="font-size:.85rem;line-height:1.8;color:var(--text)">
+      <strong>Divi's Labs, Laurus Labs, Neuland, Sai Life Sciences, Anthem Biosciences and Supriya Lifescience</strong> — plus the CDMO half of Gland Pharma's revenue — sell contract manufacturing and API services to global innovator pharma companies under long-term Master Supply Agreements, not finished generic dosage forms sold at retail in the US. This is a structurally different commercial relationship from what the tariff targets: a CDMO is paid a manufacturing fee under contract, it does not "import a generic drug for resale" in the way a Natco or Aurobindo does when shipping finished lenalidomide or a branded-generic tablet into the US market. Even where the end customer is a US company, the tariff's stated target — reshoring <em>generic drug production</em> — doesn't naturally capture upstream API/intermediate contract manufacturing the same way. <strong>This is the second pocket of the sector, alongside India-domestic, that should trade at a relative premium as the tariff timeline plays out — and it is precisely the CDMO exposure Dr Reddy's itself lacks, which is worth watching as a structural gap in its portfolio versus Divi's/Laurus/Gland.</strong>
+    </div>
+  </div>
+
+  <div class="section-title">🥇⚠️ Who Gets Hurt Most vs. Who Is Best Positioned</div>
+  <div class="rank-grid" style="margin-bottom:24px">
+    <div class="rank-card rank-other" style="border-left:4px solid var(--red)">
+      <div class="rank-info">
+        <h3 style="color:#991b1b">⚠️ Most exposed (Impact-A)</h3>
+        <p><strong>Aurobindo Pharma, Zydus Lifesciences, Natco Pharma</strong> — large finished-dose US generics revenue, little to no US manufacturing footprint, no disclosed on-shoring commitment yet. Dr Reddy's (Impact-B) sits one notch better than this group, but in the same broad "at-risk exporter" bucket.</p>
+      </div>
+    </div>
+    <div class="rank-card rank-other" style="border-left:4px solid var(--green)">
+      <div class="rank-info">
+        <h3 style="color:#166534">✅ Best positioned (Impact-D/E)</h3>
+        <p><strong>CDMO/API group:</strong> Sai Life, Anthem, Divi's, Laurus, Neuland, Supriya. <strong>Domestic group:</strong> Mankind, Eris, Torrent, Alkem. Neither group depends on the thing this tariff schedule taxes — finished generic drugs imported into the US.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">🏬 The Purchasing-Manager / GPO Problem — Why US Generic Prices Stay High for Consumers Even as Dr Reddy's (and Peers) Get Squeezed</div>
+  <div class="card" style="margin-bottom:24px">
+    <div style="font-size:.85rem;line-height:1.8;color:var(--text)">
+      This structural issue predates — and will outlast — the tariff headlines, and it's directly relevant to why Dr Reddy's NA margins are under pressure even independent of lenalidomide's specific dynamics.<br><br>
+      <strong>How the US generic buy-side is structured:</strong> Retail pharmacy purchasing is dominated by a small number of mega buying groups pairing the largest chains/wholesalers — Walmart with McKesson (<strong>ClarusONE</strong>), Walgreens Boots Alliance with Cencora/AmerisourceBergen, and CVS with Cardinal Health (<strong>Red Oak Sourcing</strong>) — alongside PBM-owned GPOs: CVS Caremark's <strong>Zinc Health Services</strong>, Cigna/Express Scripts' <strong>Ascent Health Services</strong>, and UnitedHealth/OptumRx's <strong>Emisar Pharma Services</strong>. Three PBMs alone control roughly 75-80% of US covered lives.<br><br>
+      <strong>Effect on manufacturers like Dr Reddy's:</strong> This concentrated buy-side gives purchasing organisations heavy negotiating leverage over the many generic manufacturers competing to supply the same molecule — the well-documented, persistent single-digit-to-double-digit annual price erosion that shows up in Dr Reddy's own base-business commentary this quarter is a direct consequence.<br><br>
+      <strong>Effect on US consumers:</strong> The rebates and fees GPOs/PBMs extract from manufacturers are frequently not passed through transparently to the end payer — patient cost-sharing is often calculated off list price rather than the lower net price actually paid, so list prices stay comparatively sticky even as manufacturer realisations fall. The FTC and HHS have separately investigated both GPOs and PBM-owned GPOs for this opacity.<br><br>
+      <strong>Net read for Dr Reddy's:</strong> the company is being squeezed from the supply side (GPO/PBM buying power) at the same time the new tariff schedule threatens to squeeze it from the trade-policy side from 2028 — a genuine pincer specific to its finished-generic NA business, and a structural reason to weight the diversification into India/EM/Europe/biosimilars as more than just a "nice to have."
+    </div>
+  </div>
+
+  <div class="warn-box" style="margin-bottom:0">
+    <strong>⚠️ Disclaimer:</strong> Tariff policy, exemption pathways and negotiated carve-outs can change rapidly and are subject to ongoing India-US trade negotiations. Impact ratings are a qualitative CB Research house view based on public disclosures as of Jul 2026, not a forecast or investment recommendation. Consult a SEBI-registered advisor before investing.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ ANALYSTS & MANAGEMENT ═══════════════════════════════════ -->
+<div id="tab-analysts" class="tab">
+  <div class="section-title">🧑‍💼 Analysts' Rating — Q1 FY27</div>
+  <div class="analyst-grid" style="margin-bottom:20px">
+    <div class="analyst-card"><div class="analyst-name">Street Consensus</div><span class="analyst-rec rec-hold">HOLD (mixed)</span><div class="analyst-tp">TP range ₹1,180–1,350</div><div class="analyst-note">Brokerages broadly cut FY27 EPS estimates 8-15% post-results on the deeper-than-expected lenalidomide erosion; several look through the semaglutide provision as one-off, but flag North America pricing as the swing factor to watch into Q2/Q3 FY27.</div></div>
+    <div class="analyst-card"><div class="analyst-name">Bull Case</div><span class="analyst-rec rec-buy">Accumulate on weakness</span><div class="analyst-tp">Base business ex-Revlimid intact</div><div class="analyst-note">India/EM/Europe growth (17-31%) shows the diversified engine is working; biosimilars pipeline (Toripalimab, COYA 302 partnership) and GLP-1 franchise (Celevida, semaglutide) are optionality the market may be under-pricing after the selloff.</div></div>
+    <div class="analyst-card"><div class="analyst-name">Bear Case</div><span class="analyst-rec rec-sell">Caution</span><div class="analyst-tp">Watch Q2/Q3 FY27</div><div class="analyst-note">Lenalidomide's high-margin tranche exclusivity is structurally fading through FY27; the incoming US generic tariff regime (see Tariff tab) adds a second overhang on top of base-business price erosion from 2028 onward.</div></div>
+  </div>
+
+  <div class="section-title">🏢 Management / Board Commentary</div>
+  <div class="card" style="margin-bottom:20px">
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.8">Co-Chairman &amp; MD <strong>G V Prasad</strong> and CEO <strong>Erez Israeli</strong> attributed the quarter to "planned" lenalidomide normalisation and a one-time semaglutide provision, while pointing to double-digit India and Emerging Markets growth as evidence the diversification strategy is on track. Management highlighted the Bosutinib 400mg US launch with 180-day exclusivity, generic semaglutide launches (Canada injection, India tablets), the Celevida GLP+ partnership with Nestlé Health Science, Toripalimab crossing ₹100 Cr in India revenue, the XACDURO in-licensing deal with Innoviva Specialty Therapeutics, and USFDA Fast Track designation for partnered ALS therapy COYA 302 as the near-term pipeline evidence to weigh against the weak headline numbers.</div>
+  </div>
+
+  <div class="section-title">📌 Key Monitorables Into Q2/Q3 FY27</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+    <div class="card"><div style="font-weight:700;margin-bottom:6px">1. North America base stabilisation</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">Does the ex-lenalidomide NA business stop shrinking, or does base-business erosion continue independent of the one molecule?</div></div>
+    <div class="card"><div style="font-weight:700;margin-bottom:6px">2. Semaglutide/GLP-1 ramp</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">Whether the Q1 provision was truly one-off, and how fast the semaglutide franchise (India, Canada, and eventually US) scales to offset it.</div></div>
+    <div class="card"><div style="font-weight:700;margin-bottom:6px">3. India/EM/Europe growth durability</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">Can 17-31% growth rates in these segments be sustained, or was Q1 an unusually strong comp?</div></div>
+    <div class="card"><div style="font-weight:700;margin-bottom:6px">4. US tariff clarity</div><div style="font-size:.81rem;color:var(--muted);line-height:1.6">Any company-specific on-shoring announcement from Dr Reddy's in response to the 2-year window would be a meaningful de-risking signal — none disclosed as of this report.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ VERDICT ═══════════════════════════════════ -->
+<div id="tab-verdict" class="tab">
+  <div class="section-title">🏆 Verdict</div>
+  <div class="champion" style="background:linear-gradient(135deg,#fef2f2,#fee2e2);border-color:var(--red)">
+    <div style="text-align:center;font-size:2rem">⚠️</div>
+    <h2 style="color:#991b1b">Q1 FY27: A Concentrated Miss, Not a Broken Business</h2>
+    <p style="font-size:.85rem;line-height:1.9;color:var(--text)">
+      Dr Reddy's delivered a genuinely poor Q1 FY27 headline — PAT down 69% YoY, EBITDA margin nearly halved — and the market was right to mark the stock down on it. But the underlying story is narrower than the headline suggests: this was overwhelmingly a North America / lenalidomide story plus a one-off provision, landing in a quarter where India, Emerging Markets and Europe all grew strongly. The balance sheet is untouched and solid.<br><br>
+      The bigger strategic question this report raises isn't Q1 itself — it's what comes next. Dr Reddy's now carries <strong>two</strong> overlapping North America risks: (1) ordinary post-exclusivity price erosion on its generics base, which just showed up in this quarter's numbers, and (2) the new US generic tariff schedule from 2028, which will apply to that same NA business unless Dr Reddy's builds US manufacturing capacity or further shifts its revenue mix within the two-year window. Unlike the sector's CDMO players (Divi's, Laurus, Sai Life, Anthem) or domestic-pure-plays (Mankind, Eris, Torrent), Dr Reddy's doesn't have a large structurally-insulated segment to fall back on — its insulation is coming from geographic diversification (India/EM/Europe) and a still-maturing biosimilars/GLP-1 pipeline, not from a different business model.<br><br>
+      <strong>Bottom line:</strong> this is a name for investors willing to underwrite a multi-quarter recovery story on NA stabilisation and biosimilar ramp-up, at a valuation the Street has already reset lower — not a name to chase on the sequential PAT recovery alone. Watch Q2/Q3 FY27 for confirmation that the NA base (ex-lenalidomide) has stopped shrinking before treating this as a clean turnaround.
+    </p>
+  </div>
+
+  <div class="warn-box" style="margin-bottom:0">
+    <strong>⚠️ Disclaimer:</strong> This analysis is for educational and informational purposes only. It does not constitute financial advice. All data is compiled from public sources (BSE/NSE filings, SEC Form 6-K, company press releases) and may contain estimates. Consult a SEBI-registered investment advisor before making investment decisions. Stock prices and fundamentals change rapidly.
+  </div>
+</div>
+
+<script>
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='results') setTimeout(initDrlCharts,80);
+}
+
+function setLang(lang,btn){
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  lang==='ta'?document.body.classList.add('tm'):document.body.classList.remove('tm');
+}
+
+let drlChartsInit=false;
+function initDrlCharts(){
+  if(drlChartsInit)return;drlChartsInit=true;
+  const def={plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false};
+  const qLabels=['Q3 FY26','Q4 FY26','Q1 FY27'];
+  new Chart(document.getElementById('drlRevChart'),{type:'bar',data:{labels:qLabels,datasets:[{data:[8545.2,7516,8070.5],backgroundColor:['rgba(3,105,161,.85)','rgba(220,38,38,.85)','rgba(217,119,6,.85)'],borderRadius:4}]},options:{...def,scales:{y:{title:{display:true,text:'₹ Crore'}}}}});
+  new Chart(document.getElementById('drlEbitdaChart'),{type:'bar',data:{labels:qLabels,datasets:[{data:[26.7,13.0,12.5],backgroundColor:['rgba(3,105,161,.85)','rgba(220,38,38,.85)','rgba(220,38,38,.85)'],borderRadius:4}]},options:{...def,scales:{y:{min:0,max:35,title:{display:true,text:'EBITDA %'}}}}});
+  new Chart(document.getElementById('drlPatChart'),{type:'bar',data:{labels:qLabels,datasets:[{data:[1417.8,220,443.5],backgroundColor:['rgba(3,105,161,.85)','rgba(220,38,38,.85)','rgba(217,119,6,.85)'],borderRadius:4}]},options:{...def,scales:{y:{title:{display:true,text:'₹ Crore'}}}}});
+  new Chart(document.getElementById('drlGeoChart'),{type:'bar',data:{labels:['North America','Europe','India','Emerging Mkts'],datasets:[{data:[2205,1444,1718,1833],backgroundColor:['rgba(220,38,38,.85)','rgba(22,163,74,.85)','rgba(3,105,161,.85)','rgba(124,58,237,.85)'],borderRadius:4}]},options:{...def,scales:{y:{title:{display:true,text:'₹ Crore, Q1 FY27'}}}}});
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  const a=document.querySelector('.tab.active');
+  if(a&&a.id==='tab-results')initDrlCharts();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BHEL — Q4 FY26 Investment Analysis · Power Equipment · CBF26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f4f8; --card: #ffffff; --card2: #f8fafc;
+    --border: #e2e8f0; --accent: #0369a1; --green: #16a34a;
+    --amber: #d97706; --red: #dc2626; --purple: #7c3aed;
+    --text: #0f172a; --muted: #64748b; --light: #e0f2fe;
+    --cdmo: #0891b2; --orange: #FF6A00; --orangelt: #fff3e8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 60%,#0891b2 100%);color:#fff;padding:28px 32px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+  .header h1{font-size:1.7rem;font-weight:700;letter-spacing:-.3px}
+  .header p{opacity:.85;margin-top:4px;font-size:.88rem}
+  .badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+  .b-q4{background:rgba(22,163,74,.3);color:#bbf7d0}
+  .b-q3{background:rgba(217,119,6,.3);color:#fde68a}
+  .b-est{background:rgba(99,102,241,.3);color:#c7d2fe}
+  nav{background:#fff;border-bottom:2px solid var(--border);display:flex;gap:0;overflow-x:auto;position:sticky;top:96px;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+  nav button{padding:13px 20px;border:none;background:none;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);background:#f0f9ff}
+  nav button:hover:not(.active){color:var(--text);background:var(--bg)}
+  .tab{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+  .tab.active{display:block}
+  .section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-bottom:28px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .2s,transform .15s}
+  .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+  .card-name{font-size:1.05rem;font-weight:700}
+  .card-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .tag{padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700}
+  .tag-power{background:#cffafe;color:#0e7490}
+  .tag-ind{background:#fef3c7;color:#92400e}
+  .tag-q4{background:#dcfce7;color:#166534}
+  .cbr{padding:2px 9px;border-radius:10px;font-size:.72rem;font-weight:800;white-space:nowrap;letter-spacing:.2px}
+  .cbr-a{background:#dcfce7;color:#166534}
+  .cbr-b{background:#cffafe;color:#0e7490}
+  .cbr-c{background:#fef9c3;color:#854d0e}
+  .cbr-d{background:#ffedd5;color:#9a3412}
+  .cbr-e{background:#fee2e2;color:#991b1b}
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .metric{background:var(--card2);border-radius:8px;padding:8px 10px;text-align:center}
+  .metric-val{font-size:1rem;font-weight:700;color:var(--accent)}
+  .metric-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+  .metric-green .metric-val{color:var(--green)}
+  .metric-amber .metric-val{color:var(--amber)}
+  .metric-red .metric-val{color:var(--red)}
+  .usp-row{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .usp-row strong{color:var(--text)}
+  .debt-bar-wrap{margin-top:8px}
+  .debt-label{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px}
+  .debt-bar{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+  .debt-fill{height:100%;border-radius:3px;transition:width .8s ease}
+  .debt-low{background:var(--green)}
+  .debt-mid{background:var(--amber)}
+  .debt-high{background:var(--red)}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:22px;margin-bottom:28px}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .chart-title{font-size:.9rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+  .chart-wrap{position:relative;height:280px}
+  .tbl-wrap{overflow-x:auto;margin-bottom:28px}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  thead tr{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff}
+  th{padding:11px 12px;text-align:left;font-size:.78rem;font-weight:700;white-space:nowrap}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#f8fafc}
+  tr:hover td{background:#f0f9ff}
+  .td-green{color:var(--green);font-weight:700}
+  .td-red{color:var(--red);font-weight:700}
+  .td-amber{color:var(--amber);font-weight:700}
+  .rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+  @media(max-width:700px){.rank-grid{grid-template-columns:1fr}}
+  .rank-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .rank-num{font-size:1.6rem;font-weight:900;min-width:42px;text-align:center;line-height:1}
+  .rank-1 .rank-num{color:#f59e0b}
+  .rank-2 .rank-num{color:#94a3b8}
+  .rank-3 .rank-num{color:#b45309}
+  .rank-4 .rank-num{color:var(--accent)}
+  .rank-5 .rank-num{color:var(--purple)}
+  .rank-info h3{font-size:.95rem;font-weight:700;margin-bottom:4px}
+  .rank-info p{font-size:.78rem;color:var(--muted);line-height:1.5}
+  .info-box{background:var(--light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .warn-box{background:#fffbeb;border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .swot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  @media(max-width:600px){.swot-wrap{grid-template-columns:1fr}}
+  .swot-box{border-radius:8px;padding:12px;font-size:.78rem;line-height:1.65}
+  .swot-s{background:#dcfce7;border-left:4px solid var(--green)}
+  .swot-w{background:#fee2e2;border-left:4px solid var(--red)}
+  .swot-o{background:#dbeafe;border-left:4px solid var(--accent)}
+  .swot-t{background:#fef9c3;border-left:4px solid var(--amber)}
+  .swot-head{font-weight:700;margin-bottom:6px;font-size:.82rem}
+  .swot-s .swot-head{color:var(--green)}
+  .swot-w .swot-head{color:var(--red)}
+  .swot-o .swot-head{color:var(--accent)}
+  .swot-t .swot-head{color:var(--amber)}
+  .acc-item{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fff}
+  .acc-head{background:#f8fafc;padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.88rem}
+  .acc-head:hover{background:#e0f2fe}
+  .acc-body{display:none;padding:16px;border-top:1px solid var(--border)}
+  .acc-body.open{display:block}
+  .qa-chat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:22px}
+  .qa-chat-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .qa-sel{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.8rem;font-weight:600;background:#fff}
+  .qa-inp{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.8rem;outline:none}
+  .qa-inp:focus{border-color:var(--accent)}
+  .qa-btn{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700}
+  .qa-resp{padding:12px;background:#f8fafc;border-radius:8px;font-size:.79rem;line-height:1.7;display:none;margin-top:6px}
+  .soc-item{background:#fff;border:1.5px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .soc-head{padding:14px 18px;display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--border);background:var(--orangelt)}
+  .soc-num{min-width:34px;height:34px;border-radius:50%;background:var(--orange);color:#fff;font-weight:900;font-size:.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .soc-q{font-weight:700;font-size:.92rem;line-height:1.5}
+  .soc-body{padding:16px 18px}
+  .soc-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .soc-opt{border:1.5px solid var(--border);border-radius:8px;padding:9px 13px;font-size:.81rem;cursor:pointer;background:#fff;text-align:left;transition:all .15s;line-height:1.5}
+  .soc-opt:hover{border-color:var(--orange);background:var(--orangelt)}
+  .soc-opt.sel{border-color:var(--orange);background:var(--orangelt);font-weight:600}
+  .soc-reveal-btn{padding:8px 18px;background:var(--orange);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer}
+  .soc-reveal-btn:hover{opacity:.9}
+  .soc-cb{display:none;margin-top:12px;background:#f0f9ff;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 15px;font-size:.8rem;line-height:1.7}
+  .soc-cb.open{display:block}
+  .soc-cb strong{color:var(--accent)}
+  .soc-meter{font-size:.78rem;color:var(--muted);background:#fff;border:1.5px dashed var(--orange);border-radius:10px;padding:10px 14px;margin-bottom:18px;font-weight:600}
+  .vert-table th{background:transparent}
+  .vert-pill{display:inline-block;padding:2px 9px;border-radius:12px;font-size:.7rem;font-weight:700;background:var(--orangelt);color:#9a3412;border:1px solid #fed7aa;margin:2px 3px 2px 0}
+  .champion{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #f59e0b;border-radius:14px;padding:22px;margin-bottom:28px}
+  .champion h2{font-size:1.15rem;font-weight:900;text-align:center;color:#92400e;margin:8px 0 14px}
+  .champion p{font-size:.82rem;line-height:1.8;color:var(--text)}
+  .cb-logo{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .cb-logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#fff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#0369a1;letter-spacing:-.5px;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+  .cb-logo-text{font-size:.78rem;line-height:1.35;color:rgba(255,255,255,.9)}
+  .cb-logo-text strong{font-size:.88rem;color:#fff;display:block;letter-spacing:.3px}
+  .cb-watermark{position:fixed;bottom:18px;right:18px;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:7px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.18);border-radius:30px;padding:5px 12px 5px 8px;backdrop-filter:blur(4px)}
+  .cb-watermark-icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0369a1,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+  .cb-watermark-text{font-size:.68rem;color:var(--muted);font-weight:600;white-space:nowrap}
+  .cb-watermark-text span{color:var(--accent)}
+  .lang-bar{background:#fff;border-bottom:1px solid var(--border);padding:6px 28px;display:flex;align-items:center;gap:10px;font-size:.79rem;color:var(--muted)}
+  .lbtn{padding:3px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;background:#fff;color:var(--muted)}
+  .lbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .en{display:block}.ta{display:none}
+  body.tm .en{display:none}body.tm .ta{display:block}
+  span.en{display:inline}span.ta{display:none}
+  body.tm span.en{display:none}body.tm span.ta{display:inline}
+  .focus-item{display:flex;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:#fff}
+  .focus-num{min-width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .focus-txt{font-size:.83rem;line-height:1.6;color:var(--muted)}
+  .focus-txt strong{color:var(--text)}
+  @media(max-width:600px){
+    .header h1{font-size:1.2rem}
+    .metrics{grid-template-columns:1fr 1fr}
+    .chart-grid{grid-template-columns:1fr}
+    nav button{padding:10px 13px;font-size:.78rem}
+    .tab{padding:16px 14px}
+    nav{top:120px}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚡ BHEL — Q4 &amp; FY26 Investment Analysis</h1>
+  <p>Vanakam (வணக்கம்)! Bharat Heavy Electricals Ltd · NSE: BHEL · BSE: 500103 · Power Equipment &amp; Industrial Systems (PSU) · Q4 FY26 &amp; FY26 Annual Actuals · CBF26 Earnings Rating · Cauvery Socrates</p>
+  <div class="badge-row">
+    <span class="badge b-q4">✓ Q4 FY26 Actuals</span>
+    <span class="badge b-q3">★ FY26 Annual P&amp;L</span>
+    <span class="badge b-est">⭐ CBF26 Earnings Rating</span>
+    <span style="background:rgba(255,106,0,.3);color:#ffe1cc;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600">🦉 Cauvery Socrates</span>
+    <span style="background:rgba(255,255,255,.15);color:#e0f2fe;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600">Updated: 8 Jul 2026 IST</span>
+  </div>
+  <div class="cb-logo">
+    <div class="cb-logo-mark">CB</div>
+    <div class="cb-logo-text"><strong>CB Research</strong>BHEL · Power Equipment · Q4 FY26 Investment Analysis</div>
+  </div>
+</div>
+
+<div class="cb-watermark">
+  <div class="cb-watermark-icon">CB</div>
+  <div class="cb-watermark-text"><span>CB Research</span> · BHEL Q4 FY26 · CBF26</div>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="switchTab('overview',this)">📊 Overview</button>
+  <button onclick="switchTab('business',this)">🏭 Business Model &amp; Segments</button>
+  <button onclick="switchTab('results',this)">📄 Results</button>
+  <button onclick="switchTab('focus',this)">🔦 Stock in Focus</button>
+  <button onclick="switchTab('socrates',this)">🦉 Cauvery Socrates</button>
+  <button onclick="switchTab('swot',this)">📋 SWOT</button>
+  <button onclick="switchTab('verdict',this)">🏆 Verdict</button>
+  <button onclick="switchTab('qa',this)">🤖 CB Assist</button>
+  <button onclick="switchTab('charts',this)">📈 Charts</button>
+  <button onclick="switchTab('peers',this)">🥇 Peer Comparison</button>
+</nav>
+<div class="lang-bar">
+  🌐 Language / மொழி:
+  <button class="lbtn on" onclick="setLang('en',this)">English</button>
+  <button class="lbtn" onclick="setLang('ta',this)">தமிழ்</button>
+</div>
+
+<!-- ═══════════════ OVERVIEW ═══════════════ -->
+<div id="tab-overview" class="tab active">
+  <div class="info-box">
+    <span class="en"><strong>Coverage Snapshot — Q4 FY26 (Jan–Mar 2026):</strong> BHEL delivered its strongest quarter in years — consolidated net profit more than 2.5x to <strong>₹1,290.47 Cr</strong> (+155.8% YoY, +230.6% QoQ) on revenue from operations of <strong>₹12,310.37 Cr</strong> (+36.9% YoY), with EBITDA margin expanding sharply to <strong>14.2%</strong> from 9.2% a year ago. The Power segment (thermal/hydro/nuclear/gas equipment + EPC) did the heavy lifting — segment revenue jumped 54% YoY to ₹9,509.85 Cr with segment margin expanding from 4.9% to 19.7%. For FY26, net profit nearly tripled to <strong>₹1,600.26 Cr</strong> (from ₹533.90 Cr) on revenue of <strong>₹33,782.18 Cr</strong> (+19.2%). The Board recommended a final dividend of ₹1.40/share. Order book stood at a record <strong>₹2.4 lakh Cr</strong> — 7.1x FY26 revenue — after fresh inflows of ~₹75,000 Cr during the year. Part of the margin story is provision write-backs and forex gains, and a gas-shortage (RLNG/LPG/Helium) issue clipped Q4 execution — both flagged in the results.</span>
+    <span class="ta"><strong>கவரேஜ் ஸ்னாப்ஷாட் — Q4 FY26 (ஜன–மார்ச் 2026):</strong> BHEL ஒருங்கிணைந்த நிகர லாபம் 2.5 மடங்கிற்கும் அதிகமாக உயர்ந்து ₹1,290.47 கோடியாக (+155.8% YoY) மாறியது, வருவாய் ₹12,310.37 கோடி (+36.9% YoY). EBITDA விளிம்பு 14.2% ஆக விரிவடைந்தது. FY26 நிகர லாபம் ₹1,600.26 கோடியாக (கிட்டத்தட்ட 3 மடங்கு) உயர்ந்தது. ஆர்டர் புத்தகம் ₹2.4 லட்சம் கோடி — FY26 வருவாயின் 7.1 மடங்கு.</span>
+  </div>
+
+  <div class="section-title">📌 Q4 FY26 KPIs at a Glance</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:28px">
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹12,310 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Q4 FY26 Revenue from Ops (+36.9% YoY)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--accent)">14.2%</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Q4 EBITDA Margin (vs 9.2% YoY)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹1,290 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Q4 PAT (+155.8% YoY, +230.6% QoQ)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--purple)">₹2.4 lakh Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Order Book (31 Mar 2026) — 7.1x FY26 Revenue</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--amber)">8.9 GW</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Power Capacity Commissioned in FY26 (~6% exports)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--accent)">₹1.40</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Final Dividend/Share (Record date 17 Jul 2026)</div>
+    </div>
+  </div>
+
+  <div class="section-title">🧭 Q4 &amp; FY26 Scoreboard (₹ Cr, Consolidated)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Metric</th><th>Q4 FY26</th><th>Q4 FY25</th><th>YoY</th><th>FY26</th><th>FY25</th><th>YoY</th><th>CBF26</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue from Ops</strong></td><td>12,310.37</td><td>8,993.00</td><td class="td-green">+36.9%</td><td>33,782.18</td><td>28,339.48</td><td class="td-green">+19.2%</td><td rowspan="5" style="text-align:center"><span class="cbr cbr-a">CB-A</span></td></tr>
+        <tr><td><strong>Total Income</strong></td><td>12,553.50</td><td>9,142.64</td><td class="td-green">+37.3%</td><td>34,589.83</td><td>28,804.79</td><td class="td-green">+20.1%</td></tr>
+        <tr><td><strong>EBITDA</strong></td><td>1,753</td><td>832</td><td class="td-green">+110.8%</td><td>~2,150†</td><td>~1,290†</td><td class="td-green">~+67%†</td></tr>
+        <tr><td><strong>EBITDA %</strong></td><td class="td-green">14.2%</td><td>9.2%</td><td class="td-green">+499 bps</td><td>~6.4%</td><td>~4.6%</td><td class="td-green">+~180 bps</td></tr>
+        <tr><td><strong>PAT</strong></td><td class="td-green">1,290.47</td><td>504.45</td><td class="td-green">+155.8%</td><td>1,600.26</td><td>533.90</td><td class="td-green">+199.7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);margin-bottom:26px;line-height:1.6">
+    Source: audited Q4/FY26 (Jan–Mar 2026) consolidated results, BSE/NSE exchange filings and earnings-call commentary. <strong>†</strong> FY26 EBITDA is CB Research's derived full-year figure (quarterly build-up); FY26 reported OPM was 6.4% including a ~₹430 Cr forex gain and provision write-backs — treat as directional, not exact. Adjusted for one-offs, Q4 FY26 margin was ~13.8%.
+  </div>
+
+  <div class="section-title">⚠️ Key Themes &amp; Risks</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">✅ Tailwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Power segment execution up 54% YoY with margin expansion 4.9% → 19.7% as older low-margin (pre-Talcher) orders roll off and newer, better-priced orders ramp<br>• Record order book ₹2.4 lakh Cr (7.1x FY26 revenue) gives visibility through ~FY29-30<br>• India's Nuclear Energy Mission (100 GW by 2047) and thermal roadmap (210 GW → 420 GW by 2047) directly benefit BHEL as the dominant domestic EPC player<br>• CRISIL upgraded long-term credit rating to AA/Stable from AA-/Stable<br>• Operating cash flow up 56% YoY to ₹11,870 Cr; net working-capital days improved 241 → 164<br>• Govt permitted import of 21 critical inputs from China — described as margin-accretive</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">⚠️ Headwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• RLNG/LPG/Helium gas shortage hit Q4 execution — JM Financial estimated a ₹2,500–3,000 Cr revenue shortfall<br>• FY26 order inflow (~₹75,000 Cr) was down ~19% YoY on a high FY25 base (₹92,534 Cr, highest ever)<br>• Industry segment execution was flat YoY (₹2,800 Cr) with margin compressing 31.3% → 24%<br>• Receivables/contract-asset days still elevated at 463 days (though improved from 494)<br>• Valuation is rich: P/E ~84-90x trailing, well above long-term average and most peers<br>• Part of margin beat driven by provision write-backs and forex gains, not pure operating improvement</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🔭 Watch Factors</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• L-1 pipeline: 3x800MW NTPC Telangana + 3x800MW NTPC Meja-II (~₹35,000 Cr combined) expected to convert<br>• Mahi Banswara nuclear package (~₹25,000 Cr) and Chutka tender expected FY26/FY27<br>• Gas-supply normalisation in Q1 FY27 — critical for margin sustenance<br>• Maharatna status review — BHEL fell short of the profitability threshold despite meeting turnover/net-worth norms<br>• Defence: DAC-approved Land Based Testing Facility (electric propulsion) and naval/ISRO order pipeline<br>• Possible AMFI large-cap reclassification</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ BUSINESS MODEL & SEGMENTS ═══════════════ -->
+<div id="tab-business" class="tab">
+  <div class="info-box" style="border-left-color:#2979FF;background:#eff6ff">
+    <span class="en"><strong>🔗 Linked to CB Finance26™ (CBF26):</strong> BHEL carries a <strong>CBF26 Earnings Rating</strong> scoring Revenue growth · EBITDA growth · PAT growth · EBITDA margin on a 1–5 scale. Rating measures earnings quality/momentum only — <strong>not</strong> a buy/sell/hold call.</span>
+    <span class="ta"><strong>🔗 CB Finance26™ (CBF26):</strong> BHEL-க்கு CBF26 வருவாய் மதிப்பீடு — வருவாய் வளர்ச்சி, EBITDA வளர்ச்சி, PAT வளர்ச்சி, EBITDA விளிம்பு அடிப்படையில். இது பரிந்துரை அல்ல.</span>
+  </div>
+
+  <div class="card" style="margin-bottom:24px">
+    <div style="font-weight:700;margin-bottom:8px;font-size:1rem">🏛️ Company Profile</div>
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.75">Bharat Heavy Electricals Limited (BHEL) was incorporated on 13 November 1964 and is India's largest engineering &amp; manufacturing enterprise in the energy and infrastructure space. It is a Government of India Maharatna-track Public Sector Undertaking under the Ministry of Heavy Industries, with the Government holding <strong>63.17%</strong> equity. BHEL supplies equipment to roughly <strong>53% of India's installed conventional (non-renewable) power generation capacity</strong> and is one of the very few companies globally with in-house design/manufacturing capability across the <em>entire</em> range of power plants — nuclear, thermal, hydro and gas. It operates 16-17 manufacturing units, 2 repair units, 4 regional offices, 8 service centres and 7 joint ventures, with a footprint across ~89-90 countries.</div>
+  </div>
+
+  <div class="section-title">🏭 Two Reportable Segments</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-name">Power Segment</div><div class="card-sub">~71–77% of revenue · the core engine</div></div>
+        <div><span class="tag tag-power">Power</span></div>
+      </div>
+      <div class="usp-row">Design, manufacture and supply of equipment for <strong>thermal, hydro, nuclear and gas</strong> power plants, plus end-to-end EPC services — from project inception, design and installation through commissioning and after-sales support. BHEL is India's dominant supplier here, with limited domestic competition for large thermal boiler-turbine-generator (BTG) packages; several rivals have exited the segment over the years.</div>
+      <div class="usp-row"><strong>Q4 FY26:</strong> Segment revenue ₹9,509.85 Cr (+54% YoY from ₹6,192.41 Cr); segment margin expanded sharply to 19.7% from 4.9% YoY as execution mix shifted toward newer, better-priced (post-Talcher) orders.</div>
+      <div class="usp-row"><strong>Order book:</strong> ₹1.92 lakh Cr (+21.8% YoY); Q4 order inflow ₹30,100 Cr; FY26 power order inflow ~₹59,000 Cr.</div>
+      <div class="usp-row"><strong>Nuclear:</strong> Supplied the 45th Steam Generator for the GHAVP nuclear plant — the highest number by any Indian manufacturer — and is positioned as a key beneficiary (alongside L&amp;T) of India's Nuclear Energy Mission (target: 100 GW nuclear capacity by 2047).</div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-name">Industry Segment</div><div class="card-sub">~23–29% of revenue · faster-growing, higher-margin, less cyclical</div></div>
+        <div><span class="tag tag-ind">Industry</span></div>
+      </div>
+      <div class="usp-row">Equipment and end-to-end solutions across <strong>rail transportation, defence &amp; aerospace, power transmission, renewables, oil &amp; gas/petrochemicals, water</strong>, and the emerging <strong>coal-to-chemicals</strong> vertical, plus newer areas like EV charging infrastructure and battery energy storage systems (BESS).</div>
+      <div class="usp-row"><strong>Q4 FY26:</strong> Segment execution ₹2,800 Cr (flat YoY); segment margin 24% (down from 31.3% YoY — a mix effect, still well above Power segment margin).</div>
+      <div class="usp-row"><strong>FY26 order inflow:</strong> ~₹16,000 Cr across transportation, transmission, defence, process industries and industrial equipment.</div>
+      <div class="usp-row"><strong>Defence/strategic:</strong> Commissioned the first upgraded Super Rapid Gun Mount (SRGM) onboard INS Nilgiri; supplies naval propulsion/fleet-support systems and specialised ISRO/space hardware. DAC has approved a Land Based Testing Facility (LBTF) for electric propulsion systems for Indian naval assets — a potential BHEL opportunity given its relevant experience.</div>
+      <div class="usp-row"><strong>Coal-to-chemicals:</strong> JV "Bharat Coal Gasification and Chemicals Ltd" with Coal India Ltd — producing Ammonium Nitrate from indigenous coal-gasification technology, a strategic import-substitution play.</div>
+    </div>
+  </div>
+
+  <div class="section-title">🧬 Business Model — How BHEL Makes Money</div>
+  <div class="card" style="margin-bottom:20px">
+    <div style="font-size:.82rem;color:var(--muted);line-height:1.75">BHEL is fundamentally an <strong>order-book-driven, execution-led EPC and heavy-equipment manufacturer</strong> — revenue is recognised as large, multi-year projects (boilers, turbines, generators, transformers, reactors) are engineered, built and commissioned, not on a steady-state sales basis. This makes the order book (currently ₹2.4 lakh Cr, 7.1x FY26 revenue) the single most important forward indicator, and execution pace (how fast the backlog converts to billed revenue) the key swing factor for both revenue growth and margin, since fixed manufacturing costs get better absorbed as throughput rises (operating leverage — visible in Q4 FY26 where 37% revenue growth drove 156% PAT growth). Customer advances (up from ₹15,300 Cr to ₹24,000 Cr in FY26) partly fund working capital. Margins are also sensitive to input-cost volatility (steel, gas, imported components) and to the vintage/pricing of the specific project mix being executed at any point in time — older, pre-2023 orders were priced thin and are being worked off, while the newer order intake carries meaningfully better economics.</div>
+    <div style="margin-top:10px">
+      <span class="vert-pill">Power — thermal/hydro/nuclear/gas equipment + EPC · 71-77% of revenue</span>
+      <span class="vert-pill">Industry — rail, defence, transmission, O&amp;G, coal-to-chemicals · 23-29% of revenue</span>
+      <span class="vert-pill">Order book ₹2.4 lakh Cr · 7.1x FY26 revenue</span>
+      <span class="vert-pill">Govt of India holds 63.17% · Maharatna-track PSU</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ RESULTS ═══════════════ -->
+<div id="tab-results" class="tab">
+  <div class="info-box">
+    <span class="en"><strong>📄 Results Room:</strong> Quarterly (Q4 FY26) and annual (FY26) consolidated P&amp;L, all figures ₹ Cr, from BSE/NSE filings and earnings-call commentary.</span>
+    <span class="ta"><strong>📄 முடிவுகள் அறை:</strong> காலாண்டு (Q4 FY26) மற்றும் ஆண்டு (FY26) ஒருங்கிணைந்த P&amp;L அட்டவணைகள், ₹ கோடியில்.</span>
+  </div>
+
+  <div class="section-title">📄 Q4 FY26 Quarterly P&amp;L (₹ Cr, Consolidated)</div>
+  <div class="tbl-wrap" style="margin-bottom:14px">
+    <table>
+      <thead><tr><th>Particulars</th><th>Q4 FY26</th><th>Q3 FY26</th><th>Q4 FY25</th><th>YoY</th><th>QoQ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue from Ops</strong></td><td class="td-green">12,310.37</td><td>8,473.10</td><td>8,993.00</td><td class="td-green">+36.9%</td><td class="td-green">+45.3%</td></tr>
+        <tr><td><strong>Other Income</strong></td><td>252</td><td>—</td><td>159</td><td class="td-green">+58.5%</td><td>—</td></tr>
+        <tr><td><strong>Total Expenses</strong></td><td>10,842.69</td><td>—</td><td>8,448.14</td><td class="td-amber">+28.3%</td><td>—</td></tr>
+        <tr><td><strong>EBITDA</strong></td><td class="td-green">1,753</td><td>~546</td><td>832</td><td class="td-green">+110.8%</td><td class="td-green">+221.5%</td></tr>
+        <tr><td><strong>EBITDA %</strong></td><td class="td-green">14.2%</td><td>6.4%</td><td>9.2%</td><td class="td-green">+499 bps</td><td class="td-green">+780 bps</td></tr>
+        <tr><td><strong>PAT (Net Profit)</strong></td><td class="td-green">1,290.47</td><td>390.40</td><td>504.45</td><td class="td-green">+155.8%</td><td class="td-green">+230.6%</td></tr>
+        <tr><td><strong>Power segment revenue</strong></td><td class="td-green">9,509.85</td><td>—</td><td>6,192.41</td><td class="td-green">+53.6%</td><td>—</td></tr>
+        <tr><td><strong>Power segment margin</strong></td><td class="td-green">19.7%</td><td>—</td><td>4.9%</td><td class="td-green">+1,480 bps</td><td>—</td></tr>
+        <tr><td><strong>Industry segment revenue</strong></td><td>2,800</td><td>—</td><td>~2,790</td><td class="td-amber">≈flat</td><td>—</td></tr>
+        <tr><td><strong>Industry segment margin</strong></td><td class="td-amber">24.0%</td><td>—</td><td>31.3%</td><td class="td-red">−730 bps</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">📅 FY26 Annual P&amp;L (₹ Cr, Consolidated)</div>
+  <div class="tbl-wrap" style="margin-bottom:14px">
+    <table>
+      <thead><tr><th>Particulars</th><th>FY26</th><th>FY25</th><th>YoY</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue from Ops</strong></td><td class="td-green">33,782.18</td><td>28,339.48</td><td class="td-green">+19.2%</td></tr>
+        <tr><td><strong>Total Income</strong></td><td class="td-green">34,589.83</td><td>28,804.79</td><td class="td-green">+20.1%</td></tr>
+        <tr><td><strong>Operating Profit Margin</strong></td><td>6.4%</td><td>~4.6%</td><td class="td-green">+~180 bps (incl. ~₹430 Cr forex gain)</td></tr>
+        <tr><td><strong>PAT (Net Profit)</strong></td><td class="td-green">1,600.26</td><td>533.90</td><td class="td-green">+199.7% (~3x)</td></tr>
+        <tr><td><strong>Operating Cash Flow</strong></td><td class="td-green">11,870</td><td>~7,610</td><td class="td-green">+56%</td></tr>
+        <tr><td><strong>Net Working Capital (days)</strong></td><td class="td-green">164</td><td>241</td><td class="td-green">Improved 77 days</td></tr>
+        <tr><td><strong>Customer Advances</strong></td><td>24,000</td><td>15,300</td><td class="td-green">+57%</td></tr>
+        <tr><td><strong>Order Inflow</strong></td><td class="td-amber">~75,000</td><td>92,534 (highest ever)</td><td class="td-red">−19% (high base)</td></tr>
+        <tr><td><strong>Order Book (outstanding, 31-Mar)</strong></td><td class="td-green">~2,40,000 (2.4 lakh Cr)</td><td>1,95,922</td><td class="td-green">+22.5%</td></tr>
+        <tr><td><strong>Power Capacity Commissioned</strong></td><td colspan="3">8.9 GW during FY26 (~6% from exports)</td></tr>
+        <tr><td><strong>Final Dividend</strong></td><td colspan="3">₹1.40/share; record date 17 Jul 2026; 62nd AGM 5 Aug 2026</td></tr>
+        <tr><td><strong>Credit Rating</strong></td><td colspan="3">CRISIL upgraded to AA/Stable (from AA-/Stable); short-term reaffirmed CRISIL A1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);margin-bottom:26px;line-height:1.6">
+    Source: BSE/NSE exchange filings dated 4-5 May 2026, company business-update filings, JM Financial/ICICI Securities/Business Standard coverage. FY26 EBITDA/OPM figures include one-off provision write-backs and forex gains flagged separately by analysts; Q4 FY26 adjusted margin (ex-one-offs) was ~13.8%.
+  </div>
+</div>
+
+<!-- ═══════════════ STOCK IN FOCUS ═══════════════ -->
+<div id="tab-focus" class="tab">
+  <div class="info-box" style="border-left-color:#FF6A00;background:#fff3e8">
+    <span class="en"><strong>🔦 Why BHEL is in the spotlight right now (July 2026):</strong> A cocktail of a blowout Q4, a record order book, and India's biggest-ever nuclear + thermal capacity build-out cycle. Below is CB Research's factual round-up of the specific triggers — this is not a recommendation.</span>
+  </div>
+
+  <div class="section-title">🔦 Reasons the Stock Is in Focus</div>
+  <div class="focus-item"><div class="focus-num">1</div><div class="focus-txt"><strong>Blowout Q4 print:</strong> Net profit up 2.5x YoY to ₹1,290.47 Cr, revenue +37%, EBITDA margin nearly doubled to 14.2% — shares rallied ~7-10% on results day (4-5 May 2026).</div></div>
+  <div class="focus-item"><div class="focus-num">2</div><div class="focus-txt"><strong>India's Nuclear Energy Mission:</strong> Government target of 100 GW nuclear capacity by 2047 (from ~8.8 GW today). ICICI Securities flags BHEL, alongside L&amp;T, as a primary beneficiary for reactor-island EPC contracts (valued at roughly ₹10 Cr/MW) given its domestic supply chain and nuclear-equipment track record.</div></div>
+  <div class="focus-item"><div class="focus-num">3</div><div class="focus-txt"><strong>Thermal capacity super-cycle:</strong> India's coal capacity roadmap envisages growth from ~210 GW to 420 GW by 2047 as 50+ GW of ageing plants retire and peak demand climbs toward 330-375 GW by FY32 — BHEL is the dominant domestic BTG supplier with limited competition left in the segment.</div></div>
+  <div class="focus-item"><div class="focus-num">4</div><div class="focus-txt"><strong>Large pipeline of near-term order conversions:</strong> BHEL is L-1 (lowest bidder) on 3x800MW NTPC Telangana and 3x800MW NTPC Meja-II (~₹35,000 Cr combined), plus 1x800MW DVC Durgapur; a Mahi Banswara nuclear package (~₹25,000 Cr) and the Chutka tender are also expected.</div></div>
+  <div class="focus-item"><div class="focus-num">5</div><div class="focus-txt"><strong>Defence &amp; strategic relevance:</strong> DAC-approved Land Based Testing Facility for naval electric propulsion, commissioning of the Super Rapid Gun Mount on INS Nilgiri, and specialised ISRO/space orders position BHEL within India's defence-indigenisation (Atmanirbhar Bharat) narrative.</div></div>
+  <div class="focus-item"><div class="focus-num">6</div><div class="focus-txt"><strong>China input-sourcing relief:</strong> Government permitted BHEL to import 21 critical input materials from China to work around the RLNG/LPG/Helium gas shortage that pinched Q4 execution — JM Financial called this margin-accretive.</div></div>
+  <div class="focus-item"><div class="focus-num">7</div><div class="focus-txt"><strong>Credit-rating upgrade:</strong> CRISIL raised BHEL's long-term rating to AA/Stable from AA-/Stable, citing the strong order book, improving profitability and a stronger balance sheet.</div></div>
+  <div class="focus-item"><div class="focus-num">8</div><div class="focus-txt"><strong>Possible index reclassification:</strong> BHEL is cited among potential entrants to AMFI's Large Cap category at the next periodic review, which can trigger passive-fund flows.</div></div>
+  <div class="focus-item"><div class="focus-num">9</div><div class="focus-txt"><strong>Q1 FY27 turning point being watched:</strong> JM Financial expects BHEL to report a Q1 profit for the first time in 8 years (last Q1 profit was FY19), on ~20% revenue growth — a potential structural shift signal if it plays out.</div></div>
+  <div class="focus-item"><div class="focus-num">10</div><div class="focus-txt"><strong>Valuation debate is itself a talking point:</strong> The stock trades near ~84-90x trailing P/E, prompting a split among brokerages between those seeing a structural re-rating (better order mix, deleveraging, execution ramp) and those flagging the multiple as excessive relative to history and sector peers.</div></div>
+
+  <div class="section-title" style="margin-top:10px">🏛️ Why BHEL Matters at Present</div>
+  <div class="card">
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.8">
+      BHEL is not just another industrial stock — it is the <strong>single largest domestic supplier of power-generation equipment in India</strong>, with roughly 53% of the country's installed conventional generation capacity built on its equipment. As India pursues a dual energy build-out — a nuclear ramp to 100 GW by 2047 and a parallel thermal expansion to 420 GW to meet rising peak demand — BHEL is one of the very few entities in the world with in-house design and manufacturing capability spanning the <em>entire</em> spectrum of power-plant technology: nuclear, thermal, hydro and gas. That makes it a direct, high-visibility proxy for India's energy-security and capex-cycle narrative, reinforced by its ₹2.4 lakh Cr order book (revenue visibility out to roughly FY29-30). Beyond power, its Industry segment gives it a foothold in strategically sensitive areas — railways, defence and naval propulsion, and coal-to-chemicals import substitution — that align with the government's broader Atmanirbhar Bharat and infrastructure-self-reliance agenda. As a Maharatna-track PSU 63.17%-owned by the Government of India, BHEL's fortunes are also closely watched as a bellwether for the health of India's capital-goods and public-sector engineering ecosystem.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CAUVERY SOCRATES ═══════════════ -->
+<div id="tab-socrates" class="tab">
+  <div class="section-title">🦉 Cauvery Socrates — Think Before You Look</div>
+  <div class="info-box" style="border-left-color:#FF6A00;background:#fff3e8">
+    <span class="en"><strong>How this works:</strong> Socrates never gave answers — he asked better questions. Commit to your own view first, then tap "Reveal CB Perspective". There is no single "right" answer.</span>
+  </div>
+  <div class="soc-meter" id="socMeter">🧠 Questions attempted: 0 / 6 · Perspectives revealed: 0 / 6</div>
+  <div id="socList"></div>
+</div>
+
+<!-- ═══════════════ SWOT ═══════════════ -->
+<div id="tab-swot" class="tab">
+  <div class="section-title">📋 SWOT — BHEL</div>
+  <div class="info-box"><span class="en">Built from Q4/FY26 disclosures, earnings-call commentary and CB Research analysis.</span></div>
+  <div class="card">
+    <div class="swot-wrap">
+      <div class="swot-box swot-s"><div class="swot-head">💪 Strengths</div>Dominant domestic BTG/EPC franchise with ~53% of India's installed conventional power capacity; only Indian player with full nuclear+thermal+hydro+gas design-manufacture capability; ₹2.4 lakh Cr order book (7.1x revenue) giving multi-year visibility; CRISIL AA/Stable rating; improving working-capital cycle (164 days vs 241 days).</div>
+      <div class="swot-box swot-w"><div class="swot-head">⚠️ Weaknesses</div>Historically thin, volatile margins on legacy low-priced orders still being executed; receivables/contract-asset days still high (463 days); PSU decision-making and execution-speed constraints; Industry segment margin declined YoY; profitability recovery is recent (post a multi-year loss/thin-margin phase, including 8 straight Q1 losses through FY26).</div>
+      <div class="swot-box swot-o"><div class="swot-head">🚀 Opportunities</div>Nuclear Energy Mission (100 GW by 2047) reactor-island EPC; thermal capacity roadmap to 420 GW; defence electric-propulsion/naval systems via DAC-approved LBTF; coal-to-chemicals JV with Coal India; EV charging &amp; battery energy storage as new verticals; large L-1 pipeline (NTPC Telangana, Meja-II, Mahi Banswara nuclear).</div>
+      <div class="swot-box swot-t"><div class="swot-head">🔻 Threats</div>Input-supply shocks (RLNG/LPG/Helium shortage already cost ~₹2,500-3,000 Cr of Q4 revenue); order-inflow lumpiness (FY26 inflow down 19% YoY on a high base); rich valuation (~84-90x P/E) leaves little room for execution slip-ups; competitive entry allowed for select Chinese equipment makers in some tender categories; Maharatna-status review outcome pending.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ VERDICT ═══════════════ -->
+<div id="tab-verdict" class="tab">
+  <div class="champion">
+    <div style="text-align:center;font-size:1.8rem">🏆</div>
+    <h2>Q4 FY26 Earnings Snapshot: A Genuine Inflection, With Caveats</h2>
+    <p>BHEL delivered its best quarter in years — net profit up 2.5x YoY, revenue +37%, and EBITDA margin nearly doubling to 14.2% — driven overwhelmingly by the Power segment, where margin expansion (4.9% → 19.7%) reflects the long-awaited shift from legacy low-priced orders to better-priced new business. The ₹2.4 lakh Cr order book (7.1x FY26 revenue) is the standout structural positive, reinforced by India's parallel nuclear and thermal capacity build-out through 2047. <strong>Counterweights:</strong> part of the margin beat came from provision write-backs and forex gains rather than pure operating improvement; FY26 order inflow actually declined 19% YoY on a high base; a gas-input shortage clipped Q4 execution; and the stock's ~84-90x trailing P/E already prices in a great deal of the turnaround, leaving limited room for disappointment. Whether Q1 FY27 breaks BHEL's 8-year Q1-loss streak, as JM Financial expects, will be an important near-term tell on whether this is a genuine structural inflection or a strong-but-cyclical quarter.</p>
+  </div>
+
+  <div class="section-title">🧑‍⚖️ CB Verdict Card (Not a Recommendation)</div>
+  <div class="grid">
+    <div class="card">
+      <div style="font-weight:800;color:var(--accent);margin-bottom:6px">BHEL — "Order Book Meets Execution Ramp"</div>
+      <div style="font-size:.81rem;color:var(--muted);line-height:1.7">The bull case rests on a genuinely re-rated order mix, a record backlog, and a once-in-a-generation domestic power-capex cycle (nuclear + thermal) where BHEL has structurally limited competition. The bear/watch case rests on valuation (~84-90x P/E), the non-recurring components of the Q4 margin beat (provision write-backs, forex gains), input-supply risk (gas shortages), and the PSU-execution question mark that has dogged the stock historically. <strong>Watch:</strong> Q1 FY27 profitability (first Q1 profit since FY19, per JM Financial), gas-supply normalisation, and whether the L-1 pipeline (NTPC Telangana/Meja-II, Mahi Banswara nuclear) actually converts to firm orders.</div>
+      <div class="usp-row" style="margin-top:10px"><span class="cbr cbr-a">Q4 FY26: CB-A</span> <span class="cbr cbr-b">FY26: CB-B</span></div>
+    </div>
+  </div>
+  <div class="warn-box">⚠️ CBF26 ratings measure earnings quality/momentum only — not valuation, and are <strong>not</strong> buy/sell/hold calls. CB Research house rule: no recommendations. Please do your own due diligence or consult a SEBI-registered financial advisor.</div>
+</div>
+
+<!-- ═══════════════ CB ASSIST ═══════════════ -->
+<div id="tab-qa" class="tab">
+  <div class="section-title">🤖 CB Assist — Ask About BHEL's Q4 FY26 Results</div>
+  <div class="info-box"><span class="en">Offline keyword-matching assistant — answers only from this dashboard's data. Try: revenue, margin, PAT, order book, segment, dividend, risk, moat, capex, nuclear.</span></div>
+  <div class="qa-chat">
+    <div class="qa-chat-row">
+      <input class="qa-inp" id="qaInp" type="text" placeholder="e.g. What was BHEL's Q4 EBITDA margin?">
+      <button class="qa-btn" onclick="answerQ()">Ask CB Assist</button>
+    </div>
+    <div class="qa-resp" id="qaResp"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ CHARTS ═══════════════ -->
+<div id="tab-charts" class="tab">
+  <div class="section-title">📈 BHEL — Quarterly Trend (₹ Cr)</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Revenue vs EBITDA vs PAT — Last 5 Quarters (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA Margin % — Last 5 Quarters</div>
+      <div class="chart-wrap"><canvas id="marginChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q4 FY26: Power vs Industry Segment Revenue (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="segRevChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q4 FY26: Power vs Industry Segment Margin (%)</div>
+      <div class="chart-wrap"><canvas id="segMarginChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Order Book vs FY26 Revenue (₹ Cr) — Visibility Multiple</div>
+      <div class="chart-wrap"><canvas id="orderChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">FY26 vs FY25 — Revenue, EBITDA*, PAT (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="annualChart"></canvas></div>
+    </div>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px">*FY26 EBITDA is CB Research's derived quarterly build-up; Q3 FY26 and earlier EBITDA figures are approximated from reported OPM% where exact ₹ Cr EBITDA was not separately disclosed.</div>
+</div>
+
+<!-- ═══════════════ PEER COMPARISON ═══════════════ -->
+<div id="tab-peers" class="tab">
+  <div class="info-box"><span class="en"><strong>🥇 Peer Comparison — Q4 FY26:</strong> BHEL vs select power/electrical-equipment peers. Business models differ meaningfully (BHEL is EPC-heavy and PSU-owned; peers below are more product/export-oriented private players) — figures are for context, not like-for-like comparability.</span></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Company</th><th>Segment</th><th>Q4 Revenue (₹ Cr)</th><th>Q4 EBITDA (₹ Cr)</th><th>EBITDA %</th><th>Q4 PAT (₹ Cr)</th><th>PAT YoY</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BHEL</strong></td><td>Power EPC + Industry (PSU)</td><td class="td-green">12,310.4</td><td>1,753.0</td><td class="td-green">14.2%</td><td class="td-green">1,290.5</td><td class="td-green">+155.8%</td></tr>
+        <tr><td><strong>GE Vernova T&amp;D India</strong></td><td>Power Transmission (GIS/HVDC)</td><td>1,637.1</td><td>444.9*</td><td class="td-green">27.2%</td><td class="td-green">351.8</td><td class="td-green">+88.6%</td></tr>
+        <tr><td><strong>Thermax</strong></td><td>Energy, Environment &amp; Chemicals</td><td>3,428.0</td><td>~374.7</td><td>10.9%</td><td class="td-green">244.3</td><td class="td-green">+18.7%</td></tr>
+        <tr><td><strong>Triveni Turbine</strong></td><td>Steam Turbines (Industrial)</td><td>679.6</td><td>144.4</td><td>21.2%</td><td class="td-green">101.9</td><td class="td-green">+7.7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);margin-bottom:26px;line-height:1.6">*GE Vernova T&amp;D India figure is operating profit excluding other income. Source: respective company BSE/NSE filings and earnings commentary, Q4 FY26 (Jan–Mar 2026).</div>
+
+  <div class="section-title">📊 Valuation Snapshot</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Company</th><th>CMP context (Jun-Jul 2026)</th><th>Market Cap (₹ Cr, approx.)</th><th>Trailing P/E</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BHEL</strong></td><td>~₹385–415 (52w range ₹205.12–424.90)</td><td>~1,33,000–1,38,000</td><td class="td-amber">~84–90x</td></tr>
+        <tr><td><strong>GE Vernova T&amp;D India</strong></td><td>~₹4,389–4,595</td><td>~1,12,000</td><td>Not disclosed here — richly valued (net-cash, ROE ~54%)</td></tr>
+        <tr><td><strong>Thermax</strong></td><td>~₹4,649 post-results high</td><td>~55,400</td><td class="td-amber">~78x</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);line-height:1.6">Valuation context only — not investment advice. BHEL's P/E of ~84-90x sits well above its own long-term historical average and reflects the market pricing in continued margin expansion and order-book conversion.</div>
+</div>
+
+<script>
+function switchTab(id, btn){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  if(id==='socrates') renderSocrates();
+  if(id==='swot') {} 
+  if(id==='charts') initCharts();
+}
+function setLang(l, btn){
+  document.body.classList.toggle('tm', l==='ta');
+  document.querySelectorAll('.lbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+}
+
+// ══════════ SOCRATES ══════════
+var SOC = [
+ {q:'BHEL\u2019s Q4 EBITDA margin nearly doubled YoY to 14.2%. Before checking the numbers table \u2014 how much of that improvement do you think came from genuinely better project pricing/execution versus one-off items (provision write-backs, forex gains)?',
+  opts:['Almost entirely operating improvement','Roughly half operating, half one-off','Mostly one-off items, limited operating improvement'],
+  cb:'Analysts (Business Standard) flagged that a meaningful part of the FY26 margin story came from provision write-backs and ~\u20b9430 Cr of forex gains, alongside real operating improvement in the Power segment (margin 4.9% \u2192 19.7%) as newer, better-priced orders entered execution. The honest picture is a mix \u2014 both are real, but the one-off components mean the 14.2% Q4 print shouldn\u2019t be extrapolated at face value into FY27.'},
+ {q:'BHEL\u2019s order book is 7.1x FY26 revenue. Does a large order book by itself tell you the stock is undervalued?',
+  opts:['Yes \u2014 more orders means more future profit, straightforward','No \u2014 order book size alone says nothing about execution speed, pricing, or margin quality','Depends entirely on how fast the backlog converts to billed, profitable revenue'],
+  cb:'A large order book is necessary but not sufficient. BHEL\u2019s own history shows order books can sit for years without translating into proportionate profit if execution is slow or orders are underpriced. The more useful question is execution pace and the pricing quality of new inflows \u2014 which is exactly why the Power segment margin expansion (not just the order book size) was the standout Q4 signal.'},
+ {q:'The stock trades near ~84-90x trailing P/E. What would you want to see before treating that multiple as justified rather than stretched?',
+  opts:['Sustained margin expansion for several more quarters, not just one','Confirmation that FY26 order inflow decline (-19% YoY) reverses','Both of the above, plus resolution of the gas-supply issue'],
+  cb:'CB Research doesn\u2019t make buy/sell calls, but the factual triangulation point is: a single strong quarter, partly boosted by one-offs, is a thin base for an 84-90x multiple. Brokerages are genuinely split \u2014 some see a structural re-rating underway (better order mix, deleveraging), others flag the valuation as excessive. Q1 FY27 (watched for BHEL\u2019s first Q1 profit since FY19) is a reasonable near-term test.'},
+ {q:'BHEL is described as a beneficiary of India\u2019s Nuclear Energy Mission (100 GW by 2047). How far away in time is that opportunity, and how should that affect how you read today\u2019s valuation?',
+  opts:['It\u2019s a multi-decade opportunity \u2014 today\u2019s price should reflect mostly near-term (2-3 year) cash flows, not the 2047 target','The 2047 target should be priced in heavily today since the market is forward-looking','Not sure how to weigh a 20+ year policy target against a quarterly earnings multiple'],
+  cb:'Long-dated policy targets (100 GW nuclear by 2047, 420 GW thermal) support the long-term demand story but convert into BHEL revenue only as specific tenders (e.g., Mahi Banswara, Chutka) are finalised and executed \u2014 a process measured in years per project. It\u2019s reasonable to view these as supportive of the multi-year narrative without assuming they justify near-term valuation on their own.'},
+ {q:'BHEL\u2019s Industry segment margin fell from 31.3% to 24% YoY even as Power segment margin surged. What does a mix shift like this suggest about relying on segment-level headlines alone?',
+  opts:['Segment headlines can mask offsetting moves \u2014 always check both segments, not just the one driving the consolidated number','It doesn\u2019t matter much since Power dominates revenue anyway','Industry segment margin decline is more concerning than the Power segment gain is encouraging'],
+  cb:'This is a good instinct to build: consolidated numbers can hide segment-level offsetting moves. Here, Industry segment margin compression (31.3% \u2192 24%) is a genuine mix effect worth tracking, even though Power segment strength dominates the headline story. Neither segment tells the full story alone.'},
+ {q:'Government permitted BHEL to import 21 critical materials from China to work around a domestic gas shortage. As an investor, how would you weigh a supply-chain fix like this \u2014 as a durable positive, or a one-time patch?',
+  opts:['Durable positive \u2014 it structurally lowers BHEL\u2019s input-cost base going forward','One-time patch \u2014 it solves this specific shortage but doesn\u2019t change BHEL\u2019s underlying execution capability','Uncertain \u2014 depends on whether it becomes a standing policy or a one-off exception'],
+  cb:'JM Financial described the China-import allowance as margin-accretive, but it was framed as a response to a specific RLNG/LPG/Helium shortage rather than a standing policy shift. Whether it persists, and whether BHEL leans on it structurally, is a genuine open question worth monitoring rather than assuming either way.'}
+];
+var socState = [];
+function renderSocrates(){
+  var list = document.getElementById('socList');
+  if(list.dataset.built) return;
+  list.dataset.built = '1';
+  var html = '';
+  for(var i=0;i<SOC.length;i++){
+    socState.push({attempted:false, revealed:false});
+    html += '<div class="soc-item"><div class="soc-head"><div class="soc-num">'+(i+1)+'</div><div class="soc-q">'+SOC[i].q+'</div></div><div class="soc-body">';
+    html += '<div class="soc-opts">';
+    for(var j=0;j<SOC[i].opts.length;j++){
+      html += '<button class="soc-opt" onclick="pickSoc('+i+','+j+',this)">'+SOC[i].opts[j]+'</button>';
+    }
+    html += '</div><button class="soc-reveal-btn" onclick="revealSoc('+i+',this)">Reveal CB Perspective</button>';
+    html += '<div class="soc-cb" id="socCb'+i+'"><strong>CB Perspective:</strong> '+SOC[i].cb+'</div>';
+    html += '</div></div>';
+  }
+  list.innerHTML = html;
+}
+function pickSoc(i,j,btn){
+  var parent = btn.parentElement;
+  parent.querySelectorAll('.soc-opt').forEach(function(b){b.classList.remove('sel')});
+  btn.classList.add('sel');
+  if(!socState[i].attempted){ socState[i].attempted = true; updateSocMeter(); }
+}
+function revealSoc(i,btn){
+  document.getElementById('socCb'+i).classList.add('open');
+  if(!socState[i].revealed){ socState[i].revealed = true; updateSocMeter(); }
+}
+function updateSocMeter(){
+  var a=0,r=0;
+  for(var i=0;i<socState.length;i++){ if(socState[i].attempted)a++; if(socState[i].revealed)r++; }
+  document.getElementById('socMeter').innerText = '\ud83e\udde0 Questions attempted: '+a+' / '+SOC.length+' \u00b7 Perspectives revealed: '+r+' / '+SOC.length;
+}
+
+// ══════════ CB ASSIST ══════════
+var KB = {
+ revenue:'Q4 FY26 revenue from operations \u20b912,310.37 Cr (+36.9% YoY, +45.3% QoQ); total income \u20b912,553.50 Cr. FY26 revenue \u20b933,782.18 Cr (+19.2% YoY); total income \u20b934,589.83 Cr. Power segment did the heavy lifting: Q4 power revenue \u20b99,509.85 Cr (+53.6% YoY).',
+ margin:'Q4 FY26 EBITDA \u20b91,753 Cr at 14.2% margin (vs 9.2% Q4 FY25, +499 bps); adjusted for one-offs, ~13.8%. FY26 operating profit margin 6.4% (incl. ~\u20b9430 Cr forex gain and provision write-backs). Power segment margin expanded 4.9% \u2192 19.7% YoY; Industry segment margin fell 31.3% \u2192 24.0%.',
+ pat:'Q4 FY26 PAT \u20b91,290.47 Cr (+155.8% YoY, +230.6% QoQ from \u20b9390.40 Cr in Q3 FY26). FY26 PAT \u20b91,600.26 Cr (+199.7% YoY, ~3x FY25\u2019s \u20b9533.90 Cr).',
+ order:'Order book (outstanding) as of 31 Mar 2026: ~\u20b92.4 lakh Cr, 7.1x FY26 revenue, up 22.5% YoY. FY26 order inflow ~\u20b975,000 Cr (Power ~\u20b959,000 Cr + Industry ~\u20b916,000 Cr) \u2014 down ~19% YoY on FY25\u2019s record \u20b992,534 Cr base. Power sector order book alone: \u20b91.92 lakh Cr.',
+ segment:'Two segments: Power (~71-77% of revenue \u2014 thermal/hydro/nuclear/gas equipment + EPC) and Industry (~23-29% \u2014 rail, defence & aerospace, transmission, renewables, oil & gas, coal-to-chemicals). Q4 FY26: Power revenue \u20b99,509.85 Cr at 19.7% margin; Industry revenue \u20b92,800 Cr at 24.0% margin.',
+ dividend:'Final dividend \u20b91.40/share for FY26; record date 17 Jul 2026; 62nd AGM scheduled 5 Aug 2026.',
+ debt:'Net working capital improved to 164 days (from 241 days FY25). Operating cash flow \u20b911,870 Cr (+56% YoY). Customer advances rose from \u20b915,300 Cr to \u20b924,000 Cr. Total debtors/contract assets 463 days (from 494 days). CRISIL upgraded long-term rating to AA/Stable from AA-/Stable.',
+ risk:'Key risks: RLNG/LPG/Helium gas shortage clipped Q4 execution (~\u20b92,500-3,000 Cr estimated revenue impact per JM Financial); FY26 order inflow down 19% YoY on a high base; rich valuation (~84-90x trailing P/E); part of the margin beat is one-off (provision write-backs, forex gains); Industry segment margin compression; Maharatna status review pending.',
+ moat:'India\u2019s largest power-equipment maker, supplying equipment behind ~53% of India\u2019s installed conventional generation capacity. One of very few companies globally with in-house design/manufacture capability across the full range \u2014 nuclear, thermal, hydro and gas \u2014 giving it limited domestic competition for large BTG packages.',
+ nuclear:'BHEL supplied the 45th Steam Generator for the GHAVP nuclear plant \u2014 the highest number by any Indian manufacturer. It is positioned (with L&T) as a key beneficiary of India\u2019s Nuclear Energy Mission targeting 100 GW nuclear capacity by 2047; reactor-island EPC contracts are valued at roughly \u20b910 Cr per MW.',
+ capex:'BHEL commissioned/synchronised 8.9 GW of power capacity in FY26 (~6% from exports). Near-term pipeline includes being L-1 on 3x800MW NTPC Telangana and 3x800MW NTPC Meja-II (~\u20b935,000 Cr combined) and 1x800MW DVC Durgapur; Mahi Banswara nuclear package (~\u20b925,000 Cr) expected.',
+ guidance:'No formal buy/sell guidance from CB Research. JM Financial expects BHEL to report a Q1 FY27 profit \u2014 its first Q1 profit since FY19 \u2014 on ~20% revenue growth. Analysts broadly expect BHEL to sustain \u20b960,000-70,000 Cr of order inflow in both FY27 and FY28.'
+};
+var KEYS = Object.keys(KB);
+var SYN = {sales:'revenue',topline:'revenue',turnover:'revenue',ebitda:'margin',profit:'pat','net profit':'pat',earnings:'pat','order book':'order',orderbook:'order',backlog:'order',inflow:'order',segments:'segment','power segment':'segment','industry segment':'segment',payout:'dividend',leverage:'debt',cash:'debt',rating:'debt',threat:'risk',concern:'risk',valuation:'risk',usp:'moat',advantage:'moat',strength:'moat',smr:'nuclear','nuclear mission':'nuclear',expansion:'capex',commission:'capex',outlook:'guidance',target:'guidance'};
+function answerQ(){
+  var q = (document.getElementById('qaInp').value||'').toLowerCase();
+  var out = document.getElementById('qaResp');
+  var wanted = {};
+  var i,k;
+  for(i=0;i<KEYS.length;i++){ if(q.indexOf(KEYS[i])>-1) wanted[KEYS[i]]=true; }
+  for(k in SYN){ if(q.indexOf(k)>-1) wanted[SYN[k]]=true; }
+  var wk = Object.keys(wanted);
+  if(!wk.length) wk = ['revenue','pat'];
+  var block = '';
+  for(i=0;i<wk.length;i++){ if(KB[wk[i]]) block += '\u2022 ' + KB[wk[i]] + '<br><br>'; }
+  out.style.display='block';
+  if(block){
+    out.innerHTML = block + '<em style="font-size:.72rem;color:#94a3b8">CB Assist answers only from this dashboard\u2019s data. Not investment advice.</em>';
+  } else {
+    out.innerHTML = 'I could not match that to dashboard data. Try keywords like <strong>revenue, margin, PAT, order book, segment, dividend, debt, risk, moat, nuclear, capex, guidance</strong>.';
+  }
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter' && document.activeElement && document.activeElement.id==='qaInp') answerQ();
+});
+
+// ══════════ CHARTS ══════════
+var chartsDone = false;
+function initCharts(){
+  if(chartsDone || typeof Chart==='undefined') return;
+  chartsDone = true;
+  var qLabels = ['Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'];
+  new Chart(document.getElementById('trendChart'),{type:'bar',
+    data:{labels:qLabels,datasets:[
+      {label:'Revenue',data:[8993,5670,7280,8473,12310],backgroundColor:'#0369a1'},
+      {label:'EBITDA',data:[832,108,466,546,1753],backgroundColor:'#16a34a'},
+      {label:'PAT',data:[504,-456,135,390,1290],backgroundColor:'#FF6A00'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+  new Chart(document.getElementById('marginChart'),{type:'line',
+    data:{labels:qLabels,datasets:[
+      {label:'EBITDA Margin %',data:[9.2,1.9,6.4,6.4,14.2],borderColor:'#0891b2',backgroundColor:'rgba(8,145,178,.15)',fill:true,tension:.3}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:16}},plugins:{legend:{position:'bottom'}}}});
+  new Chart(document.getElementById('segRevChart'),{type:'bar',
+    data:{labels:['Power','Industry'],datasets:[
+      {label:'Q4 FY26 (\u20b9 Cr)',data:[9509.85,2800],backgroundColor:['#0369a1','#d97706']},
+      {label:'Q4 FY25 (\u20b9 Cr)',data:[6192.41,2790],backgroundColor:['#bae6fd','#fed7aa']}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+  new Chart(document.getElementById('segMarginChart'),{type:'bar',
+    data:{labels:['Power','Industry'],datasets:[
+      {label:'Q4 FY26 %',data:[19.7,24.0],backgroundColor:'#16a34a'},
+      {label:'Q4 FY25 %',data:[4.9,31.3],backgroundColor:'#bbf7d0'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+  new Chart(document.getElementById('orderChart'),{type:'bar',
+    data:{labels:['FY26 Revenue','Order Book (31-Mar-26)'],datasets:[
+      {label:'\u20b9 Cr',data:[33782.18,240000],backgroundColor:['#0369a1','#7c3aed']}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('annualChart'),{type:'bar',
+    data:{labels:['Revenue','EBITDA (derived)','PAT'],datasets:[
+      {label:'FY26',data:[33782.18,2150,1600.26],backgroundColor:'#0369a1'},
+      {label:'FY25',data:[28339.48,1290,533.90],backgroundColor:'#bae6fd'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+}
+</script>
+</body>
+</html>

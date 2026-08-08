@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Sector — Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f3ef;--surface:#fff;--surface2:#eeebe5;--border:#ddd8cf;
+  --text:#141210;--muted:#68605a;
+  --tatapower:#1e40af;--adanipower:#b45309;--jsw:#166534;--suzlon:#7c3aed;
+  --torrent:#0e7490;--cesc:#be185d;--ntpc:#dc2626;--powergrid:#15803d;
+  --adanigreen:#0f766e;--aesl:#92400e;--atgl:#4338ca;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(20,18,16,.07);--shadow-md:0 4px 20px rgba(20,18,16,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.55;}
+.hdr{background:#0a1a0f;color:#fff;padding:0 36px;display:flex;align-items:stretch;justify-content:space-between;min-height:76px;border-bottom:3px solid #22c55e;}
+.hdr-left{display:flex;align-items:center;padding:14px 0;gap:13px;}
+.hdr-icon{width:44px;height:44px;background:linear-gradient(135deg,#22c55e,#0ea5e9);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.45rem;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:10px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:3px;}
+.hdr-right{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:12px 0;}
+.chip{padding:3px 8px;border-radius:20px;font-size:8.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.chip-tp{background:var(--tatapower);color:#fff;}.chip-ap{background:var(--adanipower);color:#fff;}
+.chip-jsw{background:var(--jsw);color:#fff;}.chip-sz{background:var(--suzlon);color:#fff;}
+.chip-tor{background:var(--torrent);color:#fff;}.chip-cesc{background:var(--cesc);color:#fff;}
+.chip-ntpc{background:var(--ntpc);color:#fff;}.chip-pg{background:var(--powergrid);color:#fff;}
+.chip-ag{background:var(--adanigreen);color:#fff;}.chip-aesl{background:var(--aesl);color:#fff;}
+.chip-atgl{background:var(--atgl);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 28px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(20,18,16,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:12px 11px 10px;font-size:11px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:#22c55e;font-weight:700;}
+.main{padding:22px 36px 44px;max-width:1480px;margin:0 auto;}
+.panel{
+  display:none !important;
+  visibility:hidden;
+  height:0;
+  overflow:hidden;
+  opacity:0;
+}
+.panel.active{
+  display:block !important;
+  visibility:visible;
+  height:auto;
+  overflow:visible;
+  opacity:1;
+  animation:fadeIn .25s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sec-note{font-size:10.5px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.gap-top{margin-top:20px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.card-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:11px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:4px;align-items:center;}
+.m-lbl{font-size:10px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;}
+.badge-row{margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;}
+.badge{font-size:8.5px;padding:2px 6px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}.b-hold{background:#fef9c3;color:#a16207;}
+.b-avoid{background:#fee2e2;color:#b91c1c;}.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}.b-pend{background:#e0f2fe;color:#0369a1;}
+.b-watch{background:#fff7ed;color:#c2410c;}
+.kpi-r{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:13px;}
+.kpi-r4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:13px;}
+.kpi-r3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;box-shadow:var(--shadow);}
+.kpi.tp-a{border-left:4px solid var(--tatapower);}.kpi.ap-a{border-left:4px solid var(--adanipower);}
+.kpi.jsw-a{border-left:4px solid var(--jsw);}.kpi.sz-a{border-left:4px solid var(--suzlon);}
+.kpi.tor-a{border-left:4px solid var(--torrent);}.kpi.cesc-a{border-left:4px solid var(--cesc);}
+.kpi.ntpc-a{border-left:4px solid var(--ntpc);}.kpi.pg-a{border-left:4px solid var(--powergrid);}
+.kpi.ag-a{border-left:4px solid var(--adanigreen);}.kpi.aesl-a{border-left:4px solid var(--aesl);}
+.kpi.atgl-a{border-left:4px solid var(--atgl);}
+.kpi .kl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+.kpi .kv{font-size:.98rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:8.5px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#0a1a0f;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;padding:8px 10px;text-align:left;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid var(--border);font-size:11px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.note-block{background:var(--gold-soft);border:1px solid #d97706;border-radius:8px;padding:9px 13px;font-size:10.5px;color:#92400e;margin-bottom:11px;line-height:1.55;}
+.green-block{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:9px 13px;font-size:10.5px;color:#166534;margin-bottom:11px;line-height:1.55;}
+.blue-block{background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:9px 13px;font-size:10.5px;color:#1e40af;margin-bottom:11px;line-height:1.55;}
+.alert-block{background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:9px 13px;font-size:10.5px;color:#991b1b;margin-bottom:11px;line-height:1.55;}
+/* Primer */
+.primer-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:13px;}
+.primer-hdr{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.primer-body{font-size:11.5px;line-height:1.68;color:var(--text);}
+.primer-body p{margin-bottom:9px;}
+.ptbl{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;}
+.ptbl th{background:#0a1a0f;color:#fff;padding:7px 10px;font-size:9px;text-align:left;letter-spacing:.04em;text-transform:uppercase;}
+.ptbl td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:top;font-size:11px;}
+.ptbl tr:last-child td{border-bottom:none;}
+.ptbl tr:nth-child(even) td{background:#fafaf8;}
+/* Company cards */
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.tatapower::before{background:var(--tatapower);}
+.co-card.adanipower::before{background:var(--adanipower);}
+.co-card.jsw::before{background:var(--jsw);}
+.co-card.suzlon::before{background:var(--suzlon);}
+.co-card.torrent::before{background:var(--torrent);}
+.co-card.cesc::before{background:var(--cesc);}
+.co-card.ntpc::before{background:var(--ntpc);}
+.co-card.powergrid::before{background:var(--powergrid);}
+.co-card.adanigreen::before{background:var(--adanigreen);}
+.co-card.aesl::before{background:var(--aesl);}
+.co-card.atgl::before{background:var(--atgl);}
+.co-name{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:8px;}
+/* Analyst cards */
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:12px;}
+.ac-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;flex-wrap:wrap;gap:6px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;}
+.rat-pill{padding:3px 11px;border-radius:20px;font-size:10.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef9c3;color:#a16207;}.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:2px;}
+.ac-cmp{font-size:10.5px;color:var(--muted);margin-bottom:6px;}
+.ac-bar{background:var(--surface2);border-radius:20px;height:5px;overflow:hidden;margin-bottom:8px;}
+.ac-fill{height:5px;border-radius:20px;}
+.ac-text{font-size:11px;line-height:1.62;color:var(--text);}
+/* Segments */
+.seg-tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;margin-right:3px;margin-bottom:3px;}
+.seg-thermal{background:#fef3c7;color:#92400e;}.seg-renew{background:#dcfce7;color:#166534;}
+.seg-trans{background:#ecfeff;color:#0e7490;}.seg-distrib{background:#fdf4ff;color:#6b21a8;}
+.seg-wind{background:#f3f4f6;color:#374151;}.seg-solar{background:#fefce8;color:#713f12;}
+.seg-gas{background:#fef9c3;color:#a16207;}.seg-oandm{background:#f0fdf4;color:#15803d;}
+/* Moat */
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);}
+.moat-co{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.moat-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.moat-body{font-size:10px;color:var(--muted);line-height:1.55;}
+.moat-tag{display:inline-block;margin-top:5px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;text-transform:uppercase;}
+/* SWOT */
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:13px;}
+.swot-cell{padding:10px 12px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:10px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-sw{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:1.5px solid var(--border);}
+/* Verdict */
+.verdict-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);}
+.verdict-co{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;margin-bottom:5px;}
+.vrating{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+.vr-buy{background:#dcfce7;color:#15803d;}.vr-hold{background:#fef9c3;color:#a16207;}.vr-avoid{background:#fee2e2;color:#b91c1c;}
+.verdict-text{font-size:10.5px;line-height:1.62;color:var(--muted);}
+.verdict-cmp{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;margin-bottom:4px;color:var(--text);}
+/* Chart cards */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:9.5px;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:9.5px;color:var(--muted);margin-bottom:10px;}
+/* Capacity bar */
+.cap-row{margin-bottom:9px;}
+.cap-lbl{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px;}
+.cap-bar-wrap{background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;}
+.cap-bar{height:8px;border-radius:20px;}
+/* CB Assist */
+.cbassist-chat{background:var(--surface);border:1.5px solid #22c55e;border-radius:var(--radius);padding:16px 18px;}
+.cbassist-title{font-weight:800;font-size:11.5px;color:#15803d;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.dot-live{width:7px;height:7px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:90px;max-height:400px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;padding:2px;}
+.chat-user{padding:8px 12px;border-radius:10px 10px 2px 10px;font-size:11px;max-width:88%;align-self:flex-end;background:#0a1a0f;color:#fff;line-height:1.55;}
+.chat-bot{padding:8px 12px;border-radius:10px 10px 10px 2px;font-size:11px;max-width:93%;align-self:flex-start;background:var(--surface2);border:1px solid var(--border);line-height:1.6;}
+.chat-bot.loading{color:var(--muted);font-style:italic;}
+.chat-input-row{display:flex;gap:7px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;font-size:11.5px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:#22c55e;}
+.chat-send{background:#15803d;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:11.5px;font-weight:700;cursor:pointer;}
+.preset-qs{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.preset-q{padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-size:10.5px;cursor:pointer;transition:all .15s;line-height:1.45;font-weight:600;}
+.preset-q:hover{border-color:#22c55e;background:#f0fdf4;}
+.footer{text-align:center;font-size:9.5px;color:var(--muted);padding:12px 36px;border-top:1px solid var(--border);margin-top:24px;line-height:1.7;}
+.cb-wm{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.93);border:1.5px solid var(--border);border-radius:30px;padding:6px 13px 6px 7px;box-shadow:0 4px 18px rgba(20,18,16,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:24px;height:24px;background:#15803d;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:#fff;}
+@media(max-width:900px){
+  .main{padding:10px 12px 38px;}.hdr{padding:0 12px;flex-wrap:wrap;}
+  .tab-nav{padding:0 4px;}
+  .g2,.g3,.g4,.kpi-r,.kpi-r4,.kpi-r3{grid-template-columns:1fr;}
+  .hdr-left h1{font-size:1.1rem;}
+  .hdr-right{display:none;}
+}
+@media(max-width:480px){
+  body{font-size:12px;}
+  .main{padding:8px 10px 36px;}
+  .hdr{min-height:56px;padding:0 10px;}
+  .hdr-icon{width:36px;height:36px;font-size:1.1rem;}
+  .hdr-left h1{font-size:1rem;}
+  .hdr-left .sub{font-size:8.5px;}
+  .tab-btn{padding:10px 7px 8px;font-size:10px;}
+  .sec-hdr{font-size:1rem;}
+  .g2,.g3,.g4,.kpi-r,.kpi-r4,.kpi-r3{grid-template-columns:1fr;gap:8px;}
+  .card,.co-card,.ac,.moat-card,.verdict-card,.chart-card,.primer-card{padding:12px 13px;}
+  table{font-size:10px;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  th{font-size:8px;padding:6px 8px;}
+  td{padding:5px 8px;font-size:10px;}
+  .kpi .kv{font-size:.85rem;}
+  .swot-grid{grid-template-columns:1fr;}
+  .swot-s,.swot-w,.swot-o,.swot-t{border-right:none;border-bottom:1px solid var(--border);}
+  .chat-msgs{max-height:260px;}
+  .preset-q{font-size:10px;padding:6px 9px;}
+  .cb-wm{bottom:12px;right:12px;padding:5px 10px 5px 6px;}
+  .cb-wm-logo{width:20px;height:20px;font-size:.65rem;}
+  .footer{font-size:8.5px;padding:10px 12px;}
+  .note-block,.green-block,.blue-block,.alert-block{font-size:10px;}
+  .hdr-right{display:none;}
+  .g2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-icon">⚡</div>
+    <div>
+      <h1>Power Sector — Intelligence Dashboard</h1>
+      <div class="sub">Q4 FY26 · Business &amp; Investment Analysis · 9 Companies · May 2026</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-ntpc">NTPC</span><span class="chip chip-ap">Adani Power</span><span class="chip chip-tp">Tata Power</span>
+    <span class="chip chip-pg">Power Grid</span><span class="chip chip-jsw">JSW Energy</span><span class="chip chip-sz">Suzlon</span>
+    <span class="chip chip-tor">Torrent</span><span class="chip chip-cesc">CESC</span>
+    <span class="chip chip-aesl">AESL</span>
+    <span class="chip chip-date">Q4 FY26 · 9 Cos</span>
+  </div>
+</header>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">⚡ Dashboard</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">🏭 Segments &amp; Capacity</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">📊 Financials</button>
+  <button class="tab-btn" onclick="showTab('deepdive',this)">🏢 Deep-Dive</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">🏰 Moats</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">💰 Valuation &amp; Verdict</button>
+  <button class="tab-btn" onclick="showTab('analysts',this)">🔬 Analyst Views</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">🔍 SWOT</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">📈 Charts</button>
+  <button class="tab-btn" onclick="showTab('primer',this)">📚 Sector Primer</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)">🤖 CB Assist</button>
+</nav>
+<div class="main">
+<!-- ===== SECTOR PRIMER ===== -->
+<div id="panel-primer" class="panel">
+<div class="sec-hdr">📚 Power Sector Primer — School of Energy <span class="sec-note">Fundamentals every investor must know before picking stocks</span></div>
+<div class="blue-block">📖 <strong>Why read this?</strong> India's power sector has unique economics — you need to understand coal vs solar, firm vs infirm power, PLF, PPA, merchant pricing, and business models before picking stocks. These concepts decide winners and losers.</div>
+
+<div class="primer-card">
+<div class="primer-hdr">🔋 1. Types of Power Generation — India's Generation Stack</div>
+<div class="primer-body">
+<p>India's installed capacity is approximately <strong>950+ GW</strong> including all sources. Each technology has different economics, reliability, and role.</p>
+<table class="ptbl">
+<thead><tr><th>Source</th><th>Est. GW (FY26)</th><th>Cost per Unit</th><th>Firm/Infirm</th><th>Availability</th><th>Key Listed Players</th></tr></thead>
+<tbody>
+<tr><td><strong>Coal/Thermal</strong></td><td>~215 GW</td><td>₹3–5/unit (variable)</td><td>✅ FIRM — 24×7</td><td>65–80% PLF</td><td>NTPC, Adani Power, Tata Power, JSW Energy</td></tr>
+<tr><td><strong>Solar PV</strong></td><td>~100+ GW</td><td>₹2–2.5/unit (LCOE)</td><td>❌ INFIRM — daytime only</td><td>~22% CUF</td><td>NTPC Green, Tata Power Solar</td></tr>
+<tr><td><strong>Wind</strong></td><td>~50+ GW</td><td>₹2.5–3.5/unit</td><td>❌ INFIRM — seasonal</td><td>25–35% CUF</td><td>Suzlon (turbines), JSW Energy</td></tr>
+<tr><td><strong>Hydro</strong></td><td>~47 GW</td><td>₹2–4/unit</td><td>✅ FIRM (seasonal)</td><td>30–50% seasonal</td><td>NHPC, NTPC, Tata Power (Bhutan)</td></tr>
+<tr><td><strong>Gas</strong></td><td>~25 GW</td><td>₹6–10/unit</td><td>✅ FIRM (expensive)</td><td>~20–30% (underused)</td><td>Torrent Power, NTPC</td></tr>
+<tr><td><strong>Nuclear</strong></td><td>~7.5 GW</td><td>₹3–4/unit</td><td>✅ FIRM — baseload</td><td>~80%+</td><td>NPCIL (unlisted)</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="primer-card">
+<div class="primer-hdr">⚖️ 2. Firm vs Infirm Power — The Most Critical Concept for Investors</div>
+<div class="primer-body">
+<p><strong>FIRM power</strong> means power that can be guaranteed 24 hours a day, 365 days a year, on demand — like a tap you can turn on anytime. Coal, gas, nuclear, hydro (partially) are firm. Discoms and industries pay a <em>premium tariff</em> for firm power because it gives absolute certainty of supply.</p>
+<p><strong>INFIRM (Intermittent) power</strong> means power that depends on nature — the sun shines for only 6–8 hours/day (solar gives zero at night), and wind blows only when weather permits. Grid operators call this variable generation.</p>
+<table class="ptbl">
+<thead><tr><th>Attribute</th><th>Coal — Firm</th><th>Solar — Infirm</th><th>Wind — Infirm</th></tr></thead>
+<tbody>
+<tr><td>PLF / CUF</td><td>65–80% (continuous)</td><td>~22% CUF</td><td>25–35% CUF</td></tr>
+<tr><td>Generation Hours/Year</td><td>~5,700–7,000 hrs</td><td>~1,750–2,200 hrs</td><td>~2,200–3,000 hrs</td></tr>
+<tr><td>Cost of Generation</td><td>₹3–5/unit (fuel-linked)</td><td>₹2–2.5/unit (no fuel!)</td><td>₹2.5–3.5/unit</td></tr>
+<tr><td>Tariff Commanded</td><td>₹4–7/unit (PPA)</td><td>₹2–3/unit (auction)</td><td>₹2.5–3.5/unit</td></tr>
+<tr><td>Grid Reliability</td><td>High — on-demand</td><td>Low — weather-dependent</td><td>Low — weather-dependent</td></tr>
+<tr><td>Storage Needed?</td><td>No</td><td>Yes (for 24×7 supply)</td><td>Yes (for 24×7 supply)</td></tr>
+<tr><td>Carbon Footprint</td><td>High (CO₂)</td><td>Near Zero</td><td>Near Zero</td></tr>
+<tr><td>Tariff Trend</td><td>Rising (fuel costs)</td><td>Falling (technology)</td><td>Falling</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="primer-card">
+<div class="primer-hdr">🪨 3. Why Coal Still Dominates India — Despite Cheaper Solar</div>
+<div class="primer-body">
+<p>Solar generation costs only ₹2–2.5/unit — cheaper than coal at ₹3–5/unit. Yet India continues to build coal plants and coal still generates ~70% of India's electricity. Here is why:</p>
+<p><strong>① The Despatchability Problem:</strong> When a hospital needs power at 2 AM, or factories run night shifts, or ACs run at 10 PM — solar gives zero output. Only coal, gas, nuclear, and hydro can be "dispatched" on command. India needs <em>baseload power</em> — always-on, guaranteed supply — and only coal fulfils this at scale today.</p>
+<p><strong>② India's Peak Demand is in the EVENING:</strong> Solar peaks at noon. But India's electricity demand peaks between 6–10 PM (cooking, lighting, cooling after sunset). This fundamental timing mismatch means solar alone cannot serve India's most critical demand period without battery storage.</p>
+<p><strong>③ Battery Storage is Still Expensive:</strong> To store solar energy for 4–6 hours of evening peak use costs an additional ₹3–4/unit. This makes Round-the-Clock solar competitive with coal only in the near future — not yet today at full scale.</p>
+<p><strong>④ Solar CUF is only ~22%:</strong> A 1,000 MW solar plant operates at only 22% capacity on average — it produces only 220 MW of effective output. You need ~4.5 times more installed solar capacity to deliver the same effective power as 1 GW of coal running at 70% PLF.</p>
+<p><strong>⑤ New Efficient Coal Plants Compete:</strong> NTPC's ultra-supercritical coal plants achieve 40%+ efficiency — lower emissions and lower costs. India has 100+ GW of new coal under construction or planned for 2030 completion.</p>
+<p><strong>⑥ Political Economy:</strong> Coal mining employs ~5 lakh workers. States like Jharkhand, Chhattisgarh, Odisha depend on coal royalties for state revenues. No government can phase out coal rapidly.</p>
+<div class="note-block">📌 <strong>Investor Implication:</strong> Coal (NTPC, Adani Power) remains profitable for 20+ years. Renewable companies (Suzlon, JSW Energy, Tata Power RE) are the growth story — but the transition is gradual. The FDRE/RTC (Firm Dispatchable Renewable Energy) hybrid model — combining solar + wind + storage — is the bridge that will eventually challenge coal dominance. Suzlon, JSW, and Tata Power are positioned to win this transition.</div>
+</div>
+</div>
+
+<div class="primer-card">
+<div class="primer-hdr">🏭 4. Power Business Models — How Companies Make Money</div>
+<div class="primer-body">
+<table class="ptbl">
+<thead><tr><th>Business Model</th><th>Description</th><th>Revenue Type</th><th>Risk</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><strong>PPA Generation</strong></td><td>25-year contract to supply fixed power at fixed tariff to discoms</td><td>Annuity — fixed, predictable</td><td>🟢 Low</td><td>NTPC, Adani Power (~95%), Tata Power</td></tr>
+<tr><td><strong>Merchant Power</strong></td><td>Sell on open IEX exchange at spot market price</td><td>Volatile market price</td><td>🔴 High</td><td>Adani Power (5%), Torrent (some)</td></tr>
+<tr><td><strong>Regulated Utility</strong></td><td>CERC/SERC fixes tariff with guaranteed ~15.5% ROE</td><td>Regulated — assured returns</td><td>🟢 Very Low</td><td>Power Grid, NTPC T&D, CESC</td></tr>
+<tr><td><strong>EPC / Turnkey</strong></td><td>Build solar/wind farms for others on contract</td><td>Project-based margin</td><td>🟡 Medium</td><td>Tata Power Solar, AESL EPC</td></tr>
+<tr><td><strong>OMS / O&M Services</strong></td><td>Operate and maintain wind/solar farms for annual fee</td><td>Annuity fee income</td><td>🟢 Low</td><td>Suzlon OMS (~20,000 MW base)</td></tr>
+<tr><td><strong>Distribution (Licensed)</strong></td><td>Buy bulk power, distribute to retail consumers in licensed territory</td><td>T&D spread + regulated tariff</td><td>🟢 Low-Medium</td><td>Tata Power Odisha, CESC, Torrent, AESL</td></tr>
+<tr><td><strong>Transmission (CERC)</strong></td><td>Build and operate HV transmission lines; CERC pays regulated tariff</td><td>Regulated — very stable</td><td>🟢 Very Low</td><td>Power Grid, AESL</td></tr>
+
+<tr><td><strong>WTG Manufacturing</strong></td><td>Manufacture and sell wind turbine generators</td><td>Order-based revenue</td><td>🟡 Medium</td><td>Suzlon, Inox Wind</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="primer-card">
+<div class="primer-hdr">📐 5. Key Metrics Every Power Investor Must Know</div>
+<div class="primer-body">
+<table class="ptbl">
+<thead><tr><th>Metric</th><th>Meaning</th><th>Good Benchmark</th><th>Why It Matters</th></tr></thead>
+<tbody>
+<tr><td><strong>PLF</strong> (Plant Load Factor)</td><td>How much of thermal capacity is actually used (%)</td><td>&gt;75% excellent; India avg ~63%</td><td>NTPC 72.04% vs India 63.2% = NTPC earns more from same asset</td></tr>
+<tr><td><strong>CUF</strong> (Capacity Utilisation Factor)</td><td>Same as PLF for renewable plants</td><td>Solar ~22%; Wind ~30%</td><td>Higher = more energy per GW installed</td></tr>
+<tr><td><strong>AT&C Loss</strong></td><td>Distribution loss from theft + technical inefficiency</td><td>&lt;12% excellent; some discoms 30%+</td><td>Tata Power Odisha PAT +84% = massive AT&C improvement</td></tr>
+<tr><td><strong>EBITDA Margin</strong></td><td>Operating profitability before interest, tax, depreciation</td><td>Transmission 75–85%; Thermal 30–40%</td><td>Core profitability before capital structure effects</td></tr>
+<tr><td><strong>D/EBITDA Ratio</strong></td><td>Net Debt ÷ EBITDA = years of earnings to repay debt</td><td>&lt;3x safe; &gt;5x risky</td><td>JSW Energy at 5.2x = elevated; Adani Power unlevered = safest</td></tr>
+<tr><td><strong>PPA Coverage %</strong></td><td>% of capacity under long-term contracts vs spot market</td><td>&gt;80% safe</td><td>Adani Power 95% PPA = earnings certainty; merchant = volatility</td></tr>
+<tr><td><strong>IEX Merchant Price</strong></td><td>India Energy Exchange Day-Ahead spot price for power</td><td>₹3.5–5/unit typical</td><td>Fell 13.7% to ₹3.86/unit in FY26 — hurt all merchant-exposed players</td></tr>
+<tr><td><strong>FDRE / RTC</strong></td><td>Firm Dispatchable Renewable / Round-the-Clock power</td><td>Hybrid Solar+Wind+Storage</td><td>Next big tender category — premium tariff for guaranteed RE supply</td></tr>
+<tr><td><strong>MMSCM</strong></td><td>Million Metric Standard Cubic Metres — gas volume unit</td><td>—</td><td>Key for CGD companies)</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div><!-- end panel-primer -->
+<!-- ===== DASHBOARD ===== -->
+<div id="panel-dashboard" class="panel active">
+<div class="sec-hdr">⚡ Power Sector Pulse <span class="sec-note">Q4 FY26 — All 9 Companies at a glance</span></div>
+<div class="green-block">🌱 <strong>Q4 FY26 Theme:</strong> Summer demand revival (+1.6% YoY to 422 BU). Merchant IEX prices fell 13.7% — headwind for spot-exposed players. NTPC, Adani Power, JSW delivered standout results. Torrent's -70% PAT is a base-effect mirage. AESL commissioned India's only private-sector HVDC. Suzlon Q4 PAT ₹1,114 Cr (+150% QoQ), FY26 PAT ₹3,163 Cr (+53% — record).</div>
+<div class="kpi-r">
+  <div class="kpi ap-a"><div class="kl">Adani Power Q4 PAT</div><div class="kv">₹4,271 Cr</div><div class="kc pos">▲64% YoY</div></div>
+  <div class="kpi ntpc-a"><div class="kl">NTPC Q4 PAT (Cons.)</div><div class="kv">₹10,615 Cr</div><div class="kc pos">▲34% YoY</div></div>
+  <div class="kpi tp-a"><div class="kl">Tata Power Q4 PAT</div><div class="kv">₹1,416 Cr</div><div class="kc pos">▲8% YoY</div></div>
+  <div class="kpi jsw-a"><div class="kl">JSW Energy Q4 PAT</div><div class="kv">₹574 Cr</div><div class="kc pos">▲38% YoY</div></div>
+  <div class="kpi cesc-a"><div class="kl">CESC Q4 PAT</div><div class="kv">₹459 Cr</div><div class="kc pos">▲19% YoY</div></div>
+</div>
+<div class="kpi-r">
+  <div class="kpi tor-a"><div class="kl">Torrent Q4 PAT</div><div class="kv">₹318 Cr</div><div class="kc neg">▼70%* Base Effect</div></div>
+  <div class="kpi pg-a"><div class="kl">Power Grid Q4 PAT</div><div class="kv">₹4,546 Cr</div><div class="kc pos">▲9.7% YoY</div></div>
+  <div class="kpi sz-a"><div class="kl">Suzlon Q4 PAT</div><div class="kv">₹1,114 Cr</div><div class="kc pos">▲150% QoQ · -5.7% YoY</div></div>
+  <div class="kpi aesl-a"><div class="kl">AESL Q4 Rep. PAT</div><div class="kv">₹684 Cr</div><div class="kc pos">▲6% Rep. / +28% Adj.</div></div>
+</div>
+<div class="kpi-r4">
+  <div class="kpi ntpc-a"><div class="kl">NTPC FY26 SA PAT</div><div class="kv">₹23,162 Cr</div><div class="kc pos">▲18% · All-Time High</div></div>
+  <div class="kpi tp-a"><div class="kl">Tata Power FY26 PAT</div><div class="kv">₹5,118 Cr</div><div class="kc pos">▲7% · All-Time High</div></div>
+  <div class="kpi jsw-a"><div class="kl">JSW FY26 Revenue</div><div class="kv">₹18,901 Cr</div><div class="kc pos">▲61% · Record</div></div>
+  <div class="kpi ap-a"><div class="kl">Adani Power FY26 PAT</div><div class="kv">₹12,971 Cr</div><div class="kc pos">▲2% · Biggest Private</div></div>
+</div>
+<div class="note-block">⚠️ <strong>Do Not Be Fooled:</strong> Torrent -70% = pure base effect (Q4 FY25 had ₹637 Cr one-time deferred tax reversal). Underlying EBITDA is flat. | Adani Power +64% PAT partly aided by lower tax provisions + ₹930 Cr prior-period revenue recognition; Continuing EBITDA +9% = real measure. | </div>
+<div class="sec-hdr gap-top">🗺️ Company Snapshot — All 9</div>
+<div class="g3">
+  <div class="co-card ntpc"><div class="co-name">NTPC Ltd.</div><div class="co-seg">PSU Thermal · NGEL Renewables · India's Largest</div><div class="m-row"><span class="m-lbl">Q4 PAT (Cons.)</span><span class="m-val pos">₹10,615 Cr (+34%)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT (SA)</span><span class="m-val pos">₹23,162 Cr (+18% ATH)</span></div><div class="m-row"><span class="m-lbl">Coal PLF</span><span class="m-val pos">72.04% vs India 63.2%</span></div><div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val pos">₹9/share</span></div><div class="badge-row"><span class="badge b-buy">BUY</span><span class="badge b-pos">PSU Darling</span></div></div>
+  <div class="co-card adanipower"><div class="co-name">Adani Power</div><div class="co-seg">India's Largest Private Thermal Generator</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹4,271 Cr (+64%†)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹12,971 Cr</span></div><div class="m-row"><span class="m-lbl">PPA Coverage</span><span class="m-val pos">~95% of capacity</span></div><div class="m-row"><span class="m-lbl">Expansion Pipeline</span><span class="m-val">23.7 GW underway</span></div><div class="badge-row"><span class="badge b-buy">STRONG BUY</span><span class="badge b-pos">Unlevered</span></div></div>
+  <div class="co-card tatapower"><div class="co-name">Tata Power</div><div class="co-seg">Integrated · RE · T&amp;D · Rooftop Solar · Solar Mfg</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹1,416 Cr (+8%)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹5,118 Cr (ATH)</span></div><div class="m-row"><span class="m-lbl">Rooftop Solar</span><span class="m-val pos">#1 for 11 years</span></div><div class="m-row"><span class="m-lbl">RE Portfolio</span><span class="m-val">11.6 GW (incl. pipeline)</span></div><div class="badge-row"><span class="badge b-buy">BUY</span><span class="badge b-pos">Diversified</span></div></div>
+  <div class="co-card jsw"><div class="co-name">JSW Energy</div><div class="co-seg">Thermal + Renewables · O2 Power Integration</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹574 Cr (+38%)</span></div><div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">₹18,901 Cr (+61%)</span></div><div class="m-row"><span class="m-lbl">Capacity</span><span class="m-val">13.45 GW</span></div><div class="m-row"><span class="m-lbl">Net Debt</span><span class="m-val warn">₹65,834 Cr (D/E 2.1x)</span></div><div class="badge-row"><span class="badge b-buy">BUY</span><span class="badge b-watch">Debt Watch</span></div></div>
+  <div class="co-card suzlon"><div class="co-name">Suzlon Energy</div><div class="co-seg">Wind WTG Manufacturing · OMS · India Wind #1</div><div class="m-row"><span class="m-lbl">Q4 PAT (est.)</span><span class="m-val pos">₹1,114 Cr (-5.7% YoY)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT (est.)</span><span class="m-val pos">₹3,163 Cr (+53% Record)</span></div><div class="m-row"><span class="m-lbl">Debt</span><span class="m-val pos">Near Zero</span></div><div class="m-row"><span class="m-lbl">Order Book</span><span class="m-val pos">Record FY26</span></div><div class="badge-row"><span class="badge b-buy">BUY</span><span class="badge b-pos">Zero Debt</span></div></div>
+  <div class="co-card torrent"><div class="co-name">Torrent Power</div><div class="co-seg">Gas Generation · Distribution · Renewables</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">₹318 Cr (Base Effect)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹2,469 Cr</span></div><div class="m-row"><span class="m-lbl">RE Pipeline</span><span class="m-val pos">₹27,830 Cr committed</span></div><div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val pos">₹20/share</span></div><div class="badge-row"><span class="badge b-hold">HOLD</span><span class="badge b-pos">₹20 Dividend</span></div></div>
+  <div class="co-card cesc"><div class="co-name">CESC Ltd.</div><div class="co-seg">Distribution · Generation · Kolkata Utility</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹459 Cr (+19%)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹1,618 Cr (+13%)</span></div><div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">₹18,570 Cr (+9%)</span></div><div class="m-row"><span class="m-lbl">Top Pick</span><span class="m-val pos">Nuvama &amp; Mirae</span></div><div class="badge-row"><span class="badge b-buy">BUY</span><span class="badge b-pos">9x PE · Cheapest</span></div></div>
+  <div class="co-card powergrid"><div class="co-name">Power Grid Corp.</div><div class="co-seg">Maharatna · Transmission · CERC Regulated</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹4,546 Cr (+9.7%)</span></div><div class="m-row"><span class="m-lbl">Network</span><span class="m-val">1,84,960+ circuit km</span></div><div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val pos">75%</span></div><div class="m-row"><span class="m-lbl">Annual Dividend</span><span class="m-val pos">₹9/share FY26</span></div><div class="badge-row"><span class="badge b-buy">BUY</span><span class="badge b-pos">Defensive Income</span></div></div>
+  <div class="co-card aesl"><div class="co-name">Adani Energy Solutions</div><div class="co-seg">Transmission · Distribution · Smart Metering</div><div class="m-row"><span class="m-lbl">Q4 Rep. PAT</span><span class="m-val pos">₹684 Cr (+6%); Adj. +28%</span></div><div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val pos">₹8,726 Cr (+12.7%)</span></div><div class="m-row"><span class="m-lbl">Network</span><span class="m-val">27,949 circuit km</span></div><div class="m-row"><span class="m-lbl">Smart Meters Installed</span><span class="m-val pos">1 Crore+ FY26</span></div></div>
+</div>
+</div><!-- end panel-dashboard -->
+<!-- ===== SEGMENTS & CAPACITY ===== -->
+<div id="panel-segments" class="panel">
+<div class="sec-hdr">🏭 Business Segments &amp; Capacity — All 9 Companies <span class="sec-note">What each company actually does, how big, and which verticals drive revenue</span></div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">🏛️ NTPC — Business Verticals</div>
+<div class="g4">
+  <div class="card"><div class="card-lbl">Thermal Generation</div><span class="seg-tag seg-thermal">Thermal</span><div class="m-row"><span class="m-lbl">Installed Capacity</span><span class="m-val pos">~60 GW+ thermal</span></div><div class="m-row"><span class="m-lbl">Coal PLF FY26</span><span class="m-val pos">72.04% (India: 63.2%)</span></div><div class="m-row"><span class="m-lbl">Annual Generation</span><span class="m-val">~400+ BU/year</span></div><div class="m-row"><span class="m-lbl">Key Plants</span><span class="m-val">Vindhyachal, Singrauli, Korba, Rihand</span></div></div>
+  <div class="card"><div class="card-lbl">NTPC Green Energy (NGEL)</div><span class="seg-tag seg-renew">Renewables</span><div class="m-row"><span class="m-lbl">Installed RE</span><span class="m-val pos">10,516 MW</span></div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹94 Cr</span></div><div class="m-row"><span class="m-lbl">Fundraise Approved</span><span class="m-val pos">₹5,000 Cr NCD</span></div><div class="m-row"><span class="m-lbl">JV</span><span class="m-val">CtrlS Datacenters (Power+Data)</span></div></div>
+  <div class="card"><div class="card-lbl">Hydro &amp; JVs</div><span class="seg-tag seg-renew">Hydro</span><div class="m-row"><span class="m-lbl">JV Profits FY26</span><span class="m-val pos">₹2,864 Cr (+29%)</span></div><div class="m-row"><span class="m-lbl">Subsidiary PAT</span><span class="m-val pos">₹3,312 Cr</span></div><div class="m-row"><span class="m-lbl">Captive Coal Mines</span><span class="m-val pos">7+ MMT/quarter</span></div></div>
+  <div class="card"><div class="card-lbl">Financials Summary</div><div class="m-row"><span class="m-lbl">FY26 SA PAT</span><span class="m-val pos">₹23,162 Cr ATH</span></div><div class="m-row"><span class="m-lbl">Book Value/Share</span><span class="m-val pos">₹210 (from ₹190)</span></div><div class="m-row"><span class="m-lbl">D/E Ratio</span><span class="m-val pos">1.32 (improved)</span></div><div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val pos">₹9/share total</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">🔥 Adani Power — Business Verticals</div>
+<div class="g4">
+  <div class="card"><div class="card-lbl">Thermal Generation</div><span class="seg-tag seg-thermal">Thermal</span><div class="m-row"><span class="m-lbl">Operational Capacity</span><span class="m-val pos">~15.2 GW</span></div><div class="m-row"><span class="m-lbl">PLF Q4 FY26</span><span class="m-val">74.0%</span></div><div class="m-row"><span class="m-lbl">Annual Generation</span><span class="m-val">105 BU FY26</span></div><div class="m-row"><span class="m-lbl">Key Plants</span><span class="m-val">Mundra, Tiroda, Kawai, Udupi, Mahan</span></div></div>
+  <div class="card"><div class="card-lbl">PPA Portfolio</div><div class="m-row"><span class="m-lbl">PPA Coverage</span><span class="m-val pos">~95% capacity</span></div><div class="m-row"><span class="m-lbl">Q4 New PPAs</span><span class="m-val pos">Maharashtra 1,600 MW</span></div><div class="m-row"><span class="m-lbl">Tamil Nadu PPA</span><span class="m-val pos">558 MW signed</span></div><div class="m-row"><span class="m-lbl">Tied-up Expansion</span><span class="m-val pos">13.3 GW under PPA</span></div></div>
+  <div class="card"><div class="card-lbl">Expansion Pipeline</div><div class="m-row"><span class="m-lbl">Total Pipeline</span><span class="m-val pos">23.7 GW</span></div><div class="m-row"><span class="m-lbl">Land Acquired</span><span class="m-val pos">100%</span></div><div class="m-row"><span class="m-lbl">Equipment Ordered</span><span class="m-val pos">100%</span></div><div class="m-row"><span class="m-lbl">Balance Sheet</span><span class="m-val pos">Unlevered — self-funded</span></div></div>
+  <div class="card"><div class="card-lbl">Financials Summary</div><div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val pos">₹5,573 Cr (+9%)</span></div><div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val pos">₹23,431 Cr</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹12,971 Cr (+2%)</span></div><div class="m-row"><span class="m-lbl">ESG Rating</span><span class="m-val pos">80/100 CareEdge (top)</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">⚡ Tata Power — Business Verticals</div>
+<div class="g4">
+  <div class="card"><div class="card-lbl">Renewables (Solar + Wind)</div><span class="seg-tag seg-renew">RE</span><div class="m-row"><span class="m-lbl">Portfolio (incl. pipeline)</span><span class="m-val pos">11.6 GW</span></div><div class="m-row"><span class="m-lbl">Commissioned FY26</span><span class="m-val pos">2.5 GW</span></div><div class="m-row"><span class="m-lbl">FY26 RE PAT</span><span class="m-val pos">₹1,994 Cr (+59%)</span></div><div class="m-row"><span class="m-lbl">Target</span><span class="m-val pos">15 GW by FY27</span></div></div>
+  <div class="card"><div class="card-lbl">Transmission &amp; Distribution</div><span class="seg-tag seg-trans">T&amp;D</span><div class="m-row"><span class="m-lbl">Odisha Discoms PAT</span><span class="m-val pos">₹809 Cr (+84%)</span></div><div class="m-row"><span class="m-lbl">Mumbai, Delhi, Ajmer</span><span class="m-val">Distribution licences</span></div><div class="m-row"><span class="m-lbl">FY26 T&amp;D PAT</span><span class="m-val pos">₹2,978 Cr (+49%)</span></div></div>
+  <div class="card"><div class="card-lbl">Rooftop Solar &amp; Solar Mfg</div><span class="seg-tag seg-solar">Rooftop</span><div class="m-row"><span class="m-lbl">Installations FY26</span><span class="m-val pos">3.7 lakh+ (1.7 GWp)</span></div><div class="m-row"><span class="m-lbl">Rank</span><span class="m-val pos">#1 India for 11 years</span></div><div class="m-row"><span class="m-lbl">TP Solar (Mfg)</span><span class="m-val pos">4 GW cell+module</span></div><div class="m-row"><span class="m-lbl">EV Charging</span><span class="m-val pos">Growing network</span></div></div>
+  <div class="card"><div class="card-lbl">Thermal + Bhutan Hydro</div><span class="seg-tag seg-thermal">Thermal</span><div class="m-row"><span class="m-lbl">Mundra UMPP</span><span class="m-val warn">4,000 MW (drag, SPPA ongoing)</span></div><div class="m-row"><span class="m-lbl">Trombay, Jojobera</span><span class="m-val">~2,000 MW</span></div><div class="m-row"><span class="m-lbl">Bhutan Hydro (DGPC)</span><span class="m-val pos">5,000+ MW pipeline</span></div><div class="m-row"><span class="m-lbl">FY26 Div.</span><span class="m-val">₹2.50/share</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">🌿 JSW Energy — Business Verticals</div>
+<div class="g4">
+  <div class="card"><div class="card-lbl">Thermal Generation</div><span class="seg-tag seg-thermal">Thermal</span><div class="m-row"><span class="m-lbl">Q4 Thermal Revenue</span><span class="m-val pos">₹3,346 Cr</span></div><div class="m-row"><span class="m-lbl">Plants</span><span class="m-val">Vijayanagar, Toranagallu</span></div><div class="m-row"><span class="m-lbl">PLF</span><span class="m-val">Improving</span></div></div>
+  <div class="card"><div class="card-lbl">Renewables (O2 Power + Organic)</div><span class="seg-tag seg-renew">RE</span><div class="m-row"><span class="m-lbl">O2 Power Acquired</span><span class="m-val pos">2.6 GW (FY26)</span></div><div class="m-row"><span class="m-lbl">Q4 RE Revenue</span><span class="m-val pos">₹1,142 Cr</span></div><div class="m-row"><span class="m-lbl">Total Capacity</span><span class="m-val pos">13.45 GW</span></div><div class="m-row"><span class="m-lbl">FY30 Target</span><span class="m-val pos">20 GW (Strategy 3.0)</span></div></div>
+  <div class="card"><div class="card-lbl">Storage (Emerging)</div><div class="m-row"><span class="m-lbl">Grid-Scale Battery</span><span class="m-val pos">Developing</span></div><div class="m-row"><span class="m-lbl">Pumped Hydro</span><span class="m-val pos">Pipeline projects</span></div><div style="font-size:10px;color:var(--muted);margin-top:6px;">Storage is JSW's next growth vertical — critical for FDRE/RTC tenders.</div></div>
+  <div class="card"><div class="card-lbl">Financials Summary</div><div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val pos">₹2,602 Cr (+72%)</span></div><div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">₹18,901 Cr (+61%)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹2,762 Cr (Record)</span></div><div class="m-row"><span class="m-lbl">Net Debt</span><span class="m-val warn">₹65,834 Cr (D/E 2.1x)</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">💨 Suzlon — Business Verticals</div>
+<div class="g4">
+  <div class="card"><div class="card-lbl">WTG Manufacturing</div><span class="seg-tag seg-wind">Wind</span><div class="m-row"><span class="m-lbl">Key Models</span><span class="m-val">S120, S144, S175 (5MW)</span></div><div class="m-row"><span class="m-lbl">Blue Sky Platform</span><span class="m-val pos">5MW S175 + 6.3MW S163</span></div><div class="m-row"><span class="m-lbl">Market</span><span class="m-val pos">India #1 WTG Manufacturer</span></div><div class="m-row"><span class="m-lbl">FY26 Largest Order</span><span class="m-val pos">838 MW (Tata Power RE)</span></div></div>
+  <div class="card"><div class="card-lbl">OMS — Operations &amp; Maintenance</div><span class="seg-tag seg-oandm">O&amp;M</span><div class="m-row"><span class="m-lbl">Installed Base under OMS</span><span class="m-val pos">20,000+ MW</span></div><div class="m-row"><span class="m-lbl">Revenue Type</span><span class="m-val pos">Annuity — recurring</span></div><div style="font-size:10px;color:var(--muted);margin-top:5px;">OMS is Suzlon's annuity engine — customers who buy Suzlon turbines rely on Suzlon for maintenance. Very sticky revenue.</div></div>
+  <div class="card"><div class="card-lbl">Foundry &amp; Forging</div><div class="m-row"><span class="m-lbl">Products</span><span class="m-val">Castings &amp; forgings for WTG</span></div><div class="m-row"><span class="m-lbl">Supply</span><span class="m-val">Captive + external sales</span></div><div class="m-row"><span class="m-lbl">Revenue %</span><span class="m-val">Small but profitable</span></div></div>
+  <div class="card"><div class="card-lbl">International Expansion</div><div class="m-row"><span class="m-lbl">Blue Sky Launch</span><span class="m-val pos">WindEurope 2026, Madrid</span></div><div class="m-row"><span class="m-lbl">S175 — 5MW</span><span class="m-val">Low wind regime markets</span></div><div class="m-row"><span class="m-lbl">S163 — 6.3MW</span><span class="m-val">Moderate-high wind</span></div><div class="m-row"><span class="m-lbl">President — Europe</span><span class="m-val">Paulo Soares (Jan 2026)</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">🌊 Torrent Power — Business Verticals</div>
+<div class="g4">
+  <div class="card"><div class="card-lbl">Licensed Distribution</div><span class="seg-tag seg-distrib">Distribution</span><div class="m-row"><span class="m-lbl">Licence Areas</span><span class="m-val pos">Ahmedabad, Surat, Gandhinagar</span></div><div class="m-row"><span class="m-lbl">Consumers</span><span class="m-val">Millions (monopoly)</span></div><div class="m-row"><span class="m-lbl">Q4 Rev (Distrib.)</span><span class="m-val pos">₹5,830 Cr (dominant share)</span></div></div>
+  <div class="card"><div class="card-lbl">Gas-Based Generation</div><span class="seg-tag seg-gas">Gas</span><div class="m-row"><span class="m-lbl">Status</span><span class="m-val neg">Constrained (high gas cost)</span></div><div class="m-row"><span class="m-lbl">Q4 Gen. Revenue</span><span class="m-val neg">₹1,246 Cr (declining)</span></div><div style="font-size:10px;color:var(--muted);margin-top:5px;">Gas peaker plants underutilised — gas at ₹50–60/MMBTU makes economics difficult vs solar.</div></div>
+  <div class="card"><div class="card-lbl">Renewables Pipeline</div><span class="seg-tag seg-renew">RE</span><div class="m-row"><span class="m-lbl">Current Installed</span><span class="m-val">~5.1 GWp</span></div><div class="m-row"><span class="m-lbl">Committed Capex</span><span class="m-val pos">₹27,830 Cr</span></div><div class="m-row"><span class="m-lbl">Target Capacity</span><span class="m-val pos">10.6 GWp (FY27–28)</span></div><div class="m-row"><span class="m-lbl">NCD Raised</span><span class="m-val">₹10,000 Cr approved</span></div></div>
+  <div class="card"><div class="card-lbl">Nabha Power + Financials</div><div class="m-row"><span class="m-lbl">Nabha Power Acquired</span><span class="m-val pos">Thermal addition</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹2,469 Cr</span></div><div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹28,966 Cr</span></div><div class="m-row"><span class="m-lbl">Dividend</span><span class="m-val pos">₹20/share FY26</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">🏙️ CESC — Business Verticals</div>
+<div class="g3">
+  <div class="card"><div class="card-lbl">Power Generation</div><span class="seg-tag seg-thermal">Thermal</span><div class="m-row"><span class="m-lbl">Own Generation</span><span class="m-val">~1,225 MW (coal)</span></div><div class="m-row"><span class="m-lbl">Key Plant</span><span class="m-val">Budge Budge, Southern</span></div><div class="m-row"><span class="m-lbl">Captive Supply</span><span class="m-val pos">To own distribution</span></div></div>
+  <div class="card"><div class="card-lbl">Distribution (Kolkata + New)</div><span class="seg-tag seg-distrib">Distribution</span><div class="m-row"><span class="m-lbl">Kolkata Franchise</span><span class="m-val pos">100+ year legacy</span></div><div class="m-row"><span class="m-lbl">New Distribution Circles</span><span class="m-val pos">Expanding beyond Kolkata</span></div><div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val pos">₹18,570 Cr (+9%)</span></div></div>
+  <div class="card"><div class="card-lbl">Financials Summary</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹459 Cr (+19%)</span></div><div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">₹1,618 Cr (+13%)</span></div><div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val pos">₹4,707 Cr</span></div><div class="m-row"><span class="m-lbl">Valuation</span><span class="m-val pos">~9x P/E (cheapest in sector)</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">🔌 Power Grid — Business Verticals</div>
+<div class="g3">
+  <div class="card"><div class="card-lbl">Inter-State Transmission</div><span class="seg-tag seg-trans">Transmission</span><div class="m-row"><span class="m-lbl">Network</span><span class="m-val pos">1,84,960+ circuit km</span></div><div class="m-row"><span class="m-lbl">Substations</span><span class="m-val">291+</span></div><div class="m-row"><span class="m-lbl">System Availability</span><span class="m-val pos">>99.84%</span></div><div class="m-row"><span class="m-lbl">Green Energy Corridors</span><span class="m-val pos">Under construction</span></div></div>
+  <div class="card"><div class="card-lbl">Telecom &amp; Consultancy</div><div class="m-row"><span class="m-lbl">OPGW Telecom</span><span class="m-val">Revenue ₹303 Cr Q4 FY25</span></div><div class="m-row"><span class="m-lbl">Consultancy</span><span class="m-val pos">₹518 Cr Q4 FY25 (+120%)</span></div><div style="font-size:10px;color:var(--muted);margin-top:5px;">Telecom and consultancy are small but growing segments on existing infrastructure.</div></div>
+  <div class="card"><div class="card-lbl">Financials Summary</div><div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">₹4,546 Cr (+9.7%)</span></div><div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val pos">~75%</span></div><div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val pos">₹9/share total</span></div><div class="m-row"><span class="m-lbl">Revenue Model</span><span class="m-val pos">CERC regulated tariff</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">🔷 AESL (Adani Energy Solutions) — Business Verticals</div>
+<div class="g4">
+  <div class="card"><div class="card-lbl">Power Transmission</div><span class="seg-tag seg-trans">Transmission</span><div class="m-row"><span class="m-lbl">Network</span><span class="m-val pos">27,949 circuit km</span></div><div class="m-row"><span class="m-lbl">System Availability</span><span class="m-val pos">99.77%</span></div><div class="m-row"><span class="m-lbl">Mumbai HVDC</span><span class="m-val pos">Commissioned Q4 FY26</span></div><div class="m-row"><span class="m-lbl">HVDC Projects</span><span class="m-val pos">2 completed — India private first</span></div></div>
+  <div class="card"><div class="card-lbl">Power Distribution (Mumbai)</div><span class="seg-tag seg-distrib">Distribution</span><div class="m-row"><span class="m-lbl">Consumers</span><span class="m-val pos">13 million+ in Mumbai</span></div><div class="m-row"><span class="m-lbl">Operating EBITDA Margin</span><span class="m-val pos">~92% (regulated)</span></div><div class="m-row"><span class="m-lbl">AT&amp;C Loss Trend</span><span class="m-val pos">Improving YoY</span></div></div>
+  <div class="card"><div class="card-lbl">Smart Metering (AMI)</div><div class="m-row"><span class="m-lbl">Installed FY26</span><span class="m-val pos">1 Crore+ meters</span></div><div class="m-row"><span class="m-lbl">Order Book</span><span class="m-val pos">24.6 million units</span></div><div class="m-row"><span class="m-lbl">Revenue Potential</span><span class="m-val pos">₹29,519 Cr</span></div><div class="m-row"><span class="m-lbl">Timeline</span><span class="m-val">3–5 years execution</span></div></div>
+  <div class="card"><div class="card-lbl">EPC &amp; New Projects</div><div class="m-row"><span class="m-lbl">Under Construction</span><span class="m-val pos">13 projects ₹71,779 Cr</span></div><div class="m-row"><span class="m-lbl">FY26 Capex</span><span class="m-val">₹14,232 Cr (+24%)</span></div><div class="m-row"><span class="m-lbl">Tender Pipeline</span><span class="m-val pos">₹1.5 lakh Cr near-term</span></div><div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val pos">₹8,726 Cr (+12.7%)</span></div></div>
+</div>
+
+<div class="sec-hdr gap-top" style="font-size:1rem;border:none;padding-bottom:0;">📊 Installed/Target Capacity Comparison</div>
+<div class="card">
+  <div class="card-lbl">Power Generation Capacity — Key Players</div>
+  <div class="cap-row"><div class="cap-lbl"><span><strong>NTPC Group</strong></span><span>~75 GW total (thermal + NGEL RE)</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:100%;background:var(--ntpc);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>Adani Power</span><span>~15.2 GW operational | 23.7 GW expansion pipeline</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:28%;background:var(--adanipower);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>JSW Energy</span><span>13.45 GW operational | Target 20 GW by FY30</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:24%;background:var(--jsw);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>Adani Green Energy</span><span>10+ GW operational | Target 50 GW by 2030</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:18%;background:var(--adanigreen);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>Tata Power</span><span>~5 GW RE operational | 11.6 GW portfolio | Target 15 GW FY27</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:22%;background:var(--tatapower);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>Torrent Power</span><span>5.1 GWp current → 10.6 GWp (₹27,830 Cr RE pipeline)</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:13%;background:var(--torrent);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>Suzlon (OMS base)</span><span>~20,000+ MW installed base under OMS | ~5,000 MW FY26 new orders</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:37%;background:var(--suzlon);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>AESL Transmission</span><span>27,949 circuit km | 13 projects ₹71,779 Cr under construction</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:52%;background:var(--aesl);"></div></div></div>
+  <div class="cap-row"><div class="cap-lbl"><span>Power Grid</span><span>1,84,960+ circuit km | Green Energy Corridors building</span></div><div class="cap-bar-wrap"><div class="cap-bar" style="width:95%;background:var(--powergrid);"></div></div></div>
+</div>
+</div><!-- end panel-segments -->
+<!-- ===== FINANCIALS ===== -->
+<div id="panel-financials" class="panel">
+<div class="sec-hdr">📊 Financial Scorecard — Q4 &amp; FY26 All Companies<span class="sec-note">Actuals, estimates, and full-year figures</span></div>
+<div class="note-block">📌 Notes: †Adani Power Q4 reported revenue ₹15,989 Cr (+10% YoY); continuing revenue ₹15,059 Cr (+3.7%). Q4 EBITDA ₹6,498 Cr (+27%). *Torrent -70% = base effect (one-time DTL ₹637 Cr in Q4 FY25). Suzlon Q4 FY26 = audited actuals (declared 25 May 2026). NTPC Q4 revenue & FY26 revenue = consolidated. Power Grid Q4 revenue ₹11,667 Cr (standalone), PAT ₹4,546 Cr (consolidated, +9.7%). AESL Q4 PAT ₹684 Cr reported (+6%) / ₹723 Cr adjusted (+28%); FY26 ops revenue ₹18,296 Cr; total income ₹28,325 Cr. Power Grid analyst consensus estimates.</div>
+<table>
+<thead><tr><th>Company</th><th>Segment</th><th>Q4 Revenue (₹Cr)</th><th>Q4 Rev YoY</th><th>Q4 PAT</th><th>Q4 PAT YoY</th><th>Q4 EBITDA</th><th>EBITDA %</th><th>FY26 Revenue</th><th>FY26 PAT</th><th>FY26 YoY</th></tr></thead>
+<tbody>
+<tr><td class="tb" style="color:var(--ntpc)">NTPC</td><td>PSU Thermal+RE</td><td class="num">49,688</td><td class="tneg">-0.3%</td><td class="num">10,615*</td><td class="tpos">+34%</td><td class="num">High</td><td class="num">~25%+</td><td class="num">1,87,385</td><td class="num">23,162 SA</td><td class="tpos">+18% ATH</td></tr>
+<tr><td class="tb" style="color:var(--adanipower)">Adani Power</td><td>Private Thermal</td><td class="num">15,989†</td><td class="tpos">+10%</td><td class="num">4,271†</td><td class="tpos">+64%</td><td class="num">6,498</td><td class="num">~41%</td><td class="num">55,583</td><td class="num">12,971</td><td class="tpos">+2%</td></tr>
+<tr><td class="tb" style="color:var(--tatapower)">Tata Power</td><td>Integrated</td><td class="num">15,962</td><td class="tneg">-8%</td><td class="num">1,416</td><td class="tpos">+8%</td><td class="num">4,216</td><td class="num">~26%</td><td class="num">63,681</td><td class="num">5,118</td><td class="tpos">+7% ATH</td></tr>
+<tr><td class="tb" style="color:var(--jsw)">JSW Energy</td><td>Thermal+RE</td><td class="num">4,499</td><td class="tpos">+41%</td><td class="num">574</td><td class="tpos">+38%</td><td class="num">2,602</td><td class="num">~54%</td><td class="num">18,901</td><td class="num">2,762</td><td class="tpos">+39% ATH</td></tr>
+<tr><td class="tb" style="color:var(--suzlon)">Suzlon</td><td>Wind WTG+OMS</td><td class="num">5,468</td><td class="tpos">+45%</td><td class="num">1,114</td><td class="tneg">-5.7% YoY</td><td class="num">964</td><td class="num">17.6%</td><td class="num">16,679</td><td class="num">3,163</td><td class="tpos">+53% Record</td></tr>
+<tr><td class="tb" style="color:var(--torrent)">Torrent Power</td><td>Gas+Distrib+RE</td><td class="num">6,406</td><td class="tneg">-1%</td><td class="num">318</td><td class="tneg">-70%*</td><td class="num">1,220</td><td class="num">~19%</td><td class="num">28,966</td><td class="num">2,469</td><td class="num">Flat</td></tr>
+<tr><td class="tb" style="color:var(--cesc)">CESC</td><td>Distribution+Gen</td><td class="num">4,096</td><td class="tpos">+6%</td><td class="num">459</td><td class="tpos">+19%</td><td class="num">~1,100</td><td class="num">~27%</td><td class="num">18,570</td><td class="num">1,618</td><td class="tpos">+13%</td></tr>
+<tr><td class="tb" style="color:var(--powergrid)">Power Grid</td><td>Transmission PSU</td><td class="num">11,667</td><td class="tneg">-5%</td><td class="num">4,546</td><td class="tpos">+9.7%</td><td class="num">~8,770</td><td class="num">75%</td><td class="num">~46,996</td><td class="num">15,928</td><td class="num">Stable</td></tr>
+
+<tr><td class="tb" style="color:var(--aesl)">AESL</td><td>Trans+Distrib+AMI</td><td class="num">4,400</td><td class="tpos">+7%</td><td class="num">684</td><td class="tpos">+6% rep; +28% adj</td><td class="num">~2,372</td><td class="num">~28.8%</td><td class="num">18,296 ops</td><td class="num">FY26 EBITDA ₹8,726 Cr</td><td class="tpos">+12.7%</td></tr>
+
+</tbody>
+</table>
+</div><!-- end panel-financials -->
+
+<!-- ===== DEEP DIVE ===== -->
+<div id="panel-deepdive" class="panel">
+<div class="sec-hdr">🏢 Company Deep-Dive — All 9 Companies<span class="sec-note">Business model, performance, key highlights, investment thesis</span></div>
+
+
+<div class="ac-text"><strong>Q4 FY26 (est.):</strong> PAT ~₹297 Cr (-46% YoY). ROE: 3.2% — shockingly low for a company at 73x P/E. High debt-funded expansion. FY26: delivered 5 GW commissioning — claimed as global high for greenfield RE expansion. 10+ GW operational, 50 GW target by 2030. PAT declining because interest costs are rising faster than revenue growth as they fund massive capex via debt. <strong>Investment reality:</strong> The business is real but the price is wrong. You pay 73x earnings for a business with 3.2% ROE. For the same risk profile, Tata Power RE (growing +59% PAT) or JSW Energy (record PAT) offer better current earnings + comparable RE growth exposure. <strong>Thesis:</strong> Avoid fresh entry at current prices. Existing holders hold — the 50 GW story is long-term real. Wait for a meaningful correction (30–40%) before initiating new positions.</div>
+<div class="badge-row"><span class="badge b-neg">73x P/E</span><span class="badge b-neg">ROE 3.2%</span><span class="badge b-neg">PAT -46%</span><span class="seg-tag seg-solar">Solar</span><span class="seg-tag seg-wind">Wind</span></div></div>
+
+
+<div class="ac-text"><strong>Q4 FY26:</strong> Revenue ₹1,696 Cr (+16%); PAT ₹168 Cr (+9%); EBITDA ₹310 Cr (record quarterly, +13%). FY26: Total volumes 1,133 MMSCM (+14%); CNG 782 MMSCM (+18%); PNG 351 MMSCM (+6%). Q4 CNG volumes +17% YoY. Q4 new PNG connections: ~50,000 (highest-ever single quarter). Combined +IOAGPL network: 1,169 CNG stations + 13.1 lakh PNG homes. EV arm ATEL: 5,100 charge points across 26 states. CBG: 1,654 MT sold FY26. FOM: 1,500+ tons. FY27 guidance: EBITDA ~₹1,500 Cr. <strong>Challenges:</strong> LNG imports fell 16% YoY (March 2026). Gas pool price $12.42/MMBTU — elevated. INR depreciation ~5% FY26. Operating margin eroded from 25%→19% in 5 quarters = structural pressure. 109x P/E is extreme for a regulated CGD utility. <strong>Thesis:</strong> Good business (CGD licence = geographic monopoly), excellent volume growth (+14%), but 109x P/E leaves no margin for error. Wait for correction to ₹400–450 zone for value entry.</div>
+<div class="badge-row"><span class="badge b-pos">+17% CNG Volume</span><span class="badge b-pos">Record EBITDA</span><span class="badge b-neg">109x P/E</span><span class="badge b-neg">Margin Erosion</span><span class="seg-tag seg-gas">CNG/PNG</span><span class="seg-tag seg-renew">EV/CBG</span></div></div>
+</div><!-- end panel-deepdive -->
+<!-- ===== MOATS ===== -->
+<div id="panel-moats" class="panel">
+<div class="sec-hdr">🏰 Competitive Moats — All 9 Companies <span class="sec-note">What makes each business defensible and sustainable</span></div>
+<div class="blue-block">🔒 A <strong>moat</strong> is a sustainable competitive advantage that protects a company's earnings from competition — like a castle moat. In power, moats come from: government licences, irreplaceable infrastructure, technology leadership, regulatory relationships, and scale. Companies with deep moats deserve premium valuations; those without moats should be cheap.</div>
+<div class="g3">
+<div class="moat-card"><div class="moat-co" style="color:var(--ntpc)">NTPC</div><div class="moat-title">🏰 Irreplaceable Grid Anchor + Captive Coal</div><div class="moat-body">75+ GW cannot be replicated. CERC-guaranteed returns on thermal. Captive coal mines at ~₹800–1,000/tonne vs market ₹2,500+/tonne = massive cost moat. PSU status = government backing + lowest-cost debt access. Only entity with the scale to be India's grid backbone. NGEL = separate IPO'd RE entity for value unlocking.</div><div><span class="moat-tag" style="background:#fef2f2;color:#dc2626;">Regulatory Moat</span><span class="moat-tag" style="background:#dcfce7;color:#15803d;">Scale + Cost Moat</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--adanipower)">Adani Power</div><div class="moat-title">🏰 PPA Lock-In + Unlevered Expansion Engine</div><div class="moat-body">~95% of capacity tied to 25-year PPAs = zero off-take risk. Low-cost imported coal logistics expertise. 23.7 GW expansion is pre-tied with 13.3 GW in PPAs BEFORE construction — the moat deepens itself with each new PPA. Unlevered balance sheet = no refinancing risk, unlike leveraged RE peers. PLF efficiency: 74% vs industry.</div><div><span class="moat-tag" style="background:#fffbeb;color:#92400e;">PPA Lock-In Moat</span><span class="moat-tag" style="background:#dcfce7;color:#15803d;">Capital Moat</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--powergrid)">Power Grid</div><div class="moat-title">🏰 Regulated Monopoly on India's Grid Highway</div><div class="moat-body">1,84,960 circuit km = India's power superhighway. No private entity can build competing inter-state lines without CERC approval — structural monopoly. CERC guarantees 15.5% ROE on the regulated equity base. As new RE capacity is added, Power Grid MUST build more lines — automatic growth. 75–85% EBITDA margin. Closest to risk-free equity in Indian markets.</div><div><span class="moat-tag" style="background:#ecfeff;color:#0e7490;">Monopoly Moat</span><span class="moat-tag" style="background:#fef2f2;color:#dc2626;">Regulatory Guarantee</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--tatapower)">Tata Power</div><div class="moat-title">🏰 Tata Brand + Rooftop Network Effect + Odisha Scale</div><div class="moat-body">Tata brand creates premium consumer trust in distribution — customers pay bills more willingly, dispute less. Rooftop solar #1 for 11 consecutive years: 3.7L installations = a reference network that feeds itself (every happy customer refers others). Odisha Discoms: 12M consumers; once AT&C losses fall, the moat deepens structurally. TP Solar manufacturing = supply chain independence.</div><div><span class="moat-tag" style="background:#eff6ff;color:#1e40af;">Brand Moat</span><span class="moat-tag" style="background:#dcfce7;color:#15803d;">Network Effect</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--jsw)">JSW Energy</div><div class="moat-title">🏰 M&A Execution + Integrated Developer</div><div class="moat-body">JSW has demonstrated best-in-class M&A integration (O2 Power FY26 = 2.6 GW seamlessly added). Thermal + renewable + storage = fully integrated clean energy developer — rare in India. Strong promoter group (JSW Group ₹10 lakh Cr revenue) = financial backing. Cost of debt declining 67 bps/year = improving capital efficiency over time.</div><div><span class="moat-tag" style="background:#f0fdf4;color:#166534;">Integration Moat</span><span class="moat-tag" style="background:#fdf4ff;color:#6b21a8;">Promoter Moat</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--suzlon)">Suzlon</div><div class="moat-title">🏰 OMS Annuity Base + India Wind Technology Leadership</div><div class="moat-body">20,000+ MW of installed Suzlon turbines = captive OMS base. Customers who buy Suzlon turbines must use Suzlon for O&M because only Suzlon knows these specific machines intimately — an embedded annuity stream. Technology moat in low-wind regime sites (India-specific S120/S144 models). Net cash ₹2,384 Cr = financial moat against leveraged competitors. NCLT scheme cleared ₹18,418 Cr legacy losses — completely clean balance sheet.</div><div><span class="moat-tag" style="background:#f5f3ff;color:#7c3aed;">OMS Annuity Moat</span><span class="moat-tag" style="background:#f3f4f6;color:#374151;">Tech Moat</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--torrent)">Torrent Power</div><div class="moat-title">🏰 Perpetual Distribution Franchise</div><div class="moat-body">Government-granted perpetual licence to supply electricity in Ahmedabad, Surat, Gandhinagar — millions of captive consumers. Distribution licence is a state-granted local monopoly. AT&C losses are among India's lowest — operational excellence creates regulatory goodwill that perpetuates the franchise. High switching cost: consumers cannot choose a different electricity supplier.</div><div><span class="moat-tag" style="background:#ecfeff;color:#0e7490;">Franchise Moat</span><span class="moat-tag" style="background:#fdf4ff;color:#6b21a8;">Switching Cost</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--cesc)">CESC</div><div class="moat-title">🏰 100-Year Kolkata Franchise + Institutional Memory</div><div class="moat-body">CESC has operated Kolkata's electricity supply for over 100 years — the oldest active utility in India. This creates deep regulatory relationships, institutional knowledge, and a consumer base that has never known a different supplier. A century of asset maintenance knowledge and grid infrastructure cannot be replicated by new entrants. Expanding to new circles with same DNA.</div><div><span class="moat-tag" style="background:#fdf2f8;color:#be185d;">Legacy Moat</span><span class="moat-tag" style="background:#fdf4ff;color:#6b21a8;">Regulatory Moat</span></div></div>
+<div class="moat-title">🏰 Scale + Project Development Pipeline</div><div class="moat-body">Moat is weaker relative to other power companies — RE is competitive and solar/wind assets are replicable. However: world-scale 10+ GW operational base creates cost of debt advantage (lenders trust large operators). 50 GW land acquisitions and permits pipeline = option value. Long-term PPAs with SECI/NTPC. Moat is thin vs price being paid (73x P/E).</div><div><span class="moat-tag" style="background:#f0fdfa;color:#0f766e;">Scale (Thin Moat)</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--aesl)">AESL</div><div class="moat-title">🏰 HVDC Technical Capability + Smart Meter Ecosystem</div><div class="moat-body">Only Indian private company to have built TWO HVDC transmission projects — massive technical barrier to entry. 27,949 circuit km transmission built over 15 years = infrastructure moat. Smart metering: 1 crore+ installations create a hardware + software + connectivity ecosystem that takes years to build and is extremely sticky (utility doesn't switch metering vendors). 99.77% uptime = regulatory goodwill → incentive income.</div><div><span class="moat-tag" style="background:#fef3c7;color:#92400e;">HVDC Tech Moat</span><span class="moat-tag" style="background:#ecfeff;color:#0e7490;">Infrastructure Moat</span></div></div>
+<div class="moat-card"><div class="moat-co" style="color:var(--atgl)">ATGL</div><div class="moat-title">🏰 CGD Geographic Exclusivity + Last-Mile Infra</div><div class="moat-body">Government grants exclusive City Gas Distribution licences for 25 years per geographic zone. Once ATGL wins a CGD zone, no competitor can legally pipe gas in that area. The CNG stations (1,169) and PNG network (13.1L homes) take 10+ years to build — last-mile infra moat. TotalEnergies partnership brings global LNG sourcing intelligence and long-term gas supply contracts at competitive prices. Zero promoter pledging = governance strength.</div><div><span class="moat-tag" style="background:#eef2ff;color:#4338ca;">Licence Moat</span><span class="moat-tag" style="background:#fef3c7;color:#92400e;">Last-Mile Infra</span></div></div>
+</div><!-- end g3 -->
+</div><!-- end panel-moats -->
+<!-- ===== VALUATION & VERDICT ===== -->
+<div id="panel-valuation" class="panel">
+<div class="sec-hdr">💰 Valuation &amp; Verdicts — All 9 Companies <span class="sec-note">Final investment calls with reasoning</span></div>
+<div class="green-block">📊 <strong>Sector Valuation Context:</strong> Power sector trades at a premium to historical averages on India's energy transition narrative. Key split: (1) Regulated utilities (Power Grid, CESC, NTPC) — low risk, stable, predictable earnings; (2) Growth-stage leveraged players (JSW Energy, AESL) — growth priced in; execution risk elevated; (3) Thermal generators with high PPA coverage (Adani Power, NTPC) — strong earnings visibility. <em>This is for informational purposes only. Please consult a SEBI-registered investment advisor before making any decisions.</em></div>
+<div class="gap-top" id="ranking-table-wrapper">
+<div class="sec-hdr" style="font-size:1rem;">🏆 Master Investment Ranking Table</div>
+<div style="overflow-x:auto;">
+<div style="min-width:900px;">
+<!-- Header Row -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;background:#0a1a0f;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;border-radius:8px 8px 0 0;padding:0;">
+  <div style="padding:8px 10px;">Rank</div>
+  <div style="padding:8px 10px;">Company</div>
+  <div style="padding:8px 10px;">Outlook</div>
+  <div style="padding:8px 10px;">CMP</div>
+  <div style="padding:8px 10px;">Target</div>
+  <div style="padding:8px 10px;">Upside</div>
+  <div style="padding:8px 10px;">Risk</div>
+  <div style="padding:8px 10px;">P/E</div>
+  <div style="padding:8px 10px;">FY26 PAT</div>
+  <div style="padding:8px 10px;">Key Observation</div>
+</div>
+<!-- Row 1 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:var(--surface);font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">1</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--adanipower);">Adani Power</div>
+  <div style="padding:7px 10px;"><span class="badge b-pos">POSITIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹210</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);">₹255</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);font-weight:700;">+21%</div>
+  <div style="padding:7px 10px;">Low-Med</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~13x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹12,971 Cr</div>
+  <div style="padding:7px 10px;">Unlevered balance sheet + ~95% PPA coverage + 23.7 GW expansion pipeline</div>
+</div>
+<!-- Row 2 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:#fafaf8;font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">2</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--ntpc);">NTPC</div>
+  <div style="padding:7px 10px;"><span class="badge b-pos">POSITIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹388</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);">₹430</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);font-weight:700;">+11%</div>
+  <div style="padding:7px 10px;">Low</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~11x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹23,162 Cr</div>
+  <div style="padding:7px 10px;">All-time high PAT; best-in-class PLF 72%; PSU stability; NGEL RE optionality</div>
+</div>
+<!-- Row 3 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:var(--surface);font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">3</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--cesc);">CESC</div>
+  <div style="padding:7px 10px;"><span class="badge b-pos">POSITIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹140</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">—</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);font-weight:700;">Good</div>
+  <div style="padding:7px 10px;">Low</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~9x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹1,618 Cr</div>
+  <div style="padding:7px 10px;">Lowest P/E in sector; consistent earnings growth; Nuvama top sector pick</div>
+</div>
+<!-- Row 4 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:#fafaf8;font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">4</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--tatapower);">Tata Power</div>
+  <div style="padding:7px 10px;"><span class="badge b-pos">POSITIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹380</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);">₹429</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);font-weight:700;">+13%</div>
+  <div style="padding:7px 10px;">Medium</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~22x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹5,118 Cr</div>
+  <div style="padding:7px 10px;">All-time high PAT; diversified RE + T&amp;D + Rooftop flywheel delivering results</div>
+</div>
+<!-- Row 5 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:var(--surface);font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">5</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--suzlon);">Suzlon</div>
+  <div style="padding:7px 10px;"><span class="badge b-pos">POSITIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹54</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);">₹76–80</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);font-weight:700;">+40–48%</div>
+  <div style="padding:7px 10px;">Medium</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~16x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹3,163 Cr</div>
+  <div style="padding:7px 10px;">Highest target upside; near-zero debt; FY26 PAT +53% record; strong order book</div>
+</div>
+<!-- Row 6 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:#fafaf8;font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">6</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--powergrid);">Power Grid</div>
+  <div style="padding:7px 10px;"><span class="badge b-pos">POSITIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹305</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">—</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);font-weight:700;">10–15%</div>
+  <div style="padding:7px 10px;">Very Low</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~10x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹15,928 Cr</div>
+  <div style="padding:7px 10px;">Regulated monopoly; 75–85% EBITDA margin; steady dividend income</div>
+</div>
+<!-- Row 7 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:var(--surface);font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">7</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--jsw);">JSW Energy</div>
+  <div style="padding:7px 10px;"><span class="badge b-pos">POSITIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹450</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);">₹614</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--pos);font-weight:700;">+36%</div>
+  <div style="padding:7px 10px;">Med-High</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~25x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹2,762 Cr</div>
+  <div style="padding:7px 10px;">Record earnings; well-diversified portfolio; elevated debt warrants close monitoring</div>
+</div>
+<!-- Row 8 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;border-bottom:1px solid var(--border);background:#fafaf8;font-size:11px;align-items:center;">
+  <div style="padding:7px 10px;font-weight:700;">8</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--torrent);">Torrent</div>
+  <div style="padding:7px 10px;"><span class="badge b-pend">NEUTRAL</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹1,457</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹1,410</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--neg);font-weight:700;">-3%</div>
+  <div style="padding:7px 10px;">Low-Med</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~28x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">₹2,469 Cr</div>
+  <div style="padding:7px 10px;">Q4 drop is base effect only — underlying EBITDA stable; ₹20 dividend; RE rerate expected FY27–28</div>
+</div>
+<!-- Row 9 -->
+<div style="display:grid;grid-template-columns:40px 110px 90px 70px 90px 70px 70px 80px 100px 1fr;background:var(--surface);font-size:11px;align-items:center;border-radius:0 0 8px 8px;">
+  <div style="padding:7px 10px;font-weight:700;">9</div>
+  <div style="padding:7px 10px;font-weight:700;color:var(--aesl);">AESL</div>
+  <div style="padding:7px 10px;"><span class="badge b-avoid">EXPENSIVE</span></div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~₹1,311</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--warn);">Below ₹1,000</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;color:var(--neg);font-weight:700;">Rich</div>
+  <div style="padding:7px 10px;">Medium</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">~73x</div>
+  <div style="padding:7px 10px;font-family:'IBM Plex Mono',monospace;">—</div>
+  <div style="padding:7px 10px;">Excellent business fundamentals; 73x P/E and margin compression over 5 quarters warrant caution</div>
+</div>
+</div><!-- end min-width wrapper -->
+</div><!-- end overflow wrapper -->
+</div><!-- end ranking table wrapper -->
+</div><!-- end panel-valuation -->
+<!-- ===== ANALYST VIEWS ===== -->
+<div id="panel-analysts" class="panel">
+<div class="sec-hdr">🔬 Analyst Views &amp; Broker Recommendations<span class="sec-note">JM Financial · Nuvama · Jefferies · Mirae Asset Sharekhan</span></div>
+<div class="note-block">📌 All views are sourced from publicly available Q4 FY26 preview reports and post-result analyses. For informational purposes. Not personal recommendations.</div>
+<div class="g2">
+<div class="ac"><div class="ac-head"><div class="ac-name">Nuvama Institutional Equities</div></div>
+<div class="ac-text"><strong>Top Picks: CESC &amp; NTPC</strong><br><br>
+<strong>NTPC:</strong> Expects net profit to grow 7% YoY in Q4. PLF at ~77% (standalone Q4). Profitability insulated by regulatory mechanism — returns in standalone largely assured. NGEL is long-term optionality. Target ₹430. <strong>"Top pick in PSU power."</strong><br><br>
+<strong>CESC:</strong> Expected 11% topline YoY growth driven by higher energy demand from distribution circles. Undemanding valuation vs private peers. <strong>"Top pick in the power sector — cheapest quality name."</strong><br><br>
+<strong>Tata Power:</strong> Flattish adjusted PAT ~₹1,052 Cr for Q4 owing to continued Mundra UMPP losses, softening from Q1 FY27 (plant now operational under Section 11). Odisha remains impressive. TP ₹429.<br><br>
+<strong>Suzlon:</strong> Projects 6.31% YoY drop in adjusted PAT ~₹1,107 Cr for Q4 (base: Q4 FY25 was record ₹1,182 Cr). Revenue expected to surge +56% YoY to ~₹5,914 Cr. EBITDA margin 20–21%. FY26 revenue ~₹5,300 Cr guidance. Order inflow growth = key trigger.<br><br>
+<strong>Power sector universe:</strong> "Modest PAT growth in Q4 FY26, driven by weak PLF across utilities (NTPC Q4 PLF 76.7% vs 82.7% YoY). Power demand growing but thermal generation under pressure. Top picks: CESC, NTPC."</div></div>
+<div class="ac"><div class="ac-head"><div class="ac-name">JM Financial</div></div>
+<div class="ac-text"><strong>Top Pick: Adani Power | Stock to Watch: Inox Wind (avoid)</strong><br><br>
+<strong>Adani Power:</strong> Q4 PAT est. ₹2,278 Cr pre-results (actual: ₹4,271 Cr — significant beat). Maharashtra 1,600 MW PPA win = structural positive. PPA coverage + DBFOO model = earnings certainty. TP ₹177.<br><br>
+<strong>JSW Energy:</strong> Generation growth +37% YoY led by O2 Power acquisition. Higher finance costs and D&A may weigh but EBITDA at record. "Fully integrated player — the most ambitious in the sector." TP ₹614.<br><br>
+<strong>Torrent Power:</strong> ~5% topline growth; 3% generation increase; seasonally weak transmission. Core business healthy. PAT base effect well-known. TP ₹1,410.<br><br>
+<strong>Suzlon — Actual Q4 FY26:</strong> Revenue ₹5,468 Cr (+45% YoY). PAT ₹1,114 Cr (-5.7% YoY, +150% QoQ). EBITDA ₹964 Cr (+39%). PBT ₹833 Cr (+51%). FY26: Revenue ₹16,679 Cr (+54%), PAT ₹3,163 Cr (+53% — record). 830 MW delivered in Q4 — highest-ever quarter. 2,456 MW FY26 — highest-ever annual. Net Cash ₹2,384 Cr. <strong>"Unintended beneficiary of energy security narrative — FDRE/RTC tenders are accelerating wind demand globally."</strong> TP ₹76–80.<br><br>
+<strong>NTPC:</strong> Muted Q4 generation (-7% YoY). Profitability protected by regulated model. Target ₹430.<br><br>
+
+<strong>Adani Power:</strong> Following Q4 EBITDA beat (₹6,498 Cr reported vs ₹5,573 Cr continuing), Jefferies raised target to ₹255 from ₹230. <strong>Key thesis:</strong> "Adani Power's ~95% PPA coverage and effectively debt-free balance sheet position it as the best thermal play in India for the next decade of capacity expansion. With 23.7 GW of projects pre-funded and 13.3 GW already PPA-tied, earnings visibility is exceptional."<br><br>
+<strong>On the sector:</strong> Summer demand pickup (India Q4 demand +1.6% to 422 BU) expected to strengthen tariff utilisation in FY27 Q1. IEX merchant prices at ₹3.88/kWh in Q4 are expected to recover with peak summer demand. Coal availability improving — positive for NTPC and Adani Power.<br><br>
+<strong>On JSW Energy:</strong> Strategy 3.0 (20 GW by FY30) credible given execution track record. High net debt (₹65,834 Cr) is manageable if revenue ramp continues per plan.</div></div>
+<div class="ac"><div class="ac-head"><div class="ac-name">Mirae Asset Sharekhan</div></div>
+<div class="ac-text"><strong>Top Picks: Power Grid, NTPC, CESC</strong><br><br>
+<strong>Power Grid:</strong> Green Energy Corridors + new TBCB wins ensure growing asset base → automatic regulated tariff income growth. CERC model = most predictable earnings in Indian equities. Target based on book value growth + dividend. <strong>"Best defensive power stock for 2026."</strong><br><br>
+<strong>NTPC:</strong> Target ₹430. PLF leadership at 72% is a durable efficiency advantage. 60 GW RE by 2032 = dual value from thermal + NGEL. Strong dividend track record.<br><br>
+<strong>CESC:</strong> Strongly recommended. Distribution expansion outside Kolkata materially underestimated by market. <strong>"Buy for 12-month view — the market hasn't woken up to this compounder yet."</strong><br><br>
+<strong>On AESL:</strong> Valuation concern flagged across all three. While businesses are operationally sound, P/E ratios (73x, 73x, 109x) leave little margin for error. Monitoring for entry opportunities on meaningful correction.</div></div>
+</div>
+<div class="sec-hdr gap-top" style="font-size:1rem;">📋 Broker Consensus Summary</div>
+<table>
+<thead><tr><th>Company</th><th>JM Financial</th><th>Nuvama</th><th>Jefferies</th><th>Mirae Sharekhan</th><th>Consensus</th><th>Key Q4 Comment</th></tr></thead>
+<tbody>
+<tr><td class="tb" style="color:var(--adanipower)">Adani Power</td><td><span class="badge b-buy">TOP PICK</span></td><td>BUY</td><td><span class="badge b-buy">BUY TP ₹255</span></td><td>BUY</td><td class="tpos">STRONG BUY</td><td>Beat on EBITDA + new PPAs = structural positive</td></tr>
+<tr><td class="tb" style="color:var(--ntpc)">NTPC</td><td>BUY</td><td><span class="badge b-buy">TOP PICK ₹430</span></td><td>BUY</td><td><span class="badge b-buy">TOP PICK ₹430</span></td><td class="tpos">STRONG BUY</td><td>ATH PAT; PLF leader; NGEL optionality intact</td></tr>
+<tr><td class="tb" style="color:var(--cesc)">CESC</td><td>BUY</td><td><span class="badge b-buy">TOP PICK</span></td><td>BUY</td><td><span class="badge b-buy">TOP PICK</span></td><td class="tpos">STRONG BUY</td><td>Consistent compounder; cheapest P/E in sector</td></tr>
+<tr><td class="tb" style="color:var(--tatapower)">Tata Power</td><td>BUY ₹429</td><td>BUY ₹429</td><td>BUY</td><td>BUY</td><td class="tpos">BUY</td><td>ATH PAT; Mundra resolving; RE+T&D flywheel</td></tr>
+<tr><td class="tb" style="color:var(--suzlon)">Suzlon</td><td><span class="badge b-buy">BUY ₹76–80</span></td><td>BUY</td><td>BUY</td><td>BUY</td><td class="tpos">BUY</td><td>Results today; FY27 guidance = key trigger</td></tr>
+<tr><td class="tb" style="color:var(--powergrid)">Power Grid</td><td>BUY</td><td>BUY</td><td>BUY</td><td><span class="badge b-buy">TOP PICK</span></td><td class="tpos">BUY</td><td>Safest; Green Energy Corridors adding asset base</td></tr>
+<tr><td class="tb" style="color:var(--jsw)">JSW Energy</td><td>BUY ₹614</td><td>BUY</td><td>BUY</td><td>BUY</td><td class="tpos">BUY</td><td>Record EBITDA/PAT; debt trajectory watchful</td></tr>
+<tr><td class="tb" style="color:var(--torrent)">Torrent Power</td><td>HOLD ₹1,410</td><td>HOLD</td><td>HOLD</td><td>HOLD</td><td class="warn">HOLD</td><td>Base effect distortion; underlying business fine</td></tr>
+<tr><td class="tb" style="color:var(--aesl)">AESL</td><td>BUY</td><td>BUY (rich)</td><td>BUY</td><td>HOLD</td><td class="warn">BUY (caution)</td><td>HVDC milestone; margin compression = concern</td></tr>
+
+
+</tbody>
+</table>
+</div><!-- end panel-analysts -->
+
+<!-- ===== SWOT ===== -->
+<div id="panel-swot" class="panel">
+<div class="sec-hdr">🔍 SWOT Analysis — All 9 Companies<span class="sec-note">Strengths · Weaknesses · Opportunities · Threats</span></div>
+<div class="g2">
+<div><div class="co-hdr-sw" style="color:var(--ntpc)">🏛️ NTPC</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>75+ GW — irreplaceable India grid anchor</li><li>Best coal PLF 72% vs India avg 63%</li><li>FY26 SA PAT ₹23,162 Cr ATH (+18%)</li><li>Captive coal mines — massive cost advantage</li><li>NGEL: separately IPO'd RE arm</li><li>PSU status — cheapest debt access</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Revenue flat/declining (Q4: -0.3%)</li><li>Regulatory return cap limits upside</li><li>Government interference risk (PSU)</li><li>NGEL ROE 3.2% — early stage drag</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>60 GW RE target by 2032 (NGEL)</li><li>JV CtrlS: Power + Data centres</li><li>Data centre power demand surge</li><li>JV profits growing +29% YoY</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Coal phase-out long-term pressure</li><li>PLF muted (76.7% vs 82.7% YoY)</li><li>Snow drought → hydro impact</li><li>Private RE displacing thermal margin</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--adanipower)">🔥 Adani Power</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India's largest private thermal — 15.2 GW</li><li>~95% PPA coverage — earnings certainty</li><li>Unlevered balance sheet — rare in power</li><li>FY26 EBITDA ₹23,431 Cr</li><li>23.7 GW expansion — 100% land+equipment</li><li>ESG score 80 (CareEdge) — sector top</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 PAT inflated (₹930 Cr prior period+tax)</li><li>Coal-only = ESG / transition risk</li><li>Group-level Adani perception risk</li><li>IEX merchant 5% still volatile</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>13.3 GW new PPA expansion earnings</li><li>Maharashtra + TN discom demand growing</li><li>Coal cost efficiency leadership</li><li>India thermal demand 20+ year runway</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>IEX prices fell 13.7% FY26</li><li>Regulatory change in PPA structures</li><li>Energy transition policy acceleration</li><li>Imported coal price volatility</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--tatapower)">⚡ Tata Power</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>ATH PAT ₹5,118 Cr — multi-segment</li><li>Rooftop solar #1 for 11 years</li><li>Odisha Discoms PAT +84% (turnaround)</li><li>Tata brand = consumer trust premium</li><li>TP Solar: 4 GW manufacturing (self-reliance)</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Mundra UMPP — chronic loss centre</li><li>High D&A from capacity additions</li><li>Q4 revenue -8% (Mundra+seasonal)</li><li>Multi-business complexity</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>TP Solar scaling to 4 GW+</li><li>EV charging — early mover advantage</li><li>15 GW RE target FY27</li><li>Bhutan hydro 5,000 MW pipeline</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Mundra SPPA not fully resolved</li><li>Rooftop solar competition intensifying</li><li>Rising capex → finance costs rising</li><li>Renewable tariff auction pressure</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--jsw)">🌿 JSW Energy</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Record FY26 EBITDA + PAT both</li><li>O2 Power 2.6 GW integrated seamlessly</li><li>Diversified thermal + RE + storage</li><li>Strong JSW Group promoter backing</li><li>20 GW by FY30 — credible strategy</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Net debt ₹65,834 Cr — highest in group</li><li>D/EBITDA 5.2x (ex-CWIP) — elevated</li><li>Finance costs ₹1,608 Cr Q4 — rising</li><li>Acquisition integration risk</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Grid-scale battery storage — next frontier</li><li>Greenfield RE organic growth</li><li>Data centre power demand</li><li>Cost of debt declining (-67bps)</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Interest rate rise → debt coverage stress</li><li>Execution risk at 20 GW by FY30</li><li>Competition from NTPC Green, Adani Power</li><li>Refinancing risk on large project debt</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--suzlon)">💨 Suzlon</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India Wind #1 — largest WTG maker</li><li>Near zero debt (from ₹12,000 Cr peak)</li><li>OMS: 20,000+ MW annuity base</li><li>Record FY26 order book</li><li>Blue Sky 5MW/6.3MW — export platform</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Revenue highly seasonal (Q4-heavy)</li><li>International track record historically weak</li><li>Supply chain concentration</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>FDRE/RTC/Hybrid tenders — next wave</li><li>India wind: 50 GW → 100 GW by 2030</li><li>Europe market (Blue Sky platform)</li><li>C&amp;I corporate renewable captive orders</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Order intake slowdown → stock falls sharply</li><li>Competition: Inox Wind, GE, Siemens</li><li>Land acquisition delays</li><li>Wind zone policy changes</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--torrent)">🌊 Torrent Power</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Perpetual distribution franchise (Ahmedabad, Surat, Gandhinagar)</li><li>Lowest AT&C losses in India</li><li>₹20/share FY26 dividend</li><li>₹27,830 Cr RE pipeline committed</li><li>Nabha Power adds thermal scale</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Gas generation structurally constrained</li><li>Q4 -70% PAT — media misrepresentation</li><li>High gas cost (₹50–60/MMBTU) erodes margins</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>10.6 GWp RE by FY27–28 = step earnings change</li><li>Distribution circle expansion</li><li>Gas price normalisation tailwind</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Gas market volatility (geopolitical)</li><li>RE commissioning delays</li><li>New entrants in licensed distribution areas</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--cesc)">🏙️ CESC</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>100+ year Kolkata franchise</li><li>FY26 PAT +13%, Q4 +19% consistently</li><li>9x P/E — cheapest in sector</li><li>Regulated utility = predictable earnings</li><li>Expanding to new distribution circles</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Kolkata concentration — single city heavy</li><li>RE portfolio small vs national peers</li><li>Growth rate slower than RE peers</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>New distribution circles — earnings multiplier</li><li>Privatisation of state discoms</li><li>AT&C improvement = margin expansion</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Regulatory tariff revision caps upside</li><li>Coal cost volatility (generation side)</li><li>Political risk (Bengal state relations)</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--powergrid)">🔌 Power Grid</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>1,73,000+ km = India's grid monopoly</li><li>75–85% EBITDA margin</li><li>CERC guaranteed 15.5% ROE</li><li>₹10–11/share annual dividend</li><li>Green Energy Corridors = built-in growth</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Growth capped by CERC tariff model</li><li>PSU culture — slower to adapt</li><li>Capex-intensive (high debt needed)</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>India RE capacity → mandatory new lines</li><li>HVDC technology adoption</li><li>Consultancy + telecom revenue growing</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>TBCB competition from AESL</li><li>Regulatory return revision risk</li><li>Interest rate rise → finance cost pressure</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--aesl)">🔷 AESL</div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Only private co. with 2 HVDC projects</li><li>27,949 circuit km — 15 years to build</li><li>1 Crore+ smart meters — sticky ecosystem</li><li>99.77% system availability</li><li>₹29,519 Cr smart meter order book</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>73x P/E — priced to perfection</li><li>Margin erosion -763 bps in 5 quarters</li><li>FII holdings declining 4 consecutive quarters</li><li>High capex → debt funded</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>₹1.5 lakh Cr near-term tender pipeline</li><li>Smart metering: 24.6M unit order book</li><li>Mumbai distribution: 13M consumers</li><li>Green Energy Corridor projects</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>TBCB competition intensifying</li><li>Smart meter tech commoditisation</li><li>Regulatory tariff revision</li><li>Interest rate sensitivity</li></ul></div></div></div>
+<div><div class="co-hdr-sw" style="color:var(--atgl)">🔷 </div><div class="swot-grid"><div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>CGD geographic exclusivity (25-yr licence)</li><li>TotalEnergies: global LNG + expertise</li><li>Zero promoter pledging</li><li>1,169 CNG stations + 13.1L PNG homes</li><li>FY26 volumes +14%; Record Q4 EBITDA</li></ul></div><div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>109x P/E — extreme premium</li><li>Operating margin 25%→19% in 5 quarters</li><li>LNG price volatility = cost risk</li><li>India rupee depreciation impact</li></ul></div><div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>India gas 15% energy mix by 2030</li><li>EV charging: 5,100 points → scaling</li><li>CBG: bio-gas as energy transition play</li><li>New CGD zone wins expanding</li></ul></div><div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>LNG import -16% YoY (March 2026)</li><li>Gas pool price $12.42/MMBTU (elevated)</li><li>West Asia conflict disrupts LNG routes</li><li>CNG vehicle adoption slowing (EV competition)</li></ul></div></div></div>
+</div>
+</div>
+</div><!-- end panel-swot -->
+<!-- ===== CHARTS ===== -->
+<div id="panel-charts" class="panel">
+<div class="sec-hdr">📈 Visual Analytics <span class="sec-note">Q4 FY26 performance charts</span></div>
+<div class="g2">
+<div class="chart-card"><h3>Q4 FY26 — PAT Comparison (₹ Cr)</h3><p class="sub">Actuals/estimates (NTPC = standalone; *=estimate)</p><div style="height:280px;position:relative;"><canvas id="ch-pat"></canvas></div></div>
+<div class="chart-card"><h3>Q4 FY26 — PAT Growth YoY %</h3><p class="sub">*Torrent -70% = base effect (one-time DTL reversal in Q4 FY25)</p><div style="height:280px;position:relative;"><canvas id="ch-patgrowth"></canvas></div></div>
+</div>
+<div class="g2" style="margin-top:14px;">
+<div class="chart-card"><h3>FY26 Full-Year PAT (₹ Cr)</h3><p class="sub">NTPC = standalone; others = consolidated; *=estimate</p><div style="height:280px;position:relative;"><canvas id="ch-fy26pat"></canvas></div></div>
+<div class="chart-card"><h3>Capacity Scale (GW / Transmission ckm÷100)</h3><p class="sub">Operational + pipeline. Power Grid/AESL = transmission circuit km ÷ 100</p><div style="height:280px;position:relative;"><canvas id="ch-capacity"></canvas></div></div>
+</div>
+<div class="g2" style="margin-top:14px;">
+<div class="chart-card"><h3>Q4 FY26 Revenue (₹ Cr) — Horizontal</h3><p class="sub">Revenue scale comparison across all companies</p><div style="height:320px;position:relative;"><canvas id="ch-revenue"></canvas></div></div>
+<div class="chart-card"><h3>Risk vs Target Upside — Investment Positioning</h3><p class="sub">Bubble size = FY26 PAT scale. X=risk, Y=upside%</p><div style="height:320px;position:relative;"><canvas id="ch-riskrew"></canvas></div></div>
+</div>
+</div>
+</div><!-- end panel-charts -->
+
+<!-- ===== CB ASSIST ===== -->
+<div id="panel-cbassist" class="panel">
+<div class="sec-hdr">🤖 CB Assist — Power Sector AI Analyst <span class="sec-note">Ask anything. Q4 FY26 data · English &amp; Tamil</span></div>
+<div class="green-block">⚡ <strong>CB Assist</strong> is powered by Claude AI with full Q4 FY26 data for all 9 companies: NTPC, Adani Power, Tata Power, JSW Energy, Suzlon, Torrent, CESC, Power Grid, , AESL. Ask about individual companies, comparisons, sector basics (firm vs infirm, PLF, PPA), investment advice, risk, moats — or ask in Tamil.</div>
+<div class="g2">
+<div>
+<div class="cbassist-chat">
+<div class="cbassist-title"><span class="dot-live"></span> CB Assist — Power Sector · Live · Q4 FY26</div>
+<div class="chat-msgs" id="power-chat-output">
+<div class="chat-bot">👋 Hello! I'm CB Assist — your AI power sector analyst. I cover all 9 companies with Q4 FY26 data. Ask me anything: comparisons, investment thesis, risk, sector fundamentals (why does coal still dominate? what is PLF?), or company-specific questions. தமிழில் கேட்கலாம்! ⚡</div>
+</div>
+<div class="chat-input-row">
+<input type="text" id="power-user-input" class="chat-input" placeholder="Ask about any company, concept, comparison... or ask in Tamil..." onkeydown="if(event.key==='Enter')sendPowerChat()">
+<button class="chat-send" onclick="sendPowerChat()">Send ⚡</button>
+</div>
+</div>
+</div>
+<div>
+<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:7px;">Quick Questions — Click to Ask</div>
+<div class="preset-qs">
+<div class="preset-q" onclick="askPowerPreset('Which power company is the #1 buy for Q4 FY26 and why?')">🏆 Which is the #1 buy in power sector Q4 FY26?</div>
+<div class="preset-q" onclick="askPowerPreset('Explain why coal still dominates India despite cheap solar. What is firm and infirm power?')">📚 Why does coal dominate despite cheap solar? Firm vs infirm?</div>
+<div class="preset-q" onclick="askPowerPreset('Compare Tata Power vs Adani Power — which is better for 3 years?')">⚖️ Tata Power vs Adani Power — 3-year comparison</div>
+<div class="preset-q" onclick="askPowerPreset('Suzlon results are today 25 May. Is it a buy before or after results at ₹54?')">💨 Suzlon at ₹54 — buy before or after results today?</div>
+<div class="preset-q" onclick="askPowerPreset('Torrent Power PAT fell 70% — is this a real business decline or just base effect? Should I sell?')">❓ Torrent -70% PAT — real or base effect? Should I sell?</div>
+<div class="preset-q" onclick="askPowerPreset('What is PLF and why does NTPCs 72% vs India average 63% matter to investors?')">📐 What is PLF and why does NTPC 72% vs 63% matter?</div>
+<div class="preset-q" onclick="askPowerPreset('What is the difference between Adani Power, , Adani Energy Solutions, and CGD companies?')">🔍 Explain all 4 Adani power/energy companies' differences</div>
+<div class="preset-q" onclick="askPowerPreset('AESL has 73x PE and margin compression. Is it still a buy?')">🔷 AESL at 73x P/E with margin erosion — still buy?</div>
+<div class="preset-q" onclick="askPowerPreset('CGD companies has 109x PE but 17% CNG growth. Buy or avoid?')">🔷  at 109x P/E — buy or avoid?</div>
+<div class="preset-q" onclick="askPowerPreset('For a conservative investor with ₹5 lakh, how should I allocate in the power sector?')">🛡️ Conservative investor — ₹5 lakh allocation in power sector?</div>
+<div class="preset-q" onclick="askPowerPreset('சக்தி துறையில் எந்த நிறுவனம் சிறந்த முதலீடு என்று தமிழில் சொல்லுங்கள்')">🇮🇳 சக்தி துறையில் சிறந்த முதலீடு எது? (Tamil)</div>
+<div class="preset-q" onclick="askPowerPreset('What are the top 3 risks to watch in Indian power sector for FY27?')">⚠️ Top 3 risks in Indian power sector for FY27</div>
+</div>
+</div>
+</div>
+</div><!-- end panel-cbassist -->
+
+</div><!-- end .main -->
+
+<div class="cb-wm">
+<div class="cb-wm-logo">⚡</div>
+<div><div style="font-size:10.5px;font-weight:700;">CB Research · Power Q4 FY26</div><div style="font-size:8.5px;color:var(--muted);text-transform:uppercase;">9 Companies · May 2026</div></div>
+</div>
+
+<footer class="footer">
+Power Sector Intelligence Dashboard · Q4 FY26 · Cauvery Business / CB Research<br>
+Data: Company BSE/NSE filings, JM Financial, Nuvama Institutional Equities, Jefferies India, Mirae Asset Sharekhan · As of May 25, 2026<br>
+Suzlon Q4 FY26 = JM Financial estimates (board meeting 25 May 2026) · Power Grid = analyst consensus · Adani Green Q4 = JM estimate ·  = standalone<br>
+<strong>Disclaimer:</strong> For informational &amp; educational purposes only. Not investment advice. Consult a SEBI-registered advisor before investing.
+</footer>
+<script>
+function showTab(name,btn){
+  document.querySelectorAll('.panel').forEach(function(p){
+    p.classList.remove('active');
+    p.style.display='none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  var el=document.getElementById('panel-'+name);
+  if(el){
+    el.classList.add('active');
+    el.style.display='block';
+  }
+  if(btn)btn.classList.add('active');
+  if(name==='charts')setTimeout(initCharts,150);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+var chartsInit=false;
+function initCharts(){
+  if(chartsInit)return; chartsInit=true;
+  var co9=['Adani Pwr','NTPC(SA)','Tata Pwr','JSW Enrgy','Suzlon*','Torrent','CESC','Pwr Grid','AESL'];
+  var cols9=['#b45309','#dc2626','#1e40af','#166534','#7c3aed','#0e7490','#be185d','#15803d','#92400e'];
+
+  new Chart(document.getElementById('ch-pat'),{
+    type:'bar',
+    data:{labels:co9,datasets:[{label:'Q4 PAT (Rs Cr)',data:[4271,8747,1416,574,1114,318,459,3950,723],backgroundColor:cols9.map(function(c){return c+'bb';}),borderColor:cols9,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#666',font:{size:9},callback:function(v){return 'Rs'+v;}},grid:{color:'#eee'}},x:{ticks:{color:'#555',font:{size:8}}}}}
+  });
+
+  var g=[64,18,8,38,-6,-70,19,5,28];
+  new Chart(document.getElementById('ch-patgrowth'),{
+    type:'bar',
+    data:{labels:co9,datasets:[{label:'PAT Growth YoY%',data:g,backgroundColor:g.map(function(v){return v>0?'rgba(22,163,74,.7)':'rgba(220,38,38,.7)';}),borderColor:g.map(function(v){return v>0?'#16a34a':'#dc2626';}),borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#666',font:{size:9},callback:function(v){return v+'%';}},grid:{color:'#eee'}},x:{ticks:{color:'#555',font:{size:8}}}}}
+  });
+
+  new Chart(document.getElementById('ch-fy26pat'),{
+    type:'bar',
+    data:{labels:['NTPC(SA)','Adani Pwr','Pwr Grid','Tata Pwr','Torrent','JSW Enrgy','Suzlon*','CESC'],datasets:[{label:'FY26 PAT (Rs Cr)',data:[23162,12971,15500,5118,2469,2762,3163,1618],backgroundColor:['#dc262699','#b4530999','#15803d99','#1e40af99','#0e749099','#16653499','#7c3aed99','#be185d99'],borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#666',font:{size:9},callback:function(v){return 'Rs'+v;}},grid:{color:'#eee'}},x:{ticks:{color:'#555',font:{size:8}}}}}
+  });
+
+  new Chart(document.getElementById('ch-capacity'),{
+    type:'bar',
+    data:{labels:['NTPC Grp','Adani Pwr','JSW Enrgy','Tata Pwr','Torrent','Suzlon OMS','AESL ckm/100','Pwr Grid/100'],datasets:[{label:'GW or ckm/100',data:[75,15.2,13.45,11.6,10.6,20,280,1730],backgroundColor:['#dc262699','#b4530999','#16653499','#1e40af99','#0e749099','#7c3aed99','#92400e99','#15803d99'],borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#666',font:{size:9}},grid:{color:'#eee'}},x:{ticks:{color:'#555',font:{size:8}}}}}
+  });
+
+  new Chart(document.getElementById('ch-revenue'),{
+    type:'bar',
+    data:{labels:['NTPC','Adani Pwr','Tata Pwr','Torrent','Pwr Grid','JSW Enrgy','Suzlon*','CESC','AESL'],datasets:[{label:'Q4 Revenue (Rs Cr)',data:[49688,15989,15962,6406,11667,4499,5468,4096,4400],backgroundColor:['#dc262699','#b4530999','#1e40af99','#0e749099','#15803d99','#16653499','#7c3aed99','#be185d99','#92400e99'],borderWidth:2}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#666',font:{size:9},callback:function(v){return 'Rs'+v;}},grid:{color:'#eee'}},y:{ticks:{color:'#555',font:{size:9}}}}}
+  });
+
+  new Chart(document.getElementById('ch-riskrew'),{
+    type:'bubble',
+    data:{datasets:[
+      {label:'Adani Pwr',data:[{x:3,y:21,r:18}],backgroundColor:'#b4530999',borderColor:'#b45309'},
+      {label:'Suzlon',data:[{x:4,y:44,r:10}],backgroundColor:'#7c3aed99',borderColor:'#7c3aed'},
+      {label:'JSW',data:[{x:7,y:36,r:12}],backgroundColor:'#16653499',borderColor:'#166534'},
+      {label:'NTPC',data:[{x:2,y:11,r:16}],backgroundColor:'#dc262699',borderColor:'#dc2626'},
+      {label:'CESC',data:[{x:2,y:14,r:8}],backgroundColor:'#be185d99',borderColor:'#be185d'},
+      {label:'Tata Pwr',data:[{x:4,y:13,r:12}],backgroundColor:'#1e40af99',borderColor:'#1e40af'},
+      {label:'Pwr Grid',data:[{x:1,y:12,r:10}],backgroundColor:'#15803d99',borderColor:'#15803d'},
+      {label:'Torrent',data:[{x:3,y:-2,r:9}],backgroundColor:'#0e749099',borderColor:'#0e7490'},
+      {label:'AESL',data:[{x:6,y:-5,r:7}],backgroundColor:'#92400e99',borderColor:'#92400e'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:8},boxWidth:8}}},scales:{x:{title:{display:true,text:'Risk (1=Low, 10=High)',font:{size:9}},min:0,max:11,grid:{color:'#eee'},ticks:{color:'#666',font:{size:8}}},y:{title:{display:true,text:'Target Upside %',font:{size:9}},grid:{color:'#eee'},ticks:{color:'#666',font:{size:8}}}}}
+  });
+}
+
+function askPowerPreset(q){
+  document.getElementById('power-user-input').value=q;
+  sendPowerChat();
+}
+
+async function sendPowerChat(){
+  var input=document.getElementById('power-user-input');
+  var output=document.getElementById('power-chat-output');
+  var userText=(input.value||'').trim();
+  if(!userText)return;
+  var tamilPattern=/[\u0B80-\u0BFF]/;
+  var isTamil=tamilPattern.test(userText);
+  output.innerHTML='';
+  var ub=document.createElement('div');
+  ub.className='chat-user';
+  ub.textContent=userText;
+  output.appendChild(ub);
+  var lb=document.createElement('div');
+  lb.className='chat-bot loading';
+  lb.textContent=isTamil?'⚡ யோசிக்கிறேன்...':'⚡ Analysing power sector data...';
+  output.appendChild(lb);
+  output.scrollTop=output.scrollHeight;
+  input.value='';
+
+  var sysLang=isTamil?'RESPOND IN TAMIL ONLY. Financial terms (EBITDA, PAT, GW, PLF, PPA) can stay in English.':'RESPOND IN ENGLISH. Be direct, specific, data-backed. Use bullet points.';
+
+  var sysPrompt="You are CB Assist, expert Indian power sector analyst, Q4 FY26. Cover 9 companies.\n\n"
+  +"SECTOR BASICS:\n"
+  +"FIRM POWER: Coal/gas/nuclear/hydro, 24x7 on demand, PLF 65-80%.\n"
+  +"INFIRM POWER: Solar/Wind, weather-dependent. Solar CUF ~22%, Wind ~30%.\n"
+  +"WHY COAL DOMINATES: (1)India peak demand is EVENING, solar peaks at noon (2)Battery storage adds Rs3-4/unit (3)Need 4.5x more solar per GW firm supply (4)5 lakh jobs - political economy (5)New ultra-supercritical plants 40%+ efficiency.\n"
+  +"PLF: % of thermal capacity used. NTPC 72.04% vs India avg 63.2%.\n"
+  +"PPA: 25-year fixed tariff contract. High PPA% = earnings certainty.\n"
+  +"IEX: Spot market price. Fell 13.7% to Rs3.86/unit FY26.\n"
+  +"D/EBITDA: <3x safe, >5x risky. JSW 5.2x high, Adani Power unlevered.\n\n"
+  +"Q4 FY26 DATA:\n"
+  +"NTPC: Q4 PAT Rs10615Cr(+34% cons), Q4 Revenue Rs49688Cr(-0.3% cons). FY26 SA PAT Rs23162Cr(+18% ATH), FY26 cons revenue Rs187385Cr. PLF 72.04%. NGEL 10516MW. Dividend Rs9/share. CMP Rs388.\n"
+  +"Adani Power: Q4 PAT Rs4271Cr(+64%), Q4 Rep.Revenue Rs15989Cr(+10%), Q4 EBITDA Rs6498Cr(+27%). FY26 PAT Rs12971Cr. 15.2GW, 95% PPA, 23.7GW expansion, unlevered. CMP Rs210.\n"
+  +"Tata Power: Q4 PAT Rs1416Cr(+8%), FY26 PAT Rs5118Cr(ATH). RE PAT+59%, T&D PAT+49%, Odisha+84%. Rooftop #1. CMP Rs380.\n"
+  +"JSW Energy: Q4 PAT Rs574Cr(+38%), FY26 PAT Rs2762Cr(record). 13.45GW. Net Debt Rs65834Cr, D/E 2.1x. CMP Rs450.\n"
+  +"Suzlon: Q4 PAT est Rs889Cr. FY26 PAT est Rs2362Cr(+14%). India Wind #1. Near zero debt. Record order book. CMP Rs54.\n"
+  +"Torrent Power: Q4 PAT Rs318Cr(-70% BASE EFFECT ONLY - Q4FY25 had Rs637Cr one-time tax reversal). FY26 PAT Rs2469Cr. RE pipeline Rs27830Cr. Dividend Rs20/share. CMP Rs1457.\n"
+  +"CESC: Q4 PAT Rs459Cr(+19%), FY26 PAT Rs1618Cr(+13%). Kolkata distribution. 9x PE - cheapest in sector. CMP Rs140.\n"
+  +"Power Grid: Q4 PAT ₹4,546 Cr (+9.7% YoY). Q4 Revenue ₹11,667 Cr (SA, -5% YoY). FY26 Net Profit ₹15,928 Cr. EBITDA 75%+. Total network 1,84,960 ckm. Dividend ₹9/share FY26 total. CERC regulated. CMP Rs305.\n"
+  +"AESL (Adani Energy Solutions): Q4 Rep.PAT ₹684 Cr (+6%); Adj.PAT +28%. FY26 EBITDA ₹8,726 Cr (+12.7%). FY26 ops revenue ₹18,296 Cr; total income ₹28,325 Cr. Mumbai HVDC commissioned. 27949 ckm. Smart meters 1Cr+, OB Rs29519Cr. CMP Rs1311.\n\n"
+  +"ADANI COMPANIES: Adani Power=thermal generation. AESL=transmission+smart meters (NOT generation).\n\n"
+  +sysLang;
+
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:900,
+        system:sysPrompt,
+        messages:[{role:'user',content:userText}]
+      })
+    });
+    var data=await resp.json();
+    var reply=(data.content||[]).map(function(c){return c.text||'';}).join('');
+    if(!reply)reply='Sorry, could not get a response. Please try again.';
+    lb.className='chat-bot';
+    lb.innerHTML=reply
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\n/g,'<br>')
+      .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g,'<em>$1</em>');
+  }catch(e){
+    lb.className='chat-bot';
+    lb.textContent='Connection error. Please try again.';
+  }
+  output.scrollTop=output.scrollHeight;
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  // Hide ALL panels first via inline style (belt-and-suspenders)
+  document.querySelectorAll('.panel').forEach(function(p){
+    p.style.display='none';
+    p.classList.remove('active');
+  });
+  // Activate dashboard
+  showTab('dashboard', document.querySelector('.tab-btn'));
+});
+</script>
+
+</body>
+</html>

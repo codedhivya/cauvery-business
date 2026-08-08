@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Railway Sector &mdash; Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fdf8f3;--surface:#ffffff;--surface2:#fbf1e6;--border:#f0e2d2;--text:#241a10;--muted:#7a6a55;
+--irfc:#c2410c;--irfc-s:#fff2e8;--rvnl:#b45309;--rvnl-s:#fdf3e2;--ircon:#9a3412;--ircon-s:#fdeee4;
+--irctc:#ca8a04;--irctc-s:#fefbe8;--railtel:#a16207;--railtel-s:#fdf6e3;--rites:#d97706;--rites-s:#fff7ea;
+--concor:#b45309;--concor-s:#fdf3e2;--beml:#92400e;--beml-s:#fcefe3;--jwl:#a3520c;--jwl-s:#fdf2e6;
+--texr:#c2570c;--texr-s:#fff1e6;--titagarh:#b8530b;--titagarh-s:#fdf2e5;
+--pos:#15803d;--neg:#c0392b;--warn:#d97706;--gold:#b8860b;--gold-s:#fdf6e3;
+--sh:0 1px 8px rgba(120,80,30,.08);--sh2:0 4px 20px rgba(120,80,30,.12);--r:11px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;font-weight:500;}
+.hdr{background:#2a1c0d;padding:0 32px;display:flex;align-items:stretch;justify-content:space-between;min-height:70px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:1.55rem;color:#fff;line-height:1.15;padding:16px 0 4px;font-weight:900;}
+.hdr .sub{font-size:10px;font-weight:700;color:rgba(255,240,225,.55);letter-spacing:.08em;text-transform:uppercase;padding-bottom:16px;}
+.hdr-right{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:12px 0;}
+.chip{padding:3px 9px;border-radius:20px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fff;}
+.chip-fin{background:var(--irfc);}.chip-exec{background:var(--rvnl);}.chip-svc{background:var(--irctc);}.chip-mfg{background:var(--beml);}
+.chip-date{background:rgba(255,255,255,.12);color:rgba(255,240,225,.7);border:1px solid rgba(255,255,255,.15);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;padding:0 32px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(120,80,30,.07);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:13px 13px 11px;font-size:11.5px;font-weight:700;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--irfc);font-weight:800;}
+.main{padding:22px 32px 48px;max-width:1480px;margin:0 auto;}
+.panel{display:none;animation:fi .18s ease;}.panel.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:16px;padding-bottom:9px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sec-note{font-size:10.5px;color:var(--muted);font-weight:600;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
+.card-lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:12px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:15px 17px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.fin::before{background:var(--irfc);}.co-card.exec::before{background:var(--rvnl);}
+.co-card.svc::before{background:var(--irctc);}.co-card.mfg::before{background:var(--beml);}
+.co-name{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:900;margin-bottom:2px;}
+.co-seg{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:9px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center;}
+.m-lbl{font-size:11px;color:var(--muted);font-weight:600;}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--text);}
+.badge-row{margin-top:10px;display:flex;gap:4px;flex-wrap:wrap;}
+.badge{font-size:9.5px;padding:2px 7px;border-radius:5px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-neg{background:#fde2dd;color:#b91c1c;}.b-warn{background:#fef0d9;color:#b45309;}.b-neu{background:#f3eadc;color:#6b5840;}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:14px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.kpi.fin-a{border-left:4px solid var(--irfc);}.kpi.exec-a{border-left:4px solid var(--rvnl);}
+.kpi.svc-a{border-left:4px solid var(--irctc);}.kpi.mfg-a{border-left:4px solid var(--beml);}
+.kpi .kl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+.kpi .kv{font-size:1rem;font-weight:900;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:9.5px;font-weight:800;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+th{background:#2a1c0d;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:10px 12px;text-align:left;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap;vertical-align:middle;color:var(--text);font-weight:500;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fdf6ee;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;font-weight:600;}
+td.tpos{color:var(--pos);font-weight:800;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:800;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:800;}.td-wrap{white-space:normal;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
+.swot-cell{padding:11px 13px;}
+.swot-s{background:#e8f6ec;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fcebe6;border-bottom:1px solid var(--border);}
+.swot-o{background:#fff4e0;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-s);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;margin-bottom:4px;}
+.sl{color:#15803d;}.wl{color:#c0392b;}.ol{color:#b45309;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.6;font-weight:500;}
+.swot-ul li::before{content:"\2022  ";color:var(--muted);font-weight:800;}
+.co-hdr{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:900;margin-bottom:9px;padding-bottom:5px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:7px;}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;box-shadow:var(--sh);margin-bottom:12px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:900;}
+.rat-pill{padding:3px 11px;border-radius:20px;font-size:10px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}.rp-hold{background:#fef0d9;color:#a16207;}.rp-sell{background:#fde2dd;color:#b91c1c;}
+.ac-tp{font-size:1.1rem;font-weight:900;font-family:'IBM Plex Mono',monospace;margin-bottom:2px;}
+.ac-cmp{font-size:10.5px;color:var(--muted);margin-bottom:7px;font-weight:600;}
+.ac-text{font-size:11.5px;line-height:1.6;font-weight:500;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh2);margin-bottom:16px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:9px;}
+.verdict-body{font-size:12.5px;line-height:1.7;font-weight:500;}
+.trojan-card{background:linear-gradient(135deg,#fff4e0,#fef0d9);border:2px solid var(--warn);border-radius:var(--r);padding:20px 24px;margin-bottom:16px;}
+.trojan-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--warn);margin-bottom:9px;}
+.grp-hdr{padding:7px 13px;border-left:4px solid;border-radius:0 7px 7px 0;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.chart-card h3{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:10.5px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.chart-box{position:relative;width:100%;height:300px;}
+.chart-box canvas{position:absolute;inset:0;width:100%!important;height:100%!important;}
+.rm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.rm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;}
+.rm-icon{font-size:1.5rem;margin-bottom:6px;}
+.rm-title{font-weight:900;font-size:11.5px;margin-bottom:4px;}
+.rm-body{font-size:11px;color:var(--text);line-height:1.6;font-weight:500;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--irfc);border-radius:var(--r);padding:18px 20px;}
+.cbassist-title{font-weight:900;font-size:12px;color:var(--irfc);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.cbassist-title span{width:7px;height:7px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:100px;max-height:360px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:9px;}
+.chat-msg{padding:9px 13px;border-radius:10px;font-size:12px;max-width:92%;line-height:1.55;font-weight:500;}
+.chat-msg.user{background:#2a1c0d;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--irfc);}
+.chat-input-row{display:flex;gap:7px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);outline:none;font-weight:500;}
+.chat-input:focus{border-color:var(--irfc);}
+.chat-send{background:var(--irfc);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:12px;font-weight:800;cursor:pointer;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:7px 11px;}
+.typing-ind span{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.preset-tab{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:800;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 5px 0;}
+.pt-fin.on{background:var(--irfc);border-color:var(--irfc);color:#fff;}
+.pt-exec.on{background:var(--rvnl);border-color:var(--rvnl);color:#fff;}
+.pt-svc.on{background:var(--irctc);border-color:var(--irctc);color:#fff;}
+.pt-mfg.on{background:var(--beml);border-color:var(--beml);color:#fff;}
+.pt-sector.on{background:var(--gold);border-color:var(--gold);color:#fff;}
+.pqs{display:none;}.pqs.on{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.pq{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:8px;line-height:1.45;font-weight:600;}
+.pq:hover{border-color:var(--irfc);background:var(--irfc-s);}
+.co-sel{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:12px;}
+.co-sel-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:10.5px;font-weight:800;cursor:pointer;transition:all .15s;}
+.sep{width:1px;height:22px;background:var(--border);display:inline-block;margin:0 4px;}
+.per-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10.5px;font-weight:800;cursor:pointer;transition:all .15s;}
+.co-sec{display:none;}.co-sec.on{display:block;}
+.qtr-v{display:block;}.annual-v{display:none;}
+.cat-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;box-shadow:var(--sh);}
+.cat-btn{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:10.5px;font-weight:800;cursor:pointer;transition:all .15s;}
+.cat-btn.on{background:#2a1c0d;color:#fff;border-color:#2a1c0d;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:12px 32px;border-top:1px solid var(--border);margin-top:24px;line-height:1.7;font-weight:500;}
+.cb-wm{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(255,250,244,.95);border:1.5px solid var(--border);border-radius:28px;padding:6px 13px 6px 7px;box-shadow:0 4px 18px rgba(120,80,30,.15);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:26px;height:26px;background:var(--irfc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.8rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:10.5px;font-weight:800;}.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:700;}
+@media(max-width:860px){.main{padding:12px 12px 40px;}.hdr{padding:0 14px;flex-wrap:wrap;}.tab-nav{padding:0 6px;}.g2,.g3,.g4,.kpi-grid,.rm-grid{grid-template-columns:1fr 1fr;}.chart-box{height:260px;}}
+@media(max-width:500px){.g2,.g3,.g4,.kpi-grid,.rm-grid{grid-template-columns:1fr;}.chart-card{padding:12px 10px;}.chart-box{height:300px;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><h1>India Railway Sector &mdash; Intelligence Dashboard</h1>
+  <div class="sub">IRFC &middot; RVNL &middot; IRCON &middot; IRCTC &middot; RailTel &middot; RITES &middot; CONCOR &middot; BEML &middot; Jupiter &middot; Texmaco &middot; Titagarh &middot; Q4 FY26 &amp; Annual &middot; CB Research</div></div>
+  <div class="hdr-right">
+    <span class="chip chip-fin">Financier</span><span class="chip chip-exec">Execution</span><span class="chip chip-svc">Services</span><span class="chip chip-mfg">Rolling Stock</span>
+    <span class="chip chip-date">Q4 FY26 &middot; 31 May 2026</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="showTab('companies',this)">Companies</button>
+  <button class="tab-btn" onclick="showTab('value',this)">Value Chain</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Order Books &amp; Capex</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('swot',this)">SWOT &amp; Moat</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst View</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks &amp; Outlook</button>
+  <button class="tab-btn" onclick="showTab('assist',this)">CB Assist &#x1F916;</button>
+</nav>
+<div class="main">
+
+<!-- ===== OVERVIEW ===== -->
+<div class="panel active" id="tab-overview">
+<div class="sec-hdr">Overview <span class="sec-note">&middot; 11 Companies &middot; Q4 FY26 &middot; Capex-Cycle Beneficiaries &middot; Filter by Sub-Sector</span></div>
+<div class="cat-bar">
+  <span style="font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">Filter:</span>
+  <button class="cat-btn on" onclick="filterCat('all',this)">All Companies</button>
+  <button class="cat-btn" onclick="filterCat('fin',this)">Financier</button>
+  <button class="cat-btn" onclick="filterCat('exec',this)">Project Execution</button>
+  <button class="cat-btn" onclick="filterCat('svc',this)">Services &amp; Logistics</button>
+  <button class="cat-btn" onclick="filterCat('mfg',this)">Rolling Stock</button>
+</div>
+<div class="kpi-grid">
+  <div class="kpi fin-a" data-cat="fin"><div class="kl">IRFC &mdash; Q4 PAT</div><div class="kv">&#8377;1,684 Cr</div><div class="kc warn">+0.1% YoY (flat)</div></div>
+  <div class="kpi exec-a" data-cat="exec"><div class="kl">RVNL &mdash; Q4 PAT</div><div class="kv">&#8377;187 Cr</div><div class="kc neg">&minus;58.9% YoY</div></div>
+  <div class="kpi svc-a" data-cat="svc"><div class="kl">IRCTC &mdash; Q4 PAT</div><div class="kv">&#8377;326 Cr</div><div class="kc neg">&minus;8.9% YoY</div></div>
+  <div class="kpi svc-a" data-cat="svc"><div class="kl">CONCOR &mdash; Q4 PAT</div><div class="kv">&#8377;258 Cr</div><div class="kc neg">&minus;14.5% YoY</div></div>
+  <div class="kpi mfg-a" data-cat="mfg"><div class="kl">BEML &mdash; Q4 PAT</div><div class="kv">&#8377;180 Cr</div><div class="kc neg">&minus;37.5% YoY</div></div>
+</div>
+<p style="font-size:11px;color:var(--muted);margin-bottom:14px;font-weight:600;">Theme of the quarter: <strong style="color:var(--text);">record revenue, squeezed profits.</strong> Most railway PSUs grew or held topline on a strong capex cycle, but margin compression and rising costs cut into bottom lines. IRFC&rsquo;s annuity model stayed steady; execution and manufacturing names felt the squeeze hardest.</p>
+
+<!-- FINANCIER + EXECUTION -->
+<div class="g3" style="margin-bottom:14px;">
+  <div class="co-card fin" data-cat="fin">
+    <div class="co-name" style="color:var(--irfc)">IRFC</div>
+    <div class="co-seg">NSE: IRFC &middot; Railway Financing &middot; Zero NPA &middot; Q4 &#10003; May 14, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">&#8377;7,336 Cr (+9.1%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val warn">&#8377;1,684 Cr (+0.1%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;27,284 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;7,009 Cr (Record, +7.8%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 NIM</span><span class="m-val">~1.5%</span></div>
+    <div class="m-row"><span class="m-lbl">Net Worth</span><span class="m-val">&#8377;56,000+ Cr (all-time high)</span></div>
+    <div class="badge-row"><span class="badge b-pos">Record FY26 PAT</span><span class="badge b-pos">Zero NPA</span><span class="badge b-warn">Flat Q4 / margin squeeze</span></div>
+  </div>
+  <div class="co-card exec" data-cat="exec">
+    <div class="co-name" style="color:var(--rvnl)">RVNL</div>
+    <div class="co-seg">NSE: RVNL &middot; Navratna &middot; Railway Project Execution &middot; Q4 &#10003; May 25, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;6,696 Cr (+4.2%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA / Margin</span><span class="m-val neg">&#8377;269 Cr / 4.0% (vs 6.8%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val neg">&#8377;187 Cr (&minus;58.9%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">&#8377;800 Cr (&minus;32.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY27 Guidance</span><span class="m-val">Revenue +15&ndash;20%</span></div>
+    <div class="m-row"><span class="m-lbl">Final Dividend</span><span class="m-val">&#8377;0.71/sh</span></div>
+    <div class="m-row"><span class="m-lbl">KRCL Receivable</span><span class="m-val warn">&#8377;1,116 Cr (under review)</span></div>
+    <div class="badge-row"><span class="badge b-neg">PAT &minus;59% Q4</span><span class="badge b-warn">Margin compression</span><span class="badge b-pos">BharatNet upside FY27</span></div>
+  </div>
+  <div class="co-card exec" data-cat="exec">
+    <div class="co-name" style="color:var(--ircon)">IRCON International</div>
+    <div class="co-seg">NSE: IRCON &middot; Navratna &middot; Railway Infra Construction &middot; Q4 &#10003; May 22, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;3,189 Cr (&minus;7%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 EBITDA / Margin</span><span class="m-val">&#8377;1,279 Cr / ~13.5%</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT (Consol)</span><span class="m-val neg">&#8377;191.5 Cr (&minus;9%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;9,071 Cr (&minus;15.7%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">&#8377;592 Cr (&minus;18%)</span></div>
+    <div class="m-row"><span class="m-lbl">Order Book</span><span class="m-val">&#8377;24,984 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Total Dividend FY26</span><span class="m-val">&#8377;1.90/sh</span></div>
+    <div class="badge-row"><span class="badge b-neg">Revenue &minus;16% FY26</span><span class="badge b-warn">Order intake watch</span><span class="badge b-pos">Q4 +50% QoQ</span></div>
+  </div>
+</div>
+
+<!-- SERVICES & LOGISTICS -->
+<div class="g3" style="margin-bottom:14px;">
+  <div class="co-card svc" data-cat="svc">
+    <div class="co-name" style="color:var(--irctc)">IRCTC</div>
+    <div class="co-seg">NSE: IRCTC &middot; Navratna &middot; Ticketing / Catering / Tourism &middot; Q4 &#10003; May 26, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;1,460 Cr (+15.1%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#8377;326 Cr (&minus;8.9% YoY)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA / Margin</span><span class="m-val">&#8377;399 Cr / ~27.3% (+3.5%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;5,215 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;1,393 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Promoter (President of India)</span><span class="m-val">62.40%</span></div>
+    <div class="badge-row"><span class="badge b-pos">Monopoly e-ticketing</span><span class="badge b-warn">Margin contraction</span><span class="badge b-neu">Convenience-fee linked</span></div>
+  </div>
+  <div class="co-card svc" data-cat="svc">
+    <div class="co-name" style="color:var(--railtel)">RailTel</div>
+    <div class="co-seg">NSE: RAILTEL &middot; Mini Ratna &middot; Telecom &amp; Fiber / Data Centre &middot; Q4 &#10003; May 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">&#8377;1,680 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 Operating Revenue</span><span class="m-val">&#8377;1,669 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;142 Cr (+127% QoQ)</span></div>
+    <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">Modest, project-driven mix</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;346 Cr (+17%)</span></div>
+    <div class="m-row"><span class="m-lbl">Order Book</span><span class="m-val">&#8377;11,466 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Telecom Segment QoQ</span><span class="m-val pos">+83%</span></div>
+    <div class="badge-row"><span class="badge b-pos">Strong Q4 swing</span><span class="badge b-pos">Data-centre push</span><span class="badge b-neu">Lumpy quarterly mix</span></div>
+  </div>
+  <div class="co-card svc" data-cat="svc">
+    <div class="co-name" style="color:var(--rites)">RITES</div>
+    <div class="co-seg">NSE: RITES &middot; Mini Ratna &middot; Consultancy / Exports / Leasing &middot; Q4 &#10003; May 19, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue (Consol)</span><span class="m-val">&#8377;768 Cr (+27.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 EBITDA / Margin</span><span class="m-val pos">&#8377;568 Cr / 23.5%</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val warn">&#8377;130 Cr (&minus;2% YoY)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;2,415 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val pos">&#8377;454 Cr (+7.3%)</span></div>
+    <div class="m-row"><span class="m-lbl">Order Book</span><span class="m-val">&#8377;9,416 Cr (Record)</span></div>
+    <div class="m-row"><span class="m-lbl">Final Dividend</span><span class="m-val">&#8377;2.75/sh</span></div>
+    <div class="badge-row"><span class="badge b-pos">Record order book</span><span class="badge b-pos">Export revival</span><span class="badge b-warn">Margin mix shift</span></div>
+  </div>
+</div>
+
+<!-- LOGISTICS + MANUFACTURERS -->
+<div class="g4" style="margin-bottom:14px;">
+  <div class="co-card svc" data-cat="svc">
+    <div class="co-name" style="color:var(--concor)">CONCOR</div>
+    <div class="co-seg">NSE: CONCOR &middot; Navratna &middot; Rail Logistics / Containers &middot; Q4 &#10003; May 25, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">&#8377;2,257 Cr (&minus;1%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA / Margin</span><span class="m-val warn">&#8377;420 Cr / 18.6% (&minus;3%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#8377;258 Cr (&minus;14.5%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;9,059 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">Total Dividend FY26</span><span class="m-val">&#8377;8.60/sh</span></div>
+    <div class="badge-row"><span class="badge b-pos">EXIM-led growth</span><span class="badge b-warn">Domestic softness</span></div>
+  </div>
+  <div class="co-card mfg" data-cat="mfg">
+    <div class="co-name" style="color:var(--beml)">BEML</div>
+    <div class="co-seg">NSE: BEML &middot; Navratna &middot; Metro Coaches / Defence / Mining &middot; Q4 &#10003; May 29, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">&#8377;1,794 Cr (+8.6%, record)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA / Margin</span><span class="m-val neg">&#8377;271 Cr / ~15.1% (was 25.6%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#8377;180 Cr (&minus;37.5%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">&#8377;141 Cr (&minus;51.7%)</span></div>
+    <div class="m-row"><span class="m-lbl">Order Book</span><span class="m-val">&#8377;15,896 Cr (Record)</span></div>
+    <div class="badge-row"><span class="badge b-pos">Record revenue + order book</span><span class="badge b-neg">PAT &minus;52% FY26</span></div>
+  </div>
+  <div class="co-card mfg" data-cat="mfg">
+    <div class="co-name" style="color:var(--jwl)">Jupiter Wagons</div>
+    <div class="co-seg">NSE: JWL &middot; Private &middot; Freight Wagons / Wheelsets / BESS &middot; Q4 &#10003; May 30, 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">&#8377;780 Cr (&minus;25%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA / Margin</span><span class="m-val neg">&#8377;83 Cr / 10.6% (&minus;410 bps)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val neg">&#8377;29 Cr (&minus;72%)</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">&#8377;2,896 Cr</span></div>
+    <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val neg">&#8377;241 Cr (&minus;37%)</span></div>
+    <div class="badge-row"><span class="badge b-neg">Sharp Q4 fall</span><span class="badge b-pos">Wheel plant + BESS pivot</span></div>
+  </div>
+  <div class="co-card mfg" data-cat="mfg">
+    <div class="co-name" style="color:var(--texr)">Texmaco Rail</div>
+    <div class="co-seg">NSE: TEXRAIL &middot; Private &middot; Freight Wagons / Rail Systems &middot; Q4 &#10003; May 2026</div>
+    <div class="m-row"><span class="m-lbl">Q4 PAT</span><span class="m-val pos">&#8377;57.7 Cr (+45.1%)</span></div>
+    <div class="m-row"><span class="m-lbl">Q4 EBITDA / Margin</span><span class="m-val">Pending line-item filing</span></div>
+    <div class="m-row"><span class="m-lbl">Net Debt</span><span class="m-val pos">&#8377;444 Cr (down)</span></div>
+    <div class="m-row"><span class="m-lbl">Net Debt / Equity</span><span class="m-val pos">0.21&times; (from 0.22&times;)</span></div>
+    <div class="m-row"><span class="m-lbl">Positioning</span><span class="m-val">Integrated rail + infra</span></div>
+    <div class="badge-row"><span class="badge b-pos">PAT +45% YoY</span><span class="badge b-pos">Deleveraging</span></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:14px;background:var(--titagarh-s);border-color:var(--titagarh);">
+  <div class="card-lbl" style="color:var(--titagarh)">Titagarh Rail Systems (NSE: TITAGARH) &mdash; FY26 Results Published (Board: 30 May 2026)</div>
+  <p style="font-size:11.5px;line-height:1.6;font-weight:500;">Titagarh&rsquo;s board approved audited FY26 results on <strong>30 May 2026</strong>. Full-year consolidated <strong>revenue &#8377;3,316 Cr and PAT &#8377;181 Cr</strong> &mdash; both down vs the FY25 base (revenue &#8377;3,868 Cr, PAT &#8377;276 Cr), the decline driven by wheelset-availability constraints that capped wagon production through the year. The 9M FY26 trail: Q1 PAT &#8377;30.9 Cr, Q2 PAT &#8377;36.9 Cr, with H1 revenue &#8377;1,478 Cr (+24.6% QoQ recovery into the year-end). It remains the only Indian company making both wagons and coaches, with ~25% wagon-market share and an order book around &#8377;26,000 Cr. Earnings call scheduled 1 June 2026. <strong>Q4 discrete split shown as &ldquo;see FY26&rdquo; pending the line-item filing; full-year figures are confirmed.</strong></p>
+</div>
+<div class="card" style="margin-bottom:14px;">
+  <div class="card-lbl">All Companies &mdash; Q4 FY26 &amp; FY26 Annual Quick Reference (&#8377; Crore)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>Sub-Sector</th><th>Q4 Revenue</th><th>Q4 YoY</th><th>Q4 EBITDA / Margin</th><th>Q4 PAT</th><th>Q4 PAT YoY</th><th>FY26 Revenue</th><th>FY26 PAT</th><th>Order Book / Note</th><th>Dividend</th></tr></thead>
+    <tbody>
+      <tr><td class="tb"><span class="dot" style="background:var(--irfc)"></span>IRFC</td><td>Financier</td><td class="num">&#8377;7,336</td><td class="tpos">+9.1%</td><td class="num">N/A (lender)</td><td class="num">&#8377;1,684</td><td class="warn">+0.1%</td><td class="num">&#8377;27,284</td><td class="tpos">&#8377;7,009</td><td>Zero NPA; loan book</td><td class="num">&mdash;</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--rvnl)"></span>RVNL</td><td>Execution</td><td class="num">&#8377;6,696</td><td class="tpos">+4.2%</td><td class="tneg">&#8377;269 / 4.0%</td><td class="num">&#8377;187</td><td class="tneg">&minus;58.9%</td><td class="num">~&#8377;20,000</td><td class="tneg">&#8377;800</td><td>FY27 +15&ndash;20% guide</td><td class="num">&#8377;0.71</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--ircon)"></span>IRCON</td><td>Execution</td><td class="num">&#8377;3,189</td><td class="tneg">&minus;7.0%</td><td class="num">&#8377;1,279 / 13.5%*</td><td class="num">&#8377;191.5</td><td class="tneg">&minus;9.0%</td><td class="num">&#8377;9,071</td><td class="tneg">&#8377;592</td><td>&#8377;24,984 Cr</td><td class="num">&#8377;1.90</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--irctc)"></span>IRCTC</td><td>Services</td><td class="num">&#8377;1,460</td><td class="tpos">+15.1%</td><td class="tpos">&#8377;399 / 27.3%</td><td class="num">&#8377;326</td><td class="tneg">&minus;8.9%</td><td class="num">&#8377;5,215</td><td class="tpos">&#8377;1,393</td><td>Monopoly e-ticketing</td><td class="num">&#8377;1.00 (FY25)</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--railtel)"></span>RailTel</td><td>Services</td><td class="num">&#8377;1,680</td><td class="num">&mdash;</td><td class="num">Modest (mix)</td><td class="num">&#8377;142</td><td class="tpos">+127% QoQ</td><td class="num">&mdash;</td><td class="tpos">&#8377;346</td><td>&#8377;11,466 Cr</td><td class="num">&mdash;</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--rites)"></span>RITES</td><td>Services</td><td class="num">&#8377;768</td><td class="tpos">+27.6%</td><td class="tpos">&#8377;568 / 23.5%*</td><td class="num">&#8377;130</td><td class="warn">&minus;2.0%</td><td class="num">&#8377;2,415</td><td class="tpos">&#8377;454</td><td>&#8377;9,416 Cr (Record)</td><td class="num">&#8377;2.75</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--concor)"></span>CONCOR</td><td>Logistics</td><td class="num">&#8377;2,257</td><td class="tneg">&minus;1.1%</td><td class="warn">&#8377;420 / 18.6%</td><td class="num">&#8377;258</td><td class="tneg">&minus;14.5%</td><td class="num">&#8377;9,059</td><td class="num">&mdash;</td><td>EXIM + domestic</td><td class="num">&#8377;8.60</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--beml)"></span>BEML</td><td>Rolling Stock</td><td class="num">&#8377;1,794</td><td class="tpos">+8.6%</td><td class="tneg">&#8377;271 / 15.1%</td><td class="num">&#8377;180</td><td class="tneg">&minus;37.5%</td><td class="num">&#8377;4,351</td><td class="tneg">&#8377;141</td><td>&#8377;15,896 Cr (Record)</td><td class="num">&#8377;2.85 total</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--jwl)"></span>Jupiter Wagons</td><td>Rolling Stock</td><td class="num">&#8377;780</td><td class="tneg">&minus;25.0%</td><td class="tneg">&#8377;83 / 10.6%</td><td class="num">&#8377;29</td><td class="tneg">&minus;72.0%</td><td class="num">&#8377;2,896</td><td class="tneg">&#8377;241</td><td>Wheel plant; BESS</td><td class="num">TBA</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--texr)"></span>Texmaco Rail</td><td>Rolling Stock</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">pending</td><td class="num">&#8377;57.7</td><td class="tpos">+45.1%</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td>Net debt &#8377;444 Cr</td><td class="num">TBA</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--titagarh)"></span>Titagarh Rail</td><td>Rolling Stock</td><td class="num">see FY26</td><td class="num">&mdash;</td><td class="num">~9&ndash;10%*</td><td class="num">see FY26</td><td class="num">&mdash;</td><td class="num">&#8377;3,316</td><td class="tneg">&#8377;181</td><td>~&#8377;26,000 Cr; ~25% wagon share</td><td class="num">TBA</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;font-weight:500;">Figures: standalone or consolidated as reported. PAT YoY compares Q4 FY26 vs Q4 FY25 except RailTel (sequential, QoQ). EBITDA / margin is Q4 FY26 unless marked * (FY26 full-year, where the company does not separately disclose a clean Q4 operating-profit line). IRFC is a finance company, so EBITDA margin is not a meaningful metric (N/A). Texmaco Q4 EBITDA pending its line-item filing; Titagarh margin approximate from 9M trend. RVNL FY26 revenue approximate (consol). CONCOR FY26 figure is operating revenue. All from BSE/NSE filings and investor presentations &mdash; May 2026.</p>
+</div>
+<div class="verdict-card">
+  <div class="verdict-title">&#128642; FY26 Sector Verdict &mdash; Capex Tailwind, Profitability Headwind</div>
+  <div class="verdict-body">The railway pack is a leveraged play on India&rsquo;s record railway capital outlay, but FY26 exposed a sharp gap between <strong>topline momentum</strong> and <strong>bottom-line delivery</strong>. IRFC remains the steadiest anchor &mdash; a low-spread, zero-NPA annuity lender that posted record FY26 profit even as Q4 stayed flat. Service-and-IP businesses (IRCTC monopoly e-ticketing, RailTel data-centre swing, RITES record &#8377;9,416 Cr order book) carry the best margin quality. Execution names (RVNL &minus;59% Q4 PAT, IRCON &minus;18% FY26 PAT) bore the brunt of margin compression, cost overruns and lumpy order conversion &mdash; RVNL also flagged a &#8377;1,116 Cr KRCL receivable. Rolling-stock manufacturers were the most volatile: BEML and Jupiter Wagons set revenue / order-book records yet saw profits halve or worse, while Texmaco bucked the trend with +45% PAT and deleveraging. The structural thesis &mdash; electrification, Vande Bharat, dedicated freight corridors, station redevelopment, metro expansion &mdash; is intact and order books are at or near records. The FY27 question is purely execution and margin recovery, not demand.</div>
+</div>
+</div>
+
+<!-- ===== COMPANIES ===== -->
+<div class="panel" id="tab-companies">
+<div class="sec-hdr">Companies <span class="sec-note">&middot; Select Company &middot; Q4 FY26 P&amp;L &middot; Business Moat &amp; Role in Railway Ecosystem</span></div>
+<div class="co-sel">
+  <span style="font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">Company</span>
+  <button class="co-sel-btn" id="cobtn-irfc" onclick="showCo('irfc',this)" style="background:var(--irfc);color:#fff;border-color:var(--irfc);">IRFC</button>
+  <button class="co-sel-btn" id="cobtn-rvnl" onclick="showCo('rvnl',this)">RVNL</button>
+  <button class="co-sel-btn" id="cobtn-ircon" onclick="showCo('ircon',this)">IRCON</button>
+  <button class="co-sel-btn" id="cobtn-irctc" onclick="showCo('irctc',this)">IRCTC</button>
+  <button class="co-sel-btn" id="cobtn-railtel" onclick="showCo('railtel',this)">RailTel</button>
+  <button class="co-sel-btn" id="cobtn-rites" onclick="showCo('rites',this)">RITES</button>
+  <button class="co-sel-btn" id="cobtn-concor" onclick="showCo('concor',this)">CONCOR</button>
+  <button class="co-sel-btn" id="cobtn-beml" onclick="showCo('beml',this)">BEML</button>
+  <button class="co-sel-btn" id="cobtn-jwl" onclick="showCo('jwl',this)">Jupiter</button>
+  <button class="co-sel-btn" id="cobtn-texr" onclick="showCo('texr',this)">Texmaco</button>
+</div>
+
+<!-- IRFC -->
+<div class="co-sec on" id="co-irfc">
+  <div class="grp-hdr" style="background:var(--irfc-s);border-color:var(--irfc);color:var(--irfc);">IRFC &mdash; NSE: IRFC &middot; Railway Financing Arm &middot; CMD: Manoj Kumar Dubey &middot; Dedicated lender to Indian Railways &middot; Zero NPA history</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Standalone)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;7,336 Cr</td><td class="num">&#8377;6,723 Cr</td><td class="tpos">+9.1%</td></tr>
+          <tr><td>Total Income</td><td class="num">&#8377;7,329 Cr</td><td class="num">&#8377;6,724 Cr</td><td class="tpos">+9.0%</td></tr>
+          <tr><td>Interest Income</td><td class="tpos">&#8377;2,902 Cr</td><td class="num">&#8377;1,970 Cr</td><td class="tpos">+47.3%</td></tr>
+          <tr><td>Total Expenses</td><td class="num">&#8377;5,644 Cr</td><td class="num">&#8377;5,042 Cr</td><td class="warn">+11.9%</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="warn">&#8377;1,684 Cr</td><td class="num">&#8377;1,682 Cr</td><td class="warn">+0.1%</td></tr>
+          <tr><td>FY26 PAT (Record)</td><td class="tpos">&#8377;7,009 Cr</td><td class="num">&#8377;6,502 Cr</td><td class="tpos">+7.8%</td></tr>
+          <tr><td>FY26 Net Worth</td><td class="tpos">&#8377;56,000+ Cr</td><td class="num">&#8377;49,179 Cr</td><td class="tpos">All-time high</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">IRFC &mdash; Moat &amp; Role</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Moat Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Captive Mandate</td><td style="white-space:normal">Primary market-borrowing arm of Indian Railways; funds rolling stock and project assets on a lease / annuity model</td></tr>
+          <tr><td class="tb">Zero NPA</td><td style="white-space:normal">Lends to a sovereign-backed counterparty; cost-plus margin means near-zero credit risk through the cycle</td></tr>
+          <tr><td class="tb">Scale of Book</td><td style="white-space:normal">Total assets above &#8377;4.90 lakh crore; FY26 sanctions &#8377;72,949 Cr, disbursals ~&#8377;35,067 Cr</td></tr>
+          <tr><td class="tb">Diversification</td><td style="white-space:normal">Expanding beyond railways into broader infra financing &mdash; targeting &#8377;1 lakh crore loan sanctions milestone</td></tr>
+          <tr><td class="tb">Margin Caveat</td><td style="white-space:normal">Thin NIM (~1.5%); flat Q4 vs revenue growth shows the spread squeeze inherent in a low-risk model</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- RVNL -->
+<div class="co-sec" id="co-rvnl">
+  <div class="grp-hdr" style="background:var(--rvnl-s);border-color:var(--rvnl);color:var(--rvnl);">RVNL &mdash; NSE: RVNL &middot; Navratna &middot; Project Execution Arm of Indian Railways &middot; Turnkey: design to commissioning</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;6,696 Cr</td><td class="num">&#8377;6,427 Cr</td><td class="tpos">+4.2%</td></tr>
+          <tr><td>Total Expenses</td><td class="warn">&#8377;6,535 Cr</td><td class="num">&#8377;6,120 Cr</td><td class="warn">+6.8%</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="tneg">&#8377;187 Cr</td><td class="num">&#8377;455 Cr</td><td class="tneg">&minus;58.9%</td></tr>
+          <tr><td>FY26 PAT</td><td class="tneg">&#8377;800 Cr</td><td class="num">&#8377;1,189 Cr</td><td class="tneg">&minus;32.6%</td></tr>
+          <tr><td>FY26 EPS</td><td class="num">&#8377;3.84</td><td class="num">&#8377;6.15</td><td class="tneg">Lower</td></tr>
+          <tr><td>Final Dividend</td><td class="num">&#8377;0.71/sh</td><td class="num">&#8377;1.72/sh</td><td class="warn">Reduced</td></tr>
+          <tr><td>KRCL Receivable (review)</td><td class="warn">&#8377;1,116 Cr</td><td class="num">&mdash;</td><td class="warn">Emphasis of matter</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">RVNL &mdash; Moat &amp; Watch Items</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Executing Arm</td><td style="white-space:normal">Works for and on behalf of the Ministry of Railways; full turnkey cycle from concept to commissioning</td></tr>
+          <tr><td class="tb">Diversification</td><td style="white-space:normal">Expanding into roads (new AP subsidiary) and BharatNet telecom &mdash; management expects strong FY27 margins from BharatNet</td></tr>
+          <tr><td class="tb">FY27 Guidance</td><td style="white-space:normal">Revenue growth guided at 15&ndash;20% with improved margins; Q1 FY27 may stay soft</td></tr>
+          <tr><td class="tb">Margin Pressure</td><td style="white-space:normal">Q4 profit fell 59% even as revenue grew &mdash; cost overruns and unfavourable project mix the key culprits</td></tr>
+          <tr><td class="tb">Receivable Risk</td><td style="white-space:normal">&#8377;1,116 Cr due from JV KRCL (incl. &#8377;890 Cr delayed-payment interest) pending board resolution</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- IRCON -->
+<div class="co-sec" id="co-ircon">
+  <div class="grp-hdr" style="background:var(--ircon-s);border-color:var(--ircon);color:var(--ircon);">IRCON International &mdash; NSE: IRCON &middot; Navratna &middot; Railway + Highway Infra Construction &middot; Overseas execution</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tneg">&#8377;3,189 Cr</td><td class="num">&#8377;3,412 Cr</td><td class="tneg">&minus;7.0%</td></tr>
+          <tr><td>Profit Before Tax</td><td class="num">&#8377;248 Cr</td><td class="num">&#8377;263 Cr</td><td class="tneg">&minus;5.8%</td></tr>
+          <tr><td>Net Profit (owners)</td><td class="tneg">&#8377;191.5 Cr</td><td class="num">&#8377;210.9 Cr</td><td class="tneg">&minus;9.0%</td></tr>
+          <tr><td>FY26 Revenue</td><td class="tneg">&#8377;9,071 Cr</td><td class="num">&#8377;10,760 Cr</td><td class="tneg">&minus;15.7%</td></tr>
+          <tr><td>FY26 PAT (owners)</td><td class="tneg">&#8377;595.5 Cr</td><td class="num">&#8377;727.4 Cr</td><td class="tneg">&minus;18.1%</td></tr>
+          <tr><td>FY26 EBITDA</td><td class="num">&#8377;1,279 Cr</td><td class="num">&#8377;1,276 Cr</td><td class="warn">Flat (+0.3%)</td></tr>
+          <tr><td>Q4 QoQ Revenue</td><td class="tpos">+50.5%</td><td class="num">&mdash;</td><td class="tpos">Year-end push</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">IRCON &mdash; Order Book &amp; Moat</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Order Book</td><td style="white-space:normal">&#8377;24,984 Cr at Mar 2026 &mdash; railways &#8377;19,459 Cr, highways &#8377;3,919 Cr, other infra &#8377;1,606 Cr</td></tr>
+          <tr><td class="tb">EBITDA Margin</td><td style="white-space:normal">FY26 EBITDA margin ~13.5% &mdash; held stable despite the revenue drop</td></tr>
+          <tr><td class="tb">Net Worth</td><td style="white-space:normal">Rose to &#8377;6,450 Cr (FY26) from &#8377;6,081 Cr; auditors issued an unmodified opinion</td></tr>
+          <tr><td class="tb">JV Cleanup</td><td style="white-space:normal">IRSDC under voluntary liquidation (26% IRCON stake); ISTPL toll rights expired May 2026, assets to NHAI</td></tr>
+          <tr><td class="tb">Key Watch</td><td style="white-space:normal">Revenue declined 16% in FY26 &mdash; order-intake pace and conversion are the swing factors for FY27</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- IRCTC -->
+<div class="co-sec" id="co-irctc">
+  <div class="grp-hdr" style="background:var(--irctc-s);border-color:var(--irctc);color:var(--irctc);">IRCTC &mdash; NSE: IRCTC &middot; Navratna &middot; Only authorised online rail ticketing + catering + Rail Neer &middot; Asset-light monopoly</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="tpos">&#8377;1,460 Cr</td><td class="num">&#8377;1,269 Cr</td><td class="tpos">+15.1%</td></tr>
+          <tr><td>EBITDA</td><td class="num">&#8377;399 Cr</td><td class="num">&#8377;386 Cr</td><td class="warn">+3.5%</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="tneg">&#8377;326 Cr</td><td class="num">&#8377;358 Cr</td><td class="tneg">&minus;8.9%</td></tr>
+          <tr><td>FY26 Revenue</td><td class="tpos">&#8377;5,215 Cr</td><td class="num">&#8377;4,675 Cr</td><td class="tpos">+11.6%</td></tr>
+          <tr><td>FY26 PAT</td><td class="tpos">&#8377;1,393 Cr</td><td class="num">&#8377;1,315 Cr</td><td class="tpos">+5.9%</td></tr>
+          <tr><td>Book Value</td><td class="num">~9.5&times; P/BV</td><td class="num">&mdash;</td><td class="num">Premium</td></tr>
+          <tr><td>Promoter Holding</td><td class="num">62.40%</td><td class="num">62.40%</td><td class="num">Stable (Govt)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">IRCTC &mdash; Moat &amp; Watch</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Regulated Monopoly</td><td style="white-space:normal">Sole authorised online rail ticketing platform; convenience fee is a pure high-margin annuity stream</td></tr>
+          <tr><td class="tb">Four Segments</td><td style="white-space:normal">Internet ticketing, catering, Rail Neer (packaged water), tourism &mdash; tourism is the fastest grower</td></tr>
+          <tr><td class="tb">Asset-Light</td><td style="white-space:normal">High return on capital; minimal capex; cash-generative with steady dividend payout</td></tr>
+          <tr><td class="tb">Margin Watch</td><td style="white-space:normal">Q4 PAT fell YoY and margins compressed despite record revenue &mdash; cost mix and segment shift to lower-margin tourism</td></tr>
+          <tr><td class="tb">Policy Risk</td><td style="white-space:normal">Convenience-fee structure is government-sensitive; any cap or sharing change directly hits the high-margin core</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- RAILTEL -->
+<div class="co-sec" id="co-railtel">
+  <div class="grp-hdr" style="background:var(--railtel-s);border-color:var(--railtel);color:var(--railtel);">RailTel &mdash; NSE: RAILTEL &middot; Mini Ratna &middot; Telecom &amp; nationwide optic-fiber network &middot; Data centres &amp; digital services</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">QoQ</th></tr></thead>
+        <tbody>
+          <tr><td>Operating Revenue</td><td class="tpos">&#8377;1,669 Cr</td><td class="num">&#8377;913 Cr</td><td class="tpos">+82.8%</td></tr>
+          <tr><td>Total Revenue</td><td class="num">&#8377;1,680 Cr</td><td class="num">&mdash;</td><td class="tpos">Year-end execution</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="tpos">&#8377;142 Cr</td><td class="num">&#8377;63 Cr</td><td class="tpos">+127%</td></tr>
+          <tr><td>FY26 PAT</td><td class="tpos">&#8377;346 Cr</td><td class="num">&#8377;296 Cr</td><td class="tpos">+17%</td></tr>
+          <tr><td>Telecom Segment</td><td class="tpos">&mdash;</td><td class="num">&mdash;</td><td class="tpos">+83% QoQ</td></tr>
+          <tr><td>Order Book</td><td class="num">&#8377;11,466 Cr</td><td class="num">&mdash;</td><td class="num">Strong visibility</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">RailTel &mdash; Moat &amp; Watch</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Fiber Backbone</td><td style="white-space:normal">Owns one of India&rsquo;s largest neutral optic-fiber networks laid along railway tracks &mdash; a hard-to-replicate asset</td></tr>
+          <tr><td class="tb">Data-Centre Pivot</td><td style="white-space:normal">Aggressively expanding data-centre capacity and digital / e-governance services beyond pure connectivity</td></tr>
+          <tr><td class="tb">Order Book</td><td style="white-space:normal">&#8377;11,466 Cr provides multi-year revenue cover across government digital projects</td></tr>
+          <tr><td class="tb">Lumpiness</td><td style="white-space:normal">Quarterly revenue is project-driven and uneven &mdash; the huge Q4 swing reflects year-end execution, not run-rate</td></tr>
+          <tr><td class="tb">Competition</td><td style="white-space:normal">Faces large private telcos and IT-services firms in the digital-services and data-centre space</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- RITES -->
+<div class="co-sec" id="co-rites">
+  <div class="grp-hdr" style="background:var(--rites-s);border-color:var(--rites);color:var(--rites);">RITES &mdash; NSE: RITES &middot; Mini Ratna &middot; Transport consultancy, exports, leasing, turnkey &middot; High-margin IP business</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Operating Revenue</td><td class="tpos">&#8377;768 Cr</td><td class="num">&#8377;602 Cr</td><td class="tpos">+27.6%</td></tr>
+          <tr><td>Total Income</td><td class="num">&#8377;799 Cr</td><td class="num">&#8377;626 Cr</td><td class="tpos">+27.7%</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="warn">&#8377;130 Cr</td><td class="num">&#8377;133 Cr</td><td class="warn">&minus;2.0%</td></tr>
+          <tr><td>FY26 Revenue</td><td class="tpos">&#8377;2,415 Cr</td><td class="num">&#8377;2,196 Cr</td><td class="tpos">+10.0%</td></tr>
+          <tr><td>FY26 PAT</td><td class="tpos">&#8377;454 Cr</td><td class="num">&#8377;424 Cr</td><td class="tpos">+7.3%</td></tr>
+          <tr><td>FY26 EBITDA Margin</td><td class="num">23.5%</td><td class="num">&mdash;</td><td class="tpos">High quality</td></tr>
+          <tr><td>Final Dividend</td><td class="num">&#8377;2.75/sh</td><td class="num">&mdash;</td><td class="num">95.4% payout</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">RITES &mdash; Moat &amp; Segments</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Consultancy Core</td><td style="white-space:normal">Highest-margin segment (~34% Q4 margin); transport / metro / bridge / airport / green-mobility advisory</td></tr>
+          <tr><td class="tb">Record Order Book</td><td style="white-space:normal">&#8377;9,416 Cr at Mar 2026 &mdash; all-time high; 120+ orders worth &#8377;958 Cr added in Q4 alone</td></tr>
+          <tr><td class="tb">Export Revival</td><td style="white-space:normal">Locomotive supply to CFM Mozambique a key FY26 driver; exports margin ~19%</td></tr>
+          <tr><td class="tb">Leasing</td><td style="white-space:normal">High-margin (~37%) rolling-stock leasing adds annuity stability to the mix</td></tr>
+          <tr><td class="tb">Payout</td><td style="white-space:normal">~95% FY26 payout ratio &mdash; strong cash generation, low capex intensity</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONCOR -->
+<div class="co-sec" id="co-concor">
+  <div class="grp-hdr" style="background:var(--concor-s);border-color:var(--concor);color:var(--concor);">CONCOR &mdash; NSE: CONCOR &middot; Navratna &middot; India&rsquo;s leading multimodal rail logistics &amp; container operator &middot; EXIM + domestic</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Standalone)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="warn">&#8377;2,257 Cr</td><td class="num">&#8377;2,281 Cr</td><td class="tneg">&minus;1.1%</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="tneg">&#8377;258 Cr</td><td class="num">&#8377;302 Cr</td><td class="tneg">&minus;14.5%</td></tr>
+          <tr><td>FY26 EXIM Revenue</td><td class="tpos">&#8377;6,009 Cr</td><td class="num">&#8377;5,733 Cr</td><td class="tpos">+4.8%</td></tr>
+          <tr><td>FY26 Domestic Revenue</td><td class="warn">&#8377;3,051 Cr</td><td class="num">&#8377;3,130 Cr</td><td class="tneg">&minus;2.5%</td></tr>
+          <tr><td>Total Dividend FY26</td><td class="num">&#8377;8.60/sh</td><td class="num">&mdash;</td><td class="num">3 interim + final</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">CONCOR &mdash; Moat &amp; Watch</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Terminal Network</td><td style="white-space:normal">Largest network of inland container depots and terminals &mdash; high entry barriers in rail container logistics</td></tr>
+          <tr><td class="tb">DFC Tailwind</td><td style="white-space:normal">Dedicated Freight Corridors structurally lower rail-haul cost and time, boosting rail&rsquo;s modal share</td></tr>
+          <tr><td class="tb">EXIM Engine</td><td style="white-space:normal">EXIM (port-linked) volumes drove FY26 growth; domestic cargo softened</td></tr>
+          <tr><td class="tb">PSA MoU</td><td style="white-space:normal">Signed MoU with PSA Mumbai to strengthen rail-based EXIM and domestic cargo movement</td></tr>
+          <tr><td class="tb">Margin Watch</td><td style="white-space:normal">Q4 PAT fell on flat revenue &mdash; land-licence-fee and empty-running costs remain swing factors</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- BEML -->
+<div class="co-sec" id="co-beml">
+  <div class="grp-hdr" style="background:var(--beml-s);border-color:var(--beml);color:var(--beml);">BEML &mdash; NSE: BEML &middot; Navratna &middot; CMD: Shantanu Roy &middot; Three verticals: Defence &amp; Aerospace, Mining &amp; Construction, Rail &amp; Metro</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tpos">&#8377;1,794 Cr</td><td class="num">&#8377;1,653 Cr</td><td class="tpos">+8.6%</td></tr>
+          <tr><td>EBITDA</td><td class="tneg">&#8377;271 Cr</td><td class="num">&#8377;424 Cr</td><td class="tneg">&minus;36%</td></tr>
+          <tr><td>Profit Before Tax</td><td class="tneg">&#8377;245 Cr</td><td class="num">&#8377;395 Cr</td><td class="tneg">&minus;38.0%</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="tneg">&#8377;180 Cr</td><td class="num">&#8377;288 Cr</td><td class="tneg">&minus;37.5%</td></tr>
+          <tr><td>FY26 Revenue (Record)</td><td class="tpos">&#8377;4,351 Cr</td><td class="num">&#8377;4,022 Cr</td><td class="tpos">+8.2%</td></tr>
+          <tr><td>FY26 PAT</td><td class="tneg">&#8377;141 Cr</td><td class="num">&#8377;293 Cr</td><td class="tneg">&minus;51.7%</td></tr>
+          <tr><td>Total Dividend FY26</td><td class="num">&#8377;2.85/sh</td><td class="num">&mdash;</td><td class="num">2nd interim + final</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">BEML &mdash; Moat &amp; Watch</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Record Order Book</td><td style="white-space:normal">&#8377;15,896 Cr at Mar 2026 &mdash; highest ever; spans metro coaches, defence and mining equipment</td></tr>
+          <tr><td class="tb">Metro Rolling Stock</td><td style="white-space:normal">Key domestic supplier of metro cars; rides the urban-transit and Vande Bharat / coach localisation push</td></tr>
+          <tr><td class="tb">R&amp;D Step-Up</td><td style="white-space:normal">R&amp;D spend up 150% to &#8377;251 Cr (6.25% of revenue) &mdash; indigenisation drive; record capex &#8377;379 Cr</td></tr>
+          <tr><td class="tb">Margin Collapse</td><td style="white-space:normal">Operating margin fell from ~25.6% to ~15.1% &mdash; higher material &amp; other expenses gutted FY26 profit</td></tr>
+          <tr><td class="tb">Diversified Risk</td><td style="white-space:normal">Defence + mining cyclicality plus lumpy order execution make quarterly profit volatile</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- JUPITER -->
+<div class="co-sec" id="co-jwl">
+  <div class="grp-hdr" style="background:var(--jwl-s);border-color:var(--jwl);color:var(--jwl);">Jupiter Wagons &mdash; NSE: JWL &middot; Private &middot; MD: Vivek Lohia &middot; Freight wagons, wheelsets, braking systems, EV / BESS</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &amp; FY26 &mdash; P&amp;L (Consolidated)</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="tneg">&#8377;780 Cr</td><td class="num">&#8377;1,045 Cr</td><td class="tneg">&minus;25.0%</td></tr>
+          <tr><td>EBITDA</td><td class="tneg">&#8377;83 Cr</td><td class="num">&#8377;153 Cr</td><td class="tneg">&minus;46%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="warn">10.6%</td><td class="num">14.7%</td><td class="tneg">&minus;410 bps</td></tr>
+          <tr><td>Net Profit (PAT)</td><td class="tneg">&#8377;29 Cr</td><td class="num">&#8377;103 Cr</td><td class="tneg">&minus;72.0%</td></tr>
+          <tr><td>FY26 Revenue</td><td class="tneg">&#8377;2,896 Cr</td><td class="num">&#8377;3,963 Cr</td><td class="tneg">&minus;26.9%</td></tr>
+          <tr><td>FY26 PAT</td><td class="tneg">&#8377;241 Cr</td><td class="num">&#8377;382 Cr</td><td class="tneg">&minus;36.9%</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="card-lbl">Jupiter Wagons &mdash; Moat &amp; Watch</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Wagon Leader</td><td style="white-space:normal">Major private freight-wagon maker; wagons remain 60%+ of sales even on brokerage FY28 estimates</td></tr>
+          <tr><td class="tb">Backward Integration</td><td style="white-space:normal">New wheel-manufacturing facility targets import substitution &mdash; meaningful contribution expected only post-FY28</td></tr>
+          <tr><td class="tb">BESS / EV Pivot</td><td style="white-space:normal">JEM Energy targets &#8377;500+ Cr battery / BESS revenue by FY28, &#8377;1,000 Cr by FY30; fresh MoUs signed</td></tr>
+          <tr><td class="tb">Sharp Q4 Fall</td><td style="white-space:normal">Revenue &minus;25% and PAT &minus;72% on slower wagon execution / wheelset availability constraints</td></tr>
+          <tr><td class="tb">Working Capital</td><td style="white-space:normal">Debtor days rose from ~54 to ~76 &mdash; receivables management a watch item</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEXMACO -->
+<div class="co-sec" id="co-texr">
+  <div class="grp-hdr" style="background:var(--texr-s);border-color:var(--texr);color:var(--texr);">Texmaco Rail &amp; Engineering &mdash; NSE: TEXRAIL &middot; Private &middot; MD: Sudipta Mukherjee &middot; Freight wagons + integrated rail &amp; infra systems</div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-lbl">Q4 FY26 &mdash; Highlights</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q4 FY26</th><th style="text-align:right">Q4 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Net Profit (PAT)</td><td class="tpos">&#8377;57.7 Cr</td><td class="num">&#8377;39.8 Cr</td><td class="tpos">+45.1%</td></tr>
+          <tr><td>Net Debt</td><td class="tpos">&#8377;444 Cr</td><td class="num">Higher</td><td class="tpos">Reduced</td></tr>
+          <tr><td>Net Debt / Equity</td><td class="tpos">0.21&times;</td><td class="num">0.22&times;</td><td class="tpos">Improving</td></tr>
+          <tr><td>Positioning</td><td class="num" style="white-space:normal">Integrated rail + infra solutions provider</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:10.5px;color:var(--muted);margin-top:8px;font-weight:500;">Detailed Q4 revenue and EBITDA lines to be filled once the full standalone / consolidated statement is parsed from the filing.</p>
+    </div>
+    <div class="card"><div class="card-lbl">Texmaco &mdash; Moat &amp; Watch</div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Pillar</th><th style="white-space:normal">Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Wagon Heritage</td><td style="white-space:normal">One of India&rsquo;s oldest freight-wagon makers; expanding into rail systems, EPC and technology-led businesses</td></tr>
+          <tr><td class="tb">Profit Turnaround</td><td style="white-space:normal">Q4 PAT +45% YoY on disciplined execution and cost optimisation &mdash; bucked the rolling-stock weakness</td></tr>
+          <tr><td class="tb">Deleveraging</td><td style="white-space:normal">Net debt down to &#8377;444 Cr; D/E improving to 0.21&times; &mdash; stronger balance sheet vs peers</td></tr>
+          <tr><td class="tb">Diversification</td><td style="white-space:normal">Building capabilities across manufacturing, engineering, rail systems and tech-driven verticals</td></tr>
+          <tr><td class="tb">Competition</td><td style="white-space:normal">Competes head-on with Titagarh and Jupiter on wagon tenders &mdash; order-mix and pricing discipline matter</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== VALUE CHAIN ===== -->
+<div class="panel" id="tab-value">
+<div class="sec-hdr">Railway Value Chain <span class="sec-note">&middot; Who Sits Where &middot; Capex Flow &middot; Margin Quality by Layer</span></div>
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-lbl">How the Railway Rupee Flows &mdash; From Budget to Bottom Line</div>
+  <p style="font-size:12px;line-height:1.7;font-weight:500;margin-bottom:10px;">India&rsquo;s railway capex is the engine. It flows through four layers, each with very different economics. <strong>Financiers</strong> fund the assets, <strong>executors</strong> build the lines, <strong>service / IP players</strong> monetise the running network, and <strong>rolling-stock makers</strong> supply the trains and wagons. Margin quality and risk rise as you move from contractors toward asset-light IP and regulated monopolies.</p>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Layer</th><th>Companies</th><th>Business Model</th><th>Margin Profile</th><th>Key Risk</th></tr></thead>
+    <tbody>
+      <tr><td class="tb">1. Financier</td><td>IRFC</td><td class="td-wrap">Borrows in markets, lends to Railways on lease / cost-plus</td><td class="tpos">Thin NIM, very stable</td><td class="td-wrap">Spread squeeze; rate cycle</td></tr>
+      <tr><td class="tb">2. Project Execution</td><td>RVNL, IRCON</td><td class="td-wrap">Turnkey EPC &mdash; new lines, electrification, doubling, bridges</td><td class="warn">Low single-digit to ~13% EBITDA; cyclical</td><td class="td-wrap">Cost overruns, receivables, order conversion</td></tr>
+      <tr><td class="tb">3. Services &amp; IP</td><td>IRCTC, RailTel, RITES</td><td class="td-wrap">Ticketing / catering, telecom-fiber / data, consultancy &amp; exports</td><td class="tpos">High &mdash; asset-light, IP / monopoly</td><td class="td-wrap">Policy / fee regulation; project lumpiness</td></tr>
+      <tr><td class="tb">4. Logistics</td><td>CONCOR</td><td class="td-wrap">Multimodal container haulage, ICDs, EXIM + domestic</td><td class="warn">Moderate; volume-driven</td><td class="td-wrap">Empty running, land-licence fee, port cycle</td></tr>
+      <tr><td class="tb">5. Rolling Stock</td><td>BEML, Jupiter, Texmaco, Titagarh</td><td class="td-wrap">Wagons, coaches, metro cars, wheelsets, Vande Bharat</td><td class="warn">Cyclical; order-book led; volatile margins</td><td class="td-wrap">Input costs, wheelset supply, lumpy orders</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="g2" style="margin-bottom:16px;">
+  <div class="card"><div class="card-lbl">Structural Demand Drivers &mdash; The Capex Supercycle</div>
+    <table style="font-size:11px;box-shadow:none;">
+      <thead><tr><th>Driver</th><th>Primary Beneficiaries</th></tr></thead>
+      <tbody>
+        <tr><td>Network electrification</td><td>IRCON, RVNL, IRFC</td></tr>
+        <tr><td>Vande Bharat &amp; coach push</td><td>BEML, Titagarh, Texmaco</td></tr>
+        <tr><td>Dedicated Freight Corridors</td><td>CONCOR, Jupiter, Texmaco</td></tr>
+        <tr><td>Station redevelopment</td><td>RITES, RVNL, IRCON</td></tr>
+        <tr><td>Metro &amp; urban transit</td><td>BEML, Titagarh, RVNL</td></tr>
+        <tr><td>Digital rail / fiber / data</td><td>RailTel, IRCTC</td></tr>
+        <tr><td>Asset financing for above</td><td>IRFC</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card"><div class="card-lbl">Margin Quality Ladder &mdash; FY26 Read</div>
+    <table style="font-size:11px;box-shadow:none;">
+      <thead><tr><th>Tier</th><th>Why</th><th>Examples</th><th>EBITDA Margin</th></tr></thead>
+      <tbody>
+        <tr><td class="tpos">Best</td><td class="td-wrap">Monopoly / asset-light IP</td><td>IRCTC, RITES</td><td class="num tpos">~23&ndash;27%</td></tr>
+        <tr><td class="tpos">Strong</td><td class="td-wrap">Network asset + annuity</td><td>RailTel, IRFC</td><td class="num">modest / N/A</td></tr>
+        <tr><td class="warn">Moderate</td><td class="td-wrap">Volume-driven logistics</td><td>CONCOR</td><td class="num warn">~18.6%</td></tr>
+        <tr><td class="warn">Cyclical</td><td class="td-wrap">Order-book manufacturing</td><td>BEML, Texmaco</td><td class="num warn">~15.1% (BEML)</td></tr>
+        <tr><td class="tneg">Thin / volatile</td><td class="td-wrap">EPC + input-cost exposed</td><td>RVNL, IRCON, Jupiter</td><td class="num tneg">4&ndash;13.5%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card">
+  <div class="card-lbl">PSU vs Private &mdash; Two Different Animals in One Sector</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Parameter</th><th>PSU Pack (IRFC, RVNL, IRCON, IRCTC, RailTel, RITES, CONCOR, BEML)</th><th>Private Pack (Jupiter, Texmaco, Titagarh)</th></tr></thead>
+    <tbody>
+      <tr><td class="tb">Primary Customer</td><td>Indian Railways / Govt ministries</td><td>Railways tenders + private freight + exports</td></tr>
+      <tr><td class="tb">Demand Visibility</td><td class="tpos">High &mdash; budget-linked, captive mandate</td><td class="warn">Order-book linked, more competitive</td></tr>
+      <tr><td class="tb">Ownership</td><td>President of India majority stake</td><td>Promoter-led</td></tr>
+      <tr><td class="tb">Dividend</td><td class="tpos">Generally high payout</td><td class="warn">Growth-reinvestment focus</td></tr>
+      <tr><td class="tb">Re-rating Lever</td><td>Diversification, capex cycle</td><td>Capacity expansion, backward integration</td></tr>
+      <tr><td class="tb">FY26 Theme</td><td>Record revenue, profit pressure</td><td>Volatile &mdash; Texmaco up, Jupiter down</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</div>
+
+<!-- ===== ORDER BOOKS & CAPEX ===== -->
+<div class="panel" id="tab-segments">
+<div class="sec-hdr">Order Books &amp; Capex <span class="sec-note">&middot; Revenue Visibility &middot; Records Set in FY26 &middot; Where the Pipeline Sits</span></div>
+<div class="trojan-card">
+  <div class="trojan-title">&#128230; Order Books at or Near Records &mdash; Demand Was Never the Problem</div>
+  <p style="font-size:12.5px;line-height:1.7;font-weight:500;">FY26&rsquo;s profit weakness sat alongside <strong>record order books</strong> across the pack. RITES (&#8377;9,416 Cr), BEML (&#8377;15,896 Cr) and IRCON (&#8377;24,984 Cr) all reported strong pipelines; Titagarh sits near &#8377;26,000 Cr. The story is one of conversion and margin, not a demand cliff. The FY27 swing factor is how efficiently this backlog turns into profitable revenue.</p>
+</div>
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-lbl">Order Book / Pipeline Snapshot &mdash; March 2026 (&#8377; Crore)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>Order Book / Book Size</th><th>Status</th><th>Composition / Note</th></tr></thead>
+    <tbody>
+      <tr><td class="tb"><span class="dot" style="background:var(--ircon)"></span>IRCON</td><td class="num">&#8377;24,984 Cr</td><td>Diversified</td><td class="td-wrap">Railways &#8377;19,459 Cr, Highways &#8377;3,919 Cr, Other &#8377;1,606 Cr</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--titagarh)"></span>Titagarh</td><td class="num">~&#8377;26,000 Cr</td><td>Published</td><td class="td-wrap">Freight + passenger rolling stock; RBMV / metro orders</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--beml)"></span>BEML</td><td class="num">&#8377;15,896 Cr</td><td class="tpos">Record</td><td class="td-wrap">Defence + mining + rail/metro; FY26 inflow &#8377;5,440 Cr</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--railtel)"></span>RailTel</td><td class="num">&#8377;11,466 Cr</td><td>Strong</td><td class="td-wrap">Telecom, fiber, data centre, digital governance</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--rites)"></span>RITES</td><td class="num">&#8377;9,416 Cr</td><td class="tpos">Record</td><td class="td-wrap">Consultancy, exports, leasing, turnkey</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--irfc)"></span>IRFC</td><td class="num">&#8377;72,949 Cr</td><td>Sanctions FY26</td><td class="td-wrap">Disbursals ~&#8377;35,067 Cr; targeting &#8377;1 lakh Cr sanctions</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--rvnl)"></span>RVNL</td><td class="num">Multi-year</td><td>Healthy</td><td class="td-wrap">FY27 revenue guided +15&ndash;20%; BharatNet upside</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--irctc)"></span>IRCTC</td><td class="num">N/A</td><td>Monopoly service</td><td class="td-wrap">No order book &mdash; annuity convenience-fee + catering model, not a project business</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="g3" style="margin-bottom:16px;">
+  <div class="rm-card"><div class="rm-icon">&#128176;</div><div class="rm-title">Capex Step-Ups (FY26)</div><div class="rm-body">BEML record capex &#8377;379 Cr and R&amp;D up 150% to &#8377;251 Cr (6.25% of revenue). Jupiter building a wheel-manufacturing plant. Texmaco deleveraging while investing in rail systems. The pack is building capacity ahead of the cycle.</div></div>
+  <div class="rm-card"><div class="rm-icon">&#128200;</div><div class="rm-title">Dividend Signals</div><div class="rm-body">CONCOR &#8377;8.60/sh total, RITES &#8377;2.75 final (~95% payout), BEML &#8377;2.85 total, IRCON &#8377;1.90, RVNL &#8377;0.71. PSU payouts stayed generous even where profit fell &mdash; balance-sheet comfort intact.</div></div>
+  <div class="rm-card"><div class="rm-icon">&#9881;&#65039;</div><div class="rm-title">Supply Constraints</div><div class="rm-body">Wheelset availability hit wagon makers (Titagarh, Jupiter) through FY26, capping production. Backward-integration (Jupiter wheel plant) is the structural fix but only contributes post-FY28.</div></div>
+</div>
+<div class="card">
+  <div class="card-lbl">FY27 Watch &mdash; What Turns Backlog into Profit</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Lever</th><th>Who It Helps</th><th>Why It Matters</th></tr></thead>
+    <tbody>
+      <tr><td class="tb">Execution pace</td><td>RVNL, IRCON</td><td class="td-wrap">Faster, cleaner project closure lifts margins off depressed FY26 base</td></tr>
+      <tr><td class="tb">Wheelset supply normalising</td><td>Jupiter, Titagarh</td><td class="td-wrap">Removes the production cap that gutted FY26 wagon volumes</td></tr>
+      <tr><td class="tb">BharatNet ramp</td><td>RVNL, RailTel</td><td class="td-wrap">High-margin digital revenue layered onto core rail business</td></tr>
+      <tr><td class="tb">Export orders</td><td>RITES, Texmaco</td><td class="td-wrap">Higher-margin overseas locomotive / wagon supply diversifies the book</td></tr>
+      <tr><td class="tb">Receivable resolution</td><td>RVNL</td><td class="td-wrap">KRCL &#8377;1,116 Cr clarity removes an overhang on reported profit</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</div>
+
+<!-- ===== CHARTS ===== -->
+<div class="panel" id="tab-charts">
+<div class="sec-hdr">Charts <span class="sec-note">&middot; Q4 FY26 &amp; Annual FY26 &middot; Revenue &middot; PAT &middot; YoY Growth &middot; Order Books</span></div>
+<div style="margin-bottom:12px;">
+  <button id="chq" onclick="showCharts('q',this)" style="background:#2a1c0d;color:#fff;border:none;" class="per-btn">Q4 FY26</button>
+  <button id="cha" onclick="showCharts('a',this)" class="per-btn">Annual FY26</button>
+  <button id="chr" onclick="showCharts('r',this)" class="per-btn">Order Books</button>
+</div>
+<div id="chq-view">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 Revenue (&#8377; Cr)</h3><p class="sub">Log scale &mdash; lets small bars stay readable next to IRFC</p><div class="chart-box"><canvas id="q4Rev"></canvas></div></div>
+    <div class="chart-card"><h3>Q4 FY26 PAT (&#8377; Cr)</h3><p class="sub">Log scale &mdash; IRFC &#8377;1,684 Cr vs Jupiter &#8377;29 Cr both visible</p><div class="chart-box"><canvas id="q4Pat"></canvas></div></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 PAT Growth YoY (%)</h3><p class="sub">RailTel shown QoQ; the profit-pressure quarter in one chart</p><div class="chart-box"><canvas id="q4Grw"></canvas></div></div>
+    <div class="chart-card"><h3>Q4 FY26 Revenue vs PAT (&#8377; Cr)</h3><p class="sub">Log scale &mdash; revenue (orange) vs PAT (green), all 10 names</p><div class="chart-box"><canvas id="q4Combo"></canvas></div></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Q4 FY26 EBITDA Margin (%)</h3><p class="sub">Operating-profit quality &mdash; IRCTC and RITES lead; IRFC excluded (lender)</p><div class="chart-box"><canvas id="q4Ebm"></canvas></div></div>
+    <div class="chart-card"><h3>Q4 FY26 EBITDA (&#8377; Cr)</h3><p class="sub">Absolute operating profit; * = FY26 full-year (IRCON, RITES)</p><div class="chart-box"><canvas id="q4Eb"></canvas></div></div>
+  </div>
+</div>
+<div id="cha-view" style="display:none;">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>FY26 Revenue (&#8377; Cr)</h3><p class="sub">Log scale &mdash; IRFC scale stands apart but all bars readable</p><div class="chart-box"><canvas id="fyRev"></canvas></div></div>
+    <div class="chart-card"><h3>FY26 PAT (&#8377; Cr)</h3><p class="sub">Log scale &mdash; IRFC record vs the rest, all visible</p><div class="chart-box"><canvas id="fyPat"></canvas></div></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>FY26 PAT Growth YoY (%)</h3><p class="sub">Only IRFC, IRCTC, RailTel, RITES grew profit; execution + mfg fell</p><div class="chart-box"><canvas id="fyGrw"></canvas></div></div>
+    <div class="chart-card"><h3>FY26 PAT &mdash; Winners vs Losers (&#8377; Cr)</h3><p class="sub">Log scale; green = grew YoY, red = fell YoY</p><div class="chart-box"><canvas id="fyWin"></canvas></div></div>
+  </div>
+</div>
+<div id="chr-view" style="display:none;">
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="chart-card"><h3>Order Book / Pipeline (&#8377; Cr)</h3><p class="sub">Mar 2026 &mdash; IRCON and Titagarh lead the build pipeline</p><div class="chart-box"><canvas id="obChart"></canvas></div></div>
+    <div class="chart-card"><h3>FY26 Dividend per Share (&#8377;)</h3><p class="sub">CONCOR highest absolute; RITES near-full payout</p><div class="chart-box"><canvas id="divChart"></canvas></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ===== SWOT ===== -->
+<div class="panel" id="tab-swot">
+<div class="sec-hdr">SWOT &amp; Moat <span class="sec-note">&middot; Sector-Level &middot; Per-Company Strength / Weakness / Opportunity / Threat</span></div>
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-lbl">Sector-Level SWOT &mdash; India Railway Pack</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+      <li>Record government railway capital outlay; multi-year demand visibility</li>
+      <li>PSU pack has captive / sovereign-backed customer in Indian Railways</li>
+      <li>Order books at or near all-time highs across executors and manufacturers</li>
+      <li>Asset-light monopolies (IRCTC) and network assets (RailTel, IRFC) with high return on capital</li>
+    </ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+      <li>FY26 showed widespread margin compression &mdash; topline grew, profits fell</li>
+      <li>EPC players exposed to cost overruns, receivables, lumpy conversion</li>
+      <li>Rolling-stock margins volatile; hit by wheelset / input constraints</li>
+      <li>Thin financier spreads (IRFC NIM ~1.5%) cap profit growth</li>
+    </ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+      <li>Vande Bharat, DFCs, electrification, station redevelopment, metro expansion</li>
+      <li>Backward integration (Jupiter wheels) for import substitution</li>
+      <li>Export orders (RITES, Texmaco) and digital rail (RailTel, BharatNet)</li>
+      <li>Diversification into roads, defence, data centres beyond core rail</li>
+    </ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+      <li>Policy / fee regulation risk (IRCTC convenience fee, tariff structure)</li>
+      <li>Order-execution slippage and rising material / other expenses</li>
+      <li>De-rating risk after a strong multi-year PSU run-up; valuation reset</li>
+      <li>Receivable / JV overhangs (e.g. RVNL&ndash;KRCL &#8377;1,116 Cr)</li>
+    </ul></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--irfc)"></span>IRFC &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Zero NPA, captive Railways lender</li><li>Record FY26 PAT, all-time-high net worth</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Thin NIM; flat Q4 profit</li><li>Earnings growth structurally capped</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>Diversify into broader infra finance</li><li>&#8377;1 lakh Cr sanctions milestone</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Spread / rate-cycle pressure</li><li>Premium valuation vs PFC / REC</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--rvnl)"></span>RVNL &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Turnkey executing arm of Railways</li><li>Healthy multi-year order pipeline</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Q4 PAT &minus;59%, FY26 &minus;33%</li><li>Margin volatility, project mix</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>BharatNet + roads diversification</li><li>FY27 revenue guide +15&ndash;20%</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>KRCL &#8377;1,116 Cr receivable</li><li>Cost overruns on fixed-price jobs</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--irctc)"></span>IRCTC &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Regulated monopoly e-ticketing</li><li>Asset-light, cash-generative</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Q4 PAT fell, margins compressed</li><li>Tourism mix dilutes blended margin</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>Tourism &amp; premium-train growth</li><li>Data monetisation potential</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Convenience-fee policy risk</li><li>Stock down ~33% in a year</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--beml)"></span>BEML &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Record revenue + &#8377;15,896 Cr order book</li><li>Three verticals diversify demand</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>FY26 PAT &minus;52%; margin collapse</li><li>Material / other costs spiked</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>Metro coaches, defence indigenisation</li><li>R&amp;D step-up for new platforms</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Lumpy execution, cyclical mining</li><li>Margin sustainability questioned</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--ircon)"></span>IRCON &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>&#8377;24,984 Cr order book; rail + highways</li><li>Stable ~13.5% EBITDA margin</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>FY26 revenue &minus;16%, PAT &minus;18%</li><li>Order-intake pace slowed</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>Overseas + highways diversification</li><li>Net worth rising; clean audit</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Revenue decline must reverse</li><li>JV cleanup (IRSDC, ISTPL)</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--rites)"></span>RITES &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Record &#8377;9,416 Cr order book</li><li>High-margin consultancy + leasing</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Q4 PAT &minus;2% on margin mix</li><li>Turnkey segment drags blended margin</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>Export revival (Mozambique locos)</li><li>~95% payout; cash-rich</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Slow long-term growth, rich PE</li><li>Stock down ~31% in a year</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--railtel)"></span>RailTel &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Hard-to-replicate fiber backbone</li><li>&#8377;11,466 Cr order book; FY26 PAT +17%</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Lumpy, project-driven quarters</li><li>Big Q4 swing not a run-rate</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>Data-centre + digital governance</li><li>BharatNet ramp upside</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Private telco / IT-services rivalry</li><li>Margin pressure on connectivity</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--concor)"></span>CONCOR &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Largest ICD / terminal network</li><li>DFC structural cost tailwind</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Q4 PAT &minus;14.5% on flat revenue</li><li>Domestic cargo softened</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>EXIM growth; PSA Mumbai MoU</li><li>Rail modal-share gains via DFC</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Empty-running + land-licence fee</li><li>Port-cycle dependence</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--jwl)"></span>Jupiter Wagons &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Major private freight-wagon maker</li><li>Backward integration (wheel plant)</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Q4 PAT &minus;72%, revenue &minus;25%</li><li>EBITDA margin fell 410 bps</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>BESS / EV pivot (JEM Energy)</li><li>Wheel-plant import substitution</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Wheelset supply constraints</li><li>Rising debtor days (~76)</li></ul></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="co-hdr"><span class="dot" style="background:var(--texr)"></span>Texmaco &amp; Titagarh &mdash; Moat Map</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strength</div><ul class="swot-ul"><li>Texmaco: Q4 PAT +45%, deleveraging</li><li>Titagarh: only wagons + coaches maker, ~25% share</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weakness</div><ul class="swot-ul"><li>Titagarh FY26 PAT &minus;34% on wheelsets</li><li>Wagon margins thin and cyclical</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunity</div><ul class="swot-ul"><li>Vande Bharat, metro, freight corridors</li><li>~&#8377;26,000 Cr Titagarh order book</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threat</div><ul class="swot-ul"><li>Wheelset / input availability</li><li>Competitive wagon tenders</li></ul></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== ANALYST VIEW ===== -->
+<div class="panel" id="tab-analyst">
+<div class="sec-hdr">Analyst View <span class="sec-note">&middot; Consensus Ratings &middot; Valuation &middot; CB Research Earnings-Visibility (Not Advice)</span></div>
+<p style="font-size:11px;color:var(--muted);margin-bottom:14px;font-weight:600;">Ratings below summarise broad market / brokerage consensus tone and valuation context as of late May 2026. CMP and market-cap are approximate from the cited filings / coverage. <strong>This is data context for research, not a buy / sell recommendation.</strong></p>
+<div class="ac">
+  <div class="ac-head"><div class="ac-name">IRFC</div><span class="rat-pill rp-hold">CONSENSUS: NEUTRAL / HOLD</span></div>
+  <div class="ac-tp">P/E ~18&ndash;20&times; trailing</div>
+  <div class="ac-cmp">CMP ~&#8377;100 &middot; Mkt Cap ~&#8377;1,33,000 Cr &middot; ~23% off 52-wk levels over the year</div>
+  <div class="ac-text">Record FY26 PAT and zero NPAs underpin the quality, but the flat Q4 and thin ~1.5% NIM keep the growth narrative muted. Several analysts flag a premium valuation versus pure financiers like PFC (~8&times;) and REC (~5.6&times;), reflecting IRFC&rsquo;s scarcity / sovereign-proxy status rather than superior growth. The diversification push is the key re-rating watch.</div>
+</div>
+<div class="ac">
+  <div class="ac-head"><div class="ac-name">RVNL</div><span class="rat-pill rp-hold">CONSENSUS: CAUTIOUS / HOLD</span></div>
+  <div class="ac-tp">FY27 guide: revenue +15&ndash;20%</div>
+  <div class="ac-cmp">CMP ~&#8377;261&ndash;272 range around results &middot; Navratna executor</div>
+  <div class="ac-text">The 59% Q4 profit drop and KRCL receivable overhang tempered sentiment, with shares falling ~4% post-results. Bulls point to the FY27 growth guidance and BharatNet margin upside; bears focus on execution-margin volatility and a still-rich valuation after the multi-year PSU run. Conversion quality is the swing factor.</div>
+</div>
+<div class="ac">
+  <div class="ac-head"><div class="ac-name">IRCTC</div><span class="rat-pill rp-hold">CONSENSUS: HOLD</span></div>
+  <div class="ac-tp">Some desks see fair value ~&#8377;440&ndash;490</div>
+  <div class="ac-cmp">CMP ~&#8377;523 &middot; Mkt Cap ~&#8377;41,000&ndash;42,000 Cr &middot; ~9.5&times; P/BV</div>
+  <div class="ac-text">Monopoly quality keeps the multiple high, but the Q4 PAT dip and margin compression have analysts questioning the premium &mdash; the stock has lost ~33% over the year. A return to sustained 30%+ PAT margins is the cited condition for re-rating. Convenience-fee policy remains the binary risk.</div>
+</div>
+<div class="ac">
+  <div class="ac-head"><div class="ac-name">RITES</div><span class="rat-pill rp-hold">CONSENSUS: HOLD (quality)</span></div>
+  <div class="ac-tp">~24&times; trailing earnings</div>
+  <div class="ac-cmp">CMP ~&#8377;205 &middot; Mkt Cap ~&#8377;10,100 Cr</div>
+  <div class="ac-text">Record order book, export revival and ~95% payout mark RITES as the quality consultancy play, yet the stock fell ~31% over the year on slow long-term growth and a demanding multiple. The Q4 topline jump (+27.6%) is encouraging; margin mix (turnkey drag vs consultancy strength) is the variable to track.</div>
+</div>
+<div class="ac">
+  <div class="ac-head"><div class="ac-name">BEML</div><span class="rat-pill rp-sell">CONSENSUS: CAUTIOUS</span></div>
+  <div class="ac-tp">Margin sustainability the key debate</div>
+  <div class="ac-cmp">CMP ~&#8377;1,718&ndash;1,752 &middot; Mkt Cap ~&#8377;15,000 Cr</div>
+  <div class="ac-text">Record revenue and order book, but a 52% FY26 PAT fall and operating-margin collapse (~25.6% to ~15.1%) triggered a sharp ~6&ndash;8% post-result drop. The bull case rests on order-book conversion and defence / metro momentum; the bear case is that margins may not recover quickly given material-cost pressure.</div>
+</div>
+<div class="ac">
+  <div class="ac-head"><div class="ac-name">Jupiter Wagons &amp; Texmaco</div><span class="rat-pill rp-hold">CONSENSUS: SELECTIVE</span></div>
+  <div class="ac-tp">Diverging fortunes within wagons</div>
+  <div class="ac-cmp">Jupiter ~&#8377;285 area, &minus;28% 1-yr &middot; Texmaco PAT +45% Q4</div>
+  <div class="ac-text">Jupiter&rsquo;s 72% Q4 PAT fall on wheelset constraints contrasts with Texmaco&rsquo;s +45% PAT and deleveraging &mdash; a clear split. Brokerages cite ~23% EPS CAGR for Jupiter (FY26&ndash;30) vs higher projected for Titagarh, with wheel-plant contribution only post-FY28. Stock-specific execution dominates the wagon trade.</div>
+</div>
+<div class="card" style="margin-top:14px;">
+  <div class="card-lbl">Valuation &amp; Snapshot &mdash; Railway Pack (May 2026, approximate)</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Company</th><th>CMP (approx)</th><th>Mkt Cap (&#8377; Cr)</th><th>FY26 PAT</th><th>Order Book / Note</th><th>Dividend FY26</th><th style="white-space:normal">Valuation Note</th></tr></thead>
+    <tbody>
+      <tr><td class="tb"><span class="dot" style="background:var(--irfc)"></span>IRFC</td><td class="num">~&#8377;100</td><td class="num">~1,33,000</td><td class="tpos">&#8377;7,009</td><td>Zero NPA</td><td class="num">&mdash;</td><td style="white-space:normal">Premium vs PFC / REC</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--rvnl)"></span>RVNL</td><td class="num">~&#8377;265</td><td class="num">&mdash;</td><td class="tneg">&#8377;800</td><td>FY27 +15&ndash;20%</td><td class="num">&#8377;0.71</td><td style="white-space:normal">Execution-margin watch</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--ircon)"></span>IRCON</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="tneg">&#8377;592</td><td>&#8377;24,984 Cr</td><td class="num">&#8377;1.90</td><td style="white-space:normal">Revenue decline a drag</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--irctc)"></span>IRCTC</td><td class="num">~&#8377;523</td><td class="num">~41,000</td><td class="tpos">&#8377;1,393</td><td>Monopoly</td><td class="num">&#8377;1.00*</td><td style="white-space:normal">~9.5&times; P/BV; quality premium</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--railtel)"></span>RailTel</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="tpos">&#8377;346</td><td>&#8377;11,466 Cr</td><td class="num">&mdash;</td><td style="white-space:normal">Data-centre optionality</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--rites)"></span>RITES</td><td class="num">~&#8377;205</td><td class="num">~10,100</td><td class="tpos">&#8377;454</td><td>&#8377;9,416 Cr</td><td class="num">&#8377;2.75</td><td style="white-space:normal">~24&times; PE; high payout</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--concor)"></span>CONCOR</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td>EXIM-led</td><td class="num">&#8377;8.60</td><td style="white-space:normal">DFC structural tailwind</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--beml)"></span>BEML</td><td class="num">~&#8377;1,718</td><td class="num">~15,000</td><td class="tneg">&#8377;141</td><td>&#8377;15,896 Cr</td><td class="num">&#8377;2.85</td><td style="white-space:normal">Margin recovery the key</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--jwl)"></span>Jupiter</td><td class="num">~&#8377;285</td><td class="num">~12,400</td><td class="tneg">&#8377;241</td><td>Wheel plant</td><td class="num">TBA</td><td style="white-space:normal">&minus;28% 1-yr; pivot watch</td></tr>
+      <tr><td class="tb"><span class="dot" style="background:var(--titagarh)"></span>Titagarh</td><td class="num">~&#8377;860</td><td class="num">~11,100</td><td class="tneg">&#8377;181</td><td>~&#8377;26,000 Cr</td><td class="num">TBA</td><td style="white-space:normal">FY26 PAT &minus;34%; wheelset drag</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;font-weight:500;">*IRCTC final dividend shown is FY25 reference; FY26 final dividend per latest filing. Blank cells indicate figure not captured in cited sources at time of build. All approximate &mdash; verify against live screens before use.</p>
+</div>
+</div>
+
+<!-- ===== RISKS ===== -->
+<div class="panel" id="tab-risks">
+<div class="sec-hdr">Risks &amp; FY27 Outlook <span class="sec-note">&middot; Sector &middot; Bull / Base / Bear</span></div>
+<div class="trojan-card">
+  <div class="trojan-title">&#9888;&#65039; FY27 Key Question &mdash; Margin Recovery, Not Demand</div>
+  <p style="font-size:12.5px;line-height:1.7;font-weight:500;">The railway capex cycle is intact and order books are at records, so the FY27 debate is almost entirely about <strong>profitability</strong>. After a FY26 of squeezed margins &mdash; cost overruns, material inflation, wheelset constraints, lumpy execution &mdash; the swing factor is how cleanly the pack converts a healthy backlog into profitable revenue. PSU re-rating after a multi-year run also raises valuation sensitivity to any earnings miss.</p>
+</div>
+<div class="card" style="margin-bottom:16px;"><div class="card-lbl">Sector-Wide Risks &mdash; FY27</div>
+  <div style="overflow-x:auto;"><table>
+    <thead><tr><th>Risk</th><th>Severity</th><th>Companies Most Affected</th><th>Timeline</th></tr></thead>
+    <tbody>
+      <tr><td>Margin compression persists</td><td class="tneg">High</td><td>RVNL, IRCON, BEML, Jupiter</td><td>FY27 ongoing</td></tr>
+      <tr><td>Wheelset / input supply constraints</td><td class="warn">Medium-High</td><td>Jupiter, Titagarh, Texmaco</td><td>Until backward integration ramps</td></tr>
+      <tr><td>Order-execution slippage</td><td class="warn">Medium-High</td><td>RVNL, IRCON, BEML</td><td>FY27</td></tr>
+      <tr><td>Policy / fee regulation</td><td class="warn">Medium</td><td>IRCTC (convenience fee)</td><td>Budget / policy-event driven</td></tr>
+      <tr><td>Receivable / JV overhang</td><td class="warn">Medium</td><td>RVNL (KRCL &#8377;1,116 Cr)</td><td>Pending board resolution</td></tr>
+      <tr><td>PSU valuation de-rating</td><td class="warn">Medium</td><td>Whole pack after multi-year run</td><td>Sentiment-driven</td></tr>
+      <tr><td>Interest-rate / spread cycle</td><td class="warn">Low-Medium</td><td>IRFC</td><td>FY27</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="g3" style="margin-bottom:16px;">
+  <div class="card"><div class="card-lbl">&#128526; Bull Case FY27 (margins recover, execution accelerates)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;font-weight:500;">
+      <li>&bull; RVNL / IRCON margins rebound off low FY26 base; PAT recovers</li>
+      <li>&bull; Wheelset supply normalises &mdash; Jupiter / Titagarh volumes lift</li>
+      <li>&bull; BEML order-book converts; margin claws back toward 20%+</li>
+      <li>&bull; RailTel data-centre + BharatNet ramp adds high-margin revenue</li>
+      <li>&bull; IRFC diversification lifts spread; crosses &#8377;1 lakh Cr sanctions</li>
+      <li>&bull; Sector earnings inflect; PSU re-rating resumes</li>
+    </ul>
+  </div>
+  <div class="card"><div class="card-lbl">&#9878;&#65039; Base Case FY27 (gradual normalisation)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;font-weight:500;">
+      <li>&bull; Topline grows on capex; margins recover only partially</li>
+      <li>&bull; RVNL meets ~15&ndash;20% revenue guide with modest margin lift</li>
+      <li>&bull; IRCTC / RITES hold high-margin quality; steady profit</li>
+      <li>&bull; BEML / Jupiter improve sequentially but stay below peak margins</li>
+      <li>&bull; IRFC posts steady, low-growth record profit again</li>
+      <li>&bull; Stock returns track earnings, not multiple expansion</li>
+    </ul>
+  </div>
+  <div class="card"><div class="card-lbl">&#127783;&#65039; Bear Case FY27 (margins stay weak)</div>
+    <ul style="list-style:none;font-size:11.5px;line-height:1.85;font-weight:500;">
+      <li>&bull; Cost inflation + execution slippage keep EPC margins depressed</li>
+      <li>&bull; Wagon makers stay supply-constrained; profits lag order books</li>
+      <li>&bull; BEML margin recovery disappoints; PAT stays low</li>
+      <li>&bull; IRCTC fee / policy change hits the high-margin core</li>
+      <li>&bull; RVNL KRCL provision dents reported profit</li>
+      <li>&bull; PSU de-rating deepens as earnings disappoint rich multiples</li>
+    </ul>
+  </div>
+</div>
+<div class="verdict-card">
+  <div class="verdict-title">&#128202; CB Research FY27 Earnings-Visibility Ranking (Not a Recommendation)</div>
+  <div class="verdict-body">
+    1. <strong>IRFC</strong> &mdash; High. Zero-NPA annuity model; record profit even in a soft quarter. Low growth but very predictable.<br>
+    2. <strong>IRCTC</strong> &mdash; High. Monopoly e-ticketing, asset-light cash machine; margin mix the only real variable.<br>
+    3. <strong>RITES</strong> &mdash; Good. Record order book, export revival, high payout; consultancy margin quality stands out.<br>
+    4. <strong>RailTel</strong> &mdash; Good. Strong order book + data-centre optionality; quarterly lumpiness is the caveat.<br>
+    5. <strong>CONCOR</strong> &mdash; Moderate-Good. DFC structural tailwind; volume / cost swings drive the quarter.<br>
+    6. <strong>Texmaco</strong> &mdash; Moderate. Profit turnaround + deleveraging; smallest but improving in the wagon pack.<br>
+    7. <strong>RVNL</strong> &mdash; Moderate. Strong pipeline and FY27 guidance, but margin volatility + KRCL overhang cloud visibility.<br>
+    8. <strong>IRCON</strong> &mdash; Moderate. Healthy order book but FY26 revenue / profit decline needs reversal.<br>
+    9. <strong>BEML</strong> &mdash; Moderate-Low. Record revenue and order book, but margin collapse must reverse to justify the print.<br>
+    10. <strong>Jupiter / Titagarh</strong> &mdash; Low-Moderate. Capex-cycle exposure is real, but supply constraints and lumpy margins make near-term earnings the least visible.
+  </div>
+</div>
+</div>
+
+<!-- ===== CB ASSIST ===== -->
+<div class="panel" id="tab-assist">
+<div class="sec-hdr">CB Assist &#x1F916; <span class="sec-note">&middot; India Railway Sector &middot; 11 Companies &middot; English &amp; Tamil &middot; From Dashboard Data</span></div>
+<div class="cbassist-chat">
+  <div class="cbassist-title"><span></span> CB Assist &mdash; India Railway Sector &middot; Q4 FY26 &middot; IRFC &middot; RVNL &middot; IRCON &middot; IRCTC &middot; RailTel &middot; RITES &middot; CONCOR &middot; BEML &middot; Jupiter &middot; Texmaco &middot; Titagarh</div>
+  <div style="margin-bottom:10px;">
+    <span style="font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;">English Presets</span>
+    <button class="preset-tab pt-fin" onclick="swPre('efin',this)">IRFC</button>
+    <button class="preset-tab pt-exec" onclick="swPre('eexec',this)">RVNL / IRCON</button>
+    <button class="preset-tab pt-svc" onclick="swPre('esvc',this)">IRCTC / RailTel / RITES</button>
+    <button class="preset-tab pt-mfg" onclick="swPre('emfg',this)">BEML / Jupiter / Texmaco</button>
+    <button class="preset-tab pt-sector" onclick="swPre('esec',this)">Sector</button>
+  </div>
+  <div style="margin-bottom:10px;">
+    <span style="font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;">&#2980;&#2990;&#3007;&#2996;&#3021; Presets (Tamil)</span>
+    <button class="preset-tab pt-fin" onclick="swPre('tfin',this)">IRFC</button>
+    <button class="preset-tab pt-exec" onclick="swPre('texec',this)">RVNL / IRCON</button>
+    <button class="preset-tab pt-svc" onclick="swPre('tsvc',this)">IRCTC / RailTel / RITES</button>
+    <button class="preset-tab pt-mfg" onclick="swPre('tmfg',this)">BEML / Jupiter</button>
+    <button class="preset-tab pt-sector" onclick="swPre('tsec',this)">Sector</button>
+  </div>
+  <div id="pqs-efin" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>IRFC Q4 FY26 results &mdash; revenue, PAT, FY26 record profit?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#127974;</span><b>Why is IRFC a zero-NPA lender and what is its moat?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#9888;&#65039;</span><b>Why was IRFC Q4 profit flat despite revenue growth?</b></div>
+  </div>
+  <div id="pqs-eexec" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>RVNL Q4 FY26 &mdash; why did profit fall 59%?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128679;</span><b>IRCON Q4 FY26 results and order book?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128181;</span><b>What is the RVNL KRCL receivable issue?</b></div>
+  </div>
+  <div id="pqs-esvc" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>IRCTC Q4 FY26 &mdash; why did profit dip despite record revenue?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128225;</span><b>RailTel Q4 FY26 &mdash; what drove the 127% profit jump?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128209;</span><b>RITES Q4 FY26 &mdash; record order book and exports?</b></div>
+  </div>
+  <div id="pqs-emfg" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128202;</span><b>BEML Q4 FY26 &mdash; record revenue but profit down 37%?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128649;</span><b>Jupiter Wagons Q4 FY26 &mdash; why did PAT crash 72%?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128200;</span><b>Texmaco Q4 FY26 &mdash; how did it grow profit 45%?</b></div>
+  </div>
+  <div id="pqs-esec" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128642;</span><b>Railway sector Q4 FY26 &mdash; record revenue, squeezed profit, explain?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128176;</span><b>How does the railway value chain work &mdash; who has best margins?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128230;</span><b>Order books across railway companies &mdash; who leads?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent)"><span>&#128302;</span><b>FY27 railway sector outlook &mdash; bull base bear?</b></div>
+  </div>
+  <div id="pqs-tfin" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>IRFC Q4 FY26 results Tamil-&#2994;&#3021; &mdash; revenue, PAT, FY26 record?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#127974;</span><b>IRFC zero-NPA lender &mdash; moat &#2958;&#2985;&#3021;&#2985;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#9888;&#65039;</span><b>IRFC Q4 profit flat &#2950;&#2985;&#2980;&#3009; &#2958;&#2985;&#3021;?</b></div>
+  </div>
+  <div id="pqs-texec" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>RVNL Q4 &mdash; profit 59% &#2995;&#3015;&#2997;&#3009; &#2950;&#2985;&#2980;&#3009; &#2958;&#2985;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128679;</span><b>IRCON Q4 results &#2990;&#2993;&#3021;&#2993;&#3009;&#2990;&#3021; order book?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128181;</span><b>RVNL KRCL receivable issue &#2958;&#2985;&#3021;&#2985;?</b></div>
+  </div>
+  <div id="pqs-tsvc" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>IRCTC Q4 &mdash; record revenue &#2950;&#2985;&#3006; profit &#2965;&#3009;&#2993;&#3016;&#2997;&#3009; &#2958;&#2985;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128225;</span><b>RailTel Q4 &mdash; 127% profit jump &#2958;&#2985;&#2985;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128209;</span><b>RITES Q4 &mdash; record order book &#2990;&#2993;&#3021;&#2993;&#3009;&#2990;&#3021; exports?</b></div>
+  </div>
+  <div id="pqs-tmfg" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128202;</span><b>BEML Q4 &mdash; record revenue &#2950;&#2985;&#3006; profit 37% &#2965;&#3009;&#2993;&#3016;&#2997;&#3009; &#2958;&#2985;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128649;</span><b>Jupiter Wagons Q4 &mdash; PAT 72% crash &#2958;&#2985;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128200;</span><b>Texmaco Q4 &mdash; profit 45% &#2949;&#2980;&#3007;&#2965;&#2992;&#3007;&#2965;&#3021;&#2965; &#2958;&#2986;&#3021;&#2986;&#2975;&#3007;?</b></div>
+  </div>
+  <div id="pqs-tsec" class="pqs">
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128642;</span><b>Railway sector Q4 &mdash; record revenue &#2950;&#2985;&#3006; profit squeeze &#2958;&#2985;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128176;</span><b>Railway value chain &mdash; &#2991;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009; best margin?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128230;</span><b>Order books &mdash; &#2991;&#2992;&#3009; lead &#2986;&#2979;&#3021;&#2993;&#3009;&#2965;&#3007;&#2993;&#3006;&#2992;&#3021;?</b></div>
+    <div class="pq" onclick="cbA(this.querySelector('b').textContent,'ta')"><span>&#128302;</span><b>FY27 outlook &mdash; bull base bear Tamil-&#2994;&#3021;?</b></div>
+  </div>
+  <div style="margin-top:4px;">
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="chat-msg bot">&#128642; <strong>CB Assist</strong> &mdash; India Railway Sector &middot; IRFC &middot; RVNL &middot; IRCON &middot; IRCTC &middot; RailTel &middot; RITES &middot; CONCOR &middot; BEML &middot; Jupiter &middot; Texmaco &middot; Titagarh &middot; Q4 FY26 &middot; CB Research. Select a preset above or type your question. All data from BSE/NSE filings.</div>
+    </div>
+    <div id="typingInd" class="typing-ind"><span></span><span></span><span></span></div>
+    <div class="chat-input-row">
+      <input type="text" id="chatIn" class="chat-input" placeholder="Ask: IRFC results, RVNL profit fall, RITES order book, BEML margin, sector outlook..." onkeypress="if(event.key==='Enter')cbA(this.value)"/>
+      <button class="chat-send" onclick="cbA(document.getElementById('chatIn').value)">Ask &#x27A4;</button>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /main -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">Railway Sector &middot; Q4 FY26</div></div>
+</div>
+<div class="footer">
+  CB Research &mdash; India Railway Sector Intelligence Dashboard &middot; Q4 FY26 &amp; Annual FY26 &middot; 31 May 2026 &middot; Build 20260531-1020 IST<br>
+  IRFC (NSE: IRFC) &middot; RVNL (NSE: RVNL) &middot; IRCON (NSE: IRCON) &middot; IRCTC (NSE: IRCTC) &middot; RailTel (NSE: RAILTEL) &middot; RITES (NSE: RITES) &middot; CONCOR (NSE: CONCOR) &middot; BEML (NSE: BEML) &middot; Jupiter Wagons (NSE: JWL) &middot; Texmaco Rail (NSE: TEXRAIL) &middot; Titagarh Rail (NSE: TITAGARH)<br>
+  All figures from BSE/NSE official filings and investor presentations. Titagarh FY26 results published 30 May 2026 (board meeting); Q4 discrete split pending line-item filing. Sources: company filings, Business Standard, PSU Connect, Indian Masterminds, MarketsMojo, Whalesbook, Screener &mdash; May 2026.<br>
+  For information and research purposes only &mdash; not investment advice. Consult a SEBI-registered investment advisor before making financial decisions.
+</div>
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts')setTimeout(initCharts,80);
+}
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.kpi[data-cat]').forEach(el=>{
+    const cats=el.dataset.cat.split(' ');
+    el.style.display=(cat==='all'||cats.includes(cat))?'block':'none';
+  });
+  document.querySelectorAll('.co-card[data-cat]').forEach(el=>{
+    const cats=el.dataset.cat.split(' ');
+    el.style.display=(cat==='all'||cats.includes(cat))?'block':'none';
+  });
+}
+const coClr={irfc:'#c2410c',rvnl:'#b45309',ircon:'#9a3412',irctc:'#ca8a04',railtel:'#a16207',rites:'#d97706',concor:'#b45309',beml:'#92400e',jwl:'#a3520c',texr:'#c2570c'};
+function showCo(co,btn){
+  document.querySelectorAll('.co-sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.co-sel-btn').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  document.getElementById('co-'+co).classList.add('on');
+  btn.style.background=coClr[co];btn.style.color='#fff';btn.style.border='none';
+}
+function showCharts(period,btn){
+  document.getElementById('chq-view').style.display=period==='q'?'block':'none';
+  document.getElementById('cha-view').style.display=period==='a'?'block':'none';
+  document.getElementById('chr-view').style.display=period==='r'?'block':'none';
+  document.querySelectorAll('#chq,#cha,#chr').forEach(b=>{b.style.background='var(--surface)';b.style.color='var(--muted)';b.style.border='1.5px solid var(--border)';});
+  btn.style.background='#2a1c0d';btn.style.color='#fff';btn.style.border='none';
+  setTimeout(initCharts,80);
+}
+const nf=new Intl.NumberFormat('en-IN');
+let chartsBuilt=false;
+function initCharts(){
+  if(chartsBuilt)return;chartsBuilt=true;
+  // Titagarh has FY26 (annual) but no discrete Q4 split; excluded only from Q4 charts
+  const co10=['IRFC','RVNL','IRCON','IRCTC','RailTel','RITES','CONCOR','BEML','Jupiter','Texmaco'];
+  const cl10=['#c2410c','#b45309','#9a3412','#ca8a04','#a16207','#d97706','#b45309','#92400e','#a3520c','#c2570c'];
+  Chart.defaults.font.family="'Inter',sans-serif";
+  Chart.defaults.font.weight='600';
+  Chart.defaults.color='#7a6a55';
+  // value-label plugin (en-IN, no K/L abbreviations)
+  const lblP={id:'lp',afterDatasetsDraw(ch){
+    const{ctx}=ch;
+    ctx.save();
+    ch.data.datasets.forEach((ds,di)=>{
+      const meta=ch.getDatasetMeta(di);
+      if(meta.hidden)return;
+      meta.data.forEach((el,i)=>{
+        const v=ds.data[i];
+        if(v===null||v===undefined)return;
+        ctx.font="700 10px 'IBM Plex Mono', monospace";
+        ctx.fillStyle='#241a10';
+        ctx.textAlign='center';
+        const t=(ds._pct? (v>0?'+':'')+v+'%' : nf.format(v));
+        const pos=el.tooltipPosition();
+        ctx.fillText(t,pos.x, v<0? pos.y+13 : pos.y-5);
+      });
+    });
+    ctx.restore();
+  }};
+  const baseOpts=(yt,logScale)=>({responsive:true,maintainAspectRatio:false,layout:{padding:{top:22}},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>(c.dataset._pct?(c.parsed.y>0?'+':'')+c.parsed.y+'%':'\u20B9'+nf.format(c.parsed.y)+' Cr')}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:9,weight:'700'},maxRotation:55,minRotation:0,autoSkip:false}},
+      y:logScale
+        ?{type:'logarithmic',grid:{color:'#f0e2d2'},title:{display:!!yt,text:yt+' (log scale)',font:{size:9.5,weight:'700'}},ticks:{font:{size:9},callback:v=>([10,100,1000,10000].includes(v)?nf.format(v):'')}}
+        :{grid:{color:'#f0e2d2'},title:{display:!!yt,text:yt,font:{size:9.5,weight:'700'}},ticks:{font:{size:9},callback:v=>nf.format(v)}}}});
+
+  function mk(id,labels,data,colors,yt,pct,logScale){
+    const el=document.getElementById(id);if(!el)return;
+    new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:4,_pct:!!pct,maxBarThickness:46}]},options:baseOpts(yt,logScale),plugins:[lblP]});
+  }
+
+  // ---- Q4 FY26 ----  (log scale: IRFC dwarfs others, so small bars stay visible)
+  mk('q4Rev',co10,[7336,6696,3189,1460,1680,768,2257,1794,780,null],cl10,'\u20B9 Crore',false,true);
+  mk('q4Pat',co10,[1684,187,191.5,326,142,130,258,180,29,57.7],cl10,'\u20B9 Crore',false,true);
+  const q4g=[0.1,-58.9,-9,-8.9,127,-2,-14.5,-37.5,-72,45.1];
+  mk('q4Grw',co10,q4g,q4g.map(v=>v>=0?'#15803d':'#c0392b'),'% YoY (RailTel QoQ)',true,false);
+  // combo: revenue (orange) vs PAT (green) grouped -- log scale for IRFC dominance
+  const cb=document.getElementById('q4Combo');
+  if(cb){new Chart(cb,{type:'bar',data:{labels:co10,datasets:[
+    {label:'Revenue',data:[7336,6696,3189,1460,1680,768,2257,1794,780,null],backgroundColor:'#d97706',borderRadius:3,maxBarThickness:18},
+    {label:'PAT',data:[1684,187,191.5,326,142,130,258,180,29,57.7],backgroundColor:'#15803d',borderRadius:3,maxBarThickness:18}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:10}},plugins:{legend:{display:true,labels:{font:{size:10,weight:'700'},boxWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': \u20B9'+nf.format(c.parsed.y)+' Cr'}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:9,weight:'700'},maxRotation:55,autoSkip:false}},y:{type:'logarithmic',grid:{color:'#f0e2d2'},title:{display:true,text:'\u20B9 Crore (log scale)',font:{size:9.5,weight:'700'}},ticks:{font:{size:9},callback:v=>([10,100,1000,10000].includes(v)?nf.format(v):'')}}}}});}
+
+  // ---- EBITDA margin & absolute (non-finance names; IRFC excluded as a lender) ----
+  const coEb=['RVNL','IRCON*','IRCTC','RITES*','CONCOR','BEML','Jupiter','Titagarh*'];
+  const clEb=['#b45309','#9a3412','#ca8a04','#d97706','#b45309','#92400e','#a3520c','#b8530b'];
+  const ebm=[4.0,13.5,27.3,23.5,18.6,15.1,10.6,9.5];
+  mk('q4Ebm',coEb,ebm,clEb,'EBITDA Margin %',false,false);
+  const eba=['RVNL','IRCON*','IRCTC','RITES*','CONCOR','BEML','Jupiter'];
+  const clEba=['#b45309','#9a3412','#ca8a04','#d97706','#b45309','#92400e','#a3520c'];
+  mk('q4Eb',eba,[269,1279,399,568,420,271,83],clEba,'\u20B9 Crore',false,false);
+
+  const coF=['IRFC','RVNL','IRCON','IRCTC','RailTel','RITES','BEML','Jupiter','Titagarh'];
+  const clF=['#c2410c','#b45309','#9a3412','#ca8a04','#a16207','#d97706','#92400e','#a3520c','#b8530b'];
+  mk('fyRev',coF,[27284,20000,9071,5215,null,2415,4351,2896,3316],clF,'\u20B9 Crore',false,true);
+  mk('fyPat',coF,[7009,800,592,1393,346,454,141,241,181],clF,'\u20B9 Crore',false,true);
+  const fyG=[7.8,-32.6,-18,5.9,17,7.3,-51.7,-36.9,-34.4];
+  mk('fyGrw',coF,fyG,fyG.map(v=>v>=0?'#15803d':'#c0392b'),'% YoY',true,false);
+  mk('fyWin',coF,[7009,800,592,1393,346,454,141,241,181],fyG.map(v=>v>=0?'#15803d':'#c0392b'),'\u20B9 Crore',false,true);
+
+  // ---- Order books ---- (linear: values are comparable)
+  const coOB=['IRCON','Titagarh','BEML','RailTel','RITES'];
+  mk('obChart',coOB,[24984,26000,15896,11466,9416],['#9a3412','#b8530b','#92400e','#a16207','#d97706'],'\u20B9 Crore',false,false);
+  const coD=['CONCOR','BEML','RITES','IRCON','RVNL','IRCTC'];
+  mk('divChart',coD,[8.60,2.85,2.75,1.90,0.71,1.00],['#b45309','#92400e','#d97706','#9a3412','#b45309','#ca8a04'],'\u20B9 / share',false,false);
+}
+
+// ---- CB Assist ----
+function swPre(k,btn){
+  document.querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.pqs').forEach(p=>p.classList.remove('on'));
+  const el=document.getElementById('pqs-'+k);if(el)el.classList.add('on');
+}
+const KB={
+  irfc:{en:`<strong>IRFC &mdash; Q4 FY26 &amp; FY26 (NSE: IRFC)</strong><br><br>Q4 PAT &#8377;1,684 Cr (flat, +0.1% YoY) on revenue &#8377;7,336 Cr (+9.1%). FY26 PAT a record &#8377;7,009 Cr (+7.8%), net worth at an all-time high above &#8377;56,000 Cr.<br><br><strong>Why flat profit?</strong> IRFC is a thin-spread (NIM ~1.5%), zero-NPA lender to Indian Railways on a cost-plus / lease model. Revenue rose but expenses rose faster, so PAT stayed flat &mdash; the structural trade-off of a very low-risk book.<br><br><strong>Moat:</strong> captive Railways mandate, zero NPAs, &#8377;4.9 lakh crore+ assets, FY26 sanctions &#8377;72,949 Cr. Targeting &#8377;1 lakh crore sanctions and diversifying into broader infra finance. Trades at a premium to PFC / REC.`,
+  ta:`<strong>IRFC &mdash; Q4 FY26 (NSE: IRFC) Tamil</strong><br><br>Q4 PAT &#8377;1,684 Cr (flat, +0.1% YoY), revenue &#8377;7,336 Cr (+9.1%). FY26 PAT record &#8377;7,009 Cr (+7.8%), net worth &#8377;56,000 Cr+ &mdash; all-time high.<br><br><strong>Profit flat &#2958;&#2985;&#3021;?</strong> IRFC = Railways-&#2965;&#3021;&#2965;&#3009; zero-NPA, thin-spread (NIM ~1.5%) lender. Revenue &#2950;&#2985;&#2980;&#3009;, &#2950;&#2985;&#3006;&#2994;&#3021; expense &#2997;&#3015;&#2965;&#2990;&#3006;&#2965; &#2950;&#2985;&#2980;&#2980;&#3006;&#2994;&#3021; PAT flat.<br><br><strong>Moat:</strong> captive Railways mandate, zero NPA, assets &#8377;4.9 lakh crore+. &#8377;1 lakh crore sanctions target + infra finance diversification.`},
+  exec:{en:`<strong>RVNL &amp; IRCON &mdash; Execution Arms (Q4 FY26)</strong><br><br><strong>RVNL (NSE: RVNL):</strong> Q4 consol PAT &#8377;187 Cr (&minus;58.9%) on revenue &#8377;6,696 Cr (+4.2%); FY26 PAT &#8377;800 Cr (&minus;32.6%). Profit fell because costs rose faster than revenue (margin compression, project mix). Flagged a &#8377;1,116 Cr KRCL receivable (incl. &#8377;890 Cr delayed-payment interest) pending board resolution. FY27 guidance: revenue +15&ndash;20% with BharatNet upside. Final dividend &#8377;0.71.<br><br><strong>IRCON (NSE: IRCON):</strong> Q4 consol PAT &#8377;191.5 Cr (&minus;9%), revenue &#8377;3,189 Cr (&minus;7%); FY26 PAT &#8377;592 Cr (&minus;18%), revenue &#8377;9,071 Cr (&minus;15.7%). EBITDA margin held ~13.5%. Order book &#8377;24,984 Cr (railways &#8377;19,459 Cr). Q4 jumped +50% QoQ on year-end execution.`,
+  ta:`<strong>RVNL &amp; IRCON &mdash; Execution (Q4 FY26) Tamil</strong><br><br><strong>RVNL:</strong> Q4 PAT &#8377;187 Cr (&minus;58.9%), revenue &#8377;6,696 Cr (+4.2%); FY26 PAT &#8377;800 Cr (&minus;32.6%). Cost &#2997;&#3015;&#2965;&#2990;&#3006;&#2965; &#2950;&#2985;&#2980;&#3006;&#2994;&#3021; profit &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;. KRCL receivable &#8377;1,116 Cr issue. FY27: revenue +15&ndash;20%.<br><br><strong>IRCON:</strong> Q4 PAT &#8377;191.5 Cr (&minus;9%), revenue &#8377;3,189 Cr (&minus;7%); FY26 PAT &#8377;592 Cr (&minus;18%). Order book &#8377;24,984 Cr. Q4 +50% QoQ.`},
+  svc:{en:`<strong>IRCTC / RailTel / RITES &mdash; Services &amp; IP (Q4 FY26)</strong><br><br><strong>IRCTC (NSE: IRCTC):</strong> Q4 PAT &#8377;326 Cr (&minus;8.9% YoY) despite record revenue &#8377;1,460 Cr (+15.1%); FY26 PAT &#8377;1,393 Cr. Monopoly e-ticketing, but margins compressed as lower-margin tourism grew faster.<br><br><strong>RailTel (NSE: RAILTEL):</strong> Q4 PAT &#8377;142 Cr (+127% QoQ) on revenue &#8377;1,680 Cr; telecom +83% QoQ; FY26 PAT &#8377;346 Cr (+17%). Order book &#8377;11,466 Cr; data-centre push. Quarterly numbers are lumpy/project-driven.<br><br><strong>RITES (NSE: RITES):</strong> Q4 PAT &#8377;130 Cr (&minus;2% YoY) on revenue &#8377;768 Cr (+27.6%); FY26 PAT &#8377;454 Cr (+7.3%). Record order book &#8377;9,416 Cr, export revival (Mozambique locos), ~95% payout, &#8377;2.75 dividend.`,
+  ta:`<strong>IRCTC / RailTel / RITES &mdash; Services (Tamil)</strong><br><br><strong>IRCTC:</strong> Q4 PAT &#8377;326 Cr (&minus;8.9%), record revenue &#8377;1,460 Cr (+15.1%); FY26 PAT &#8377;1,393 Cr. Monopoly &#2986;&#3009;&#2980;&#3021; tourism mix-&#2994;&#3006;&#2994;&#3021; margin &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;.<br><br><strong>RailTel:</strong> Q4 PAT &#8377;142 Cr (+127% QoQ), revenue &#8377;1,680 Cr; FY26 PAT &#8377;346 Cr (+17%). Order book &#8377;11,466 Cr.<br><br><strong>RITES:</strong> Q4 PAT &#8377;130 Cr (&minus;2%), revenue &#8377;768 Cr (+27.6%); FY26 PAT &#8377;454 Cr. Order book &#8377;9,416 Cr (record), dividend &#8377;2.75.`},
+  mfg:{en:`<strong>BEML / Jupiter / Texmaco / Titagarh &mdash; Rolling Stock (Q4 / FY26)</strong><br><br><strong>BEML (NSE: BEML):</strong> Record Q4 revenue &#8377;1,794 Cr (+8.6%) but PAT &#8377;180 Cr (&minus;37.5%); FY26 PAT &#8377;141 Cr (&minus;51.7%). Operating margin collapsed ~25.6% to ~15.1% on material/other costs. Record order book &#8377;15,896 Cr; R&amp;D up 150%.<br><br><strong>Jupiter Wagons (NSE: JWL):</strong> Q4 PAT &#8377;29 Cr (&minus;72%) on revenue &#8377;780 Cr (&minus;25%); FY26 PAT &#8377;241 Cr. EBITDA margin fell 410 bps to 10.6% on wheelset constraints. Building a wheel plant (post-FY28) and BESS pivot.<br><br><strong>Texmaco (NSE: TEXRAIL):</strong> Q4 PAT &#8377;57.7 Cr (+45.1%) &mdash; bucked the trend on disciplined execution; net debt down to &#8377;444 Cr, D/E 0.21&times;.<br><br><strong>Titagarh (NSE: TITAGARH):</strong> FY26 published 30 May 2026 &mdash; revenue &#8377;3,316 Cr, PAT &#8377;181 Cr (down from &#8377;276 Cr FY25) on wheelset-availability constraints. Only Indian maker of both wagons and coaches; ~25% wagon share; order book ~&#8377;26,000 Cr.`,
+  ta:`<strong>BEML / Jupiter / Texmaco / Titagarh &mdash; Rolling Stock (Tamil)</strong><br><br><strong>BEML:</strong> Record revenue &#8377;1,794 Cr (+8.6%) &#2950;&#2985;&#3006; PAT &#8377;180 Cr (&minus;37.5%); FY26 PAT &#8377;141 Cr (&minus;51.7%). Margin 25.6%&rarr;15.1% &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;. Order book &#8377;15,896 Cr.<br><br><strong>Jupiter:</strong> Q4 PAT &#8377;29 Cr (&minus;72%), revenue &#8377;780 Cr (&minus;25%). Wheelset constraint. Wheel plant + BESS pivot.<br><br><strong>Texmaco:</strong> Q4 PAT &#8377;57.7 Cr (+45.1%) &mdash; turnaround; net debt &#8377;444 Cr.<br><br><strong>Titagarh:</strong> FY26 (30 May 2026) &mdash; revenue &#8377;3,316 Cr, PAT &#8377;181 Cr (FY25 &#8377;276 Cr-&#2994;&#3007;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;). Wagons + coaches &#2007;&#2992;&#3009;&#2990;&#3009;&#2990;&#3021; &#2970;&#3015;&#2991;&#3021;&#2991;&#3009;&#2990;&#3021; &#2962;&#2992;&#3015; &#2024;&#2984;&#3021;&#2980;&#3007;&#2991; company; ~25% wagon share; order book ~&#8377;26,000 Cr.`},
+  sector:{en:`<strong>Railway Sector Q4 FY26 &mdash; Record Revenue, Squeezed Profit</strong><br><br>The pack is a leveraged play on India's record railway capex. FY26 theme: most names grew or held topline but profits fell on margin compression, cost inflation and (for wagon makers) wheelset constraints.<br><br><strong>Best margin quality:</strong> IRCTC (monopoly e-ticketing) and RITES (consultancy) &mdash; asset-light IP. Then RailTel + IRFC (network / annuity).<br><br><strong>Most pressured:</strong> RVNL (&minus;59% Q4 PAT), IRCON (&minus;18% FY26), BEML (&minus;52% FY26), Jupiter (&minus;72% Q4). Texmaco bucked it (+45%).<br><br><strong>Order books at records:</strong> IRCON &#8377;24,984 Cr, BEML &#8377;15,896 Cr, RailTel &#8377;11,466 Cr, RITES &#8377;9,416 Cr, Titagarh ~&#8377;26,000 Cr. <strong>Demand was never the problem &mdash; FY27 is about margin recovery and execution.</strong>`,
+  ta:`<strong>Railway Sector Q4 FY26 &mdash; Record Revenue, Profit Squeeze (Tamil)</strong><br><br>India railway capex-&#2985;&#3021; leveraged play. FY26 theme: topline &#2949;&#2980;&#3007;&#2965;&#2990;&#3006;&#2985;&#2980;&#3009;/flat &#2950;&#2985;&#3006; margin compression-&#2994;&#3006;&#2994;&#3021; profit &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;.<br><br><strong>Best margin:</strong> IRCTC (monopoly), RITES (consultancy) &mdash; asset-light. &#2986;&#3007;&#2993;&#3017; RailTel + IRFC.<br><br><strong>Pressure:</strong> RVNL (&minus;59% Q4), IRCON (&minus;18% FY26), BEML (&minus;52%), Jupiter (&minus;72%). Texmaco +45% &mdash; exception.<br><br><strong>Order books record:</strong> IRCON &#8377;24,984 Cr, BEML &#8377;15,896 Cr, RailTel &#8377;11,466 Cr, RITES &#8377;9,416 Cr. FY27 = margin recovery + execution.`},
+  valuechain:{en:`<strong>Railway Value Chain &mdash; Who Has the Best Margins</strong><br><br><strong>1. Financier (IRFC):</strong> thin NIM, very stable, zero NPA.<br><strong>2. Execution (RVNL, IRCON):</strong> EPC &mdash; low/cyclical margins, exposed to cost overruns and receivables.<br><strong>3. Services &amp; IP (IRCTC, RailTel, RITES):</strong> highest margin quality &mdash; monopoly / asset-light / network IP.<br><strong>4. Logistics (CONCOR):</strong> moderate, volume-driven; DFC tailwind.<br><strong>5. Rolling stock (BEML, Jupiter, Texmaco, Titagarh):</strong> cyclical, order-book led, volatile margins.<br><br><strong>Rule of thumb:</strong> margin quality rises as you move from contractors toward asset-light IP and regulated monopolies. Risk falls the same way (except IRFC's spread risk).`,
+  ta:`<strong>Railway Value Chain &mdash; Best Margin (Tamil)</strong><br><br><strong>1. Financier (IRFC):</strong> thin NIM, stable, zero NPA.<br><strong>2. Execution (RVNL, IRCON):</strong> EPC &mdash; low/cyclical margin.<br><strong>3. Services &amp; IP (IRCTC, RailTel, RITES):</strong> best margin &mdash; monopoly / asset-light.<br><strong>4. Logistics (CONCOR):</strong> moderate, DFC tailwind.<br><strong>5. Rolling stock (BEML, Jupiter, Texmaco, Titagarh):</strong> cyclical, volatile.<br><br>Asset-light IP / monopoly = best margin.`},
+  orderbook:{en:`<strong>Order Books &mdash; Who Leads (Mar 2026)</strong><br><br>&bull; Titagarh ~&#8377;26,000 Cr (order book; FY26 PAT &#8377;181 Cr)<br>&bull; IRCON &#8377;24,984 Cr (railways &#8377;19,459 Cr, highways &#8377;3,919 Cr)<br>&bull; BEML &#8377;15,896 Cr (record; defence + mining + rail/metro)<br>&bull; RailTel &#8377;11,466 Cr (telecom + data centre)<br>&bull; RITES &#8377;9,416 Cr (record; +&#8377;958 Cr in Q4)<br>&bull; IRFC FY26 sanctions &#8377;72,949 Cr (financing book)<br><br>Order books are at or near records across the pack &mdash; the FY27 swing factor is conversion into profitable revenue, not demand.`,
+  ta:`<strong>Order Books &mdash; &#2991;&#2992;&#3009; Lead (Mar 2026) Tamil</strong><br><br>&bull; Titagarh ~&#8377;26,000 Cr (order book; FY26 PAT &#8377;181 Cr)<br>&bull; IRCON &#8377;24,984 Cr<br>&bull; BEML &#8377;15,896 Cr (record)<br>&bull; RailTel &#8377;11,466 Cr<br>&bull; RITES &#8377;9,416 Cr (record)<br>&bull; IRFC sanctions &#8377;72,949 Cr<br><br>Order books record level-&#2994;&#3021;. FY27 = conversion + margin.`},
+  fy27:{en:`<strong>FY27 Outlook &mdash; CB Research (No Recommendation)</strong><br><br><strong>Bull (margins recover, execution accelerates):</strong> RVNL/IRCON margins rebound off low base; wheelset supply normalises lifting Jupiter/Titagarh; BEML order book converts; RailTel + BharatNet add high-margin revenue; PSU re-rating resumes.<br><br><strong>Base (gradual normalisation):</strong> topline grows on capex; margins recover partially; RVNL meets ~15&ndash;20% guide; IRCTC/RITES hold quality; returns track earnings not multiple.<br><br><strong>Bear (margins stay weak):</strong> cost inflation + execution slippage keep EPC margins depressed; wagon makers supply-constrained; BEML recovery disappoints; IRCTC fee-policy hit; PSU de-rating deepens.<br><br><strong>CB Research visibility ranking:</strong> IRFC &gt; IRCTC &gt; RITES &gt; RailTel &gt; CONCOR &gt; Texmaco &gt; RVNL &gt; IRCON &gt; BEML &gt; Jupiter/Titagarh.`,
+  ta:`<strong>FY27 Outlook &mdash; CB Research (Tamil, recommendation &#2007;&#2994;&#3021;&#2994;&#3016;)</strong><br><br><strong>Bull:</strong> margins recover, RVNL/IRCON rebound, wheelset normalise, BEML convert, BharatNet upside, PSU re-rating.<br><br><strong>Base:</strong> topline &#2949;&#2980;&#3007;&#2965;&#2990;&#3021;, margin partial recovery, RVNL +15&ndash;20%, IRCTC/RITES quality.<br><br><strong>Bear:</strong> cost inflation, execution slippage, wagon supply constraint, BEML recovery &#2965;&#3009;&#2993;&#3016;&#2997;&#3009;, PSU de-rating.<br><br><strong>Visibility:</strong> IRFC &gt; IRCTC &gt; RITES &gt; RailTel &gt; CONCOR &gt; Texmaco &gt; RVNL &gt; IRCON &gt; BEML &gt; Jupiter/Titagarh.`}
+};
+function cbA(q,lang){
+  if(!q||!q.trim())return;
+  const msgs=document.getElementById('chatMsgs');
+  const inp=document.getElementById('chatIn');
+  const typ=document.getElementById('typingInd');
+  const uEl=document.createElement('div');
+  uEl.className='chat-msg user';uEl.textContent=q.trim();
+  msgs.appendChild(uEl);if(inp)inp.value='';msgs.scrollTop=msgs.scrollHeight;
+  const isTa=/[\u0B80-\u0BFF]/.test(q)||/tamil/i.test(q);
+  const l=(lang==='ta'||isTa)?'ta':'en';
+  typ.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typ.style.display='none';
+    const a=findA(q.toLowerCase(),l);
+    const bEl=document.createElement('div');
+    bEl.className='chat-msg bot';bEl.innerHTML=a;
+    msgs.appendChild(bEl);msgs.scrollTop=msgs.scrollHeight;
+  },500);
+}
+function findA(q,l){
+  l=l||'en';
+  const G=k=>KB[k]?.[l]||KB[k]?.en||'';
+  if(/\birfc\b|railway finance|railway financing/.test(q))return G('irfc');
+  if(/rvnl|rail vikas|ircon|krcl|execution/.test(q))return G('exec');
+  if(/irctc|railtel|rites|ticketing|catering|telecom|consultancy/.test(q))return G('svc');
+  if(/beml|jupiter|texmaco|titagarh|wagon|rolling stock|coach|wheelset/.test(q))return G('mfg');
+  if(/value chain|margin quality|who has|best margin|layer/.test(q))return G('valuechain');
+  if(/order book|pipeline|backlog/.test(q))return G('orderbook');
+  if(/fy27|outlook|bull|bear|scenario|forecast/.test(q))return G('fy27');
+  if(/sector|overall|record revenue|squeeze|all compan/.test(q))return G('sector');
+  if(l==='ta')return '<strong>CB Assist (Tamil)</strong><br><br>&#2007;&#2985;&#3021;&#2924; topics try &#2986;&#2979;&#3021;&#2979;&#3009;&#2999;&#3021;&#2965;:<br>&bull; IRFC / RVNL / IRCON / IRCTC / RailTel / RITES / BEML / Jupiter / Texmaco Q4 results<br>&bull; Railway value chain &mdash; best margin<br>&bull; Order books &mdash; &#2991;&#2992;&#3009; lead<br>&bull; Sector Q4 &mdash; record revenue vs profit squeeze<br>&bull; FY27 outlook (bull/base/bear)';
+  return '<strong>CB Assist</strong> &mdash; Try asking about:<br><br>&bull; <em>IRFC / RVNL / IRCON / IRCTC / RailTel / RITES / CONCOR / BEML / Jupiter / Texmaco Q4 FY26</em><br>&bull; <em>Railway value chain &mdash; who has the best margins</em><br>&bull; <em>Order books &mdash; who leads the pipeline</em><br>&bull; <em>Sector Q4 &mdash; record revenue, squeezed profit</em><br>&bull; <em>FY27 outlook &mdash; bull, base, bear cases</em>';
+}
+</script>
+</body>
+</html>

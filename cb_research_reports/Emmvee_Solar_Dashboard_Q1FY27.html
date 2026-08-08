@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emmvee Solar · Manufacturing Dashboard Q1 FY27 | Cauvery Business Research</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --emmvee:#1a6b3c;--emmvee-soft:#edf7f1;
+  --solar:#e07b00;--solar-soft:#fff8ec;
+  --topcon:#7c3aed;--topcon-soft:#f5f3ff;
+  --policy:#0e7490;--policy-soft:#ecfeff;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-emmvee{background:var(--emmvee);color:#fff;}
+.chip-solar{background:var(--solar);color:#fff;}
+.chip-topcon{background:var(--topcon);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--emmvee);font-weight:700;}
+.main{padding:26px 40px 60px;max-width:1460px;margin:0 auto;isolation:isolate;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gap-top{margin-top:22px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-neg{background:#fee2e2;color:#b91c1c;}.b-warn{background:#fff7ed;color:#c2410c;}.b-spec{background:#f3f4f6;color:#4b5563;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.sector-a{border-left:4px solid var(--gold);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;}
+td.tb{font-weight:700;}
+td.ml{font-weight:600;color:var(--muted);font-size:12px;}
+td.mn{font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text);}
+.chart-card p.sub{font-size:10.5px;color:var(--muted);margin-bottom:14px;}
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.moat-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.moat-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.moat-body{font-size:11px;color:var(--muted);line-height:1.55;}
+.moat-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;margin-right:4px;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verdict-body{font-size:13px;line-height:1.7;color:var(--text);}
+.school-model-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.school-model-hdr{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.school-model-body{font-size:12px;line-height:1.75;color:var(--muted);}
+.reg-badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;margin-right:4px;margin-bottom:4px;}
+.rb-pos{background:#dcfce7;color:#15803d;}
+.rb-warn{background:#fff7ed;color:#c2410c;}
+.rb-neg{background:#fee2e2;color:#b91c1c;}
+.rb-neu{background:#f3f4f6;color:#4b5563;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--emmvee);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--emmvee);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.cbassist-sub{font-size:10px;font-weight:400;color:var(--muted);margin-bottom:12px;padding-left:16px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:360px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;padding-right:4px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--emmvee);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--emmvee);}
+.chat-send{background:var(--emmvee);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.preset-tab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 6px 0;}
+.preset-tab:hover{border-color:var(--text);color:var(--text);}
+.pt-emmvee.active{background:var(--emmvee);border-color:var(--emmvee);color:#fff;}
+.pt-sector.active{background:#181511;border-color:#181511;color:#fff;}
+.rp-wrap{padding:0 0 18px 0;}
+.rp-card{border:2px solid var(--emmvee);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-md);margin-bottom:20px;}
+.rp-header{background:var(--emmvee);padding:16px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.rp-hdr-left{flex:1;}
+.rp-title{font-size:13px;font-weight:800;color:#fff;margin-bottom:2px;}
+.rp-subtitle{font-size:10px;color:rgba(255,255,255,.65);}
+.rp-hdr-right{display:flex;align-items:center;gap:12px;}
+.rp-overall-wrap{display:flex;align-items:baseline;gap:3px;}
+.rp-overall{font-family:'IBM Plex Mono',monospace;font-size:2.4rem;font-weight:800;color:#fff;line-height:1;}
+.rp-overall-sub{font-size:14px;color:rgba(255,255,255,.6);font-weight:700;}
+.rp-verdict{font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px;white-space:nowrap;}
+.rp-summary{padding:14px 22px;font-size:12px;line-height:1.7;background:var(--emmvee-soft);color:var(--text);border-bottom:1px solid var(--border);}
+.rp-table-wrap{overflow-x:auto;}
+.rp-table{width:100%;border-collapse:collapse;font-size:12px;}
+.rp-th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:9px 14px;text-align:left;letter-spacing:.05em;text-transform:uppercase;}
+.rp-th-score{min-width:160px;}
+.rp-th-comment{min-width:280px;}
+.rp-lbl{padding:10px 14px;font-size:12px;font-weight:600;color:var(--text);border-bottom:1px solid var(--border);min-width:160px;}
+.rp-bar{padding:10px 14px;border-bottom:1px solid var(--border);}
+.rp-bar-wrap{display:flex;align-items:center;gap:8px;}
+.rp-bar-track{flex:1;height:10px;background:#f3f4f6;border-radius:20px;overflow:hidden;}
+.rp-bar-fill{height:10px;border-radius:20px;transition:width .5s ease;}
+.rp-score{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;min-width:36px;}
+.rp-comment{padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5;}
+.rp-disclaimer{padding:8px 14px;font-size:9.5px;color:var(--muted);background:#f9f9f7;font-style:italic;border-top:1px solid var(--border);}
+.soc-outer{display:grid;grid-template-columns:220px 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;min-height:540px;}
+.soc-sidebar{background:#181511;display:flex;flex-direction:column;}
+.soc-sidebar-hdr{padding:18px 16px 12px;}
+.soc-sidebar-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fff;margin-bottom:3px;}
+.soc-sidebar-sub{font-size:9.5px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em;}
+.soc-topic-pill{display:block;width:100%;}
+.soc-topic-btn{display:flex;align-items:center;gap:10px;padding:11px 16px;background:none;border:none;color:rgba(255,255,255,.65);cursor:pointer;text-align:left;width:100%;font-size:11.5px;font-weight:500;font-family:'Inter',sans-serif;transition:all .15s;border-left:3px solid transparent;}
+.soc-topic-btn:hover{background:rgba(255,255,255,.06);color:#fff;}
+.soc-topic-btn.active{background:rgba(255,255,255,.1);color:#fff;border-left-color:#22c55e;font-weight:700;}
+.soc-topic-btn .soc-icon{font-size:14px;flex-shrink:0;}
+.soc-topic-btn .soc-meta{font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;}
+.soc-right{display:flex;flex-direction:column;background:var(--surface);}
+.soc-q-zone{flex:1;overflow-y:auto;padding:24px 26px;}
+.soc-q-intro{background:linear-gradient(135deg,#181511 0%,#2d2720 100%);border-radius:10px;padding:18px 20px;margin-bottom:20px;color:#fff;}
+.soc-q-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.45);margin-bottom:6px;}
+.soc-q-text{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#fff;line-height:1.5;}
+.soc-q-hint{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:8px;font-style:italic;}
+.soc-q-context{font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:16px;color:var(--muted);line-height:1.65;}
+.soc-q-context strong{color:var(--text);}
+.soc-mcq{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.soc-opt{padding:11px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;text-align:left;transition:all .18s;font-family:'Inter',sans-serif;line-height:1.45;}
+.soc-opt:hover:not(:disabled){border-color:#181511;background:var(--surface2);}
+.soc-opt.correct{border-color:#22c55e;background:#f0fdf4;color:#166534;font-weight:700;}
+.soc-opt.wrong{border-color:#ef4444;background:#fef2f2;color:#b91c1c;}
+.soc-opt.reveal{border-color:#e5e7eb;background:#f9fafb;color:var(--muted);}
+.soc-opt:disabled{cursor:default;}
+.soc-free-wrap{margin-bottom:16px;}
+.soc-free-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-size:12.5px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;resize:vertical;min-height:80px;transition:border-color .2s;line-height:1.55;}
+.soc-free-input:focus{border-color:#181511;}
+.soc-free-submit{margin-top:8px;padding:9px 22px;background:#181511;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+.soc-response{border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:12px;line-height:1.7;animation:fadeIn .3s ease;}
+.soc-response.correct-resp{background:#f0fdf4;border:1.5px solid #86efac;color:#14532d;}
+.soc-response.partial-resp{background:#fdf5e0;border:1.5px solid #fcd34d;color:#78350f;}
+.soc-response.wrong-resp{background:#fff5f5;border:1.5px solid #fca5a5;color:#7f1d1d;}
+.soc-response .soc-resp-tag{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;display:block;}
+.soc-response .soc-followup{margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.08);font-style:italic;color:inherit;opacity:.85;}
+.soc-scorebar{display:flex;align-items:center;gap:12px;padding:10px 26px;background:var(--surface2);border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.soc-score-item{font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;}
+.soc-score-dot{width:8px;height:8px;border-radius:50%;}
+.soc-next-btn{margin-left:auto;padding:7px 20px;background:#181511;color:#fff;border:none;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:none;}
+.soc-next-btn.visible{display:block;}
+.soc-complete{text-align:center;padding:40px 24px;}
+.soc-complete-icon{font-size:3rem;margin-bottom:12px;}
+.soc-complete-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:8px;}
+.soc-complete-msg{font-size:12.5px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.soc-restart-btn{padding:10px 28px;background:#181511;color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;}
+.soc-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;text-align:center;padding:40px 30px;color:var(--muted);}
+.soc-welcome-icon{font-size:3rem;margin-bottom:16px;}
+.soc-welcome-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:8px;}
+.soc-welcome-sub{font-size:12px;line-height:1.7;}
+.cb-wm{position:fixed;bottom:16px;right:16px;z-index:9999;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.94);border:1.5px solid var(--border);border-radius:30px;padding:7px 15px 7px 8px;box-shadow:0 4px 22px rgba(24,21,17,.13);backdrop-filter:blur(10px);pointer-events:none;}
+.cb-wm-logo{width:30px;height:30px;background:linear-gradient(135deg,#1a6b3c 0%,#e07b00 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.9rem;font-weight:900;color:#fff;flex-shrink:0;}
+.cb-wm-name{font-size:11.5px;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:1px;}
+@media(max-width:768px){
+  .hdr{padding:0 16px;flex-direction:column;align-items:flex-start;min-height:auto;padding-bottom:12px;}
+  .hdr-left h1{font-size:1.15rem;}
+  .tab-nav{padding:0 8px;}
+  .tab-btn{padding:12px 10px 10px;font-size:11px;}
+  .main{padding:16px 12px 80px;}
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  table{font-size:11px;}
+  th{font-size:9.5px;padding:8px 8px;}
+  td{padding:8px 8px;font-size:11px;}
+  .soc-outer{grid-template-columns:1fr;}
+  .cb-wm{bottom:12px;right:10px;padding:5px 10px 5px 6px;}
+}
+</style>
+</head>
+
+<body>
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Emmvee Photovoltaic Power · Solar Manufacturing</h1>
+      <div class="sub">CB Research · NSE: EMMVEE · Q1 FY27 Results Dashboard · Cauvery Business Research</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-emmvee">🌿 Integrated Mfr</span>
+    <span class="chip chip-topcon">⚡ TOPCon Leader</span>
+    <span class="chip chip-solar">☀️ 10.3 GW Modules · 9.9 GW Order Book</span>
+    <span class="chip chip-date">Q1 FY27 · July 2026</span>
+  </div>
+</header>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview')">📊 Dashboard</button>
+  <button class="tab-btn" onclick="showTab('financials')">📋 Financials</button>
+  <button class="tab-btn" onclick="showTab('capacity')">🏭 Capacity</button>
+  <button class="tab-btn" onclick="showTab('swot')">🔲 SWOT</button>
+  <button class="tab-btn" onclick="showTab('moats')">🏰 Moats</button>
+  <button class="tab-btn" onclick="showTab('charts')">📈 Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation')">💰 Valuation</button>
+  <button class="tab-btn" onclick="showTab('analyst')">🎯 Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('verdict')">⚖️ Verdict</button>
+  <button class="tab-btn" onclick="showTab('school')">🎓 School</button>
+  <button class="tab-btn" onclick="showTab('cbassist')">🤖 CB Assist</button>
+  <button class="tab-btn" onclick="showTab('socrates')">🏛️ Cauvery Socrates</button>
+</nav>
+
+<main class="main">
+
+<!-- ===== SCHOOL TAB ===== -->
+<div id="school" class="panel">
+  <div class="sec-hdr">🎓 Solar Manufacturing — Investor School <span class="sec-note">Understanding Business Models · Key Metrics · Regulations</span></div>
+
+  <!-- PART 1: BUSINESS MODELS -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:0;">Part 1 — Solar Business Models in India</div>
+
+  <div class="school-model-card" style="border-left:4px solid var(--emmvee);">
+    <div class="school-model-hdr" style="color:var(--emmvee);">🏆 Model 1 — Integrated Cell + Module Manufacturer <span class="badge b-pos">Emmvee's Model</span></div>
+    <div class="school-model-body">
+      This is the most complete value chain model in Indian solar manufacturing. The company manufactures solar cells from silicon wafers, then assembles them into modules (panels). Emmvee operates <strong>2.94 GW of cell manufacturing capacity</strong> (TOPCon technology) and <strong>10.3 GW of module capacity</strong>.<br><br>
+      <strong>Why it matters:</strong> ALMM List-II came into force on June 1, 2026 — only integrated manufacturers with approved cell capacity can sell modules to government-funded solar projects, locking out module-only assemblers from ~80% of the market. Integrated players like Emmvee, Waaree, Premier Energies, and Adani Solar enjoy a structural advantage, though the enlisted cell base has widened to ~30 GW across ~10+ manufacturers as of mid-2026 — the moat is real but less exclusive than in 2025.<br><br>
+      <strong>Revenue drivers:</strong> Spread (module selling price minus cell cost), PLI incentives per watt, order book size, and capacity utilisation. Margins expand when raw material costs fall and regulation tightens the competitive field.<br><br>
+      <strong style="color:var(--warn);">📅 ALMM List-II Extension (latest update):</strong> On July 18, 2026, MNRE extended the ALMM List-II exemption for net-metering and open-access renewable projects from a May 31, 2026 cut-off to <strong>December 31, 2026</strong> — giving these project categories more time to keep sourcing non-ALMM-II cells. MNRE was explicit that this is a phased glide path, not a policy rollback: "no change" to the underlying mandate. From January 1, 2027, even these exempted categories must fully comply with ALMM List-I (modules) and ALMM List-II (cells).
+    </div>
+    <div class="badge-row"><span class="badge b-pos">✅ ALMM-II Compliant</span><span class="badge b-pos">✅ PLI Winner</span><span class="badge b-pos">✅ TOPCon Technology</span><span class="badge b-pos">High Margin</span><span class="badge b-warn">⚠️ Extension till Dec 31, 2026</span></div>
+  </div>
+
+  <div class="school-model-card" style="border-left:4px solid var(--neg);">
+    <div class="school-model-hdr" style="color:var(--neg);">⚠️ Model 2 — Pure Module Assembler (Non-Integrated)</div>
+    <div class="school-model-body">
+      These companies import solar cells (mostly from China) and assemble them into modules. Until 2025, this was a viable model in India — companies like Vikram Solar, Goldi Solar, and many smaller players operated this way. They focus purely on assembly: stringing, lamination, framing, and testing.<br><br>
+      <strong>Critical vulnerability:</strong> ALMM List-II, in force since June 1, 2026, bars module-only assemblers from supplying to ~₹3–4 lakh crore worth of government-mandated solar projects annually. MNRE has since granted a phased carve-out — net-metering and open-access projects retain an exemption until December 31, 2026 — but from January 2027 even these segments must comply, tightening the squeeze further.<br><br>
+      <strong>Additional squeeze:</strong> Anti-Dumping Duty (23–30%) on Chinese cells makes their raw material costlier, while Basic Customs Duty (44% effective on imported modules) doesn't help if they import cells either. Their margin model is under severe stress.
+    </div>
+    <div class="badge-row"><span class="badge b-neg">❌ ALMM-II Excluded</span><span class="badge b-neg">No PLI</span><span class="badge b-warn">⚠️ ADD on Imported Cells</span></div>
+  </div>
+
+  <div class="school-model-card" style="border-left:4px solid var(--policy);">
+    <div class="school-model-hdr" style="color:var(--policy);">🌍 Model 3 — IPP / Project Developer (Pure Downstream)</div>
+    <div class="school-model-body">
+      Independent Power Producers (IPPs) like Adani Green, ReNew, Greenko, and NTPC Renewable do not manufacture panels at all. They design, build, own, and operate solar power plants. They procure modules from manufacturers like Emmvee.<br><br>
+      <strong>Revenue model:</strong> They sell electricity at long-term fixed tariffs (Power Purchase Agreements / PPAs) to DISCOMs or direct consumers (C&I). Revenue is highly predictable; risk comes from tariff discovery, land acquisition, grid connectivity, and financing costs.<br><br>
+      <strong>Why this matters for Emmvee:</strong> India's 500 GW renewable target by 2030 requires 45–50 GW of solar installation annually. IPPs are Emmvee's primary customers, and their mega-pipeline drives Emmvee's 9.9 GW order book.
+    </div>
+    <div class="badge-row"><span class="badge b-spec">Stable PPA Revenue</span><span class="badge b-spec">Emmvee's Customer Base</span><span class="badge b-pos">500 GW Pipeline</span></div>
+  </div>
+
+  <div class="school-model-card" style="border-left:4px solid var(--topcon);">
+    <div class="school-model-hdr" style="color:var(--topcon);">🔀 Model 4 — Hybrid (Manufacturer + Developer)</div>
+    <div class="school-model-body">
+      Some players combine manufacturing with power project development. <strong>Waaree Energies</strong> (India's largest solar manufacturer by capacity at ~12 GW) and <strong>Reliance New Energy</strong> aim to be fully vertically integrated — from polysilicon/wafers all the way to power plants.<br><br>
+      <strong>Emmvee's position:</strong> Currently a pure manufacturer with no IPP ambitions. This keeps capex focused and avoids balance sheet leverage from power assets. The Devanahalli 6 GW expansion (FY27) deepens the manufacturing model further. Emmvee is also evaluating an ingot/wafer unit to move upstream.
+    </div>
+    <div class="badge-row"><span class="badge b-spec">Waaree: 12 GW Modules</span><span class="badge b-spec">Adani Solar: Integrated</span><span class="badge b-pos">Emmvee: Pure Mfr Focus</span></div>
+  </div>
+
+  <!-- PART 2: KEY METRICS -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:28px;">Part 2 — 8 Key Metrics Every Solar Investor Must Track</div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">📐 Metric 1 — Installed GW Capacity</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> Total manufacturing capacity for modules and cells (in gigawatts). Reflects scale, competitive position, and ability to bid for large government tenders (which often require minimum GW eligibility).<br>
+        <strong style="color:var(--text);">Emmvee Q4 FY26:</strong> Modules: 10.3 GW · Cells: 2.94 GW (both 100% TOPCon)<br>
+        <strong style="color:var(--text);">Watch for:</strong> Cell GW < Module GW means company still imports some cells. Emmvee is rapidly closing this gap with the 6 GW Devanahalli project.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">⚙️ Metric 2 — Capacity Utilisation Rate</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> Actual production as % of installed capacity. Low utilisation (< 60%) signals weak demand or execution issues. High utilisation (> 80%) signals healthy demand and pricing power.<br>
+        <strong style="color:var(--text);">Emmvee Q1 FY27:</strong> Cell utilisation: 83% (record) · Module utilisation: 45%<br>
+        <strong style="color:var(--text);">Watch for:</strong> Cell utilisation is already ahead of the 85%+ FY27 target; module utilisation has more room to climb as the 9.9 GW order book converts into deliveries.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">💸 Metric 3 — Module Spread (₹/Watt)</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> The difference between module realisation price and manufacturing cost per watt. This is the core operating margin driver in solar. Spread compresses when module prices fall globally or raw material costs rise.<br>
+        <strong style="color:var(--text);">Emmvee Q4 FY26:</strong> EBITDA margin 32.84% — exceptionally high, partly aided by PLI incentives of ~₹0.80–1.00/W<br>
+        <strong style="color:var(--text);">Watch for:</strong> PLI phase-out post FY27 may compress reported margins.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">📦 Metric 4 — Order Book (GW)</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> Contracted but undelivered orders. A large order book provides revenue visibility (typically 6–18 months). Order intake trend (new orders per quarter) indicates demand momentum.<br>
+        <strong style="color:var(--text);">Emmvee Q1 FY27:</strong> Order book: 9.9 GW (all-time high, vs 9.4 GW FY26-end) · Q1 FY27 intake: 1.48 GW<br>
+        <strong style="color:var(--text);">Watch for:</strong> Order-to-capacity ratio. 9.9 GW vs 10.3 GW module capacity = ~11.5 months cover — healthy.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🏛️ Metric 5 — PLI Incentive (₹/W)</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> Production Linked Incentive — a government subsidy of ₹1–2/W paid for 5 years to qualifying manufacturers. Currently inflates EBITDA and PAT margins significantly. Emmvee is a PLI Phase-I winner.<br>
+        <strong style="color:var(--text);">Risk:</strong> PLI for Emmvee runs through FY27. Post FY27, margins will normalize downward unless underlying spread improves. Separating PLI-adjusted vs reported margins is critical for valuation.<br>
+        <strong style="color:var(--text);">Watch for:</strong> Management disclosures on PLI income each quarter.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🔋 Metric 6 — Operating Cashflow vs PAT</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> In manufacturing, PAT must convert to cash. If OCF << PAT, working capital is being consumed (receivables building up, payables shrinking). This is a major red flag — it means accounting profits are not yet real cash.<br>
+        <strong style="color:var(--text);">Emmvee FY26 RED FLAG:</strong> OCF ₹200 Cr vs PAT ₹1,081 Cr. WC days jumped from −13.3 to +88.3. Debtor days rose: 38.9 → 50.2.<br>
+        <strong style="color:var(--text);">Watch for:</strong> Quarterly normalisation. If OCF doesn't recover in FY27, it signals structural receivables stress.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🔬 Metric 7 — Technology Generation</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> Solar cell technology evolves rapidly: BSF (old) → PERC (dominant 2020–24) → TOPCon (current premium) → HJT/Perovskite (future). Manufacturers on older tech face margin compression and order loss.<br>
+        <strong style="color:var(--text);">Emmvee FY26–Q1 FY27:</strong> 100% TOPCon transition complete (both cells and modules); record 83% cell utilisation in Q1 FY27.<br>
+        <strong style="color:var(--text);">Watch for:</strong> HJT roadmap — Reliance has already entered ALMM List-II with HJT cells, a signal the next disruption cycle is beginning. TOPCon has a 3–5 year window before this becomes a bigger competitive factor.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">📊 Metric 8 — Net Debt / Equity</div>
+      <div style="font-size:12px;line-height:1.7;color:var(--muted);">
+        <strong style="color:var(--text);">What it means:</strong> Solar manufacturing is capital-intensive. High debt increases financial risk, especially if margins compress. A net cash position enables aggressive expansion without dilution.<br>
+        <strong style="color:var(--text);">Emmvee post-IPO (Nov 2025):</strong> Net Debt/Equity = (0.06)× — net cash company. ₹1,621 Cr of IPO proceeds used to prepay loans. ICRA upgraded to 'A' in Jan 2026.<br>
+        <strong style="color:var(--text);">Watch for:</strong> Devanahalli capex (6 GW) will require ₹3,000–4,000 Cr. Debt will rise in FY27–28.
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 3: REGULATIONS -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:28px;">Part 3 — Key Regulations Shaping Indian Solar Manufacturing</div>
+
+  <table class="gap-top">
+    <thead>
+      <tr>
+        <th>Regulation</th>
+        <th>Effective</th>
+        <th>What It Does</th>
+        <th>Impact on Emmvee</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tb">ALMM List-I<br><span style="font-size:10px;color:var(--muted);">Modules</span></td>
+        <td class="mn">2021 (reinstated 2024)</td>
+        <td style="font-size:11.5px;">Only ALMM-listed modules can be used in govt-funded solar projects. Bars cheap Chinese imports from CPSU/ISTS projects.</td>
+        <td style="font-size:11.5px;">Emmvee is ALMM-I listed. Direct access to CPSU tenders. Protects from Chinese module dumping.</td>
+        <td><span class="reg-badge rb-pos">✅ Highly Positive</span></td>
+      </tr>
+      <tr>
+        <td class="tb">ALMM List-II<br><span style="font-size:10px;color:var(--muted);">Cells</span></td>
+        <td class="mn">Live since June 1, 2026</td>
+        <td style="font-size:11.5px;">IN FORCE. Modules used in govt projects must use ALMM-II listed cells. Enlisted capacity has widened to ~30.5 GW across 10+ manufacturers (up from 6 at launch in Aug 2025). Bars module-only assemblers from ~80% of the market.</td>
+        <td style="font-size:11.5px;">Emmvee is enlisted with 2.94 GW cell capacity. Q1 FY27 cell utilisation hit a record 83%, and management flagged ALMM-II as a demand tailwind supporting the DCR product mix.</td>
+        <td><span class="reg-badge rb-pos">✅ Transformational</span></td>
+      </tr>
+      <tr>
+        <td class="tb">ALMM List-II — Fate / Rollout Tracker<br><span style="font-size:10px;color:var(--muted);">MNRE Clarifications, Jun–Jul 2026</span></td>
+        <td class="mn">Ongoing (as of Jul 2026)</td>
+        <td style="font-size:11.5px;">MNRE has issued a stream of clarifications since go-live: (1) govt rooftop projects bid before Dec 9, 2024 remain permanently exempt; bids between Dec 2024–Aug 31, 2025 follow original tender terms; (2) commissioning-based exemptions granted case-by-case via May 25, 2026 OM; (3) on July 18, 2026, MNRE extended the ALMM-II exemption for net-metering &amp; open-access projects to Dec 31, 2026 (from a May 31, 2026 cut-off) — but reaffirmed "no change" to the mandate itself, i.e. no rollback, only a phased glide path.</td>
+        <td style="font-size:11.5px;">Net effect for Emmvee: the mandate's substance is intact and enlisted cell base keeps growing, but near-term enforcement has been softened for smaller/rooftop segments, delaying the full demand pull-through Emmvee had modelled for CY26.</td>
+        <td><span class="reg-badge rb-warn">⚠️ Phased, Not Diluted</span></td>
+      </tr>
+      <tr>
+        <td class="tb">ALMM List-III<br><span style="font-size:10px;color:var(--muted);">Wafers/Ingots</span></td>
+        <td class="mn">June 2028 (draft issued Mar 2026)</td>
+        <td style="font-size:11.5px;">Will extend ALMM compliance upstream to wafers and ingots. First list to be published once ≥3 independent wafer manufacturers with ≥15 GW combined capacity are enlisted; cut-off date is 7 days after that publication. Only manufacturers with domestic wafer/ingot capacity will qualify for govt projects at all chain levels thereafter.</td>
+        <td style="font-size:11.5px;">Emmvee is evaluating a 9 GW ingot/wafer plan in two phases; management confirmed on the Q1 FY27 call this remains under evaluation, with regulatory clarity on List-III cited as a key FY27 monitorable before committing capex.</td>
+        <td><span class="reg-badge rb-warn">⚠️ Future Watch</span></td>
+      </tr>
+      <tr>
+        <td class="tb">Basic Customs Duty<br><span style="font-size:10px;color:var(--muted);">BCD on Modules</span></td>
+        <td class="mn">Active (20% + AIDC + SWS)</td>
+        <td style="font-size:11.5px;">~44% effective duty on imported solar modules. Makes imported Chinese modules uncompetitive in India and protects domestic manufacturers' pricing.</td>
+        <td style="font-size:11.5px;">Strong pricing support for Emmvee's modules domestically. Enables premium spread vs Chinese module prices.</td>
+        <td><span class="reg-badge rb-pos">✅ Positive</span></td>
+      </tr>
+      <tr>
+        <td class="tb">Anti-Dumping Duty<br><span style="font-size:10px;color:var(--muted);">On Chinese Cells/Modules</span></td>
+        <td class="mn">Sep 2025 – Sep 2028</td>
+        <td style="font-size:11.5px;">23–30% ADD specifically targeting Chinese solar cells and modules found to be dumped in Indian markets below cost. Effective September 2025.</td>
+        <td style="font-size:11.5px;">Protects Emmvee's cell and module business from Chinese pricing aggression. Significant 3-year runway.</td>
+        <td><span class="reg-badge rb-pos">✅ Positive</span></td>
+      </tr>
+      <tr>
+        <td class="tb">PLI Scheme<br><span style="font-size:10px;color:var(--muted);">Phase-I (Emmvee is winner)</span></td>
+        <td class="mn">FY22 – FY27</td>
+        <td style="font-size:11.5px;">₹1–2/W incentive per watt of production for 5 years. Emmvee is one of 13 PLI Phase-I winners. Significantly inflates reported EBITDA and PAT margins.</td>
+        <td style="font-size:11.5px;">FY26 margins (34%+ EBITDA) are partially PLI-inflated. Post FY27 margin normalisation is a key valuation risk investors must price in.</td>
+        <td><span class="reg-badge rb-warn">⚠️ Margin Cliff Risk</span></td>
+      </tr>
+      <tr>
+        <td class="tb">DCR Tightening<br><span style="font-size:10px;color:var(--muted);">Domestic Content Req.</span></td>
+        <td class="mn">March 2025</td>
+        <td style="font-size:11.5px;">Domestic Content Requirements now mandate that modules must use cells made from undiffused wafers sourced domestically (not just domestic cell assembly). Higher bar for "domestic" classification.</td>
+        <td style="font-size:11.5px;">Emmvee's integrated model complies. Further raises barriers for pure assemblers trying to claim DCR status.</td>
+        <td><span class="reg-badge rb-pos">✅ Positive</span></td>
+      </tr>
+      <tr>
+        <td class="tb">500 GW Target<br><span style="font-size:10px;color:var(--muted);">India National Mission</span></td>
+        <td class="mn">By 2030</td>
+        <td style="font-size:11.5px;">India's national mission to install 500 GW of renewable capacity by 2030. Requires ~45–50 GW of annual solar installation. Creates massive structural demand for domestic module manufacturers.</td>
+        <td style="font-size:11.5px;">Emmvee's 9.9 GW order book and expansion plans are directly aligned with this pipeline. 10+ year structural demand story.</td>
+        <td><span class="reg-badge rb-pos">✅ Structural Tailwind</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PART 4: EMMVEE SNAPSHOT -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:28px;">Part 4 — Emmvee at a Glance</div>
+  <div class="g3 gap-top">
+    <div class="card">
+      <div class="card-lbl">🏢 Company Profile</div>
+      <div style="font-size:12px;line-height:1.8;color:var(--muted);">
+        <strong style="color:var(--text);">Full name:</strong> Emmvee Photovoltaic Power Pvt Ltd<br>
+        <strong style="color:var(--text);">Listed:</strong> NSE: EMMVEE (IPO Nov 18, 2025)<br>
+        <strong style="color:var(--text);">HQ:</strong> Bengaluru, Karnataka<br>
+        <strong style="color:var(--text);">CMD:</strong> Dr. DV Manjunatha Donthi<br>
+        <strong style="color:var(--text);">Promoter:</strong> 80% holding (family)<br>
+        <strong style="color:var(--text);">Founded:</strong> 1993 (30+ years solar focus)
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">⚡ Capacity Snapshot (Jun 30, 2026)</div>
+      <div style="font-size:12px;line-height:1.8;color:var(--muted);">
+        <strong style="color:var(--text);">Modules:</strong> 10.3 GW (100% TOPCon)<br>
+        <strong style="color:var(--text);">Cells:</strong> 2.94 GW (ALMM-II enlisted)<br>
+        <strong style="color:var(--text);">Cell Utilisation Q1 FY27:</strong> 83% (record; vs 68% Q1 FY26, 79% Q4 FY26)<br>
+        <strong style="color:var(--text);">Module Utilisation Q1 FY27:</strong> 45% (ample headroom)<br>
+        <strong style="color:var(--text);">Q1 FY27 Production:</strong> 970 MW modules · 454 MW cells (both record)<br>
+        <strong style="color:var(--text);">Order Book:</strong> 9.9 GW (all-time high; +1.48 GW added in Q1)
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">📈 Q1 FY27 Financial Highlights</div>
+      <div style="font-size:12px;line-height:1.8;color:var(--muted);">
+        <strong style="color:var(--text);">Revenue:</strong> ₹1,555.5 Cr (+51.3% YoY, −10.5% QoQ)<br>
+        <strong style="color:var(--text);">EBITDA:</strong> ₹548.1 Cr (35.24% margin, record)<br>
+        <strong style="color:var(--text);">PAT:</strong> ₹380.3 Cr (+102.6% YoY, −3.1% QoQ)<br>
+        <strong style="color:var(--text);">PAT Margin:</strong> 24.2% (record)<br>
+        <strong style="color:var(--text);">Net Debt/Eq:</strong> (0.06)× — Net Cash<br>
+        <strong style="color:var(--text);">Dividend:</strong> ₹1/share recommended with Q1 results
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OVERVIEW TAB ===== -->
+<div id="overview" class="panel active">
+  <div class="sec-hdr">📊 Dashboard <span class="sec-note">Q1 FY27 Results (Qtr Ended Jun 30, 2026) · Market Position · Strategy</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi sector-a"><div class="kl">Q1 FY27 Revenue</div><div class="kv">₹1,555.5 Cr</div><div class="kc pos">+51.3% YoY</div></div>
+    <div class="kpi sector-a"><div class="kl">Q1 FY27 PAT</div><div class="kv">₹380.3 Cr</div><div class="kc pos">+102.6% YoY</div></div>
+    <div class="kpi sector-a"><div class="kl">EBITDA Margin</div><div class="kv">35.24%</div><div class="kc pos">Record High</div></div>
+    <div class="kpi sector-a"><div class="kl">Order Book</div><div class="kv">9.9 GW</div><div class="kc pos">All-Time High</div></div>
+    <div class="kpi sector-a"><div class="kl">Market Cap</div><div class="kv">~₹24,000 Cr</div><div class="kc muted">@ ~₹345/share</div></div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kl">Module Capacity</div><div class="kv">10.3 GW</div><div class="kc pos">100% TOPCon</div></div>
+    <div class="kpi"><div class="kl">Cell Utilisation</div><div class="kv">83%</div><div class="kc pos">Record (Q1 FY27)</div></div>
+    <div class="kpi"><div class="kl">Net Debt/Equity</div><div class="kv">(0.06)×</div><div class="kc pos">Net Cash</div></div>
+    <div class="kpi"><div class="kl">Q1 FY27 EBITDA</div><div class="kv">₹548 Cr</div><div class="kc pos">+56.4% YoY</div></div>
+    <div class="kpi"><div class="kl">FY27 EBITDA Guide</div><div class="kv">₹2,200–2,400 Cr</div><div class="kc muted">Reaffirmed on call</div></div>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">🏢 Business Description</div>
+      <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+        Emmvee Photovoltaic Power is one of India's leading solar module and cell manufacturers, headquartered in Bengaluru. Founded in 1993, the company has transformed into a fully integrated TOPCon solar manufacturer with 10.3 GW of module capacity and 2.94 GW of cell capacity as of March 2026.<br><br>
+        Emmvee went public on NSE in November 2025, raising ₹2,900 Cr — primarily to prepay ₹1,621 Cr in debt, making it a net cash company. It is a PLI Phase-I winner, one of only 6 ALMM List-II approved cell manufacturers, and a key beneficiary of India's solar manufacturing policy regime.<br><br>
+        The company sells modules primarily to large IPPs and government projects across India, with an increasingly strong export presence.
+      </div>
+      <div class="badge-row">
+        <span class="badge b-pos">PLI Phase-I Winner</span>
+        <span class="badge b-pos">ALMM-I & II Approved</span>
+        <span class="badge b-pos">100% TOPCon</span>
+        <span class="badge b-pos">Net Cash Post-IPO</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🚀 Strategic Expansion Plan (Post-Q1 FY27 Update)</div>
+      <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+        <strong style="color:var(--text);">Devanahalli 6 GW Expansion:</strong> Total project cost ₹5,500 Cr, with ₹3,300 Cr in debt already tied up at &lt;8%. Equipment orders covering ~60% of capex placed; construction on schedule. Module line targeted for commissioning by <strong>December 2026</strong>, cell line by <strong>March 2027</strong>. Will take modules to 16.3 GW and cells to 8.9 GW by FY27-end.<br><br>
+        <strong style="color:var(--text);">Ingot/Wafer (Evaluating):</strong> 9 GW planned across two phases. Management reiterated on the Q1 FY27 call that regulatory clarity on ALMM List-III is a key input before committing capex.<br><br>
+        <strong style="color:var(--text);">FY27 EBITDA Guidance:</strong> Reaffirmed at ₹2,200–2,400 Cr, with a medium-term target of ~₹3,000 Cr operating profit by FY28 as capacity scales from ~6 GW effective to 10.3 GW+.<br><br>
+        <strong style="color:var(--text);">Cell Utilisation:</strong> Already at a record 83% in Q1 FY27, ahead of the 85%+ FY27 target; module utilisation at 45% leaves room to grow into the order book.
+      </div>
+      <div class="badge-row">
+        <span class="badge b-pos">₹5,500 Cr Devanahalli Capex — Funded</span>
+        <span class="badge b-warn">⚠️ Module Dec'26 / Cell Mar'27</span>
+        <span class="badge b-spec">Ingot Evaluation Ongoing</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="g3 gap-top">
+    <div class="card">
+      <div class="card-lbl">👥 Management & Governance</div>
+      <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+        <strong style="color:var(--text);">CMD:</strong> Dr. DV Manjunatha Donthi (founder-family)<br>
+        <strong style="color:var(--text);">CEO:</strong> Suhas Donthi Manjunatha (next-gen family)<br>
+        <strong style="color:var(--text);">Promoter Stake:</strong> 80%<br>
+        <strong style="color:var(--text);">Auditors:</strong> MSKC & Associates LLP (unmodified opinion FY26)<br><br>
+        Family-run founder-led company with high promoter alignment. Governance risk exists given 80% promoter concentration and limited independent oversight track record as a newly listed company.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🏦 Credit & Balance Sheet</div>
+      <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+        <strong style="color:var(--text);">ICRA Rating Timeline:</strong><br>
+        BBB+ (pre-IPO) → A- (Aug 2025) → A (Jan 2026)<br><br>
+        <strong style="color:var(--text);">Net Debt/Equity:</strong> (0.06)× — effectively debt-free<br>
+        <strong style="color:var(--text);">Current Ratio:</strong> 2.1×<br>
+        <strong style="color:var(--text);">IPO Size:</strong> ₹2,900 Cr (Nov 2025)<br>
+        <strong style="color:var(--text);">Debt Repaid:</strong> ₹1,621 Cr from IPO proceeds
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🎯 Competitive Landscape</div>
+      <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+        <strong style="color:var(--text);">Key ALMM-II enlisted peers (list has widened to 10+ manufacturers, ~30.5 GW):</strong><br>
+        Waaree Energies (largest, ~12 GW modules, ₹26,537 Cr FY26 revenue)<br>
+        Adani Solar / Mundra Solar (fully integrated, incl. HJT via Reliance)<br>
+        Premier Energies (₹7,824 Cr FY26 revenue; new 5.6 GW Telangana line)<br>
+        Emmvee (10.3 GW modules, 2.94 GW cells, ₹5,050 Cr FY26 revenue)<br>
+        Vikram Solar, TP Solar, FS India, Jupiter International, Evervolt<br><br>
+        ALMM-II remains a real regulatory moat, but it is a widening club, not a fixed 6-player oligopoly — durability now rests more on integration depth (cell→wafer) and execution than on scarcity of the cell license itself.
+      </div>
+    </div>
+  </div>
+
+  <!-- PEER REVIEW SECTION -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:28px;">🔍 Peer Review — Listed Indian Solar Manufacturers (FY26 Actuals)</div>
+  <table class="gap-top">
+    <thead>
+      <tr><th>Company</th><th>FY26 Revenue</th><th>FY26 PAT</th><th>Module Capacity</th><th>Cell Capacity</th><th>ALMM-II Status</th><th>Order Book</th><th>Mkt Cap (Jul'26)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tb">Waaree Energies</td><td class="tpos num">₹26,537 Cr</td><td class="tpos num">₹3,884 Cr</td><td class="num">~12 GW</td><td class="num">5.4 GW</td><td><span class="badge b-pos">✅ Enlisted</span></td><td class="num">₹14,010 Cr</td><td class="num">~₹81,400 Cr</td></tr>
+      <tr><td class="tb">Premier Energies</td><td class="num">₹7,824 Cr</td><td class="num">₹1,510 Cr</td><td class="num">~9.1 GW (post new 5.6 GW line)</td><td class="num">~4 GW</td><td><span class="badge b-pos">✅ Enlisted</span></td><td class="ml">Not disclosed here</td><td class="num">~₹47,400 Cr</td></tr>
+      <tr style="background:#edf7f1;"><td class="tb">Emmvee Photovoltaic</td><td class="num">₹5,050 Cr</td><td class="num">₹1,082 Cr</td><td class="num">10.3 GW</td><td class="num">2.94 GW</td><td><span class="badge b-pos">✅ Enlisted</span></td><td class="tpos">9.9 GW</td><td class="num">~₹24,000 Cr</td></tr>
+      <tr><td class="tb">Vikram Solar</td><td class="num">₹4,861 Cr</td><td class="ml">Lower margin profile</td><td class="num">~4.5 GW</td><td class="num">Limited</td><td><span class="badge b-warn">⚠️ Partial</span></td><td class="ml">—</td><td class="num">~₹6,660 Cr</td></tr>
+      <tr><td class="tb">Adani Solar (Mundra)</td><td class="ml">Not separately listed</td><td class="ml">Part of Adani Green</td><td class="num">~4 GW+ (expanding)</td><td class="num">~3.7 GW incl. HJT</td><td><span class="badge b-pos">✅ Enlisted</span></td><td class="ml">—</td><td class="ml">Not separately listed</td></tr>
+    </tbody>
+  </table>
+  <div class="card gap-top">
+    <div class="card-lbl">🧭 Peer Review Takeaways</div>
+    <div style="font-size:12px;line-height:1.8;color:var(--muted);">
+      <strong style="color:var(--text);">Scale:</strong> Waaree remains the clear scale leader by a wide margin (5× Emmvee's revenue), with a diversified retail/service/overseas mix. Premier Energies sits between the two on revenue but trades at the richest multiple, reflecting its faster capacity ramp (new 5.6 GW Telangana line, plus BESS and aluminium-frame backward integration announced in July 2026).<br><br>
+      <strong style="color:var(--text);">Margins &amp; growth:</strong> Emmvee posted the fastest FY26 revenue growth (+116% YoY) among the three, and its Q1 FY27 EBITDA margin (35.24%) is now competitive with, or ahead of, peer guidance ranges — though Waaree's FY27 EBITDA guidance of ₹7,000–7,700 Cr dwarfs Emmvee's ₹2,200–2,400 Cr in absolute terms.<br><br>
+      <strong style="color:var(--text);">Integration:</strong> Adani Solar and Waaree are furthest along on backward integration (Adani fully integrated; Waaree adding BESS, electrolyzers, transformers under "Waaree 2.0"). Emmvee's Devanahalli project narrows but does not close this gap, and Emmvee remains the only one of the four still "evaluating" — rather than committing to — ingot/wafer capacity.<br><br>
+      <strong style="color:var(--text);">Valuation:</strong> Emmvee's post-Q1 TTM P/E (~19×) now sits close to Waaree's (~21×) and well below Premier's (~31×) — the earnings beat has meaningfully closed what was a much wider valuation gap at Q4 FY26.
+    </div>
+  </div>
+</div>
+
+<!-- ===== FINANCIALS TAB ===== -->
+<div id="financials" class="panel">
+  <div class="sec-hdr">📋 Financial Performance <span class="sec-note">Q1 FY27 (Qtr Ended Jun 30, 2026) & FY26 Base · en-IN Format · BSE/NSE Data</span></div>
+
+  <!-- CB Rating Card -->
+  <div class="rp-card">
+    <div class="rp-header">
+      <div class="rp-hdr-left">
+        <div class="rp-title">CB Research Rating — Emmvee Photovoltaic Power (NSE: EMMVEE)</div>
+        <div class="rp-subtitle">CBF27 Scorecard · 10 Parameters · Q1 FY27 Results · Cauvery Business Research</div>
+      </div>
+      <div class="rp-hdr-right">
+        <div class="rp-overall-wrap">
+          <div class="rp-overall">8.1</div>
+          <div class="rp-overall-sub">/10</div>
+        </div>
+        <div class="rp-verdict" style="background:#fdf5e0;color:#78350f;">High Conviction — Watch Working Capital &amp; Devanahalli Execution</div>
+      </div>
+    </div>
+    <div class="rp-summary">
+      Emmvee opened FY27 with its strongest-ever Q1 — revenue +51% YoY to ₹1,555.5 Cr, EBITDA +56% YoY to ₹548.1 Cr (record 35.24% margin), and PAT more than doubling (+103% YoY) to ₹380.3 Cr — even as revenue and PAT moderated modestly QoQ (-10.5%/-3.1%) off a seasonally strong Q4. Record cell utilisation (83%) and an all-time-high 9.9 GW order book (+1.48 GW added in Q1, 57% repeat customers) underpin near-term visibility, and the ₹5,500 Cr Devanahalli expansion is now fully funded (₹3,300 Cr debt tied up at &lt;8%) with ~60% of equipment ordered. ALMM List-II is live and the enlisted cell base has widened to ~30.5 GW/10+ players — a real but less exclusive moat than before. Working capital (OCF vs PAT conversion) and execution of the Dec 2026/Mar 2027 Devanahalli commissioning milestones remain the key monitorables. <em>CB Research does not issue buy/sell/hold recommendations.</em>
+    </div>
+    <div class="rp-table-wrap">
+      <table class="rp-table">
+        <thead>
+          <tr>
+            <th class="rp-th" style="width:160px;">Parameter</th>
+            <th class="rp-th rp-th-score">Score</th>
+            <th class="rp-th rp-th-comment">Analyst Commentary</th>
+          </tr>
+        </thead>
+        <tbody id="rp-tbody"></tbody>
+      </table>
+    </div>
+    <div class="rp-disclaimer">⚠️ CB Research Disclaimer: CB Rating Scorecard is for educational and informational purposes only. It does not constitute investment advice, a buy/sell/hold recommendation, or solicitation of any kind. All data sourced from BSE/NSE filings. Past performance does not guarantee future results.</div>
+  </div>
+
+  <!-- Quarterly Performance Table -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:24px;">Quarterly Financial Performance (₹ Crore)</div>
+  <table class="gap-top">
+    <thead>
+      <tr>
+        <th>Quarter</th><th>Revenue</th><th>YoY %</th><th>EBITDA</th><th>EBITDA%</th><th>PAT</th><th>PAT%</th><th>EPS (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#edf7f1;"><td class="tb">Q1 FY27</td><td class="tpos">1,555.50</td><td class="tpos">+51.3%</td><td class="tpos">548.10</td><td class="tpos">35.24%</td><td class="tpos">380.30</td><td class="tpos">24.45%</td><td class="tpos">5.49</td></tr>
+      <tr><td class="tb">Q4 FY26</td><td class="num">1,738.81</td><td class="tpos">+62.3%</td><td class="num">571.1</td><td class="num">32.84%</td><td class="num">392.38</td><td class="num">22.57%</td><td class="num">5.62</td></tr>
+      <tr><td class="tb">Q3 FY26</td><td class="num">1,150.0</td><td class="tpos">+71.2%</td><td class="num">398.2</td><td class="num">34.6%</td><td class="num">263.7</td><td class="num">22.9%</td><td class="num">3.77</td></tr>
+      <tr><td class="tb">Q2 FY26</td><td class="num">1,175.5</td><td class="tpos">+88.4%</td><td class="num">409.0</td><td class="num">34.8%</td><td class="num">270.5</td><td class="num">23.0%</td><td class="num">3.87</td></tr>
+      <tr><td class="tb">Q1 FY26</td><td class="num">1,027.8</td><td class="tpos">+178.5%</td><td class="num">350.4</td><td class="num">34.10%</td><td class="num">187.7</td><td class="num">18.26%</td><td class="num">2.72</td></tr>
+      <tr><td class="tb">FY26 Full Year</td><td class="num">5,049.88</td><td class="tpos">+116.2%</td><td class="num">1,734.4</td><td class="num">34.35%</td><td class="num">1,081.55</td><td class="num">21.42%</td><td class="num">15.48</td></tr>
+      <tr><td class="tb">FY25 Full Year</td><td class="num">2,335.0</td><td class="muted">—</td><td class="num">720.0</td><td class="num">30.8%</td><td class="num">369.5</td><td class="num">15.8%</td><td class="num">5.29</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Annual Trend Table -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:24px;">Annual Financial Trend (₹ Crore)</div>
+  <table class="gap-top">
+    <thead>
+      <tr><th>Metric</th><th>FY23</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Growth (FY23→26)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tb">Revenue</td><td class="num">580</td><td class="num">1,120</td><td class="num">2,335</td><td class="tpos">5,049.88</td><td class="tpos">+770%</td></tr>
+      <tr><td class="tb">EBITDA</td><td class="num">118</td><td class="num">280</td><td class="num">720</td><td class="tpos">1,734.4</td><td class="tpos">+1,369%</td></tr>
+      <tr><td class="tb">EBITDA Margin</td><td class="num">20.3%</td><td class="num">25.0%</td><td class="num">30.8%</td><td class="tpos">34.35%</td><td class="tpos">+14.0 pp</td></tr>
+      <tr><td class="tb">PAT</td><td class="num">48</td><td class="num">98</td><td class="num">369.5</td><td class="tpos">1,081.55</td><td class="tpos">+2,153%</td></tr>
+      <tr><td class="tb">Operating Cashflow</td><td class="num">42</td><td class="num">210</td><td class="num">624.89</td><td class="tneg">200.14</td><td class="warn">⚠️ WC stress</td></tr>
+      <tr><td class="tb">Net Debt/Equity</td><td class="num">1.8×</td><td class="num">1.2×</td><td class="num">0.4×</td><td class="tpos">(0.06)×</td><td class="tpos">Net Cash</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Working Capital / Cash Conversion Cycle -->
+  <div class="sec-hdr" style="font-size:1rem;margin-top:24px;">Working Capital & Cash Conversion Cycle</div>
+  <div class="card" style="border-left:4px solid var(--policy);margin-bottom:14px;">
+    <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">ℹ️ Indian listed companies are only required to disclose full balance-sheet and cash-flow detail (receivables, inventory, payables in ₹) <strong style="color:var(--text);">annually</strong> — quarterly filings show only the P&amp;L. So the granular working-capital figures below are as of <strong style="color:var(--text);">FY26-end (March 31, 2026)</strong>, the latest audited base; Q1 FY27 commentary is directional, drawn from management's concall remarks and analyst previews rather than a published quarterly balance sheet.</div>
+  </div>
+  <table class="gap-top">
+    <thead>
+      <tr><th>Metric</th><th>FY23</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Trend</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tb">Debtor Days (Receivables)</td><td class="num">41</td><td class="num">37</td><td class="num">30</td><td class="tneg">50.2</td><td class="warn">⚠️ Rising</td></tr>
+      <tr><td class="tb">Inventory Days</td><td class="num">103</td><td class="num">148</td><td class="num">197</td><td class="tneg">225</td><td class="warn">⚠️ Rising — capacity build-up + Devanahalli pre-stocking</td></tr>
+      <tr><td class="tb">Days Payable (Creditors)</td><td class="num">50</td><td class="num">77</td><td class="num">91</td><td class="tpos">116</td><td class="pos">✅ Lengthening — helps offset WC drag</td></tr>
+      <tr style="background:#edf7f1;"><td class="tb">Cash Conversion Cycle</td><td class="num">93</td><td class="num">108</td><td class="num">136</td><td class="tneg">159</td><td class="warn">⚠️ Structurally elongating</td></tr>
+      <tr><td class="tb">Working Capital Days</td><td class="num">(28)</td><td class="num">(90)</td><td class="num">(38)</td><td class="tneg">88.3</td><td class="warn">⚠️ Flipped from net-negative to net-positive in FY26</td></tr>
+    </tbody>
+  </table>
+  <div class="card gap-top">
+    <div class="card-lbl">🧮 Reading the Cash Conversion Cycle</div>
+    <div style="font-size:12px;line-height:1.8;color:var(--muted);">
+      <strong style="color:var(--text);">Debtor days (50.2):</strong> how long Emmvee waits to collect cash after a sale — up from 30 days in FY25, consistent with slower government/DISCOM/IPP payment cycles as the order book scaled.<br>
+      <strong style="color:var(--text);">Inventory days (225):</strong> the biggest single driver of the FY26 working-capital build — nearly 7.5 months of inventory on the books, reflecting raw-material stocking (polysilicon, wafers, cells) ahead of the capacity ramp and, per pre-results analyst previews, an inventory stockpile in the ~₹1,700 Cr range heading into Q1 FY27 that management is expected to normalise as production throughput rises.<br>
+      <strong style="color:var(--text);">Days payable (116):</strong> Emmvee is also taking longer to pay its own suppliers — up from 91 days in FY25 — which partly offsets the receivables/inventory drag.<br>
+      <strong style="color:var(--text);">Net effect:</strong> Cash Conversion Cycle = Debtor Days + Inventory Days − Days Payable = 50.2 + 225 − 116 ≈ <strong style="color:var(--text);">159 days</strong>. That's the number of days cash is tied up in the operating cycle before it comes back in — and it's the single best explanation for why FY26 OCF (₹200 Cr) lagged PAT (₹1,081 Cr) so sharply. CB Research will watch whether Q1–Q4 FY27 filings show inventory days normalising as Devanahalli ramps production, since that is the largest lever available to shorten the cycle.
+    </div>
+  </div>
+
+  <div class="card gap-top" style="border-left:4px solid var(--warn);">
+    <div class="card-lbl">⚠️ Working Capital Red Flag — Deep Dive (Updated Q1 FY27)</div>
+    <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+      FY26 OCF of ₹200.14 Cr vs PAT of ₹1,081.55 Cr represented only 18.5% cash conversion. Working capital days had swung from (13.3) to +88.3 (screener still flags this as of the Q1 update), and debtor days sat at 50.2 as of FY26-end. This reflects large receivables from government/DISCOM and IPP clients — a common feature of the Indian solar supply chain.<br><br>
+      <strong style="color:var(--neg);">Risk:</strong> Q1 FY27's sequential revenue and PAT dip (-10.5%/-3.1% QoQ) came off a seasonally strong Q4; if working capital continues to build as Devanahalli capex ramps through FY27, the net-cash cushion could erode faster than modelled.<br>
+      <strong style="color:var(--pos);">Mitigant:</strong> Devanahalli's ₹5,500 Cr capex is already funded (₹3,300 Cr tied-up debt at &lt;8%), so near-term OCF stress need not force fresh unplanned borrowing. Record Q1 margins (35.24% EBITDA) also suggest underlying profitability is genuine, not solely PLI-driven. CB Research will track OCF/PAT conversion each quarter through FY27 as the key data point to resolve this flag.
+    </div>
+  </div>
+</div>
+
+<!-- ===== CAPACITY TAB ===== -->
+<div id="capacity" class="panel">
+  <div class="sec-hdr">🏭 Manufacturing Capacity & Expansion <span class="sec-note">GW Scale · TOPCon Technology · Q1 FY27 Utilisation · Devanahalli Roadmap</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi sector-a"><div class="kl">Module Capacity</div><div class="kv">10.3 GW</div><div class="kc pos">100% TOPCon</div></div>
+    <div class="kpi sector-a"><div class="kl">Cell Capacity</div><div class="kv">2.94 GW</div><div class="kc pos">ALMM-II ✅</div></div>
+    <div class="kpi sector-a"><div class="kl">Cell Utilisation Q1 FY27</div><div class="kv">83%</div><div class="kc pos">Record; Target 85%+</div></div>
+    <div class="kpi sector-a"><div class="kl">Module Utilisation Q1 FY27</div><div class="kv">45%</div><div class="kc muted">Headroom to grow</div></div>
+    <div class="kpi sector-a"><div class="kl">Order Book</div><div class="kv">9.9 GW</div><div class="kc pos">All-Time High</div></div>
+  </div>
+
+  <table class="gap-top">
+    <thead>
+      <tr><th>Capacity Type</th><th>FY26 (Mar 31)</th><th>Q1 FY27 (Jun 30)</th><th>FY27 Target</th><th>Technology</th><th>ALMM Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tb">Module Capacity</td><td class="num">10.3 GW</td><td class="num">10.3 GW</td><td class="tpos">16.3 GW</td><td class="mn">TOPCon (100%)</td><td><span class="badge b-pos">✅ List-I</span></td></tr>
+      <tr><td class="tb">Cell Capacity</td><td class="num">2.94 GW</td><td class="num">2.94 GW</td><td class="tpos">8.9 GW</td><td class="mn">TOPCon (100%)</td><td><span class="badge b-pos">✅ List-II</span></td></tr>
+      <tr><td class="tb">Ingot/Wafer</td><td class="num">—</td><td class="num">—</td><td class="num">Evaluating (9 GW, 2 phases)</td><td class="mn">TBD</td><td><span class="badge b-warn">⚠️ List-III (2028)</span></td></tr>
+      <tr><td class="tb">Quarterly Module Output</td><td class="num">~1.03 GW (Q4 FY26)</td><td class="tpos">0.97 GW (record)</td><td class="num">Rising through FY27</td><td class="ml">—</td><td class="ml">—</td></tr>
+      <tr><td class="tb">Quarterly Cell Output</td><td class="num">~0.42 GW (Q4 FY26 est)</td><td class="tpos">0.454 GW (record)</td><td class="num">Rising through FY27</td><td class="ml">—</td><td class="ml">—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">🏗️ Devanahalli Expansion — Q1 FY27 Update</div>
+      <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+        <strong style="color:var(--text);">Location:</strong> Devanahalli, Bengaluru (near international airport)<br>
+        <strong style="color:var(--text);">Size:</strong> 6 GW integrated cell + module plant<br>
+        <strong style="color:var(--text);">Status:</strong> Construction on schedule; ~60% of equipment orders (by capital cost) already placed<br>
+        <strong style="color:var(--text);">Total Project Cost:</strong> ₹5,500 Cr — funded via ₹3,300 Cr tied-up debt (&lt;8% cost) + internal accruals<br>
+        <strong style="color:var(--text);">Commissioning:</strong> Module line by <strong>December 2026</strong>; cell line by <strong>March 2027</strong><br>
+        <strong style="color:var(--text);">Post-completion:</strong> Modules → 16.3 GW · Cells → 8.9 GW<br>
+        <strong style="color:var(--text);">Significance:</strong> Nearly 3× cell capacity, closing the integration gap and strengthening ALMM-II compliant volumes. Debt is already tied up, reducing the incremental leverage risk flagged in FY26.
+      </div>
+      <div class="badge-row"><span class="badge b-pos">Funding Secured</span><span class="badge b-pos">~60% Equipment Ordered</span><span class="badge b-warn">⚠️ Execution Watch: Dec'26/Mar'27</span></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🔬 Technology Roadmap</div>
+      <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+        <strong style="color:var(--text);">Current State:</strong> 100% TOPCon cells and modules (industry-leading efficiency ~24–25%)<br>
+        <strong style="color:var(--text);">Cell Utilisation:</strong> 68% Q1 FY26 → 79% Q4 FY26 → <strong>83% Q1 FY27 (record)</strong> — deeper internal cell consumption is the primary margin-expansion driver this quarter<br>
+        <strong style="color:var(--text);">Module Utilisation:</strong> 45% Q1 FY27 — significant headroom vs 10.3 GW installed base as order book converts to deliveries<br>
+        <strong style="color:var(--text);">Future Watch:</strong> HJT (Heterojunction) technology — Reliance has already entered ALMM List-II with HJT cells; Emmvee has not committed to HJT capex. Perovskite remains longer-term (5–10 years).<br>
+        <strong style="color:var(--text);">Ingot/Wafer:</strong> 9 GW planned across two phases; still at evaluation stage pending ALMM List-III clarity.
+      </div>
+      <div class="badge-row"><span class="badge b-pos">TOPCon Leader</span><span class="badge b-pos">Cell Util. 83% (Record)</span><span class="badge b-spec">HJT: No Commitment Yet</span></div>
+    </div>
+  </div>
+
+  <div class="sec-hdr" style="font-size:1rem;margin-top:24px;">Order Book Trend</div>
+  <table class="gap-top">
+    <thead>
+      <tr><th>Period</th><th>Opening Order Book</th><th>Q Intake</th><th>Q Delivery</th><th>Closing Order Book</th><th>Book/Capacity Ratio</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tb">FY25 End</td><td class="num">3.2 GW</td><td class="num">—</td><td class="num">—</td><td class="num">4.9 GW</td><td class="num">0.8×</td></tr>
+      <tr><td class="tb">Q1 FY26</td><td class="num">4.9 GW</td><td class="num">2.8 GW</td><td class="num">0.55 GW</td><td class="num">7.15 GW</td><td class="num">1.2×</td></tr>
+      <tr><td class="tb">Q2 FY26</td><td class="num">7.15 GW</td><td class="num">1.5 GW</td><td class="num">0.70 GW</td><td class="num">7.95 GW</td><td class="num">0.9×</td></tr>
+      <tr><td class="tb">Q3 FY26</td><td class="num">7.95 GW</td><td class="num">2.1 GW</td><td class="num">0.72 GW</td><td class="num">9.33 GW</td><td class="num">0.9×</td></tr>
+      <tr><td class="tb">Q4 FY26</td><td class="num">9.33 GW</td><td class="num">1.27 GW</td><td class="num">1.20 GW</td><td class="num">9.40 GW</td><td class="num">0.91× (11 months)</td></tr>
+      <tr style="background:#edf7f1;"><td class="tb">Q1 FY27</td><td class="num">9.40 GW</td><td class="tpos">1.48 GW</td><td class="num">~0.98 GW (est)</td><td class="tpos">9.90 GW</td><td class="tpos">0.96× (~11.5 months)</td></tr>
+    </tbody>
+  </table>
+  <div class="card gap-top">
+    <div class="card-lbl">📦 Order Book Quality — Q1 FY27</div>
+    <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+      Order inflows of 1.48 GW in Q1 FY27 took the book to an all-time high of ~9.9 GW. The mix remains diversified across IPPs, C&amp;I customers, and other categories, with the <strong style="color:var(--text);">repeat-customer rate rising to 57%</strong> during the quarter — a proxy for delivery reliability and customer stickiness. Management specifically flagged ALMM List-II as a demand tailwind expected to support the shift toward a fully DCR-compliant product mix over coming quarters.
+    </div>
+  </div>
+</div>
+
+<!-- ===== SWOT TAB ===== -->
+<div id="swot" class="panel">
+  <div class="sec-hdr">🔲 SWOT Analysis <span class="sec-note">Emmvee Photovoltaic Power · Q1 FY27</span></div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s">
+      <div class="swot-lbl sl">💪 Strengths</div>
+      <ul class="swot-ul">
+        <li>Enlisted on ALMM List-II (now live) with 2.94 GW cell capacity — structural regulatory tailwind for govt solar market</li>
+        <li>100% TOPCon transition complete — technology leadership in India</li>
+        <li>Record Q1 FY27 cell utilisation (83%) and EBITDA margin (35.24%) — margin expansion is genuine, not just PLI-driven</li>
+        <li>10.3 GW module + 2.94 GW cell capacity; Devanahalli 6 GW expansion fully funded</li>
+        <li>Net cash balance sheet (Net D/E: -0.06×); Devanahalli debt (₹3,300 Cr) already tied up at &lt;8%</li>
+        <li>9.9 GW order book (all-time high) — ~11.5 months of revenue visibility; repeat customers at 57%</li>
+        <li>30+ year operating history; founder-led execution; PAT more than doubled YoY in Q1 FY27</li>
+        <li>FY27 EBITDA guidance of ₹2,200–2,400 Cr reaffirmed on the Q1 call</li>
+      </ul>
+    </div>
+    <div class="swot-cell swot-w">
+      <div class="swot-lbl wl">⚠️ Weaknesses</div>
+      <ul class="swot-ul">
+        <li>FY26 OCF ₹200 Cr vs PAT ₹1,081 Cr — cash conversion gap; WC days had surged to 88.3; not yet resolved as of Q1 FY27</li>
+        <li>Revenue and PAT declined sequentially in Q1 FY27 (-10.5%/-3.1% QoQ) off a strong Q4 — some seasonality/lumpiness in quarterly delivery</li>
+        <li>Cell capacity (2.94 GW) still well below module capacity (10.3 GW) until Devanahalli's cell line arrives (Mar 2027)</li>
+        <li>PLI Phase-I window (FY22–FY27) is now in its final year — margin-cliff risk into FY28 remains unresolved</li>
+        <li>High promoter concentration (80%) — limited float; governance track record as listed company still short (listed Nov 2025)</li>
+        <li>No ingot/wafer capacity yet — still at "evaluating" stage; ALMM List-III (2028) requires a capex decision</li>
+        <li>Customer concentration risk (few large IPPs/govt entities dominate revenue)</li>
+      </ul>
+    </div>
+    <div class="swot-cell swot-o">
+      <div class="swot-lbl ol">🌱 Opportunities</div>
+      <ul class="swot-ul">
+        <li>India 500 GW renewable target by 2030 — 45–50 GW/year solar demand; peak power demand already at 271 GW (May 2026)</li>
+        <li>ALMM List-II now live and enforced, with net-metering/open-access exemptions tapering off through Dec 2026 — full demand pull-through still ahead</li>
+        <li>Devanahalli 6 GW expansion (fully funded) to nearly triple cell capacity and close the integration gap by FY27-end</li>
+        <li>Jefferies raised target to ₹400 post-Q1 (from ₹320 at initiation), projecting 29% EBITDA CAGR FY26–29</li>
+        <li>Export markets — US, Middle East, Europe demand premium Indian modules (non-China diversification)</li>
+        <li>Anti-dumping duty on Chinese cells/modules provides pricing umbrella (till Sep 2028)</li>
+        <li>PM Surya Ghar — 10 million rooftop solar homes target adds distributed demand layer</li>
+        <li>Ingot/wafer integration — upstream move could add spread, subject to List-III regulatory clarity</li>
+      </ul>
+    </div>
+    <div class="swot-cell swot-t">
+      <div class="swot-lbl tl">⚡ Threats</div>
+      <ul class="swot-ul">
+        <li>PLI Phase-I ends FY27 — post-PLI margin normalisation could disappoint investors expecting current 35%+ margins</li>
+        <li>Silver paste cost volatility (8–9% of module cost) is an active near-term margin headwind flagged by the Street</li>
+        <li>ALMM List-II base has widened to ~30.5 GW/10+ players — the moat is diluting as more manufacturers get enlisted, including HJT entrants like Reliance</li>
+        <li>ALMM List-III (wafers/ingots by 2028) — execution risk if ingot capex is delayed or over-budget</li>
+        <li>DISCOM payment delays — structural risk to receivables and OCF; FY26 WC stress not yet fully resolved</li>
+        <li>Devanahalli execution risk — module line (Dec 2026) and cell line (Mar 2027) commissioning must hold to schedule</li>
+        <li>Competition — Waaree (₹26,537 Cr FY26 revenue, largest), Adani Solar/Mundra (fully integrated, incl. HJT) are formidable peers</li>
+        <li>Industry-wide overcapacity risk — Indian cell/module capacity projected to exceed near-term demand by FY28E per brokerage estimates</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MOATS TAB ===== -->
+<div id="moats" class="panel">
+  <div class="sec-hdr">🏰 Competitive Moats <span class="sec-note">Structural Advantages · Durability Assessment</span></div>
+  <div class="g2 gap-top">
+    <div class="moat-card" style="border-left:4px solid var(--emmvee);">
+      <div class="moat-co" style="color:var(--emmvee);">🏆 Regulatory Moat (Widening, Still High Conviction)</div>
+      <div class="moat-title">ALMM List-II — Now Live, But a Growing Club (10+ Players, ~30.5 GW)</div>
+      <div class="moat-body">ALMM List-II has been in force since June 1, 2026: only enlisted cell manufacturers can supply modules to government-funded solar projects (~80% of total Indian solar demand), instantly excluding ~1,100+ smaller module-only assemblers. However, the enlisted base has grown quickly — from 6 players/13 GW at the August 2025 launch to 10+ players/~30.5 GW by mid-2026, with Reliance's HJT cells the latest entrant. The moat still excludes pure assemblers, but it is no longer a scarce 6-player club — competitive intensity among the enlisted integrated players (Waaree, Adani, Premier, Emmvee, and others) is the more relevant lens going forward. MNRE's July 2026 clarifications also softened near-term enforcement for net-metering/open-access projects (exempt till Dec 2026), a modest dilution of the near-term demand pull-through.</div>
+      <span class="moat-tag" style="background:#dcfce7;color:#15803d;">Durability: HIGH vs assemblers, MEDIUM vs integrated peers</span>
+      <span class="moat-tag" style="background:#dbeafe;color:#1d4ed8;">Type: Regulatory Barrier</span>
+    </div>
+    <div class="moat-card" style="border-left:4px solid var(--topcon);">
+      <div class="moat-co" style="color:var(--topcon);">⚡ Technology Moat</div>
+      <div class="moat-title">100% TOPCon Transition — First-Mover in Indian Integrated Manufacturing</div>
+      <div class="moat-body">Emmvee completed 100% TOPCon conversion for both cells and modules in FY26 — among the fastest in India. TOPCon cells achieve ~24–25% efficiency vs ~21–22% for PERC (older technology). Higher efficiency means fewer modules per MW, lower balance-of-system costs, and premium realisations for customers. Record 83% cell utilisation in Q1 FY27 shows this capacity is now being used efficiently, not just built.</div>
+      <span class="moat-tag" style="background:#f3e8ff;color:#7c3aed;">Durability: MEDIUM (3-5 yr window before HJT)</span>
+      <span class="moat-tag" style="background:#dbeafe;color:#1d4ed8;">Type: Tech Leadership</span>
+    </div>
+    <div class="moat-card" style="border-left:4px solid var(--solar);">
+      <div class="moat-co" style="color:var(--solar);">📦 Scale & Execution Moat</div>
+      <div class="moat-title">10.3 GW Module Capacity — Top-5 Indian Manufacturer</div>
+      <div class="moat-body">Scale in solar manufacturing creates cost advantages through bulk procurement of encapsulants, glass, backsheet, junction boxes, and aluminium frames. Emmvee's 10.3 GW positions it in the top tier of Indian manufacturers. Large IPPs and government agencies strongly prefer suppliers who can deliver GW-scale volumes in short timelines. Emmvee's order book hit an all-time high of 9.9 GW in Q1 FY27, with the repeat-customer share rising to 57% — a direct signal of delivery-execution trust.</div>
+      <span class="moat-tag" style="background:#fff7ed;color:#c2410c;">Durability: MEDIUM (Waaree larger at 12 GW)</span>
+      <span class="moat-tag" style="background:#dbeafe;color:#1d4ed8;">Type: Scale Advantage</span>
+    </div>
+    <div class="moat-card" style="border-left:4px solid var(--policy);">
+      <div class="moat-co" style="color:var(--policy);">🛡️ Policy Umbrella Moat</div>
+      <div class="moat-title">BCD + ADD = 44%+ Protection from Chinese Imports</div>
+      <div class="moat-body">The combination of 44% effective Basic Customs Duty on imported modules and 23–30% Anti-Dumping Duty on Chinese cells/modules (valid till Sep 2028) creates a near-impenetrable price wall. Chinese module prices (which fell below ₹12–14/W globally) are effectively priced out of the Indian market. This sustains Emmvee's domestic realisations well above global market prices.</div>
+      <span class="moat-tag" style="background:#ecfeff;color:#0e7490;">Durability: MEDIUM (policy-dependent; BCD subject to review)</span>
+      <span class="moat-tag" style="background:#dbeafe;color:#1d4ed8;">Type: Policy Protection</span>
+    </div>
+    <div class="moat-card" style="border-left:4px solid var(--gold);">
+      <div class="moat-co" style="color:var(--gold);">🌿 Brand & Relationship Moat</div>
+      <div class="moat-title">30+ Years of Solar Manufacturing — Institutional Customer Trust</div>
+      <div class="moat-body">Founded in 1993, Emmvee has 30+ years of solar manufacturing experience — rare in an industry where most Indian players are under 10 years old. Long-standing relationships with IPPs (Adani Green, ReNew, NTPC Renewable etc.) and state DISCOMs create switching cost advantages. These customers prefer suppliers with proven quality, delivery reliability, and service history.</div>
+      <span class="moat-tag" style="background:#fdf5e0;color:#78350f;">Durability: HIGH (relationships are sticky)</span>
+      <span class="moat-tag" style="background:#dbeafe;color:#1d4ed8;">Type: Customer Relationships</span>
+    </div>
+    <div class="moat-card" style="border-left:4px solid var(--neg);">
+      <div class="moat-co" style="color:var(--neg);">⚠️ Moat Vulnerabilities</div>
+      <div class="moat-title">Where Emmvee's Moats Are Weak</div>
+      <div class="moat-body">1. <strong>No proprietary technology:</strong> TOPCon is a licensed/open technology. Competitors can replicate. <br>2. <strong>No wafer/ingot moat:</strong> Still dependent on imports for upstream silicon products. <br>3. <strong>No pricing power beyond policy umbrella:</strong> Module prices are commoditised globally. <br>4. <strong>ALMM moat is government-made, not market-made:</strong> Policy change risk is real. <br>5. <strong>Waaree at 12 GW and Adani (fully integrated) are ahead</strong> in scale and integration respectively.</div>
+      <span class="moat-tag" style="background:#fee2e2;color:#b91c1c;">Risk: Policy Reversal</span>
+      <span class="moat-tag" style="background:#fee2e2;color:#b91c1c;">Risk: HJT Disruption</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHARTS TAB ===== -->
+<div id="charts" class="panel">
+  <div class="sec-hdr">📈 Visual Analytics <span class="sec-note">Revenue · PAT · Margin · Capacity · Order Book</span></div>
+  <div class="g2 gap-top">
+    <div class="chart-card"><h3>Revenue Growth (₹ Crore)</h3><p class="sub">Annual FY23–FY26 · BSE/NSE Audited</p><canvas id="chartRevenue" height="220"></canvas></div>
+    <div class="chart-card"><h3>EBITDA Growth (₹ Crore)</h3><p class="sub">Annual FY23–FY26 · BSE/NSE Audited</p><canvas id="chartEBITDA" height="220"></canvas></div>
+    <div class="chart-card"><h3>PAT Growth (₹ Crore)</h3><p class="sub">Annual FY23–FY26 · BSE/NSE Audited</p><canvas id="chartPAT" height="220"></canvas></div>
+    <div class="chart-card"><h3>EBITDA Margin Trend (%)</h3><p class="sub">Annual FY23–FY26</p><canvas id="chartMargin" height="220"></canvas></div>
+    <div class="chart-card"><h3>Quarterly Revenue vs EBITDA (₹ Crore)</h3><p class="sub">Q1 FY26 – Q1 FY27 Trend</p><canvas id="chartQRev" height="220"></canvas></div>
+    <div class="chart-card"><h3>Module vs Cell Capacity (GW)</h3><p class="sub">FY24–FY27E Integration Progress</p><canvas id="chartCapacity" height="220"></canvas></div>
+    <div class="chart-card"><h3>PAT vs Operating Cashflow (₹ Crore)</h3><p class="sub">FY23–FY26 · Cash Conversion Watch</p><canvas id="chartOCF" height="220"></canvas></div>
+    <div class="chart-card"><h3>Cash Conversion Cycle (Days)</h3><p class="sub">Debtor + Inventory − Payable Days · FY23–FY26</p><canvas id="chartCCC" height="220"></canvas></div>
+  </div>
+</div>
+
+<!-- ===== VALUATION TAB ===== -->
+<div id="valuation" class="panel">
+  <div class="sec-hdr">💰 Valuation <span class="sec-note">Market Data · Late July 2026 · Educational Only — No Investment Advice</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi sector-a"><div class="kl">CMP (₹)</div><div class="kv">~₹345</div><div class="kc muted">Late July 2026</div></div>
+    <div class="kpi sector-a"><div class="kl">Market Cap</div><div class="kv">~₹24,000 Cr</div><div class="kc muted">~69.2 Cr shares</div></div>
+    <div class="kpi sector-a"><div class="kl">P/E Ratio (TTM)</div><div class="kv">~19×</div><div class="kc warn">Q1 FY27 EPS ₹5.49</div></div>
+    <div class="kpi sector-a"><div class="kl">EV/EBITDA</div><div class="kv">~11–12×</div><div class="kc muted">TTM, post-Q1</div></div>
+    <div class="kpi sector-a"><div class="kl">P/B Ratio</div><div class="kv">~6.5×</div><div class="kc muted">Post-IPO BV</div></div>
+  </div>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">📉 52-Week Price Range</div>
+      <table style="font-size:12px;box-shadow:none;border:none;">
+        <tr><td class="tb">52W High</td><td class="tpos num">₹371.55 (all-time high, Jul 2, 2026)</td></tr>
+        <tr><td class="tb">52W Low</td><td class="tneg num">₹171.51</td></tr>
+        <tr><td class="tb">IPO Price (Nov 2025)</td><td class="num">₹217 (listing day close)</td></tr>
+        <tr><td class="tb">CMP vs 52W High</td><td class="warn">~−7% from peak</td></tr>
+        <tr><td class="tb">CMP vs 52W Low</td><td class="tpos">~+101% from trough</td></tr>
+        <tr><td class="tb">Post-Q1 Results Move</td><td class="tpos">+8.7% on results day (Jul 16, 2026)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">📊 Valuation Multiples vs Peers (FY26 Actuals / TTM)</div>
+      <table style="font-size:11.5px;box-shadow:none;border:none;">
+        <thead><tr><th style="background:var(--surface2);color:var(--text);font-size:10px;">Company</th><th style="background:var(--surface2);color:var(--text);font-size:10px;">P/E</th><th style="background:var(--surface2);color:var(--text);font-size:10px;">Mkt Cap</th><th style="background:var(--surface2);color:var(--text);font-size:10px;">FY26 PAT</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Emmvee (EMMVEE)</td><td class="num">~19×</td><td class="num">~₹24,000 Cr</td><td class="num">₹1,082 Cr</td></tr>
+          <tr><td class="tb">Waaree Energies</td><td class="num">~21×</td><td class="num">~₹81,400 Cr</td><td class="num">₹3,884 Cr</td></tr>
+          <tr><td class="tb">Premier Energies</td><td class="num">~31×</td><td class="num">~₹47,400 Cr</td><td class="num">₹1,510 Cr</td></tr>
+          <tr><td class="tb">Adani Solar (unlisted)</td><td class="ml">—</td><td class="ml">—</td><td class="ml">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card gap-top" style="border-left:4px solid var(--gold);">
+    <div class="card-lbl">💡 Valuation Commentary (Educational — Not Investment Advice)</div>
+    <div style="font-size:12px;line-height:1.75;color:var(--muted);">
+      At ~19× TTM P/E, Emmvee now trades broadly in line with Waaree (~21×) and at a discount to Premier Energies (~31×) — a narrower gap than the 21.6×-vs-35-80× spread seen at Q4 FY26, as Emmvee's Q1 FY27 earnings beat closed part of the discount. Jefferies raised its target to ₹400 (from ₹320 at initiation) post-results, implying continued upside conviction from at least one large brokerage.<br><br>
+      <strong style="color:var(--text);">Bull case:</strong> If Emmvee sustains 30%+ EBITDA margins as Devanahalli ramps (module line Dec 2026, cell line Mar 2027), executes its 9.9 GW order book on schedule, and resolves the OCF/PAT gap — re-rating toward peer multiples (25×+) is plausible.<br>
+      <strong style="color:var(--text);">Bear case:</strong> PLI Phase-I ends FY27, silver-paste cost inflation and industry overcapacity (India cell/module capacity projected to outpace demand by FY28E) compress spreads, and Devanahalli commissioning slips — multiple could de-rate back toward 12–15×.<br><br>
+      <em>CB Research does not issue buy/sell/hold recommendations or price targets. Investors should conduct their own due diligence.</em>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ANALYST RATINGS TAB ===== -->
+<div id="analyst" class="panel">
+  <div class="sec-hdr">🎯 Analyst Ratings & Price Targets <span class="sec-note">External Brokerages · Not CB Research Views · Educational Only</span></div>
+
+  <div class="card gap-top" style="background:#fff8ec;border:1.5px solid #e07b00;margin-bottom:20px;">
+    <div style="font-size:11.5px;color:var(--muted);line-height:1.65;">⚠️ <strong style="color:var(--text);">Disclaimer:</strong> The analyst ratings and price targets below are sourced from external brokerages and research firms. CB Research does not endorse, verify, or replicate these views. CB Research does NOT issue Buy/Sell/Hold recommendations. This section is for investor education and tracking market consensus only. Past analyst targets are not indicative of future outcomes.</div>
+  </div>
+
+  <table class="gap-top">
+    <thead>
+      <tr><th>Brokerage / Analyst</th><th>Rating</th><th>Target (₹)</th><th>Date</th><th>CMP at Time</th><th>Upside/Downside</th><th>Key Thesis</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tb">Jefferies</td><td><span class="badge b-pos">Buy</span></td><td class="tpos num">₹400</td><td class="mn">Jul 2026 (post-Q1)</td><td class="num">~₹358</td><td class="tpos">+11.7%</td><td style="font-size:11px;">Q1 beat, 29% EBITDA CAGR FY26–29E, FY27 power-sector recovery supports renewables</td></tr>
+      <tr><td class="tb">Jefferies (Initiation)</td><td><span class="badge b-pos">Buy</span></td><td class="num">₹320</td><td class="mn">Jan 2026 (initiation)</td><td class="num">~₹188</td><td class="tpos">+70% (at initiation)</td><td style="font-size:11px;">Early TOPCon mover, DCR profitability, funded balance sheet</td></tr>
+      <tr><td class="tb">Consensus High</td><td><span class="badge b-pos">Bullish</span></td><td class="tpos num">₹377</td><td class="mn">Jul 2026</td><td class="num">~₹358</td><td class="tpos">+5.3%</td><td style="font-size:11px;">ALMM-II tailwind, capacity scale, record order book</td></tr>
+      <tr><td class="tb">Consensus Low</td><td><span class="badge b-neg">Cautious</span></td><td class="tneg num">₹295</td><td class="mn">Jul 2026</td><td class="num">~₹358</td><td class="tneg">−17.6%</td><td style="font-size:11px;">OCF divergence, PLI cliff FY28, widening ALMM-II peer set, Devanahalli execution risk</td></tr>
+    </tbody>
+  </table>
+
+  <div class="g2 gap-top">
+    <div class="card">
+      <div class="card-lbl">📈 Bull Case Thesis (Consensus Upside)</div>
+      <ul style="list-style:none;font-size:12px;line-height:1.9;color:var(--muted);">
+        <li>✅ ALMM-II now live and enforced — govt-project access secured for enlisted cell manufacturers</li>
+        <li>✅ 9.9 GW order book (all-time high) provides multi-year revenue visibility; 57% repeat customers</li>
+        <li>✅ Devanahalli fully funded (₹5,500 Cr, ₹3,300 Cr debt tied up) — capex risk largely de-risked</li>
+        <li>✅ Record Q1 FY27 margins (35.24% EBITDA) show genuine operating leverage, not just PLI</li>
+        <li>✅ India 500 GW target — structural demand for 10+ years</li>
+        <li>✅ Post-Q1 re-rating narrowed the Waaree/Premier valuation gap; Jefferies target raised to ₹400</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl">📉 Bear Case Thesis (Cautious View)</div>
+      <ul style="list-style:none;font-size:12px;line-height:1.9;color:var(--muted);">
+        <li>⚠️ PLI Phase-I ends FY27 — margin cliff into FY28 remains an open question</li>
+        <li>⚠️ FY26 OCF/PAT gap (₹200 Cr vs ₹1,081 Cr) — quality-of-earnings concern not yet resolved as of Q1</li>
+        <li>⚠️ Sequential Q1 FY27 revenue/PAT decline (-10.5%/-3.1% QoQ) shows some quarter-to-quarter lumpiness</li>
+        <li>⚠️ ALMM-II moat is diluting — enlisted base widened from 6 to 10+ players/~30.5 GW since launch</li>
+        <li>⚠️ Waaree (larger scale, broader diversification) and Adani (better integrated) remain stronger peers</li>
+        <li>⚠️ Industry-wide capacity build-out (India cell/module capacity to exceed demand by FY28E) risks spread compression</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VERDICT TAB ===== -->
+<div id="verdict" class="panel">
+  <div class="sec-hdr">⚖️ CB Research Verdict <span class="sec-note">Analytical Summary · Educational Only · No Buy/Sell/Hold</span></div>
+
+  <div class="verdict-card">
+    <div class="verdict-title">☀️ Emmvee Solar — CB Research Summary Verdict (Q1 FY27)</div>
+    <div class="verdict-body">
+      Emmvee Photovoltaic Power opened FY27 with its strongest-ever first quarter — revenue up 51% YoY to ₹1,555.5 Cr and PAT more than doubling (+103% YoY) to ₹380.3 Cr, with record EBITDA (35.24%) and PAT (24.2%) margins driven by record cell utilisation (83%) and deeper internal cell consumption. The company enters FY27 with an all-time-high 9.9 GW order book, ALMM List-II now live and enforced, and its ₹5,500 Cr Devanahalli expansion fully funded with debt already tied up at &lt;8%.<br><br>
+      Two threads from FY26 still need resolving. First, the PLI cliff — PLI Phase-I ends FY27, and while Q1 margins suggest the underlying business is strengthening independent of the subsidy, the true post-PLI run-rate won't be visible until FY28. Second, the working capital divergence — FY26 OCF of just ₹200 Cr against PAT of ₹1,081 Cr (debtor days 50.2, WC days 88.3) has not yet been demonstrably reversed; this bears close tracking through FY27 as Devanahalli capex draws down cash. A third, newer thread has emerged: the ALMM List-II moat, while still a real barrier against pure assemblers, has widened from 6 to 10+ enlisted manufacturers since its 2025 launch — durability now depends more on execution and integration depth than on regulatory scarcity.<br><br>
+      At ~19× TTM P/E, Emmvee now trades close to Waaree and at a meaningful discount to Premier Energies — the Q1 beat has closed much of the earlier valuation gap. The Devanahalli module line (Dec 2026) and cell line (Mar 2027) are the next critical execution checkpoints.<br><br>
+      <em>CB Research CBF27 Rating: 8.1/10 — "High Conviction Story, Watch Working Capital &amp; Devanahalli Execution"</em>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="border-left:4px solid var(--pos);">
+      <div class="card-lbl" style="color:var(--pos);">✅ What We Find Compelling</div>
+      <ul style="list-style:none;font-size:12px;line-height:2.0;color:var(--muted);">
+        <li>🏛️ ALMM List-II — now enforced, still a real barrier against ~1,100+ module-only assemblers even as the enlisted club widens</li>
+        <li>⚡ Record Q1 FY27 margins (35.24% EBITDA, 24.2% PAT) — technology and integration leadership showing through in results</li>
+        <li>📦 9.9 GW order book (all-time high) — ~11.5 months of module capacity pre-sold; repeat customers at 57%</li>
+        <li>🏦 Devanahalli fully funded (₹5,500 Cr, ₹3,300 Cr debt tied up at &lt;8%) — capex de-risked ahead of construction</li>
+        <li>🇮🇳 India 500 GW mission — Emmvee is in the right place at the right time</li>
+        <li>📈 Post-Q1 re-rating has narrowed the valuation gap to Waaree/Premier</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:4px solid var(--neg);">
+      <div class="card-lbl" style="color:var(--neg);">⚠️ Key Risks to Monitor</div>
+      <ul style="list-style:none;font-size:12px;line-height:2.0;color:var(--muted);">
+        <li>💸 PLI Cliff FY27→FY28 — watch whether spread/scale gains offset PLI income loss once the scheme lapses</li>
+        <li>🔄 OCF/PAT divergence — FY26's gap is not yet resolved; track working capital days each quarter in FY27</li>
+        <li>🏗️ Devanahalli execution — module line (Dec 2026) and cell line (Mar 2027) commissioning must hold to schedule</li>
+        <li>⚠️ ALMM-II dilution — enlisted base has grown from 6 to 10+ players; monitor whether Emmvee's realisation premium holds</li>
+        <li>🔬 HJT risk — Reliance's HJT entry into ALMM List-II signals a credible next-gen competitor is already enlisted</li>
+        <li>📉 Industry overcapacity — India cell/module capacity is projected to outpace demand by FY28E per brokerage estimates</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card gap-top" style="background:#f9f9f7;border:1px solid var(--border);">
+    <div style="font-size:10.5px;color:var(--muted);line-height:1.75;font-style:italic;">
+      ⚠️ <strong style="color:var(--text);">CB Research Disclaimer:</strong> This dashboard is produced by Cauvery Business Research (CB Research) for educational and informational purposes only. It does not constitute investment advice, a solicitation, or a buy/sell/hold recommendation of any kind. All financial data is sourced from BSE/NSE regulatory filings, company investor presentations, and publicly available sources. CB Research is an independent equity research brand and is not registered as an investment advisor under SEBI regulations. Investors must conduct their own due diligence and consult a SEBI-registered investment advisor before making investment decisions. Past financial performance is not a guarantee of future results.
+    </div>
+  </div>
+</div>
+
+<!-- ===== CB ASSIST TAB ===== -->
+<div id="cbassist" class="panel">
+  <div class="sec-hdr">🤖 CB Assist <span class="sec-note">Offline Q&A · Emmvee Solar · English & Tamil · No Internet Required</span></div>
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist — Emmvee Solar (Offline Engine)</div>
+    <div class="cbassist-sub">Ask in English or Tamil about Emmvee, solar manufacturing, regulations, financials, and more. This assistant works offline with a curated knowledge base.</div>
+    <div class="preset-tab pt-emmvee" onclick="setLang('en')">🇬🇧 English</div>
+    <div class="preset-tab pt-emmvee" onclick="setLang('ta')">🇮🇳 Tamil</div>
+    <br>
+    <div style="font-size:10.5px;color:var(--muted);margin-bottom:10px;">Sample questions:</div>
+    <div id="preset-buttons"></div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="chat-msg bot">👋 <strong>CB Assist நமஸ்காரம்!</strong> I can answer questions about Emmvee Solar, solar manufacturing models, ALMM regulations, PLI scheme, financials, and more — in English or Tamil. Type your question below.</div>
+    </div>
+    <div class="typing-ind" id="typing-ind"><span></span><span></span><span></span></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="Ask about Emmvee, solar metrics, regulations..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-send" onclick="sendMsg()">Ask →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CAUVERY SOCRATES TAB ===== -->
+<div id="socrates" class="panel">
+  <div class="sec-hdr">🏛️ Cauvery Socrates <span class="sec-note">Socratic Learning Engine · Solar Manufacturing & Investing</span></div>
+  <div class="soc-outer">
+    <div class="soc-sidebar">
+      <div class="soc-sidebar-hdr">
+        <div class="soc-sidebar-title">Cauvery Socrates</div>
+        <div class="soc-sidebar-sub">Solar Manufacturing · 4 Topics</div>
+      </div>
+      <div id="soc-topics"></div>
+    </div>
+    <div class="soc-right">
+      <div class="soc-q-zone" id="soc-q-zone">
+        <div class="soc-welcome">
+          <div class="soc-welcome-icon">🏛️</div>
+          <div class="soc-welcome-title">Welcome to Cauvery Socrates</div>
+          <div class="soc-welcome-sub">Choose a topic from the left to begin your Socratic journey through solar manufacturing, policy, and Emmvee's business model. Test your understanding through questions — not lectures.</div>
+        </div>
+      </div>
+      <div class="soc-scorebar">
+        <div class="soc-score-item"><span class="soc-score-dot" style="background:#22c55e;"></span>Correct: <span id="soc-correct">0</span></div>
+        <div class="soc-score-item" style="margin-left:12px;"><span class="soc-score-dot" style="background:#ef4444;"></span>Wrong: <span id="soc-wrong">0</span></div>
+        <div class="soc-score-item" style="margin-left:12px;">Topic: <span id="soc-topic-name">—</span></div>
+        <button class="soc-next-btn" id="soc-next-btn" onclick="socNextQ()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- CB Watermark -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">Cauvery Business Research</div><div class="cb-wm-sub">Independent · Educational</div></div>
+</div>
+
+<script>
+// ===== DATA LAYER =====
+var CO = {
+  name: "Emmvee Photovoltaic Power",
+  ticker: "NSE:EMMVEE",
+  quarter: "Q1 FY27",
+  revenue_q1fy27: 1555.5, revenue_q4fy26: 1738.81, revenue_fy26: 5049.88, revenue_fy25: 2335.0,
+  ebitda_q1fy27: 548.1, ebitda_margin_q1fy27: 35.24, ebitda_fy26: 1734.4, ebitda_margin_fy26: 34.35,
+  pat_q1fy27: 380.3, pat_q4: 392.38, pat_fy26: 1081.55, pat_fy25: 369.5,
+  ocf_fy26: 200.14, ocf_fy25: 624.89,
+  module_gw: 10.3, cell_gw: 2.94, order_book_gw: 9.9,
+  cell_util_q1fy27: 83, module_util_q1fy27: 45,
+  fy27_ebitda_guide_low: 2200, fy27_ebitda_guide_high: 2400,
+  devanahalli_cost: 5500, devanahalli_debt: 3300,
+  cmp: 345, mcap: 24000, pe: 19, evEbitda: 11.5, pb: 6.5,
+  netDebtEq: -0.06, cr: 2.1, roce: 38, roe: 51,
+  debtor_days: 50.2, wc_days: 88.3,
+  cb_rating: 8.1, cb_verdict: "High Conviction — Watch Working Capital & Devanahalli Execution"
+};
+
+// ===== TAB SWITCHING =====
+function showTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const panel = document.getElementById(id);
+  if(panel){ panel.classList.add('active'); }
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(b=>{ if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active'); });
+  if(id==='charts') setTimeout(initCharts, 100);
+}
+
+// ===== CB RATING SCORECARD =====
+const rpData = [
+  {lbl:"Revenue Growth", score:9, max:10, color:"#16a34a", comment:"Q1 FY27 revenue +51.3% YoY to ₹1,555.5 Cr — strongest-ever Q1. Sequential dip (-10.5% QoQ) off a seasonally strong Q4 tempers the score slightly."},
+  {lbl:"EBITDA Margin", score:9, max:10, color:"#16a34a", comment:"Record 35.24% EBITDA margin in Q1 FY27 (vs 34.10% Q1 FY26, 32.84% Q4 FY26) — driven by record 83% cell utilisation, not just PLI. Still watch FY28 post-PLI run-rate."},
+  {lbl:"PAT Growth", score:10, max:10, color:"#16a34a", comment:"PAT +102.6% YoY to ₹380.3 Cr in Q1 FY27, record 24.2% PAT margin. Explosive and broad-based across volume, mix, and finance-cost savings."},
+  {lbl:"Balance Sheet Health", score:9, max:10, color:"#16a34a", comment:"Net cash company (D/E -0.06×). Devanahalli's ₹5,500 Cr capex is already funded with ₹3,300 Cr tied-up debt at <8% — de-risks the FY27 leverage story materially."},
+  {lbl:"Free Cashflow / OCF", score:4, max:10, color:"#dc2626", comment:"⚠️ STILL A RED FLAG. FY26 OCF ₹200 Cr vs PAT ₹1,081 Cr (18.5% conversion); WC days +88.3, debtor days 50.2. Not yet demonstrably reversed as of the Q1 FY27 update."},
+  {lbl:"Capacity Execution", score:9, max:10, color:"#16a34a", comment:"Record Q1 FY27 production: 970 MW modules, 454 MW cells. Devanahalli on schedule — ~60% equipment ordered, module line Dec 2026, cell line Mar 2027."},
+  {lbl:"Order Book Quality", score:9, max:10, color:"#16a34a", comment:"9.9 GW order book (all-time high, +1.48 GW in Q1) — ~11.5 months cover. Repeat-customer share rose to 57%, a strong execution-trust signal."},
+  {lbl:"Regulatory Position", score:9, max:10, color:"#16a34a", comment:"ALMM List-II now live and enforced — Emmvee enlisted. Score trimmed from 10 as the enlisted base has widened to 10+ manufacturers/~30.5 GW, diluting exclusivity vs FY26."},
+  {lbl:"Promoter & Governance", score:7, max:10, color:"#ca8a04", comment:"Founder-family led (30+ yr solar focus). 80% promoter concentration is high. ₹1/share dividend recommended with Q1 results — a modest positive governance signal."},
+  {lbl:"Valuation Comfort", score:6, max:10, color:"#ca8a04", comment:"~19× TTM P/E — up from 21.6× on a lower base, now close to Waaree (~21×) and below Premier (~31×). Post-Q1 re-rating narrowed the discount; less of a bargain than at Q4 FY26."}
+];
+
+function buildRPTable(){
+  const tbody = document.getElementById('rp-tbody');
+  if(!tbody) return;
+  rpData.forEach(r=>{
+    const pct = (r.score/r.max)*100;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="rp-lbl">${r.lbl}</td>
+      <td class="rp-bar">
+        <div class="rp-bar-wrap">
+          <div class="rp-bar-track"><div class="rp-bar-fill" style="width:${pct}%;background:${r.color};"></div></div>
+          <div class="rp-score" style="color:${r.color};">${r.score}/${r.max}</div>
+        </div>
+      </td>
+      <td class="rp-comment">${r.comment}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== CHARTS =====
+var chartsInit = false;
+function initCharts(){
+  if(chartsInit) return;
+  chartsInit = true;
+  const yrs = ['FY23','FY24','FY25','FY26'];
+  const revenues = [580, 1120, 2335, 5049.88];
+  const ebitdas = [118, 280, 720, 1734.4];
+  const pats = [48, 98, 369.5, 1081.55];
+  const margins = [20.3, 25.0, 30.8, 34.35];
+  const qRevs = [1027.8, 1175.5, 1150.0, 1738.81, 1555.5];
+  const qEbitdas = [350.4, 409.0, 398.2, 571.1, 548.1];
+  const qLabels = ['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'];
+  const modCap = [4.5, 6.0, 10.3, 16.3];
+  const cellCap = [0.5, 1.04, 2.94, 8.9];
+  const ocfs = [42, 210, 624.89, 200.14];
+  const debtorDays = [41, 37, 30, 50.2];
+  const inventoryDays = [103, 148, 197, 225];
+  const payableDays = [50, 77, 91, 116];
+
+  function bar(id, labels, data, color, unit){
+    const ctx = document.getElementById(id);
+    if(!ctx) return;
+    new Chart(ctx, {type:'bar', data:{labels, datasets:[{data, backgroundColor:color+'cc', borderColor:color, borderWidth:1.5, borderRadius:6}]},
+      options:{plugins:{legend:{display:false}, datalabels:{display:false},
+        tooltip:{callbacks:{label:cb=>`${unit}${cb.raw.toLocaleString('en-IN')}`}}},
+        scales:{y:{grid:{color:'#f0ede8'}, ticks:{callback:v=>`${unit}${v.toLocaleString('en-IN')}`}}, x:{grid:{display:false}}},
+        animation:{duration:600}}});
+  }
+  bar('chartRevenue', yrs, revenues, '#1a6b3c', '₹');
+  bar('chartEBITDA', yrs, ebitdas, '#0e7490', '₹');
+  bar('chartPAT', yrs, pats, '#7c3aed', '₹');
+  bar('chartOCF', yrs, ocfs, '#dc2626', '₹');
+
+  const qCtx = document.getElementById('chartQRev');
+  if(qCtx) new Chart(qCtx, {type:'bar', data:{labels:qLabels,
+    datasets:[{label:'Revenue', data:qRevs, backgroundColor:'#e07b00cc', borderColor:'#e07b00', borderWidth:1.5, borderRadius:4},
+              {label:'EBITDA', data:qEbitdas, backgroundColor:'#0e7490cc', borderColor:'#0e7490', borderWidth:1.5, borderRadius:4}]},
+    options:{plugins:{legend:{display:true, position:'top'}, tooltip:{callbacks:{label:cb=>`${cb.dataset.label}: ₹${cb.raw.toLocaleString('en-IN')} Cr`}}},
+      scales:{y:{grid:{color:'#f0ede8'}, ticks:{callback:v=>`₹${v.toLocaleString('en-IN')}`}}, x:{grid:{display:false}}},
+      animation:{duration:600}}});
+
+  const mCtx = document.getElementById('chartMargin');
+  if(mCtx) new Chart(mCtx, {type:'line', data:{labels:yrs, datasets:[{data:margins, borderColor:'#0e7490', backgroundColor:'rgba(14,116,144,.08)', fill:true, tension:.35, pointBackgroundColor:'#0e7490', pointRadius:5}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{min:15, ticks:{callback:v=>v+'%'}, grid:{color:'#f0ede8'}}, x:{grid:{display:false}}}}});
+
+  const cCtx = document.getElementById('chartCapacity');
+  if(cCtx) new Chart(cCtx, {type:'bar', data:{labels:['FY24','FY25','FY26','FY27E'],
+    datasets:[{label:'Module GW', data:modCap, backgroundColor:'#1a6b3ccc', borderRadius:4},
+              {label:'Cell GW', data:cellCap, backgroundColor:'#e07b00cc', borderRadius:4}]},
+    options:{plugins:{legend:{display:true, position:'top'}}, scales:{x:{stacked:false, grid:{display:false}}, y:{grid:{color:'#f0ede8'}, ticks:{callback:v=>v+' GW'}}}}});
+
+  const cccCtx = document.getElementById('chartCCC');
+  if(cccCtx) new Chart(cccCtx, {type:'bar', data:{labels:yrs,
+    datasets:[{label:'Debtor Days', data:debtorDays, backgroundColor:'#7c3aedcc', borderRadius:4, stack:'s1'},
+              {label:'Inventory Days', data:inventoryDays, backgroundColor:'#e07b00cc', borderRadius:4, stack:'s1'},
+              {label:'Payable Days (offset)', data:payableDays.map(v=>-v), backgroundColor:'#16a34acc', borderRadius:4, stack:'s1'}]},
+    options:{plugins:{legend:{display:true, position:'top'}, tooltip:{callbacks:{label:cb=>`${cb.dataset.label}: ${Math.abs(cb.raw)} days`}}},
+      scales:{x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{color:'#f0ede8'}, ticks:{callback:v=>v+'d'}}}}});
+}
+
+// ===== CB ASSIST =====
+var cbLang = 'en';
+function setLang(l){ cbLang = l; renderPresets(); }
+
+const presets = {
+  en: ["What is Emmvee's Q1 FY27 revenue?","What is the fate of ALMM List-II?","What is TOPCon technology?","What is the order book?","What is the PLI scheme?","Why is OCF low?","What is the CB Rating?","Who is the CMD?"],
+  ta: ["Emmvee Q1 FY27 வருவாய் என்ன?","ALMM List-II நிலை என்ன?","TOPCon தொழில்நுட்பம் என்ன?","Order book என்ன?","PLI திட்டம் என்றால் என்ன?","OCF ஏன் குறைவாக உள்ளது?"]
+};
+
+function renderPresets(){
+  const wrap = document.getElementById('preset-buttons');
+  if(!wrap) return;
+  wrap.innerHTML='';
+  presets[cbLang].forEach(q=>{
+    const b = document.createElement('button');
+    b.className='preset-tab pt-emmvee';
+    b.textContent=q;
+    b.onclick=()=>{ document.getElementById('chat-input').value=q; sendMsg(); };
+    wrap.appendChild(b);
+  });
+}
+
+const KB = [
+  {k:['revenue','வருவாய்','sales','turnover','fy26 revenue','q1 fy27'],
+   en:`<strong>Q1 FY27 Revenue:</strong> ₹1,555.5 Crore — up +51.3% YoY from ₹1,027.8 Cr in Q1 FY26, though down -10.5% QoQ from a seasonally strong Q4 FY26 (₹1,738.81 Cr). FY26 full-year revenue was ₹5,049.88 Cr (+116.2% YoY). Growth was driven by record production volumes, deeper internal cell integration, and the live ALMM-II framework.`,
+   ta:`<strong>Q1 FY27 வருவாய்:</strong> ₹1,555.5 கோடி — Q1 FY26 ₹1,027.8 கோடியிலிருந்து +51.3% வளர்ச்சி (QoQ -10.5%). FY26 முழு ஆண்டு வருவாய்: ₹5,049.88 கோடி (+116.2% YoY). ALMM-II அமலாக்கம் மற்றும் திறன் விரிவாக்கம் மூலம் வளர்ச்சி அடைந்தது.`},
+  {k:['pat','profit','லாபம்','net profit','earnings'],
+   en:`<strong>Q1 FY27 PAT:</strong> ₹380.3 Crore — up +102.6% YoY (more than doubled) from ₹187.7 Cr in Q1 FY26, down -3.1% QoQ. Record PAT margin of 24.2%. FY26 full-year PAT was ₹1,081.55 Cr (+193.1% YoY). PLI incentive income remains a contributor, but record cell utilisation (83%) is now the primary margin driver.`,
+   ta:`<strong>Q1 FY27 PAT (நிகர லாபம்):</strong> ₹380.3 கோடி — Q1 FY26 ₹187.7 கோடியிலிருந்து +102.6% வளர்ச்சி (இரட்டிப்பு). PAT margin: 24.2% (சாதனை). FY26 முழு ஆண்டு PAT: ₹1,081.55 கோடி.`},
+  {k:['almm','almm-ii','almm list','cell approval','government tender','fate'],
+   en:`<strong>ALMM List-II (Cells) — Status &amp; Fate:</strong> In force since June 1, 2026 — only manufacturers with ALMM-approved cell capacity can supply modules to government-funded solar projects (~80% of India's solar market). The enlisted base has grown from 6 manufacturers/13 GW at its August 2025 launch to 10+ manufacturers/~30.5 GW by mid-2026, including Reliance's HJT cells. MNRE has since issued rollout clarifications: rooftop projects bid before Dec 2024 stay exempt, and on July 18, 2026 the ministry extended the net-metering/open-access exemption to Dec 31, 2026 — while reaffirming there is "no change" to the underlying mandate. Emmvee is enlisted with 2.94 GW of cell capacity and posted record 83% cell utilisation in Q1 FY27.`,
+   ta:`<strong>ALMM List-II (செல்கள்) — நிலை:</strong> June 1, 2026 முதல் அமலில் உள்ளது. அரசு திட்டங்களுக்கு ALMM-II அங்கீகரிக்கப்பட்ட செல் உற்பத்தியாளர்களின் மாட்யூல்கள் மட்டுமே பயன்படுத்தலாம். பட்டியல் 6 நிறுவனங்களிலிருந்து (2025) 10+ நிறுவனங்கள் / ~30.5 GW ஆக விரிவடைந்துள்ளது (2026 நடுப்பகுதி). Net-metering/open-access திட்டங்களுக்கான விலக்கு Dec 31, 2026 வரை நீட்டிக்கப்பட்டது. Emmvee 2.94 GW செல் திறனுடன் பட்டியலிடப்பட்டுள்ளது, Q1 FY27-ல் சாதனை 83% பயன்பாட்டை எட்டியது.`},
+  {k:['topcon','technology','cell technology','efficiency','solar cell'],
+   en:`<strong>TOPCon Technology:</strong> Tunnel Oxide Passivated Contact — the current generation premium solar cell technology achieving ~24-25% efficiency vs ~21-22% for older PERC cells. Emmvee completed 100% TOPCon conversion for both cells and modules in FY26. In Q1 FY27, cell utilisation hit a record 83% (vs 79% in Q4 FY26, 68% in Q1 FY26), driving margin expansion through deeper internal cell consumption.`,
+   ta:`<strong>TOPCon தொழில்நுட்பம்:</strong> Tunnel Oxide Passivated Contact — தற்போதைய தலைமுறை சூரிய செல் தொழில்நுட்பம், ~24-25% திறன் அடையும். Emmvee FY26-ல் 100% TOPCon மாற்றத்தை முடித்தது. Q1 FY27-ல் செல் பயன்பாடு சாதனை 83%-ஐ எட்டியது.`},
+  {k:['order book','orders','backlog','gw orders'],
+   en:`<strong>Order Book:</strong> 9.9 GW as of June 30, 2026 (all-time high) — up from 9.4 GW at FY26-end after adding 1.48 GW in Q1 FY27. With 10.3 GW module capacity, this represents ~11.5 months of cover. Repeat-customer share rose to 57% in Q1, and the order mix stays diversified across IPPs, C&I, and other categories, with ALMM-II cited as a demand tailwind.`,
+   ta:`<strong>Order Book:</strong> June 30, 2026 வரை 9.9 GW (சாதனை உயர்வு) — FY26-இறுதியில் 9.4 GW-லிருந்து Q1-ல் 1.48 GW சேர்க்கப்பட்டது. 10.3 GW மாட்யூல் திறனுடன், இது ~11.5 மாதங்களின் வருவாய் திட்டத்தை வழங்குகிறது. மீண்டும் வரும் வாடிக்கையாளர் விகிதம் 57%-ஆக உயர்ந்தது.`},
+  {k:['pli','production linked','incentive','subsidy'],
+   en:`<strong>PLI Scheme:</strong> Production Linked Incentive — Emmvee is one of 13 PLI Phase-I winners receiving ₹1-2/Watt for 5 years (FY22-FY27). This is in its final year. Despite the scheme winding down, Q1 FY27's record 35.24% EBITDA margin suggests margin strength is increasingly coming from higher cell utilisation (83%) and integration, not just the subsidy — though the true post-PLI run-rate won't be clear until FY28.`,
+   ta:`<strong>PLI திட்டம்:</strong> உற்பத்தி இணைக்கப்பட்ட ஊக்கத்தொகை — Emmvee 13 PLI Phase-I வெற்றியாளர்களில் ஒன்று. FY22-FY27 வரை ₹1-2/வாட்ட் ஊக்கத்தொகை பெறுகிறது — இது இறுதி ஆண்டில் உள்ளது. Q1 FY27-ல் சாதனை 35.24% EBITDA margin, subsidy-ஐ தாண்டியும் வலிமையான அடிப்படை வணிகத்தை காட்டுகிறது.`},
+  {k:['ocf','operating cashflow','cash','working capital','cash flow','wc','debtor'],
+   en:`<strong>Working Capital Red Flag:</strong> FY26 Operating Cashflow was only ₹200.14 Cr vs PAT of ₹1,081.55 Cr — just 18.5% cash conversion. Working capital days surged from -13.3 to +88.3, and debtor days rose from 38.9 to 50.2. As of the Q1 FY27 update this has not yet been demonstrably reversed. CB Research continues to flag this as the key risk to monitor each quarter through FY27.`,
+   ta:`<strong>Working Capital எச்சரிக்கை:</strong> FY26 Operating Cashflow வெறும் ₹200.14 கோடி — PAT ₹1,081.55 கோடியுடன் ஒப்பிட்டால் வெறும் 18.5% மட்டுமே பணமாக மாறியது. WC நாட்கள் -13.3 இலிருந்து +88.3-க்கு உயர்ந்தது. Q1 FY27 வரை இது தீர்க்கப்படவில்லை. CB Research இதை தொடர்ந்து முக்கிய அபாயமாக கருதுகிறது.`},
+  {k:['cb rating','rating','scorecard','cbf26','cbf27'],
+   en:`<strong>CB Research Rating:</strong> 8.1/10 — "High Conviction — Watch Working Capital &amp; Devanahalli Execution" (updated for Q1 FY27, up from 7.8/10 at Q4 FY26). Emmvee scores strongly on PAT growth, capacity execution, and order book quality. The 4/10 score on FCF/OCF still reflects the unresolved cash conversion gap, and the regulatory-position score was trimmed slightly as the ALMM-II enlisted base widens. CB Research does not issue buy/sell/hold recommendations — this rating is for educational purposes only.`,
+   ta:`<strong>CB Research மதிப்பீடு:</strong> 8.1/10 — "உயர் நம்பிக்கை — Working Capital மற்றும் Devanahalli செயல்படுத்தலை கவனிக்கவும்" (Q1 FY27 புதுப்பிப்பு, முன்பு 7.8/10). PAT வளர்ச்சி, திறன் செயல்படுத்தல் மற்றும் ஆர்டர் புத்தக தரம் ஆகியவற்றில் சிறப்பான மதிப்பெண். FCF/OCF-ல் 4/10 — பணம் மாற்றும் இடைவெளி இன்னும் தீர்க்கப்படவில்லை. CB Research வாங்க/விற்க/வைத்திரு பரிந்துரைகளை வழங்குவதில்லை.`},
+  {k:['cmd','management','ceo','promoter','founder','donthi'],
+   en:`<strong>Management:</strong> CMD: Dr. DV Manjunatha Donthi (founder-family, 30+ years solar experience). CEO: Suhas Donthi Manjunatha (next-generation family). Promoter stake: 80%. Company was founded in 1993 and has been family-run throughout. Auditors: MSKC & Associates LLP (unmodified opinion FY26).`,
+   ta:`<strong>நிர்வாகம்:</strong> CMD: Dr. DV Manjunatha Donthi (நிறுவனர் குடும்பம், 30+ ஆண்டு சூரிய அனுபவம்). CEO: Suhas Donthi Manjunatha (அடுத்த தலைமுறை குடும்பம்). Promoter பங்கு: 80%. 1993-ல் நிறுவப்பட்டது. குடும்ப நடத்தை நிறுவனம்.`},
+  {k:['capacity','gw','module','cell','devanahalli','expansion'],
+   en:`<strong>Capacity (as of Jun 30, 2026):</strong> Modules: 10.3 GW (100% TOPCon) · Cells: 2.94 GW (ALMM-II enlisted). Q1 FY27 utilisation: cells 83% (record), modules 45%. Devanahalli expansion: 6 GW integrated cell+module plant, total cost ₹5,500 Cr with ₹3,300 Cr debt already tied up at &lt;8%; module line by Dec 2026, cell line by Mar 2027. Post-Devanahalli targets: Modules 16.3 GW · Cells 8.9 GW. Ingot/Wafer: 9 GW planned across two phases, still under evaluation.`,
+   ta:`<strong>திறன் (Jun 30, 2026):</strong> மாட்யூல்: 10.3 GW (100% TOPCon) · செல்: 2.94 GW (ALMM-II பட்டியலிடப்பட்டது). Q1 FY27 பயன்பாடு: செல்கள் 83% (சாதனை), மாட்யூல்கள் 45%. Devanahalli விரிவாக்கம்: 6 GW, ₹5,500 கோடி மொத்த செலவு, ₹3,300 கோடி கடன் ஏற்கனவே ஒதுக்கப்பட்டுள்ளது. மாட்யூல் லைன் Dec 2026, செல் லைன் Mar 2027.`},
+  {k:['valuation','pe','price','share price','cmp','market cap'],
+   en:`<strong>Valuation (Late July 2026):</strong> CMP: ~₹345 · Market Cap: ~₹24,000 Cr · P/E (TTM): ~19× · EV/EBITDA: ~11-12× · P/B: ~6.5×. 52-Week High: ₹371.55 (all-time high, Jul 2, 2026) · Low: ₹171.51. The Q1 FY27 beat narrowed Emmvee's valuation discount — it now trades close to Waaree (~21×) and below Premier Energies (~31×). Jefferies raised its target to ₹400 post-results. CB Research does not issue price targets.`,
+   ta:`<strong>மதிப்பீடு (July 2026):</strong> தற்போதைய விலை: ~₹345 · சந்தை மூலதனம்: ~₹24,000 கோடி · P/E: ~19× · EV/EBITDA: ~11-12× · P/B: ~6.5×. 52 வார உயர்வு: ₹371.55 · தாழ்வு: ₹171.51. Q1 FY27 முடிவுகளுக்குப் பிறகு மதிப்பீட்டு இடைவெளி குறைந்துள்ளது.`}
+];
+
+function getKBAnswer(q){
+  const qL = q.toLowerCase();
+  for(const e of KB){
+    if(e.k.some(k=>qL.includes(k))){
+      return cbLang==='ta' ? e.ta : e.en;
+    }
+  }
+  return cbLang==='ta'
+    ? `மன்னிக்கவும், இந்த கேள்விக்கு எனது offline knowledge base-ல் நேரடி பதில் இல்லை. Revenue, PAT, ALMM, TOPCon, PLI, OCF, order book, management, valuation போன்ற தலைப்புகளில் கேட்கவும்.`
+    : `I don't have a specific answer for that in my offline knowledge base. Try asking about: Emmvee's revenue, PAT, ALMM List-II, TOPCon technology, PLI scheme, working capital, order book, management, valuation, or CB rating.`;
+}
+
+function sendMsg(){
+  const inp = document.getElementById('chat-input');
+  const msgs = document.getElementById('chat-msgs');
+  const q = inp.value.trim();
+  if(!q) return;
+  inp.value='';
+  const uDiv = document.createElement('div');
+  uDiv.className='chat-msg user';
+  uDiv.textContent=q;
+  msgs.appendChild(uDiv);
+  msgs.scrollTop=msgs.scrollHeight;
+  const typInd = document.getElementById('typing-ind');
+  typInd.style.display='flex';
+  setTimeout(()=>{
+    typInd.style.display='none';
+    const bDiv = document.createElement('div');
+    bDiv.className='chat-msg bot';
+    bDiv.innerHTML=getKBAnswer(q);
+    msgs.appendChild(bDiv);
+    msgs.scrollTop=msgs.scrollHeight;
+  }, 600);
+}
+
+// ===== CAUVERY SOCRATES =====
+const TOPICS = [
+  {id:'biz', icon:'🏭', title:'Solar Business Models', meta:'4 Questions',
+   questions:[
+    {type:'mcq', text:'What is the primary advantage of an integrated cell+module manufacturer like Emmvee over a pure module assembler?', hint:'Think about regulations effective June 2026.',
+     opts:['Lower module assembly cost','Eligibility for government solar projects under ALMM List-II','Faster delivery times','Better module aesthetics'],
+     correct:1, explain:`ALMM List-II (effective June 1, 2026) requires that modules used in government-funded solar projects must use ALMM-approved cells. Only integrated manufacturers with approved cell capacity — like Emmvee — can sell to ~80% of India's solar market.`},
+    {type:'mcq', text:'What is a pure module assembler\'s biggest vulnerability in India as of mid-2026?', hint:'Think about the newest regulation.',
+     opts:['Lack of skilled workers','Higher electricity costs','Exclusion from most government solar tenders under ALMM List-II','Inability to make TOPCon cells'],
+     correct:2, explain:`ALMM List-II bars module assemblers (those who import cells and assemble) from supplying to government-funded projects. These projects form ~80% of India's solar demand. Pure assemblers are now confined to rooftop solar and private industrial projects — and even net-metering/open-access exemptions are being phased out, with MNRE extending them only to December 31, 2026.`},
+    {type:'free', text:'Emmvee is classified as an "integrated cell+module manufacturer." What would make it even more integrated? Name one upstream process Emmvee is currently missing and explain why it matters by 2028.', hint:'Think about where cells come from.',
+     explain:`Emmvee currently lacks ingot and wafer manufacturing capacity — the step between silicon (polysilicon) and solar cells. ALMM List-III, announced in March 2026 and effective June 2028, will require modules in government projects to use cells made from domestically produced wafers. Without ingot/wafer capacity, Emmvee risks losing ALMM eligibility. That's why Emmvee is evaluating a 9 GW ingot/wafer plan spread across two phases.`},
+    {type:'mcq', text:'Which business model combination does Waaree Energies represent?', hint:'They manufacture AND develop power plants.',
+     opts:['Pure module assembler','IPP/Project Developer only','Integrated manufacturer + Project Developer (hybrid model)','Raw material supplier only'],
+     correct:2, explain:`Waaree Energies (~12 GW module capacity) is pursuing a hybrid model — manufacturing modules AND developing solar power projects as an IPP. This contrasts with Emmvee which is a pure manufacturer without power project ambitions.`}
+   ]},
+  {id:'metrics', icon:'📊', title:'Key Solar Metrics', meta:'4 Questions',
+   questions:[
+    {type:'mcq', text:'Emmvee\'s FY26 PAT was ₹1,081 Cr but Operating Cashflow (OCF) was only ₹200 Cr. What does this tell us?', hint:'Where are the profits going?',
+     opts:['The company is lying about profits','Working capital is being consumed — receivables are building up','The company made a large one-time investment','Depreciation is very high'],
+     correct:1, explain:`When OCF is much lower than PAT, it typically means working capital is being consumed — i.e., the company is extending credit to customers (receivables building up). Emmvee's debtor days rose from 38.9 to 50.2 and working capital days surged from -13.3 to +88.3. This means government and IPP clients are taking longer to pay.`},
+    {type:'mcq', text:'Emmvee\'s Q1 FY27 cell utilisation hit a record 83%, ahead of management\'s 85%+ FY27 target. What is the significance of this metric?', hint:'Think about capacity vs actual production.',
+     opts:['It measures how many solar panels are installed successfully','It measures what percentage of installed cell manufacturing capacity is actually producing cells','It measures employee productivity','It measures energy efficiency of the factory'],
+     correct:1, explain:`Capacity utilisation measures actual production as a percentage of total installed capacity. 83% cell utilisation means Emmvee produced cells at 83% of its 2.94 GW cell capacity (~2.44 GW annualised run-rate). Higher utilisation means better cost absorption (fixed costs spread over more output) and higher revenue per GW of capacity — it was the single biggest driver of Q1 FY27's record 35.24% EBITDA margin.`},
+    {type:'mcq', text:'The PLI scheme gives Emmvee ₹1-2 per watt of production for 5 years. If PLI ends in FY27 and current EBITDA margin is 34.35%, what is the most likely outcome?', hint:'PLI directly adds to revenue/margin.',
+     opts:['EBITDA margin will increase further','EBITDA margin will remain exactly the same','EBITDA margin will likely decline toward 20-26% as PLI income disappears','The company will shut down operations'],
+     correct:2, explain:`PLI income is essentially a government subsidy added to Emmvee's revenue/margin. Once PLI ends in FY27, this income stream disappears. Analysts estimate post-PLI normalised EBITDA margins at 20-26%. The 34.35% FY26 margin is partly an artificial inflation. Investors must factor this margin cliff into valuation.`},
+    {type:'free', text:'Emmvee has a 9.9 GW order book vs 10.3 GW of module capacity. Calculate the "order book to capacity ratio" and explain what it signals to investors.', hint:'Divide order book by annual capacity.',
+     explain:`Order book to capacity ratio = 9.9 GW ÷ 10.3 GW = 0.96× (approximately). This means Emmvee has approximately 11.5 months of module capacity pre-sold through confirmed orders. A ratio above 0.75× is generally considered healthy — it means the factory will be busy for the foreseeable future. For investors, this provides revenue visibility and reduces near-term demand uncertainty.`}
+   ]},
+  {id:'regs', icon:'📜', title:'Solar Regulations', meta:'3 Questions',
+   questions:[
+    {type:'mcq', text:'What is the "Basic Customs Duty" on imported solar modules in India, and what is its effective rate (approximate)?', hint:'BCD + AIDC + SWS.',
+     opts:['5% — small protective tariff','20% flat rate','~44% effective rate (20% BCD + 20% AIDC + 4% SWS)','100% — complete ban on imports'],
+     correct:2, explain:`The effective customs duty on imported solar modules in India is approximately 44%: 20% Basic Customs Duty (BCD) + 20% Agriculture Infrastructure Development Cess (AIDC) + ~4% Social Welfare Surcharge (SWS). This makes Chinese modules ~44% more expensive in India, protecting domestic manufacturers like Emmvee.`},
+    {type:'mcq', text:'ALMM List-III, announced in March 2026, will require modules in government projects to use domestically produced wafers/ingots by June 2028. What strategic decision must Emmvee make urgently?', hint:'Emmvee currently imports wafers.',
+     opts:['Hire more engineers','Build or source domestic wafer/ingot manufacturing capacity before 2028','Expand module capacity further','Focus only on export markets'],
+     correct:1, explain:`ALMM List-III (effective June 2028) will require modules in government projects to use cells made from domestically produced wafers/ingots. Since Emmvee currently imports wafers/ingots (it has cell and module capacity but not upstream), it must invest in ingot/wafer manufacturing urgently. Emmvee is evaluating a 9 GW ingot/wafer plan across two phases — but as of the Q1 FY27 call this remains at the evaluation stage, with execution risk and timing still critical.`},
+    {type:'free', text:'India\'s Anti-Dumping Duty (ADD) on Chinese solar cells and modules was imposed in September 2025 for 3 years. Explain "dumping" and why this ADD matters for Emmvee.', hint:'What does "dumping" mean in trade?',
+     explain:`Dumping occurs when a foreign manufacturer exports goods to another country at a price below their production cost (or below their home market price) — essentially subsidising exports to capture market share. Chinese solar manufacturers, supported by government subsidies, produce modules at extremely low costs and sell globally at prices that domestic Indian manufacturers cannot match. The Anti-Dumping Duty of 23-30% on Chinese cells/modules (Sep 2025-Sep 2028) makes these imports more expensive, protecting Emmvee's pricing and margins from Chinese competition for at least 3 years.`}
+   ]},
+  {id:'emmvee', icon:'☀️', title:'Emmvee Deep Dive', meta:'4 Questions',
+   questions:[
+    {type:'mcq', text:'Emmvee raised ₹2,900 Cr in its November 2025 IPO. What was the primary use of these proceeds?', hint:'Look at the debt levels.',
+     opts:['Acquiring land for Devanahalli expansion','Buying raw material inventory','Prepaying ₹1,621 Cr in bank loans to become debt-free','Paying dividends to promoters'],
+     correct:2, explain:`Emmvee used ₹1,621 Crore of the IPO proceeds to prepay bank loans, transforming itself from a leveraged manufacturer to a net cash company (Net D/E: -0.06×). ICRA subsequently upgraded its credit rating to 'A' in January 2026. This clean balance sheet gives Emmvee the firepower to fund the Devanahalli 6 GW expansion.`},
+    {type:'mcq', text:'Emmvee completed 100% TOPCon conversion in FY26. What record did the company achieve in Q1 FY27 that signals this capacity is being used efficiently, not just built?', hint:'Think about how much of installed capacity is actually running.',
+     opts:['A record 45% module utilisation','A record 83% cell utilisation','A record 100% cell utilisation','A record 68% cell utilisation'],
+     correct:1, explain:`Emmvee posted a record 83% cell capacity utilisation in Q1 FY27, up from 79% in Q4 FY26 and 68% in Q1 FY26. Module utilisation, by contrast, stood at a lower 45% — reflecting that module capacity (10.3 GW) is much larger than cell capacity (2.94 GW), so there's more headroom on the module side as the order book converts into deliveries.`},
+    {type:'mcq', text:'ALMM List-II\'s enlisted cell manufacturer base grew from 6 players (~13 GW) at its August 2025 launch to over 10 players (~30.5 GW) by mid-2026. What does this trend mean for Emmvee\'s regulatory moat?', hint:'Think about scarcity vs exclusion.',
+     opts:['The moat has disappeared completely','The moat against pure module assemblers remains, but is less exclusive among integrated cell manufacturers','ALMM List-II has been cancelled','Emmvee has been removed from the list'],
+     correct:1, explain:`ALMM List-II still excludes module-only assemblers from ~80% of India's solar demand, so that part of the moat remains intact and is arguably strengthening as enforcement tightens. But the enlisted cell-manufacturer club has widened considerably — from 6 to 10+ players — meaning Emmvee's competitive edge increasingly depends on execution, scale, and integration depth relative to other enlisted peers (Waaree, Adani, Premier, and others), rather than on being one of a scarce few insiders.`},
+    {type:'free', text:'If you were a CB Research analyst reviewing Emmvee for FY27, what would be your single most important metric to watch? Explain why and what levels would concern you vs reassure you.', hint:'Think about the biggest current risk.',
+     explain:`The single most important metric to watch in FY27 would be Operating Cashflow (OCF) to PAT conversion ratio. In FY26, OCF was only ₹200 Cr vs PAT of ₹1,081 Cr — just 18.5% cash conversion — a severe divergence. Concern: If OCF remains below 30-40% of PAT in FY27, it indicates structural receivables stress from government/DISCOM delays that could force new borrowing even as Devanahalli capex commences. Reassurance: OCF recovering toward 60-70%+ of PAT would signal that FY26's WC build-up was temporary and that profits are real. The other key metric is post-PLI EBITDA margin — if Q4 FY27 (after PLI ends) shows margins above 24%, the underlying business is strong.`}
+   ]}
+];
+
+var socState = { topicIdx: -1, qIdx: 0, correct: 0, wrong: 0, answered: false };
+
+function buildSocTopics(){
+  const wrap = document.getElementById('soc-topics');
+  if(!wrap) return;
+  TOPICS.forEach((t,i)=>{
+    const btn = document.createElement('button');
+    btn.className='soc-topic-btn';
+    btn.innerHTML=`<span class="soc-icon">${t.icon}</span><div><div>${t.title}</div><div class="soc-meta">${t.meta}</div></div>`;
+    btn.onclick=()=>startTopic(i);
+    wrap.appendChild(btn);
+  });
+}
+
+function startTopic(idx){
+  socState = { topicIdx: idx, qIdx: 0, correct: 0, wrong: 0, answered: false };
+  document.querySelectorAll('.soc-topic-btn').forEach((b,i)=>b.classList.toggle('active', i===idx));
+  document.getElementById('soc-topic-name').textContent = TOPICS[idx].title;
+  document.getElementById('soc-correct').textContent = 0;
+  document.getElementById('soc-wrong').textContent = 0;
+  renderSocQ();
+}
+
+function renderSocQ(){
+  const t = TOPICS[socState.topicIdx];
+  const q = t.questions[socState.qIdx];
+  const zone = document.getElementById('soc-q-zone');
+  const nextBtn = document.getElementById('soc-next-btn');
+  nextBtn.classList.remove('visible');
+  socState.answered = false;
+
+  let html = `<div class="soc-q-intro">
+    <div class="soc-q-label">Topic: ${t.title} · Question ${socState.qIdx+1} of ${t.questions.length}</div>
+    <div class="soc-q-text">${q.text}</div>
+    ${q.hint ? `<div class="soc-q-hint">💡 Hint: ${q.hint}</div>` : ''}
+  </div>`;
+
+  if(q.type==='mcq'){
+    html += `<div class="soc-mcq">`;
+    q.opts.forEach((o,i)=>{
+      html += `<button class="soc-opt" id="soc-opt-${i}" onclick="socAnswer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="soc-free-wrap">
+      <textarea class="soc-free-input" id="soc-free-input" placeholder="Type your answer here..."></textarea>
+      <button class="soc-free-submit" onclick="socFreeSubmit()">Submit Answer →</button>
+    </div>`;
+  }
+
+  zone.innerHTML = html;
+}
+
+function socAnswer(i){
+  if(socState.answered) return;
+  socState.answered = true;
+  const q = TOPICS[socState.topicIdx].questions[socState.qIdx];
+  const isCorrect = i === q.correct;
+  if(isCorrect){ socState.correct++; document.getElementById('soc-correct').textContent=socState.correct; }
+  else { socState.wrong++; document.getElementById('soc-wrong').textContent=socState.wrong; }
+
+  document.querySelectorAll('.soc-opt').forEach((b,idx)=>{
+    b.disabled=true;
+    if(idx===q.correct) b.classList.add('correct');
+    else if(idx===i && !isCorrect) b.classList.add('wrong');
+    else b.classList.add('reveal');
+  });
+
+  const zone = document.getElementById('soc-q-zone');
+  const resp = document.createElement('div');
+  resp.className = `soc-response ${isCorrect?'correct-resp':'wrong-resp'}`;
+  resp.innerHTML = `<span class="soc-resp-tag">${isCorrect?'✅ Correct!':'❌ Not quite'}</span>${q.explain}`;
+  zone.appendChild(resp);
+  zone.scrollTop = zone.scrollHeight;
+  document.getElementById('soc-next-btn').classList.add('visible');
+}
+
+function socFreeSubmit(){
+  if(socState.answered) return;
+  socState.answered = true;
+  const q = TOPICS[socState.topicIdx].questions[socState.qIdx];
+  const inp = document.getElementById('soc-free-input');
+  if(inp){ inp.disabled=true; }
+  const zone = document.getElementById('soc-q-zone');
+  const resp = document.createElement('div');
+  resp.className='soc-response partial-resp';
+  resp.innerHTML=`<span class="soc-resp-tag">📝 Model Answer</span>${q.explain}`;
+  zone.appendChild(resp);
+  zone.scrollTop=zone.scrollHeight;
+  document.getElementById('soc-next-btn').classList.add('visible');
+}
+
+function socNextQ(){
+  const t = TOPICS[socState.topicIdx];
+  socState.qIdx++;
+  if(socState.qIdx >= t.questions.length){
+    socComplete();
+  } else {
+    renderSocQ();
+  }
+}
+
+function socComplete(){
+  const zone = document.getElementById('soc-q-zone');
+  const total = TOPICS[socState.topicIdx].questions.length;
+  const pct = Math.round((socState.correct/total)*100);
+  zone.innerHTML = `<div class="soc-complete">
+    <div class="soc-complete-icon">🏛️</div>
+    <div class="soc-complete-title">Topic Complete! ${pct}% Correct</div>
+    <div class="soc-complete-msg">You answered ${socState.correct} out of ${total} MCQ questions correctly.<br>Socrates would say: the journey of understanding is never complete. Try another topic!</div>
+    <button class="soc-restart-btn" onclick="restartTopic()">↩ Retry This Topic</button>
+  </div>`;
+  document.getElementById('soc-next-btn').classList.remove('visible');
+}
+
+function restartTopic(){ startTopic(socState.topicIdx); }
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded',()=>{
+  buildRPTable();
+  buildSocTopics();
+  renderPresets();
+});
+</script>
+</body>
+</html>

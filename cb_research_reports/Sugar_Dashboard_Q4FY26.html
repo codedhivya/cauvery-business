@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sugar &amp; Ethanol – Q4 FY26 Sector Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd6;--text:#1a1714;--muted:#6b6660;
+  --accent:#15803d;
+  --bcm:#15803d;--eid:#c84b31;--renuka:#b91c1c;--triveni:#2979FF;--bajaj:#7c3aed;
+  --dalmia:#0ea5e9;--dwarikesh:#d97706;--avadh:#db2777;--uttam:#0d9488;--dhampur:#65a30d;--bannari:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+.hdr{background:#13230f;padding:24px 36px 18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;letter-spacing:2px;line-height:1}
+.hdr p{color:#aab;font-size:.72rem;font-family:'DM Mono',monospace;margin-top:4px;letter-spacing:1px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bdg{padding:3px 9px;border-radius:3px;font-size:.68rem;font-family:'DM Mono',monospace}
+.bdg-r{background:var(--accent);color:#fff}
+.bdg-g{background:#1f2e1a;color:#bcd;border:1px solid #3a4a35}
+.tabs{background:#0d1a0a;padding:0 36px;display:flex;border-bottom:2px solid var(--accent);overflow-x:auto}
+.tab{padding:12px 20px;cursor:pointer;font-size:.8rem;font-weight:500;color:#889;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.4px}
+.tab:hover{color:#ccc}
+.tab.on{color:#fff;border-bottom-color:var(--accent)}
+.main{padding:24px 36px;max-width:1480px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1.5px;margin:22px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.st:first-child{margin-top:0}
+.st .sq{width:9px;height:9px;border-radius:2px;background:var(--accent)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:24px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+.ct{font-size:.72rem;font-weight:600;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.cw{position:relative;height:300px}
+.cw-lg{position:relative;height:360px}
+.tblwrap{overflow-x:auto;margin-bottom:20px}
+.tbl{width:100%;border-collapse:collapse;font-size:.78rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border);min-width:900px}
+.tbl th{background:#13230f;color:#fff;padding:9px 12px;text-align:left;font-size:.66rem;letter-spacing:.7px;font-family:'DM Mono',monospace;font-weight:400;white-space:nowrap}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#faf9f6}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:middle}
+.mono{font-family:'DM Mono',monospace;font-size:.76rem}
+.up{background:#dcfce7;color:#15803d}.dn{background:#fee2e2;color:#b91c1c}.flat{background:#f3f4f6;color:#6b7280}
+.tag{padding:2px 7px;border-radius:3px;font-size:.65rem;font-weight:600;font-family:'DM Mono',monospace;display:inline-block}
+.coCard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:22px;border-top:4px solid var(--accent)}
+.coName{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;margin-bottom:2px}
+.coSub{font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:12px}
+.coNote{font-size:.78rem;color:var(--muted);line-height:1.6;margin-top:10px}
+.coNote strong{color:var(--text)}
+.minitbl{width:100%;border-collapse:collapse;font-size:.76rem;margin-top:8px}
+.minitbl th{background:#f0ede8;padding:6px 10px;text-align:right;font-size:.63rem;font-family:'DM Mono',monospace;font-weight:500;color:var(--muted)}
+.minitbl th:first-child{text-align:left}
+.minitbl td{padding:6px 10px;border-bottom:1px solid var(--border);text-align:right;font-family:'DM Mono',monospace}
+.minitbl td:first-child{text-align:left;font-family:'DM Sans',sans-serif;font-weight:500}
+.fn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;margin-top:20px}
+.wm{text-align:center;padding:10px;font-size:.66rem;color:#bbb;font-family:'DM Mono',monospace;letter-spacing:1px}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.rc-title{font-weight:600;font-size:.8rem;margin-bottom:9px}
+.ri{display:flex;gap:7px;align-items:flex-start;font-size:.75rem;color:var(--muted);margin-bottom:6px;line-height:1.55}
+
+/* ── Sub-tabs (Charts / CB Assist internal) ── */
+.stabs{display:flex;gap:0;margin-bottom:22px;border-bottom:2px solid var(--border)}
+.stab{padding:9px 20px;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;letter-spacing:.3px;transition:all .18s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.stab:hover{color:var(--text)}
+.stab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.spane{display:none}.spane.on{display:block}
+
+/* ── Regulations ── */
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+.reg-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px}
+.reg-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.reg-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.reg-icon.central{background:#e0f2fe;color:#0369a1}
+.reg-icon.state{background:#dcfce7;color:#15803d}
+.reg-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px}
+.reg-sub{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted)}
+.reg-item{border:1px solid var(--border);border-radius:7px;padding:12px 14px;margin-bottom:10px}
+.reg-item-title{font-weight:600;font-size:.78rem;margin-bottom:4px;color:var(--text)}
+.reg-item-body{font-size:.74rem;color:var(--muted);line-height:1.65}
+.reg-item-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:.6rem;font-family:'DM Mono',monospace;font-weight:600;margin-bottom:5px}
+.rtag-c{background:#e0f2fe;color:#0369a1}
+.rtag-s{background:#dcfce7;color:#15803d}
+.rtag-e{background:#fef3c7;color:#92400e}
+.rtag-crit{background:#fee2e2;color:#b91c1c}
+
+/* ── CB Assist ── */
+.cba-wrap{max-width:920px;margin:0 auto}
+.cba-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:12px;border-bottom:3px solid var(--accent)}
+.cba-logo{width:46px;height:46px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;letter-spacing:1px}
+.cba-head-text h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;margin-bottom:2px}
+.cba-head-text p{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
+/* language toggle */
+.lang-toggle{display:flex;gap:8px;margin-bottom:18px;align-items:center}
+.lang-btn{padding:5px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:.75rem;font-family:'DM Mono',monospace;cursor:pointer;transition:all .18s;letter-spacing:.3px}
+.lang-btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.lang-lbl{font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace}
+.qa-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.qa-q{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;cursor:pointer}
+.qa-q:hover{background:#faf9f6}
+.qa-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--border);line-height:1;width:30px;flex-shrink:0}
+.qa-qtxt .qen{font-size:.82rem;font-weight:600;margin-bottom:3px}
+.qa-qtxt .qta{font-size:.78rem;color:var(--accent);font-weight:500}
+.qa-toggle{margin-left:auto;color:var(--muted);transition:transform .2s;padding-top:2px;font-size:.9rem}
+.qa-card.open .qa-toggle{transform:rotate(180deg)}
+.qa-ans{display:none;padding:0 16px 16px 58px;border-top:1px solid var(--border)}
+.qa-card.open .qa-ans{display:block}
+.ans-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+.ans-en{font-size:.8rem;line-height:1.75}
+.ans-ta{font-size:.78rem;color:var(--muted);line-height:1.75;font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+/* language visibility */
+body.lang-en .qa-qtxt .qta{display:none}
+body.lang-ta .qa-qtxt .qen{display:none}
+body.lang-en .ans-ta{display:none}
+body.lang-ta .ans-en{display:none}
+body.lang-en .lang-btn[data-l="en"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+body.lang-ta .lang-btn[data-l="ta"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+@media(max-width:900px){.main{padding:12px}.hdr{padding:14px}.g2,.g3,.rg,.reg-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="lang-en">
+
+<div class="hdr">
+  <div>
+    <h1>Sugar &amp; Ethanol Industry</h1>
+    <p>INDIA SECTOR DASHBOARD · Q4 FY26 ACTUALS · 11 LISTED COMPANIES · BSE/NSE FILINGS · UPDATED 11 JUN 2026 IST</p>
+  </div>
+  <div class="badges">
+    <span class="bdg bdg-r">Q4 FY26</span>
+    <span class="bdg bdg-g">Balrampur · EID Parry · Renuka · Triveni · Bajaj Hind · Dalmia · Dwarikesh · Avadh · Uttam · Dhampur · Bannari</span>
+    <span class="bdg bdg-g">₹ Cr · Consolidated unless noted</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on"  onclick="sw('ov')">Overview</div>
+  <div class="tab"    onclick="sw('co')">Company Analysis</div>
+  <div class="tab"    onclick="sw('charts')">Charts</div>
+  <div class="tab"    onclick="sw('val')">Valuation</div>
+  <div class="tab"    onclick="sw('reg')">Regulations</div>
+  <div class="tab"    onclick="sw('risk')">Risks &amp; Outlook</div>
+  <div class="tab"    style="color:#4ade80;font-weight:700" onclick="sw('cbassist')">🤖 CB Assist</div>
+</div>
+
+<div class="main">
+
+<!-- ══ OVERVIEW ══ -->
+<div id="pov" class="pane on">
+  <div class="st"><div class="sq"></div> SECTOR PULSE — SUGAR SEASON 2025-26 (Q4 FY26)</div>
+  <div class="rg" style="margin-bottom:22px">
+    <div class="rc"><div class="rc-title">What defined Q4 FY26</div>
+      <div class="ri">🌾 UP cane SAP raised ~8% from ₹370 to ₹400/qtl — the single biggest margin compressor for all UP millers (Balrampur, Bajaj, Dwarikesh, Avadh, Uttam, Dhampur, Triveni).</div>
+      <div class="ri">⛽ Ethanol procurement prices for cane-based feedstocks left unchanged despite successive cane price hikes — distillery spreads squeezed; industry seeking price revision and MSP hike above ₹31/kg.</div>
+      <div class="ri">📦 Closing sugar stocks expected ~4.6 MT for SS 2025-26 (Triveni mgmt) — tight stocks supportive of firm sugar realisations into FY27.</div>
+      <div class="ri">🏭 One-off pain concentrated: EID Parry's Q4 loss driven by PSRIPL refinery closure provisions (~₹591 Cr); Renuka's milling impairment ₹295 Cr.</div>
+    </div>
+    <div class="rc"><div class="rc-title">Scoreboard — Q4 FY26 PAT (₹ Cr, consolidated)</div>
+      <div class="ri">▲ Bajaj Hindusthan 391 (seasonal) · Triveni 167 · Balrampur 160 · Dalmia 104 · Dwarikesh 57 · Avadh 56 · Uttam 55 · Dhampur 46 · Bannari 42</div>
+      <div class="ri">▼ Losses: EID Parry −333 (exceptional-led) · Shree Renuka −122 (4th consecutive quarterly loss)</div>
+      <div class="ri">Pattern: profitable but YoY-lower for most UP millers. The sector's earnings quality is rotating toward distillery/branded/specialty over commodity sugar.</div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> Q4 FY26 SNAPSHOT — ALL 11 COMPANIES (₹ Cr)</div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Company</th><th>BSE</th><th>Q4 Revenue</th><th>Rev YoY</th><th>Q4 EBITDA*</th><th>EBITDA M%</th><th>Q4 PAT</th><th>PAT YoY</th><th>FY26 Revenue</th><th>FY26 PAT</th></tr>
+    <tr><td><span class="dot" style="background:var(--bcm)"></span>Balrampur Chini</td><td class="mono">500038</td><td class="mono">1,604</td><td><span class="tag up">+6.7%</span></td><td class="mono">285</td><td class="mono">17.8</td><td class="mono">160</td><td><span class="tag dn">−30%</span></td><td class="mono">6,271</td><td class="mono">380</td></tr>
+    <tr><td><span class="dot" style="background:var(--eid)"></span>EID Parry (cons.)</td><td class="mono">500125</td><td class="mono">7,882</td><td><span class="tag up">+15.7%</span></td><td class="mono">660</td><td class="mono">8.4</td><td class="mono">−333</td><td><span class="tag dn">Loss</span></td><td class="mono">~36,000†</td><td class="mono">~1,248†</td></tr>
+    <tr><td><span class="dot" style="background:var(--renuka)"></span>Shree Renuka</td><td class="mono">532670</td><td class="mono">2,547</td><td><span class="tag dn">−6.1%</span></td><td class="mono">39</td><td class="mono">1.5</td><td class="mono">−122</td><td><span class="tag dn">Loss</span></td><td class="mono">9,169</td><td class="mono">−792</td></tr>
+    <tr><td><span class="dot" style="background:var(--triveni)"></span>Triveni Engg</td><td class="mono">532356</td><td class="mono">1,508</td><td><span class="tag dn">−4.8%</span></td><td class="mono">~280†</td><td class="mono">~18.5†</td><td class="mono">167</td><td><span class="tag dn">−8%</span></td><td class="mono">6,291</td><td class="mono">269</td></tr>
+    <tr><td><span class="dot" style="background:var(--bajaj)"></span>Bajaj Hindusthan</td><td class="mono">500032</td><td class="mono">1,669</td><td><span class="tag up">+7.4%</span></td><td class="mono">372</td><td class="mono">22.3</td><td class="mono">391</td><td><span class="tag up">Sharp ▲</span></td><td class="mono">~5,600†</td><td class="mono">126</td></tr>
+    <tr><td><span class="dot" style="background:var(--dalmia)"></span>Dalmia Bharat Sugar</td><td class="mono">500097</td><td class="mono">~1,180†</td><td><span class="tag dn">−5%†</span></td><td class="mono">~190†</td><td class="mono">~16†</td><td class="mono">104</td><td><span class="tag dn">−48%</span></td><td class="mono">3,712</td><td class="mono">236</td></tr>
+    <tr><td><span class="dot" style="background:var(--dwarikesh)"></span>Dwarikesh Sugar</td><td class="mono">532610</td><td class="mono">425</td><td><span class="tag dn">−7.3%</span></td><td class="mono">~75†</td><td class="mono">~17.6†</td><td class="mono">57</td><td><span class="tag up">+24%</span></td><td class="mono">1,402</td><td class="mono">31</td></tr>
+    <tr><td><span class="dot" style="background:var(--avadh)"></span>Avadh Sugar</td><td class="mono">540649</td><td class="mono">672</td><td><span class="tag dn">−0.9%</span></td><td class="mono">~100†</td><td class="mono">~15†</td><td class="mono">56</td><td><span class="tag dn">−22%</span></td><td class="mono">~2,700†</td><td class="mono">~118†</td></tr>
+    <tr><td><span class="dot" style="background:var(--uttam)"></span>Uttam Sugar</td><td class="mono">532729</td><td class="mono">470</td><td><span class="tag dn">−17%</span></td><td class="mono">92</td><td class="mono">19.5</td><td class="mono">55</td><td><span class="tag dn">−17%</span></td><td class="mono">2,210</td><td class="mono">101</td></tr>
+    <tr><td><span class="dot" style="background:var(--dhampur)"></span>Dhampur Sugar</td><td class="mono">500119</td><td class="mono">690</td><td><span class="tag dn">−5%†</span></td><td class="mono">~95†</td><td class="mono">~13.8†</td><td class="mono">46</td><td><span class="tag dn">▼</span></td><td class="mono">~2,600†</td><td class="mono">65</td></tr>
+    <tr><td><span class="dot" style="background:var(--bannari)"></span>Bannari Amman</td><td class="mono">500041</td><td class="mono">282</td><td><span class="tag dn">−43%</span></td><td class="mono">4</td><td class="mono">1.3</td><td class="mono">42</td><td><span class="tag up">+18%</span></td><td class="mono">~1,917†</td><td class="mono">~145†</td></tr>
+  </table></div>
+  <div class="fn">* EBITDA as reported; † = CB Research estimate. EID Parry consolidated includes Coromandel International; Q4 EBITDA ₹660 Cr excludes exceptional item −₹478 Cr. CB Research provides analytical context only, not investment recommendations.</div>
+</div>
+
+<!-- ══ COMPANY ANALYSIS ══ -->
+<div id="pco" class="pane">
+  <div class="st"><div class="sq"></div> COMPANY-WISE ANALYSIS — Q4 FY26 &amp; 3-YEAR FINANCIALS (₹ Cr · Consolidated unless noted)</div>
+
+  <div class="coCard" style="border-top-color:var(--bcm)">
+    <div class="coName">Balrampur Chini Mills</div>
+    <div class="coSub">BSE 500038 · UP integrated sugar + ethanol + PLA · Founder-promoted (Saraogi family)</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>5,594</td><td>5,415</td><td>6,271</td><td>1,604</td><td>+15.8%</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~700</td><td>704</td><td>741</td><td>285</td><td>+5.3% (Q4: −22%)</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~12.5</td><td>13.0</td><td>11.8</td><td>17.8</td><td>compressing</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>534</td><td>439</td><td>380</td><td>160</td><td>−13.3% (Q4: −30%)</td></tr>
+      <tr><td>Debt</td><td colspan="4">LT borrowings ₹97.5 Cr (core) + ₹903 Cr (PLA project); ₹450 Cr preferential equity raise approved; promoters contributed ₹193 Cr</td><td>Low core debt, rising for PLA</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~80,000 TCD crushing · ~1,050 KLPD distillery · 80,000 TPA PLA plant (₹3,080 Cr capex, commissioning Q3 FY27)</td><td>10 UP mills</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Stable despite ₹400/qtl SAP shock — volumes and realisations held, but cane cost ate margins (Q4 EBITDA −22% YoY). PLA pivot changes earnings mix from FY28. Associate Auxilo Finserve (30.47% stake) AUM ₹5,051 Cr — hidden value. Watch FY27 ethanol price revision.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--eid)">
+    <div class="coName">EID Parry (India)</div>
+    <div class="coSub">BSE 500125 · Sugar + distillery + nutra + CPG + Coromandel (consolidated) · Murugappa Group, Chennai</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr, cons.)</td><td>29,413</td><td>~31,000†</td><td>~36,000†</td><td>7,882</td><td>Q4: +15.7%</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~2,600†</td><td>~2,900†</td><td>~3,300†</td><td>660 (ex-excep.)</td><td>Q4: +5.4%</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~8.8</td><td>~9.4</td><td>~9.2</td><td>8.4</td><td>−265 bps Q4 YoY</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>~900</td><td>~1,950†</td><td>~1,248†</td><td>−333</td><td>−36% (Q4: loss)</td></tr>
+      <tr><td>Debt</td><td colspan="4">Standalone comfortable; PSRIPL closure ₹591 Cr guarantee provision + impairment in Q4; 0.51% Coromandel sale gain ₹298 Cr</td><td>Clean post-cleanup</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~40,800 TCD across TN/Karnataka/AP · 582 KLPD distillery · Q4 recovery 11.19%; cane crushed 17.75 LMT; sugar 1.74 LMT</td><td>South India leader</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Q4 loss is exceptional-driven — standalone sugar PBIT improved (₹78 Cr vs ₹56 Cr). Closing PSRIPL removes chronic drag. CPG/sweetener ambition + Coromandel stake = SOTP story, not a sugar cycle play.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--renuka)">
+    <div class="coName">Shree Renuka Sugars</div>
+    <div class="coSub">BSE 532670 · Sugar milling + 4,000 TPD refining + ethanol · Wilmar International-controlled</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>11,298</td><td>10,589</td><td>9,169</td><td>2,547</td><td>−13.4% (Q4: −6.1%)</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>756</td><td>768</td><td>~430†</td><td>39</td><td>collapsing</td></tr>
+      <tr><td>EBITDA Margin %</td><td>6.7</td><td>7.3</td><td>~4.7†</td><td>1.5</td><td>−924 bps Q4 YoY</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>−627</td><td>−300</td><td>−792</td><td>−122</td><td>loss widened</td></tr>
+      <tr><td>Debt</td><td colspan="4">Negative net worth ₹−1,676 Cr; NCD asset cover 1.57x; milling impairment ₹295 Cr in FY26; 4 consecutive quarterly losses</td><td>Stressed</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~44,000 TCD (Maharashtra/Karnataka) · 4,000 TPD raw refining (India's largest) · ~1,250 KLPD ethanol</td><td>Largest refiner</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> FY26 loss ₹−792 Cr, equity wiped out. Going-concern rests on Wilmar parentage. Refining economics broken by global spreads + high finance costs. Needs Wilmar recapitalisation or a structural spread recovery.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--triveni)">
+    <div class="coName">Triveni Engineering &amp; Industries</div>
+    <div class="coSub">BSE 532356 · UP sugar + 1,110 KLPD distillery · PTB demerged eff. 19 May 2026 · Sawhney family</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>6,310</td><td>5,689</td><td>6,291</td><td>1,508</td><td>+10.6% (Q4: −4.8%)</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~560†</td><td>~500†</td><td>~620†</td><td>~280†</td><td>distillery-led ▲</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~8.9†</td><td>~8.8†</td><td>~9.9†</td><td>~18.5†</td><td>improving</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>395</td><td>243</td><td>269</td><td>167</td><td>+12.3% (Q4: −8%)</td></tr>
+      <tr><td>Debt</td><td colspan="4">Moderate, seasonal WC-led; PTB OB ₹485 Cr (+25%) now demerged via NCLT-approved Composite Scheme (eff. 19 May 2026)</td><td>Low-moderate</td></tr>
+      <tr><td>Capacity</td><td colspan="4">61,000 TCD across 7 UP mills · 1,110 KLPD distillery · 7 co-gen plants</td><td>Top-3 UP miller</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> FY26 PAT +12% on distillery turnaround. PTB demerger creates clean pure-play sugar+ethanol entity. Q4 dip from cane cost + PTB geopolitical delays. Rerating depends on FY27 ethanol price revision.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--bajaj)">
+    <div class="coName">Bajaj Hindusthan Sugar</div>
+    <div class="coSub">BSE 500032 · India's largest crushing capacity · 14 UP mills · Bajaj (Shishir) group</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>~5,900†</td><td>~5,540†</td><td>~5,600†</td><td>1,669</td><td>Q4: +7.4%</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~370†</td><td>~310†</td><td>~640†</td><td>372</td><td>Q4 margin 22.3%</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~6†</td><td>~5.6†</td><td>~11.4†</td><td>22.3</td><td>seasonal spike</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>~−1,050†</td><td>−780</td><td>126</td><td>391</td><td>turnaround</td></tr>
+      <tr><td>Debt</td><td colspan="4">Legacy high debt + OCD obligations; interest cost declining (Q4 ₹18 Cr vs ₹24 Cr prior year); balance sheet still leveraged</td><td>High debt</td></tr>
+      <tr><td>Capacity</td><td colspan="4">136,000 TCD (India's largest) · ~800 KLPD distillery · 14 mills, all UP</td><td>#1 by capacity</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Q4 PAT ₹391 Cr strongest quarter in years, but Q1/Q2 FY26 were losses (₹−174 Cr, ₹−105 Cr). First annual profit after years. Debt overhang and governance history keep this a high-risk cyclical name.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--dalmia)">
+    <div class="coName">Dalmia Bharat Sugar &amp; Industries</div>
+    <div class="coSub">BSE 500097 · UP + Maharashtra mills · Gautam Dalmia re-appointed MD for 5 years</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr, total income)</td><td>3,540†</td><td>3,786</td><td>3,712</td><td>~1,180†</td><td>−2%</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~520†</td><td>~560†</td><td>~440†</td><td>~190†</td><td>margin contracted</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~14.7†</td><td>~14.8†</td><td>~11.9†</td><td>~16†</td><td>compressing</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>302†</td><td>366</td><td>236</td><td>104</td><td>−35% (Q4: −48%)</td></tr>
+      <tr><td>Debt</td><td colspan="4">Conservative balance sheet, low leverage; final dividend ₹1.50/share recommended</td><td>Low debt</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~37,000 TCD (UP + Kolhapur, MH) · ~850 KLPD distillery · dual-state cane diversification</td><td>Efficient operator</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Clean operator hit by the cane-cost/flat-ethanol squeeze. Q4 PAT halved. Balance-sheet strength lets it ride the trough; efficiency among the best. Policy (MSP/ethanol) is the trigger.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--dwarikesh)">
+    <div class="coName">Dwarikesh Sugar Industries</div>
+    <div class="coSub">BSE 532610 · 3 UP mills (Bijnor/Bareilly) · Standalone · Morarka family (Chairman re-appointed to 2032)</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>1,612†</td><td>1,359</td><td>1,402</td><td>425</td><td>+3.2% (Q4: −7.3%)</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~190†</td><td>~140†</td><td>~150†</td><td>~75†</td><td>flat</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~11.8†</td><td>~10.3†</td><td>~10.7†</td><td>~17.6†</td><td>stable</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>86†</td><td>23</td><td>31</td><td>57</td><td>+32% (Q4: +24%)</td></tr>
+      <tr><td>Debt</td><td colspan="4">Low; seasonal cane dues; dividend ₹0.10/share; minor molasses storage penalty ₹5 lakh (Feb 2026)</td><td>Low debt</td></tr>
+      <tr><td>Capacity</td><td colspan="4">21,500 TCD · 337.5 KLPD distillery · 3 fully automated UP mills</td><td>Efficient mid-cap</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Q4 PAT ₹57 Cr aided by lower tax; full-year ₹31 Cr reflects seasonal earnings volatility (H1 loss-making). Clean operations, but scale and cane-cost exposure cap upside until policy moves.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--avadh)">
+    <div class="coName">Avadh Sugar &amp; Energy</div>
+    <div class="coSub">BSE 540649 · 4 UP mills · KK Birla group (Chandra Shekhar Nopany)</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>2,800†</td><td>2,640†</td><td>~2,700†</td><td>672</td><td>+2.2% (Q4: −0.9%)</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~300†</td><td>~280†</td><td>~227†</td><td>~100†</td><td>margin 10.6→8.4%</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~10.7†</td><td>10.6</td><td>8.4</td><td>~15†</td><td>compressing</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>120†</td><td>~181†</td><td>~118†</td><td>56</td><td>−35% (Q4: −22%)</td></tr>
+      <tr><td>Debt</td><td colspan="4">D/E ~1.25x (improving from ~1.30x) — most leveraged of the profitable UP millers; Hargaon unit expanded</td><td>Leveraged</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~31,800 TCD (Hargaon capacity expanded FY26) · ~320 KLPD distillery · 4 UP units</td><td>4 UP mills</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Profit −35% FY26; leverage (D/E 1.25x) amplifies the squeeze. Hargaon expansion adds volume into a margin trough. Deleveraging + ethanol policy are the twin rerating levers.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--uttam)">
+    <div class="coName">Uttam Sugar Mills</div>
+    <div class="coSub">BSE 532729 · UP/Uttarakhand mills · Branded sugar + distillery scale-up · Adlakha family</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>2,030†</td><td>1,846</td><td>2,210</td><td>470</td><td>+19% (Q4: −17%)</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~230†</td><td>~250†</td><td>~290†</td><td>92</td><td>distillery-led ▲</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~11.3†</td><td>~13.5†</td><td>~13.1†</td><td>19.5</td><td>resilient</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>~96†</td><td>86</td><td>101</td><td>55</td><td>+17% (Q4: −17%)</td></tr>
+      <tr><td>Debt</td><td colspan="4">Moderate; preference share redemption extended; finance cost doubled QoQ in Q4 (₹13 Cr vs ₹6 Cr); dividend ₹2.50/share</td><td>Moderate</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~23,750 TCD · distillery +32% to 877 lakh BL FY26 · branded sugar growing · UPERC tariff uplift ₹7.4 Cr</td><td>Distillery pivot</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> One of only two names to grow FY26 PAT (+17%). Distillery +32% and branded sugar offset weather-hit cane crush. Q4 standalone weather-dented, but consolidated mix shift is working — quiet compounder of the pack.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--dhampur)">
+    <div class="coName">Dhampur Sugar Mills</div>
+    <div class="coSub">BSE 500119 · 3 UP mills (post Dhampur Bio demerger) · Sugar + potable spirits</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>2,580†</td><td>2,480†</td><td>~2,600†</td><td>690</td><td>Q4: −5%†</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~220†</td><td>~180†</td><td>~200†</td><td>~95†</td><td>flat</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~8.5†</td><td>~7.3†</td><td>~7.7†</td><td>~13.8†</td><td>thin</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>118†</td><td>~50†</td><td>65</td><td>46</td><td>FY26 ▲ (Q4 ▼)</td></tr>
+      <tr><td>Debt</td><td colspan="4">Moderate; commercial paper programme active; FY26 segment: sugar ₹1,496 Cr + potable spirits ₹935 Cr (~36% rev)</td><td>Moderate</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~30,500 TCD · Q3 FY26 was strong (+75% PAT YoY); Q4 moderated with sector</td><td>Spirits ~36% revenue</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Potable spirits now over a third of revenue — steadier, better-margin than commodity sugar. FY26 PAT recovered to ₹65 Cr. Mid-cap with an underappreciated alco-bev angle at ~0.7x book.</div>
+  </div>
+
+  <div class="coCard" style="border-top-color:var(--bannari)">
+    <div class="coName">Bannari Amman Sugars</div>
+    <div class="coSub">BSE 500041 · TN/Karnataka mills · Sugar + power + distillery + granite · SV Balasubramaniam group</div>
+    <table class="minitbl">
+      <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q4 FY26</th><th>Growth (FY26 YoY)</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>~2,250†</td><td>~1,793†</td><td>~1,917†</td><td>282</td><td>+6.9%† (Q4: −43%)</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>~210†</td><td>~170†</td><td>~200†</td><td>4</td><td>Q4 operating washout</td></tr>
+      <tr><td>EBITDA Margin %</td><td>~9.3†</td><td>~9.5†</td><td>~10.4†</td><td>1.3</td><td>Q4 anomaly</td></tr>
+      <tr><td>Net Profit (₹ Cr)</td><td>~110†</td><td>~120†</td><td>~145†</td><td>42</td><td>+18% Q4 YoY</td></tr>
+      <tr><td>Debt</td><td colspan="4">Low debt; conservative management; ROE ~8.1%; stock −15% YTD; trading at 2.5x book</td><td>Low debt</td></tr>
+      <tr><td>Capacity</td><td colspan="4">~23,700 TCD across TN/Karnataka · cogen power · distillery · granite division</td><td>South pure-play</td></tr>
+    </table>
+    <div class="coNote"><strong>View:</strong> Q4 revenue collapsed 56% QoQ on early crush end; operating profit just ₹4 Cr. Q4 PAT carried by other income. Sub-9% ROE at 2.5x book is hard to justify. Stable but stagnant.</div>
+  </div>
+
+  <div class="fn">All ₹ Crore. † = CB Research estimate. CB Research does not provide buy/sell/hold recommendations.</div>
+</div>
+
+<!-- ══ CHARTS ══ -->
+<div id="pcharts" class="pane">
+  <div class="stabs">
+    <button class="stab on" onclick="sst(this,'sqtr')">📊 Quarterly Results (Q4 FY26)</button>
+    <button class="stab" onclick="sst(this,'sann')">📈 Annual Trends (FY24–FY26)</button>
+  </div>
+
+  <!-- QUARTERLY sub-pane -->
+  <div id="ssqtr" class="spane on">
+    <div class="st"><div class="sq"></div> QUARTERLY RESULTS — Q4 FY26 COMPARISON (₹ Cr)</div>
+    <div class="g2">
+      <div class="cc"><div class="ct">Q4 FY26 Revenue (₹ Cr) — All 11 Companies</div><div class="cw-lg"><canvas id="cqRev"></canvas></div></div>
+      <div class="cc"><div class="ct">Q4 FY26 PAT (₹ Cr) — Losses in Red</div><div class="cw-lg"><canvas id="cqPat"></canvas></div></div>
+    </div>
+    <div class="g2">
+      <div class="cc"><div class="ct">Q4 FY26 EBITDA (₹ Cr)</div><div class="cw-lg"><canvas id="cqEbitda"></canvas></div></div>
+      <div class="cc"><div class="ct">Q4 FY26 EBITDA Margin % — Who Held Margins?</div><div class="cw-lg"><canvas id="cqMargin"></canvas></div></div>
+    </div>
+    <div class="cc" style="margin-bottom:20px"><div class="ct">Q4 FY26 Revenue YoY Growth % — Red = Decline</div><div class="cw"><canvas id="cqYoy"></canvas></div></div>
+  </div>
+
+  <!-- ANNUAL sub-pane -->
+  <div id="ssann" class="spane">
+    <div class="st"><div class="sq"></div> ANNUAL TRENDS — FY24 · FY25 · FY26 (₹ Cr)</div>
+    <div class="g2">
+      <div class="cc"><div class="ct">FY26 Annual Revenue (₹ Cr) — Top 8 Comparable</div><div class="cw-lg"><canvas id="caRevBar"></canvas></div></div>
+      <div class="cc"><div class="ct">FY24 → FY25 → FY26 Revenue Trend — Selected Companies</div><div class="cw-lg"><canvas id="caRevLine"></canvas></div></div>
+    </div>
+    <div class="g2">
+      <div class="cc"><div class="ct">Annual PAT Trend FY24 → FY25 → FY26 (₹ Cr)</div><div class="cw-lg"><canvas id="caPatLine"></canvas></div></div>
+      <div class="cc"><div class="ct">FY26 Annual EBITDA Margin % vs FY25</div><div class="cw-lg"><canvas id="caMarginBar"></canvas></div></div>
+    </div>
+    <div class="cc" style="margin-bottom:20px"><div class="ct">3-Year EBITDA Trend — FY24 · FY25 · FY26 (₹ Cr)</div><div class="cw"><canvas id="caEbitdaLine"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ══ VALUATION ══ -->
+<div id="pval" class="pane">
+  <div class="st"><div class="sq"></div> VALUATION — PRICES &amp; MULTIPLES (Approx · May–Jun 2026 · post Q4 results)</div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Company</th><th>CMP ₹ (approx)</th><th>Mcap ₹ Cr</th><th>FY26 PAT ₹ Cr</th><th>P/E (FY26)</th><th>P/B (approx)</th><th>ROE %</th><th>D/E</th><th>CB Valuation Read</th></tr>
+    <tr><td><span class="dot" style="background:var(--bcm)"></span>Balrampur Chini</td><td class="mono">541</td><td class="mono">10,905</td><td class="mono">380</td><td class="mono">~29x</td><td class="mono">~2.8x</td><td class="mono">~11</td><td class="mono">~0.3x</td><td>Pricing PLA optionality — premium justified only if PLA executes</td></tr>
+    <tr><td><span class="dot" style="background:var(--eid)"></span>EID Parry</td><td class="mono">764</td><td class="mono">~13,570</td><td class="mono">~1,248†</td><td class="mono">~11x</td><td class="mono">~1.6x</td><td class="mono">~14†</td><td class="mono">Low</td><td>Near 52-wk low; Coromandel stake dominates SOTP; ex-refinery drag, cheapest quality name</td></tr>
+    <tr><td><span class="dot" style="background:var(--renuka)"></span>Shree Renuka</td><td class="mono">27</td><td class="mono">5,598</td><td class="mono">−792</td><td class="mono">NM (loss)</td><td class="mono">NM (−ve BV)</td><td class="mono">NM</td><td class="mono">−ve equity</td><td>Option on Wilmar support — negative net worth ₹−1,676 Cr, not a valuation case</td></tr>
+    <tr><td><span class="dot" style="background:var(--triveni)"></span>Triveni Engg</td><td class="mono">~390†</td><td class="mono">~8,500†</td><td class="mono">269</td><td class="mono">~32x†</td><td class="mono">~2.9x†</td><td class="mono">~9</td><td class="mono">~0.4x</td><td>Post-demerger price discovery; pure sugar+ethanol entity needs ethanol price hike to justify multiple</td></tr>
+    <tr><td><span class="dot" style="background:var(--bajaj)"></span>Bajaj Hindusthan</td><td class="mono">18.7</td><td class="mono">4,451</td><td class="mono">126</td><td class="mono">~35x</td><td class="mono">~1.1x†</td><td class="mono">~3†</td><td class="mono">High</td><td>Optically cheap per-share, expensive on earnings quality; capacity value vs. debt trade</td></tr>
+    <tr><td><span class="dot" style="background:var(--dalmia)"></span>Dalmia Bharat Sugar</td><td class="mono">~370†</td><td class="mono">~3,000†</td><td class="mono">236</td><td class="mono">~13x†</td><td class="mono">~0.9x†</td><td class="mono">~7</td><td class="mono">~0.2x</td><td>Below book with clean balance sheet — value name of the UP pack if MSP/ethanol policy moves</td></tr>
+    <tr><td><span class="dot" style="background:var(--dwarikesh)"></span>Dwarikesh Sugar</td><td class="mono">~55†</td><td class="mono">~1,040†</td><td class="mono">31</td><td class="mono">~34x†</td><td class="mono">~1.5x†</td><td class="mono">~4</td><td class="mono">Low</td><td>Trough P/E misleads; normalised mid-cycle PAT ₹80–100 Cr would imply ~11–13x</td></tr>
+    <tr><td><span class="dot" style="background:var(--avadh)"></span>Avadh Sugar</td><td class="mono">~560†</td><td class="mono">~1,120†</td><td class="mono">~118†</td><td class="mono">~9x†</td><td class="mono">~0.8x†</td><td class="mono">~9†</td><td class="mono">1.25x</td><td>Cheapest optical multiple — leverage is the discount; deleveraging is the rerating trigger</td></tr>
+    <tr><td><span class="dot" style="background:var(--uttam)"></span>Uttam Sugar</td><td class="mono">243</td><td class="mono">909</td><td class="mono">101</td><td class="mono">~9x</td><td class="mono">~1.4x†</td><td class="mono">~15†</td><td class="mono">Moderate</td><td>Only grower at single-digit P/E — distillery+branded mix shift not yet in the price</td></tr>
+    <tr><td><span class="dot" style="background:var(--dhampur)"></span>Dhampur Sugar</td><td class="mono">~125†</td><td class="mono">~830†</td><td class="mono">65</td><td class="mono">~13x†</td><td class="mono">~0.7x†</td><td class="mono">~6†</td><td class="mono">Moderate</td><td>Below book; potable spirits segment (₹935 Cr rev) arguably worth most of the mcap</td></tr>
+    <tr><td><span class="dot" style="background:var(--bannari)"></span>Bannari Amman</td><td class="mono">3,613</td><td class="mono">4,531</td><td class="mono">~145†</td><td class="mono">~31x†</td><td class="mono">2.5x</td><td class="mono">8.1</td><td class="mono">Low</td><td>2.5x book for 8% ROE and other-income-dependent earnings — hardest to justify in the sector</td></tr>
+  </table></div>
+  <div class="g2">
+    <div class="cc"><div class="ct">P/E on FY26 PAT (x · NM excluded)</div><div class="cw"><canvas id="chPE"></canvas></div></div>
+    <div class="cc"><div class="ct">FY26 ROE % vs P/B (x) — Bubble = Mcap</div><div class="cw"><canvas id="chROE"></canvas></div></div>
+  </div>
+  <div class="rg">
+    <div class="rc"><div class="rc-title">How CB Research reads sugar valuations</div>
+      <div class="ri">P/E on trough FY26 earnings overstates expensiveness — normalise to mid-cycle PAT.</div>
+      <div class="ri">P/B + ROE is the cleaner lens: Dalmia, Dhampur, Avadh at or below book; Balrampur, Triveni, Bannari at 2.5–3x.</div>
+      <div class="ri">Optionality stack: ethanol price revision → MSP hike → PLA (Balrampur) → spirits/branded (Dhampur, Uttam).</div>
+    </div>
+    <div class="rc"><div class="rc-title">CB Score shorthand (analytical only)</div>
+      <div class="ri"><span class="tag up">High Score</span> Uttam (growth + 9x), EID Parry (SOTP value), Dalmia (balance-sheet value)</div>
+      <div class="ri"><span class="tag flat">Watch</span> Balrampur (PLA execution), Triveni (post-demerger), Dhampur, Avadh</div>
+      <div class="ri"><span class="tag dn">Skip</span> Shree Renuka (−ve net worth), Bajaj Hind (debt), Bannari (price vs quality)</div>
+    </div>
+  </div>
+  <div class="fn">† = CB Research approximation. Multiples on FY26 reported PAT — a cyclically depressed base. CB Research provides analytical scores only, never investment recommendations.</div>
+</div>
+
+<!-- ══ REGULATIONS ══ -->
+<div id="preg" class="pane">
+  <div class="st"><div class="sq"></div> GOVERNMENT REGULATIONS — CENTRAL &amp; STATE (Sugar · Ethanol · Cane Pricing)</div>
+
+  <div class="reg-grid">
+    <!-- CENTRAL GOVERNMENT -->
+    <div class="reg-card">
+      <div class="reg-head">
+        <div class="reg-icon central">🏛️</div>
+        <div><div class="reg-title">Central Government Regulations</div><div class="reg-sub">Ministry of Consumer Affairs · DFPD · Ministry of Petroleum · Cabinet</div></div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-c">CANE PRICE</div>
+        <div class="reg-item-title">Fair &amp; Remunerative Price (FRP) — Sugarcane</div>
+        <div class="reg-item-body">Set annually by the Cabinet Committee on Economic Affairs (CCEA) on recommendation of CACP. FRP is the minimum price mills must pay farmers across India. FRP for SS 2025-26: <strong>₹340/qtl</strong> (for a recovery of 10.25%). State-level SAP in UP/Maharashtra often exceeds FRP — <strong>UP SAP for SS 2025-26 raised to ₹400/qtl</strong> (+8% over prior year), causing the single biggest margin squeeze for UP millers in Q4 FY26.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-c">SUGAR MSP</div>
+        <div class="reg-item-title">Minimum Selling Price (MSP) of Sugar</div>
+        <div class="reg-item-body">Central government fixes the ex-mill MSP to ensure mills can recover cane costs before selling below this floor. Current MSP: <strong>₹31/kg</strong> — <em>unchanged since Feb 2019 despite two successive SAP hikes</em>. Industry bodies including Triveni and Dalmia management have publicly demanded a revision; the spread compression is the central financial issue for the sector in FY26.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-e">ETHANOL</div>
+        <div class="reg-item-title">Ethanol Blending Programme (EBP) &amp; Procurement Prices</div>
+        <div class="reg-item-body">Centre mandated <strong>E20 blending</strong> (20% ethanol in petrol) as the FY27 target under the National Biofuel Policy 2018. OMC procurement prices fixed by CCEA annually. <strong>B-heavy molasses ethanol: ₹60.73/litre; C-heavy: ₹56.58/litre; sugarcane juice / syrup: ₹65.61/litre</strong> (ESY 2025-26). Ethanol prices for cane-based feedstocks were left unchanged for ESY 2025-26 despite SAP hikes — the critical industry grievance heading into ESY 2026-27 (announced ~Oct–Nov 2026).</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-c">EXPORTS</div>
+        <div class="reg-item-title">Sugar Export Policy &amp; Quota Mechanism</div>
+        <div class="reg-item-body">Centre controls sugar exports via quota (MEQ — Maximum Export Quota). India suspended open-ended exports in Oct 2023 to protect domestic stocks; export quota remains <strong>restricted/nil for SS 2024-25 and SS 2025-26</strong>. Centre intervenes bilaterally (e.g., to specific countries) within this framework. Domestic surplus/deficit determines annual quota decisions — currently supportive of domestic price firmness.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-crit">STRESSED MILLS</div>
+        <div class="reg-item-title">Soft Loan / SEFASU Schemes &amp; Sugar Development Fund (SDF)</div>
+        <div class="reg-item-body">Centre periodically extends soft loan schemes for distillery expansion (MSDP) and cane dues clearance (SEFASU). Sugar Development Fund provides concessional loans for modernisation. These are critical for Bajaj Hindusthan (legacy debt) and smaller mills — government backstop that prevents sector-wide failure.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-c">BIOPLASTICS</div>
+        <div class="reg-item-title">PLA / Bioplastics Policy — Emerging Regulation</div>
+        <div class="reg-item-body">Central government's <em>Single Use Plastics (SUP) ban</em> (eff. Jul 2022) and draft <em>Extended Producer Responsibility (EPR) rules</em> for plastics create structural demand for bio-based alternatives like PLA. Balrampur's 80,000 TPA PLA plant directly benefits — no explicit PLA price support yet, but MNRE/MoPNG are evaluating incentive structures. To watch for policy specifics in FY27.</div>
+      </div>
+    </div>
+
+    <!-- STATE GOVERNMENT -->
+    <div class="reg-card">
+      <div class="reg-head">
+        <div class="reg-icon state">🏗️</div>
+        <div><div class="reg-title">State Government Regulations</div><div class="reg-sub">UP · Maharashtra · Karnataka · Tamil Nadu · Uttarakhand</div></div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-s">UP — SAP</div>
+        <div class="reg-item-title">Uttar Pradesh State Advised Price (SAP) — Key Cost Driver</div>
+        <div class="reg-item-body">UP government announces SAP annually (typically Oct–Nov ahead of crushing season). <strong>SS 2025-26 SAP: ₹400/qtl</strong> for general variety, up from ₹370/qtl — an 8.1% hike. UP accounts for ~35% of India's sugar production; virtually all UP millers (Balrampur, Triveni, Dalmia, Dwarikesh, Avadh, Uttam, Dhampur, Bajaj) are directly impacted. SAP is above FRP and is legally binding; mills cannot pay below SAP in UP.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-s">UP — POWER</div>
+        <div class="reg-item-title">UPERC — Co-generation Tariff &amp; Power Purchase</div>
+        <div class="reg-item-body">Uttar Pradesh Electricity Regulatory Commission (UPERC) fixes the tariff for co-generation power supplied by sugar mills to the grid. <strong>FY26: UPERC revised power tariffs</strong>, adding ₹7.4 Cr to Uttam Sugar's FY26 revenue (including ₹6.7 Cr arrear for FY25). Balrampur, Triveni, Bajaj, and Dalmia all have captive/co-gen plants; tariff revisions materially impact non-sugar revenue.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-s">UP — MOLASSES</div>
+        <div class="reg-item-title">UP Molasses Control &amp; Excise Regulation</div>
+        <div class="reg-item-body">UP mandates minimum molasses storage norms and levies state excise on molasses/ethanol. Non-compliance attracts penalties — <strong>Dwarikesh was directed to pay ₹5 lakh for molasses storage shortfall (Feb 2026)</strong>. UP excise rules govern potable spirit sales (relevant for Dhampur). State excise policy changes can directly alter distillery economics for UP mills.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-s">MAHARASHTRA</div>
+        <div class="reg-item-title">Maharashtra FRP + Revenue Sharing Formula (RSF)</div>
+        <div class="reg-item-body">Maharashtra mills follow central FRP plus a state-mandated Revenue Sharing Formula — mills must share 70% of revenue (above FRP equivalent) with farmers. MH also has a separate <strong>Fair &amp; Profitable Price (FPP)</strong> recommendation. Dalmia (Kolhapur) and Renuka (Pune/Sangli) operate under MH framework; MH cane area is more weather-sensitive and cooperative-dominated than UP.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-s">TNERC</div>
+        <div class="reg-item-title">Tamil Nadu Electricity Regulatory Commission — EID Parry / Bannari</div>
+        <div class="reg-item-body">TNERC governs co-generation tariff and captive power rules for TN sugar mills. EID Parry (7 mills in TN/AP/Karnataka) and Bannari Amman (TN/Karnataka) are subject to TNERC and KERC frameworks. <strong>TN mills run for shorter seasons</strong> (Bannari Q4 FY26: 77-day average) due to cane availability — regulatory limits on crushing season also apply.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-s">KARNATAKA</div>
+        <div class="reg-item-title">Karnataka — Renuka Sugars &amp; EID Parry Operations</div>
+        <div class="reg-item-body">Karnataka sets its own cane price (state-advised, close to FRP). <strong>Renuka's Panchaganga and Haldia plants</strong> are secured under NCD charge in Karnataka. Karnataka/MH operations are Renuka's core; FY26 cane crush was lower 17% due to poor crop yields (below-normal rainfall in SS 2025-26). KERC governs co-gen tariff.</div>
+      </div>
+
+      <div class="reg-item">
+        <div class="reg-item-tag rtag-crit">CROSS-STATE</div>
+        <div class="reg-item-title">Cane Area Reservation &amp; Minimum Distance Rules</div>
+        <div class="reg-item-body">All sugar-producing states mandate a <strong>minimum distance (typically 15 km)</strong> between mills for cane procurement zones, enforced by state Cane Commissioners. Mills cannot source cane outside their designated radius without permission. This creates captive cane supply — positive for cost predictability, but exposes mills to hyper-local weather events and SAP revisions in their assigned zone.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="st"><div class="sq"></div> REGULATORY IMPACT MATRIX — Q4 FY26 &amp; FY27 OUTLOOK</div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Regulation</th><th>Level</th><th>Current Status</th><th>Q4 FY26 Impact</th><th>FY27 Implication</th><th>Most-Affected Companies</th></tr>
+    <tr><td>UP SAP ₹400/qtl</td><td><span class="tag rtag-s">State</span></td><td>Active SS 2025-26</td><td class="mono">−22 to −48% EBITDA for UP millers</td><td>SS 2026-27 SAP decision ~Oct 2026</td><td>Balrampur, Triveni, Bajaj, Dalmia, Dwarikesh, Avadh, Uttam</td></tr>
+    <tr><td>Sugar MSP ₹31/kg</td><td><span class="tag rtag-c">Central</span></td><td>Frozen since 2019</td><td>Negative — no relief on output</td><td>Industry demanding hike; cabinet decision awaited</td><td>All millers</td></tr>
+    <tr><td>Ethanol EBP prices</td><td><span class="tag rtag-c">Central</span></td><td>Unchanged ESY 2025-26</td><td>Distillery spread squeezed</td><td>ESY 2026-27 pricing ~Oct–Nov 2026 is the key event</td><td>All integrated millers</td></tr>
+    <tr><td>Sugar Export Quota</td><td><span class="tag rtag-c">Central</span></td><td>Nil / Restricted</td><td>Domestic surplus contained</td><td>Any quota reopening would pressure domestic prices</td><td>EID Parry (refinery), Renuka</td></tr>
+    <tr><td>UPERC Cogen Tariff</td><td><span class="tag rtag-s">State</span></td><td>Revised upward FY26</td><td>+₹7.4 Cr Uttam Sugar</td><td>Periodic reviews add incremental non-sugar revenue</td><td>Uttam, Triveni, Bajaj, Balrampur</td></tr>
+    <tr><td>MH Revenue Sharing</td><td><span class="tag rtag-s">State</span></td><td>Active</td><td>Dalmia / Renuka MH margin impact</td><td>Stable; no change expected</td><td>Dalmia (Kolhapur), Renuka</td></tr>
+    <tr><td>PLA / Bioplastics Policy</td><td><span class="tag rtag-c">Central</span></td><td>SUP ban active; PLA incentive draft</td><td>No impact yet</td><td>Demand catalyst for Balrampur PLA (Q3 FY27 start)</td><td>Balrampur Chini only</td></tr>
+    <tr><td>Molasses / Excise Rules</td><td><span class="tag rtag-s">State</span></td><td>UP active</td><td>Minor penalties (Dwarikesh ₹5 lakh)</td><td>Potable spirits excise affects Dhampur economics</td><td>Dwarikesh, Dhampur</td></tr>
+  </table></div>
+  <div class="fn">FRP = Fair &amp; Remunerative Price (Central) · SAP = State Advised Price (UP/MH) · EBP = Ethanol Blending Programme · MSP = Minimum Selling Price · ESY = Ethanol Supply Year (Nov–Oct). Sources: DFPD notifications, CCEA decisions, UP Cane Commissioner orders, UPERC tariff orders, company filings.</div>
+</div>
+
+<!-- ══ RISKS & OUTLOOK ══ -->
+<div id="prisk" class="pane">
+  <div class="st"><div class="sq"></div> SECTOR RISKS &amp; FY27 OUTLOOK</div>
+  <div class="rg">
+    <div class="rc"><div class="rc-title">⚠️ Key risks</div>
+      <div class="ri">Cane cost ratchet: UP SAP +8% to ₹400/qtl with no matching ethanol/MSP move — every UP miller's FY27 margin starts in a hole if policy doesn't respond.</div>
+      <div class="ri">Ethanol overcapacity: Triveni management explicitly flags excess national ethanol capacity; with E20 achieved, incremental blending demand slows.</div>
+      <div class="ri">Frozen ethanol prices for cane feedstocks despite two cane price hikes — distillery, the sector's profit engine since 2021, is squeezed at both ends.</div>
+      <div class="ri">Monsoon/weather: Uttam's standalone Q4 and Renuka/Bannari crush were weather-hit; recovery rates remain the biggest single swing factor.</div>
+      <div class="ri">Balance-sheet tail risk: Renuka (negative net worth), Bajaj Hindusthan (legacy OCDs).</div>
+      <div class="ri">Export policy: quota decisions can swing realisations within a season.</div>
+    </div>
+    <div class="rc"><div class="rc-title">🔭 FY27 outlook</div>
+      <div class="ri">Tight closing stocks (~4.6 MT) support firm domestic sugar prices into SS 2026-27.</div>
+      <div class="ri">Industry's two asks: MSP hike (₹31/kg frozen since 2019) and ethanol price revision for cane feedstocks. Either is a sector-wide earnings event.</div>
+      <div class="ri">Diversification winners: Balrampur PLA (Q3 FY27), Dhampur potable spirits, Uttam branded sugar + distillery, EID Parry CPG.</div>
+      <div class="ri">Consolidation likely: stressed assets (Renuka, smaller UP units) are targets for clean balance sheets (Dalmia, Balrampur).</div>
+      <div class="ri">CB stance: trough-year financials, policy-option-rich. Track ethanol pricing announcements (Oct–Nov 2026) as the next sector catalyst.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CB ASSIST ══ -->
+<div id="pcbassist" class="pane">
+  <div class="cba-wrap">
+    <div class="cba-head">
+      <div class="cba-logo">CB</div>
+      <div class="cba-head-text">
+        <h2>CB Assist — Sugar Sector</h2>
+        <p>Q4 FY26 · Analytical only · No recommendations</p>
+      </div>
+    </div>
+    <div class="lang-toggle">
+      <span class="lang-lbl">Language / மொழி:&nbsp;</span>
+      <button class="lang-btn on" data-l="en" onclick="setLang('en')">English</button>
+      <button class="lang-btn" data-l="ta" onclick="setLang('ta')">தமிழ்</button>
+    </div>
+
+    <div class="qa-card"><div class="qa-q" onclick="this.parentElement.classList.toggle('open')">
+      <div class="qa-num">01</div><div class="qa-qtxt">
+        <div class="qen">Why did most sugar companies report lower profits in Q4 FY26?</div>
+        <div class="qta">Q4 FY26-ல் பெரும்பாலான சர்க்கரை நிறுவனங்களின் லாபம் ஏன் குறைந்தது?</div>
+      </div><div class="qa-toggle">▼</div></div>
+      <div class="qa-ans">
+        <div class="ans-label">Answer</div>
+        <div class="ans-en">UP raised the cane SAP ~8% to ₹400/qtl while sugar MSP (₹31/kg) and ethanol prices for cane feedstocks stayed frozen. Input cost up, output prices flat — margins compressed across the board. Balrampur's Q4 EBITDA fell 22%, Dalmia's PAT halved, Renuka slid deeper into losses.</div>
+        <div class="ans-ta">உ.பி. அரசு கரும்பு விலையை (SAP) சுமார் 8% உயர்த்தி ₹400/குவிண்டால் ஆக்கியது. ஆனால் சர்க்கரை MSP (₹31/கிலோ) மற்றும் எத்தனால் விலைகள் மாறவில்லை. உள்ளீட்டு செலவு கூடியது, விற்பனை விலை அப்படியே — அதனால் லாப வரம்பு (margin) எல்லா நிறுவனங்களுக்கும் சுருங்கியது. பால்ராம்பூர் Q4 EBITDA 22% வீழ்ந்தது, டால்மியா PAT பாதியானது, ரேணுகா நஷ்டத்தில் மேலும் சரிந்தது.</div>
+      </div></div>
+
+    <div class="qa-card"><div class="qa-q" onclick="this.parentElement.classList.toggle('open')">
+      <div class="qa-num">02</div><div class="qa-qtxt">
+        <div class="qen">Which companies actually grew profits in FY26?</div>
+        <div class="qta">FY26-ல் எந்த நிறுவனங்கள் உண்மையில் லாப வளர்ச்சி கண்டன?</div>
+      </div><div class="qa-toggle">▼</div></div>
+      <div class="qa-ans">
+        <div class="ans-label">Answer</div>
+        <div class="ans-en">Only a few: Uttam Sugar (+17% to ₹101 Cr, distillery production +32%), Triveni (+12% to ₹269 Cr on distillery turnaround), Dwarikesh (+32% to ₹31 Cr from a low base), and Bajaj Hindusthan swung from a ₹780 Cr loss to ₹126 Cr profit. The common thread is distillery/diversified revenue, not sugar.</div>
+        <div class="ans-ta">சில நிறுவனங்கள் மட்டுமே: உத்தம் சுகர் (+17%, டிஸ்டிலரி +32%), திரிவேணி (+12%), துவாரிகேஷ் (+32%), பஜாஜ் ஹிந்துஸ்தான் நஷ்டத்திலிருந்து ₹126 கோடி லாபத்திற்கு. பொதுவான காரணம் — சர்க்கரை அல்ல, எத்தனால்/டிஸ்டிலரி வருவாய்தான்.</div>
+      </div></div>
+
+    <div class="qa-card"><div class="qa-q" onclick="this.parentElement.classList.toggle('open')">
+      <div class="qa-num">03</div><div class="qa-qtxt">
+        <div class="qen">Is EID Parry's ₹333 Cr Q4 loss a real operational problem?</div>
+        <div class="qta">EID பாரியின் ₹333 கோடி Q4 நஷ்டம் உண்மையான செயல்பாட்டு பிரச்சனையா?</div>
+      </div><div class="qa-toggle">▼</div></div>
+      <div class="qa-ans">
+        <div class="ans-label">Answer</div>
+        <div class="ans-en">Mostly no — it's exceptional-led. The company booked ~₹591 Cr of financial-guarantee provisions plus impairments tied to closing the loss-making Parry Sugars Refinery (PSRIPL). Core sugar segment PBIT actually improved YoY (₹78 Cr vs ₹56 Cr). Closing the refinery removes a chronic drag from FY27.</div>
+        <div class="ans-ta">பெரும்பாலும் இல்லை — இது விதிவிலக்கான (exceptional) செலவுகளால். நஷ்டத்தில் இயங்கிய Parry Sugars Refinery மூடலுக்கான ₹591 கோடி ஒதுக்கீடுகள்தான் காரணம். அடிப்படை சர்க்கரை பிரிவின் லாபம் உண்மையில் உயர்ந்தது (₹78 கோடி vs ₹56 கோடி). FY27-லிருந்து இந்த சுமை நீங்கும்.</div>
+      </div></div>
+
+    <div class="qa-card"><div class="qa-q" onclick="this.parentElement.classList.toggle('open')">
+      <div class="qa-num">04</div><div class="qa-qtxt">
+        <div class="qen">What is Balrampur's PLA project and why does it matter?</div>
+        <div class="qta">பால்ராம்பூரின் PLA திட்டம் என்ன, ஏன் முக்கியம்?</div>
+      </div><div class="qa-toggle">▼</div></div>
+      <div class="qa-ans">
+        <div class="ans-label">Answer</div>
+        <div class="ans-en">An 80,000 TPA Poly Lactic Acid (bioplastics) plant — ₹3,080 Cr capex, India's first at industrial scale, commissioning Q3 FY27. It converts sugar into a non-cyclical, higher-value product, structurally changing the earnings mix. Debt is rising (₹903 Cr project borrowings) and a ₹450 Cr equity raise was approved. India's single-use plastics ban creates structural demand tailwind.</div>
+        <div class="ans-ta">80,000 டன் PLA (உயிர் பிளாஸ்டிக்) ஆலை — ₹3,080 கோடி முதலீடு, இந்தியாவின் முதல் தொழில்துறை அளவிலான திட்டம், FY27 Q3-ல் தொடக்கம். சர்க்கரையை சுழற்சி அல்லாத, அதிக மதிப்புள்ள பொருளாக மாற்றும். நிறுவனம் ₹450 கோடி பங்கு வெளியீடும் அனுமதித்துள்ளது. இந்தியாவின் ஒரு முறை பிளாஸ்டிக் தடை இந்த திட்டத்திற்கு கட்டமைப்பு சந்தை உருவாக்குகிறது.</div>
+      </div></div>
+
+    <div class="qa-card"><div class="qa-q" onclick="this.parentElement.classList.toggle('open')">
+      <div class="qa-num">05</div><div class="qa-qtxt">
+        <div class="qen">What's the difference between FRP and SAP — and why does it matter?</div>
+        <div class="qta">FRP-க்கும் SAP-க்கும் என்ன வித்தியாசம் — ஏன் முக்கியம்?</div>
+      </div><div class="qa-toggle">▼</div></div>
+      <div class="qa-ans">
+        <div class="ans-label">Answer</div>
+        <div class="ans-en">FRP (₹340/qtl) is the minimum central government mandated price. SAP is the State Advised Price — UP's is ₹400/qtl, legally binding and higher. The gap (₹60/qtl) is entirely borne by the mill with no relief from the centre. For a mill crushing 1 crore quintals, this ₹60/qtl gap costs ₹600 Cr extra per year. That's why UP millers are the most squeezed in Q4 FY26.</div>
+        <div class="ans-ta">FRP (₹340/குவிண்டால்) என்பது மத்திய அரசு நிர்ணயிக்கும் குறைந்தபட்ச விலை. SAP என்பது மாநில அரசின் விலை — உ.பி.-ல் ₹400/குவிண்டால், சட்டப்பூர்வமாக கட்டாயம். இந்த ₹60/குவிண்டால் வித்தியாசத்தை ஆலை மட்டுமே தாங்க வேண்டும். 1 கோடி குவிண்டால் அரைக்கும் ஆலைக்கு ₹600 கோடி கூடுதல் செலவு — அதனால்தான் Q4 FY26-ல் உ.பி. நிறுவனங்கள் மிகவும் பாதிக்கப்பட்டன.</div>
+      </div></div>
+
+    <div class="qa-card"><div class="qa-q" onclick="this.parentElement.classList.toggle('open')">
+      <div class="qa-num">06</div><div class="qa-qtxt">
+        <div class="qen">What's the single biggest catalyst to watch for FY27?</div>
+        <div class="qta">FY27-க்கு கவனிக்க வேண்டிய மிக முக்கிய catalyst எது?</div>
+      </div><div class="qa-toggle">▼</div></div>
+      <div class="qa-ans">
+        <div class="ans-label">Answer</div>
+        <div class="ans-en">Ethanol price revision for cane-based feedstocks ahead of ESY 2026-27 (announced Oct–Nov 2026), and/or a sugar MSP hike above ₹31/kg. Either one re-prices the entire sector's earnings. Tight closing stocks (~4.6 MT) already support firm sugar prices going into the new season.</div>
+        <div class="ans-ta">ESY 2026-27-க்கான (அக்டோபர்–நவம்பர் 2026 அறிவிப்பு) கரும்பு அடிப்படை எத்தனால் விலை திருத்தம், மற்றும்/அல்லது சர்க்கரை MSP ₹31/கிலோவுக்கு மேல் உயர்வு. இரண்டில் எது நடந்தாலும் முழுத் துறையின் வருவாயும் மறு மதிப்பீடு பெறும். மூடும் இருப்பு (~4.6 மில்லியன் டன்) சர்க்கரை விலையை தக்க வைக்கும்.</div>
+      </div></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="fn" style="margin:0 36px 8px">Sources: Audited Q4/FY26 results filed with BSE/NSE, company press releases (May–Jun 2026), CCEA/DFPD notifications, UP Cane Commissioner, UPERC orders. Items marked † are CB Research approximations — verify before reuse. This dashboard is analytical material only; CB Research provides no investment recommendations.</div>
+<div class="wm">CB RESEARCH &amp; ANALYTICS · CAUVERY BUSINESS · SUGAR SECTOR DASHBOARD · Q4 FY26 · CBF26-COMPATIBLE · 11 JUN 2026 IST</div>
+
+<script>
+/* ── Navigation ── */
+function sw(id){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('p'+id).classList.add('on');
+  event.currentTarget.classList.add('on');
+}
+function sst(btn,id){
+  btn.closest('.pane').querySelectorAll('.spane').forEach(p=>p.classList.remove('on'));
+  btn.closest('.pane').querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('s'+id).classList.add('on');
+  btn.classList.add('on');
+}
+function setLang(l){
+  document.body.className = 'lang-'+l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('on', b.dataset.l===l));
+}
+
+/* ── CBF26 data ── */
+var CO = {
+  balrampur: {
+    name:'Balrampur Chini — Balrampur Chini Mills Limited', cls:'balrampur-c', bse:'500038',
+    seg:'Integrated Sugar + Ethanol + PLA | Founder-promoted',
+    q4:{rev:1604,ebitda:285,ebitdaM:17.8,pat:160,yoy:7},
+    fy:{rev24:5594,rev25:5415,rev26:6271,ebitda24:700,ebitda25:704,ebitda26:741,ebitdaM24:12.5,ebitdaM25:13.0,ebitdaM26:11.8,pat24:534,pat25:439,pat26:380},
+    ob:0,obr:0,bs:'Low Debt | D/E 0.3x',roe:11.0,
+    mgmt:'CMD Vivek Saraogi. Promoters contributed ₹193 Cr to ₹450 Cr preferential raise.',
+    spec:'80,000 TCD 10 UP mills, ~1,050 KLPD distillery, 80,000 TPA PLA plant (Q3 FY27). 30.47% Auxilo Finserve.',
+    jv:'Auxilo Finserve associate. PLA tech partnerships.',
+    export:'Domestic-focused; exports subject to government quota.',
+    delays:'PLA on track Q3 FY27; debt ₹903 Cr for project; cane SAP +8% squeezing margins.',
+    swot:{s:['Largest efficient UP integrated miller','PLA bioplastics India-first','Low core debt + Auxilo value'],
+          w:['Q4 EBITDA −22% on cane cost','29x trough P/E'],
+          o:['PLA commissioning Q3 FY27','Ethanol price revision','MSP hike'],
+          t:['Further SAP hikes without output relief','PLA execution risk']},
+  },
+  eidparry: {
+    name:'EID Parry — E.I.D.-Parry (India) Limited', cls:'eidparry-c', bse:'500125',
+    seg:'Sugar + Distillery + Nutra + CPG + Coromandel | Murugappa Group',
+    q4:{rev:7882,ebitda:660,ebitdaM:8.4,pat:-333,yoy:16},
+    fy:{rev24:29413,rev25:31000,rev26:36000,ebitda24:2600,ebitda25:2900,ebitda26:3300,ebitdaM24:8.8,ebitdaM25:9.4,ebitdaM26:9.2,pat24:900,pat25:1950,pat26:1248},
+    ob:0,obr:0,bs:'Low Debt | post-PSRIPL cleanup',roe:14.0,
+    mgmt:'CEO Muthiah Murugappan. Murugappa governance. Decisive PSRIPL closure.',
+    spec:'Oldest sugar producer India (1842). ~40,800 TCD, 582 KLPD distillery, recovery 11.19%.',
+    jv:'Coromandel International majority stake.',
+    export:'Refinery exports wound down; domestic + CPG focus.',
+    delays:'PSRIPL closure provisions ₹591 Cr + impairments in Q4; clean from FY27.',
+    swot:{s:['SOTP value via Coromandel','Core sugar PBIT improved YoY','Best recovery rates South'],
+          w:['Q4 loss ₹−333 Cr','South cane availability cyclical'],
+          o:['Refinery drag removed FY27','CPG scale-up'],
+          t:['TN/Karnataka monsoon','Holding-co discount']},
+  },
+  renuka: {
+    name:'Shree Renuka — Shree Renuka Sugars Limited', cls:'renuka-c', bse:'532670',
+    seg:'Sugar Milling + Refining + Ethanol | Wilmar-controlled MNC',
+    q4:{rev:2547,ebitda:39,ebitdaM:1.5,pat:-122,yoy:-6},
+    fy:{rev24:11298,rev25:10589,rev26:9169,ebitda24:756,ebitda25:768,ebitda26:430,ebitdaM24:6.7,ebitdaM25:7.3,ebitdaM26:4.7,pat24:-627,pat25:-300,pat26:-792},
+    ob:0,obr:0,bs:'Stressed balance sheet',roe:0,
+    mgmt:'Wilmar International parentage the going-concern anchor.',
+    spec:'~44,000 TCD Maharashtra/Karnataka, 4,000 TPD refining (largest India), ~1,250 KLPD ethanol.',
+    jv:'Wilmar International Singapore.',
+    export:'Raw-to-white refining exports; spreads currently broken.',
+    delays:'4 straight quarterly losses; ₹295 Cr impairment; negative net worth ₹−1,676 Cr.',
+    swot:{s:['Wilmar backing','Largest refining capacity','Integrated ethanol'],
+          w:['Negative net worth','FY26 loss ₹−792 Cr'],
+          o:['Wilmar recapitalisation','Spread cycle recovery'],
+          t:['Going-concern dependence','High finance costs']},
+  },
+  triveni: {
+    name:'Triveni Engg — Triveni Engineering & Industries Limited', cls:'triveni-c', bse:'532356',
+    seg:'Sugar + Ethanol (PTB demerged May 2026) | Sawhney family',
+    q4:{rev:1508,ebitda:280,ebitdaM:18.5,pat:167,yoy:-5},
+    fy:{rev24:6310,rev25:5689,rev26:6291,ebitda24:560,ebitda25:500,ebitda26:620,ebitdaM24:8.9,ebitdaM25:8.8,ebitdaM26:9.9,pat24:395,pat25:243,pat26:269},
+    ob:0,obr:0,bs:'Low Debt | D/E 0.4x',roe:9.0,
+    mgmt:'CMD Dhruv M. Sawhney. Clean NCLT-approved restructuring.',
+    spec:'61,000 TCD 7 UP mills, 1,110 KLPD distillery. PTB OB ₹485 Cr demerged 19 May 2026.',
+    jv:'SSEL amalgamation + PTB demerger completed.',
+    export:'Domestic sugar; ethanol to OMCs.',
+    delays:'Q4 PAT −8% cane cost; PTB delays geopolitical (now demerged).',
+    swot:{s:['Distillery turnaround FY26 PAT +12%','Clean post-demerger structure','Top-3 UP scale'],
+          w:['SAP ₹400/qtl margin hit','Ethanol price freeze'],
+          o:['Ethanol price revision biggest lever','Tight stocks firm prices'],
+          t:['National ethanol overcapacity','Cane cost ratchet']},
+  },
+  bajajhind: {
+    name:'Bajaj Hindusthan — Bajaj Hindusthan Sugar Limited', cls:'bajajhind-c', bse:'500032',
+    seg:'Sugar + Ethanol | Largest crushing capacity | Promoter-stressed',
+    q4:{rev:1669,ebitda:372,ebitdaM:22.3,pat:391,yoy:7},
+    fy:{rev24:5900,rev25:5540,rev26:5600,ebitda24:370,ebitda25:310,ebitda26:640,ebitdaM24:6.0,ebitdaM25:5.6,ebitdaM26:11.4,pat24:-1050,pat25:-780,pat26:126},
+    ob:0,obr:0,bs:'High debt | OCD obligations',roe:3.0,
+    mgmt:'Bajaj (Shishir) group; legacy debt restructuring.',
+    spec:'136,000 TCD 14 UP mills — India largest; ~800 KLPD distillery.',
+    jv:'Lender consortium OCD structure.',
+    export:'Domestic; quota-dependent.',
+    delays:'Q1 FY26 −₹174 Cr, Q2 −₹105 Cr; Q4 ₹391 Cr spike — extreme seasonality.',
+    swot:{s:['136,000 TCD unmatched','First annual profit FY26','Interest declining'],
+          w:['Wild quarterly volatility','Legacy debt + OCD'],
+          o:['Asset value vs ₹4,451 Cr mcap','Debt resolution rerates'],
+          t:['Equity dilution risk','Governance discount']},
+  },
+  dalmia: {
+    name:'Dalmia Sugar — Dalmia Bharat Sugar and Industries Limited', cls:'dalmia-c', bse:'500097',
+    seg:'Sugar + Ethanol UP & Maharashtra | Dalmia group',
+    q4:{rev:1180,ebitda:190,ebitdaM:16.0,pat:104,yoy:-5},
+    fy:{rev24:3540,rev25:3786,rev26:3712,ebitda24:520,ebitda25:560,ebitda26:440,ebitdaM24:14.7,ebitdaM25:14.8,ebitdaM26:11.9,pat24:302,pat25:366,pat26:236},
+    ob:0,obr:0,bs:'Low Debt | D/E 0.2x',roe:7.0,
+    mgmt:'MD Gautam Dalmia re-appointed 5 years. Conservative operator.',
+    spec:'~37,000 TCD UP + Kolhapur MH, ~850 KLPD distillery.',
+    jv:'None material.',
+    export:'Domestic; quota participant.',
+    delays:'Q4 PAT −48% cane cost + flat ethanol; no structural issues.',
+    swot:{s:['Below-book balance sheet','Dual-state cane diversification','Efficiency leader'],
+          w:['FY26 PAT −35%','No diversification kicker'],
+          o:['MSP hike (mgmt advocating)','Stressed-asset acquisition'],
+          t:['Margin squeeze into FY27','MH cane availability']},
+  },
+  dwarikesh: {
+    name:'Dwarikesh — Dwarikesh Sugar Industries Limited', cls:'dwarikesh-c', bse:'532610',
+    seg:'Sugar + Ethanol | 3 UP mills | Morarka family',
+    q4:{rev:425,ebitda:75,ebitdaM:17.6,pat:57,yoy:-7},
+    fy:{rev24:1612,rev25:1359,rev26:1402,ebitda24:190,ebitda25:140,ebitda26:150,ebitdaM24:11.8,ebitdaM25:10.3,ebitdaM26:10.7,pat24:86,pat25:23,pat26:31},
+    ob:0,obr:0,bs:'Low Debt | seasonal WC only',roe:4.0,
+    mgmt:'Executive Chairman Gautam R. Morarka to Jan 2032.',
+    spec:'21,500 TCD, 337.5 KLPD distillery, 3 automated mills Bijnor/Bareilly.',
+    jv:'None.',
+    export:'Domestic.',
+    delays:'H1 FY26 loss-making; molasses penalty ₹5 lakh Feb 2026.',
+    swot:{s:['Q4 PAT +24%','Automated low-cost operations','Clean balance sheet'],
+          w:['FY26 PAT base ₹31 Cr','Pure UP cane-cost exposure'],
+          o:['Mid-cycle normalisation','Ethanol price revision'],
+          t:['Sub-scale vs large millers','SAP ratchet']},
+  },
+  avadh: {
+    name:'Avadh Sugar — Avadh Sugar & Energy Limited', cls:'avadh-c', bse:'540649',
+    seg:'Sugar + Ethanol | 4 UP mills | KK Birla group',
+    q4:{rev:672,ebitda:100,ebitdaM:15.0,pat:56,yoy:-1},
+    fy:{rev24:2800,rev25:2640,rev26:2700,ebitda24:300,ebitda25:280,ebitda26:227,ebitdaM24:10.7,ebitdaM25:10.6,ebitdaM26:8.4,pat24:120,pat25:181,pat26:118},
+    ob:0,obr:0,bs:'Leveraged | D/E 1.25x',roe:9.0,
+    mgmt:'Chandra Shekhar Nopany. Hargaon expansion executed FY26.',
+    spec:'~31,800 TCD 4 UP units, ~320 KLPD distillery; Hargaon expanded.',
+    jv:'Magadh Sugar (KK Birla group linkage).',
+    export:'Domestic.',
+    delays:'FY26 PAT −35%; D/E 1.25x amplifies squeeze.',
+    swot:{s:['~9x P/E + ~0.8x book','Hargaon capacity added','Birla backing'],
+          w:['Highest leverage of profitable pack','EBITDA margin 10.6→8.4%'],
+          o:['Deleveraging rerating','Ethanol/MSP policy'],
+          t:['Leverage in down-cycle','Cane cost']},
+  },
+  uttam: {
+    name:'Uttam Sugar — Uttam Sugar Mills Limited', cls:'uttam-c', bse:'532729',
+    seg:'Sugar + Distillery + Branded | UP/Uttarakhand | Adlakha family',
+    q4:{rev:470,ebitda:92,ebitdaM:19.5,pat:55,yoy:-17},
+    fy:{rev24:2030,rev25:1846,rev26:2210,ebitda24:230,ebitda25:250,ebitda26:290,ebitdaM24:11.3,ebitdaM25:13.5,ebitdaM26:13.1,pat24:96,pat25:86,pat26:101},
+    ob:0,obr:0,bs:'Moderate leverage | D/E 0.8x',roe:15.0,
+    mgmt:'Adlakha family. Distillery + branded sugar execution.',
+    spec:'~23,750 TCD, distillery 877 lakh BL FY26 (+32%); branded sugar; UPERC +₹7.4 Cr.',
+    jv:'None.',
+    export:'Domestic.',
+    delays:'Q4 standalone weather-hit; pref. share redemption extended.',
+    swot:{s:['FY26 PAT +17%','Distillery +32%','~9x P/E'],
+          w:['Weather-hit crush','Finance cost doubled QoQ Q4'],
+          o:['Branded sugar premiumisation','Distillery capacity scaling'],
+          t:['Weather dependence','Ethanol price freeze']},
+  },
+  dhampur: {
+    name:'Dhampur Sugar — Dhampur Sugar Mills Limited', cls:'dhampur-c', bse:'500119',
+    seg:'Sugar + Potable Spirits | 3 UP mills | post Dhampur Bio demerger',
+    q4:{rev:690,ebitda:95,ebitdaM:13.8,pat:46,yoy:-5},
+    fy:{rev24:2580,rev25:2480,rev26:2600,ebitda24:220,ebitda25:180,ebitda26:200,ebitdaM24:8.5,ebitdaM25:7.3,ebitdaM26:7.7,pat24:118,pat25:50,pat26:65},
+    ob:0,obr:0,bs:'Moderate leverage | CP programme',roe:6.0,
+    mgmt:'Goel family post demerger.',
+    spec:'~30,500 TCD; FY26: sugar ₹1,496 Cr + potable spirits ₹935 Cr (~36% rev).',
+    jv:'None.',
+    export:'Domestic.',
+    delays:'Q4 moderated with sector.',
+    swot:{s:['Potable spirits 36% revenue','Below book ~0.7x','FY26 PAT ₹65 Cr'],
+          w:['Thin margins ~7.7%','Sub-scale sugar'],
+          o:['Spirits value unlock','UP alco-bev demand'],
+          t:['Cane cost','Spirits excise policy']},
+  },
+  bannari: {
+    name:'Bannari Amman — Bannari Amman Sugars Limited', cls:'bannari-c', bse:'500041',
+    seg:'Sugar + Power + Distillery + Granite | TN/Karnataka | Family-run',
+    q4:{rev:282,ebitda:4,ebitdaM:1.3,pat:42,yoy:-43},
+    fy:{rev24:2250,rev25:1793,rev26:1917,ebitda24:210,ebitda25:170,ebitda26:200,ebitdaM24:9.3,ebitdaM25:9.5,ebitdaM26:10.4,pat24:110,pat25:120,pat26:145},
+    ob:0,obr:0,bs:'Low Debt | conservative',roe:8.1,
+    mgmt:'SV Balasubramaniam family. Conservative low-disclosure style.',
+    spec:'~23,700 TCD TN/Karnataka, cogen, distillery, granite.',
+    jv:'None.',
+    export:'Domestic.',
+    delays:'Q4 revenue −56% QoQ early crush end; operating profit ₹4 Cr.',
+    swot:{s:['Debt-free balance sheet','South India position','Q4 PAT +18% YoY'],
+          w:['Other-income-dependent earnings','ROE 8.1% vs 2.5x book'],
+          o:['TN cane recovery','Distillery utilisation'],
+          t:['Earnings quality scrutiny','Monsoon dependence']},
+  },
+};
+
+/* ── Chart helpers ── */
+Chart.defaults.font.family="'DM Mono',monospace";
+Chart.defaults.font.size=10;
+const N=Object.keys(CO);
+const L=N.map(k=>CO[k].name.split(' — ')[0]);
+const C=['#15803d','#c84b31','#b91c1c','#2979FF','#7c3aed','#0ea5e9','#d97706','#db2777','#0d9488','#65a30d','#6b7280'];
+const fmt=v=>Math.abs(v)>=10000?v.toLocaleString('en-IN'):v.toLocaleString('en-IN');
+const barOpts=(ttl,cb)=>({plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'₹'+fmt(c.raw)+' Cr'}}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')},title:{display:true,text:ttl}}}});
+
+/* ── OVERVIEW charts ── */
+// (none in overview now — moved to Charts tab)
+
+/* ── QUARTERLY charts ── */
+new Chart(cqRev,{type:'bar',data:{labels:L,datasets:[{data:N.map(k=>CO[k].q4.rev),backgroundColor:C,borderRadius:3}]},options:barOpts('₹ Cr')});
+new Chart(cqPat,{type:'bar',data:{labels:L,datasets:[{data:N.map(k=>CO[k].q4.pat),backgroundColor:N.map((k,i)=>CO[k].q4.pat<0?'#ef4444':C[i]),borderRadius:3}]},options:barOpts('₹ Cr')});
+new Chart(cqEbitda,{type:'bar',data:{labels:L,datasets:[{data:N.map(k=>CO[k].q4.ebitda),backgroundColor:C.map(c=>c+'cc'),borderRadius:3}]},options:barOpts('₹ Cr')});
+new Chart(cqMargin,{type:'bar',data:{labels:L,datasets:[{data:N.map(k=>CO[k].q4.ebitdaM),backgroundColor:N.map((k,i)=>CO[k].q4.ebitdaM<5?'#ef4444':CO[k].q4.ebitdaM>15?'#15803d':'#d97706'),borderRadius:3}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'},title:{display:true,text:'EBITDA Margin %'}}}}});
+new Chart(cqYoy,{type:'bar',data:{labels:L,datasets:[{data:N.map(k=>CO[k].q4.yoy),backgroundColor:N.map(k=>CO[k].q4.yoy>=0?'#15803d':'#ef4444'),borderRadius:3}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'% YoY'}}},scales:{y:{ticks:{callback:v=>v+'%'},title:{display:true,text:'Revenue YoY %'}}}}});
+
+/* ── ANNUAL charts ── */
+// Exclude EID Parry from annual revenue bar (too large, distorts scale)
+const Nsmall=N.filter(k=>k!=='eidparry');
+const Lsmall=Nsmall.map(k=>CO[k].name.split(' — ')[0]);
+const Csmall=Nsmall.map((k,i)=>C[N.indexOf(k)]);
+
+new Chart(caRevBar,{type:'bar',data:{labels:Lsmall,datasets:[
+  {label:'FY24',data:Nsmall.map(k=>CO[k].fy.rev24),backgroundColor:'#bbf7d0',borderRadius:2},
+  {label:'FY25',data:Nsmall.map(k=>CO[k].fy.rev25),backgroundColor:'#4ade80',borderRadius:2},
+  {label:'FY26',data:Nsmall.map(k=>CO[k].fy.rev26),backgroundColor:'#15803d',borderRadius:2},
+]},options:{plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')},title:{display:true,text:'₹ Cr'}}}}});
+
+// Revenue line — select 6 companies for clarity
+const Nsel=['balrampur','triveni','dalmia','uttam','dwarikesh','bannari'];
+new Chart(caRevLine,{type:'line',data:{labels:['FY24','FY25','FY26'],datasets:Nsel.map((k,i)=>({
+  label:CO[k].name.split(' — ')[0],
+  data:[CO[k].fy.rev24,CO[k].fy.rev25,CO[k].fy.rev26],
+  borderColor:C[N.indexOf(k)],backgroundColor:C[N.indexOf(k)]+'33',
+  tension:0.3,pointRadius:4,fill:false,
+}))},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')},title:{display:true,text:'₹ Cr'}}}}});
+
+new Chart(caPatLine,{type:'line',data:{labels:['FY24','FY25','FY26'],datasets:Nsel.map((k,i)=>({
+  label:CO[k].name.split(' — ')[0],
+  data:[CO[k].fy.pat24,CO[k].fy.pat25,CO[k].fy.pat26],
+  borderColor:C[N.indexOf(k)],backgroundColor:C[N.indexOf(k)]+'33',
+  tension:0.3,pointRadius:4,fill:false,
+}))},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')},title:{display:true,text:'₹ Cr'}}}}});
+
+new Chart(caMarginBar,{type:'bar',data:{labels:Lsmall,datasets:[
+  {label:'FY25 EBITDA M%',data:Nsmall.map(k=>CO[k].fy.ebitdaM25),backgroundColor:'#93c5fd',borderRadius:2},
+  {label:'FY26 EBITDA M%',data:Nsmall.map(k=>CO[k].fy.ebitdaM26),backgroundColor:'#1d4ed8',borderRadius:2},
+]},options:{plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'%'},title:{display:true,text:'EBITDA Margin %'}}}}});
+
+new Chart(caEbitdaLine,{type:'line',data:{labels:['FY24','FY25','FY26'],datasets:Nsel.map((k,i)=>({
+  label:CO[k].name.split(' — ')[0],
+  data:[CO[k].fy.ebitda24,CO[k].fy.ebitda25,CO[k].fy.ebitda26],
+  borderColor:C[N.indexOf(k)],backgroundColor:'transparent',
+  tension:0.3,pointRadius:4,
+}))},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')},title:{display:true,text:'₹ Cr'}}}}});
+
+/* ── VALUATION charts ── */
+const peData=[['Balrampur',29],['EID Parry',11],['Triveni',32],['Bajaj Hind',35],['Dalmia',13],['Dwarikesh',34],['Avadh',9],['Uttam',9],['Dhampur',13],['Bannari',31]];
+new Chart(chPE,{type:'bar',data:{labels:peData.map(d=>d[0]),datasets:[{data:peData.map(d=>d[1]),backgroundColor:'#15803d',borderRadius:3}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'~'+c.raw+'x FY26 PAT'}}}}});
+const roeData=[['Balrampur',11,2.8],['EID Parry',14,1.6],['Triveni',9,2.9],['Dalmia',7,0.9],['Dwarikesh',4,1.5],['Avadh',9,0.8],['Uttam',15,1.4],['Dhampur',6,0.7],['Bannari',8.1,2.5]];
+new Chart(chROE,{type:'scatter',data:{datasets:roeData.map((d,i)=>({label:d[0],data:[{x:d[1],y:d[2]}],backgroundColor:C[i],pointRadius:8}))},
+  options:{plugins:{legend:{position:'bottom',labels:{boxWidth:8}}},scales:{x:{title:{display:true,text:'ROE %'}},y:{title:{display:true,text:'P/B (x)'}}}}});
+</script>
+</body>
+</html>

@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cement Sector — Intelligence Dashboard | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --utc:#1d4ed8;--utc-soft:#eff6ff;
+  --ambuja:#7c3aed;--ambuja-soft:#f5f3ff;
+  --acc:#c84b2f;--acc-soft:#fef3f0;
+  --shree:#166534;--shree-soft:#f0fdf4;
+  --ramco:#b8911e;--ramco-soft:#fdf5e0;
+  --jsw:#0e7490;--jsw-soft:#ecfeff;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-utc{background:var(--utc);color:#fff;}
+.chip-ambuja{background:var(--ambuja);color:#fff;}
+.chip-acc{background:var(--acc);color:#fff;}
+.chip-shree{background:var(--shree);color:#fff;}
+.chip-ramco{background:var(--ramco);color:#fff;}
+.chip-jsw{background:var(--jsw);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--utc);font-weight:700;}
+
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.gap-top{margin-top:22px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.utc::before{background:var(--utc);}
+.co-card.ambuja::before{background:var(--ambuja);}
+.co-card.acc::before{background:var(--acc);}
+.co-card.shree::before{background:var(--shree);}
+.co-card.ramco::before{background:var(--ramco);}
+.co-card.jsw::before{background:var(--jsw);}
+.co-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}
+.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}
+.b-spec{background:#f3f4f6;color:#4b5563;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+.b-warn{background:#fff7ed;color:#c2410c;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.utc-a{border-left:4px solid var(--utc);}
+.kpi.ambuja-a{border-left:4px solid var(--ambuja);}
+.kpi.acc-a{border-left:4px solid var(--acc);}
+.kpi.shree-a{border-left:4px solid var(--shree);}
+.kpi.ramco-a{border-left:4px solid var(--ramco);}
+.kpi.jsw-a{border-left:4px solid var(--jsw);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.val-co{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11.5px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
+.seg-bar{height:10px;border-radius:20px;}
+.seg-row{margin-bottom:14px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}
+.rp-hold{background:#fef9c3;color:#a16207;}
+.rp-sell{background:#fee2e2;color:#b91c1c;}
+.rp-spec{background:#f3f4f6;color:#4b5563;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-bar{background:var(--surface2);border-radius:20px;height:6px;overflow:hidden;margin-bottom:10px;}
+.ac-fill{height:6px;border-radius:20px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.moat-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.moat-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.moat-body{font-size:11px;color:var(--muted);line-height:1.55;}
+.moat-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+/* VERDICT */
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verdict-body{font-size:13px;line-height:1.7;color:var(--text);}
+
+/* CB ASSIST */
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--utc);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--utc);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--utc);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--utc);}
+.chat-send{background:var(--utc);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.lang-toggle{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:10px;}
+.lang-btn{padding:3px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;}
+.lang-btn.active{background:#181511;color:#fff;border-color:#181511;}
+
+/* LANGUAGE SECTION SEPARATOR */
+.lang-section{margin-top:18px;}
+.lang-section-hdr{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:6px 12px;background:var(--surface2);border-radius:6px;margin-bottom:10px;display:inline-block;}
+.lang-section-hdr.ta{color:var(--acc);}
+.lang-section-hdr.en{color:var(--utc);}
+
+.preset-tab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 6px 0;}
+.preset-tab:hover{border-color:var(--text);color:var(--text);}
+.pt-utc.active{background:var(--utc);border-color:var(--utc);color:#fff;}
+.pt-ambuja.active{background:var(--ambuja);border-color:var(--ambuja);color:#fff;}
+.pt-acc.active{background:var(--acc);border-color:var(--acc);color:#fff;}
+.pt-shree.active{background:var(--shree);border-color:var(--shree);color:#fff;}
+.pt-ramco.active{background:var(--ramco);border-color:var(--ramco);color:#fff;}
+.pt-jsw.active{background:var(--jsw);border-color:var(--jsw);color:#fff;}
+.pt-sector.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.presets-panel{display:none;}.presets-panel.active{display:block;}
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.preset-q{padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:9px;line-height:1.45;}
+.preset-q:hover{border-color:var(--utc);background:var(--utc-soft);}
+.pq-en{font-weight:600;color:var(--text);}
+.pq-ta{font-size:10px;color:var(--muted);font-style:italic;margin-top:2px;}
+
+.grp-hdr{margin-bottom:8px;padding:7px 14px;border-left:4px solid;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+
+/* CLINKER INFO BOX */
+.clinker-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.6;}
+.clinker-box strong{color:var(--text);}
+
+.metric-sel{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:13px 16px;box-shadow:var(--shadow);}
+.m-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s;}
+.m-btn.active{background:#181511;color:#fff;border-color:#181511;}
+.m-btn:hover:not(.active){border-color:var(--muted);color:var(--text);}
+
+/* GEO TABLE */
+.geo-note{font-size:11px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--gold);}
+
+.cb-wm{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid var(--border);border-radius:30px;padding:7px 14px 7px 8px;box-shadow:0 4px 20px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:28px;height:28px;background:var(--utc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:11px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:14px 40px;border-top:1px solid var(--border);margin-top:28px;line-height:1.7;}
+@media(max-width:860px){
+  .main{padding:14px 16px 40px;}.hdr{padding:0 16px;flex-wrap:wrap;}
+  .tab-nav{padding:0 8px;}
+  .g2,.g3,.g4,.g6,.kpi-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Cement Sector — Intelligence Dashboard</h1>
+      <div class="sub">UltraTech · Ambuja · ACC · Shree · Ramco · JSW Cement · Q4 FY26 Actuals ✅ · EIL Research</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-utc">UltraTech</span>
+    <span class="chip chip-ambuja">Ambuja</span>
+    <span class="chip chip-acc">ACC</span>
+    <span class="chip chip-shree">Shree Cement</span>
+    <span class="chip chip-ramco">Ramco</span>
+    <span class="chip chip-jsw">JSW Cement</span>
+    <span class="chip chip-date">24 May 2026 · EIL Research</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('business',this)">Business Profiles</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">Financials</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Business Segments</button>
+  <button class="tab-btn" onclick="showTab('geographic',this)">Geographic Mix</button>
+  <button class="tab-btn" onclick="showTab('bizanalysis',this)">SWOT Analysis</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">Moats &amp; USPs</button>
+  <button class="tab-btn" onclick="showTab('school',this)" style="color:#0e7490;font-weight:800;">🎓 Cement School</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--utc);font-weight:800;">🤖 CB Assist</button>
+</nav>
+
+<div class="main">
+
+<!-- ══ TAB 1 · DASHBOARD ══ -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">· 6 companies · Q4 FY26 Actuals ✅ · Cauvery Business Research</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi utc-a"><div class="kl">UltraTech Q4 Revenue ✅</div><div class="kv">₹25,467 Cr</div><div class="kc pos">▲ 12% YoY</div></div>
+    <div class="kpi ambuja-a"><div class="kl">Ambuja Q4 Revenue ✅</div><div class="kv">₹10,915 Cr</div><div class="kc pos">▲ 9% YoY</div></div>
+    <div class="kpi acc-a"><div class="kl">ACC Q4 Revenue ✅</div><div class="kv">₹7,146 Cr</div><div class="kc pos">▲ 17% YoY</div></div>
+    <div class="kpi shree-a"><div class="kl">Shree Q4 Revenue ✅</div><div class="kv">₹6,101 Cr</div><div class="kc pos">▲ 10% YoY</div></div>
+    <div class="kpi ramco-a"><div class="kl">Ramco Q4 Revenue ✅</div><div class="kv">₹2,610 Cr</div><div class="kc pos">▲ 9% YoY</div></div>
+    <div class="kpi jsw-a"><div class="kl">JSW Cement Q4 Revenue ✅</div><div class="kv">₹1,895 Cr</div><div class="kc pos">▲ 11% YoY</div></div>
+  </div>
+
+  <div class="g3" style="margin-bottom:22px;">
+    <div class="co-card utc">
+      <div class="co-name" style="color:var(--utc)">UltraTech Cement</div>
+      <div class="co-seg">Pan-India Leader · 200 MTPA Capacity · Aditya Birla · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹2,983 Cr (+21%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹5,688 Cr (+20%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Volume</span><span class="m-val">42.41 MT (+9.3%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA/Tonne</span><span class="m-val">₹1,253/T</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹8,305 Cr (+36%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹11,200 / ₹3.23L Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">200 MTPA ✅</span>
+        <span class="badge b-pos">Debt Managed</span>
+        <span class="badge b-pos">EBITDA +20%</span>
+      </div>
+    </div>
+    <div class="co-card ambuja">
+      <div class="co-name" style="color:var(--ambuja)">Ambuja Cements</div>
+      <div class="co-seg">Adani Group · One Cement Platform · 73.7 MT FY26 · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹800 Cr (est. +64%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹1,464 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Volume</span><span class="m-val">19.9 MT (+10%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">13.2%</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 EBITDA</span><span class="m-val">₹6,539 Cr (+31%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹502 / ₹99,800 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">Debt-Free</span>
+        <span class="badge b-warn">Margin Pressure</span>
+        <span class="badge b-warn">Cost ₹4,500/T</span>
+      </div>
+    </div>
+    <div class="co-card acc">
+      <div class="co-name" style="color:var(--acc)">ACC Limited</div>
+      <div class="co-seg">Adani Cement · Ambuja Subsidiary · ACC+RMC · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹238 Cr (−68% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">₹7,146 Cr (+17%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Volume</span><span class="m-val">11.9 MT (+8%)</span></div>
+      <div class="m-row"><span class="m-lbl">PAT Margin Q4</span><span class="m-val">3.3% (vs 12% Q4FY25)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹26,363 Cr (+14.6%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹1,423 / ₹26,700 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-warn">Base Effect †</span>
+        <span class="badge b-pos">Debt-Free</span>
+        <span class="badge b-pos">RMC +36.6%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-bottom:22px;">
+    <div class="co-card shree">
+      <div class="co-name" style="color:var(--shree)">Shree Cement</div>
+      <div class="co-seg">#3 India · 69.3 MTPA · Premium Player · Rajasthan HQ · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹641 Cr (FY26 ₹1,706 Cr)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹1,212 Cr (₹1,161/T)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Volume</span><span class="m-val">10.56 MT (+11%)</span></div>
+      <div class="m-row"><span class="m-lbl">Realisation/T</span><span class="m-val">₹4,725/T</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Dividend</span><span class="m-val">₹150/share (+36%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹26,500 / ₹95,400 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">Premium 22%</span>
+        <span class="badge b-pos">Green 61%</span>
+        <span class="badge b-pos">PAT +43% FY26</span>
+      </div>
+    </div>
+    <div class="co-card ramco">
+      <div class="co-name" style="color:var(--ramco)">The Ramco Cements</div>
+      <div class="co-seg">South India Leader · Tamil Nadu · Wind Power · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹150.7 Cr (+450% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">₹2,610 Cr (+9%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹433 Cr (₹785/T)</span></div>
+      <div class="m-row"><span class="m-lbl">Capacity</span><span class="m-val">19.4 MTPA</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹693.6 Cr (FY rev +6%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹913 / ₹21,500 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-warn">D/E 3.3×</span>
+        <span class="badge b-warn">South India Focus</span>
+        <span class="badge b-pos">PAT +450%</span>
+      </div>
+    </div>
+    <div class="co-card jsw">
+      <div class="co-name" style="color:var(--jsw)">JSW Cement</div>
+      <div class="co-seg">JSW Group · Listed Aug 2025 · GGBS+Cement · PAN India Expansion · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹361.7 Cr (incl. tax gain)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue</span><span class="m-val">₹1,895 Cr (+11%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA</span><span class="m-val">₹365 Cr (+46% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">19.3% (best in class Q4)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Adj. PAT</span><span class="m-val">₹667.6 Cr (vs loss FY25)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹128 / ₹28,500 Cr</span></div>
+      <div class="badge-row">
+        <span class="badge b-pos">EBITDA +46%</span>
+        <span class="badge b-pos">Margin 19.3%</span>
+        <span class="badge b-warn">Net Debt ₹3,635 Cr</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sector KPIs -->
+  <div class="card gap-top">
+    <div class="card-lbl">Sector Q4 FY26 Quick Metrics at a Glance</div>
+    <table>
+      <thead><tr><th>Company</th><th>Q4 Revenue</th><th>YoY%</th><th>Q4 EBITDA</th><th>EBITDA Margin</th><th>EBITDA/T</th><th>Q4 PAT</th><th>Q4 Volume</th><th>FY26 Vol</th><th>Capacity</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--utc)"></span>UltraTech</td><td class="num">₹25,467 Cr</td><td class="tpos">+12%</td><td class="num">₹5,688 Cr</td><td class="num">22.3%</td><td class="num">₹1,253</td><td class="num">₹2,983 Cr</td><td class="num">42.41 MT</td><td class="num">145 MT</td><td class="num">200 MTPA</td><td><span class="badge b-spec">Best-in-Class</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ambuja)"></span>Ambuja</td><td class="num">₹10,915 Cr</td><td class="tpos">+9%</td><td class="num">₹1,464 Cr</td><td class="num">13.4%</td><td class="num">₹735</td><td class="num">~₹800 Cr</td><td class="num">19.9 MT</td><td class="num">73.7 MT*</td><td class="num">119 MTPA (FY27)</td><td><span class="badge b-warn">Margin Recovery</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--acc)"></span>ACC</td><td class="num">₹7,146 Cr</td><td class="tpos">+17%</td><td class="num">~₹750 Cr</td><td class="num">~10.5%</td><td class="num">~₹630</td><td class="num" style="color:#166534;font-weight:700;">₹238 Cr †</td><td class="num">11.9 MT</td><td class="num">43.9 MT</td><td class="num">~65 MTPA</td><td><span class="badge b-warn">Base Effect</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--shree)"></span>Shree Cement</td><td class="num">₹6,101 Cr</td><td class="tpos">+10%</td><td class="num">₹1,212 Cr</td><td class="num">19.9%</td><td class="num">₹1,161</td><td class="num">₹641 Cr</td><td class="num">10.56 MT</td><td class="num">36.4 MT</td><td class="num">69.3 MTPA</td><td><span class="badge b-spec">Strong Premium</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ramco)"></span>Ramco</td><td class="num">₹2,610 Cr</td><td class="tpos">+9%</td><td class="num">₹433 Cr</td><td class="num">16.6%</td><td class="num">₹785</td><td class="tpos">₹150.7 Cr (+450%)</td><td class="num">5.5 MT</td><td class="num">~20 MT</td><td class="num">19.4 MTPA</td><td><span class="badge b-warn">Turnaround</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--jsw)"></span>JSW Cement</td><td class="num">₹1,895 Cr</td><td class="tpos">+11%</td><td class="num">₹365 Cr</td><td class="num">19.3%</td><td class="num">₹916</td><td class="tpos">₹361.7 Cr</td><td class="num">3.99 MT</td><td class="num">13.96 MT</td><td class="num">~25 MTPA</td><td><span class="badge b-spec">Fastest Growth</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">*Ambuja FY26 volume includes ACC (consolidated One Cement Platform). ACC standalone 43.9 MT. &nbsp;† ACC Q4 PAT ₹238 Cr is a <strong style="color:#166534">PROFIT</strong> — the apparent −68% YoY is a base-effect distortion; Q4 FY25 included a one-time ₹637 Cr Gagal plant excise refund. Normalised Q4 FY25 PAT ~₹107 Cr → ACC Q4 FY26 PAT is +122% on like-for-like basis. Sources: BSE/NSE filings, company press releases.</p>
+  </div>
+</div>
+
+<!-- ══ TAB 2 · BUSINESS PROFILES ══ -->
+<div class="panel" id="tab-business">
+  <div class="sec-hdr">Business Profiles <span class="sec-note">· What each company does · Clinker &amp; Grinding · Inputs · Revenue model</span></div>
+
+  <div class="clinker-box">
+    <strong>🏭 Cement Manufacturing 101:</strong> Cement production has two critical stages. <strong>Clinker production</strong> (integrated plants): Raw materials — Limestone (~80%), Clay, Iron ore, Gypsum — are crushed, heated in rotary kilns at ~1,450°C to form clinker nodules. Energy intensive — power &amp; fuel = 35–40% of cost. <strong>Grinding units</strong> (blending/splitting): Clinker is transported from integrated plants and ground with gypsum and fly ash (or slag) to produce Portland cement. Much lower capex per tonne vs integrated plants. Key inputs: <strong>Coal &amp; Pet Coke</strong> (fuel for kilns), <strong>Fly Ash / GGBS / Slag</strong> (SCM — Supplementary Cementitious Material, reduces clinker factor), <strong>Packaging bags</strong> (impacted by West Asia conflict in FY26), <strong>Diesel</strong> (logistics), <strong>Power</strong> (captive preferred). <strong>Clinker factor</strong> = ratio of clinker to cement — lower is better (more blending = lower cost). JSW targets 51% clinker factor; industry average ~65–68%.
+  </div>
+
+  <!-- UltraTech -->
+  <div class="grp-hdr" style="background:var(--utc-soft);border-color:var(--utc);color:var(--utc);margin-bottom:14px;">UltraTech Cement Limited — India's #1 Cement Company · Aditya Birla Group · Listed BSE/NSE</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>UltraTech</strong> is India's largest and the world's third-largest cement manufacturer (outside China). Headquartered in Mumbai, it is the flagship cement business of the Aditya Birla Group. Its product portfolio spans <strong>Ordinary Portland Cement (OPC), Portland Pozzolana Cement (PPC), Portland Slag Cement (PSC), Ready Mix Concrete (RMC), White Cement, and Dry Mortars.</strong></p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Integrated Plants (Clinker):</strong> 22 integrated manufacturing units across India — major clinker hubs in Rajasthan, Chhattisgarh, AP, Gujarat, Madhya Pradesh. Clinker capacity ~140 MTPA. In Q4 FY26, domestic grey cement volume: 42.41 MT with 89% utilisation — highest in sector.<br><br><strong>Grinding Units:</strong> 27 grinding units spread across India to serve regional markets efficiently. Reduces logistics cost vs transporting clinker long distances. Fly ash/slag blending happens here — supports "green cement."<br><br><strong>Key Inputs:</strong> Coal (domestic + imported) + Pet Coke for kilns. Efficiency gains of ₹185/T achieved in FY26. Alternative fuels being scaled. WHRS (Waste Heat Recovery Systems) at major plants reduce power cost by ₹40–60/T.<br><br><strong>Inorganic Growth:</strong> Acquired India Cements (Tamil Nadu) in FY24–25, adding ~15 MTPA. Reached milestone 200 MTPA in Q4 FY26.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26 Annual Record</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="num">₹87,384 Cr</td><td class="num">₹74,936 Cr</td><td class="tpos">+17%</td></tr>
+          <tr><td>EBITDA (PBIDT)</td><td class="num">₹17,598 Cr</td><td class="num">₹13,332 Cr</td><td class="tpos">+32%</td></tr>
+          <tr><td>PAT (before excl.)</td><td class="num">₹8,305 Cr</td><td class="num">₹6,106 Cr</td><td class="tpos">+36%</td></tr>
+          <tr><td>Volume (India Grey)</td><td class="num">145 MT</td><td class="num">~132 MT</td><td class="tpos">+10%</td></tr>
+          <tr><td>EBITDA/Tonne Q4</td><td class="num">₹1,253</td><td class="num">₹1,126</td><td class="tpos">+11%</td></tr>
+          <tr><td>Net Debt/EBITDA</td><td class="num">0.94×</td><td class="num">1.4×</td><td class="tpos">Improving</td></tr>
+          <tr><td>Capacity (total)</td><td class="num">200 MTPA</td><td class="num">197 MTPA</td><td class="tpos">+3 MTPA Q4</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">MD: K.K. Maheshwari. Listed on BSE/NSE. Part of Aditya Birla Group. CMP ~₹11,200.</p>
+    </div>
+  </div>
+
+  <!-- Ambuja -->
+  <div class="grp-hdr" style="background:var(--ambuja-soft);border-color:var(--ambuja);color:var(--ambuja);margin-bottom:14px;">Ambuja Cements Limited — Adani Group · One Cement Platform · BSE: 500425</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Ambuja Cements</strong> is the flagship cement entity of the Adani Group, operating under the "One Cement Platform" which consolidates Ambuja, ACC, Orient Cement, Sanghi Industries, and Penna Cement. India's second-largest cement company. Headquarters: Ahmedabad, Gujarat.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Integrated Plants (Clinker):</strong> Major plants at Darlaghat (HP), Rauri (Gujarat), Ambujanagar (Gujarat). FY26 — expanding Maratha clinker unit by 4 MTPA (H1 FY27). Total clinker capacity across One Cement Platform ~60 MTPA.<br><br><strong>Grinding Units:</strong> Multiple grinding units across West, North, and East India. New grinding additions in FY27: Dahej (1.2 MTPA), Bhatinda (1.2 MTPA), Salai Banwa (2.4 MTPA), Jodhpur (2 MTPA), Kalamboli (1 MTPA), Warisaliganj (2.4 MTPA) — totalling ~10 MTPA in H1 FY27.<br><br><strong>Key Inputs:</strong> Coal imported through Adani ports (synergy advantage). Fly ash blending well-established. Premium cement products = 35% of trade sales FY26. Q4 FY26 production cost peaked at ₹4,500/T due to West Asia packaging bag costs. Target FY27 average: ₹4,250/T.<br><br><strong>Brand:</strong> Ambuja Plus, Ambuja Kawach, Ambuja Compocem — premium positioning.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="num">₹40,656 Cr</td><td class="num">₹35,396 Cr</td><td class="tpos">+15%</td></tr>
+          <tr><td>EBITDA (Normalised)</td><td class="num">₹6,539 Cr</td><td class="num">₹4,976 Cr</td><td class="tpos">+31%</td></tr>
+          <tr><td>PAT (Normalised)</td><td class="num">₹2,647 Cr</td><td class="num">₹2,262 Cr</td><td class="tpos">+17%</td></tr>
+          <tr><td>Volume (One Platform)</td><td class="num">73.7 MT</td><td class="num">63.5 MT</td><td class="tpos">+16%</td></tr>
+          <tr><td>EBITDA/Tonne FY26</td><td class="num">₹887</td><td class="num">₹783</td><td class="tpos">+13%</td></tr>
+          <tr><td>Balance Sheet</td><td class="num">Debt-Free</td><td class="num">Debt-Free</td><td class="tpos">AAA/A1+</td></tr>
+          <tr><td>Capacity (Target FY27)</td><td class="num">119 MTPA</td><td class="num">~103 MTPA</td><td class="tpos">+16 MTPA</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CEO: Vinod Bahety. Promoter: Adani family (63%+). CMP ~₹502. Strategic reset FY26 — organic-focused from FY27.</p>
+    </div>
+  </div>
+
+  <!-- ACC -->
+  <div class="grp-hdr" style="background:var(--acc-soft);border-color:var(--acc);color:var(--acc);margin-bottom:14px;">ACC Limited — Adani Cement · Ambuja Subsidiary · BSE: 500410 · Established 1936</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>ACC Limited</strong>, one of India's oldest cement brands (est. 1936), is now a subsidiary of Ambuja Cements and part of the Adani Cement portfolio. Products: OPC, PPC, Bulk cement, Ready Mix Concrete (RMC), and specialty cements including ACC Gold, ACC Suraksha.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Integrated Plants (Clinker):</strong> Key clinker plants at Wadi (Karnataka), Kymore (MP), Gagal (HP — which had notable excise duty refund in FY25), Chaibasa (Jharkhand), Bargarh (Odisha). Total integrated capacity ~30 MTPA clinker.<br><br><strong>Grinding Units:</strong> Multiple GUs across Maharashtra (Thane, Katni), West Bengal (Tikaria), Rajasthan (Sindri), Kerala (Kochi) — ensures pan-India reach with lower logistics cost.<br><br><strong>Key Inputs:</strong> Coal/petcoke (Q4 FY26 power &amp; fuel costs rose to ₹1,314/T, up 4% YoY). Fly ash blending (eastern India advantage). Q4 PAT took a one-time hit compared to exceptional Gagal plant income in Q4 FY25 — base effect explains −68% PAT YoY.<br><br><strong>RMC Business:</strong> ₹573.82 Cr revenue in Q4 FY26 — up 36.6% YoY. Growing urban construction demand fuels this segment.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="num">₹26,363 Cr</td><td class="num">₹22,996 Cr</td><td class="tpos">+14.6%</td></tr>
+          <tr><td>EBITDA (Normalised)</td><td class="num">₹2,950 Cr</td><td class="num">₹2,425 Cr*</td><td class="tpos">+22%</td></tr>
+          <tr><td>PAT (Consol FY26) †</td><td class="num" style="color:#166534;font-weight:700;">₹2,137 Cr</td><td class="num">₹2,401 Cr*</td><td class="warn">−11% (base effect)</td></tr>
+          <tr><td>Volume (FY26)</td><td class="num">43.9 MT</td><td class="num">~40 MT</td><td class="tpos">+9.8%</td></tr>
+          <tr><td>Q4 Volume (Record)</td><td class="num">11.9 MT</td><td class="num">11.0 MT</td><td class="tpos">+8%</td></tr>
+          <tr><td>Net Worth</td><td class="num">₹20,554 Cr</td><td class="num">—</td><td class="tpos">Debt-Free</td></tr>
+          <tr><td>Dividend FY26</td><td class="num">₹7.50/share</td><td class="num">—</td><td>Recommended</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">*FY25 PAT normalised ex Gagal excise ₹637 Cr one-time income. &nbsp;† FY26 PAT ₹2,137 Cr is a <strong style="color:#166534">PROFIT</strong> — the −11% YoY is purely a base-effect distortion. Stripping the ₹637 Cr excise windfall from FY25, normalised FY25 PAT = ~₹1,764 Cr → FY26 PAT is actually +21% on a like-for-like basis. CEO: Vinod Bahety. CMP ~₹1,423.</p>
+    </div>
+  </div>
+
+  <!-- Shree Cement -->
+  <div class="grp-hdr" style="background:var(--shree-soft);border-color:var(--shree);color:var(--shree);margin-bottom:14px;">Shree Cement Limited — India's #3 Cement Group · Rajasthan HQ · BSE: 500387</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Shree Cement</strong> is India's third-largest cement group by installed capacity (69.3 MTPA post-Kodla, Karnataka plant commissioned Q4 FY26). Known for exceptional cost efficiency, premium positioning, and a "value over volume" philosophy. Promoter: B.G. Bangur family.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Integrated Plants (Clinker):</strong> Major integrated plants at Beawar (Rajasthan), Ras (Rajasthan), Raipur (Chhattisgarh), Aurangabad (Bihar), Kodla (Karnataka — NEW FY26: 3.65 MTPA clinker). Rajasthan plants benefit from captive limestone mines. WHRS at all major plants.<br><br><strong>Grinding Units:</strong> GUs in Kolkata (WB), Panipat (Haryana), Jobner (Rajasthan), Bulandshahr (UP), Baloda Bazar (Chhattisgarh), Guntur (AP). Recent AP GU now serves south India market.<br><br><strong>Key Inputs:</strong> Petcoke (dominant fuel — historically cheaper than coal; exposed to price volatility). Green electricity = 61% in Q4 FY26, capacity 666.5 MW. Fly ash blending. Premium products = 22% of trade sales (up from 16% in Q4 FY25).<br><br><strong>Power Business:</strong> Sells excess power from captive plants. WHRS generates ~₹200–250 Cr annually. All plants are Zero Liquid Discharge. Among India's Top 60 Most Sustainable Companies.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Standalone)</td><td class="num">₹19,311 Cr</td><td class="num">₹18,037 Cr</td><td class="tpos">+7%</td></tr>
+          <tr><td>Consol Revenue Q4</td><td class="num">₹6,101 Cr</td><td class="num">₹5,532 Cr</td><td class="tpos">+10%</td></tr>
+          <tr><td>EBITDA FY26</td><td class="num">₹4,788 Cr</td><td class="num">₹4,414 Cr</td><td class="tpos">+8%</td></tr>
+          <tr><td>Q4 EBITDA/Tonne</td><td class="num">₹1,161</td><td class="num">₹1,071</td><td class="tpos">+8%</td></tr>
+          <tr><td>PAT FY26</td><td class="num">₹1,706 Cr</td><td class="num">₹1,196 Cr</td><td class="tpos">+43%</td></tr>
+          <tr><td>Volume FY26</td><td class="num">36.4 MT</td><td class="num">35.6 MT</td><td class="tpos">+2.2%</td></tr>
+          <tr><td>Dividend FY26</td><td class="num">₹150/share</td><td class="num">₹110/share</td><td class="tpos">+36%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">Chairman: H.M. Bangur. CMP ~₹26,500. Highest-value cement stock. Citi: BUY ₹29,200 | Morgan Stanley: Underweight ₹25,500.</p>
+    </div>
+  </div>
+
+  <!-- Ramco -->
+  <div class="grp-hdr" style="background:var(--ramco-soft);border-color:var(--ramco);color:var(--ramco);margin-bottom:14px;">The Ramco Cements Limited — South India Dominant · Tamil Nadu · BSE: 500260</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>The Ramco Cements</strong> is South India's largest cement producer and a Chennai-based conglomerate entity (Ramco Group). Products: Portland Cement (OPC/PPC/PSC), Ready Mix Concrete, Dry Mortar products, and operates a large <strong>wind power</strong> business. South India accounts for ~80% of volumes.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Integrated Plants (Clinker):</strong> Major integrated plants at Ramasamy Raja Nagar (near Ariyalur, TN), Alathiyur (TN), R.R. Nagar (AP), Kolimigundla (AP — expansion: doubling clinker to 6.3 MTPA + 15 MW WHRS, est. cost ₹1,250 Cr, commissioning FY26–27). Limestone sourced from Ariyalur belt — one of South India's richest deposits.<br><br><strong>Grinding Units:</strong> GUs at Chennai (Ennore), Visakhapatnam (AP), Kochi (Kerala), Hyderabad (Telangana), Haridaspur (Odisha). East India expansion through Odisha GU.<br><br><strong>Key Inputs:</strong> Coal + Pet Coke (exposed to price volatility; South India typically pays premium logistics). Fly Ash from TN thermal plants. Wind Power business (~600+ MW) reduces power cost significantly — major competitive advantage in South.<br><br><strong>Debt situation:</strong> Net debt ~₹4,500–5,000 Cr as at Q4 FY26 (Debt/EBITDA ~3.3×) — elevated vs peers. Working to deleverage.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>FY26 Revenue</td><td class="num">~₹9,100 Cr</td><td class="num">₹8,539 Cr</td><td class="tpos">+6%</td></tr>
+          <tr><td>Q4 Revenue</td><td class="num">₹2,610 Cr</td><td class="num">₹2,395 Cr</td><td class="tpos">+9%</td></tr>
+          <tr><td>Q4 EBITDA</td><td class="num">₹433 Cr</td><td class="num">₹424 Cr</td><td class="tpos">+2%</td></tr>
+          <tr><td>Q4 PAT</td><td class="tpos">₹150.7 Cr</td><td class="num">₹27.4 Cr</td><td class="tpos">+450%</td></tr>
+          <tr><td>FY26 PAT</td><td class="num">₹693.6 Cr</td><td class="num">~₹300 Cr</td><td class="tpos">Strong Recovery</td></tr>
+          <tr><td>Capacity</td><td class="num">19.4 MTPA</td><td class="num">18.5 MTPA</td><td class="tpos">+0.9 MTPA</td></tr>
+          <tr><td>Net Debt/EBITDA</td><td class="num">~3.3×</td><td class="num">~3.6×</td><td class="warn">Still Elevated</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">Chairman: P.R. Venketrama Raja. CMP ~₹913. Promoter pledging 22% — watch carefully. ROE 6.62%, ROCE 7.69%.</p>
+    </div>
+  </div>
+
+  <!-- JSW -->
+  <div class="grp-hdr" style="background:var(--jsw-soft);border-color:var(--jsw);color:var(--jsw);margin-bottom:14px;">JSW Cement Limited — JSW Group · Listed Aug 2025 · BSE/NSE · CEO: Nilesh Narwekar</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>JSW Cement</strong>, the newest listed entity in this peer group (IPO August 14, 2025), is part of the JSW Group. It has a unique product differentiation — <strong>cement + GGBS (Ground Granulated Blast-Furnace Slag)</strong> — leveraging JSW Steel's slag output as raw material. This gives structural cost and green credentials advantage.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Integrated Plants (Clinker):</strong> New Nagaur integrated greenfield plant (Rajasthan) — <strong>commissioned March 2026</strong>: 3.3 MTPA clinkerization + 2.5 MTPA grinding. This marks JSW's entry into North India. Additional 2.5 MTPA grinding being added at Nagaur (₹430 Cr capex approved). Prior plants: Nandyal (AP), Shiva Cement (Odisha subsidiary, listed) — integrated.<br><br><strong>Grinding Units:</strong> Vijayanagar (Karnataka — adjacent to JSW Steel plant), Dolvi (Maharashtra), Salboni (WB). GUs are strategically co-located with JSW Steel plants — free access to slag for GGBS. Shiva Cement commissioned new 1 MTPA GU East India.<br><br><strong>GGBS Advantage:</strong> FY26 GGBS volume = 5.78 MT (up 12%). GGBS is a green substitute for clinker in PSC — reduces carbon footprint by ~40% vs OPC. JSW's clinker factor of 51% is among the lowest in India — structural cost advantage.<br><br><strong>Key Inputs:</strong> Limestone (own quarries + purchased), Slag from JSW Steel (captive advantage), Pet Coke/Coal for Nagaur kiln. Power: captive power at Vijayanagar.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">FY26</th><th style="text-align:right">FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue (Consol)</td><td class="num">₹6,512 Cr</td><td class="num">₹5,813 Cr</td><td class="tpos">+12%</td></tr>
+          <tr><td>Operating EBITDA</td><td class="num">₹1,240 Cr</td><td class="num">₹861 Cr</td><td class="tpos">+44%</td></tr>
+          <tr><td>EBITDA Margin FY26</td><td class="num">19.0%</td><td class="num">14.8%</td><td class="tpos">+420 bps</td></tr>
+          <tr><td>Adj. PAT FY26</td><td class="tpos">₹667.6 Cr</td><td class="tneg">Loss</td><td class="tpos">Turnaround</td></tr>
+          <tr><td>Volume FY26</td><td class="num">13.96 MT</td><td class="num">12.57 MT</td><td class="tpos">+11%</td></tr>
+          <tr><td>GGBS Volume FY26</td><td class="num">5.78 MT</td><td class="num">5.16 MT</td><td class="tpos">+12%</td></tr>
+          <tr><td>Net Debt</td><td class="num">₹3,635 Cr</td><td class="num">—</td><td class="warn">Manageable</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CEO: Nilesh Narwekar. IPO ₹1,600 Cr Aug 2025. CMP ~₹128. JSW Group promoters. Dividend: ₹0.50/share FY26.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 3 · FINANCIALS ══ -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Financials Comparison <span class="sec-note">· Q4 FY26 vs Q4 FY25 · Annual FY26 · All figures in ₹ Crore</span></div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">Q4 FY26 — Quarter Performance (Jan–Mar 2026)</div>
+    <table>
+      <thead><tr><th>Company</th><th>Revenue Q4</th><th>YoY%</th><th>EBITDA Q4</th><th>EBITDA%</th><th>EBITDA/T</th><th>PAT Q4</th><th>PAT%</th><th>Volume MT</th><th>Vol YoY</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--utc)"></span>UltraTech</td><td class="num">₹25,467</td><td class="tpos">+12%</td><td class="num">₹5,688</td><td class="num">22.3%</td><td class="num">₹1,253</td><td class="num">₹2,983</td><td class="num">11.7%</td><td class="num">42.41</td><td class="tpos">+9.3%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ambuja)"></span>Ambuja</td><td class="num">₹10,915</td><td class="tpos">+9%</td><td class="num">₹1,464</td><td class="num">13.4%</td><td class="num">₹735</td><td class="num">~₹800</td><td class="num">~7.3%</td><td class="num">19.9</td><td class="tpos">+10%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--acc)"></span>ACC</td><td class="num">₹7,146</td><td class="tpos">+17%</td><td class="num">~₹750</td><td class="num">~10.5%</td><td class="num">~₹630</td><td class="tneg">₹238</td><td class="tneg">3.3%</td><td class="num">11.9</td><td class="tpos">+8%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--shree)"></span>Shree Cement</td><td class="num">₹6,101</td><td class="tpos">+10%</td><td class="num">₹1,212</td><td class="num">19.9%</td><td class="num">₹1,161</td><td class="num">₹641</td><td class="num">10.5%</td><td class="num">10.56</td><td class="tpos">+11%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ramco)"></span>Ramco</td><td class="num">₹2,610</td><td class="tpos">+9%</td><td class="num">₹433</td><td class="num">16.6%</td><td class="num">₹785</td><td class="tpos">₹150.7</td><td class="num">5.8%</td><td class="num">5.5</td><td class="tpos">+17%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--jsw)"></span>JSW Cement</td><td class="num">₹1,895</td><td class="tpos">+11%</td><td class="num">₹365</td><td class="num">19.3%</td><td class="num">₹916</td><td class="tpos">₹361.7</td><td class="num">19.1%</td><td class="num">3.99</td><td class="tpos">+7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-lbl">FY26 Full Year Performance</div>
+    <table>
+      <thead><tr><th>Company</th><th>FY26 Revenue</th><th>YoY%</th><th>FY26 EBITDA</th><th>EBITDA Margin</th><th>FY26 PAT</th><th>PAT Growth</th><th>FY26 Volume</th><th>Capacity</th><th>Balance Sheet</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--utc)"></span>UltraTech</td><td class="num">₹87,384 Cr</td><td class="tpos">+17%</td><td class="num">₹17,598 Cr</td><td class="num">20.1%</td><td class="num">₹8,305 Cr</td><td class="tpos">+36%</td><td class="num">145 MT</td><td class="num">200 MTPA</td><td><span class="badge b-pos">Net D/E 0.94×</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ambuja)"></span>Ambuja</td><td class="num">₹40,656 Cr</td><td class="tpos">+15%</td><td class="num">₹6,539 Cr</td><td class="num">16.1%</td><td class="num">₹2,647 Cr</td><td class="tpos">+17%</td><td class="num">73.7 MT*</td><td class="num">~103 MTPA</td><td><span class="badge b-pos">Debt-Free</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--acc)"></span>ACC</td><td class="num">₹26,363 Cr</td><td class="tpos">+14.6%</td><td class="num">₹2,950 Cr</td><td class="num">11.2%</td><td class="tneg">₹2,137 Cr (−11%)</td><td class="tneg">−11%</td><td class="num">43.9 MT</td><td class="num">~65 MTPA</td><td><span class="badge b-pos">Debt-Free</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--shree)"></span>Shree Cement</td><td class="num">₹19,311 Cr</td><td class="tpos">+7%</td><td class="num">₹4,788 Cr</td><td class="num">24.8%</td><td class="num">₹1,706 Cr</td><td class="tpos">+43%</td><td class="num">36.4 MT</td><td class="num">69.3 MTPA</td><td><span class="badge b-pos">Near Debt-Free</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ramco)"></span>Ramco</td><td class="num">~₹9,100 Cr</td><td class="tpos">+6%</td><td class="num">~₹1,600 Cr</td><td class="num">~17.6%</td><td class="num">₹693.6 Cr</td><td class="tpos">Strong recovery</td><td class="num">~20 MT</td><td class="num">19.4 MTPA</td><td><span class="badge b-neg">D/EBITDA 3.3×</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--jsw)"></span>JSW Cement</td><td class="num">₹6,512 Cr</td><td class="tpos">+12%</td><td class="num">₹1,240 Cr</td><td class="num">19.0%</td><td class="num">₹667.6 Cr adj.</td><td class="tpos">Turned Profitable</td><td class="num">13.96 MT</td><td class="num">~25 MTPA</td><td><span class="badge b-warn">Net Debt ₹3,635 Cr</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">*Ambuja volume includes ACC (One Cement Platform consolidated). Sources: BSE/NSE exchange filings Q4 FY26.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">Cost Structure Comparison — Q4 FY26 (₹ per Tonne)</div>
+    <table>
+      <thead><tr><th>Company</th><th>Realisation/T</th><th>Power &amp; Fuel/T</th><th>Freight/T</th><th>Total Cost/T</th><th>EBITDA/T</th><th>EBITDA Margin</th><th>Clinker Factor</th></tr></thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:var(--utc)"></span>UltraTech</td><td class="num">₹5,034</td><td class="num">~₹1,180</td><td class="num">~₹920</td><td class="num">~₹3,781</td><td class="num">₹1,253</td><td class="tpos">22.3%</td><td class="num">~65%</td></tr>
+        <tr><td><span class="dot" style="background:var(--ambuja)"></span>Ambuja</td><td class="num">~₹4,800</td><td class="num">~₹1,200</td><td class="num">~₹850</td><td class="num">~₹4,065</td><td class="num">₹735</td><td class="num">13.4%</td><td class="num">~62%</td></tr>
+        <tr><td><span class="dot" style="background:var(--acc)"></span>ACC</td><td class="num">~₹4,600</td><td class="num">₹1,314</td><td class="num">~₹850</td><td class="num">~₹3,970</td><td class="num">~₹630</td><td class="num">10.5%</td><td class="num">~65%</td></tr>
+        <tr><td><span class="dot" style="background:var(--shree)"></span>Shree Cement</td><td class="num">₹4,725</td><td class="num">~₹950</td><td class="num">~₹900</td><td class="num">~₹3,564</td><td class="num">₹1,161</td><td class="tpos">19.9%</td><td class="num">~62%</td></tr>
+        <tr><td><span class="dot" style="background:var(--ramco)"></span>Ramco</td><td class="num">~₹4,500</td><td class="num">~₹900*</td><td class="num">~₹950</td><td class="num">~₹3,715</td><td class="num">₹785</td><td class="num">16.6%</td><td class="num">~65%</td></tr>
+        <tr><td><span class="dot" style="background:var(--jsw)"></span>JSW Cement</td><td class="num">~₹4,750</td><td class="num">~₹850</td><td class="num">~₹900</td><td class="num">~₹3,834</td><td class="num">₹916</td><td class="tpos">19.3%</td><td class="num">51%</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">*Ramco wind power reduces effective power cost. JSW's 51% clinker factor is structural competitive advantage. Shree's WHRS (666.5 MW green) drives cost efficiency. Estimates based on investor presentations and BSE filings.</p>
+  </div>
+</div>
+
+<!-- ══ TAB 4 · CHARTS ══ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Visual Analytics <span class="sec-note">· Q4 FY26 comparison charts · EBITDA · Volumes · Margins</span></div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>Q4 FY26 — Revenue (₹ Crore)</h3>
+      <p class="sub">Consolidated revenue from operations</p>
+      <canvas id="revenueChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Q4 FY26 — EBITDA/Tonne (₹)</h3>
+      <p class="sub">Operating profitability per tonne — efficiency metric</p>
+      <canvas id="ebitdaTChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>EBITDA Margin % — Q4 FY26</h3>
+      <p class="sub">Operating margin comparison across peers</p>
+      <canvas id="marginChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Q4 FY26 — Volume (Million Tonnes)</h3>
+      <p class="sub">Cement sales volume — quarterly</p>
+      <canvas id="volumeChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card">
+      <h3>FY26 Annual PAT (₹ Crore)</h3>
+      <p class="sub">Full year profitability — FY26 vs FY25</p>
+      <canvas id="patChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>FY26 Annual Volumes (MT)</h3>
+      <p class="sub">Full year cement sales volumes</p>
+      <canvas id="annualVolChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:18px;">
+    <h3>Capacity vs Utilisation — FY26</h3>
+    <p class="sub">Installed capacity (MTPA) and utilisation rate</p>
+    <canvas id="capUtilChart" height="130"></canvas>
+  </div>
+</div>
+
+<!-- ══ TAB 5 · VALUATIONS ══ -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuations <span class="sec-note">· EV/EBITDA · P/BV · EV/Tonne · Replacement Value Context</span></div>
+
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--utc)">UltraTech Cement</div>
+      <div class="val-row"><span class="val-lbl">CMP</span><span class="val-num">~₹11,200</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹3,23,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV</span><span class="val-num">~₹3,50,000 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~19.9×</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~38×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/Tonne</span><span class="val-num">~$210/T</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~3.2×</span></div>
+      <div class="val-row"><span class="val-lbl">Net D/EBITDA</span><span class="val-num pos">0.94×</span></div>
+      <div style="margin-top:10px"><span class="badge b-buy">Premium justified — scale + PAT growth 36%</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--ambuja)">Ambuja Cements</div>
+      <div class="val-row"><span class="val-lbl">CMP</span><span class="val-num">~₹502</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹99,800 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV</span><span class="val-num">~₹99,800 Cr (Debt-Free)</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~15.3×</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~37.7×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/Tonne (consol)</span><span class="val-num">~$160/T</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~1.4×</span></div>
+      <div class="val-row"><span class="val-lbl">1-yr return</span><span class="val-num neg">−20%</span></div>
+      <div style="margin-top:10px"><span class="badge b-hold">Discount to UltraTech — margin recovery key</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--acc)">ACC Limited</div>
+      <div class="val-row"><span class="val-lbl">CMP</span><span class="val-num">~₹1,423</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹26,700 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~9.1×</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~12.5×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/Tonne</span><span class="val-num">~$72/T</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~1.3×</span></div>
+      <div class="val-row"><span class="val-lbl">1-yr return</span><span class="val-num neg">−24.5%</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend</span><span class="val-num">₹7.50/share</span></div>
+      <div style="margin-top:10px"><span class="badge b-hold">Cheapest in group — PAT recovery needed</span></div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--shree)">Shree Cement</div>
+      <div class="val-row"><span class="val-lbl">CMP</span><span class="val-num">~₹26,500</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹95,400 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~19.9×</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~55.9×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/Tonne</span><span class="val-num">~$310/T</span></div>
+      <div class="val-row"><span class="val-lbl">P/BV</span><span class="val-num">~4.2×</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE</span><span class="val-num pos">~18%</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend FY26</span><span class="val-num">₹150/share</span></div>
+      <div style="margin-top:10px"><span class="badge b-buy">Premium justified — best EBITDA/T</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--ramco)">Ramco Cements</div>
+      <div class="val-row"><span class="val-lbl">CMP</span><span class="val-num">~₹913</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹21,500 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~16.5×</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (FY26)</span><span class="val-num">~31× (trailing)</span></div>
+      <div class="val-row"><span class="val-lbl">EV/Tonne</span><span class="val-num">~$155/T</span></div>
+      <div class="val-row"><span class="val-lbl">ROE</span><span class="val-num neg">6.62%</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE</span><span class="val-num neg">7.69%</span></div>
+      <div class="val-row"><span class="val-lbl">Debt/EBITDA</span><span class="val-num neg">3.3×</span></div>
+      <div style="margin-top:10px"><span class="badge b-hold">Valuation stretched vs return ratios</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--jsw)">JSW Cement</div>
+      <div class="val-row"><span class="val-lbl">CMP</span><span class="val-num">~₹128</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹28,500 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV</span><span class="val-num">~₹32,135 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA (FY26)</span><span class="val-num">~25.9×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/Tonne</span><span class="val-num">~$182/T</span></div>
+      <div class="val-row"><span class="val-lbl">IPO Price</span><span class="val-num">~₹113 (Aug 2025)</span></div>
+      <div class="val-row"><span class="val-lbl">Net Debt</span><span class="val-num warn">₹3,635 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">EBITDA Growth</span><span class="val-num pos">+44% FY26</span></div>
+      <div style="margin-top:10px"><span class="badge b-buy">Growth premium — EBITDA expansion story</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 6 · BUSINESS SEGMENTS ══ -->
+<div class="panel" id="tab-segments">
+  <div class="sec-hdr">Business Segments <span class="sec-note">· Revenue mix · Products · Geographic split</span></div>
+
+  <div class="grp-hdr" style="background:var(--utc-soft);border-color:var(--utc);color:var(--utc);margin-bottom:14px;">UltraTech — Diversified Cement Leader</div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Mix (FY26 Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Grey Cement (India)</span><span style="font-weight:700">~72%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:72%;background:var(--utc)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Ready Mix Concrete (RMC)</span><span style="font-weight:700">~14%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:14%;background:var(--utc);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>White Cement / Wall Care</span><span style="font-weight:700">~6%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:6%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Overseas (UAE, Bahrain, etc.)</span><span style="font-weight:700">~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:#94a3b8"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products</div>
+      <table><thead><tr><th>Brand</th><th>Type</th><th>Market Position</th></tr></thead>
+        <tbody>
+          <tr><td>UltraTech Cement</td><td>OPC/PPC</td><td>Pan-India mainstream</td></tr>
+          <tr><td>Birla White</td><td>White Cement</td><td>#1 white cement India</td></tr>
+          <tr><td>Aditya Birla Ultracem</td><td>PSC/PPC</td><td>Eastern India strength</td></tr>
+          <tr><td>RMC Readymix</td><td>Ready Mix</td><td>Urban construction</td></tr>
+          <tr><td>India Cements (acquired)</td><td>OPC/PPC</td><td>South India reach</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--shree-soft);border-color:var(--shree);color:var(--shree);margin-bottom:14px;">Shree Cement — Premium-Focused Efficient Player</div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Mix (FY26 Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Grey Cement (Trade)</span><span style="font-weight:700">~68%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:68%;background:var(--shree)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Grey Cement (Non-Trade/Bulk)</span><span style="font-weight:700">~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:var(--shree);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Power Sales (captive surplus)</span><span style="font-weight:700">~6%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:6%;background:#0ea5e9"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>RMC Business</span><span style="font-weight:700">~4%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:4%;background:#94a3b8"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products</div>
+      <table><thead><tr><th>Brand</th><th>Type</th><th>Market Position</th></tr></thead>
+        <tbody>
+          <tr><td>Shree Jung Rodhak</td><td>OPC/PPC</td><td>Premium North/West India</td></tr>
+          <tr><td>Bangur Cement</td><td>OPC/PPC/PSC</td><td>East India premium</td></tr>
+          <tr><td>Rockstrong</td><td>OPC</td><td>Infra/bulk segment</td></tr>
+          <tr><td>Power (Wind+WHRS)</td><td>Captive+surplus</td><td>666.5 MW capacity</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--jsw-soft);border-color:var(--jsw);color:var(--jsw);margin-bottom:14px;">JSW Cement — Unique GGBS + Cement Hybrid Model</div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Mix (FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Cement (OPC/PSC/PPC)</span><span style="font-weight:700">~58%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:58%;background:var(--jsw)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>GGBS (Slag Cement)</span><span style="font-weight:700">~38%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:38%;background:var(--jsw);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Other (Logistics/Services)</span><span style="font-weight:700">~4%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:4%;background:#94a3b8"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products</div>
+      <table><thead><tr><th>Brand</th><th>Type</th><th>Market Position</th></tr></thead>
+        <tbody>
+          <tr><td>JSW Cement</td><td>OPC/PSC/PPC</td><td>South + East + now North India</td></tr>
+          <tr><td>JSW Concreel HD</td><td>High-Strength PSC</td><td>Infra/metro projects</td></tr>
+          <tr><td>JSW GGBS</td><td>Ground Slag</td><td>Green cement additive</td></tr>
+          <tr><td>Shiva Cement</td><td>OPC (Odisha sub)</td><td>Eastern India listed entity</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--ramco-soft);border-color:var(--ramco);color:var(--ramco);margin-bottom:14px;">Ramco Cements — South India + Wind Power Hybrid</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Revenue Mix (FY26 Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Cement (South India dominant)</span><span style="font-weight:700">~85%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:85%;background:var(--ramco)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Ready Mix Concrete</span><span style="font-weight:700">~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:var(--ramco);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Dry Mortar Products</span><span style="font-weight:700">~3%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:3%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Wind Power Sales</span><span style="font-weight:700">~4%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:4%;background:#0ea5e9"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products</div>
+      <table><thead><tr><th>Brand</th><th>Type</th><th>Market Position</th></tr></thead>
+        <tbody>
+          <tr><td>Ramco Super Grade</td><td>OPC 53/43</td><td>Premium TN/AP/Karnataka</td></tr>
+          <tr><td>Ramco PPC</td><td>Portland Pozzolana</td><td>General construction South</td></tr>
+          <tr><td>Ramco Supercrete</td><td>PSC</td><td>High-strength South India</td></tr>
+          <tr><td>Ramco RMC</td><td>Ready Mix</td><td>Urban TN/AP</td></tr>
+          <tr><td>Wind Energy</td><td>Power (~600 MW)</td><td>Captive + grid sale</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 7 · GEOGRAPHIC MIX ══ -->
+<div class="panel" id="tab-geographic">
+  <div class="sec-hdr">Geographic Sales Mix <span class="sec-note">· Regional presence · Volume-based estimates · FY26</span></div>
+
+  <div class="geo-note">⚠ Note: Cement companies don't always report exact state/zone-wise revenue splits in quarterly filings. The regional breakdowns below are based on capacity locations, investor presentations, management commentary, and analyst estimates. Not direct revenue figures unless stated.</div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">UltraTech Cement — Pan-India (Est. Volume Mix)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>North India (Rajasthan, Punjab, UP, Delhi)</span><span style="font-weight:700">~28%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:28%;background:var(--utc)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>West India (Gujarat, Maharashtra)</span><span style="font-weight:700">~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:var(--utc);opacity:.85"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>South India (AP, TN, Karnataka, Kerala)</span><span style="font-weight:700">~25%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:25%;background:var(--utc);opacity:.70"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>East India (WB, Odisha, Bihar, Jharkhand)</span><span style="font-weight:700">~16%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:16%;background:var(--utc);opacity:.55"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Central India (MP, Chhattisgarh)</span><span style="font-weight:700">~9%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:9%;background:#94a3b8"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px;">Source: UltraTech investor presentations, capacity locations. South rose post India Cements acquisition.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Ambuja / ACC (One Cement Platform — Est. Volume Mix)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>North India (HP, Punjab, Rajasthan, UP)</span><span style="font-weight:700">~30%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--ambuja)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>West India (Gujarat, Maharashtra)</span><span style="font-weight:700">~28%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:28%;background:var(--ambuja);opacity:.85"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>East India (WB, Jharkhand, Odisha)</span><span style="font-weight:700">~24%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:24%;background:var(--ambuja);opacity:.70"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>South India (AP, Karnataka, TN)</span><span style="font-weight:700">~12%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:12%;background:var(--ambuja);opacity:.55"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Central India (MP, CG)</span><span style="font-weight:700">~6%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:6%;background:#94a3b8"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px;">Source: Management commentary. Adani Group infra projects concentrated in West + North. Penna acquisition adds AP/TN.</p>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Shree Cement — North/East Stronghold (Est. Volume Mix)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>North India (Rajasthan, Haryana, UP, Delhi)</span><span style="font-weight:700">~42%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:42%;background:var(--shree)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>East India (WB, Bihar, Jharkhand, Odisha)</span><span style="font-weight:700">~30%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--shree);opacity:.80"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Central India (MP, Chhattisgarh)</span><span style="font-weight:700">~16%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:16%;background:var(--shree);opacity:.60"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>South India (AP — new Kodla plant)</span><span style="font-weight:700">~7%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:7%;background:var(--shree);opacity:.45"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>West India (Gujarat, Maharashtra)</span><span style="font-weight:700">~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:#94a3b8"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px;">Kodla plant (Karnataka) marks South India entry. North+East = 72% — significant concentration risk but premium markets.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Ramco Cements — South India Dominant (Approx. FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Tamil Nadu</span><span style="font-weight:700">~38%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:38%;background:var(--ramco)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Andhra Pradesh + Telangana</span><span style="font-weight:700">~28%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:28%;background:var(--ramco);opacity:.80"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Karnataka</span><span style="font-weight:700">~10%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:10%;background:var(--ramco);opacity:.65"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Kerala</span><span style="font-weight:700">~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:var(--ramco);opacity:.50"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>East India (Odisha GU)</span><span style="font-weight:700">~11%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:11%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Other</span><span style="font-weight:700">~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:#94a3b8"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px;">South India ~85% of volumes. Key Ramco competitive advantage in TN is limestone (Ariyalur) + wind power. Source: Q3 FY26 investor presentation.</p>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">JSW Cement — South+East+Now North (Est. FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>South India (Karnataka, AP — Vijayanagar)</span><span style="font-weight:700">~48%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:48%;background:var(--jsw)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>East India (WB, Odisha — Shiva Cement)</span><span style="font-weight:700">~28%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:28%;background:var(--jsw);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>West India (Maharashtra — Dolvi GU)</span><span style="font-weight:700">~15%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:15%;background:var(--jsw);opacity:.55"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>North India (Rajasthan — Nagaur NEW)</span><span style="font-weight:700">~9%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:9%;background:var(--jsw);opacity:.40"></div></div></div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px;">Nagaur plant (Rajasthan) commissioned March 2026 — North India entry. Geographic diversification now accelerating. Source: JSW Q4 FY26 press release.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Geographic Summary Table</div>
+      <table>
+        <thead><tr><th>Company</th><th>Strongest Zone</th><th>Weakest Zone</th><th>New Markets</th></tr></thead>
+        <tbody>
+          <tr><td><span class="dot" style="background:var(--utc)"></span>UltraTech</td><td>Pan-India balanced</td><td>—</td><td>South (India Cements)</td></tr>
+          <tr><td><span class="dot" style="background:var(--ambuja)"></span>Ambuja</td><td>West + North</td><td>South</td><td>South (Penna)</td></tr>
+          <tr><td><span class="dot" style="background:var(--acc)"></span>ACC</td><td>East + West</td><td>South</td><td>East expansion GUs</td></tr>
+          <tr><td><span class="dot" style="background:var(--shree)"></span>Shree</td><td>North + East</td><td>South</td><td>South (Kodla, AP GU)</td></tr>
+          <tr><td><span class="dot" style="background:var(--ramco)"></span>Ramco</td><td>South (Tamil Nadu)</td><td>North/West</td><td>East (Odisha GU)</td></tr>
+          <tr><td><span class="dot" style="background:var(--jsw)"></span>JSW Cement</td><td>South + East</td><td>North</td><td>North (Nagaur FY26)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 8 · SWOT ══ -->
+<div class="panel" id="tab-bizanalysis">
+  <div class="sec-hdr">Business Analysis — SWOT <span class="sec-note">· Q4 FY26 lens · All 6 companies</span></div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--utc-soft);color:var(--utc);padding:2px 9px;font-size:9px;">ULTRATECH CEMENT</span> UltraTech Cement — Aditya Birla Group</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India's #1 cement — 200 MTPA milestone reached Q4 FY26 ✅</li><li>PAT ₹8,305 Cr FY26 (+36%) — highest ever; first to cross ₹8,000 Cr</li><li>EBITDA/Tonne ₹1,253 — second highest in sector</li><li>Net D/EBITDA = 0.94× — disciplined leverage despite massive expansion</li><li>Pan-India network — no regional dependency risk</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>High capex intensity — constant investment in acquisitions and capacity</li><li>India Cements integration still in progress; absorption takes 2–3 yrs</li><li>Pricing power limited in fragmented regional markets</li><li>EBITDA margin 22.3% — good but not Shree's ~25% per-tonne efficiency</li><li>Large size = slower % growth vs smaller players</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Government infra: PM Gati Shakti, housing for all = 5–7% demand CAGR</li><li>South India integration post India Cements to improve margin</li><li>White cement / specialty products: high-margin niche growing</li><li>Export to Africa / Middle East via UAE subsidiary</li><li>Green cement: 200 MTPA scale = fastest carbon reduction in absolute terms</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>West Asia conflict → pet coke + packaging bag cost pressure</li><li>Ambuja/Adani aggressive expansion targeting UltraTech's market share</li><li>Demand slowdown if infra spending tapers post elections</li><li>Coal price spike: $10/T rise → ₹60–70/T EBITDA hit (disclosed in investor pres.)</li><li>Real estate cycle risk in residential segment</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--ambuja-soft);color:var(--ambuja);padding:2px 9px;font-size:9px;">AMBUJA CEMENTS</span> Ambuja Cements — Adani Group</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>One Cement Platform: 73.7 MT FY26 — second largest volume in India</li><li>Debt-free with AAA/A1+ ratings — strongest balance sheet</li><li>EBITDA +31% YoY on normalised basis — recovery trajectory strong</li><li>Port + logistics advantage: Adani Ports synergy for coastal distribution</li><li>Premium products = 35% of trade sales — brand positioning improving</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 EBITDA margin only 13.4% — well below UltraTech/Shree peers</li><li>Penna + Sanghi integration challenges: acquired assets underperforming</li><li>1-yr stock return −20% — market not rewarding growth narrative yet</li><li>Production cost ₹4,500/T in Q4 — highest in peer group (packaging + fuel)</li><li>Strategic pivot mid-year (aggressive → disciplined) creates uncertainty</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>119 MTPA capacity target FY27 — 10 MTPA grinding additions in H1 FY27</li><li>Adani infra captive demand: airports, ports, data centers, roads</li><li>Cost reduction roadmap: ₹4,500/T → ₹4,250/T target for FY27 average</li><li>South India expansion via Penna — under-penetrated vs UltraTech</li><li>Coal logistics via Adani ports = long-term cost moat building</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Penna/Sanghi asset quality concerns — operational reset may slow margin recovery</li><li>ESG scrutiny on Adani Group — institutional investor sensitivity</li><li>Sustained input cost inflation (West Asia) hurts more due to high production cost</li><li>Competition: UltraTech and Shree defending North/West India market share</li><li>Cement price war if capacity exceeds demand in FY27</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--acc-soft);color:var(--acc);padding:2px 9px;font-size:9px;">ACC LIMITED</span> ACC Limited — Adani · Ambuja Subsidiary</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Legacy brand (est. 1936) — strong loyalty in East and West India</li><li>Q4 FY26 revenue ₹7,146 Cr — highest ever quarterly revenue</li><li>Q4 Volume 11.9 MT — highest ever quarterly volume</li><li>RMC business +36.6% YoY — urban construction upcycle beneficiary</li><li>Debt-free, net worth ₹20,554 Cr — fortress balance sheet</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q4 PAT ₹238 Cr (−68% YoY) — base effect of Gagal excise windfall in Q4 FY25</li><li>PAT margin contracted to 3.3% in Q4 — operationally thin</li><li>FY26 PAT ₹2,137 Cr (−11%) — annual earnings decline</li><li>Power+fuel cost ₹1,314/T — up 4% YoY despite industry focus on cost cuts</li><li>Subsidiary status limits independent strategic flexibility</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>RMC business expansion: urban infra and housing boom</li><li>East India market: ACC has strong legacy — volume growth runway</li><li>Premium products mix increase from current levels</li><li>Coal cost normalisation should improve margins from FY27</li><li>One Platform synergies: logistics, procurement, brand with Ambuja</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>High base in profitability metrics going into FY26 from Gagal windfall</li><li>Fuel cost inflation: pet coke + coal volatility direct bottom-line hit</li><li>Possible minority shareholder governance concerns as Adani tightens integration</li><li>Cement price deflation risk if supply exceeds demand in key markets</li><li>RMC competition: UltraTech + Shree both expanding RMC businesses</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--shree-soft);color:var(--shree);padding:2px 9px;font-size:9px;">SHREE CEMENT</span> Shree Cement — Bangur Family</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>EBITDA/Tonne ₹1,161 — best per-tonne profitability in Q4 FY26</li><li>Green electricity 61% — lowest green power cost in sector</li><li>PAT FY26 ₹1,706 Cr (+43%) — strong earnings recovery</li><li>Premium products = 22% of trade sales (up from 16%) — premiumisation momentum</li><li>Dividend ₹150/share (+36%) — shareholder-friendly; near-zero debt</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Volume growth only 2.2% FY26 — lagged sector growth (~8–10%)</li><li>"Value over volume" strategy hurts market share in low-price environments</li><li>High P/E ~56× — limited upside if earnings miss expectation</li><li>North+East concentration: 72% volumes; South India just entering (Kodla)</li><li>Limited RMC footprint vs UltraTech and ACC</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>South India expansion via Kodla (Karnataka) — large white space</li><li>Premiumisation: target 30%+ premium share — margin expansion driver</li><li>WHRS expansion: scale renewable from 666.5 MW — cost reduction</li><li>RMC: 36 plants being built — urban construction upcycle play</li><li>North India market leadership to compound as new capacity comes online</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Morgan Stanley Underweight — valuation concern; any volume miss = sharp de-rating</li><li>Pet coke price spike: Shree's dominant use of petcoke makes it exposed</li><li>Competition in North: UltraTech, Adani Cement both expanding North India aggressively</li><li>Rajasthan capacity expansion delays (deferred some projects to FY27)</li><li>Market share loss if competitors offer aggressive pricing during demand lull</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--ramco-soft);color:var(--ramco);padding:2px 9px;font-size:9px;">RAMCO CEMENTS</span> The Ramco Cements</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Q4 revenue ₹2,610 Cr — all-time quarterly high; volume 5.5 MT (+17%)</li><li>PAT turnaround: ₹150.7 Cr Q4 FY26 vs ₹27.4 Cr Q4 FY25 (+450%)</li><li>Wind power ~600 MW: significant capex reduction in power cost (South India advantage)</li><li>Ariyalur limestone belt: captive mines, low-cost raw material in TN</li><li>Tamil Nadu brand leadership — trusted regional brand since 1957</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Net Debt/EBITDA 3.3× — highest leverage in peer group; interest ₹95 Cr Q4</li><li>Promoter pledge 22% — governance risk, forced selling risk</li><li>ROE 6.62%, ROCE 7.69% — capital destruction below cost of capital</li><li>Heavy South India concentration (~85%) — no natural hedge to regional slowdown</li><li>Capacity 19.4 MTPA — smallest in this peer group, limited pricing leverage</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Kolimigundla expansion (AP): doubling clinker 6.3 MTPA + 15 MW WHRS → FY27</li><li>South India construction boom: TN TIDCO projects, AP Amaravati revival</li><li>Debt reduction: as EBITDA recovers, deleveraging speeds ROE recovery</li><li>Odisha GU expansion: East India diversification</li><li>Premium products: Ramco Super Grade commands premium in TN market</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Adani cement (ACC + Penna): aggressive South India entry threatens Ramco's home turf</li><li>UltraTech (India Cements) now a direct competitor in TN/AP</li><li>High debt + pledged shares = vulnerability in capital market stress</li><li>South India cement prices historically volatile; margin compression risk</li><li>Delayed Kolimigundla expansion could cede market share to competitors</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--jsw-soft);color:var(--jsw);padding:2px 9px;font-size:9px;">JSW CEMENT</span> JSW Cement Limited</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>EBITDA margin 19.3% Q4 FY26 — best quarterly margin in this peer group</li><li>EBITDA +46% YoY Q4 — fastest operating leverage play</li><li>Clinker factor 51% — lowest in sector → structural cost advantage</li><li>GGBS captive supply from JSW Steel: zero raw material cost, green credentials</li><li>FY26 adjusted PAT ₹667.6 Cr — turned profitable from loss in FY25</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Smallest revenue base (₹6,512 Cr) — limited pricing power nationally</li><li>Net debt ₹3,635 Cr — significant for the scale of business</li><li>GGBS = 38% of volume — limited standalone cement brand vs legacy peers</li><li>IPO baggage: CCPS fair value expense created confusion in FY26 reported P&amp;L</li><li>North India entry (Nagaur) barely started — no track record yet</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Nagaur Phase 2: additional 2.5 MTPA grinding approved (₹430 Cr capex)</li><li>North India: largest under-penetrated market for JSW; cement demand 90 MT/yr</li><li>GGBS premium pricing: green infra projects specify GGBS; metro/rail segment</li><li>JSW Steel slag output growing → more GGBS raw material = volume growth</li><li>Listed stock post IPO: capital market access for future growth funding</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>JSW Steel production cuts → less slag → GGBS volume risk</li><li>Pet coke/coal price inflation hits new Nagaur kiln disproportionately (new plant)</li><li>Demand softness April 2026 management commentary: "near-term uncertainty"</li><li>Competition in South and East from Adani Cement and UltraTech</li><li>Execution risk of rapid multi-region expansion while managing debt</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 9 · ANALYST RATINGS ══ -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Ratings &amp; Consensus <span class="sec-note">· Target prices · Bull/Bear · Research only · Not investment advice</span></div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--utc)">UltraTech Cement Limited</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-tp">Target: ₹12,500–13,500</div>
+    <div class="ac-cmp">CMP ~₹11,200 · Upside ~12–20% · FY27E P/E ~32×</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:75%;background:var(--utc)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> India cement demand grows 7–8% in FY27; UltraTech sustains 10%+ volume growth as India Cements integration completes; EBITDA/tonne improves toward ₹1,350 by FY27 on cost reduction. PAT growth 20%+ as interest burden reduces (Net D/EBITDA already at 0.94×). 200 MTPA milestone opens next phase of premiumisation. FY27 capex guided lower — FCF improvement.<br><br><strong>Bear Case:</strong> Cement demand growth slows below 5% in FY27; West Asia conflict keeps pet coke elevated; India Cements integration costs linger; regional price wars emerge as 119 MTPA Adani capacity comes online in FY27.<br><br><strong>Key Trigger:</strong> Q1 FY27 volume guidance + EBITDA/tonne trajectory commentary.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--ambuja)">Ambuja Cements</div><span class="rat-pill rp-hold">HOLD</span></div>
+    <div class="ac-tp">Target: ₹580–620</div>
+    <div class="ac-cmp">CMP ~₹502 · Upside ~15–23% · Sector discount persists · −20% 1-yr return</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:50%;background:var(--ambuja)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> 119 MTPA capacity fully operational by FY27 end; cost target ₹4,250/T achieved → EBITDA/tonne improves from ₹735 to ₹900+; Adani infra captive demand absorbs incremental volume; Penna/Sanghi integration shows progress; stock re-rates to 18×+ EV/EBITDA.<br><br><strong>Bear Case:</strong> Penna/Sanghi remain operational laggards; margin stays below 15%; Adani Group corporate governance concerns suppress institutional buying; stock stays range-bound.<br><br><strong>Key Trigger:</strong> Q2 FY27 EBITDA/tonne confirmation above ₹850 + capex moderation signal.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--acc)">ACC Limited</div><span class="rat-pill rp-hold">HOLD</span></div>
+    <div class="ac-tp">Target: ₹1,700–1,900</div>
+    <div class="ac-cmp">CMP ~₹1,423 · Upside ~20–34% · P/E 12.5× — cheapest in group</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:55%;background:var(--acc)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> Q4 FY25 Gagal base effect disappears from Q1 FY27 — PAT comparisons improve dramatically; RMC business scales to ₹2,500+ Cr/yr; volume growth 10%+ as One Platform synergies kick in; margin recovery to 13%+ EBITDA supported by lower fuel costs. At 12.5× P/E, risk-reward attractive.<br><br><strong>Bear Case:</strong> Q4 FY26 trend of margin compression continues; fuel costs stay elevated through FY27; stock continues underperformance as part of Adani conglomerate discount.<br><br><strong>Key Trigger:</strong> Q1 FY27 PAT base normalisation (no Gagal effect) + EBITDA margin recovery above 12%.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--shree)">Shree Cement</div><span class="rat-pill rp-buy">BUY — Citi · UNDERWEIGHT — Morgan Stanley</span></div>
+    <div class="ac-tp">Citi: ₹29,200 | Morgan Stanley: ₹25,500</div>
+    <div class="ac-cmp">CMP ~₹26,500 · Divided Street verdict · P/E ~56×</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:58%;background:var(--shree)"></div></div>
+    <div class="ac-text"><strong>Bull Case (Citi):</strong> Premiumisation sustains — 22% premium share heading to 30%; South India entry (Kodla) adds new volume runway without cannibalising North margins; EBITDA/tonne industry-best at ₹1,161+ improves to ₹1,300+ by FY27 as petcoke stabilises; PAT growth 25%+ justified at 56× P/E given quality.<br><br><strong>Bear Case (Morgan Stanley):</strong> Volume growth 2.2% FY26 is structural, not cyclical — losing market share deliberately; petcoke cost spike could hurt disproportionately; high P/E leaves zero margin of safety.<br><br><strong>Key Trigger:</strong> Q1 FY27 volume growth rate vs industry — if Shree catches up to 7%+ industry growth, Citi wins; if volume lags, MS wins.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--ramco)">The Ramco Cements</div><span class="rat-pill rp-hold">HOLD / AVOID</span></div>
+    <div class="ac-tp">Target: ₹900–1,050</div>
+    <div class="ac-cmp">CMP ~₹913 · P/E 115× trailing (extreme) · D/EBITDA 3.3×</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:40%;background:var(--ramco)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> FY26 PAT recovery (₹693.6 Cr) normalises trailing P/E; Kolimigundla expansion delivers by FY27 end → volume growth 15%+; South India construction boom (TN TIDCO, AP Amaravati); debt declines as EBITDA compounds; ROE improves toward 12%+.<br><br><strong>Bear Case:</strong> P/E 115× is extreme — even on forward FY27E earnings, still expensive at 40–50×; promoter pledge 22% creates uncertainty; South India competition from Adani (Penna) and UltraTech (India Cements) compresses realisations; ROE 6.62% = value destruction.<br><br><strong>Key Trigger:</strong> Promoter pledge reduction + Kolimigundla commissioning + debt reduction to 2× EBITDA.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name" style="color:var(--jsw)">JSW Cement</div><span class="rat-pill rp-buy">BUY — Growth Play</span></div>
+    <div class="ac-tp">Target: ₹150–170</div>
+    <div class="ac-cmp">CMP ~₹128 · Upside ~17–33% · IPO Aug 2025 at ~₹113</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:65%;background:var(--jsw)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> Q4 FY26 EBITDA margin 19.3% shows structural advantage is real; Nagaur ramp-up doubles North India volumes by FY28; GGBS premium pricing sustains; FY26 adjusted PAT ₹667.6 Cr establishes profitability baseline; capacity reaches 30 MTPA by FY27 end; re-rates to 20–22× EV/EBITDA (from 26× now).<br><br><strong>Bear Case:</strong> Rapid capacity expansion in debt environment; Nagaur execution takes longer than expected; JSW Steel slag supply disruption risks GGBS volumes; sector-wide demand softness flagged by management for April 2026.<br><br><strong>Key Trigger:</strong> Nagaur cement grinding Phase 2 commissioning + first full-year North India volume contribution in FY27.</div>
+  </div>
+</div>
+
+<!-- ══ TAB 10 · MOATS ══ -->
+<div class="panel" id="tab-moats">
+  <div class="sec-hdr">Moats &amp; Competitive Advantages <span class="sec-note">· What creates sustainable edge for each player</span></div>
+
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--utc)">UltraTech Cement</div>
+      <div class="moat-title">Scale + Distribution Moat</div>
+      <div class="moat-body">200 MTPA capacity — 3× the next player in India. 200+ manufacturing locations (plants + GUs). Pan-India distribution means no raw material arbitrage gaps. Scale = purchasing power for coal, packaging. Birla White = monopoly-like in white cement India.</div>
+      <span class="moat-tag" style="background:var(--utc-soft);color:var(--utc)">Structural</span>
+      <span class="moat-tag" style="background:#f0fdf4;color:#166534">Scale Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--ambuja)">Ambuja / ACC</div>
+      <div class="moat-title">Balance Sheet + Logistics Moat</div>
+      <div class="moat-body">Debt-free with ₹20,000+ Cr+ net worth — unmatched financial flexibility for acquisition or capex. Adani Port access: coal import cost advantage. One Platform: single procurement desk for 73.7 MT = massive purchasing leverage. AAA/A1+ = cheapest debt cost if they ever use it.</div>
+      <span class="moat-tag" style="background:var(--ambuja-soft);color:var(--ambuja)">Financial Moat</span>
+      <span class="moat-tag" style="background:var(--gold-soft);color:var(--gold)">Ecosystem Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--shree)">Shree Cement</div>
+      <div class="moat-title">Operational Efficiency Moat</div>
+      <div class="moat-body">EBITDA/Tonne ₹1,161 — best-in-class. WHRS 666.5 MW (61% green electricity) = ₹150–200/T cost advantage vs non-WHRS peers. Captive limestone at Rajasthan. Near-zero debt = full PAT flows to shareholders. FY26 dividend ₹150/share (+36%).</div>
+      <span class="moat-tag" style="background:var(--shree-soft);color:var(--shree)">Cost Moat</span>
+      <span class="moat-tag" style="background:#ecfeff;color:#0e7490">Green Moat</span>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--ramco)">Ramco Cements</div>
+      <div class="moat-title">Regional Brand + Wind Power Moat</div>
+      <div class="moat-body">Tamil Nadu brand loyalty since 1957. Ariyalur limestone belt = captive raw material. Wind power ~600 MW = ₹90–120/T power cost reduction vs grid tariff peers. South India: Ramco is the preferred premium brand for individual home builders — sticky consumer base.</div>
+      <span class="moat-tag" style="background:var(--ramco-soft);color:var(--ramco)">Regional Brand</span>
+      <span class="moat-tag" style="background:#ecfeff;color:#0e7490">Wind Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--jsw)">JSW Cement</div>
+      <div class="moat-title">Slag + Low Clinker Factor Moat</div>
+      <div class="moat-body">Clinker factor 51% = lowest in sector — structural ₹200–300/T cost advantage vs peers at 65%+ factor. GGBS from JSW Steel is essentially free raw material (byproduct of steel). Green credentials for infra projects. EBITDA margin 19.3% proves the model works.</div>
+      <span class="moat-tag" style="background:var(--jsw-soft);color:var(--jsw)">Input Moat</span>
+      <span class="moat-tag" style="background:#ecfeff;color:#0e7490">Green Moat</span>
+    </div>
+    <div class="moat-card">
+      <div class="moat-co" style="color:var(--muted)">Sector-Level Moats</div>
+      <div class="moat-title">What Makes Cement a Good Business?</div>
+      <div class="moat-body">Regional natural monopolies (freight cost = 20–30% of price = distance kills arbitrage). Limestone mines are captive — can't be replicated. High entry barriers: 1 MTPA integrated plant needs ₹600–800 Cr + 3+ years. India demand CAGR 5–7% for next decade. GoI infra = sustained demand floor.</div>
+      <span class="moat-tag" style="background:#f3f4f6;color:#4b5563">Regional Natural Oligopoly</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 11 · VERDICT ══ -->
+<div class="panel" id="tab-verdict">
+  <div class="sec-hdr">🏆 Verdict <span class="sec-note">· Star Player · Investment Thesis · Business Scorecard · Q4 FY26</span></div>
+
+  <div class="verdict-card">
+    <div class="verdict-title">🏆 Star Player: UltraTech Cement</div>
+    <div class="verdict-body">
+      <strong>UltraTech Cement is the undisputed star of the Q4 FY26 cement pack.</strong> In a quarter and a year marked by cost headwinds (West Asia fuel/packaging inflation), it delivered across every metric that matters: <strong>Record PAT ₹8,305 Cr FY26 (+36%) — first ever above ₹8,000 Cr.</strong> Record PBIDT ₹17,598 Cr FY26 (+32%). Record volume 145 MT FY26 (89% utilisation in Q4). It simultaneously achieved the milestone 200 MTPA capacity, maintained EBITDA/Tonne at ₹1,253 (sector-high for its size), and reduced Net D/EBITDA from 1.4× to 0.94×. Essentially: grow revenue 17%, grow PAT 36%, grow capacity, reduce debt — all in the same year. That is a rare combination.
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="verdict-card" style="border-color:var(--shree);">
+      <div class="verdict-title" style="color:var(--shree);">🥈 Business Quality Runner-Up: Shree Cement</div>
+      <div class="verdict-body">Shree Cement is the <strong>purest quality business</strong> in this group. EBITDA/T ₹1,161 is best-in-class per-tonne profitability. 61% green electricity = structural cost advantage compounding every year. FY26 PAT +43%, dividend ₹150/share (+36%). The "value over volume" philosophy sacrifices short-term market share but builds long-term pricing power. The only knock: volume growth 2.2% lagged sector. If Kodla (Karnataka) and South India expansion deliver volume growth alongside the margin discipline, Shree becomes the clear #2 story in cement. Citi's ₹29,200 target has merit on a 3-year view.</div>
+    </div>
+    <div class="verdict-card" style="border-color:var(--jsw);">
+      <div class="verdict-title" style="color:var(--jsw);">🚀 Best Growth Story: JSW Cement</div>
+      <div class="verdict-body">JSW Cement is the <strong>most exciting growth narrative</strong> in the group. It turned profitable (adj. PAT ₹667.6 Cr from loss in FY25), delivered EBITDA margin 19.3% in Q4 — best in group that quarter — and has a structural moat with 51% clinker factor and captive GGBS from JSW Steel. The Nagaur (Rajasthan) integrated plant launched in March 2026 is transformational — unlocking North India. FY26 EBITDA +44%. For investors willing to accept the risk of a newly-listed, debt-carrying, rapidly-expanding cement player, JSW Cement offers the highest earnings CAGR potential in this peer group through FY28.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">Business + Investment Scorecard — Q4 FY26</div>
+    <table>
+      <thead><tr><th>Company</th><th>Business Quality</th><th>Q4 Execution</th><th>Valuation</th><th>Balance Sheet</th><th>Growth Runway</th><th>Overall Score</th><th>Best For</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--utc)"></span>UltraTech</td><td class="tpos">★★★★★</td><td class="tpos">★★★★★</td><td><span style="color:var(--warn)">★★★☆☆</span></td><td class="tpos">★★★★☆</td><td class="tpos">★★★★★</td><td class="tpos">9.2 / 10</td><td>Core long-term hold</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--shree)"></span>Shree Cement</td><td class="tpos">★★★★★</td><td class="tpos">★★★★☆</td><td><span style="color:var(--warn)">★★★☆☆</span></td><td class="tpos">★★★★★</td><td class="tpos">★★★★☆</td><td class="tpos">8.8 / 10</td><td>Quality + dividend</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--jsw)"></span>JSW Cement</td><td class="tpos">★★★★☆</td><td class="tpos">★★★★★</td><td class="tpos">★★★★☆</td><td><span style="color:var(--warn)">★★★☆☆</span></td><td class="tpos">★★★★★</td><td class="tpos">8.4 / 10</td><td>Growth investors</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ambuja)"></span>Ambuja</td><td class="tpos">★★★★☆</td><td><span style="color:var(--warn)">★★★☆☆</span></td><td class="tpos">★★★★☆</td><td class="tpos">★★★★★</td><td class="tpos">★★★★☆</td><td><span style="color:var(--warn)">7.4 / 10</span></td><td>Contrarian FY27</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--acc)"></span>ACC</td><td><span style="color:var(--warn)">★★★☆☆</span></td><td><span style="color:var(--neg)">★★☆☆☆</span></td><td class="tpos">★★★★★</td><td class="tpos">★★★★★</td><td><span style="color:var(--warn)">★★★☆☆</span></td><td><span style="color:var(--warn)">7.0 / 10</span></td><td>Value recovery play</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ramco)"></span>Ramco</td><td><span style="color:var(--warn)">★★★☆☆</span></td><td class="tpos">★★★★☆</td><td><span style="color:var(--neg)">★★☆☆☆</span></td><td><span style="color:var(--neg)">★★☆☆☆</span></td><td><span style="color:var(--warn)">★★★☆☆</span></td><td><span style="color:var(--neg)">5.8 / 10</span></td><td>Regional traders only</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Q4 FY26 Sector Summary — Key Takeaways</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-top:4px;">
+      <div>
+        <p style="font-size:12.5px;font-weight:700;margin-bottom:8px;color:var(--pos)">✅ What Went Right</p>
+        <ul style="list-style:none;font-size:12px;line-height:1.85;">
+          <li>• UltraTech: Record on every metric — revenue, PAT, EBITDA, volume, capacity</li>
+          <li>• JSW Cement: EBITDA margin 19.3% — surprised on the upside</li>
+          <li>• Shree Cement: Volume +11%, premium share 22%, dividend +36%</li>
+          <li>• Ramco: PAT +450% YoY — base effect but shows structural recovery</li>
+          <li>• Industry volume growth: All 6 companies grew volumes 7–17% YoY in Q4</li>
+          <li>• Green power penetration: Sector-wide renewable adoption accelerating</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-size:12.5px;font-weight:700;margin-bottom:8px;color:var(--neg)">⚠ What To Watch</p>
+        <ul style="list-style:none;font-size:12px;line-height:1.85;">
+          <li>• ACC: PAT −68% YoY — margin compression despite record volumes</li>
+          <li>• Ambuja: EBITDA margin 13.4% — lowest in peer group; Penna/Sanghi drag</li>
+          <li>• Ramco: D/EBITDA 3.3×, promoter pledge 22% — structural concerns persist</li>
+          <li>• West Asia conflict: Packaging bags + pet coke still elevated heading into FY27</li>
+          <li>• Sector demand: Management flagged April 2026 demand softness</li>
+          <li>• FY27 risk: 119 MTPA Adani new capacity may pressure prices</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 12 · CB ASSIST ══ -->
+<div class="panel" id="tab-cbassist">
+  <div class="sec-hdr">🤖 CB Assist — Cement Sector AI Analyst <span class="sec-note">· EIL Research · Powered by Claude</span></div>
+
+  <div class="g2">
+    <div>
+      <div class="cbassist-chat">
+        <div class="cbassist-title"><span></span> CB Assist — Cement Research</div>
+
+        <!-- English Questions Section -->
+        <div class="lang-section">
+          <span class="lang-section-hdr en">🇬🇧 English Questions</span>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+              <button class="preset-tab pt-utc active" onclick="switchPreset('en-utc',this)">UltraTech</button>
+              <button class="preset-tab pt-shree" onclick="switchPreset('en-shree',this)">Shree</button>
+              <button class="preset-tab pt-jsw" onclick="switchPreset('en-jsw',this)">JSW</button>
+              <button class="preset-tab pt-ambuja" onclick="switchPreset('en-ambuja',this)">Ambuja</button>
+              <button class="preset-tab pt-acc" onclick="switchPreset('en-acc',this)">ACC</button>
+              <button class="preset-tab pt-ramco" onclick="switchPreset('en-ramco',this)">Ramco</button>
+              <button class="preset-tab pt-sector" onclick="switchPreset('en-sector',this)">Sector</button>
+            </div>
+
+            <div class="presets-panel active" id="pn-en-utc">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askPreset('UltraTech reached 200 MTPA capacity in Q4 FY26. How does this scale translate into a competitive moat that smaller players cannot replicate?')"><div class="pq-en">UltraTech reached 200 MTPA — what does this scale mean as a competitive moat vs smaller peers?</div></div>
+                <div class="preset-q" onclick="askPreset('UltraTech reduced Net Debt/EBITDA from 1.4x to 0.94x while also growing capacity to 200 MTPA. What does this capital allocation discipline signal about management quality?')"><div class="pq-en">UltraTech grew capacity to 200 MTPA AND reduced debt simultaneously — what does this signal?</div></div>
+                <div class="preset-q" onclick="askPreset('UltraTech acquired India Cements (Tamil Nadu) in FY24-25. How is the South India integration progressing and what is the risk if Ramco and Adani-Penna fight for market share in Tamil Nadu?')"><div class="pq-en">India Cements integration in TN — how is it progressing and what is the competitive risk from Ramco and Adani-Penna?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-en-shree">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askPreset('Shree Cement grew volume only 2.2% in FY26 while the industry grew 8-10%. The company deliberately chose value over volume. When is this strategy a moat and when does it become a liability?')"><div class="pq-en">Shree Cement: volume growth 2.2% vs sector 8–10%. When does "value over volume" strategy become a liability?</div></div>
+                <div class="preset-q" onclick="askPreset('Shree Cement has 666.5 MW of green power capacity with 61% green electricity share in Q4 FY26. How does this translate into EBITDA/tonne advantage and is it sustainable as peers also scale up renewable energy?')"><div class="pq-en">Shree Cement's 666.5 MW green power = 61% electricity share. How durable is this cost moat as peers scale up renewables?</div></div>
+                <div class="preset-q" onclick="askPreset('Citi has a Buy at Rs 29,200 and Morgan Stanley has Underweight at Rs 25,500 on Shree Cement. The key debate is volume growth vs margin quality. Who is more likely right in a 2-year view and why?')"><div class="pq-en">Citi Buy ₹29,200 vs Morgan Stanley Underweight ₹25,500 on Shree — who is more likely right and why?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-en-jsw">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askPreset('JSW Cement has a clinker factor of 51% versus the industry average of 65-68%. Explain exactly why this structural advantage translates to EBITDA/tonne superiority and whether it can be replicated by competitors.')"><div class="pq-en">JSW Cement: 51% clinker factor vs 65–68% industry avg. Explain this structural advantage and whether peers can replicate it.</div></div>
+                <div class="preset-q" onclick="askPreset('JSW Cement IPO was in August 2025. The company has a non-cash exceptional loss of Rs 1,466 crore from CCPS conversion which distorts reported FY26 PAT. How should investors normalise this and what is the true FY26 profitability story?')"><div class="pq-en">JSW Cement FY26 reported loss distorted by ₹1,466 Cr CCPS charge. How should investors read the true FY26 profitability?</div></div>
+                <div class="preset-q" onclick="askPreset('JSW Cement entered North India with the Nagaur integrated plant in Rajasthan (commissioned March 2026). North India is dominated by UltraTech, Shree Cement, and Adani. What is JSW Cement strategic rationale and what are the key success metrics to track in FY27?')"><div class="pq-en">JSW Cement entered North India via Nagaur in March 2026. What is the strategic rationale and what FY27 metrics prove success?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-en-ambuja">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askPreset('Ambuja Cement is consolidating Penna and Sanghi Industries under the One Cement Platform. FY26 production cost peaked at Rs 4,500/tonne due to West Asia conflict impacts. What is the realistic cost reduction roadmap and timeline to reach Rs 4,250/tonne?')"><div class="pq-en">Ambuja production cost peaked at ₹4,500/T. What is the realistic path to ₹4,250/T target for FY27 and what could derail it?</div></div>
+                <div class="preset-q" onclick="askPreset('Ambuja Cements is debt-free with AAA/A1+ credit ratings and has aggressive capacity expansion to 119 MTPA by FY27 with multiple grinding units. How does the Adani Group port logistics advantage structurally lower coal import cost compared to peers?')"><div class="pq-en">How does Adani Port access structurally reduce Ambuja coal import cost — and by how much per tonne vs competitors?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-en-acc">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askPreset('ACC Q4 FY26 PAT dropped 68% YoY to Rs 238 crore, but the context is that Q4 FY25 included a one-time Gagal excise refund of Rs 637 crore. Stripping out this base effect, what is the true underlying Q4 PAT trajectory for ACC?')"><div class="pq-en">ACC PAT fell 68% in Q4 FY26 — but Q4 FY25 had ₹637 Cr Gagal excise windfall. What is the true underlying PAT trend?</div></div>
+                <div class="preset-q" onclick="askPreset('ACC Ready Mix Concrete business grew 36.6% YoY in Q4 FY26 to Rs 574 crore. This is the fastest growing segment. What is the total addressable RMC market in India, what margins does it offer versus grey cement, and can RMC become 25% of ACC revenue in 3 years?')"><div class="pq-en">ACC RMC grew +36.6% YoY in Q4. Can RMC become 25% of ACC revenue in 3 years and what margin does it carry?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-en-ramco">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askPreset('Ramco Cements has debt/EBITDA of 3.3x and promoter pledge at 22%. In the context of South India cement competition intensifying with Adani Penna and UltraTech India Cements entering Tamil Nadu, what is the risk that Ramco ends up in a debt trap if realisations fall?')"><div class="pq-en">Ramco: D/EBITDA 3.3×, promoter pledge 22%, new TN competition from Adani-Penna and UltraTech. What is the debt trap risk?</div></div>
+                <div class="preset-q" onclick="askPreset('Ramco Cements has 600 MW of wind power — a unique differentiator in the cement sector. How does this wind power business reduce effective power cost per tonne and what is the EBITDA impact quantified in Rs per tonne versus competitors who buy grid power?')"><div class="pq-en">Ramco 600 MW wind power — quantify the EBITDA/tonne advantage vs peers buying grid power in South India.</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-en-sector">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askPreset('The West Asia conflict has impacted cement companies through two channels: petcoke/coal cost inflation and packing bag price increase. Ambuja said production cost peaked at Rs 4,500/T in Q4 FY26. Which cement companies are most exposed to this risk in FY27 and which are most insulated?')"><div class="pq-en">West Asia conflict hit cement via petcoke and packing bags. Which of these 6 companies are most and least exposed going into FY27?</div></div>
+                <div class="preset-q" onclick="askPreset('With UltraTech at 200 MTPA and Ambuja targeting 119 MTPA — total Adani+Birla = over 300 MTPA — India cement demand is only around 400-420 MT per annum. How does this concentration of capacity affect pricing power for the sector and what happens to Ramco and JSW Cement pricing if the two giants engage in a price war?')"><div class="pq-en">UltraTech 200 MTPA + Ambuja 119 MTPA = 319 MTPA vs 400 MT total demand. Does this concentration risk trigger a price war?</div></div>
+                <div class="preset-q" onclick="askPreset('Compare EBITDA per tonne across all 6 companies: UltraTech Rs 1253, Shree Rs 1161, JSW Rs 916, Ramco Rs 785, Ambuja Rs 735, ACC Rs 630. What explains the wide disparity and which of the low-EBITDA/tonne companies has the clearest structural path to improvement?')"><div class="pq-en">EBITDA/T ranges from ₹630 (ACC) to ₹1,253 (UltraTech). What explains this wide gap and who has the clearest path to improvement?</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tamil Section -->
+        <div class="lang-section">
+          <span class="lang-section-hdr ta">🇮🇳 தமிழ் கேள்விகள் (Tamil Questions)</span>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+              <button class="preset-tab pt-utc active" onclick="switchTamilPreset('ta-utc',this)">UltraTech</button>
+              <button class="preset-tab pt-shree" onclick="switchTamilPreset('ta-shree',this)">Shree</button>
+              <button class="preset-tab pt-jsw" onclick="switchTamilPreset('ta-jsw',this)">JSW</button>
+              <button class="preset-tab pt-ramco" onclick="switchTamilPreset('ta-ramco',this)">Ramco</button>
+              <button class="preset-tab pt-sector" onclick="switchTamilPreset('ta-sector',this)">Sector</button>
+            </div>
+
+            <div class="presets-panel active" id="pn-ta-utc">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askTamilPreset('UltraTech Cement 200 MTPA திறன் அடைந்துள்ளது. இந்த அளவிலான scale, சிறிய நிறுவனங்கள் போட்டியிட முடியாத competitive moat-ஆக எவ்வாறு செயல்படுகிறது என்று விளக்குங்கள்?')"><div class="pq-en">UltraTech 200 MTPA திறன் — இந்த scale-ஆல் என்ன competitive moat உருவாகிறது?</div><div class="pq-ta">இந்த அளவு ஏன் சிறிய நிறுவனங்களுக்கு மிகவும் கடினமான போட்டியாக மாறுகிறது?</div></div>
+                <div class="preset-q" onclick="askTamilPreset('UltraTech FY26-ல் PAT ₹8,305 கோடி (+36%) — முதல்முறையாக ₹8,000 கோடியை தாண்டியது. இந்த வளர்ச்சியை நம்பகமான முறையில் FY27-லும் தொடர முடியுமா? என்ன risk காரணிகள் உள்ளன?')"><div class="pq-en">UltraTech PAT ₹8,305 கோடி FY26 — FY27-லும் இந்த வளர்ச்சி நீடிக்குமா?</div><div class="pq-ta">India Cements integration மற்றும் Adani competition என்ன தாக்கம் ஏற்படுத்தும்?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-ta-shree">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askTamilPreset('Shree Cement EBITDA per tonne ₹1,161 — sector-ல் மிக அதிகமான தொழிற்திறன். ஆனால் FY26-ல் volume வளர்ச்சி வெறும் 2.2%. இந்த value over volume strategy எப்போது strength ஆகும்? எப்போது liability ஆகும்?')"><div class="pq-en">Shree Cement volume வளர்ச்சி 2.2% மட்டுமே vs sector 8–10%. "Value over volume" strategy எப்போது ஆபத்தாகும்?</div><div class="pq-ta">இந்த strategy நீண்டகாலத்தில் சரியானதா?</div></div>
+                <div class="preset-q" onclick="askTamilPreset('Shree Cement 666.5 MW பசுமை மின் உற்பத்தி திறன் கொண்டுள்ளது — Q4 FY26-ல் 61% green electricity. இது EBITDA per tonne-ல் சரியாக எத்தனை ரூபாய் advantage தருகிறது? மற்ற நிறுவனங்கள் இதை replicate செய்ய எவ்வளவு ஆண்டுகள் ஆகும்?')"><div class="pq-en">Shree Cement 61% பசுமை மின்சாரம் — இது EBITDA/tonne-ல் எத்தனை ரூபாய் advantage? போட்டியாளர்கள் copy செய்ய எவ்வளவு நேரம்?</div><div class="pq-ta">இந்த green moat நீண்டகால competitive advantage-ஆ?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-ta-jsw">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askTamilPreset('JSW Cement clinker factor 51% — sector average 65-68%. இந்த குறைந்த clinker factor எவ்வாறு EBITDA per tonne advantage-ஆக மாறுகிறது? ரூபாயில் quantify செய்யுங்கள். இதை மற்ற நிறுவனங்கள் replicate செய்ய முடியுமா?')"><div class="pq-en">JSW Cement clinker factor 51% vs industry 65–68% — இந்த advantage-ஐ ரூபாயில் quantify செய்யுங்கள்.</div><div class="pq-ta">இதை போட்டியாளர்கள் copy செய்ய முடியுமா?</div></div>
+                <div class="preset-q" onclick="askTamilPreset('JSW Cement August 2025-ல் IPO வந்தது. Q4 FY26-ல் EBITDA margin 19.3% — group-ல் மிக அதிகம். Rajasthan Nagaur plant commissioning ஆனது. இந்த நிறுவனம் 3 ஆண்டுகளில் அடுத்த tier-க்கு செல்ல முடியுமா?')"><div class="pq-en">JSW Cement IPO ஆகி 9 மாதம் — EBITDA margin 19.3% அடைந்தது. 3 ஆண்டுகளில் இது sector-ல் major player ஆகுமா?</div><div class="pq-ta">North India entry எவ்வளவு risk எடுக்கிறது?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-ta-ramco">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askTamilPreset('Ramco Cements Tamil Nadu நிறுவனம். ஆனால் Adani-Penna மற்றும் UltraTech-India Cements இப்போது Tamil Nadu-ல் நேரடி போட்டியாளர்கள். Ramco debt/EBITDA 3.3x மற்றும் promoter pledge 22%. இந்த competitive threat Ramco-க்கு எந்த அளவு ஆபத்தானது?')"><div class="pq-en">Tamil Nadu-ல் Adani-Penna மற்றும் UltraTech-India Cements புதிய போட்டி — Ramco debt 3.3× + promoter pledge. இது எவ்வளவு ஆபத்தானது?</div><div class="pq-ta">Ramco-ன் home turf attack-க்கு என்ன பதில் strategy வேண்டும்?</div></div>
+                <div class="preset-q" onclick="askTamilPreset('Ramco Cements-ன் 600 MW wind power business ஒரு unique differentiator. South India-ல் grid power-ஐ விட எத்தனை ரூபாய் per tonne மலிவாக மின்சாரம் கிடைக்கிறது? இதன் EBITDA impact quantify செய்யுங்கள்.')"><div class="pq-en">Ramco 600 MW wind power advantage — South India grid power vs wind: per tonne EBITDA impact என்ன?</div><div class="pq-ta">இந்த advantage போட்டியாளர்களுக்கு copy செய்ய முடியுமா?</div></div>
+              </div>
+            </div>
+            <div class="presets-panel" id="pn-ta-sector">
+              <div class="preset-qs">
+                <div class="preset-q" onclick="askTamilPreset('India cement demand FY27-ல் 5% வளர்ச்சி எதிர்பார்க்கப்படுகிறது. Ambuja 119 MTPA capacity FY27-ல் ready ஆகும். UltraTech 200 MTPA-ல் இருக்கிறது. இந்த oversupply risk cement prices-ஐ எவ்வாறு பாதிக்கும்? யாருக்கு அதிகமான impact ஆகும்?')"><div class="pq-en">Ambuja 119 MTPA + UltraTech 200 MTPA vs 5% demand growth — oversupply risk-ஈல் யாருக்கு அதிக impact?</div><div class="pq-ta">Ramco மற்றும் JSW போன்ற சிறிய நிறுவனங்களுக்கு என்ன ஆகும்?</div></div>
+                <div class="preset-q" onclick="askTamilPreset('Cement sector-ல் EBITDA per tonne: UltraTech ₹1,253, Shree ₹1,161, JSW ₹916, Ramco ₹785, Ambuja ₹735, ACC ₹630. இந்த வித்தியாசத்திற்கு காரணம் என்ன? குறைந்த EBITDA/tonne கொண்ட நிறுவனங்களில் யாருக்கு மேம்படுத்த தெளிவான வழி உள்ளது?')"><div class="pq-en">EBITDA/tonne ₹630 (ACC) முதல் ₹1,253 (UltraTech) வரை பரந்த வித்தியாசம் — காரணம் என்ன? யாருக்கு improvement path தெளிவாக உள்ளது?</div><div class="pq-ta">இந்த sector-ல் invest செய்ய ஒரே ஒரு நிறுவனம் தேர்வு செய்தால் எது?</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-msgs" id="cementChatMsgs">
+          <div class="chat-msg bot">நல்வரவு! CB Assist — Cement Sector Research இங்கு. Ask in English or Tamil. Smart questions get smarter answers. 🏗️</div>
+        </div>
+        <div class="typing-ind" id="cementTyping"><span></span><span></span><span></span></div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="cementInput" placeholder="Ask about cement companies, clinker, margins, geography, or valuation..." onkeydown="if(event.key==='Enter')sendCementChat()">
+          <button class="chat-send" id="cementSend" onclick="sendCementChat()">Ask</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-lbl">CB Assist — How to Use</div>
+        <ul style="list-style:none;font-size:12px;line-height:1.8;color:var(--muted);">
+          <li>📊 Click any English question to ask instantly</li>
+          <li>🇮🇳 Click any Tamil question for Tamil response</li>
+          <li>✍️ Type your own question in the input box</li>
+          <li>💡 Questions are smart — not basic, but analytical</li>
+          <li>🔬 Covers: Clinker, Grinding, EBITDA/T, Geography, SWOT, Valuation</li>
+        </ul>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <div class="card-lbl">Data Scope</div>
+          <ul style="list-style:none;font-size:11.5px;line-height:1.8;color:var(--muted);">
+            <li>✅ UltraTech Q4 FY26 (Apr 27, 2026)</li>
+            <li>✅ Ambuja Q4 FY26 (Apr 30, 2026)</li>
+            <li>✅ ACC Q4 FY26 (Apr 30, 2026)</li>
+            <li>✅ Shree Cement Q4 FY26 (May 6, 2026)</li>
+            <li>✅ Ramco Q4 FY26 (May 23, 2026)</li>
+            <li>✅ JSW Cement Q4 FY26 (May 21, 2026)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CEMENT SCHOOL ══ -->
+<div class="panel" id="tab-school">
+  <div class="sec-hdr">🎓 Cement School <span class="sec-note">· Everything you need to know about the cement industry · EIL Research</span></div>
+
+  <!-- INTRO BANNER -->
+  <div style="background:linear-gradient(135deg,#0e7490 0%,#1d4ed8 100%);border-radius:var(--radius);padding:22px 28px;margin-bottom:24px;color:#fff;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;margin-bottom:8px;">Why Cement Matters More Than You Think</div>
+    <div style="font-size:13px;line-height:1.8;opacity:.92;">Cement is not a commodity — it is the backbone of every road, bridge, dam, home, and factory in India. Every ₹1 lakh crore spent on infrastructure requires roughly 0.8–1 MT of cement. India consumes ~420 MT per year, second only to China (~2,000 MT). With urbanisation at 36% (target: 50% by 2047) and a ₹11 lakh crore annual infrastructure budget, demand will only grow. Understanding how cement is made, priced, and competed for is understanding India's growth story itself.</div>
+  </div>
+
+  <!-- CHAPTER 1: CLINKER -->
+  <div style="border-left:5px solid #0e7490;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#0e7490;margin-bottom:4px;">Chapter 1 — Clinker: The Heart of Cement</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">The Most Critical Asset in the Entire Value Chain</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">What Is Clinker?</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:12px;">Clinker is the intermediate product formed when limestone, clay, iron ore, and silica are blended and burned at <strong>1,450°C in a rotary kiln</strong>. It emerges as dark grey pellets — the actual "binding agent" that gives cement its strength.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">Think of clinker as the <strong>baked dough</strong> and cement as the <strong>finished bread</strong>. You can bake at one location, transport the dough, and finish the bread at a bakery near the customer. That logic is exactly how integrated plants + grinding units work.</p>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;margin-top:12px;font-size:12px;line-height:1.7;">
+        <strong>Raw materials needed per tonne of clinker:</strong><br>
+        🪨 Limestone — ~1.5 tonnes (80% of mix)<br>
+        🟫 Clay / Shale — ~0.25 tonnes<br>
+        🔩 Iron ore / Laterite — ~0.05 tonnes<br>
+        🧂 Gypsum — added at grinding stage (regulates setting time)
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Why Clinker Capacity = Strategic Power</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:12px;">Whoever controls <strong>clinker capacity controls cement supply</strong>. You cannot make cement without clinker. A grinding unit without its own clinker supply is permanently dependent — either buying clinker from a competitor or paying freight from a distant integrated plant.</p>
+      <table style="margin-top:8px;">
+        <thead><tr><th>Company</th><th style="text-align:right">Clinker Capacity</th><th style="text-align:right">Clinker Factor</th></tr></thead>
+        <tbody>
+          <tr><td>UltraTech</td><td class="num">~140 MTPA</td><td class="num">~65%</td></tr>
+          <tr><td>Ambuja+ACC</td><td class="num">~60 MTPA</td><td class="num">~65%</td></tr>
+          <tr><td>Shree Cement</td><td class="num">~50 MTPA</td><td class="num">~62%</td></tr>
+          <tr><td>JSW Cement</td><td class="num">~15 MTPA</td><td class="num"><strong style="color:#0e7490">51%</strong> ← Best</td></tr>
+          <tr><td>Ramco</td><td class="num">~12 MTPA</td><td class="num">~63%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;"><strong>Clinker factor</strong> = clinker used per tonne of cement produced. Lower = more fly ash/slag blending = cheaper cement = better margins. JSW's 51% is the best in class.</p>
+    </div>
+  </div>
+
+  <!-- CHAPTER 2: GRINDING UNITS -->
+  <div style="border-left:5px solid #7c3aed;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#7c3aed;margin-bottom:4px;">Chapter 2 — Grinding Units: The Market Access Network</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">Getting Cement to the Customer Cheaply is Half the Battle</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">Integrated Plant vs Grinding Unit</div>
+      <table>
+        <thead><tr><th>Factor</th><th>Integrated Plant</th><th>Grinding Unit</th></tr></thead>
+        <tbody>
+          <tr><td>What it does</td><td>Makes clinker + grinds cement</td><td>Only grinds (buys clinker)</td></tr>
+          <tr><td>Location logic</td><td>Near limestone mines</td><td>Near cement markets</td></tr>
+          <tr><td>Capex/MTPA</td><td>₹600–800 Cr</td><td>₹150–200 Cr</td></tr>
+          <tr><td>Lead time</td><td>3–4 years</td><td>12–18 months</td></tr>
+          <tr><td>Power use</td><td>Very high (kiln firing)</td><td>Low (only ball mills)</td></tr>
+          <tr><td>Flexibility</td><td>Low — heavy fixed costs</td><td>High — can be shut easily</td></tr>
+          <tr><td>Strategic value</td><td>Very high</td><td>Medium</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Why Companies Race to Build Grinding Units</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">The golden rule in cement: <strong>freight cost = 15–22% of total cost</strong>. Cement is heavy, low value-to-weight. Transporting cement 500 km by road costs ₹250–350/tonne — nearly 6–8% of the selling price wiped out just in logistics.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);margin-bottom:10px;">A grinding unit placed 100 km from the target market converts a distant cement company into a <strong>local supplier</strong>. This is why UltraTech has <strong>27 grinding units</strong> — they can serve almost any city in India with a local price advantage.</p>
+      <div style="background:#f5f3ff;border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.7;border-left:3px solid #7c3aed;">
+        <strong>Key Insight:</strong> Ambuja's 10 new grinding units in H1 FY27 (Dahej, Bhatinda, Salai Banwa, Jodhpur etc.) are not expansion for the sake of size — they are a deliberate <strong>freight cost reduction strategy</strong> targeting markets where UltraTech currently has a logistics advantage.
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 3: RAW MATERIALS -->
+  <div style="border-left:5px solid #c84b2f;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#c84b2f;margin-bottom:4px;">Chapter 3 — Raw Materials: The Hidden Margin Drivers</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">What Goes In Determines What Comes Out — in Cost and Quality</div>
+  </div>
+  <div class="g3" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">🪨 Limestone — The Crown Jewel</div>
+      <p style="font-size:12px;line-height:1.75;margin-bottom:10px;">Limestone is the <strong>single most important raw material</strong> — and it is non-movable. You cannot import limestone economically. This is why cement plants are always built <strong>near limestone deposits</strong>.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">Companies with long-term mining leases have a <strong>permanent structural cost advantage</strong>. Shree Cement's Rajasthan mines, Ramco's Ariyalur mines in Tamil Nadu, and UltraTech's mines in Rajasthan/AP are strategic moats that a new entrant simply cannot replicate overnight.</p>
+      <div style="background:#fef3f0;padding:10px 12px;border-radius:6px;margin-top:10px;font-size:11px;color:#c84b2f;font-weight:600;">India has ~100 billion tonnes of limestone reserves. But only high-grade deposits near markets are truly valuable.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">🌫️ Fly Ash & Slag — The Margin Enhancers</div>
+      <p style="font-size:12px;line-height:1.75;margin-bottom:10px;"><strong>Fly ash</strong> is a by-product of coal-fired power plants. <strong>GGBS (Ground Granulated Blast-furnace Slag)</strong> is a steel industry by-product. Both can partially replace clinker in cement — reducing cost by ₹200–400/tonne.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">JSW Cement's unique advantage: being part of JSW Steel, it has <strong>captive GGBS supply</strong> at near-zero cost. This is why JSW achieves a clinker factor of 51% — industry average is 65–68%. That 14% difference = ₹250–350/T lower cost.</p>
+      <div style="background:#ecfeff;padding:10px 12px;border-radius:6px;margin-top:10px;font-size:11px;color:#0e7490;font-weight:600;">Fly ash availability is tied to thermal power plant locations. Eastern India (near NTPC plants) = natural fly ash advantage for ACC, UltraTech.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">📦 Packaging Bags — The Overlooked Cost</div>
+      <p style="font-size:12px;line-height:1.75;margin-bottom:10px;">Every tonne of cement sold in bags needs <strong>20 HDPE/PP bags</strong> (50 kg each). Bag cost = ₹4–5 per bag = ₹80–100/tonne, or roughly 2% of cost.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">In FY26, <strong>West Asia conflict disrupted polypropylene supply chains</strong> — PP prices spiked 18–22%. This was a direct hit on margins across the sector. Ambuja's production cost peaked at ₹4,500/T partly due to this.</p>
+      <div style="background:#fdf5e0;padding:10px 12px;border-radius:6px;margin-top:10px;font-size:11px;color:#b8911e;font-weight:600;">Bulk cement (supplied via tankers to large infra projects) avoids bag cost entirely — and is growing as NHAI, metro, and port projects scale up.</div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 4: POWER & FUEL -->
+  <div style="border-left:5px solid #b8911e;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#b8911e;margin-bottom:4px;">Chapter 4 — Power & Fuel: The Biggest Cost Lever</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">35–40% of Total Production Cost. The Battlefield for Margins.</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">Where Energy is Consumed</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:12px;">Cement is one of India's most energy-intensive industries. The kiln must run at <strong>1,450°C continuously</strong> — stopping and restarting a kiln costs crores and damages the lining. Power and fuel together consume 35–40% of total production cost.</p>
+      <table>
+        <thead><tr><th>Stage</th><th>Energy Used</th><th>Fuel Type</th></tr></thead>
+        <tbody>
+          <tr><td>Raw material crushing</td><td class="num">~15–20 kWh/T</td><td>Electricity</td></tr>
+          <tr><td>Kiln (clinker burning)</td><td class="num">700–800 kcal/kg</td><td>Coal / Pet Coke</td></tr>
+          <tr><td>Clinker cooling</td><td class="num">~8–10 kWh/T</td><td>Electricity</td></tr>
+          <tr><td>Cement grinding</td><td class="num">~25–35 kWh/T</td><td>Electricity</td></tr>
+          <tr><td>Total electrical energy</td><td class="num">~80–110 kWh/T</td><td>Captive preferred</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">The Green Power Race & WHRS Advantage</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;"><strong>Waste Heat Recovery Systems (WHRS)</strong> capture the hot gases exiting the kiln and pre-heater and convert them into electricity — at near-zero marginal cost. A modern 4 MTPA plant can generate 15–20 MW of free power through WHRS.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);margin-bottom:10px;">Shree Cement pioneered WHRS adoption in India — it now generates <strong>61% of its power from green sources</strong> (WHRS + solar + wind). This saves approximately ₹80–120/tonne vs buying grid power.</p>
+      <div style="background:#f0fdf4;padding:10px 12px;border-radius:6px;margin-top:10px;font-size:12px;line-height:1.65;border-left:3px solid #166534;">
+        <strong>Ramco's Wind Power Moat:</strong> ~600 MW of wind power capacity in Tamil Nadu and AP gives Ramco a <strong>structural ₹100–150/T cost advantage</strong> in South India — a key reason why it survives against UltraTech's scale despite being 10× smaller.
+      </div>
+      <div style="background:#fdf5e0;padding:10px 12px;border-radius:6px;margin-top:10px;font-size:11.5px;line-height:1.65;border-left:3px solid #b8911e;">
+        <strong>Pet Coke vs Coal:</strong> Pet coke is cheaper but more polluting. Plants in states with stricter emission norms (Maharashtra, Gujarat) use more coal. A $10/T rise in coal = ₹60–70/T EBITDA hit — as seen in Q4 FY26.
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 5: LOGISTICS -->
+  <div style="border-left:5px solid #166534;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#166534;margin-bottom:4px;">Chapter 5 — Logistics: The Silent Margin Killer</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">In Cement, Where You Sell Matters as Much as What You Make</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">The Freight Math</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:12px;">Cement sells at roughly ₹4,500–5,200/tonne (retail). Road freight costs <strong>₹0.8–1.2 per tonne per km</strong>. So moving cement 300 km eats ₹240–360/T — that is 5–8% of revenue, gone just in transport.</p>
+      <table>
+        <thead><tr><th>Distance</th><th style="text-align:right">Freight Cost</th><th style="text-align:right">% of Revenue</th></tr></thead>
+        <tbody>
+          <tr><td>100 km (local)</td><td class="num">₹80–120/T</td><td class="tpos">~2%</td></tr>
+          <tr><td>300 km (regional)</td><td class="num">₹240–360/T</td><td class="warn">~6%</td></tr>
+          <tr><td>500 km (long haul)</td><td class="num">₹400–600/T</td><td class="tneg">~10%</td></tr>
+          <tr><td>Rail (bulk)</td><td class="num">₹180–250/T</td><td class="tpos">~4–5%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;">This is why cement is almost always sold within 250–350 km of the plant. Pan-India sales require grinding units in every major region — UltraTech's 27 GUs give it a freight advantage no other player currently matches.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Rail, Road & Ports — The Three Arteries</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;"><strong>Road:</strong> Fastest, flexible, but costliest. Used for distances under 300 km and for retail market delivery (bagged cement to dealers).</p>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;"><strong>Rail:</strong> Preferred for bulk/clinker movement over long distances. Shree Cement's Rajasthan plants use rail heavily to reach Delhi NCR, Mumbai, and even South India. Cost is 30–40% lower than road for distances above 500 km.</p>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;"><strong>Sea/Coastal:</strong> Used by coastal manufacturers. <strong>Ambuja's Adani port advantage</strong> is unique — Adani owns major ports at Mundra, Hazira, Mormugao. Importing coal and exporting clinker via captive ports saves ₹80–120/T vs competitors using third-party terminals.</p>
+      <div style="background:#f0fdf4;padding:10px 12px;border-radius:6px;margin-top:10px;font-size:11.5px;color:#166534;font-weight:600;border-left:3px solid #166534;">
+        Ramco's Chennai port access enables clinker movement from Ariyalur to coastal grinding units in Kerala and Andhra Pradesh — a key cost advantage for South India dominance.
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 6: RACE FOR DOMINANCE -->
+  <div style="border-left:5px solid #1d4ed8;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#1d4ed8;margin-bottom:4px;">Chapter 6 — The Race for Dominance: Why Size Matters Enormously</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">Cement is a Fixed-Cost Business — Bigger is Always Better</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">Why Cement Rewards Scale</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">A cement plant's biggest costs — kiln depreciation, power plant, mine, WHRS, management — are largely <strong>fixed</strong>. Whether you run a kiln at 70% or 90% utilisation, the fixed costs are the same. The more you produce, the lower the cost per tonne.</p>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.75;margin-bottom:10px;">
+        <strong>Example:</strong> UltraTech's fixed overheads per tonne at 200 MTPA are roughly <strong>40% lower</strong> than what they were at 100 MTPA — on the same asset base. This is operating leverage.
+      </div>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">Scale also brings <strong>brand pricing power</strong>. UltraTech commands ₹200–300/T premium over regional brands in many markets. That premium is pure margin — no extra cost to produce.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);margin-top:8px;">Finally, scale enables <strong>cross-subsidisation</strong> — a large player can price aggressively in one region to kill competition, absorbing losses with profits from other regions. A small regional player has no such buffer.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">The Capacity Land Grab — Why Everyone is Expanding Now</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">India's cement demand is expected to hit <strong>600–700 MT by 2030</strong> from ~420 MT today. That is 180–280 MT of new demand. Whoever builds capacity now — at current costs — will be the lowest-cost producer when that demand arrives.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);margin-bottom:10px;">Building a new integrated plant today costs <strong>₹600–800 Cr per MTPA</strong>. In 5 years, with inflation, it may cost ₹900–1,100 Cr. So the incentive is to build now, carry excess capacity for 2–3 years, and reap the benefits for 20+ years.</p>
+      <table>
+        <thead><tr><th>Company</th><th style="text-align:right">FY26 Capacity</th><th style="text-align:right">Target FY27–28</th><th style="text-align:right">Addition</th></tr></thead>
+        <tbody>
+          <tr><td>UltraTech</td><td class="num">200 MTPA</td><td class="num">~220 MTPA</td><td class="tpos">+20 MT</td></tr>
+          <tr><td>Ambuja+ACC</td><td class="num">103 MTPA</td><td class="num">119 MTPA</td><td class="tpos">+16 MT</td></tr>
+          <tr><td>Shree</td><td class="num">69.3 MTPA</td><td class="num">~75 MTPA</td><td class="tpos">+6 MT</td></tr>
+          <tr><td>JSW Cement</td><td class="num">~25 MTPA</td><td class="num">~35 MTPA</td><td class="tpos">+10 MT</td></tr>
+          <tr><td>Ramco</td><td class="num">19.4 MTPA</td><td class="num">~26 MTPA</td><td class="tpos">+6 MT</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CHAPTER 7: ADANI ENTRY -->
+  <div style="border-left:5px solid #c84b2f;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#c84b2f;margin-bottom:4px;">Chapter 7 — The Adani Entry: How One Acquisition Changed the Industry</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">From a Two-Horse Race to a Full Battle — 2022 Onwards</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">Before Adani: A Comfortable Duopoly</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">Until 2022, the Indian cement industry was effectively a <strong>comfortable duopoly</strong> at the top: <strong>UltraTech</strong> (Aditya Birla) was the undisputed #1 with ~120 MTPA, and <strong>Shree Cement</strong> was the most profitable player. Ambuja and ACC were under Swiss major Holcim, operating independently without aggressive expansion.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">The market was orderly — prices were relatively stable, players respected regional boundaries informally, and profitability was good. The top 5 companies controlled ~55% of capacity. A $10.5 billion Holcim exit changed everything.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">The Adani Takeover — May 2022</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">In May 2022, <strong>Gautam Adani acquired Holcim's entire India portfolio</strong> — Ambuja Cements (63.1% stake) + ACC (via Ambuja's holdings) — for <strong>$10.5 billion</strong>, the largest M&A deal in Indian cement history.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);margin-bottom:10px;">Overnight, Adani became the #2 cement group in India with ~67 MTPA combined capacity. But more importantly, Adani brought something Holcim never had: <strong>an integrated infrastructure ecosystem</strong>.</p>
+      <div style="background:#fef3f0;border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.75;border-left:3px solid #c84b2f;">
+        <strong>What Adani Brought That Others Cannot Match:</strong><br>
+        🚢 Captive ports (Mundra, Hazira, Mormugao) → cheaper coal imports<br>
+        ⚡ Adani Green Energy → potential green power supply to plants<br>
+        🛤️ Adani Logistics → road and rail network for distribution<br>
+        💰 Adani Capital → ability to fund expansion at lower cost<br>
+        🏗️ Adani Infra Projects → captive cement consumer for its own mega-projects
+      </div>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">How Adani Changed the Competitive Dynamics</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">The entry sparked a <strong>capacity arms race</strong> that the industry had not seen in a decade. UltraTech, which was growing at 8–10 MTPA/year, immediately accelerated to 20+ MTPA/year additions. Shree Cement broke its "no debt" tradition to fund new capacity. JSW Steel decided to spin off and list JSW Cement.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);margin-bottom:10px;">Adani announced a <strong>target of 140 MTPA by FY28</strong> under the One Cement Platform (Ambuja + ACC + Orient + Sanghi + Penna). This ambition forced competitors to respond or risk being marginalised.</p>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.75;">
+        <strong>The Price War Fear:</strong> In FY26, cement realisation per tonne actually declined or stayed flat even as input costs rose — because nobody dared raise prices with so much new capacity being added. The consumer benefited; the industry's margins compressed 200–400 bps from peak FY24 levels.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">One Cement Platform Strategy — Consolidate & Dominate</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">Adani's masterstroke was the <strong>"One Cement Platform"</strong> strategy — merging all acquisitions under a single operational umbrella while retaining individual brands for customer trust. Ambuja and ACC brands are over 50 years old and command deep dealer loyalty.</p>
+      <p style="font-size:12px;line-height:1.75;color:var(--muted);">Synergies extracted FY23–26: shared procurement of coal/fuel (saving ~₹80–100/T), cross-plant clinker optimisation, unified logistics contracts, and a single captive power procurement strategy. Normalised EBITDA/T has improved from ₹650 to ₹887 under Adani management.</p>
+      <div style="background:#f5f3ff;padding:10px 12px;border-radius:6px;margin-top:10px;font-size:11.5px;color:#7c3aed;font-weight:600;border-left:3px solid #7c3aed;">
+        Still work to do: Ambuja's Q4 FY26 EBITDA margin of 13.4% vs UltraTech's 22.3% shows the gap. Adani has the assets; execution is now the test.
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 8: SHREE CEMENT — VALUE OVER VOLUME -->
+  <div style="border-left:5px solid #166534;padding-left:18px;margin-bottom:28px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#166534;margin-bottom:4px;">Chapter 8 — Shree Cement: India's Most Efficient Cement Company</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">How a Rajasthan Company Beats Everyone on Margins, Not Just Volume</div>
+  </div>
+  <div class="g2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-lbl">The Shree Cement Paradox</div>
+      <p style="font-size:12.5px;line-height:1.8;margin-bottom:10px;">Shree Cement produces <strong>36.4 MT per year</strong> — roughly 1/4th of UltraTech's 145 MT. Yet its market cap is <strong>~₹95,000 Cr</strong> — roughly 30% of UltraTech's ₹3,23,000 Cr. The ratio of value to volume is significantly higher than its peers. Why?</p>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Shree</th><th style="text-align:right">UltraTech</th><th style="text-align:right">Ambuja</th></tr></thead>
+        <tbody>
+          <tr><td>EBITDA/Tonne Q4</td><td class="num" style="color:#166534;font-weight:700;">₹1,161</td><td class="num">₹1,253</td><td class="num">₹735</td></tr>
+          <tr><td>EBITDA Margin Q4</td><td class="num" style="color:#166534;font-weight:700;">19.9%</td><td class="num">22.3%</td><td class="num">13.4%</td></tr>
+          <tr><td>FY26 PAT growth</td><td class="num" style="color:#166534;font-weight:700;">+43%</td><td class="num">+36%</td><td class="num">+17%</td></tr>
+          <tr><td>Green power %</td><td class="num" style="color:#166534;font-weight:700;">61%</td><td class="num">~35%</td><td class="num">~30%</td></tr>
+          <tr><td>Debt</td><td class="num" style="color:#166534;font-weight:700;">Near zero</td><td class="num">₹16,000 Cr</td><td class="num">Zero</td></tr>
+          <tr><td>Dividend FY26</td><td class="num" style="color:#166534;font-weight:700;">₹150/share</td><td class="num">₹70/share</td><td class="num">₹2/share</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">What Makes Shree Different</div>
+      <div style="margin-bottom:10px;">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#166534;">1. Obsessive Cost Culture</div>
+        <p style="font-size:12px;line-height:1.7;color:var(--muted);">Shree's promoters (Bangur family) are known for running one of the leanest management structures in Indian industry. Employee cost per tonne is among the lowest. Every rupee of capex is justified by a clear IRR before approval. This is not just strategy — it is family culture.</p>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#166534;">2. WHRS Pioneer — 20 Years Ahead</div>
+        <p style="font-size:12px;line-height:1.7;color:var(--muted);">Shree installed its first WHRS plant in the early 2000s when no one else in India was doing it. Today, with 61% green power and 666.5 MW capacity, it saves ₹100–150/T in power cost vs grid-dependent competitors.</p>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#166534;">3. Premium Pricing Without Premium Advertising</div>
+        <p style="font-size:12px;line-height:1.7;color:var(--muted);">Shree commands premium pricing through <strong>contractor and dealer loyalty</strong> rather than mass-market advertising. 22% of trade volume is premium products — up from 16% in Q4 FY25. This shift = ₹150–200/T higher realisation per tonne.</p>
+      </div>
+      <div style="background:#f0fdf4;padding:10px 12px;border-radius:6px;font-size:12px;line-height:1.7;border-left:3px solid #166534;">
+        <strong>The Bangur Philosophy:</strong> "Never chase volume. Build where you have cost advantage. Never borrow to grow faster than your cash generation." This discipline is why Shree has near-zero debt while peers carry thousands of crores.
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-lbl">Shree vs UltraTech — Size vs Quality: The Full Picture</div>
+    <div class="g3" style="gap:14px;margin-top:4px;">
+      <div style="background:#f0fdf4;border-radius:8px;padding:14px;border:1px solid #bbf7d0;">
+        <div style="font-weight:800;font-size:11px;color:#166534;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Shree Cement Edge</div>
+        <ul style="list-style:none;font-size:12px;line-height:1.8;color:var(--text);">
+          <li>✅ Highest EBITDA/T after UltraTech</li>
+          <li>✅ 61% green power — lowest energy cost</li>
+          <li>✅ Near-zero debt — pure equity growth</li>
+          <li>✅ ₹150/share dividend — highest in sector</li>
+          <li>✅ PAT grew +43% FY26 — fastest large cap</li>
+          <li>✅ New Kodla (Karnataka) plant opens South India</li>
+        </ul>
+      </div>
+      <div style="background:#eff6ff;border-radius:8px;padding:14px;border:1px solid #bfdbfe;">
+        <div style="font-weight:800;font-size:11px;color:#1d4ed8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">UltraTech Edge</div>
+        <ul style="list-style:none;font-size:12px;line-height:1.8;color:var(--text);">
+          <li>✅ 200 MTPA — 3× Shree's size</li>
+          <li>✅ Pan-India presence — 27 grinding units</li>
+          <li>✅ Highest absolute EBITDA/T ₹1,253</li>
+          <li>✅ Highest volume market share ~34%</li>
+          <li>✅ India Cements acquisition — South India entry</li>
+          <li>✅ Scale allows cross-region pricing power</li>
+        </ul>
+      </div>
+      <div style="background:#fdf5e0;border-radius:8px;padding:14px;border:1px solid #fde68a;">
+        <div style="font-weight:800;font-size:11px;color:#b8911e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">The Verdict on Shree</div>
+        <ul style="list-style:none;font-size:12px;line-height:1.8;color:var(--text);">
+          <li>🏆 Most profitable per tonne (non-UltraTech)</li>
+          <li>🏆 Best capital allocation discipline</li>
+          <li>🏆 Highest return to shareholders FY26</li>
+          <li>⚠️ North-heavy — limited South India reach</li>
+          <li>⚠️ Petcoke dependent — cost volatile</li>
+          <li>⚠️ High P/E (~55×) — priced for perfection</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 9: KEY METRICS GLOSSARY -->
+  <div style="border-left:5px solid #6b7280;padding-left:18px;margin-bottom:20px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:#374151;margin-bottom:4px;">Chapter 9 — The Cement Investor's Glossary</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;">Numbers That Matter and What They Actually Mean</div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="card">
+      <table>
+        <thead><tr><th>Term</th><th>What It Means</th><th style="text-align:right">Good Number</th></tr></thead>
+        <tbody>
+          <tr><td><strong>EBITDA/Tonne</strong></td><td>Profit earned per tonne of cement sold (before interest, tax, depreciation)</td><td class="tpos">₹1,000+</td></tr>
+          <tr><td><strong>Realisation/Tonne</strong></td><td>Average selling price per tonne of cement</td><td class="num">₹4,800–5,200</td></tr>
+          <tr><td><strong>Clinker Factor</strong></td><td>Clinker used per tonne of cement — lower = better blending efficiency</td><td class="tpos">&lt;60%</td></tr>
+          <tr><td><strong>Capacity Utilisation</strong></td><td>Actual production ÷ installed capacity. High = good fixed cost absorption</td><td class="tpos">&gt;85%</td></tr>
+          <tr><td><strong>P&F Cost/Tonne</strong></td><td>Power and Fuel cost per tonne — biggest variable cost lever</td><td class="tpos">&lt;₹1,200/T</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Term</th><th>What It Means</th><th style="text-align:right">Good Number</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Net D/EBITDA</strong></td><td>Net debt divided by annual EBITDA — leverage health check</td><td class="tpos">&lt;1.5×</td></tr>
+          <tr><td><strong>WHRS MW</strong></td><td>Waste Heat Recovery capacity — more = lower power cost</td><td class="tpos">Higher better</td></tr>
+          <tr><td><strong>EBITDA Margin</strong></td><td>EBITDA as % of revenue — overall operational efficiency</td><td class="tpos">&gt;18%</td></tr>
+          <tr><td><strong>EV/EBITDA</strong></td><td>Enterprise value relative to earnings — valuation metric for cement</td><td class="num">12–16× fair</td></tr>
+          <tr><td><strong>Volume Growth %</strong></td><td>YoY growth in cement despatches — demand indicator</td><td class="tpos">&gt;8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+<!-- ══ END CEMENT SCHOOL ══ -->
+
+</div><!-- /main -->
+
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">Cauvery Business</div><div class="cb-wm-sub">EIL Research · Q4 FY26</div></div>
+</div>
+
+<div class="footer">
+  Cement Sector Intelligence Dashboard · Q4 FY26 · EIL Research | Cauvery Business<br>
+  Data sources: BSE/NSE exchange filings, company press releases, investor presentations. All figures from official sources.<br>
+  <strong>Research only. Not investment advice.</strong> Verify all figures from primary BSE/NSE filings before any investment decision.
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'charts') initCharts();
+}
+
+let chartsInit = false;
+function initCharts() {
+  if (chartsInit) return;
+  chartsInit = true;
+  const C = {
+    utc: '#1d4ed8', ambuja: '#7c3aed', acc: '#c84b2f',
+    shree: '#166534', ramco: '#b8911e', jsw: '#0e7490'
+  };
+  const cos = ['UltraTech','Ambuja','ACC','Shree','Ramco','JSW'];
+  const bgs = [C.utc, C.ambuja, C.acc, C.shree, C.ramco, C.jsw];
+  const opts = { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#eee' }, ticks: { font: { family: 'IBM Plex Mono', size: 10 } } }, x: { ticks: { font: { size: 11 } } } } };
+
+  new Chart(document.getElementById('revenueChart').getContext('2d'), {
+    type: 'bar',
+    data: { labels: cos, datasets: [{ data: [25467, 10915, 7146, 6101, 2610, 1895], backgroundColor: bgs, borderRadius: 5 }] },
+    options: { ...opts, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '₹' + c.parsed.y.toLocaleString('en-IN') + ' Cr' } } }, scales: { y: { ticks: { callback: v => '₹' + (v/1000).toFixed(0) + 'K' } }, x: {} } }
+  });
+
+  new Chart(document.getElementById('ebitdaTChart').getContext('2d'), {
+    type: 'bar',
+    data: { labels: cos, datasets: [{ data: [1253, 735, 630, 1161, 785, 916], backgroundColor: bgs, borderRadius: 5 }] },
+    options: { ...opts, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '₹' + c.parsed.y + '/T' } } }, scales: { y: { ticks: { callback: v => '₹' + v } }, x: {} } }
+  });
+
+  new Chart(document.getElementById('marginChart').getContext('2d'), {
+    type: 'bar',
+    data: { labels: cos, datasets: [{ data: [22.3, 13.4, 10.5, 19.9, 16.6, 19.3], backgroundColor: bgs, borderRadius: 5 }] },
+    options: { ...opts, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + '%' } } }, scales: { y: { ticks: { callback: v => v + '%' } }, x: {} } }
+  });
+
+  new Chart(document.getElementById('volumeChart').getContext('2d'), {
+    type: 'bar',
+    data: { labels: cos, datasets: [{ data: [42.41, 19.9, 11.9, 10.56, 5.5, 3.99], backgroundColor: bgs, borderRadius: 5 }] },
+    options: { ...opts, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + ' MT' } } }, scales: { y: { ticks: { callback: v => v + ' MT' } }, x: {} } }
+  });
+
+  new Chart(document.getElementById('patChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: cos,
+      datasets: [
+        { label: 'FY26 PAT', data: [8305, 2647, 2137, 1706, 694, 668], backgroundColor: bgs.map(c => c + 'cc'), borderRadius: 4 },
+        { label: 'FY25 PAT', data: [6106, 2262, 2401, 1196, 300, -13], backgroundColor: bgs.map(c => c + '44'), borderRadius: 4 }
+      ]
+    },
+    options: { ...opts, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ₹' + c.parsed.y.toLocaleString('en-IN') + ' Cr' } } }, scales: { y: { ticks: { callback: v => '₹' + (v/1000).toFixed(1) + 'K Cr' } }, x: {} } }
+  });
+
+  new Chart(document.getElementById('annualVolChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: cos,
+      datasets: [
+        { label: 'FY26 Volume', data: [145, 73.7, 43.9, 36.4, 20, 13.96], backgroundColor: bgs.map(c => c + 'cc'), borderRadius: 4 },
+        { label: 'FY25 Volume', data: [132, 63.5, 40, 35.6, 18, 12.57], backgroundColor: bgs.map(c => c + '44'), borderRadius: 4 }
+      ]
+    },
+    options: { ...opts, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + c.parsed.y + ' MT' } } }, scales: { y: { ticks: { callback: v => v + ' MT' } }, x: {} } }
+  });
+
+  new Chart(document.getElementById('capUtilChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: cos,
+      datasets: [
+        { label: 'Capacity (MTPA)', data: [200, 103, 65, 69.3, 19.4, 25], backgroundColor: bgs.map(c => c + '55'), borderRadius: 4 },
+        { label: 'FY26 Volume (MT)', data: [145, 73.7, 43.9, 36.4, 20, 13.96], backgroundColor: bgs, borderRadius: 4 }
+      ]
+    },
+    options: { ...opts, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + c.parsed.y + ' MT' } } }, scales: { y: { ticks: { callback: v => v + ' MT' } }, x: {} } }
+  });
+}
+
+// English preset tabs
+function switchPreset(id, btn) {
+  document.querySelectorAll('[id^="pn-en-"]').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pt-utc, .pt-shree, .pt-jsw, .pt-ambuja, .pt-acc, .pt-ramco, .pt-sector').forEach(b => {
+    if (b.closest('.lang-section:first-of-type') === btn.closest('.lang-section:first-of-type')) b.classList.remove('active');
+  });
+  document.getElementById('pn-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Tamil preset tabs
+function switchTamilPreset(id, btn) {
+  document.querySelectorAll('[id^="pn-ta-"]').forEach(p => p.classList.remove('active'));
+  btn.closest('.lang-section').querySelectorAll('.preset-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('pn-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function askPreset(q) {
+  document.getElementById('cementInput').value = q;
+  sendCementChat();
+}
+
+function askTamilPreset(q) {
+  document.getElementById('cementInput').value = q;
+  sendCementChat();
+}
+
+async function sendCementChat() {
+  const input = document.getElementById('cementInput');
+  const msgs = document.getElementById('cementChatMsgs');
+  const btn = document.getElementById('cementSend');
+  const typing = document.getElementById('cementTyping');
+  const q = input.value.trim();
+  if (!q) return;
+
+  // Detect Tamil
+  const isTamil = /[\u0B80-\u0BFF]/.test(q);
+
+  const uMsg = document.createElement('div');
+  uMsg.className = 'chat-msg user';
+  uMsg.textContent = q;
+  msgs.appendChild(uMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+  btn.disabled = true;
+  typing.style.display = 'flex';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const langInst = isTamil
+    ? 'Answer in Tamil ONLY. தமிழில் மட்டுமே பதில் தாருங்கள். Company names, numbers, and financial/technical terms can stay in English (e.g. EBITDA, MTPA, clinker, PAT). Give a sharp analytical answer in 6-9 sentences. Start with the key insight.'
+    : 'Answer in English ONLY. Be analytical and concise — 6 to 9 sentences. Start with the most important insight. Use specific numbers. Do NOT add disclaimers.';
+
+  const sys = `You are CB Assist — expert cement sector research analyst at Cauvery Business (EIL Research). You cover Indian cement industry in depth.
+
+${langInst}
+
+RULES: Analytical depth required — these are smart questions, not basics. Use specific data. Do NOT mention data sources. Research analysis only — not investment advice.
+
+COMPANY DATA — Q4 FY26 ACTUALS:
+
+ULTRATECH CEMENT (BSE: 532538): Q4 FY26 ✅ (Apr 27, 2026) — Revenue ₹25,467 Cr (+12% YoY), EBITDA ₹5,688 Cr (+20%), PAT ₹2,983 Cr (+21%), Volume 42.41 MT (+9.3% YoY), EBITDA/T ₹1,253 (+11%). FY26: Revenue ₹87,384 Cr (+17%), EBITDA ₹17,598 Cr (+32%), PAT ₹8,305 Cr (+36%) — first ever above ₹8,000 Cr. FY26 Volume 145 MT (India grey). Net D/EBITDA 0.94× (improved from 1.4×). Capacity reached 200 MTPA milestone. Realisation/T ₹5,034 (flat YoY). $10/T coal rise = ₹60–70/T EBITDA impact. Efficiency gains ₹185/T achieved. India Cements (TN) acquisition integrating. Aditya Birla Group. CMP ~₹11,200. Mkt Cap ~₹3,23,000 Cr.
+
+AMBUJA CEMENTS (BSE: 500425): Q4 FY26 ✅ (Apr 30, 2026) — Volume 19.9 MT (+10%), Revenue ₹10,915 Cr (+9%), EBITDA ₹1,464 Cr, EBITDA margin 13.4%. Production cost peaked ₹4,500/T (West Asia packaging + fuel), target ₹4,250/T FY27. FY26: Revenue ₹40,656 Cr (+15%), Normalised EBITDA ₹6,539 Cr (+31%), Normalised PAT ₹2,647 Cr (+17%), Volume 73.7 MT (+16%), EBITDA/T ₹887. One Cement Platform: includes ACC, Orient, Sanghi, Penna. Debt-free, AAA/A1+. Capacity ~103 MTPA; target 119 MTPA FY27 (multiple GUs: Dahej 1.2, Bhatinda 1.2, Salai Banwa 2.4, Jodhpur 2, Kalamboli 1, Warisaliganj 2.4 MTPA + Maratha clinker 4 MTPA). Premium products 35% of trade. CMP ~₹502, 1-yr return −20%. CEO: Vinod Bahety.
+
+ACC LIMITED (BSE: 500410): Q4 FY26 ✅ (Apr 30, 2026) — Revenue ₹7,146 Cr (+17%), Volume 11.9 MT (+8%), PAT ₹238 Cr (−68% YoY — BASE EFFECT: Q4 FY25 had ₹637 Cr Gagal excise refund one-time). Power+fuel ₹1,314/T. FY26: Revenue ₹26,363 Cr (+14.6%), Normalised EBITDA ₹2,950 Cr (+22%), PAT ₹2,137 Cr (−11%, includes base effect). RMC Revenue Q4 ₹573.82 Cr (+36.6%). Net worth ₹20,554 Cr. Debt-free. Subsidiary of Ambuja. CMP ~₹1,423.
+
+SHREE CEMENT (BSE: 500387): Q4 FY26 ✅ (May 6, 2026) — Revenue ₹6,101 Cr (+10%), Volume 10.56 MT (+11%), EBITDA ₹1,212 Cr, EBITDA/T ₹1,161 (vs ₹1,071 YoY). Realisation ₹4,725/T. FY26: Revenue ₹19,311 Cr (+7%), EBITDA ₹4,788 Cr, PAT ₹1,706 Cr (+43%). Volume FY26 = 36.4 MT (+2.2%). Green electricity 61%, 666.5 MW capacity. Premium products 22% of trade (up from 16%). Dividend ₹150/share total (+36%). New integrated plant Kodla, Karnataka commissioned — 3.65 MTPA clinker + 3.5 MTPA cement = 69.3 MTPA total. CMP ~₹26,500. Citi BUY ₹29,200, Morgan Stanley Underweight ₹25,500. Promoters: Bangur family.
+
+RAMCO CEMENTS (BSE: 500260): Q4 FY26 ✅ (May 23, 2026) — Revenue ₹2,610 Cr (+9%), Volume 5.5 MT (+17%), EBITDA ₹433 Cr (+2%), EBITDA/T ₹785, PAT ₹150.7 Cr (+450% YoY — base effect). FY26: Revenue ~₹9,100 Cr (+6%), PAT ₹693.6 Cr. Capacity 19.4 MTPA. Net debt ~₹4,500–5,000 Cr, D/EBITDA ~3.3×. Promoter pledge 22%. ROE 6.62%, ROCE 7.69%. Wind power ~600 MW (major South India cost advantage). Ariyalur limestone mines TN. Kolimigundla AP expansion: 6.3 MTPA clinker + 3 MTPA cement + 15 MW WHRS, ₹1,250 Cr. South India ~85% volumes. CMP ~₹913. Chairman: P.R. Venketrama Raja.
+
+JSW CEMENT (BSE/NSE: Listed Aug 14, 2025): Q4 FY26 ✅ (May 21, 2026) — Revenue ₹1,895 Cr (+11%), Volume 3.99 MT (+7%), EBITDA ₹365 Cr (+46%), EBITDA margin 19.3% (vs 14.6% Q4 FY25), EBITDA/T ₹916. PAT ₹361.7 Cr (includes ₹211.2 Cr deferred tax gain from new tax regime adoption). FY26: Revenue ₹6,512 Cr (+12%), Operating EBITDA ₹1,240 Cr (+44%), EBITDA margin 19%, Adj. PAT ₹667.6 Cr (vs loss FY25; reported loss due to ₹1,466 Cr non-cash CCPS fair value expense Q1 FY26 pre-IPO). Volume FY26 = 13.96 MT (+11%): Cement 7.73 MT + GGBS 5.78 MT. Clinker factor 51% — lowest in sector. Net debt ₹3,635 Cr. Nagaur integrated plant (Rajasthan) commissioned March 2026: 3.3 MTPA clinker + 2.5 MTPA grinding. Additional 2.5 MTPA Nagaur grinding approved ₹430 Cr. Shiva Cement subsidiary (Odisha). CEO: Nilesh Narwekar. CMP ~₹128.
+
+SECTOR CONTEXT FY26: Industry demand growth ~8–10% FY26. India total demand ~420 MT. West Asia conflict impacted pet coke (+22% YoY Apr 2026), diesel, packing bags. Coal declined 17% YoY to $102/T. FY27 demand expected ~5% growth. ICRA: operating margins to moderate 200–400 bps FY27 due to input costs. Key input factors: Coal/petcoke (35–40% of cost), freight/logistics (18–22%), packaging (5–8%), power (8–12%).`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 700, system: sys, messages: [{ role: 'user', content: q }] })
+    });
+    const data = await res.json();
+    const text = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'Unable to process.';
+    typing.style.display = 'none';
+    const bMsg = document.createElement('div');
+    bMsg.className = 'chat-msg bot';
+    bMsg.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+    msgs.appendChild(bMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch (e) {
+    typing.style.display = 'none';
+    const eMsg = document.createElement('div');
+    eMsg.className = 'chat-msg bot';
+    eMsg.textContent = 'CB Assist temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>

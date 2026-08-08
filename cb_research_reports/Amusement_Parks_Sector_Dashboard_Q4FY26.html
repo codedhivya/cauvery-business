@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Amusement & Theme Parks Sector Intelligence Dashboard Q4 FY26 — Cauvery Business Research. 3 companies: Wonderla Holidays, Imagicaaworld Entertainment, Nicco Parks & Resorts.">
+<meta property="og:title" content="Amusement Parks Sector Dashboard · Q4 FY26 · CB Research">
+<meta property="og:description" content="Cauvery Business Research — FY26 verified data on 3 listed Indian amusement park operators. Footfalls, ARPU, margins, debt, valuations.">
+<title>Amusement & Theme Parks Sector Intelligence Dashboard · Q4 FY26 | Cauvery Business Research</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --won:#1d4ed8;--won-soft:#eff6ff;
+  --img:#ea580c;--img-soft:#fff7ed;
+  --nic:#0f766e;--nic-soft:#f0fdfa;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;flex-wrap:wrap;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-won{background:var(--won);color:#fff;}.chip-img{background:var(--img);color:#fff;}.chip-nic{background:var(--nic);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.15);}
+.tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);}
+.tab-btn{background:none;border:none;padding:14px 16px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;font-family:inherit;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--won);border-bottom-color:var(--won);}
+.main{max-width:1280px;margin:0 auto;padding:28px 28px 80px;}
+.panel{display:none;animation:fade .3s;}
+.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;margin:6px 0 18px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.sec-note{font-family:'Inter',sans-serif;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.02em;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.card-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gap-top{margin-top:18px;}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+th{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--surface2);}
+td.num,th.num{text-align:right;font-family:'IBM Plex Mono',monospace;}
+.tb{font-weight:600;}
+.tpos{color:var(--pos);font-weight:600;}
+.tneg{color:var(--neg);font-weight:600;}
+.twarn{color:var(--warn);font-weight:600;}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.badge{padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;}
+.b-pos{background:#dcfce7;color:#166534;}
+.b-neg{background:#fee2e2;color:#dc2626;}
+.b-warn{background:#fff0e0;color:#ea580c;}
+.b-spec{background:#e0e7ff;color:#3730a3;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+.kpi .v{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:600;}
+.kpi .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+.scroll-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+.scroll-wrap table{min-width:900px;}
+.period-btn{background:var(--surface);border:1px solid var(--border);padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--muted);}
+.period-btn.active{background:var(--won);color:#fff;border-color:var(--won);}
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.chart-box h3{font-size:13px;font-weight:700;margin-bottom:10px;}
+.cmp-head{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.cmp-pill{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid transparent;}
+.deep-sel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.deep-btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:var(--surface);font-family:inherit;}
+.deep-pane{display:none;}.deep-pane.active{display:block;}
+.foot{text-align:center;font-size:11px;color:var(--muted);padding:30px 0 10px;border-top:1px solid var(--border);margin-top:40px;}
+.wm{position:fixed;bottom:10px;right:14px;font-family:'Playfair Display',serif;font-size:12px;color:rgba(24,21,17,.18);font-weight:700;pointer-events:none;z-index:99;}
+.chat-msg{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:12.5px;line-height:1.6;}
+.chat-msg.bot{background:var(--won-soft);}
+.chat-msg.user{background:var(--surface2);text-align:right;}
+#typingInd{display:none;font-size:11px;color:var(--muted);font-style:italic;padding:4px 0;}
+.cb-chat-hdr{font-weight:700;font-size:13px;margin-bottom:10px;}
+.preset-q{display:block;width:100%;text-align:left;padding:8px 12px;margin-bottom:6px;border:1px solid var(--border);border-radius:7px;background:var(--surface);font-size:11.5px;cursor:pointer;font-family:inherit;}
+.preset-q:hover{background:var(--surface2);}
+.soc-topic-pill{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;margin:0 6px 8px 0;font-family:inherit;}
+.soc-topic-pill.active{background:var(--nic);color:#fff;border-color:var(--nic);}
+.soc-opt{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:8px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:12.5px;cursor:pointer;font-family:inherit;}
+.soc-opt:hover{background:var(--surface2);}
+.soc-free-input{width:100%;min-height:80px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:12.5px;margin-bottom:8px;}
+.soc-followup{margin-top:10px;padding:10px 14px;background:var(--nic-soft);border-radius:8px;font-size:12.5px;}
+.btn{padding:9px 18px;border-radius:7px;border:none;background:var(--won);color:#fff;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;}
+p{font-size:12.5px;}
+input.chat-in{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:12.5px;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Amusement &amp; Theme Parks — Sector Intelligence</h1>
+      <div class="sub">Cauvery Business Research · Q4 FY26 (Jan–Mar 2026) &amp; Full-Year FY26</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-won">Wonderla</span>
+    <span class="chip chip-img">Imagicaaworld</span>
+    <span class="chip chip-nic">Nicco Parks</span>
+    <span class="chip chip-date">FY26 Audited Filings</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('school',this)">🎢 School</button>
+  <button class="tab-btn" onclick="switchTab('overview',this)">📊 Sector Overview</button>
+  <button class="tab-btn" onclick="switchTab('companies',this)">🎡 Companies</button>
+  <button class="tab-btn" onclick="switchTab('segments',this)">🗂️ Business Segments</button>
+  <button class="tab-btn" onclick="switchTab('comparison',this)">⚖️ Peer Comparison</button>
+  <button class="tab-btn" onclick="switchTab('charts',this)">📈 Charts</button>
+  <button class="tab-btn" onclick="switchTab('debtcash',this)">💳 Debt &amp; Cashflow</button>
+  <button class="tab-btn" onclick="switchTab('valuation',this)">💰 Valuations</button>
+  <button class="tab-btn" onclick="switchTab('swot',this)">🔲 SWOT</button>
+  <button class="tab-btn" onclick="switchTab('moat',this)">🏰 Moats</button>
+  <button class="tab-btn" onclick="switchTab('analyst',this)">🎯 Analyst Ratings</button>
+  <button class="tab-btn" onclick="switchTab('verdict',this)">⚖️ Verdict</button>
+  <button class="tab-btn" onclick="switchTab('cb',this)">🤖 CB Assist</button>
+  <button class="tab-btn" onclick="switchTab('socrates',this)">🏛️ Cauvery Socrates</button>
+</nav>
+<div class="main">
+
+<!-- ========== SCHOOL TAB ========== -->
+<div id="tab-school" class="panel active">
+  <div class="sec-hdr">🎢 Amusement Parks Sector School <span class="sec-note">Fundamentals · Footfall × ARPU Engine · Why Seasonality &amp; Operating Leverage Dominate</span></div>
+  <div class="g2">
+    <div class="card" style="background:var(--won-soft);border-color:var(--won);">
+      <div class="card-lbl" style="color:var(--won);">🎡 What Makes Amusement Park Stocks Unique</div>
+      <p style="line-height:1.8;margin-bottom:10px;">An amusement park is a <strong>high fixed-cost, high operating-leverage</strong> business. The land, rides, and staff cost roughly the same whether 5,000 or 15,000 people walk in. So profit is driven by two levers multiplied together: <strong>footfall × ARPU</strong> (Average Revenue Per User). Once a park crosses its break-even footfall, almost every incremental rupee of ticket and spend drops to EBITDA — which is why mature parks earn 35–45% margins while a brand-new park bleeds in year one.</p>
+      <p style="color:var(--muted);line-height:1.7;">The flip side is brutal <strong>seasonality</strong> and <strong>weather dependence</strong>. Summer vacations and festive holidays make Q1/Q2 strong; monsoon and winter (Q3/Q4) are lean. A single park operator like Nicco can swing from profit to loss across quarters on weather alone. The structural tailwind is rising discretionary income, domestic tourism, and Tier-2 family-entertainment demand; the structural risk is competition from malls, OTT, gaming and experiential retail for the same leisure wallet.</p>
+      <div class="badge-row"><span class="badge b-pos">Operating Leverage</span><span class="badge b-warn">Extreme Seasonality</span><span class="badge b-warn">Weather Dependent</span><span class="badge b-spec">High Entry Barriers (Land + Capex)</span></div>
+    </div>
+    <div class="card" style="background:var(--gold-soft);border-color:var(--gold);">
+      <div class="card-lbl" style="color:var(--gold);">📐 6 Core Metrics Every Amusement Park Investor Must Know</div>
+      <table style="margin-top:4px;">
+        <thead><tr><th>Metric</th><th>Meaning</th><th>Best-in-Class FY26</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Footfall</td><td>Total paying visitors in period</td><td class="num">Wonderla 32.19 lakh (FY26)</td></tr>
+          <tr><td class="tb">ARPU</td><td>Total revenue ÷ footfall (ticket + spend)</td><td class="tpos">Wonderla ₹1,530 (FY26)</td></tr>
+          <tr><td class="tb">SPH</td><td>Spend Per Head — non-ticket (F&amp;B, retail)</td><td class="num">Higher = stickier revenue</td></tr>
+          <tr><td class="tb">EBITDA Margin</td><td>Operating profit ÷ Revenue</td><td class="tpos">Wonderla 35.5% (FY26)</td></tr>
+          <tr><td class="tb">Non-Ticket Mix</td><td>% from F&amp;B, hotel, merchandise, events</td><td class="num">De-risks seasonality</td></tr>
+          <tr><td class="tb">Net D/E</td><td>Net Debt ÷ Equity — leverage gauge</td><td class="tpos">Wonderla &amp; Nicco: ~Net Cash</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="gap-top" style="border:2px solid #181511;border-radius:var(--radius);overflow:hidden;">
+    <div style="background:#181511;color:#fff;padding:14px 22px;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;">⚡ Three Operating Models — Why These Parks Don't Trade on the Same Multiple</div>
+    <div class="g3" style="gap:0;">
+      <div style="padding:20px 22px;border-right:2px solid #181511;">
+        <div style="font-size:11px;font-weight:800;color:var(--won);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">🔵 Wonderla — Pan-India Owner-Operator</div>
+        <p style="line-height:1.8;margin-bottom:10px;">Five owned parks across South + East India, in-house ride manufacturing, a debt-light balance sheet and a new resort vertical. The moat is <strong>scale, brand, and cost control</strong> — Wonderla designs its own rides, keeping capex per park well below import-led peers.</p>
+        <div style="padding:8px 12px;background:var(--won-soft);border-radius:6px;border-left:3px solid var(--won);">
+          <div style="font-size:11px;font-weight:700;">FY26 — Best-Ever Revenue</div>
+          <div style="font-size:11px;color:var(--muted);">Revenue ₹518.8 Cr (+13%) · EBITDA margin 35.5% · Chennai park launched Dec 2025 · PAT fell only on prior-year tax base</div>
+        </div>
+      </div>
+      <div style="padding:20px 22px;border-right:2px solid #181511;">
+        <div style="font-size:11px;font-weight:800;color:var(--img);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">🟠 Imagicaaworld — Acquisition-Led Roll-Up</div>
+        <p style="line-height:1.8;margin-bottom:10px;">Malpani Group is building a multi-park portfolio via <strong>acquisitions and SPVs</strong> (Wet'n'Joy, Saiteerth, Indore, Shanku's). Scale is rising but so is debt and integration cost — FY26 expenses nearly swallowed revenue, collapsing PAT to near zero.</p>
+        <div style="padding:8px 12px;background:var(--img-soft);border-radius:6px;border-left:3px solid var(--img);">
+          <div style="font-size:11px;font-weight:700;">FY26 — Profit Collapse</div>
+          <div style="font-size:11px;color:var(--muted);">Consol revenue ₹373.9 Cr (-9%) · EBITDA margin ~31% · Consol PAT ₹0.64 Cr (-99%) · Borrowings rising on roll-up</div>
+        </div>
+      </div>
+      <div style="padding:20px 22px;">
+        <div style="font-size:11px;font-weight:800;color:var(--nic);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">🟢 Nicco Parks — Single-Asset Micro-Cap</div>
+        <p style="line-height:1.8;margin-bottom:10px;">One iconic park in Kolkata (Salt Lake), debt-free, historically high ROCE — but <strong>single-asset concentration</strong> and an unresolved land-lease renewal create a going-concern overhang. Tiny scale magnifies weather and seasonality.</p>
+        <div style="padding:8px 12px;background:var(--nic-soft);border-radius:6px;border-left:3px solid var(--nic);">
+          <div style="font-size:11px;font-weight:700;">FY26 — Standalone Up, Consol Loss</div>
+          <div style="font-size:11px;color:var(--muted);">Standalone PAT ₹19.71 Cr (vs ₹4.43 Cr) · Consol net loss ₹2.73 Cr · Q4 net loss ₹0.72 Cr · Land-lease overhang</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card gap-top" style="background:var(--surface2);">
+    <div class="card-lbl">🧭 The Footfall × ARPU Engine — A Simple Mental Model</div>
+    <p style="line-height:1.8;">Think of each park as a machine with a <strong>break-even footfall line</strong>. Below it, fixed costs (land, rides, salaries, power) dominate and the park loses money — exactly what Nicco shows in its lean Q4 and what Imagicaa shows in monsoon/winter quarters. Above it, operating leverage takes over: Wonderla's Q4 FY26 EBITDA jumped 64% on just 32% income growth because incremental visitors carried almost no extra cost. The investing question for all three is the same: <strong>can footfall stay durably above break-even across the full year, and can ARPU rise through premiumisation and non-ticket spend faster than costs?</strong> Wonderla answers yes; Imagicaa is betting acquisitions will get it there; Nicco must first resolve its land lease.</p>
+  </div>
+</div>
+
+<!-- ========== SECTOR OVERVIEW TAB ========== -->
+<div id="tab-overview" class="panel">
+  <div class="sec-hdr">📊 Sector Overview <span class="sec-note">FY26 Actuals — Official Exchange Filings (Consolidated unless noted)</span></div>
+  <div class="g4">
+    <div class="kpi"><div class="v" style="color:var(--won);">₹518.8 Cr</div><div class="l">Wonderla FY26 Revenue</div></div>
+    <div class="kpi"><div class="v" style="color:var(--img);">₹373.9 Cr</div><div class="l">Imagicaa FY26 Revenue (Consol)</div></div>
+    <div class="kpi"><div class="v" style="color:var(--nic);">₹66.4 Cr</div><div class="l">Nicco FY26 Revenue (Consol)</div></div>
+    <div class="kpi"><div class="v">35.5%</div><div class="l">Best EBITDA Margin (Wonderla)</div></div>
+  </div>
+  <div class="g4 gap-top">
+    <div class="kpi"><div class="v" style="color:var(--won);">32.19 L</div><div class="l">Wonderla FY26 Footfall</div></div>
+    <div class="kpi"><div class="v" style="color:var(--img);">24.70 L</div><div class="l">Imagicaa FY26 Footfall</div></div>
+    <div class="kpi"><div class="v" style="color:var(--nic);">~Net Cash</div><div class="l">Wonderla &amp; Nicco Balance Sheet</div></div>
+    <div class="kpi"><div class="v">5 Parks</div><div class="l">Wonderla National Footprint</div></div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">🔭 Sector Snapshot — FY26 in One Read</div>
+    <p style="line-height:1.8;margin-bottom:10px;">FY26 was a tale of <strong>diverging execution</strong> in India's small listed amusement-park universe. Wonderla delivered its best-ever revenue, powered by the December-2025 Chennai launch and a maturing Bangalore resort, with margins firmly in the mid-30s. Imagicaaworld grew its physical footprint aggressively through acquisitions but saw profitability collapse as integration, finance and operating costs nearly equalled revenue. Nicco Parks, a single-asset Kolkata operator, posted a sharply higher standalone profit (aided by other income and tax) yet a consolidated loss, while an unresolved government land-lease renewal kept a going-concern note alive.</p>
+    <p style="color:var(--muted);line-height:1.7;">The common thread: extreme quarterly seasonality. Q4 (Jan–Mar) is a seasonally lean window for outdoor parks, so it tests fixed-cost discipline rather than peak demand. Wonderla's Q4 stood out because new-park operating leverage offset the soft season; Imagicaa and Nicco both showed how thin the margin of safety is when footfall sits near break-even.</p>
+  </div>
+
+  <div class="scroll-wrap gap-top">
+    <table>
+      <thead><tr><th>Company</th><th class="num">FY26 Revenue (₹ Cr)</th><th class="num">Rev Gr %</th><th class="num">FY26 EBITDA Mgn</th><th class="num">FY26 PAT (₹ Cr)</th><th class="num">PAT Gr %</th><th class="num">FY26 Footfall</th><th class="num">FY26 ARPU (₹)</th><th>Basis</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--won);">Wonderla Holidays</td><td class="num">518.80</td><td class="num tpos">+13.1</td><td class="num">35.5%</td><td class="num">81.70</td><td class="num tneg">-25.2</td><td class="num">32.19 L</td><td class="num">1,530</td><td>Consolidated</td></tr>
+        <tr><td class="tb" style="color:var(--img);">Imagicaaworld</td><td class="num">373.99</td><td class="num tneg">-8.9</td><td class="num">~31%</td><td class="num">0.64</td><td class="num tneg">-99.2</td><td class="num">24.70 L</td><td class="num">1,259</td><td>Consolidated</td></tr>
+        <tr><td class="tb" style="color:var(--nic);">Nicco Parks</td><td class="num">66.35</td><td class="num tneg">-11.6</td><td class="num">Low/Neg (Q4)</td><td class="num tneg">-2.73</td><td class="num tneg">PY +ve</td><td class="num">~9–10 L</td><td class="num">~700</td><td>Consolidated</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">Note: Nicco FY26 standalone net profit ₹19.71 Cr (vs ₹4.43 Cr FY25) on standalone revenue ₹66.35 Cr; the consolidated net loss of ₹2.73 Cr reflects subsidiary drag. Imagicaa standalone revenue FY26 ₹359.01 Cr; consolidated ₹373.99 Cr. ARPU figures rounded; Nicco ARPU approximate. Figures from audited Q4 &amp; FY26 exchange filings.</p>
+</div>
+
+<!-- ========== COMPANIES (DEEP DIVE) TAB ========== -->
+<div id="tab-companies" class="panel">
+  <div class="sec-hdr">🎡 Company Deep-Dive <span class="sec-note">All Metrics · Q4 FY26 vs Q4 FY25 · Annual FY26 vs FY25</span></div>
+  <div class="deep-sel">
+    <button class="deep-btn" style="border-color:var(--won);color:var(--won);" onclick="showDeep('won',this)">Wonderla Holidays</button>
+    <button class="deep-btn" style="border-color:var(--img);color:var(--img);" onclick="showDeep('img',this)">Imagicaaworld</button>
+    <button class="deep-btn" style="border-color:var(--nic);color:var(--nic);" onclick="showDeep('nic',this)">Nicco Parks</button>
+  </div>
+
+  <!-- WONDERLA -->
+  <div id="deep-won" class="deep-pane">
+    <div class="card" style="border-left:4px solid var(--won);">
+      <div class="card-lbl" style="color:var(--won);">Wonderla Holidays Ltd · NSE: WONDERLA · BSE: 538268 · ISIN INE066O01014</div>
+      <p style="line-height:1.8;">India's largest amusement-park chain, operating five owned parks (Bengaluru, Kochi, Hyderabad, Bhubaneswar, Chennai) plus a Bangalore resort ("Isle by Wonderla"). Incorporated 2002, listed May 2014. Known for in-house ride design and manufacturing that keeps capex per park low. FY26 marked the launch of its fifth park in Chennai (Dec 2025), funded partly by a ₹540 Cr QIP that was fully utilised by Q4 FY26.</p>
+    </div>
+    <div class="scroll-wrap gap-top">
+      <table>
+        <thead><tr><th>Metric</th><th class="num">Q4 FY26</th><th class="num">Q4 FY25</th><th class="num">YoY</th><th class="num">FY26</th><th class="num">FY25</th><th class="num">YoY</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Total Income (₹ Cr)</td><td class="num">142.05</td><td class="num">107.59</td><td class="num tpos">+32.0%</td><td class="num">551.08</td><td class="num">506.03</td><td class="num tpos">+8.9%</td></tr>
+          <tr><td class="tb">Revenue from Ops (₹ Cr)</td><td class="num">135.85</td><td class="num">96.70</td><td class="num tpos">+40.4%</td><td class="num">518.80</td><td class="num">458.60</td><td class="num tpos">+13.1%</td></tr>
+          <tr><td class="tb">EBITDA (₹ Cr)</td><td class="num">50.01</td><td class="num">30.55</td><td class="num tpos">+63.7%</td><td class="num">192.45</td><td class="num">171.40</td><td class="num tpos">+12.3%</td></tr>
+          <tr><td class="tb">EBITDA Margin</td><td class="num">35.2%</td><td class="num">28.4%</td><td class="num tpos">+680 bps</td><td class="num">35.5%</td><td class="num">37.4%</td><td class="num tneg">-190 bps</td></tr>
+          <tr><td class="tb">PAT (₹ Cr)</td><td class="num">16.42</td><td class="num">11.01</td><td class="num tpos">+49.2%</td><td class="num">81.70</td><td class="num">109.27</td><td class="num tneg">-25.2%</td></tr>
+          <tr><td class="tb">Footfall</td><td class="num">8.79 L</td><td class="num">6.76 L</td><td class="num tpos">+30%</td><td class="num">32.19 L</td><td class="num">30.37 L</td><td class="num tpos">+6%</td></tr>
+          <tr><td class="tb">ARPU (₹)</td><td class="num">1,465</td><td class="num">1,369</td><td class="num tpos">+7%</td><td class="num">1,530</td><td class="num">1,443</td><td class="num tpos">+6%</td></tr>
+          <tr><td class="tb">Resort Revenue (₹ Cr)</td><td class="num">7.02</td><td class="num">3.82</td><td class="num tpos">+84%</td><td class="num">26.36</td><td class="num">16.90</td><td class="num tpos">+56%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:6px;">FY26 PAT decline is base-effect: FY25 included a one-off favourable deferred-tax credit of ~₹24.1 Cr (fair value of freehold land). Chennai contributed ₹41.4 Cr FY26 revenue (₹29.5 Cr in Q4). Final dividend ₹2/share recommended.</p>
+    <div class="g2 gap-top">
+      <div class="card"><div class="card-lbl" style="color:var(--won);">🏢 Promoter &amp; Management</div><p style="line-height:1.7;">Chittilappilly family (V-Guard promoter lineage). <strong>Arun K. Chittilappilly</strong> — Executive Chairman &amp; MD; <strong>Kochouseph Chittilappilly</strong> — founder/Chairman Emeritus. Promoter holding ~62.2% (Mar 2026). Auditors: Deloitte Haskins &amp; Sells. Registrar: KFin Technologies.</p></div>
+      <div class="card"><div class="card-lbl" style="color:var(--won);">🚀 FY27 Catalysts &amp; Guidance</div><p style="line-height:1.7;">Full-year Chennai contribution; resort scale-up (+39 keys at Isle in Q1 FY27); sustaining capex of only ₹35–40 Cr (no large greenfield in FY27); 2–3 new parks targeted over 4–5 years in Tier-1 cities; active talks with ≥4 state governments. Chennai incremental depreciation ₹45–50 Cr/yr is the key FY27 PAT headwind.</p></div>
+    </div>
+  </div>
+
+  <!-- IMAGICAA -->
+  <div id="deep-img" class="deep-pane">
+    <div class="card" style="border-left:4px solid var(--img);">
+      <div class="card-lbl" style="color:var(--img);">Imagicaaworld Entertainment Ltd · NSE: IMAGICAA · BSE: 539056</div>
+      <p style="line-height:1.8;">India's largest single-site integrated theme destination — flagship 110-acre Imagicaa (Theme Park + Water Park + Snow Park + Novotel hotel) at Khopoli, near Mumbai. Controlled by the Sangamner-based <strong>Malpani Group</strong> since 2022 (resolution-plan acquisition). FY24–26 marked an aggressive roll-up: Wet'n'Joy / Saiteerth (Lonavala &amp; Shirdi), Aqua Imagicaa (Surat), and an Indore water park. Operates two reportable segments — Parks and Hotel.</p>
+    </div>
+    <div class="scroll-wrap gap-top">
+      <table>
+        <thead><tr><th>Metric (Consolidated)</th><th class="num">Q4 FY26</th><th class="num">Q4 FY25</th><th class="num">YoY</th><th class="num">FY26</th><th class="num">FY25</th><th class="num">YoY</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue from Ops (₹ Cr)</td><td class="num">91.86</td><td class="num">94.40</td><td class="num tneg">-2.7%</td><td class="num">373.99</td><td class="num">410.22</td><td class="num tneg">-8.9%</td></tr>
+          <tr><td class="tb">EBITDA (₹ Cr)</td><td class="num">30.20</td><td class="num">40.40</td><td class="num tneg">-25.2%</td><td class="num">116.00</td><td class="num">175.50</td><td class="num tneg">-33.9%</td></tr>
+          <tr><td class="tb">EBITDA Margin</td><td class="num">33.0%</td><td class="num">42.8%</td><td class="num tneg">-980 bps</td><td class="num">31.0%</td><td class="num">42.8%</td><td class="num tneg">-1,180 bps</td></tr>
+          <tr><td class="tb">PAT (₹ Cr)</td><td class="num">0.40</td><td class="num">15.73</td><td class="num tneg">-97.5%</td><td class="num">0.64</td><td class="num">77.17</td><td class="num tneg">-99.2%</td></tr>
+          <tr><td class="tb">PAT Margin</td><td class="num">0.44%</td><td class="num">16.66%</td><td class="num tneg">-1,622 bps</td><td class="num">0.17%</td><td class="num">18.8%</td><td class="num tneg">-1,863 bps</td></tr>
+          <tr><td class="tb">Footfall</td><td class="num">6.21 L</td><td class="num">5.93 L</td><td class="num tpos">+5%</td><td class="num">24.70 L</td><td class="num">27.00 L</td><td class="num tneg">-8.7%</td></tr>
+          <tr><td class="tb">ARPU (₹)</td><td class="num">1,230</td><td class="num">1,313</td><td class="num tneg">-6.3%</td><td class="num">1,259</td><td class="num">1,267</td><td class="num tneg">-0.6%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:6px;">FY26 total expenses consumed ~97.8% of revenue (vs ~79.7% FY25) on higher employee, advertising, finance and operating costs during expansion. End of Khopoli incentives in Q1 FY26 hurt YoY. Standalone FY26 PAT ₹20.05 Cr. No dividend. Non-current borrowings rose to ~₹281.6 Cr.</p>
+    <div class="g2 gap-top">
+      <div class="card"><div class="card-lbl" style="color:var(--img);">🏢 Promoter &amp; Management</div><p style="line-height:1.7;">Malpani Group (Sangamner, Maharashtra) — promoter holding ~74.0%. <strong>Rajesh Malpani</strong> — Chairman (Non-Exec); <strong>Jai Malpani</strong> — Managing Director; Manish Malpani — Director. Auditors: Suresh Surana &amp; Associates LLP (unmodified opinion). Diversified family group across FMCG, renewables, real estate, hospitality, parks.</p></div>
+      <div class="card"><div class="card-lbl" style="color:var(--img);">🚀 FY27 Catalysts &amp; Risks</div><p style="line-height:1.7;">₹100 Cr investment in Mehsana Next Parks SPV (Shanku's Water Park, Gujarat) on O&amp;M + 6–10% management-fee model; Dubai's Hello Park JV for indoor "phygital" kids' entertainment (first site Hyderabad); two Sabarmati Riverfront parks. PL Capital models FY26–28E sales/EBITDA CAGR of 14%/30% on base effect + new parks. Key risk: debt &amp; integration drag, near-zero PAT base.</p></div>
+    </div>
+  </div>
+
+  <!-- NICCO -->
+  <div id="deep-nic" class="deep-pane">
+    <div class="card" style="border-left:4px solid var(--nic);">
+      <div class="card-lbl" style="color:var(--nic);">Nicco Parks &amp; Resorts Ltd · BSE: 526721 · NSE: NICCOPAR</div>
+      <p style="line-height:1.8;">Operator of "Nicco Park" — an iconic single-site amusement park at Jheel Meel, Salt Lake City, Kolkata. Incorporated 1989 as a JV between Nicco Corporation and West Bengal government entities (WBIDC / WBTDC). Debt-free, historically high ROCE, strong recurring local footfall — but exposed to single-asset concentration, eastern-India weather, and an unresolved government land-lease renewal (original lease expired Feb 2023) that has drawn an auditor going-concern / modified-opinion note.</p>
+    </div>
+    <div class="scroll-wrap gap-top">
+      <table>
+        <thead><tr><th>Metric</th><th class="num">Q4 FY26</th><th class="num">Q4 FY25</th><th class="num">YoY</th><th class="num">FY26 (Consol)</th><th class="num">FY25 (Consol)</th><th class="num">YoY</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Net Sales (₹ Cr)</td><td class="num">15.35</td><td class="num">17.59</td><td class="num tneg">-12.7%</td><td class="num">66.35</td><td class="num">75.02</td><td class="num tneg">-11.6%</td></tr>
+          <tr><td class="tb">Operating Profit ex-OI (₹ Cr)</td><td class="num tneg">-0.18</td><td class="num">3.92</td><td class="num tneg">NM</td><td class="num">~3–4</td><td class="num">~15</td><td class="num tneg">Sharp fall</td></tr>
+          <tr><td class="tb">Operating Margin (ex-OI)</td><td class="num tneg">-1.17%</td><td class="num">22.3%</td><td class="num tneg">-2,346 bps</td><td class="num">Low</td><td class="num">~20%</td><td class="num tneg">Contracted</td></tr>
+          <tr><td class="tb">PAT — Standalone (₹ Cr)</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num tpos">19.71</td><td class="num">4.43</td><td class="num tpos">+345%</td></tr>
+          <tr><td class="tb">PAT — Consolidated (₹ Cr)</td><td class="num tneg">-0.72</td><td class="num">3.36</td><td class="num tneg">NM</td><td class="num tneg">-2.73</td><td class="num">PY +ve</td><td class="num tneg">To loss</td></tr>
+          <tr><td class="tb">Book Value / Share (₹)</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">~22.9</td><td class="num">—</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:6px;">Standalone FY26 net profit ₹19.71 Cr (vs ₹4.43 Cr) aided by other income / tax; consolidated net loss ₹2.73 Cr reflects subsidiary drag. Final dividend 25% (₹0.25/share) plus 100% interim already paid. Auditor M/s Lodha &amp; Co. LLP issued a modified opinion linked to land-lease uncertainty.</p>
+    <div class="g2 gap-top">
+      <div class="card"><div class="card-lbl" style="color:var(--nic);">🏢 Promoter &amp; Management</div><p style="line-height:1.7;">Promoter holding ~69.4% (Nicco Corporation + West Bengal government entities). <strong>Rahul Mitra</strong> — newly approved Managing Director &amp; CEO; <strong>Barun Kumar Ray</strong> — Nominee Director (govt). Registered office: Salt Lake City, Kolkata. Zero-debt micro-cap; limited institutional ownership.</p></div>
+      <div class="card"><div class="card-lbl" style="color:var(--nic);">🚀 FY27 Watch-Items &amp; Risks</div><p style="line-height:1.7;">Resolution of West Bengal land-lease renewal is the single biggest re-rating / de-risking event. Return to positive operating profitability, new-attraction-led footfall recovery, and cost optimisation are the levers. Risks: extreme single-park seasonality, weather, micro-cap illiquidity, going-concern note, F&amp;B land partly acquired by the state.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== BUSINESS SEGMENTS TAB ========== -->
+<div id="tab-segments" class="panel">
+  <div class="sec-hdr">🗂️ Business Segments &amp; Asset Footprint <span class="sec-note">FY26 — Wonderla · Imagicaaworld · Nicco Parks</span></div>
+  <div class="g3">
+    <div class="card" style="border-top:3px solid var(--won);">
+      <div class="card-lbl" style="color:var(--won);">🔵 Wonderla Holidays</div>
+      <table>
+        <thead><tr><th>Segment / Asset</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Amusement Parks</td><td>5 owned parks: Bengaluru, Kochi, Hyderabad, Bhubaneswar, Chennai (Dec 2025)</td></tr>
+          <tr><td class="tb">Resort</td><td>"Isle by Wonderla", Bangalore — FY26 rev ₹26.36 Cr (+56%)</td></tr>
+          <tr><td class="tb">Revenue mix</td><td>Ticket + Spend-Per-Head (F&amp;B, merchandise) + Resort</td></tr>
+          <tr><td class="tb">Rides &amp; F&amp;B</td><td>187 rides, 19 restaurants, in-house ride manufacturing</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="border-top:3px solid var(--img);">
+      <div class="card-lbl" style="color:var(--img);">🟠 Imagicaaworld (Reportable Segments)</div>
+      <table>
+        <thead><tr><th>Segment</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Parks Division</td><td>Theme/amusement/water/snow/devotional parks, restaurants, retail — bulk of revenue</td></tr>
+          <tr><td class="tb">Hotel Division</td><td>Novotel Imagica accommodation, restaurants, merchandise</td></tr>
+          <tr><td class="tb">Portfolio</td><td>Khopoli flagship + Wet'n'Joy / Saiteerth (Lonavala, Shirdi), Aqua Imagicaa (Surat), Indore</td></tr>
+          <tr><td class="tb">Subsidiaries</td><td>Blue Haven, Malpani Parks Indore, Imagicaa Next</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="border-top:3px solid var(--nic);">
+      <div class="card-lbl" style="color:var(--nic);">🟢 Nicco Parks &amp; Resorts</div>
+      <table>
+        <thead><tr><th>Segment / Asset</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Amusement Park</td><td>Single iconic park, Salt Lake City, Kolkata</td></tr>
+          <tr><td class="tb">Revenue mix</td><td>Ticket + rides + F&amp;B; high recurring local footfall</td></tr>
+          <tr><td class="tb">Consulting</td><td>Park design / consultancy services (small)</td></tr>
+          <tr><td class="tb">Structure</td><td>JV with WB govt entities; land on government lease (renewal pending)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card gap-top" style="background:var(--surface2);">
+    <div class="card-lbl">📌 Why Segment Structure Matters Here</div>
+    <p style="line-height:1.8;">Wonderla's revenue is geographically diversified across five parks, so a weak quarter in one region is cushioned by others — and the resort adds a non-weather-dependent stream. Imagicaa's revenue, despite acquisitions, remains heavily anchored to the Khopoli/Lonavala belt near Mumbai-Pune, plus a hotel that smooths seasonality somewhat. Nicco is the purest single-asset play — 100% of operating fortune rides on one Kolkata park and one regional climate, which is exactly why its quarterly swings are the most violent of the three.</p>
+  </div>
+</div>
+
+<!-- ========== PEER COMPARISON TAB ========== -->
+<div id="tab-comparison" class="panel">
+  <div class="sec-hdr">⚖️ Peer Comparison <span class="sec-note">FY26 Verified Actuals — All 3 Operators</span></div>
+  <div class="scroll-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th class="num" style="color:var(--won);">Wonderla</th><th class="num" style="color:var(--img);">Imagicaaworld</th><th class="num" style="color:var(--nic);">Nicco Parks</th><th>Sources</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">FY26 Revenue (₹ Cr)</td><td class="num">518.80</td><td class="num">373.99</td><td class="num">66.35</td><td>Exchange filings</td></tr>
+        <tr><td class="tb">Revenue Growth YoY</td><td class="num tpos">+13.1%</td><td class="num tneg">-8.9%</td><td class="num tneg">-11.6%</td><td>Exchange filings</td></tr>
+        <tr><td class="tb">FY26 EBITDA (₹ Cr)</td><td class="num">192.45</td><td class="num">116.00</td><td class="num">~4–6</td><td>Filings / concall</td></tr>
+        <tr><td class="tb">FY26 EBITDA Margin</td><td class="num tpos">35.5%</td><td class="num">31.0%</td><td class="num tneg">Low</td><td>Filings</td></tr>
+        <tr><td class="tb">FY26 PAT (₹ Cr)</td><td class="num">81.70</td><td class="num">0.64</td><td class="num tneg">-2.73 (consol)</td><td>Filings</td></tr>
+        <tr><td class="tb">Q4 FY26 Revenue (₹ Cr)</td><td class="num">135.85</td><td class="num">91.86</td><td class="num">15.35</td><td>Filings</td></tr>
+        <tr><td class="tb">Q4 FY26 EBITDA Margin</td><td class="num tpos">35.2%</td><td class="num">33.0%</td><td class="num tneg">-1.2% (ex-OI)</td><td>Filings</td></tr>
+        <tr><td class="tb">Q4 FY26 PAT (₹ Cr)</td><td class="num">16.42</td><td class="num">0.40</td><td class="num tneg">-0.72</td><td>Filings</td></tr>
+        <tr><td class="tb">FY26 Footfall</td><td class="num">32.19 L</td><td class="num">24.70 L</td><td class="num">~9–10 L</td><td>Filings</td></tr>
+        <tr><td class="tb">FY26 ARPU (₹)</td><td class="num tpos">1,530</td><td class="num">1,259</td><td class="num">~700</td><td>Filings</td></tr>
+        <tr><td class="tb">No. of Parks</td><td class="num">5</td><td class="num">Multiple (roll-up)</td><td class="num">1</td><td>Company</td></tr>
+        <tr><td class="tb">Balance Sheet</td><td class="num tpos">~Net Cash</td><td class="num tneg">Rising Debt (~₹282 Cr NCB)</td><td class="num tpos">~Net Cash</td><td>Filings / Screener</td></tr>
+        <tr><td class="tb">Promoter Holding</td><td class="num">~62.2%</td><td class="num">~74.0%</td><td class="num">~69.4%</td><td>Shareholding (Mar'26)</td></tr>
+        <tr><td class="tb">Market Cap (₹ Cr)*</td><td class="num">~3,360</td><td class="num">~2,460</td><td class="num">~349</td><td>NSE/BSE (May'26)</td></tr>
+        <tr><td class="tb">P/E (TTM)*</td><td class="num">~44×</td><td class="num tneg">~156–170×</td><td class="num">~30–46×</td><td>Exchange data</td></tr>
+        <tr><td class="tb">P/B*</td><td class="num">~1.9×</td><td class="num">~2.0–2.2×</td><td class="num">~3.1×</td><td>Exchange data</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">*Market cap, P/E and P/B are market-driven and dated to early–mid May 2026; treat as indicative. Nicco operating profit and EBITDA are small and volatile; Q4 turned operationally negative excluding other income. Imagicaa P/E is distorted by a near-zero earnings base.</p>
+</div>
+
+<!-- ========== CHARTS TAB ========== -->
+<div id="tab-charts" class="panel">
+  <div class="sec-hdr">📈 Visual Analytics <span class="sec-note">FY26 Verified Data · Chart.js · Annual + Q4</span></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px;">
+    <button class="period-btn active" onclick="setPeriod('annual',this)">FY26 Annual</button>
+    <button class="period-btn" onclick="setPeriod('q4',this)">Q4 FY26</button>
+  </div>
+  <div id="chart-period-note" style="font-size:11px;color:var(--muted);margin-bottom:14px;">Showing full-year FY26 actuals for all 3 companies</div>
+  <div class="g2">
+    <div class="chart-box"><h3>Revenue (₹ Cr)</h3><canvas id="chartRev" height="200"></canvas></div>
+    <div class="chart-box"><h3>EBITDA Margin %</h3><canvas id="chartMargin" height="200"></canvas></div>
+    <div class="chart-box"><h3>Revenue Growth % YoY</h3><canvas id="chartGrowth" height="200"></canvas></div>
+    <div class="chart-box"><h3>Footfall (lakhs)</h3><canvas id="chartFoot" height="200"></canvas></div>
+  </div>
+</div>
+
+<!-- ========== DEBT & CASHFLOW TAB ========== -->
+<div id="tab-debtcash" class="panel">
+  <div class="sec-hdr">💳 Debt &amp; Balance-Sheet Positioning <span class="sec-note">FY26 · Leverage · Capex Intensity · Cash Generation</span></div>
+  <div class="scroll-wrap">
+    <table>
+      <thead><tr><th>Company</th><th class="num">Net Debt Position</th><th class="num">Leverage Risk</th><th class="num">Capex Mode</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--won);">Wonderla</td><td class="num tpos">~Net Cash</td><td class="num tpos">LOW</td><td class="num">Post-expansion / sustaining</td><td>₹540 Cr QIP fully utilised on Chennai; FY27 capex only ₹35–40 Cr; investments ₹402.5 Cr; PP&amp;E ₹1,307.7 Cr</td></tr>
+        <tr><td class="tb" style="color:var(--img);">Imagicaaworld</td><td class="num tneg">~₹282 Cr non-current borrowings</td><td class="num tneg">MODERATE–RISING</td><td class="num">Acquisition / expansion</td><td>₹215.7 Cr preferential issue for subsidiary debt + acquisitions; ₹65 Cr Axis/IDBI facility; ₹100 Cr Shanku's SPV commitment</td></tr>
+        <tr><td class="tb" style="color:var(--nic);">Nicco Parks</td><td class="num tpos">~Net Cash (debt-free)</td><td class="num tpos">LOW (financial)</td><td class="num">Minimal</td><td>Debt-free, but going-concern note from land-lease uncertainty is a non-debt balance-sheet risk</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card gap-top" style="background:var(--surface2);">
+    <div class="card-lbl">🧮 Reading the Balance Sheets</div>
+    <p style="line-height:1.8;">The leverage picture inverts the profit picture. <strong>Wonderla</strong> just completed its heavy capex cycle (Chennai) using equity (QIP), so it enters FY27 cash-rich with only sustaining capex — its main FY27 drag is higher depreciation, not interest. <strong>Imagicaaworld</strong> is mid-roll-up: rising borrowings plus equity raises fund acquisitions, and finance costs are already pressuring an earnings base that has fallen to near zero — leverage is the variable to watch. <strong>Nicco</strong> carries no financial debt at all, but its risk is legal/contractual: the unresolved government land lease, not a loan book, is what an auditor flagged.</p>
+  </div>
+</div>
+
+<!-- ========== VALUATIONS TAB ========== -->
+<div id="tab-valuation" class="panel">
+  <div class="sec-hdr">💰 Valuations <span class="sec-note">FY26 Based · Market Cap · Dividend · Brokerage Views</span></div>
+  <div class="scroll-wrap">
+    <table>
+      <thead><tr><th>Company</th><th class="num">Market Cap (₹ Cr)</th><th class="num">P/E</th><th class="num">P/B</th><th class="num">52W Range (₹)</th><th class="num">1Y Return</th><th class="num">Dividend</th><th>Brokerage View</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--won);">Wonderla</td><td class="num">~3,360</td><td class="num">~44×</td><td class="num">~1.9×</td><td class="num">455 – 715</td><td class="num tneg">~-19%</td><td class="num">₹2 final</td><td>MOFSL Buy TP ₹780; JM Financial Buy TP ₹750; YES Sec Buy TP ₹800</td></tr>
+        <tr><td class="tb" style="color:var(--img);">Imagicaaworld</td><td class="num">~2,460</td><td class="num tneg">~156–170×</td><td class="num">~2.0–2.2×</td><td class="num">37 – 76</td><td class="num tneg">~-33% to -41%</td><td class="num">Nil</td><td>MOFSL Buy; YES Sec Add; PL Capital Buy (sales/EBITDA CAGR 14%/30% FY26–28E)</td></tr>
+        <tr><td class="tb" style="color:var(--nic);">Nicco Parks</td><td class="num">~349</td><td class="num">~30–46×</td><td class="num">~3.1×</td><td class="num">71 – 125</td><td class="num tneg">~-33% to -43%</td><td class="num">₹0.25 final + 100% interim</td><td>Micro-cap, ~nil institutional coverage; valuation flagged "very expensive" vs current earnings</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">Market-driven figures dated early–mid May 2026; verify before use. Imagicaa P/E distorted by near-zero earnings — EV/EBITDA (~22×) is a more meaningful gauge. No buy/sell/hold recommendation is made by CB Research; brokerage views shown for context only.</p>
+  <div class="g3 gap-top">
+    <div class="card" style="border-top:3px solid var(--won);"><div class="card-lbl" style="color:var(--won);">Wonderla — Quality at a Discount</div><p style="line-height:1.7;">Trades below its own history and peer median multiples after a -19% year, despite best-ever revenue and a cash-rich balance sheet. The market is discounting FY27 PAT compression from Chennai depreciation; re-rating hinges on new-park maturation and footfall momentum.</p></div>
+    <div class="card" style="border-top:3px solid var(--img);"><div class="card-lbl" style="color:var(--img);">Imagicaaworld — Optionality vs Earnings Void</div><p style="line-height:1.7;">A near-zero PAT base makes headline P/E meaningless. The bull case is a base-effect earnings recovery as acquired parks ramp and seasonality smooths; the bear case is that debt and integration costs keep swallowing operating gains.</p></div>
+    <div class="card" style="border-top:3px solid var(--nic);"><div class="card-lbl" style="color:var(--nic);">Nicco — Cheap Asset, Real Overhang</div><p style="line-height:1.7;">A debt-free, cash-generative single asset trading at ~3× book — but the land-lease/going-concern note caps any clean re-rating. Resolution of the West Bengal lease is the binary event that defines the equity story.</p></div>
+  </div>
+</div>
+
+<!-- ========== SWOT TAB ========== -->
+<div id="tab-swot" class="panel">
+  <div class="sec-hdr">🔲 SWOT Analysis <span class="sec-note">All 3 Companies</span></div>
+  <div class="g3">
+    <div class="card" style="border-top:3px solid var(--won);">
+      <div class="card-lbl" style="color:var(--won);">🔵 Wonderla</div>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--pos);">Strengths:</strong> Largest chain, 5-park geographic diversification, in-house ride manufacturing, ~net cash, 35%+ margins, strong brand.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--neg);">Weaknesses:</strong> FY27 PAT pressure from Chennai depreciation; resort still small; ARPU growth must outrun cost inflation.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--won);">Opportunities:</strong> 2–3 new Tier-1 parks; ≥4 state-govt talks; resort scale-up; premiumisation lifting ARPU.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--warn);">Threats:</strong> Seasonality/weather; leisure-wallet competition; execution risk on new parks.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--img);">
+      <div class="card-lbl" style="color:var(--img);">🟠 Imagicaaworld</div>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--pos);">Strengths:</strong> Largest single integrated destination; growing multi-park portfolio; deep-pocketed Malpani parent; hotel smooths seasonality.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--neg);">Weaknesses:</strong> PAT collapsed 99%; expenses ~98% of revenue; rising debt; heavy Mumbai-Pune concentration; extreme seasonality.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--won);">Opportunities:</strong> Asset-light O&amp;M/fee model (Shanku's); indoor Hello Park year-round revenue; Sabarmati parks; base-effect earnings recovery.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--warn);">Threats:</strong> Integration risk; finance-cost drag; discretionary-spend pressure; water-availability disruptions (Khopoli).</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--nic);">
+      <div class="card-lbl" style="color:var(--nic);">🟢 Nicco Parks</div>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--pos);">Strengths:</strong> Debt-free; iconic Kolkata brand; high recurring local footfall; historically strong ROCE; high standalone FY26 profit.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--neg);">Weaknesses:</strong> Single-asset concentration; consol net loss; Q4 operationally negative; going-concern / modified-opinion note; micro-cap illiquidity.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--nic);">Opportunities:</strong> Land-lease resolution; new attractions; cost optimisation; new MD-led turnaround.</p>
+      <p style="font-size:11.5px;line-height:1.7;"><strong style="color:var(--warn);">Threats:</strong> Lease renewal denial/delay; eastern-India weather; state acquisition of F&amp;B land; sector demand softness.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MOATS TAB ========== -->
+<div id="tab-moat" class="panel">
+  <div class="sec-hdr">🏰 Economic Moats &amp; Catalysts <span class="sec-note">Durable Competitive Advantages — All 3 Companies</span></div>
+  <div class="g3">
+    <div class="card" style="border-top:3px solid var(--won);">
+      <div class="card-lbl" style="color:var(--won);">🔵 Wonderla — Scale + In-House Engineering</div>
+      <p style="line-height:1.7;margin-bottom:8px;">High capex + land + operational know-how create steep entry barriers; Wonderla compounds this with <strong>in-house ride design and manufacturing</strong>, lowering capex-per-park and enabling faster, cheaper expansion than import-reliant rivals. A trusted family-safe brand across five cities drives repeat footfall.</p>
+      <p style="font-size:11px;color:var(--muted);"><strong>Catalyst:</strong> Full-year Chennai, resort expansion, 2–3 new Tier-1 parks over 4–5 years on a cash-rich balance sheet.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--img);">
+      <div class="card-lbl" style="color:var(--img);">🟠 Imagicaaworld — Largest Integrated Destination</div>
+      <p style="line-height:1.7;margin-bottom:8px;">India's only large all-in-one destination (theme + water + snow + hotel) at a single Mumbai-proximate site, plus a parent group with the capital to roll up regional parks. The moat is <strong>scale and parent backing</strong> — but it is currently outweighed by execution and cost discipline gaps.</p>
+      <p style="font-size:11px;color:var(--muted);"><strong>Catalyst:</strong> Asset-light fee model (Shanku's), year-round indoor Hello Park format, Sabarmati parks, base-effect recovery.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--nic);">
+      <div class="card-lbl" style="color:var(--nic);">🟢 Nicco Parks — Location &amp; Legacy</div>
+      <p style="line-height:1.7;margin-bottom:8px;">An irreplaceable prime location in the heart of Salt Lake, Kolkata, with three decades of brand equity and a captive eastern-India catchment that few would attempt to replicate. The moat is <strong>site + brand</strong> — but it is contingent on retaining the government land lease.</p>
+      <p style="font-size:11px;color:var(--muted);"><strong>Catalyst:</strong> Lease renewal, new rides/attractions, cost optimisation, fresh management.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ANALYST RATINGS TAB ========== -->
+<div id="tab-analyst" class="panel">
+  <div class="sec-hdr">🎯 Analyst &amp; CB Research Ratings <span class="sec-note">Sector-Relative Scoring · Brokerage Views Where Available</span></div>
+  <div class="scroll-wrap">
+    <table>
+      <thead><tr><th>Company</th><th class="num">CB Rating /10</th><th>CB Verdict</th><th>Brokerage Stance</th><th>Key Swing Factor</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--won);">Wonderla</td><td class="num tpos">7.8</td><td>High Conviction — Quality Compounder</td><td>Buy (MOFSL ₹780, YES ₹800, JM ₹750)</td><td>Chennai &amp; resort maturation vs depreciation drag</td></tr>
+        <tr><td class="tb" style="color:var(--img);">Imagicaaworld</td><td class="num twarn">4.8</td><td>Speculative — Turnaround / Base-Effect Bet</td><td>Buy/Add (MOFSL, YES, PL)</td><td>Cost discipline &amp; debt vs acquisition ramp</td></tr>
+        <tr><td class="tb" style="color:var(--nic);">Nicco Parks</td><td class="num twarn">4.5</td><td>Deep-Value with Binary Overhang</td><td>~No active coverage</td><td>Land-lease resolution (binary)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">CB Rating is a sector-relative composite of growth, margin quality, balance-sheet strength, footprint diversification and visibility — it is not investment advice and contains no buy/sell/hold call. Brokerage targets are third-party and time-stamped to the Q4 FY26 results window.</p>
+  <div class="card gap-top" style="background:var(--surface2);">
+    <div class="card-lbl">🧠 How to Read These Scores</div>
+    <p style="line-height:1.8;">Wonderla scores highest because it pairs sector-leading margins and a clean balance sheet with the only proven multi-park expansion engine — its risks are temporary (depreciation timing) rather than structural. Imagicaa and Nicco score lower for opposite reasons: Imagicaa has scale and ambition but unproven cost discipline and rising leverage; Nicco has a pristine balance sheet and prime asset but a single point of failure (the lease) and no diversification. Lower scores reflect higher dispersion of outcomes, not a directional view on price.</p>
+  </div>
+</div>
+
+<!-- ========== VERDICT TAB ========== -->
+<div id="tab-verdict" class="panel">
+  <div class="sec-hdr">⚖️ Sector Verdict <span class="sec-note">CB Research Ranking — Q4 &amp; FY26</span></div>
+  <div class="card" style="border-left:4px solid var(--won);">
+    <div class="card-lbl" style="color:var(--won);">🥇 1 · Wonderla Holidays — The Operating-Leverage Winner</div>
+    <p style="line-height:1.8;">Best-ever FY26 revenue, sector-leading ~35.5% margins, a cash-rich post-QIP balance sheet, and the only credible national-expansion roadmap. Q4 demonstrated textbook operating leverage as new-park footfall lifted EBITDA 64% on 32% income growth. The reported FY26 PAT dip is a base-effect mirage (prior-year tax credit); the real FY27 question is whether revenue growth outpaces Chennai's ₹45–50 Cr depreciation step-up. Highest quality, lowest structural risk.</p>
+  </div>
+  <div class="card gap-top" style="border-left:4px solid var(--img);">
+    <div class="card-lbl" style="color:var(--img);">🥈 2 · Imagicaaworld — Scale Without (Yet) Discipline</div>
+    <p style="line-height:1.8;">The most aggressive growth ambition and the largest single destination, backed by a deep-pocketed parent — but FY26 exposed the cost: PAT collapsed 99% as expenses nearly equalled revenue and borrowings climbed. The pivot to asset-light O&amp;M (Shanku's) and year-round indoor formats (Hello Park) is strategically sound and could smooth the brutal seasonality. This is a turnaround / base-effect story: high optionality, high execution risk, near-zero current earnings.</p>
+  </div>
+  <div class="card gap-top" style="border-left:4px solid var(--nic);">
+    <div class="card-lbl" style="color:var(--nic);">🥉 3 · Nicco Parks — Deep Value Held Hostage by a Lease</div>
+    <p style="line-height:1.8;">A debt-free, iconic, cash-generative single asset with historically strong returns — and a sharply higher standalone FY26 profit. But consolidated results slipped to a loss, Q4 turned operationally negative ex-other-income, and an unresolved West Bengal land lease keeps a going-concern note alive. The equity is effectively a bet on one binary event: lease resolution. Until then, scale, diversification and visibility are all absent.</p>
+  </div>
+  <div class="card gap-top" style="background:#181511;color:#fff;">
+    <div class="card-lbl" style="color:var(--gold);">📋 Bottom Line</div>
+    <p style="line-height:1.8;color:rgba(255,255,255,.9);">FY26 sorted India's listed park operators by execution, not ambition. Wonderla converted expansion into profitable scale; Imagicaa converted expansion into cost and debt; Nicco simply needs to keep its land. All three remain hostage to the same physics — footfall × ARPU against a fixed-cost base, swinging violently with season and weather — but only one has so far shown it can win that equation consistently across a full year.</p>
+  </div>
+</div>
+
+<!-- ========== CB ASSIST TAB ========== -->
+<div id="tab-cb" class="panel">
+  <div class="sec-hdr">🤖 CB Assist <span class="sec-note">Offline Q&amp;A Engine · Amusement Parks Sector · No API, No Internet — All Answers From This Dashboard's FY26 Data</span></div>
+  <div class="g2">
+    <div class="card">
+      <div class="cb-chat-hdr">💬 Ask CB Assist about any of the 3 companies</div>
+      <div id="chatLog" style="max-height:340px;overflow-y:auto;margin-bottom:10px;">
+        <div class="chat-msg bot"><strong>CB Assist:</strong> Hi Elango! Ask me about revenue, margins, footfall, ARPU, debt, promoters, moats, catalysts or risks for Wonderla, Imagicaaworld or Nicco Parks — in English or Tamil (தமிழ்). Or try a preset question on the right.</div>
+      </div>
+      <div id="typingInd">CB Assist is thinking…</div>
+      <div style="display:flex;gap:8px;">
+        <input class="chat-in" id="chatInput" placeholder="Type your question… / உங்கள் கேள்வியை இங்கே தட்டச்சு செய்யவும்" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn" onclick="sendChat()">Ask</button>
+      </div>
+    </div>
+    <div class="card" style="background:var(--surface2);">
+      <div class="cb-chat-hdr">⚡ Preset Questions</div>
+      <button class="preset-q" onclick="askPreset(this)">Which company had the best FY26 margin?</button>
+      <button class="preset-q" onclick="askPreset(this)">What is Wonderla's FY26 footfall and ARPU?</button>
+      <button class="preset-q" onclick="askPreset(this)">Why did Imagicaa PAT collapse in FY26?</button>
+      <button class="preset-q" onclick="askPreset(this)">Compare Wonderla vs Imagicaa</button>
+      <button class="preset-q" onclick="askPreset(this)">What is the risk for Nicco Parks?</button>
+      <button class="preset-q" onclick="askPreset(this)">Who are the promoters of each company?</button>
+      <button class="preset-q" onclick="askPreset(this)">What is Wonderla's debt position?</button>
+      <button class="preset-q" onclick="askPreset(this)">வொண்டர்லா வருவாய் என்ன?</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SOCRATES TAB ========== -->
+<div id="tab-socrates" class="panel">
+  <div class="sec-hdr">🏛️ Cauvery Socrates <span class="sec-note">Socratic Tutor · Amusement Park Sector Investing · CB Research</span></div>
+  <div class="card" style="margin-bottom:14px;">
+    <strong style="color:var(--text);">How it works:</strong> Pick a topic below. Answer the question — Socrates checks your reasoning and corrects misconceptions gently. No shortcuts.
+  </div>
+  <div style="margin-bottom:14px;">
+    <button class="soc-topic-pill" data-topic="fundamentals">🎢 Fundamentals</button>
+    <button class="soc-topic-pill" data-topic="seasonality">🌦️ Seasonality &amp; Leverage</button>
+    <button class="soc-topic-pill" data-topic="moat">🏰 Moats &amp; Diversification</button>
+    <button class="soc-topic-pill" data-topic="compare">⚖️ Compare</button>
+    <button class="soc-topic-pill" data-topic="balance">💳 Balance Sheet &amp; Risk</button>
+  </div>
+  <div id="socZone" class="card">
+    <div style="text-align:center;color:var(--muted);padding:30px 10px;">
+      "I know that I know nothing." — Socrates<br><br>
+      Pick a topic above to begin. Socrates will probe your reasoning and push you deeper.
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div class="foot">Cauvery Business Research · Amusement &amp; Theme Parks Sector Intelligence · Q4 &amp; FY26 · Data from audited BSE/NSE exchange filings &amp; earnings calls · For education only — no buy/sell/hold recommendation.</div>
+<div class="wm">CB Research</div>
+<script>
+// ─── TAB SWITCHING ──────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts') initCharts();
+}
+function showDeep(key,btn){
+  document.querySelectorAll('.deep-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.deep-btn').forEach(b=>b.style.background='var(--surface)');
+  document.getElementById('deep-'+key).classList.add('active');
+  const c={won:'var(--won-soft)',img:'var(--img-soft)',nic:'var(--nic-soft)'}[key];
+  btn.style.background=c;
+}
+window.addEventListener('DOMContentLoaded',function(){
+  document.querySelector('.deep-btn').click();
+});
+
+// ─── CHART DATA ─────────────────────────────────────────────────
+const CHART_DATA = {
+  annual:{
+    labels:["Wonderla","Imagicaa","Nicco"],
+    rev:[518.80,373.99,66.35],
+    margin:[35.5,31.0,8.0],
+    growth:[13.1,-8.9,-11.6],
+    foot:[32.19,24.70,9.5],
+    titleRev:"FY26 Annual Revenue (₹ Cr)",
+    titleMargin:"EBITDA Margin % — FY26",
+    titleGrowth:"Revenue Growth % YoY — FY26",
+    titleFoot:"FY26 Footfall (lakhs)"
+  },
+  q4:{
+    labels:["Wonderla","Imagicaa","Nicco"],
+    rev:[135.85,91.86,15.35],
+    margin:[35.2,33.0,-1.17],
+    growth:[40.4,-2.7,-12.7],
+    foot:[8.79,6.21,2.0],
+    titleRev:"Q4 FY26 Revenue — Jan–Mar 2026 (₹ Cr)",
+    titleMargin:"Q4 FY26 EBITDA Margin %",
+    titleGrowth:"Q4 FY26 Revenue Growth % YoY",
+    titleFoot:"Q4 FY26 Footfall (lakhs)"
+  }
+};
+const colors=["#1d4ed8","#ea580c","#0f766e"];
+let chartsInited=false,currentPeriod='annual',chartInstances={};
+
+const valueLabelPlugin={
+  id:'valueLabel',
+  afterDatasetsDraw(chart){
+    const{ctx}=chart;ctx.save();
+    chart.data.datasets.forEach((ds,di)=>{
+      const meta=chart.getDatasetMeta(di);
+      meta.data.forEach((bar,i)=>{
+        const v=ds.data[i];if(v===null||v===undefined)return;
+        ctx.fillStyle='#181511';ctx.font='600 11px Inter';ctx.textAlign='center';
+        let txt=typeof v==='number'?v.toLocaleString('en-IN'):v;
+        const y=bar.y+(v>=0?-6:14);
+        ctx.fillText(txt,bar.x,y);
+      });
+    });
+    ctx.restore();
+  }
+};
+
+function updateOrCreate(id,config){
+  if(chartInstances[id]){
+    chartInstances[id].data=config.data;
+    if(config.options.scales)chartInstances[id].options.scales=config.options.scales;
+    chartInstances[id].options.plugins=config.options.plugins;
+    chartInstances[id].update();
+  }else{
+    chartInstances[id]=new Chart(document.getElementById(id),config);
+  }
+}
+function buildCharts(period){
+  const d=CHART_DATA[period];
+  const gColors=d.growth.map((v,i)=>v>=0?colors[i]:'#dc2626');
+  const mColors=d.margin.map((v,i)=>v>=0?colors[i]:'#dc2626');
+  updateOrCreate('chartRev',{type:'bar',plugins:[valueLabelPlugin],data:{labels:d.labels,datasets:[{data:d.rev,backgroundColor:colors}]},options:{responsive:true,animation:{duration:400},plugins:{legend:{display:false},title:{display:true,text:d.titleRev,font:{size:12}}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')}}}}});
+  updateOrCreate('chartMargin',{type:'bar',plugins:[valueLabelPlugin],data:{labels:d.labels,datasets:[{data:d.margin,backgroundColor:mColors}]},options:{responsive:true,animation:{duration:400},plugins:{legend:{display:false},title:{display:true,text:d.titleMargin,font:{size:12}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  updateOrCreate('chartGrowth',{type:'bar',plugins:[valueLabelPlugin],data:{labels:d.labels,datasets:[{data:d.growth,backgroundColor:gColors}]},options:{responsive:true,animation:{duration:400},plugins:{legend:{display:false},title:{display:true,text:d.titleGrowth,font:{size:12}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  updateOrCreate('chartFoot',{type:'bar',plugins:[valueLabelPlugin],data:{labels:d.labels,datasets:[{data:d.foot,backgroundColor:colors}]},options:{responsive:true,animation:{duration:400},plugins:{legend:{display:false},title:{display:true,text:d.titleFoot,font:{size:12}}},scales:{y:{ticks:{callback:v=>v.toLocaleString('en-IN')}}}}});
+}
+function initCharts(){if(chartsInited)return;chartsInited=true;buildCharts('annual');}
+function setPeriod(p,btn){
+  currentPeriod=p;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const note=document.getElementById('chart-period-note');
+  note.textContent=p==='annual'?'Showing full-year FY26 actuals for all 3 companies':'Showing Q4 FY26 (Jan–Mar 2026) standalone quarter data';
+  if(chartsInited)buildCharts(p);
+}
+
+// ─── CB ASSIST — OFFLINE KNOWLEDGE ENGINE ───────────────────────
+const KB={
+ won:{name:"Wonderla Holidays",rev:"₹518.80 Cr",revGr:"+13.1%",ebitdaMargin:"35.5%",pat:"₹81.70 Cr",patGr:"-25.2% (base effect)",q4Rev:"₹135.85 Cr",q4EbitdaMargin:"35.2%",footfall:"32.19 lakh (FY26), 8.79 lakh (Q4)",arpu:"₹1,530 (FY26), ₹1,465 (Q4)",netDebt:"~Net Cash (almost debt-free post-QIP)",debtRisk:"LOW",segments:"5 owned amusement parks (Bengaluru, Kochi, Hyderabad, Bhubaneswar, Chennai) + Isle by Wonderla resort (FY26 ₹26.36 Cr, +56%)",promoter:"Chittilappilly family — Arun K. Chittilappilly (Exec Chairman & MD), Kochouseph Chittilappilly (founder). Promoter holding ~62.2%.",moat:"Largest pan-India chain with five-park geographic diversification plus in-house ride design and manufacturing that lowers capex-per-park — a cost and expansion advantage rivals can't easily match.",catalyst:"Full-year Chennai contribution, resort scale-up (+39 keys Q1 FY27), 2-3 new Tier-1 parks over 4-5 years, talks with 4+ state governments, sustaining capex only ₹35-40 Cr in FY27.",risk:"FY27 PAT faces a ₹45-50 Cr annual depreciation step-up from Chennai; revenue growth must outpace it. Seasonality/weather and leisure-wallet competition are ever-present.",brokerage:"MOFSL Buy TP ₹780; YES Securities Buy TP ₹800; JM Financial Buy TP ₹750.",code:"NSE: WONDERLA · BSE: 538268",ratingScore:"7.8",ratingVerdict:"High Conviction — Quality Compounder",
+  ta:{rev:"வொண்டர்லாவின் FY26 வருவாய் ₹518.80 கோடி (+13.1%); EBITDA மார்ஜின் 35.5%; PAT ₹81.70 கோடி (முந்தைய ஆண்டு வரிச்சலுகை அடிப்படையில் -25.2%).",margin:"வொண்டர்லாவின் FY26 EBITDA மார்ஜின் 35.5% — துறையில் சிறந்தது.",risk:"FY27-ல் சென்னை பூங்காவின் தேய்மானம் (₹45-50 கோடி) PAT-ஐ அழுத்தும்; வருவாய் வளர்ச்சி அதை மிஞ்ச வேண்டும்."}},
+ img:{name:"Imagicaaworld Entertainment",rev:"₹373.99 Cr (consol)",revGr:"-8.9%",ebitdaMargin:"31.0%",pat:"₹0.64 Cr (consol)",patGr:"-99.2%",q4Rev:"₹91.86 Cr",q4EbitdaMargin:"33.0%",footfall:"24.70 lakh (FY26, -8.7%), 6.21 lakh (Q4, +5%)",arpu:"₹1,259 (FY26), ₹1,230 (Q4)",netDebt:"~₹282 Cr non-current borrowings (rising)",debtRisk:"MODERATE — RISING",segments:"Two reportable segments: Parks Division (theme/water/snow/devotional parks + retail) and Hotel Division (Novotel Imagica). Khopoli flagship + Wet'n'Joy/Saiteerth (Lonavala, Shirdi) + Aqua Imagicaa (Surat) + Indore.",promoter:"Malpani Group (Sangamner) — Rajesh Malpani (Chairman, Non-Exec), Jai Malpani (MD), Manish Malpani (Director). Promoter holding ~74.0%.",moat:"India's largest single integrated theme destination (theme+water+snow+hotel near Mumbai) backed by a deep-pocketed diversified parent able to roll up regional parks.",catalyst:"Asset-light O&M + 6-10% management fee model (₹100 Cr Shanku's Water Park SPV), Dubai Hello Park indoor 'phygital' kids JV (first site Hyderabad), Sabarmati Riverfront parks. PL Capital models FY26-28E sales/EBITDA CAGR 14%/30%.",risk:"FY26 expenses consumed ~98% of revenue, collapsing PAT 99%; rising debt and integration costs; heavy Mumbai-Pune concentration; extreme seasonality (Q2 peak vs Q3/Q4 lean); water-availability disruptions at Khopoli.",brokerage:"MOFSL Buy; YES Securities Add; PL Capital Buy.",code:"NSE: IMAGICAA · BSE: 539056",ratingScore:"4.8",ratingVerdict:"Speculative — Turnaround / Base-Effect Bet",
+  ta:{rev:"இமேஜிகாவின் FY26 ஒருங்கிணைந்த வருவாய் ₹373.99 கோடி (-8.9%); PAT ₹0.64 கோடி மட்டுமே (-99.2%).",margin:"FY26 EBITDA மார்ஜின் 31.0% (முந்தைய ஆண்டு 42.8%).",risk:"FY26-ல் செலவுகள் வருவாயில் ~98% ஐ விழுங்கின; கடன் உயர்கிறது; லாபம் கிட்டத்தட்ட பூஜ்ஜியம்."}},
+ nic:{name:"Nicco Parks & Resorts",rev:"₹66.35 Cr (consol)",revGr:"-11.6%",ebitdaMargin:"Low / negative in Q4",pat:"Standalone ₹19.71 Cr; Consol -₹2.73 Cr",patGr:"Standalone +345%; Consol to loss",q4Rev:"₹15.35 Cr",q4EbitdaMargin:"-1.17% (ex-other income)",footfall:"~9-10 lakh (FY26)",arpu:"~₹700",netDebt:"Debt-free (~net cash)",debtRisk:"LOW financial; HIGH legal (lease)",segments:"Single iconic amusement park at Salt Lake City, Kolkata; small park-design consultancy. JV with West Bengal government entities; land on government lease (renewal pending).",promoter:"Nicco Corporation + West Bengal govt entities, ~69.4%. Rahul Mitra (newly approved MD & CEO), Barun Kumar Ray (Nominee Director).",moat:"Irreplaceable prime Salt Lake Kolkata location with three decades of brand equity and a captive eastern-India catchment — contingent on retaining the government land lease.",catalyst:"Resolution of West Bengal land-lease renewal (binary event), new attractions, cost optimisation, fresh management-led turnaround.",risk:"Single-asset concentration; consolidated net loss; Q4 operationally negative ex-other-income; auditor going-concern / modified opinion on land-lease uncertainty; micro-cap illiquidity; eastern-India weather.",brokerage:"Effectively no active institutional coverage; valuation flagged 'very expensive' vs current earnings.",code:"BSE: 526721 · NSE: NICCOPAR",ratingScore:"4.5",ratingVerdict:"Deep-Value with Binary Overhang",
+  ta:{rev:"நிக்கோ பார்க்ஸ் FY26 ஒருங்கிணைந்த வருவாய் ₹66.35 கோடி (-11.6%); தனிநிலை PAT ₹19.71 கோடி, ஒருங்கிணைந்த நிகர நஷ்டம் ₹2.73 கோடி.",margin:"Q4-ல் இயக்க மார்ஜின் (மற்ற வருமானம் தவிர்த்து) எதிர்மறை -1.17%.",risk:"முக்கிய ஆபத்து: மேற்கு வங்க அரசு நில குத்தகை புதுப்பித்தல் தீர்வடையாதது — தணிக்கையாளர் going-concern குறிப்பு."}}};
+const CO_KEYS=["won","img","nic"];
+
+function findCompany(q){
+  const l=q.toLowerCase();
+  if(/wonderla|வொண்டர்லா|வொன்டர்லா/.test(l))return 'won';
+  if(/imagica|magic|இமேஜிகா|மேஜிக்/.test(l))return 'img';
+  if(/nicco|nico|நிக்கோ/.test(l))return 'nic';
+  return null;
+}
+function findTopic(q){
+  const l=q.toLowerCase();
+  if(/revenue|topline|sales|வருவாய்|விற்பனை/.test(l))return 'rev';
+  if(/ebitda|margin|profit margin|மார்ஜின்/.test(l))return 'ebitdaMargin';
+  if(/footfall|visitor|வருகை/.test(l))return 'footfall';
+  if(/arpu|spend per/.test(l))return 'arpu';
+  if(/\bpat\b|net profit|bottom|லாபம்/.test(l))return 'pat';
+  if(/segment|business|division|park|hotel|பிரிவு/.test(l))return 'segments';
+  if(/promoter|founder|family|owner|malpani|chittil|நிறுவனர்|உரிமையாளர்/.test(l))return 'promoter';
+  if(/catalyst|trigger|capex|expansion|guidance|வளர்ச்சி/.test(l))return 'catalyst';
+  if(/debt|leverage|borrow|cash|balance|கடன்/.test(l))return 'netDebt';
+  if(/moat|advantage|competitive|barrier/.test(l))return 'moat';
+  if(/risk|threat|downside|concern|ஆபத்து|risk/.test(l))return 'risk';
+  if(/broker|target|rating|consensus/.test(l))return 'brokerage';
+  if(/code|ticker|symbol|bse|nse/.test(l))return 'code';
+  return null;
+}
+function isTamil(q){return /[\u0B80-\u0BFF]/.test(q);}
+const TOPIC_LABEL={rev:"Revenue (FY26)",ebitdaMargin:"EBITDA Margin (FY26)",footfall:"Footfall",arpu:"ARPU",pat:"PAT (FY26)",segments:"Business Segments",promoter:"Promoters & Management",catalyst:"Catalysts & Guidance",netDebt:"Debt Position",moat:"Economic Moat",risk:"Key Risks",brokerage:"Brokerage View",code:"Listing"};
+
+function buildAnswer(q){
+  const co=findCompany(q),topic=findTopic(q),tamil=isTamil(q),l=q.toLowerCase();
+  const isCompare=l.includes(' vs ')||l.includes('versus')||l.includes('compare')||l.includes('against');
+  if(isCompare){
+    const cos=CO_KEYS.filter(c=>findCompanyIn(l,c));
+    if(cos.length>=2){
+      let out='Comparison ('+cos.map(c=>KB[c].name).join(' vs ')+'):\n\n';
+      const fields=[['rev','FY26 Revenue'],['ebitdaMargin','EBITDA Margin'],['pat','FY26 PAT'],['footfall','Footfall'],['netDebt','Balance Sheet']];
+      fields.forEach(f=>{out+='• '+f[1]+': '+cos.map(c=>KB[c].name.split(' ')[0]+' '+KB[c][f[0]]).join('  |  ')+'\n';});
+      return out;
+    }
+  }
+  if(l.includes('best')&&l.includes('margin'))return 'Wonderla had the best FY26 EBITDA margin at 35.5%, ahead of Imagicaaworld (~31.0%). Nicco Parks turned operationally negative in Q4 FY26 (-1.17% ex-other income). Wonderla also led on Q4 margin at 35.2%.';
+  if(co&&topic){
+    if(tamil&&KB[co].ta&&KB[co].ta[topic])return KB[co].ta[topic];
+    return KB[co].name+' — '+TOPIC_LABEL[topic]+': '+KB[co][topic];
+  }
+  if(co){
+    const k=KB[co];
+    return k.name+' ('+k.code+')\n• FY26 Revenue: '+k.rev+' ('+k.revGr+')\n• EBITDA Margin: '+k.ebitdaMargin+'\n• FY26 PAT: '+k.pat+'\n• Footfall: '+k.footfall+'\n• ARPU: '+k.arpu+'\n• Balance Sheet: '+k.netDebt+'\n• CB Rating: '+k.ratingScore+'/10 — '+k.ratingVerdict+'\n\nAsk about: moat, catalyst, risk, promoter, segments, brokerage.';
+  }
+  if(topic){
+    let out='';CO_KEYS.forEach(c=>{out+='• '+KB[c].name+': '+KB[c][topic]+'\n\n';});
+    return (TOPIC_LABEL[topic]||'')+' across all three:\n\n'+out;
+  }
+  return "I can answer about Wonderla, Imagicaaworld or Nicco Parks. Try: \"Wonderla footfall\", \"why did Imagicaa PAT collapse\", \"compare Wonderla vs Imagicaa\", or \"Nicco risk\". Tamil questions welcome (தமிழ்).";
+}
+function findCompanyIn(l,c){
+  if(c==='won')return /wonderla|வொண்டர்லா/.test(l);
+  if(c==='img')return /imagica|magic|இமேஜிகா/.test(l);
+  if(c==='nic')return /nicco|nico|நிக்கோ/.test(l);
+  return false;
+}
+function appendMsg(text,who){
+  const log=document.getElementById('chatLog');
+  const d=document.createElement('div');
+  d.className='chat-msg '+who;
+  d.innerHTML=(who==='bot'?'<strong>CB Assist:</strong> ':'')+text.replace(/\n/g,'<br>');
+  log.appendChild(d);log.scrollTop=log.scrollHeight;
+}
+function sendChat(){
+  const inp=document.getElementById('chatInput');const q=inp.value.trim();if(!q)return;
+  appendMsg(q,'user');inp.value='';
+  const ti=document.getElementById('typingInd');ti.style.display='block';
+  setTimeout(function(){ti.style.display='none';appendMsg(buildAnswer(q),'bot');},350);
+}
+function askPreset(btn){document.getElementById('chatInput').value=btn.textContent;sendChat();}
+
+// ─── CAUVERY SOCRATES — SOCRATIC TUTOR ──────────────────────────
+const SOC={
+ fundamentals:{
+  q:"An amusement park earns the same whether 5,000 or 15,000 people visit, because its big costs (land, rides, staff, power) are mostly fixed. Given that, what is the single most important driver of whether a park is profitable in any given period?",
+  opts:["The ticket price alone","Footfall crossing the break-even level (then ARPU on top)","The number of rides installed","Government tourism subsidies"],
+  correct:1,
+  right:"Exactly. Above break-even footfall, operating leverage kicks in and almost every incremental rupee drops to EBITDA. That's why Wonderla's Q4 EBITDA rose 64% on just 32% income growth.",
+  wrong:"Not quite. Ticket price and ride count matter, but with mostly fixed costs the decisive variable is whether footfall clears the break-even line — only then does each extra visitor (footfall × ARPU) become almost pure profit.",
+  followup:"If two parks have identical ARPU, which is riskier — the one running just above break-even footfall, or the one running well above it? Why?"},
+ seasonality:{
+  q:"Nicco Parks swung from a healthy Q4 FY25 profit to a Q4 FY26 operating loss, and Imagicaa's quarterly revenue ranged from ₹41 Cr to ₹148 Cr within FY26. What does this volatility tell you about how to judge a single quarter's result?",
+  opts:["One weak quarter means the business is broken","A single quarter can mislead; you must read the full-year and the seasonal pattern","Seasonality doesn't matter for valuation","Q4 is always the strongest quarter for parks"],
+  correct:1,
+  right:"Right. Outdoor parks are highly seasonal (summer/festive peaks, monsoon/winter troughs). A lean Q4 tests fixed-cost discipline, not demand — so the full-year trend and seasonal context matter far more than any one quarter.",
+  wrong:"Reconsider. Q4 (Jan–Mar) is a seasonally lean window for outdoor parks, so judging the business on it alone is misleading. You must read the full-year figures and the recurring seasonal shape.",
+  followup:"How does adding a hotel or an indoor format (like Imagicaa's Hello Park plan) change a park operator's exposure to this seasonality?"},
+ moat:{
+  q:"Wonderla designs and manufactures its own rides in-house. Why is that a more durable competitive advantage than simply owning more parks?",
+  opts:["It isn't — park count is all that matters","It lowers capex-per-park and speeds expansion, which rivals relying on imports can't easily copy","It guarantees higher ticket prices","It removes seasonality"],
+  correct:1,
+  right:"Correct. In-house engineering structurally lowers the cost and time to add capacity. Combined with five-park diversification and brand trust, it's an advantage import-reliant rivals struggle to match.",
+  wrong:"Think again. The edge isn't park count by itself — it's that in-house ride manufacturing cuts capex-per-park and accelerates expansion, a cost/speed moat competitors who import rides can't easily replicate.",
+  followup:"Nicco has an irreplaceable location but only one park. Is 'great location, single asset' a moat or a vulnerability? Defend your answer."},
+ compare:{
+  q:"In FY26 both Imagicaa and Wonderla expanded aggressively. Wonderla's profits rose in quality terms while Imagicaa's PAT collapsed 99%. What best explains the divergence?",
+  opts:["Wonderla got lucky with weather","Wonderla converted expansion into profitable scale (margins, cash) while Imagicaa's costs and debt outran revenue","Imagicaa is in a worse sector","They are actually identical businesses"],
+  correct:1,
+  right:"Exactly. Same ambition, different execution: Wonderla funded growth with equity and kept 35%+ margins; Imagicaa let expenses reach ~98% of revenue and borrowings climb, erasing profit.",
+  wrong:"Not the core reason. The divergence is about execution: Wonderla turned expansion into profitable, cash-rich scale, whereas Imagicaa's operating costs and finance burden outpaced revenue, collapsing PAT.",
+  followup:"Does Imagicaa's pivot to an asset-light fee model (Shanku's O&M) address the root cause? What would you watch to confirm it's working?"},
+ balance:{
+  q:"Nicco Parks is completely debt-free, yet its auditor still raised a going-concern note. How can a company with no debt face a going-concern risk?",
+  opts:["Auditors made an error","Going-concern risk can come from non-debt factors — here, an unresolved government land lease the park sits on","Debt-free companies can never have risk","It's only about cash in the bank"],
+  correct:1,
+  right:"Precisely. Solvency isn't only about loans. Nicco's park operates on a West Bengal government land lease that expired and awaits renewal — losing the land would threaten the whole business regardless of zero debt.",
+  wrong:"Reconsider. Going-concern risk isn't only about borrowings. Nicco's is contractual/legal: the park sits on a government land lease pending renewal — a non-debt threat to the entire asset base.",
+  followup:"If you were valuing Nicco, how would you treat this binary lease outcome — as a discount to fair value, a probability-weighted scenario, or a reason to avoid entirely? Justify it."}
+};
+let socTopic=null;
+function renderSocQuestion(t){
+  socTopic=t;const s=SOC[t];const z=document.getElementById('socZone');
+  let html='<div style="font-weight:700;font-size:13px;margin-bottom:14px;">🏛️ Socrates asks:</div><p style="font-size:13px;line-height:1.8;margin-bottom:16px;">'+s.q+'</p>';
+  s.opts.forEach((o,i)=>{html+='<button class="soc-opt" data-idx="'+i+'">'+String.fromCharCode(65+i)+'. '+o+'</button>';});
+  html+='<div id="socResult"></div>';
+  z.innerHTML=html;
+  z.querySelectorAll('.soc-opt[data-idx]').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const idx=parseInt(this.getAttribute('data-idx'));
+      const s=SOC[socTopic];const correct=idx===s.correct;
+      z.querySelectorAll('.soc-opt').forEach(b=>b.style.pointerEvents='none');
+      this.style.borderColor=correct?'var(--pos)':'var(--neg)';
+      this.style.background=correct?'#dcfce7':'#fee2e2';
+      const r=document.getElementById('socResult');
+      r.innerHTML='<div style="margin-top:14px;padding:12px 16px;border-radius:8px;background:'+(correct?'#dcfce7':'#fff0e0')+';font-size:12.5px;line-height:1.7;">'+(correct?'✅ ':'🤔 ')+(correct?s.right:s.wrong)+'</div>'+
+        '<div class="soc-followup">🏛️ <strong>Socrates asks:</strong> '+s.followup+'</div>'+
+        '<textarea class="soc-free-input" style="margin-top:10px;" placeholder="Think it through and write your reasoning here — there are no shortcuts in Socrates..."></textarea>'+
+        '<button class="btn" onclick="document.querySelectorAll(\'.soc-topic-pill\').forEach(p=>p.classList.remove(\'active\'));renderSocReflect()">Submit Reflection</button>';
+    });
+  });
+}
+function renderSocReflect(){
+  const z=document.getElementById('socZone');
+  z.innerHTML='<div style="text-align:center;padding:24px 10px;"><div style="font-size:13px;line-height:1.8;">🏛️ <em>"The unexamined investment is not worth making."</em><br><br>Good — you reasoned it through rather than guessing. That habit, applied to footfall, ARPU, margins, debt and the one binary risk in each business, is the whole game in this sector.<br><br>Pick another topic above to continue.</div></div>';
+}
+document.querySelectorAll('.soc-topic-pill[data-topic]').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.soc-topic-pill').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    renderSocQuestion(this.getAttribute('data-topic'));
+  });
+});
+</script>
+</body>
+</html>

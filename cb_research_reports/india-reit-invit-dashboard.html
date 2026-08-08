@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India REIT & InvIT — Complete Investment Dashboard 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f0f4f8;--card:#fff;--card2:#f8fafc;--border:#e2e8f0;
+  --accent:#0369a1;--green:#16a34a;--amber:#d97706;--red:#dc2626;--purple:#7c3aed;
+  --teal:#0891b2;--text:#0f172a;--muted:#64748b;--light:#e0f2fe;
+  --emb:#185FA5;--mind:#1D9E75;--brook:#7c3aed;--nex:#D85A30;--krt:#b91c1c;
+  --irb:#0e7490;--ndhit:#1e40af;--indigrid:#064e3b;--pginvit:#7f1d1d;
+  --nhit:#92400e;--highways:#4c1d95;--tvs:#065f46;--shrem:#374151;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff;padding:28px 32px;position:sticky;top:0;z-index:100;box-shadow:0 2px 14px rgba(0,0,0,.25)}
+.header h1{font-size:1.65rem;font-weight:700;letter-spacing:-.3px}
+.header p{opacity:.82;margin-top:4px;font-size:.87rem}
+.badge-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.badge{padding:3px 10px;border-radius:20px;font-size:.73rem;font-weight:600}
+.b-reit{background:rgba(3,105,161,.35);color:#bae6fd}
+.b-invit{background:rgba(6,78,59,.35);color:#a7f3d0}
+.b-sebi{background:rgba(124,58,237,.3);color:#ddd6fe}
+.b-note{background:rgba(245,158,11,.3);color:#fde68a}
+.b-date{background:rgba(255,255,255,.15);color:#e0f2fe}
+nav{background:#fff;border-bottom:2px solid var(--border);display:flex;gap:0;overflow-x:auto;position:sticky;top:88px;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+nav button{padding:12px 16px;border:none;background:none;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+nav button.active{color:var(--accent);border-bottom-color:var(--accent);background:#f0f9ff}
+nav button:hover:not(.active){color:var(--text);background:var(--bg)}
+.tab{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+.tab.active{display:block}
+.sec{font-size:1.1rem;font-weight:700;color:var(--text);margin:1.5rem 0 1rem;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.sec-invit{border-bottom-color:var(--green)}
+.sec-reit{border-bottom-color:var(--accent)}
+.sec-sebi{border-bottom-color:var(--purple)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.kv{font-size:1.45rem;font-weight:900}
+.kl{font-size:.74rem;color:var(--muted);margin-top:4px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .2s,transform .15s;margin-bottom:0}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.tbl-wrap{overflow-x:auto;margin-bottom:24px}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+thead tr{background:linear-gradient(135deg,#1a1a2e,#0369a1);color:#fff}
+.tbl-invit thead tr{background:linear-gradient(135deg,#064e3b,#065f46)}
+th{padding:10px 12px;text-align:left;font-size:.76rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{background:rgba(255,255,255,.15)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:.8rem;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:#f8fafc}
+tr:hover td{background:#f0f9ff}
+.td-green{color:var(--green);font-weight:700}.td-red{color:var(--red);font-weight:700}
+.td-amber{color:var(--amber);font-weight:700}.td-blue{color:var(--accent);font-weight:700}
+.td-purple{color:var(--purple);font-weight:700}
+.info-box{background:var(--light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;font-size:.82rem;line-height:1.65}
+.invit-box{background:#f0fdf4;border-left:4px solid var(--green);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;font-size:.82rem;line-height:1.65}
+.sebi-box{background:#faf5ff;border-left:4px solid var(--purple);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;font-size:.82rem;line-height:1.65}
+.warn-box{background:#fffbeb;border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;font-size:.82rem;line-height:1.65}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:18px;margin-bottom:22px}
+.ct{font-size:.88rem;font-weight:700;margin-bottom:3px}
+.cs{font-size:.72rem;color:var(--muted);margin-bottom:10px}
+.cw{position:relative;height:240px}
+.cw-sm{position:relative;height:200px}
+.mcard{background:var(--card2);border-radius:8px;padding:8px 10px;text-align:center;border:1px solid var(--border)}
+.mv{font-size:.94rem;font-weight:700;color:var(--accent)}
+.ml{font-size:.67rem;color:var(--muted);margin-top:2px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:10px 0}
+.tag{padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700;display:inline-block}
+.tag-reit{background:#dbeafe;color:#1e40af}
+.tag-invit{background:#d1fae5;color:#065f46}
+.tag-toll{background:#fce7f3;color:#9d174d}
+.tag-power{background:#fef3c7;color:#92400e}
+.tag-log{background:#ede9fe;color:#5b21b6}
+.tag-road{background:#ffedd5;color:#9a3412}
+.db-wrap{margin:6px 0}
+.db-l{display:flex;justify-content:space-between;font-size:.73rem;margin-bottom:2px}
+.db-t{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.db-f{height:100%;border-radius:3px}
+.note-rule{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:.8rem;line-height:1.55}
+.note-rule strong{color:var(--text)}
+.pill{padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.pill-g{background:#dcfce7;color:#166534}
+.pill-a{background:#fef9c3;color:#854d0e}
+.pill-r{background:#fee2e2;color:#991b1b}
+.sort-i{opacity:.5;font-size:.68rem}
+@media(max-width:700px){
+  .header h1{font-size:1.15rem}
+  .chart-grid{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .tab{padding:14px 12px}
+  nav button{padding:9px 11px;font-size:.76rem}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏗 India REIT &amp; InvIT — Complete Investment Dashboard 2026</h1>
+  <p>5 Listed REITs · 7+ Listed Public InvITs · Business Model Explainer · SEBI Sponsor Rules · Quarterly Data · Charts · Rankings</p>
+  <div class="badge-row">
+    <span class="badge b-reit">🏢 5 Mainboard REITs</span>
+    <span class="badge b-invit">🏗 7 Public InvITs</span>
+    <span class="badge b-sebi">⚖ SEBI Sponsor Rules</span>
+    <span class="badge b-note">📋 Business Model Notes</span>
+    <span class="badge b-date">Data: May 15, 2026 · IST</span>
+  </div>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="st('explainer',this)">📖 Explainer</button>
+  <button onclick="st('sebi',this)">⚖ SEBI Rules</button>
+  <button onclick="st('reits',this)">🏢 REITs</button>
+  <button onclick="st('invits',this)">🏗 InvITs</button>
+  <button onclick="st('comparison',this)">⚖ REIT vs InvIT</button>
+  <button onclick="st('charts',this)">📈 Charts</button>
+  <button onclick="st('table',this)">📋 All Data</button>
+  <button onclick="st('rankings',this)">🏆 Rankings</button>
+</nav>
+
+<!-- ══════════════ EXPLAINER ══════════════ -->
+<div id="tab-explainer" class="tab active">
+
+  <div class="sec sec-reit">📖 What is a REIT? (Real Estate Investment Trust)</div>
+  <div class="info-box">
+    <strong>Definition:</strong> A REIT (Real Estate Investment Trust) is a SEBI-regulated trust that owns and operates income-generating real estate — primarily Grade-A commercial offices, retail malls, and hospitality. By law, REITs must distribute at least 90% of net distributable cash flows (NDCF) quarterly to unitholders.<br><br>
+    <strong>Business model — how REITs make money:</strong><br>
+    ① Collect rent from blue-chip tenants (MNCs, GCCs, domestic corporates) under long-term leases (5–10 years)<br>
+    ② Built-in rent escalations of ~15% every 3 years lock in growing income<br>
+    ③ Re-lease expiring space at higher market rents (re-leasing spreads of 17–27% currently)<br>
+    ④ Acquire more assets using unit capital + debt → grow the NOI base<br>
+    ⑤ Distribute 90%+ of cash flows as quarterly DPU (Distribution Per Unit)<br><br>
+    <strong>Structure:</strong> Sponsor → sets up the REIT trust → appoints an Investment Manager and Trustee → REIT holds assets directly or through SPVs (Special Purpose Vehicles) → unitholders receive distributions<br><br>
+    <strong>Key metrics for REIT analysis:</strong> NOI (Net Operating Income), DPU (Distribution Per Unit), Distribution Yield (DPU ÷ Unit Price), NAV (Net Asset Value), Occupancy %, WALE (Weighted Avg. Lease Expiry), Re-leasing spreads, LTV (Loan-to-Value), Cost of Debt
+  </div>
+
+  <div class="grid">
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--accent)">🏢 Office REITs (Embassy, Mindspace, Brookfield, KRT)</div><div style="font-size:.8rem;line-height:1.7;color:var(--muted)">Own Grade-A office parks leased to MNCs, GCCs, Fortune 500 companies. Long lease terms (5–10 yrs) with 3-yearly escalations. Demand driven by India's GCC boom — companies like JP Morgan, Microsoft, Google, Amazon prefer institutional Grade-A office space. NOI margins typically 70–90%. WALE 5–8 years.</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--nex)">🛍 Retail REITs (Nexus Select Trust)</div><div style="font-size:.8rem;line-height:1.7;color:var(--muted)">Own premium shopping malls leased to national and international retail brands. Revenue = base rent + variable rent linked to tenant turnover. Mall occupancy at 95%+. WALE shorter (3–4 yrs, retail norm). Re-classified by SEBI as Equity REIT (Jan 1, 2026). Consumption-driven — benefits from India's premiumisation wave.</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--green)">📋 REIT vs FD/Bond — why investors choose it</div><div style="font-size:.8rem;line-height:1.7;color:var(--muted)">• Yield 6–8.5% (vs FD 6.5–7%) + capital appreciation potential<br>• Tax-efficient distributions (mix of dividend, interest, capital repayment)<br>• Liquidity — tradeable on NSE/BSE like stocks<br>• Inflation hedge — built-in rent escalations<br>• SEBI-regulated, quarterly distributions mandatory<br>• No direct property ownership hassles<br>• Minimum investment: just 1 unit (₹118–₹422)</div></div>
+  </div>
+
+  <div class="sec sec-invit">🏗 What is an InvIT? (Infrastructure Investment Trust)</div>
+  <div class="invit-box">
+    <strong>Definition:</strong> An InvIT (Infrastructure Investment Trust) is a SEBI-regulated trust that owns and operates infrastructure assets — highways, toll roads, power transmission lines, gas pipelines, warehousing/logistics parks, and telecom towers. Like REITs, InvITs must distribute 90% of NDCF to unitholders.<br><br>
+    <strong>Business model — how InvITs make money:</strong><br>
+    ① <strong>Toll roads:</strong> Collect vehicle tolls daily under NHAI/government concession agreements (20–30 years). Revenue grows with traffic volume + annual toll price hikes<br>
+    ② <strong>Power transmission:</strong> Collect fixed "transmission tariffs" from state power utilities. Revenue is government-backed and extremely stable (near-annuity income)<br>
+    ③ <strong>Warehousing/Logistics:</strong> Collect rent from e-commerce, FMCG, pharma, auto tenants on long leases<br>
+    ④ <strong>Gas pipelines:</strong> Charge usage fees for gas transportation — regulated tariff-based model<br>
+    ⑤ Acquire more assets using unit capital + debt → grow NDCF → grow DPU<br><br>
+    <strong>Key metrics for InvIT analysis:</strong> NDCF (Net Distributable Cash Flow), DPU, Distribution Yield, EBITDA, Concession period remaining, Traffic volume growth (for toll), Availability (for transmission), LTV, Cost of Debt, Asset life/WAL (Weighted Asset Life)
+  </div>
+
+  <div class="grid">
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--irb)">🛣 Toll Road InvITs (IRB InvIT, NHIT, Cube, Highways)</div><div style="font-size:.8rem;line-height:1.7;color:var(--muted)">Collect toll revenue under NHAI concessions (20–30 yrs). Revenue = traffic × toll rate. Annual toll hikes (inflation-linked, ~5–8% p.a.) built in. Risk: traffic volume dependent on economic activity. NHAI-sponsored NHIT is quasi-sovereign backed. Longest concession period = highest asset life.</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--indigrid)">⚡ Power Transmission InvITs (IndiGrid, PowerGrid)</div><div style="font-size:.8rem;line-height:1.7;color:var(--muted)">Collect fixed "availability charges" from state grid operators — paid regardless of actual power flow. Effectively annuity income. Backed by CERC (Central Electricity Regulatory Commission) approvals. IndiGrid sponsored by KKR + Sterlite Power. PowerGrid InvIT backed by GoI's PGCIL — sovereign quasi-backing. Extremely stable, low-risk cash flows.</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--tvs)">📦 Logistics InvITs (TVS Infrastructure Trust)</div><div style="font-size:.8rem;line-height:1.7;color:var(--muted)">Own warehousing and industrial parks leased to e-commerce, automotive, FMCG, pharma, electronics companies. Revenue = rent + CAM charges. Backed by IFC (World Bank) and L&amp;T. TVS ILP part of TVS Mobility Group (Chennai). Growing rapidly with India's logistics formalisation trend and GST-driven warehouse consolidation.</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--shrem)">📡 Telecom Tower InvITs (Altius Telecom)</div><div style="font-size:.8rem;line-height:1.7;color:var(--muted)">Passive telecom infrastructure — towers leased to mobile operators (Jio, Airtel, Vi). Revenue = tower rental income under long-term Master Service Agreements. Beneficiary of 5G rollout and rising tenancy ratios. Altius is the listed example — sector poised for more InvIT listings as tower companies monetise assets.</div></div>
+  </div>
+
+  <div class="sec">🔑 REIT vs InvIT — Key Differences at a Glance</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>REIT 🏢</th><th>InvIT 🏗</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Asset class</strong></td><td>Commercial real estate (offices, malls, hotels)</td><td>Infrastructure (roads, power lines, pipelines, warehouses, towers)</td></tr>
+        <tr><td><strong>Revenue driver</strong></td><td>Rental income from tenants</td><td>Toll fees, transmission tariffs, pipeline charges, warehouse rent</td></tr>
+        <tr><td><strong>Concession/Lease</strong></td><td>5–10 year leases, renewable</td><td>20–30 year government concessions (toll) or regulated tariffs</td></tr>
+        <tr><td><strong>Risk profile</strong></td><td>Moderate — vacancy + rental market risk</td><td>Low-moderate — traffic/volume risk; transmission nearly zero-risk</td></tr>
+        <tr><td><strong>Distribution yield</strong></td><td>6–8.5% currently</td><td>7–13% currently (higher for toll due to NAV discount)</td></tr>
+        <tr><td><strong>SEBI mandate</strong></td><td>Distribute ≥90% of NDCF quarterly</td><td>Distribute ≥90% of NDCF (at least every 6 months; most do quarterly)</td></tr>
+        <tr><td><strong>Minimum investment</strong></td><td>1 unit (₹118–₹422)</td><td>1 unit for publicly listed; ₹25 lakh for private placement</td></tr>
+        <tr><td><strong>Asset life</strong></td><td>Perpetual (real estate appreciates)</td><td>Finite concession period (20–30 years); assets run off over time</td></tr>
+        <tr><td><strong>NAV</strong></td><td>Property valuation by registered valuer</td><td>DCF of future cash flows from concession assets</td></tr>
+        <tr><td><strong>India market size</strong></td><td>₹1.5 lakh Cr (5 listed REITs)</td><td>₹1.2 lakh Cr+ (7 public InvITs listed)</td></tr>
+        <tr><td><strong>Credit ratings</strong></td><td>AAA (Embassy, Mindspace, KRT, IndiGrid), AA+ (Brookfield)</td><td>AAA (NHIT, IndiGrid, PGInvIT); AA+ (IRB); AA (others)</td></tr>
+        <tr><td><strong>SEBI classification</strong></td><td>Equity (Jan 2026); Nexus also reclassified Equity</td><td>Hybrid instrument (debt + equity characteristics)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ SEBI RULES ══════════════ -->
+<div id="tab-sebi" class="tab">
+
+  <div class="sec sec-sebi">⚖ SEBI Regulations — REITs &amp; InvITs: Complete Framework</div>
+  <div class="sebi-box">
+    SEBI regulates both REITs and InvITs under the SEBI (Real Estate Investment Trusts) Regulations, 2014 and SEBI (Infrastructure Investment Trusts) Regulations, 2014 respectively — with ongoing amendments to align with equity market norms. The most recent significant updates were the April 2025 Amendment Regulations and the March 28, 2025 Master Circular amendments covering sponsor lock-in, follow-on offers, and unit-based employee benefit schemes.
+  </div>
+
+  <div class="sec sec-sebi" style="font-size:1rem">1. Sponsor — Who Qualifies &amp; Obligations</div>
+  <div class="note-rule"><strong>Who is a Sponsor?</strong> The Sponsor is the entity that sets up (settles) the REIT or InvIT trust and transfers assets into it. The sponsor is typically the real estate developer or infrastructure company that originally built or owns the underlying assets. Examples: Embassy Group + Blackstone (Embassy REIT), NHAI (NHIT InvIT), IRB Infrastructure (IRB InvIT), Sattva Group + Blackstone (KRT), KKR + Sterlite Power (IndiGrid).</div>
+  <div class="note-rule"><strong>Minimum Unitholding — REITs (SEBI Reg. 11):</strong> Sponsor(s) and their group entities must collectively hold a minimum of 15% of the outstanding units of the REIT at all times. <span class="pill pill-g">Perpetual requirement</span></div>
+  <div class="note-rule"><strong>Minimum Unitholding — InvITs (SEBI Reg. 12):</strong> Sponsor(s) and their group entities must collectively hold a minimum of 15% of outstanding units at all times. If the project manager is not a sponsor or sponsor associate → minimum raised to 25%. <span class="pill pill-g">Perpetual requirement</span></div>
+
+  <div class="sec sec-sebi" style="font-size:1rem">2. Lock-in Rules (as amended March 2025)</div>
+  <div class="note-rule">
+    <strong>Pre-2025 rule:</strong> Sponsors had to lock in 25% of total unit capital for 3 years from trading approval; all units above 25% locked in for 1 year.<br><br>
+    <strong>Current rule (post March 28, 2025 amendment):</strong><br>
+    • <span class="pill pill-g">15%</span> of units <em>allotted to sponsor &amp; sponsor group</em> locked in for <strong>3 years</strong> from date of trading approval (condition: project manager must be sponsor or associate)<br>
+    • <span class="pill pill-a">Remaining</span> units locked in for <strong>1 year</strong> from trading approval<br>
+    • <span class="pill pill-r">If project manager is NOT sponsor/associate:</span> 25% locked in for 3 years (higher standard)<br><br>
+    <strong>Note:</strong> This is a significant easing — the lock-in now applies to units <em>allotted to the sponsor</em>, not to 25% of <em>total unit capital</em>. This gives sponsors more flexibility to raise capital via new unit issuances.
+  </div>
+  <div class="note-rule"><strong>Inter-se transfers within Sponsor Group (NEW — 2025):</strong> Locked-in units may now be transferred among sponsor and sponsor group entities. Lock-in continues with the transferee for the remaining original period. Transferee cannot further sell until lock-in expires. In multi-sponsor trusts, transfer only within same sponsor group — cannot cross to another sponsor's group.</div>
+  <div class="note-rule"><strong>Change of Sponsor:</strong> When a sponsor exits and a new sponsor comes in, locked-in units from the outgoing sponsor may be transferred to the incoming sponsor (or self-sponsored investment manager), subject to minimum unitholding requirements being met post-transfer.</div>
+
+  <div class="sec sec-sebi" style="font-size:1rem">3. Investment Conditions (Asset Allocation)</div>
+  <div class="note-rule"><strong>80:20 Rule (REITs &amp; InvITs):</strong> Minimum <span class="pill pill-g">80%</span> of assets must be in completed, revenue-generating properties/projects at all times. Maximum <span class="pill pill-a">20%</span> may be in under-construction assets, listed/unlisted debt securities, or other permissible investments.</div>
+  <div class="note-rule"><strong>HoldCo cash flow rule (2025 clarification):</strong> Holding companies (HoldCos) may now offset their own negative cash flows against inflows from SPVs before distributing upward to the REIT/InvIT — provided adequate disclosures are made. Previously, holdcos had to distribute 100% of cash received from SPVs regardless of their own balance sheets.</div>
+
+  <div class="sec sec-sebi" style="font-size:1rem">4. Distribution Rules</div>
+  <div class="note-rule"><strong>Mandatory distribution — REITs:</strong> Must distribute ≥90% of net distributable cash flows (NDCF) to unitholders. Distributions must be made at least once every quarter. Components: (a) dividend from SPVs, (b) interest on inter-company loans, (c) repayment of SPV debt. Tax treatment of each component differs in the hands of unitholders.</div>
+  <div class="note-rule"><strong>Mandatory distribution — InvITs:</strong> Must distribute ≥90% of NDCF at least once every 6 months (most do quarterly in practice). Similar component structure to REITs.</div>
+  <div class="note-rule"><strong>Public unitholding:</strong> Minimum 25% of units must be held by the public at all times. Units held by related parties of the sponsor, investment manager, or project manager do NOT count as public — unless those entities are Qualified Institutional Buyers (QIBs).</div>
+
+  <div class="sec sec-sebi" style="font-size:1rem">5. Leverage &amp; Debt Rules</div>
+  <div class="note-rule"><strong>Leverage cap — REITs:</strong> Debt-to-total-assets ratio cannot exceed 49%. Unit holder approval required if debt exceeds 25% of asset value (25–49% band requires unitholder approval at each additional borrowing). Credit rating mandatory when total borrowings exceed specified thresholds.</div>
+  <div class="note-rule"><strong>Leverage cap — InvITs:</strong> Debt cannot exceed 49% of value of InvIT assets. Same unitholder approval thresholds as REITs for the 25–49% band. The 80% completed asset rule also constrains leverage indirectly.</div>
+  <div class="note-rule"><strong>Credit rating (2025 amendment):</strong> SEBI clarified that the "issuer credit rating of the REIT/InvIT" must be obtained (not just project-level ratings) when borrowings cross threshold levels. This enhances transparency for unitholders.</div>
+
+  <div class="sec sec-sebi" style="font-size:1rem">6. Governance &amp; Trustee Rules (2025 Amendments)</div>
+  <div class="note-rule"><strong>Trustee obligations (new 2025 framework):</strong> Trustee must now: (a) comply with core principles of transparency, accountability, due diligence; (b) act impartially in fiduciary capacity; (c) prioritise unitholder protection; (d) maintain effective oversight over the Investment Manager; (e) submit quarterly confirmations that trustee has not engaged in unit transactions of the trust it manages. Net worth compliance certificates required from IM on half-yearly basis and from sponsor + IM annually.</div>
+  <div class="note-rule"><strong>NRC composition:</strong> Nomination &amp; Remuneration Committee (NRC) of the Investment Manager can now comprise non-executive directors — provided at least 2/3 are independent directors.</div>
+  <div class="note-rule"><strong>REIT equity reclassification (Jan 1, 2026):</strong> SEBI reclassified all REITs from "Hybrid" to "Equity" instruments effective January 1, 2026. This broadens eligibility for insurance, pension fund, and sovereign wealth fund mandates that have minimum equity allocation requirements. Nexus Select Trust was particularly impacted positively as it was previously Hybrid.</div>
+
+  <div class="sec sec-sebi" style="font-size:1rem">7. SM REIT Rules (Small &amp; Medium REITs)</div>
+  <div class="note-rule"><strong>Asset size:</strong> SM REITs cover assets valued ₹50 crore – ₹500 crore (assets below this cannot list; above this must use mainboard REIT route).<br><strong>Minimum investment:</strong> ₹10 lakh per unit (HNI/institutional — not retail).<br><strong>Sponsor holding:</strong> Sponsor must hold minimum 5% of units for minimum 2 years post-listing.<br><strong>Structure:</strong> Each scheme under the SM REIT trust is separately listed — each scheme owns a specific property or group of properties.<br><strong>Distribution:</strong> 95% (vs 90% for mainboard REITs) of NDCF to be distributed quarterly.<br><strong>India's first:</strong> PropShare Platina listed on BSE, December 2024 (Property Share Investment Trust).</div>
+
+  <div class="warn-box"><strong>Key risk for investors re: sponsors:</strong> If a sponsor reduces its holding below the minimum 15%, SEBI can take action including directing restoration of holding, restricting further unit sales, or imposing penalties. The perpetual minimum holding requirement is designed to ensure sponsors have "skin in the game" and do not dump assets into the trust and exit. Suryoday SFB's analogous issue — pledged promoter shares 22.35% — illustrates the risk when sponsors/promoters approach their minimum freely-held threshold.</div>
+</div>
+
+<!-- ══════════════ REITs ══════════════ -->
+<div id="tab-reits" class="tab">
+  <div class="sec sec-reit">🏢 India's 5 Listed REITs — Summary (May 2026)</div>
+  <div class="info-box">Embassy REIT: Q4 FY26 actuals (Apr 27, 2026). KRT: Q4 FY26 actuals (May 13, 2026). Mindspace, Brookfield, Nexus: Q3 FY26 (Q4 results expected May 2026). All CMP and market cap as of mid-May 2026.</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kv" style="color:var(--accent)">5</div><div class="kl">Listed Mainboard REITs</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--green)">~₹1.52L Cr</div><div class="kl">Combined Market Cap</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--teal)">~170 msf</div><div class="kl">Total Leasable Area</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--amber)">8.3%</div><div class="kl">Best Yield (Mindspace)</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--green)">~0.96x</div><div class="kl">Best P/NAV (KRT)</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--purple)">AAA</div><div class="kl">Embassy, Mindspace, KRT</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortT('reitBody',0)">REIT <span class="sort-i">⇅</span></th>
+        <th>Type</th><th>Listed</th>
+        <th onclick="sortT('reitBody',3)">CMP ₹</th>
+        <th onclick="sortT('reitBody',4)">Mkt Cap ₹Cr</th>
+        <th onclick="sortT('reitBody',5)">NAV ₹/unit</th>
+        <th onclick="sortT('reitBody',6)">P/NAV</th>
+        <th onclick="sortT('reitBody',7)">Dist. Yield</th>
+        <th onclick="sortT('reitBody',8)">Latest DPU ₹</th>
+        <th onclick="sortT('reitBody',9)">Occupancy</th>
+        <th onclick="sortT('reitBody',10)">Re-lease %</th>
+        <th onclick="sortT('reitBody',11)">Net Debt/GAV</th>
+        <th onclick="sortT('reitBody',12)">WALE yrs</th>
+        <th>Rating</th><th>Sponsor</th>
+      </tr></thead>
+      <tbody id="reitBody">
+        <tr><td><strong style="color:var(--emb)">Embassy REIT</strong></td><td><span class="tag tag-reit">Office</span></td><td>Apr 2019</td><td>~420</td><td class="td-green">~39,916</td><td class="td-blue">491.6</td><td class="td-amber">0.87x</td><td>~6.2%</td><td>6.50 (Q4)</td><td class="td-green">~95%</td><td>17%</td><td>~26%</td><td>~5.5</td><td><span class="pill pill-g">AAA</span></td><td>Embassy+Blackstone</td></tr>
+        <tr><td><strong style="color:var(--mind)">Mindspace REIT</strong></td><td><span class="tag tag-reit">Office</span></td><td>Aug 2020</td><td>~315</td><td>~18,900</td><td class="td-blue">~350</td><td class="td-green">~0.90x</td><td class="td-green">~8.3%</td><td>~6.50 (Q3)</td><td>~94.5%</td><td class="td-green">27.4%</td><td class="td-green">~25%</td><td>~5.5</td><td><span class="pill pill-g">AAA</span></td><td>K Raheja Corp</td></tr>
+        <tr><td><strong style="color:var(--brook)">Brookfield REIT</strong></td><td><span class="tag tag-reit">Office</span></td><td>Feb 2021</td><td>~280</td><td>~18,000</td><td class="td-blue">~315</td><td>~0.89x</td><td>~7.7%</td><td>5.40 (Q3)</td><td>92%</td><td>17%</td><td class="td-amber">~29%</td><td>~5.0</td><td><span class="pill pill-a">AA+</span></td><td>Brookfield AM</td></tr>
+        <tr><td><strong style="color:var(--nex)">Nexus Select</strong></td><td><span class="tag tag-reit" style="background:#fce7f3;color:#9d174d">Retail</span></td><td>May 2023</td><td>~158</td><td>~23,881</td><td class="td-blue">~200</td><td class="td-amber">~0.79x</td><td>~7.0%</td><td>2.37 (Q3)</td><td class="td-green">~95%+</td><td>N/A</td><td>~27%</td><td>3–4</td><td><span class="pill pill-a">AA</span></td><td>Blackstone</td></tr>
+        <tr><td><strong style="color:var(--krt)">KRT (Sattva)</strong></td><td><span class="tag tag-reit">Office</span></td><td>Aug 2025</td><td>~118</td><td class="td-green">~52,570</td><td class="td-green">123.61</td><td class="td-green">~0.96x</td><td>~5.5%</td><td>1.62 (Q4)</td><td>92%</td><td class="td-green">26%</td><td class="td-green">~18%</td><td class="td-green">8.4</td><td><span class="pill pill-a">AA+</span></td><td>Sattva+Blackstone</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ InvITs ══════════════ -->
+<div id="tab-invits" class="tab">
+  <div class="sec sec-invit">🏗 India's Listed Public InvITs — Complete Overview (May 2026)</div>
+  <div class="invit-box">
+    <strong>Note on "public" vs "private" InvITs:</strong> India has 29 registered InvITs in total, but only 7–8 are <em>publicly listed</em> and retail-tradeable on NSE/BSE. The rest are "privately placed" InvITs accessible only to institutional and HNI investors (min ₹25 lakh). This tab covers publicly listed InvITs only. SEBI's Nifty REITs &amp; InvITs Index tracks this combined universe.
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kv" style="color:var(--green)">7+</div><div class="kl">Public Listed InvITs</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--green)">~₹1.2L Cr+</div><div class="kl">Combined Market Cap</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--teal)">3</div><div class="kl">Asset Types<br>(Road·Power·Logistics)</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--amber)">~12.9%</div><div class="kl">Highest Yield (PGInvIT)</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--green)">AAA</div><div class="kl">Ratings: NHIT, IndiGrid, PGInvIT</div></div>
+    <div class="kpi"><div class="kv" style="color:var(--purple)">20–30 yrs</div><div class="kl">Avg Concession Period</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl-invit">
+      <thead><tr>
+        <th onclick="sortT('invitBody',0)">InvIT <span class="sort-i">⇅</span></th>
+        <th>NSE</th><th>Type</th><th>Listed</th>
+        <th onclick="sortT('invitBody',4)">CMP ₹</th>
+        <th onclick="sortT('invitBody',5)">Mkt Cap ₹Cr</th>
+        <th onclick="sortT('invitBody',6)">Dist. Yield</th>
+        <th onclick="sortT('invitBody',7)">Latest DPU ₹/qtr</th>
+        <th onclick="sortT('invitBody',8)">Revenue ₹Cr (latest)</th>
+        <th onclick="sortT('invitBody',9)">Asset Life</th>
+        <th>Rating</th><th>Sponsor</th>
+      </tr></thead>
+      <tbody id="invitBody">
+        <tr><td><strong style="color:var(--nhit)">National Highways Infra Trust</strong></td><td>NHIT</td><td><span class="tag tag-toll">Toll Roads</span></td><td>Nov 2021</td><td>~155</td><td class="td-green">~30,990</td><td>~5–6%</td><td>~2.47 (Q2)</td><td>1,001 (Q2 FY26)</td><td>20–30 yrs</td><td><span class="pill pill-g">AAA</span></td><td>NHAI (Govt. of India)</td></tr>
+        <tr><td><strong style="color:var(--indigrid)">IndiGrid Infrastructure Trust</strong></td><td>INDIGRID</td><td><span class="tag tag-power">Power Transmission</span></td><td>Jun 2017</td><td>~173</td><td class="td-green">~16,520</td><td>~9.2%</td><td>~4.00 (Q3)</td><td>908 (Q3 FY26)</td><td>25–30 yrs</td><td><span class="pill pill-g">AAA</span></td><td>KKR + Sterlite Power</td></tr>
+        <tr><td><strong style="color:var(--pginvit)">PowerGrid InvIT</strong></td><td>PGINVIT</td><td><span class="tag tag-power">Power Transmission</span></td><td>May 2021</td><td>~93</td><td>~8,468</td><td class="td-green">~12.9%</td><td>~3.00 (Q3)</td><td>317 (Q3 FY26)</td><td>35 yrs (TBCB)</td><td><span class="pill pill-g">AAA</span></td><td>PGCIL (Govt. of India)</td></tr>
+        <tr><td><strong style="color:var(--irb)">IRB InvIT Fund</strong></td><td>IRBINVIT</td><td><span class="tag tag-toll">Toll Roads</span></td><td>May 2017</td><td>~61</td><td>~4,860</td><td>~8–9%</td><td>~1.30 (Q3)</td><td>~450 (Q3 FY26)</td><td>18–25 yrs</td><td><span class="pill pill-a">AA+</span></td><td>IRB Infrastructure</td></tr>
+        <tr><td><strong style="color:var(--highways)">Highways Infrastructure Trust</strong></td><td>HIGHWAYS</td><td><span class="tag tag-road">Toll Roads</span></td><td>2022</td><td>~107</td><td>~15,930</td><td>~7–8%</td><td>~2.00</td><td>~400 (est.)</td><td>25 yrs</td><td><span class="pill pill-a">AA+</span></td><td>NHAI/Private</td></tr>
+        <tr><td><strong style="color:var(--tvs)">TVS Infrastructure Trust</strong></td><td>TVSINVIT</td><td><span class="tag tag-log">Logistics/Warehousing</span></td><td>Jul 2025</td><td>~109</td><td>~1,300</td><td>~7–8%</td><td>~1.95 (est.)</td><td>~80 (Q3 est.)</td><td>Long-term leases</td><td><span class="pill pill-a">AA</span></td><td>TVS Mobility / IFC</td></tr>
+        <tr><td><strong style="color:var(--shrem)">Altius Telecom InvIT</strong></td><td>ALTIUS</td><td><span class="tag tag-log" style="background:#ede9fe;color:#5b21b6">Telecom Towers</span></td><td>2022</td><td>~150</td><td>~457</td><td>~6–7%</td><td>~2.50</td><td>~25 (est.)</td><td>15–20 yrs MSAs</td><td><span class="pill pill-a">AA</span></td><td>Altius Group</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec sec-invit" style="font-size:1rem;margin-top:1.5rem">📋 Individual InvIT Profiles</div>
+  <div class="grid">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-weight:700;color:var(--nhit)">National Highways Infra Trust (NHIT)</div><div style="font-size:.75rem;color:var(--muted)">NSE: NHIT · Mkt Cap ~₹30,990 Cr · Listed Nov 2021 · CMP ~₹155</div></div>
+        <span class="tag tag-toll">Toll</span>
+      </div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.6;margin-bottom:8px">India's largest and only government-sponsored road InvIT. Sponsor is NHAI (National Highways Authority of India — a GoI autonomous body). Holds 15 toll road concessions across 26 geographically diverse projects in 12 states via 2 SPVs (Western + Eastern Projects). Portfolio enterprise value ~₹48,371 Cr. Concession terms 20–30 years under NHAI agreements. Q2 FY26 revenue ₹1,001.55 Cr (+77% YoY due to Round 3 roads addition). EPFO is a unitholder — quasi-sovereign backing. CARE AAA (Stable) rated.</div>
+      <div class="metrics">
+        <div class="mcard"><div class="mv">₹30,990 Cr</div><div class="ml">Market Cap</div></div>
+        <div class="mcard"><div class="mv">~26 Projects</div><div class="ml">Toll Road Assets</div></div>
+        <div class="mcard"><div class="mv">20–30 yrs</div><div class="ml">Concession Period</div></div>
+        <div class="mcard"><div class="mv">₹2.47/unit</div><div class="ml">DPU Q2 FY26</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-weight:700;color:var(--indigrid)">IndiGrid Infrastructure Trust</div><div style="font-size:.75rem;color:var(--muted)">NSE: INDIGRID · Mkt Cap ~₹16,520 Cr · Listed Jun 2017 · CMP ~₹173</div></div>
+        <span class="tag tag-power">Power</span>
+      </div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.6;margin-bottom:8px">India's first listed power sector InvIT and the first InvIT to launch in India (2017). Sponsored by KKR (global PE) and Sterlite Power Grid Ventures. Owns inter-state power transmission lines and substations across 12 states. Income is "availability charges" — paid by state utilities regardless of actual power transmitted (near-annuity model). Q3 FY26 revenue ₹908 Cr; PAT ₹96 Cr (+76% YoY). Distribution yield ~9.2%. CRISIL/ICRA AAA. Expanding into renewable energy assets (up to 35% of AUM permitted by SEBI).</div>
+      <div class="metrics">
+        <div class="mcard"><div class="mv">~₹16,520 Cr</div><div class="ml">Market Cap</div></div>
+        <div class="mcard"><div class="mv">Transmission</div><div class="ml">12 States + UTs</div></div>
+        <div class="mcard"><div class="mv">~9.2%</div><div class="ml">Distribution Yield</div></div>
+        <div class="mcard"><div class="mv">₹4.00/unit</div><div class="ml">DPU Q3 FY26</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-weight:700;color:var(--pginvit)">PowerGrid InvIT (PGInvIT)</div><div style="font-size:.75rem;color:var(--muted)">NSE: PGINVIT · Mkt Cap ~₹8,468 Cr · Listed May 2021 · CMP ~₹93</div></div>
+        <span class="tag tag-power">Power</span>
+      </div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.6;margin-bottom:8px">Sponsored by Power Grid Corporation of India (PGCIL) — a Maharatna CPSE under Ministry of Power. Owns 5 inter-state transmission system (ISTS) projects under Tariff Based Competitive Bidding (TBCB) — 11 lines, ~3,699 ckm, 3 substations. Income is CERC-regulated tariffs (government-fixed, near-zero demand risk). Highest distribution yield (~12.9%) in sector. Board meets May 15, 2026 to approve Q4 FY26 distribution. Governance issue: SEBI granted relaxation on board independence norms until Jun 30, 2026 (PGCIL nominee board composition challenge).</div>
+      <div class="metrics">
+        <div class="mcard"><div class="mv" style="color:var(--green)">~12.9%</div><div class="ml">Distribution Yield</div></div>
+        <div class="mcard"><div class="mv">GoI / PGCIL</div><div class="ml">Sovereign Sponsor</div></div>
+        <div class="mcard"><div class="mv">~35 yrs</div><div class="ml">Asset Concession</div></div>
+        <div class="mcard"><div class="mv">₹3/unit</div><div class="ml">DPU Q3 FY26</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-weight:700;color:var(--irb)">IRB InvIT Fund</div><div style="font-size:.75rem;color:var(--muted)">NSE: IRBINVIT · Mkt Cap ~₹4,860 Cr · Listed May 2017 · CMP ~₹61</div></div>
+        <span class="tag tag-toll">Toll</span>
+      </div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.6;margin-bottom:8px">India's first listed toll road InvIT, sponsored by IRB Infrastructure Developers — one of India's largest highway developers (44% market share in awarded TOT space). Owns 6 toll road assets across Maharashtra, Gujarat, Rajasthan, Karnataka, Tamil Nadu under NHAI concessions. Weighted average life 18+ years. IRB also runs a separate Private InvIT (IRBIT) with 14 highway assets (₹66,000 Cr EV). Unit price has underperformed — trading near 52-week low. Yield 8–9%.</div>
+      <div class="metrics">
+        <div class="mcard"><div class="mv">6 Toll Assets</div><div class="ml">NHAI Concessions</div></div>
+        <div class="mcard"><div class="mv">18+ yrs</div><div class="ml">Weighted Asset Life</div></div>
+        <div class="mcard"><div class="mv">~8–9%</div><div class="ml">Distribution Yield</div></div>
+        <div class="mcard"><div class="mv">AA+</div><div class="ml">Credit Rating</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-weight:700;color:var(--tvs)">TVS Infrastructure Trust</div><div style="font-size:.75rem;color:var(--muted)">NSE: TVSINVIT · Mkt Cap ~₹1,300 Cr · Listed Jul 2025 · CMP ~₹109</div></div>
+        <span class="tag tag-log">Logistics</span>
+      </div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.6;margin-bottom:8px">India's first listed logistics/warehousing InvIT. Part of TVS Mobility Group (Chennai) — JV between TVS Supply Chain Solutions and Ravi Swaminathan &amp; Family. Backed by IFC (World Bank Group, ₹348 Cr cornerstone) and L&amp;T. Seeded with ~11 msf of warehousing and industrial assets across Chennai, Pune, Kolkata, Hosur, Kochi, Northeast from TVS ILP's 20 msf platform. Tenant base: 30+ clients from e-commerce, automotive, FMCG, electronics, pharma. No single tenant &gt;10% of revenue. ₹1,300 Cr IPO (Fresh ₹1,050 Cr + OFS ₹250 Cr). Chennai-based — Tamil Nadu connection.</div>
+      <div class="metrics">
+        <div class="mcard"><div class="mv">~11 msf</div><div class="ml">Warehousing Assets</div></div>
+        <div class="mcard"><div class="mv">IFC + L&amp;T</div><div class="ml">Institutional Backing</div></div>
+        <div class="mcard"><div class="mv">30+ clients</div><div class="ml">Tenant Diversification</div></div>
+        <div class="mcard"><div class="mv">Jul 2025</div><div class="ml">Listed (Newest InvIT)</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-weight:700;color:var(--highways)">Highways Infrastructure Trust</div><div style="font-size:.75rem;color:var(--muted)">NSE: HIGHWAYS · Mkt Cap ~₹15,930 Cr · CMP ~₹107</div></div>
+        <span class="tag tag-road">Toll</span>
+      </div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.6;margin-bottom:8px">Listed toll road InvIT with NHAI-backed road concessions. Part of the broader "road monetisation" wave supported by NHAI's asset recycling strategy. Holds highway toll assets under 25-year concession agreements. Part of investor universe that includes Cube Highways Trust (another major private InvIT now permitted to trade). Highways Infrastructure Trust and Cube are Brookfield-backed toll road InvITs targeting similar asset profiles. Distribution yield 7–8%.</div>
+      <div class="metrics">
+        <div class="mcard"><div class="mv">~₹15,930 Cr</div><div class="ml">Market Cap</div></div>
+        <div class="mcard"><div class="mv">NHAI Concessions</div><div class="ml">Government Backed</div></div>
+        <div class="mcard"><div class="mv">~7–8%</div><div class="ml">Distribution Yield</div></div>
+        <div class="mcard"><div class="mv">25 yrs</div><div class="ml">Concession Period</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ COMPARISON ══════════════ -->
+<div id="tab-comparison" class="tab">
+  <div class="sec">⚖ REITs vs InvITs — Side-by-Side Investment Comparison</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Metric</th>
+        <th style="color:#93c5fd">Embassy REIT 🏢</th>
+        <th style="color:#86efac">Mindspace REIT 🏢</th>
+        <th style="color:#f9a8d4">KRT 🏢</th>
+        <th style="color:#a5f3fc">NHIT 🏗</th>
+        <th style="color:#bbf7d0">IndiGrid 🏗</th>
+        <th style="color:#fde68a">PGInvIT 🏗</th>
+        <th style="color:#d9f99d">TVS InvIT 🏗</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Asset type</td><td>Grade-A Office</td><td>Grade-A Office</td><td>Grade-A Office</td><td>Toll Roads</td><td>Power Transmission</td><td>Power Transmission</td><td>Logistics/Warehousing</td></tr>
+        <tr><td>CMP ₹</td><td>~420</td><td>~315</td><td>~118</td><td>~155</td><td>~173</td><td>~93</td><td>~109</td></tr>
+        <tr><td>Market Cap ₹Cr</td><td class="td-green">~39,916</td><td>~18,900</td><td class="td-green">~52,570</td><td class="td-green">~30,990</td><td>~16,520</td><td>~8,468</td><td>~1,300</td></tr>
+        <tr><td>Distribution Yield</td><td>~6.2%</td><td class="td-green">~8.3%</td><td>~5.5%</td><td>~5.5%</td><td>~9.2%</td><td class="td-green">~12.9%</td><td>~7.5%</td></tr>
+        <tr><td>Latest DPU ₹/qtr</td><td>6.50</td><td>~6.50</td><td>1.62</td><td>~2.47</td><td>4.00</td><td>3.00</td><td>~1.95</td></tr>
+        <tr><td>P/NAV</td><td class="td-amber">0.87x</td><td class="td-green">0.90x</td><td class="td-green">0.96x</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
+        <tr><td>Occupancy / Availability</td><td>~95%</td><td>~94.5%</td><td>92%</td><td>~95%+ traffic</td><td class="td-green">~99% avail.</td><td class="td-green">~99% avail.</td><td>~92%</td></tr>
+        <tr><td>Revenue stability</td><td>Market rent risk</td><td>Market rent risk</td><td>Market rent risk</td><td>Traffic dependent</td><td class="td-green">Near-annuity</td><td class="td-green">Near-annuity</td><td>Long-term leases</td></tr>
+        <tr><td>Asset life/WALE</td><td>~5.5 yrs WALE</td><td>~5.5 yrs WALE</td><td class="td-green">8.4 yrs WALE</td><td>20–30 yrs</td><td>25–30 yrs</td><td class="td-green">35 yrs</td><td>10–15 yrs</td></tr>
+        <tr><td>Leverage (LTV)</td><td>~26%</td><td class="td-green">~25%</td><td class="td-green">~18%</td><td>~45%</td><td>~50%</td><td>~40%</td><td>~30%</td></tr>
+        <tr><td>Credit rating</td><td class="td-green">AAA</td><td class="td-green">AAA</td><td>AA+</td><td class="td-green">AAA</td><td class="td-green">AAA</td><td class="td-green">AAA</td><td class="td-amber">AA</td></tr>
+        <tr><td>Sponsor type</td><td>Private</td><td>Private</td><td>Private</td><td class="td-green">GoI / NHAI</td><td>KKR+Sterlite</td><td class="td-green">GoI / PGCIL</td><td>Private/IFC</td></tr>
+        <tr><td>Listed since</td><td>2019</td><td>2020</td><td>2025</td><td>2021</td><td>2017</td><td>2021</td><td>2025</td></tr>
+        <tr><td>Best for</td><td>Scale + governance (if resolved)</td><td>Income + growth</td><td>Scale + low leverage</td><td>Sovereign-backed income</td><td>Stable annuity income</td><td>Highest yield</td><td>Logistics theme play</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ CHARTS ══════════════ -->
+<div id="tab-charts" class="tab">
+  <div class="sec">📈 Charts — REITs &amp; InvITs Combined</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="ct">Distribution Yield % — All REITs &amp; InvITs</div>
+      <div class="cs">PGInvIT highest at ~12.9%; KRT lowest at ~5.5%. InvITs generally yield more due to finite asset lives.</div>
+      <div class="cw"><canvas id="c_yield" role="img" aria-label="Distribution yield for REITs and InvITs">Yield comparison</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">Market Capitalisation ₹ Crore</div>
+      <div class="cs">KRT is now India's largest REIT/InvIT by market cap (₹52,570 Cr), overtaking Embassy.</div>
+      <div class="cw"><canvas id="c_mcap" role="img" aria-label="Market cap for REITs and InvITs">Market cap comparison</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">REIT Distribution Yield vs P/NAV</div>
+      <div class="cs">Scatter: Higher discount to NAV often corresponds to higher yield (Embassy is outlier due to governance).</div>
+      <div class="cw"><canvas id="c_scatter" role="img" aria-label="Yield vs P/NAV scatter for REITs">REIT scatter</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">InvIT — Asset Type Mix (by market cap)</div>
+      <div class="cs">Road InvITs dominate by market cap; Power transmission next; Logistics emerging.</div>
+      <div class="cw"><canvas id="c_invit_mix" role="img" aria-label="InvIT asset type mix by market cap">InvIT mix</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">REIT vs InvIT — Aggregate Market Cap ₹Cr</div>
+      <div class="cs">Total listed REIT + InvIT market: ~₹2.7 lakh crore. REITs slightly larger by combined cap.</div>
+      <div class="cw-sm"><canvas id="c_reit_v_invit" role="img" aria-label="REIT vs InvIT total market cap">REIT vs InvIT</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">REIT Occupancy % — Latest Quarter</div>
+      <div class="cs">All five REITs at 92–95%+ occupancy — sector-wide tightening from MNC/GCC demand.</div>
+      <div class="cw-sm"><canvas id="c_occ" role="img" aria-label="REIT occupancy comparison">Occupancy</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ DATA TABLE ══════════════ -->
+<div id="tab-table" class="tab">
+  <div class="sec sec-reit">📋 Complete Data — All Listed REITs (May 2026)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortT('reitT',0)">REIT</th><th>Period</th><th>CMP ₹</th><th>Mkt Cap ₹Cr</th><th>NAV ₹</th><th>P/NAV</th><th>Yield %</th><th>DPU ₹/qtr</th><th>FY DPU</th><th>Occ %</th><th>WALE</th><th>NOI ₹Cr</th><th>Re-lease %</th><th>Debt/GAV</th><th>Debt Cost</th><th>Rating</th><th>Units Cr</th>
+      </tr></thead>
+      <tbody id="reitT">
+        <tr><td><strong style="color:var(--emb)">Embassy REIT</strong></td><td>Q4 FY26 ✓</td><td>~420</td><td>~39,916</td><td>491.6</td><td>0.87x</td><td>~6.2%</td><td>6.50</td><td>25.30</td><td>~95%</td><td>5.5</td><td>~1,005</td><td>17%</td><td>~26%</td><td>7.10%</td><td>AAA</td><td>94.79</td></tr>
+        <tr><td><strong style="color:var(--mind)">Mindspace REIT</strong></td><td>Q3 FY26</td><td>~315</td><td>~18,900</td><td>~350</td><td>0.90x</td><td>~8.3%</td><td>~6.50</td><td>~25</td><td>~94.5%</td><td>5.5</td><td>+28.7%YoY</td><td>27.4%</td><td>~25%</td><td>~7.5%</td><td>AAA</td><td>~60</td></tr>
+        <tr><td><strong style="color:var(--brook)">Brookfield REIT</strong></td><td>Q3 FY26</td><td>~280</td><td>~18,000</td><td>~315</td><td>0.89x</td><td>~7.7%</td><td>5.40</td><td>~21.30</td><td>92%</td><td>5.0</td><td>540</td><td>17%</td><td>~29%</td><td>~7.5%</td><td>AA+</td><td>~64.4</td></tr>
+        <tr><td><strong style="color:var(--nex)">Nexus Select</strong></td><td>Q3 FY26</td><td>~158</td><td>~23,881</td><td>~200</td><td>0.79x</td><td>~7.0%</td><td>2.37</td><td>8.79</td><td>~95%+</td><td>3–4</td><td>~520</td><td>N/A</td><td>~27%</td><td>~7.8%</td><td>AA</td><td>151.5</td></tr>
+        <tr><td><strong style="color:var(--krt)">KRT (Sattva)</strong></td><td>Q4 FY26 ✓</td><td>~118</td><td>~52,570</td><td>123.61</td><td>0.96x</td><td>~5.5%</td><td>1.62</td><td>4.74*</td><td>92%</td><td>8.4</td><td>1,053</td><td>26%</td><td>~18%</td><td>7.2%</td><td>AA+</td><td>443.4</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec sec-invit">📋 Complete Data — All Listed Public InvITs (May 2026)</div>
+  <div class="tbl-wrap">
+    <table class="tbl-invit">
+      <thead><tr>
+        <th onclick="sortT('invitT',0)">InvIT</th><th>NSE</th><th>Type</th><th>Listed</th><th>CMP ₹</th><th>Mkt Cap ₹Cr</th><th>Yield %</th><th>DPU ₹/qtr</th><th>Revenue ₹Cr</th><th>Asset Life</th><th>LTV %</th><th>Rating</th><th>Sponsor</th>
+      </tr></thead>
+      <tbody id="invitT">
+        <tr><td><strong style="color:var(--nhit)">NHIT</strong></td><td>NHIT</td><td><span class="tag tag-toll">Toll</span></td><td>Nov 2021</td><td>~155</td><td class="td-green">~30,990</td><td>~5.5%</td><td>~2.47</td><td>1,001 (Q2)</td><td>20–30 yrs</td><td>~45%</td><td><span class="pill pill-g">AAA</span></td><td>NHAI (GoI)</td></tr>
+        <tr><td><strong style="color:var(--indigrid)">IndiGrid</strong></td><td>INDIGRID</td><td><span class="tag tag-power">Power</span></td><td>Jun 2017</td><td>~173</td><td>~16,520</td><td>~9.2%</td><td>~4.00</td><td>908 (Q3)</td><td>25–30 yrs</td><td>~50%</td><td><span class="pill pill-g">AAA</span></td><td>KKR + Sterlite</td></tr>
+        <tr><td><strong style="color:var(--pginvit)">PGInvIT</strong></td><td>PGINVIT</td><td><span class="tag tag-power">Power</span></td><td>May 2021</td><td>~93</td><td>~8,468</td><td class="td-green">~12.9%</td><td>~3.00</td><td>317 (Q3)</td><td>35 yrs</td><td>~40%</td><td><span class="pill pill-g">AAA</span></td><td>PGCIL (GoI)</td></tr>
+        <tr><td><strong style="color:var(--irb)">IRB InvIT</strong></td><td>IRBINVIT</td><td><span class="tag tag-toll">Toll</span></td><td>May 2017</td><td>~61</td><td>~4,860</td><td>~8.5%</td><td>~1.30</td><td>~450 (Q3)</td><td>18–25 yrs</td><td>~48%</td><td><span class="pill pill-a">AA+</span></td><td>IRB Infrastructure</td></tr>
+        <tr><td><strong style="color:var(--highways)">Highways Trust</strong></td><td>HIGHWAYS</td><td><span class="tag tag-road">Toll</span></td><td>2022</td><td>~107</td><td>~15,930</td><td>~7.5%</td><td>~2.00</td><td>~400</td><td>25 yrs</td><td>~45%</td><td><span class="pill pill-a">AA+</span></td><td>NHAI/Brookfield</td></tr>
+        <tr><td><strong style="color:var(--tvs)">TVS InvIT</strong></td><td>TVSINVIT</td><td><span class="tag tag-log">Logistics</span></td><td>Jul 2025</td><td>~109</td><td>~1,300</td><td>~7.5%</td><td>~1.95</td><td>~80</td><td>Long leases</td><td>~30%</td><td><span class="pill pill-a">AA</span></td><td>TVS Mobility/IFC</td></tr>
+        <tr><td><strong style="color:var(--shrem)">Altius Telecom</strong></td><td>ALTIUS</td><td><span class="tag tag-log" style="background:#ede9fe;color:#5b21b6">Towers</span></td><td>2022</td><td>~150</td><td>~457</td><td>~6.5%</td><td>~2.50</td><td>~25</td><td>15–20 yrs</td><td>~35%</td><td><span class="pill pill-a">AA</span></td><td>Altius Group</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ RANKINGS ══════════════ -->
+<div id="tab-rankings" class="tab">
+  <div class="sec">🏆 Rankings — REITs &amp; InvITs Combined (May 2026)</div>
+
+  <div class="sec" style="font-size:1rem;margin-top:8px">💰 Best Income — Distribution Yield</div>
+  <div class="grid">
+    <div class="card"><div style="display:flex;gap:12px;align-items:center"><div style="font-size:2rem;font-weight:900;color:#f59e0b;min-width:36px">1</div><div><div style="font-weight:700;color:var(--pginvit)">PowerGrid InvIT (PGInvIT) — ~12.9%</div><div style="font-size:.78rem;color:var(--muted);margin-top:3px">Government-backed (PGCIL), CERC-regulated tariffs. Near-annuity income with 35-year asset life. AAA rated. Highest yield in entire REIT+InvIT space. Board meeting May 15, 2026 for Q4 FY26 distribution.</div></div></div></div>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center"><div style="font-size:2rem;font-weight:900;color:#94a3b8;min-width:36px">2</div><div><div style="font-weight:700;color:var(--indigrid)">IndiGrid — ~9.2%</div><div style="font-size:.78rem;color:var(--muted);margin-top:3px">First power InvIT, KKR + Sterlite backed. Availability charges model (near-annuity). AAA. Q3 FY26 PAT +76% YoY. Expanding into renewable assets.</div></div></div></div>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center"><div style="font-size:2rem;font-weight:900;color:#b45309;min-width:36px">3</div><div><div style="font-weight:700;color:var(--irb)">IRB InvIT — ~8.5%</div><div style="font-size:.78rem;color:var(--muted);margin-top:3px">India's first toll road InvIT. IRB Infrastructure sponsor (44% TOT market share). Attractive yield at current unit price. AA+ rated.</div></div></div></div>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center"><div style="font-size:2rem;font-weight:900;color:var(--accent);min-width:36px">4</div><div><div style="font-weight:700;color:var(--mind)">Mindspace REIT — ~8.3%</div><div style="font-size:.78rem;color:var(--muted);margin-top:3px">Best yield among REITs. 27.4% re-leasing spreads. AAA rated. No governance issues. Q4 FY26 results incoming.</div></div></div></div>
+  </div>
+
+  <div class="sec" style="font-size:1rem">🛡 Best Safety — Credit Rating + Sponsor Strength</div>
+  <div class="grid">
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:6px;color:var(--green)">🥇 Sovereign-backed InvITs (Quasi-Govt.)</div><div style="font-size:.79rem;color:var(--muted);line-height:1.6">NHIT (Sponsor: NHAI) + PGInvIT (Sponsor: PGCIL, Ministry of Power) — government of India entities. Effectively near-sovereign income. AAA rated. EPFO and institutional investors hold units. Lowest default risk of any listed infrastructure instrument in India.</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:6px;color:var(--accent)">🥈 AAA Private REITs / InvITs</div><div style="font-size:.79rem;color:var(--muted);line-height:1.6">Embassy REIT (AAA, dual), Mindspace REIT (AAA), IndiGrid (AAA, KKR backing) — private sector with highest institutional-grade credit. Strong cash flow predictability, long leases/concessions, professional management. Solid second tier after sovereign.</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.95rem;margin-bottom:6px;color:var(--amber)">🥉 AA+ Category</div><div style="font-size:.79rem;color:var(--muted);line-height:1.6">Brookfield REIT (AA+, Brookfield AM global backing), KRT (AA+, Blackstone + Sattva), IRB InvIT (AA+, IRB Infrastructure), Highways Trust (AA+). One notch below AAA but still high investment grade. Typically offer slightly higher yields to compensate.</div></div>
+  </div>
+
+  <div class="sec" style="font-size:1rem">📐 Best Valuation — P/NAV &amp; Price relative to fair value</div>
+  <div class="grid">
+    <div class="card"><div style="font-weight:700;color:var(--krt);margin-bottom:5px">🏷 Best: KRT — 0.96x P/NAV (only 4% below NAV)</div><div style="font-size:.78rem;color:var(--muted);line-height:1.6">Newest REIT, listed Aug 2025. Trading closest to fair value. Lowest LTV (18%). 88% NOI margin. FTSE + Nareit index included. ROFO pipeline 6.7 msf from Sattva. FY27E DPU guidance ~₹7/unit.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--mind);margin-bottom:5px">🏷 #2: Mindspace — 0.90x P/NAV</div><div style="font-size:.78rem;color:var(--muted);line-height:1.6">Best risk-adjusted REIT. Highest yield (8.3%) + closest P/NAV of established REITs + AAA + lowest leverage + no governance issues. TP ₹378–420. +11% NAV upside.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--brook);margin-bottom:5px">🏷 #3: Brookfield — 0.89x P/NAV</div><div style="font-size:.78rem;color:var(--muted);line-height:1.6">Fastest DPU growth (9M +14%). Ecoworld adds Bengaluru. 7.7% yield. TP ₹330–360. Slightly higher leverage post Ecoworld.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--emb);margin-bottom:5px">🏷 #4: Embassy — 0.87x P/NAV (governance discount)</div><div style="font-size:.78rem;color:var(--muted);line-height:1.6">Asia's largest REIT at 13% discount to NAV. Resolution of SEBI CEO probe = catalyst for re-rating. Double-digit FY27 DPU growth guided. TP ₹460–490.</div></div>
+  </div>
+
+  <div class="sec" style="font-size:1rem">📊 Overall Investment Scorecard</div>
+  <div class="grid">
+    <div class="card"><div style="font-weight:700;color:var(--mind);margin-bottom:6px">🌟 Best All-Round REIT: Mindspace</div>
+      <div style="display:grid;grid-template-columns:100px 1fr 36px;gap:4px;align-items:center;margin:4px 0;font-size:.71rem">
+        <span style="text-align:right;color:var(--muted)">Income</span><div style="background:#e2e8f0;border-radius:3px;height:7px;overflow:hidden"><div style="width:90%;height:100%;background:var(--mind);border-radius:3px"></div></div><span style="font-weight:700">9.0</span>
+      </div>
+      <div style="display:grid;grid-template-columns:100px 1fr 36px;gap:4px;align-items:center;margin:4px 0;font-size:.71rem">
+        <span style="text-align:right;color:var(--muted)">Asset quality</span><div style="background:#e2e8f0;border-radius:3px;height:7px;overflow:hidden"><div style="width:85%;height:100%;background:var(--mind);border-radius:3px"></div></div><span style="font-weight:700">8.5</span>
+      </div>
+      <div style="display:grid;grid-template-columns:100px 1fr 36px;gap:4px;align-items:center;margin:4px 0;font-size:.71rem">
+        <span style="text-align:right;color:var(--muted)">Governance</span><div style="background:#e2e8f0;border-radius:3px;height:7px;overflow:hidden"><div style="width:90%;height:100%;background:var(--mind);border-radius:3px"></div></div><span style="font-weight:700">9.0</span>
+      </div>
+      <div style="display:grid;grid-template-columns:100px 1fr 36px;gap:4px;align-items:center;margin:4px 0;font-size:.71rem">
+        <span style="text-align:right;color:var(--muted)">Valuation</span><div style="background:#e2e8f0;border-radius:3px;height:7px;overflow:hidden"><div style="width:85%;height:100%;background:var(--mind);border-radius:3px"></div></div><span style="font-weight:700">8.5</span>
+      </div>
+      <div style="font-size:.76rem;color:var(--muted);margin-top:7px">TP ₹378–420. Strong Buy. No governance issues. Highest yield among REITs. 27.4% re-leasing spread.</div>
+    </div>
+    <div class="card"><div style="font-weight:700;color:var(--pginvit);margin-bottom:6px">🌟 Best All-Round InvIT: PGInvIT or IndiGrid</div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.7"><strong style="color:var(--pginvit)">PGInvIT</strong> for pure income (12.9% yield), sovereign safety (GoI/PGCIL), AAA. Note governance issue with board composition (SEBI relaxation until Jun 2026).<br><br><strong style="color:var(--indigrid)">IndiGrid</strong> for quality + growth — KKR backing, AAA, expanding into renewables, 9.2% yield, Q3 PAT +76% YoY.<br><br>Both are far superior to toll roads in revenue predictability. Power transmission tariffs are government-set and cannot go to zero even in recession.</div>
+    </div>
+    <div class="card"><div style="font-weight:700;color:var(--tvs);margin-bottom:6px">🌟 Best Thematic Play: TVS Infrastructure Trust</div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.7">Only listed logistics/warehousing InvIT. India's formalisation of supply chains, GST driving consolidation, e-commerce growth, and manufacturing push (PLI schemes) all benefit this sector. TVS Mobility Group credibility + IFC (World Bank) + L&amp;T backing. Only ₹1,300 Cr market cap — early stage, high upside if sector grows. Chennai-based — strong Tamil Nadu connection for Elango ji.</div>
+    </div>
+    <div class="card"><div style="font-weight:700;color:var(--nhit);margin-bottom:6px">🌟 Best Government-Backed Play: NHIT</div>
+      <div style="font-size:.79rem;color:var(--muted);line-height:1.7">NHAI sponsor + EPFO unitholder = as close to sovereign debt as equity markets get. 26 toll road projects across 12 states. Round 4 (FY25 monetisation ₹18,380 Cr) already added. CARE AAA Stable. Long concession periods. Lower yield (~5.5%) reflects safety premium. For conservative investors seeking equity-like income with bond-like safety.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLS={emb:'#185FA5',mind:'#1D9E75',brook:'#7c3aed',nex:'#D85A30',krt:'#b91c1c',
+  nhit:'#92400e',indigrid:'#064e3b',pginvit:'#7f1d1d',irb:'#0e7490',highways:'#4c1d95',tvs:'#065f46',altius:'#374151'};
+
+function st(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='charts')setTimeout(initCharts,80);
+}
+
+let sortDir={};
+function sortT(id,col){
+  const tbody=document.getElementById(id);
+  if(!tbody)return;
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const key=id+'_'+col;
+  const dir=(sortDir[key]=!sortDir[key]);
+  rows.sort((a,b)=>{
+    const av=(a.cells[col]?.innerText||'').replace(/[₹,+~★✓%x≈]/g,'').trim();
+    const bv=(b.cells[col]?.innerText||'').replace(/[₹,+~★✓%x≈]/g,'').trim();
+    const an=parseFloat(av),bn=parseFloat(bv);
+    if(!isNaN(an)&&!isNaN(bn))return dir?an-bn:bn-an;
+    return dir?av.localeCompare(bv):bv.localeCompare(av);
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;chartsInit=true;
+
+  const ALL_LABELS=['Embassy\nREIT','Mindspace\nREIT','Brookfield\nREIT','Nexus\nSelect','KRT\n(Sattva)','NHIT','IndiGrid','PGInvIT','IRB\nInvIT','Highways\nTrust','TVS\nInvIT'];
+  const ALL_COLS=[COLS.emb,COLS.mind,COLS.brook,COLS.nex,COLS.krt,COLS.nhit,COLS.indigrid,COLS.pginvit,COLS.irb,COLS.highways,COLS.tvs];
+  const BASE={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9}}}}};
+
+  new Chart(document.getElementById('c_yield'),{type:'bar',data:{labels:ALL_LABELS,datasets:[{data:[6.2,8.3,7.7,7.0,5.5,5.5,9.2,12.9,8.5,7.5,7.5],backgroundColor:ALL_COLS,borderRadius:4}]},options:{...BASE,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>v+'%'}}}}});
+
+  new Chart(document.getElementById('c_mcap'),{type:'bar',data:{labels:ALL_LABELS,datasets:[{data:[39916,18900,18000,23881,52570,30990,16520,8468,4860,15930,1300],backgroundColor:ALL_COLS,borderRadius:4}]},options:{...BASE,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'₹'+ctx.parsed.y.toLocaleString('en-IN')+' Cr'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>'₹'+Math.round(v/1000)+'K'}}}}});
+
+  new Chart(document.getElementById('c_scatter'),{type:'scatter',data:{datasets:[
+    {label:'Embassy',data:[{x:0.87,y:6.2}],pointBackgroundColor:COLS.emb,pointRadius:8},
+    {label:'Mindspace',data:[{x:0.90,y:8.3}],pointBackgroundColor:COLS.mind,pointRadius:8},
+    {label:'Brookfield',data:[{x:0.89,y:7.7}],pointBackgroundColor:COLS.brook,pointRadius:8},
+    {label:'Nexus',data:[{x:0.79,y:7.0}],pointBackgroundColor:COLS.nex,pointRadius:8},
+    {label:'KRT',data:[{x:0.96,y:5.5}],pointBackgroundColor:COLS.krt,pointRadius:8}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:9},padding:6}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': P/NAV '+ctx.parsed.x+'x, Yield '+ctx.parsed.y+'%'}}},scales:{x:{title:{display:true,text:'P/NAV',font:{size:10}},min:0.6,max:1.05,grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>v+'x'}},y:{title:{display:true,text:'Dist. Yield %',font:{size:10}},grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>v+'%'}}}}});
+
+  new Chart(document.getElementById('c_invit_mix'),{type:'doughnut',data:{labels:['Toll Roads (NHIT+Highways+IRB)','Power Transmission (IndiGrid+PG)','Logistics (TVS)','Telecom (Altius)'],datasets:[{data:[51780,24988,1300,457],backgroundColor:['#92400e','#064e3b','#065f46','#374151'],borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'right',labels:{font:{size:9},padding:8}},tooltip:{callbacks:{label:ctx=>'₹'+ctx.parsed.toLocaleString('en-IN')+' Cr'}}}}});
+
+  new Chart(document.getElementById('c_reit_v_invit'),{type:'bar',data:{labels:['REITs (5 listed)','InvITs (7 listed)'],datasets:[{data:[153267,79525],backgroundColor:['#185FA5','#064e3b'],borderRadius:6}]},options:{...BASE,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'₹'+ctx.parsed.x.toLocaleString('en-IN')+' Cr'}}},scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>'₹'+Math.round(v/1000)+'K Cr'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+  new Chart(document.getElementById('c_occ'),{type:'bar',data:{labels:['Embassy','Mindspace','Brookfield','Nexus','KRT'],datasets:[{data:[95,94.5,92,95.5,92],backgroundColor:[COLS.emb,COLS.mind,COLS.brook,COLS.nex,COLS.krt],borderRadius:4}]},options:{...BASE,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{min:88,max:100,grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>v+'%'}}}}});
+}
+</script>
+</body>
+</html>

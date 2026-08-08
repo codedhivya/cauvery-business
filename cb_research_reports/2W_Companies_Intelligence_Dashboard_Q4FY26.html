@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Wheeler Sector — Intelligence Dashboard v2 | Q4 FY26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --bajaj:#1d4ed8;--bajaj-soft:#eff6ff;
+  --tvs:#c84b2f;--tvs-soft:#fef3f0;
+  --eicher:#166534;--eicher-soft:#f0fdf4;
+  --hero:#7c3aed;--hero-soft:#f5f3ff;
+  --ather:#d97706;--ather-soft:#fffbeb;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+
+/* HEADER */
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-bajaj{background:var(--bajaj);color:#fff;}
+.chip-tvs{background:var(--tvs);color:#fff;}
+.chip-eicher{background:var(--eicher);color:#fff;}
+.chip-hero{background:var(--hero);color:#fff;}
+.chip-ather{background:var(--ather);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+
+/* TAB NAV */
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--tvs);font-weight:700;}
+
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.gap-top{margin-top:22px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+
+/* COMPANY CARD */
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.bajaj::before{background:var(--bajaj);}
+.co-card.tvs::before{background:var(--tvs);}
+.co-card.eicher::before{background:var(--eicher);}
+.co-card.hero::before{background:var(--hero);}
+.co-card.ather::before{background:var(--ather);}
+.co-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}
+.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}
+.b-spec{background:#f3f4f6;color:#4b5563;}
+.b-watch{background:#fff7ed;color:#c2410c;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.bajaj-a{border-left:4px solid var(--bajaj);}
+.kpi.tvs-a{border-left:4px solid var(--tvs);}
+.kpi.eicher-a{border-left:4px solid var(--eicher);}
+.kpi.hero-a{border-left:4px solid var(--hero);}
+.kpi.ather-a{border-left:4px solid var(--ather);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.15rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+
+/* VALUATION */
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.val-co{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11.5px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+
+/* SWOT */
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+
+/* SEGMENT */
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
+.seg-bar{height:10px;border-radius:20px;}
+.seg-row{margin-bottom:14px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+
+/* ANALYST */
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}
+.rp-hold{background:#fef9c3;color:#a16207;}
+.rp-spec{background:#f3f4f6;color:#4b5563;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-bar{background:var(--surface2);border-radius:20px;height:6px;overflow:hidden;margin-bottom:10px;}
+.ac-fill{height:6px;border-radius:20px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+.ac-text strong{color:var(--text);}
+
+/* MOAT */
+.moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.moat-co{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.moat-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.moat-body{font-size:11px;color:var(--muted);line-height:1.55;}
+.moat-tag{display:inline-block;margin-top:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+/* CB ASSIST */
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--tvs);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--tvs);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--tvs);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--tvs);}
+.chat-send{background:var(--tvs);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.lang-toggle{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:10px;}
+.lang-btn{padding:3px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;}
+.lang-btn.active{background:#181511;color:#fff;border-color:#181511;}
+.preset-tab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 6px 0;}
+.preset-tab:hover{border-color:var(--text);color:var(--text);}
+.pt-bajaj.active{background:var(--bajaj);border-color:var(--bajaj);color:#fff;}
+.pt-tvs.active{background:var(--tvs);border-color:var(--tvs);color:#fff;}
+.pt-eicher.active{background:var(--eicher);border-color:var(--eicher);color:#fff;}
+.pt-hero.active{background:var(--hero);border-color:var(--hero);color:#fff;}
+.pt-ather.active{background:var(--ather);border-color:var(--ather);color:#fff;}
+.pt-sector.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.presets-panel{display:none;}.presets-panel.active{display:block;}
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.preset-q{padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:9px;line-height:1.45;}
+.preset-q:hover{border-color:var(--tvs);background:var(--tvs-soft);}
+.pq-en{font-weight:600;color:var(--text);}
+.pq-ta{font-size:10px;color:var(--muted);font-style:italic;margin-top:2px;}
+
+/* GRPH HEADER */
+.grp-hdr{margin-bottom:8px;padding:7px 14px;border-left:4px solid;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+
+/* CHART CARD */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+
+/* METRIC SELECTOR */
+.metric-sel{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:13px 16px;box-shadow:var(--shadow);}
+.m-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s;}
+.m-btn.active{background:#181511;color:#fff;border-color:#181511;}
+.m-btn:hover:not(.active){border-color:var(--muted);color:var(--text);}
+
+/* WATERMARK */
+.cb-wm{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid var(--border);border-radius:30px;padding:7px 14px 7px 8px;box-shadow:0 4px 20px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:28px;height:28px;background:var(--tvs);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:11px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:14px 40px;border-top:1px solid var(--border);margin-top:28px;line-height:1.7;}
+@media(max-width:860px){
+  .main{padding:14px 16px 40px;}.hdr{padding:0 16px;flex-wrap:wrap;}
+  .tab-nav{padding:0 8px;}
+  .g2,.g3,.g4,.g5,.kpi-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Two Wheeler Sector — Intelligence Dashboard v2</h1>
+      <div class="sub">Bajaj · TVS · Hero · Ather = Q4 FY26 ✅ · Eicher = Q3 FY26 Latest (Q4 Due 22 May) · EIL Research</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-bajaj">Bajaj Auto</span>
+    <span class="chip chip-tvs">TVS Motor</span>
+    <span class="chip chip-eicher">Eicher Motors</span>
+    <span class="chip chip-hero">Hero MotoCorp</span>
+    <span class="chip chip-ather">Ather Energy</span>
+    <span class="chip chip-date">21 May 2026 · EIL Research</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">Financials</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Business Segments</button>
+  <button class="tab-btn" onclick="showTab('bizanalysis',this)">Business Analysis</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('volumes',this)">Volume &amp; Markets</button>
+  <button class="tab-btn" onclick="showTab('moats',this)">Moats &amp; USPs</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--tvs);font-weight:800;">🤖 CB Assist</button>
+</nav>
+
+<div class="main">
+
+<!-- ══ TAB 1 · DASHBOARD ══ -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">· 5 companies · Q4 FY26 actuals where available · Cauvery Business Research</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi bajaj-a"><div class="kl">Bajaj Q4 Revenue ✅</div><div class="kv">₹16,006 Cr</div><div class="kc pos">▲ 32% YoY</div></div>
+    <div class="kpi tvs-a"><div class="kl">TVS Q4 Revenue ✅</div><div class="kv">₹12,808 Cr</div><div class="kc pos">▲ 34% YoY</div></div>
+    <div class="kpi eicher-a"><div class="kl">Eicher Q3 Revenue (Latest)</div><div class="kv">₹6,114 Cr</div><div class="kc pos">▲ 23% YoY · Q4 due 22 May</div></div>
+    <div class="kpi hero-a"><div class="kl">Hero Q4 Revenue ✅</div><div class="kv">₹12,797 Cr</div><div class="kc pos">▲ 29% YoY</div></div>
+    <div class="kpi ather-a"><div class="kl">Ather Q4 Revenue ✅</div><div class="kv">₹1,175 Cr</div><div class="kc pos">▲ 74% YoY</div></div>
+  </div>
+
+  <div class="g5" style="margin-bottom:22px;">
+    <div class="co-card bajaj">
+      <div class="co-name" style="color:var(--bajaj)">Bajaj Auto</div>
+      <div class="co-seg">Motorcycles · 3W · Exports · EV · KTM · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹2,746 Cr (+34%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin ✅</span><span class="m-val">20.8%</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Volumes ✅</span><span class="m-val">13.71 L units</span></div>
+      <div class="m-row"><span class="m-lbl">Surplus Cash</span><span class="m-val" style="color:var(--pos)">₹18,000 Cr+ (Net)</span></div>
+      <div class="m-row"><span class="m-lbl">Buyback</span><span class="m-val">₹5,633 Cr @ ₹12,000/sh</span></div>
+      <div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val">₹150/share</span></div>
+      <div class="badge-row"><span class="badge b-buy">Q4 RECORD</span><span class="badge b-pos">₹18K Cr Cash</span><span class="badge b-pos">KTM Turnaround</span></div>
+    </div>
+    <div class="co-card tvs">
+      <div class="co-name" style="color:var(--tvs)">TVS Motor</div>
+      <div class="co-seg">Scooters · Bikes · EV Leader · iQube · Q4 FY26 ✅</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT (consol) ✅</span><span class="m-val">₹772 Cr (+19%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 EBITDA Margin ✅</span><span class="m-val">13.1%</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Revenue ✅</span><span class="m-val">₹12,808 Cr (+34%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 EV Units</span><span class="m-val">3.71 L (+33% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 Revenue</span><span class="m-val">₹47,270 Cr (+30%)</span></div>
+      <div class="m-row"><span class="m-lbl">FY26 PAT</span><span class="m-val">₹3,018 Cr (consol)</span></div>
+      <div class="badge-row"><span class="badge b-hold">HOLD</span><span class="badge b-pos">Record Revenue</span><span class="badge b-pos">EV +33%</span></div>
+    </div>
+    <div class="co-card eicher">
+      <div class="co-name" style="color:var(--eicher)">Eicher Motors</div>
+      <div class="co-seg">Royal Enfield · Premium · VECV · Q4 FY26 Results Due 22 May</div>
+      <div class="m-row"><span class="m-lbl">Q3 PAT (Latest ✅)</span><span class="m-val">₹1,421 Cr (+21%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q3 EBITDA Margin</span><span class="m-val">25.5% (Sector Best)</span></div>
+      <div class="m-row"><span class="m-lbl">Q3 Revenue (Latest ✅)</span><span class="m-val">₹6,114 Cr (+23%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q3 RE Volumes</span><span class="m-val">3.26 L units (+21%)</span></div>
+      <div class="m-row"><span class="m-lbl">Mkt Cap</span><span class="m-val">~₹1.88 L Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 FY26 Status</span><span class="m-val warn">Results due 22 May 2026</span></div>
+      <div class="badge-row"><span class="badge b-spec">Q4 PENDING</span><span class="badge b-pos">Debt Free</span><span class="badge b-pos">Best Margins</span></div>
+    </div>
+    <div class="co-card hero">
+      <div class="co-name" style="color:var(--hero)">Hero MotoCorp</div>
+      <div class="co-seg">Mass Motorcycles · Splendor · VIDA EV</div>
+      <div class="m-row"><span class="m-lbl">Q4 PAT ✅</span><span class="m-val">₹1,401 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">14.5%</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Volumes ✅</span><span class="m-val">17.14 L units</span></div>
+      <div class="m-row"><span class="m-lbl">Dividend FY26</span><span class="m-val">₹185/share</span></div>
+      <div class="m-row"><span class="m-lbl">Mkt Cap</span><span class="m-val">~₹89,750 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">CMP</span><span class="m-val">~₹4,500</span></div>
+      <div class="badge-row"><span class="badge b-buy">STRONG BUY</span><span class="badge b-pos">4.1% Yield</span><span class="badge b-pos">Cheapest PE</span></div>
+    </div>
+    <div class="co-card ather">
+      <div class="co-name" style="color:var(--ather)">Ather Energy</div>
+      <div class="co-seg">Pure EV · Premium Scooters · Listed May 2025</div>
+      <div class="m-row"><span class="m-lbl">Q4 Net Loss ✅</span><span class="m-val neg">₹100 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Revenue Growth</span><span class="m-val pos">+74% YoY</span></div>
+      <div class="m-row"><span class="m-lbl">Q4 Volumes ✅</span><span class="m-val">83,000 units</span></div>
+      <div class="m-row"><span class="m-lbl">Gross Margin</span><span class="m-val">25% (improving)</span></div>
+      <div class="m-row"><span class="m-lbl">Mkt Cap</span><span class="m-val">~₹35,943 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">CMP</span><span class="m-val">~₹904</span></div>
+      <div class="badge-row"><span class="badge b-spec">SPEC HOLD</span><span class="badge b-neg">Pre-breakeven</span><span class="badge b-watch">EL Platform</span></div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Sector Quick Snapshot <span class="sec-note">· 4 companies Q4 FY26 declared ✅ · Eicher Q3 latest · Q4 due 22 May 2026</span></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Industry Context — Indian 2W Sector FY26</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Context</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Total 2W VAHAN FY26 (est.)</td><td class="num">~2.25 Cr units</td><td>Record year</td></tr>
+          <tr><td class="tb">YoY Industry Growth</td><td class="num tpos">~12–15%</td><td>Rural + premium led</td></tr>
+          <tr><td class="tb">EV 2W Share (FY26)</td><td class="num tpos">~5–6% of total</td><td>Rising fast</td></tr>
+          <tr><td class="tb">Top EV player (volume)</td><td class="num">TVS Motor ~26%</td><td>April 2026 data</td></tr>
+          <tr><td class="tb">Export leader</td><td class="num">Bajaj Auto ~44%</td><td>Africa + LatAm</td></tr>
+          <tr><td class="tb">Highest margin</td><td class="num">Eicher 25.5%</td><td>Premium moat</td></tr>
+          <tr><td class="tb">Largest by volume</td><td class="num">Hero MotoCorp</td><td>17.14 L Q4 units</td></tr>
+          <tr><td class="tb">Fastest revenue growth</td><td class="num tpos">Ather +74%</td><td>Q4 FY26 YoY</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Result Status — Q4 FY26</div>
+      <table>
+        <thead><tr><th>Company</th><th>Q4 FY26 Status</th><th>Revenue (₹ Cr)</th><th>PAT (₹ Cr)</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--bajaj)">Bajaj Auto</td><td><span class="badge b-buy">Q4 FY26 ✅ Declared (6 May)</span></td><td class="num">16,006</td><td class="num tpos">2,746</td></tr>
+          <tr><td class="tb" style="color:var(--tvs)">TVS Motor</td><td><span class="badge b-buy">Q4 FY26 ✅ Declared (13 May)</span></td><td class="num">12,808</td><td class="num tpos">772 (consol)</td></tr>
+          <tr><td class="tb" style="color:var(--eicher)">Eicher Motors</td><td><span class="badge b-watch">Q3 FY26 Latest · Q4 Due 22 May 2026</span></td><td class="num">6,114 (Q3)</td><td class="num tpos">1,421 (Q3)</td></tr>
+          <tr><td class="tb" style="color:var(--hero)">Hero MotoCorp</td><td><span class="badge b-buy">Q4 FY26 ✅ Declared</span></td><td class="num">12,797</td><td class="num tpos">1,401</td></tr>
+          <tr><td class="tb" style="color:var(--ather)">Ather Energy</td><td><span class="badge b-buy">Q4 FY26 ✅ Declared</span></td><td class="num">1,175</td><td class="num tneg">-100</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 2 · FINANCIALS ══ -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Financial Results <span class="sec-note">· Hero & Ather = Q4 FY26 Actual ✅ · Bajaj/TVS/Eicher = Q3 FY26 Latest Actual</span></div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">Quarterly Financials — All Companies (₹ Crore)</div>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Company</th><th>Period</th><th style="text-align:right">Revenue</th><th style="text-align:right">YoY</th><th style="text-align:right">EBITDA (₹Cr)</th><th style="text-align:right">EBITDA%</th><th style="text-align:right">PAT (₹Cr)</th><th style="text-align:right">PAT%</th><th style="text-align:right">Vol ('000)</th><th style="text-align:right">Realisation(₹)</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td>Q4 FY26 ✅</td><td class="num">16,006</td><td class="tpos">+32%</td><td class="num">3,323</td><td class="num">20.8%</td><td class="num">2,746</td><td class="num">17.2%</td><td class="num">1,371</td><td class="num">1,16,747</td><td><span class="badge b-buy">Declared ✅ 6 May</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td>Q4 FY26 ✅</td><td class="num">12,808</td><td class="tpos">+34%</td><td class="num">1,677</td><td class="num">13.1%</td><td class="num">772</td><td class="num">6.0%</td><td class="num">~1,550</td><td class="num">~82,600</td><td><span class="badge b-buy">Declared ✅ 13 May</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher Motors</td><td>Q3 FY26 (Latest ✅)</td><td class="num">6,114</td><td class="tpos">+23%</td><td class="num">1,557</td><td class="num">25.5%</td><td class="num">1,421</td><td class="num">23.2%</td><td class="num">326</td><td class="num">1,88,000</td><td><span class="badge b-watch">Q4 Due 22 May 2026</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td>Q4 FY26 ✅</td><td class="num">12,797</td><td class="tpos">+29%</td><td class="num">1,856</td><td class="num">14.5%</td><td class="num">1,401</td><td class="num">10.9%</td><td class="num">1,714</td><td class="num">74,655</td><td><span class="badge b-buy">Declared ✅</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td>Q4 FY26 ✅</td><td class="num">1,175</td><td class="tpos">+74%</td><td class="num tneg">-30</td><td class="num tneg">-2.5%</td><td class="num tneg">-100</td><td class="num tneg">-8.5%</td><td class="num">83</td><td class="num">1,40,000</td><td><span class="badge b-buy">Declared ✅</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sec-hdr" style="margin-top:24px;">3-Quarter Revenue Trend (₹ Crore)</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Company</th><th style="text-align:right">Q2 FY26</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q4 FY25 (prior yr)</th><th style="text-align:right">Q4 FY26 (latest/est.)</th><th style="text-align:right">YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td class="num">13,127</td><td class="num">15,220</td><td class="num">12,148</td><td class="num">16,006 ✅</td><td class="tpos">+32% ✅</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td class="num">8,170</td><td class="num">12,476</td><td class="num">9,550</td><td class="num">12,808 ✅</td><td class="tpos">+34% ✅</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher Motors</td><td class="num">6,172</td><td class="num">6,114</td><td class="num">5,241</td><td class="num warn">Q4 Due 22 May</td><td class="num warn">Pending</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td class="num">10,491</td><td class="num">11,088</td><td class="num">9,939</td><td class="num">12,797 ✅</td><td class="tpos">+29% ✅</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td class="num">813</td><td class="num">954</td><td class="num">677</td><td class="num">1,175 ✅</td><td class="tpos">+74% ✅</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sec-hdr" style="margin-top:24px;">FY25 Full-Year Summary (₹ Crore)</div>
+  <div class="card">
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Company</th><th style="text-align:right">FY25 Revenue</th><th style="text-align:right">FY25 EBITDA%</th><th style="text-align:right">FY25 PAT</th><th style="text-align:right">ROE</th><th style="text-align:right">ROCE</th><th style="text-align:right">Dividend</th><th style="text-align:right">Cash/Debt</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td class="num">48,008</td><td class="num">20.2%</td><td class="num">8,177</td><td class="num tpos">28%</td><td class="num tpos">37%</td><td class="num">₹200+/sh(est)</td><td class="num tpos">₹18,000 Cr+ Surplus</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td class="num">33,415</td><td class="num">12.8%</td><td class="num">1,882</td><td class="num tpos">24%</td><td class="num tpos">22%</td><td class="num">₹15/sh(est)</td><td class="num warn">Moderate debt</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher Motors</td><td class="num">22,979</td><td class="num">24.7%</td><td class="num">4,751</td><td class="num tpos">31%</td><td class="num tpos">40%</td><td class="num">₹200+/sh(est)</td><td class="num tpos">Debt-free</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td class="num">40,828</td><td class="num">13.7%</td><td class="num">4,588</td><td class="num tpos">26%</td><td class="num tpos">31%</td><td class="num">₹185/sh ✅</td><td class="num tpos">Near debt-free</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td class="num">2,921</td><td class="num tneg">Loss</td><td class="num tneg">-517</td><td class="num tneg">Negative</td><td class="num tneg">Negative</td><td class="num">None</td><td class="num warn">IPO proceeds FD</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 3 · CHARTS ══ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Interactive Charts <span class="sec-note">· Select any metric · Hero &amp; Ather = Q4 FY26 actual ✅</span></div>
+  <div class="metric-sel">
+    <span style="font-size:12px;font-weight:600;color:var(--muted);align-self:center;margin-right:6px;">SELECT:</span>
+    <button class="m-btn active" onclick="updateChart('revenue',this)">Revenue (₹ Cr)</button>
+    <button class="m-btn" onclick="updateChart('ebitda',this)">EBITDA %</button>
+    <button class="m-btn" onclick="updateChart('pat',this)">PAT (₹ Cr)</button>
+    <button class="m-btn" onclick="updateChart('volume',this)">Volume ('000)</button>
+    <button class="m-btn" onclick="updateChart('realisation',this)">Realisation (₹)</button>
+    <button class="m-btn" onclick="updateChart('growth',this)">Revenue Growth %</button>
+  </div>
+  <div class="chart-card" style="margin-bottom:20px;">
+    <h3 id="mainChartTitle">Revenue (₹ Cr) — Latest Quarter</h3>
+    <p class="sub" id="mainChartSub">All 5 Companies = Q4 FY26 Actual ✅ · Bajaj declared 6 May · TVS declared 13 May · Eicher declared 22 May</p>
+    <canvas id="mainChart" style="max-height:320px;"></canvas>
+  </div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="chart-card">
+      <h3>EBITDA Margin % — Latest Quarter</h3>
+      <p class="sub">Eicher leads at 25.5%; Ather pre-breakeven at -2.5%</p>
+      <canvas id="ebitdaChart" style="max-height:240px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>PAT (₹ Cr) — Latest Quarter</h3>
+      <p class="sub">Bajaj highest absolute profit; Ather still loss-making</p>
+      <canvas id="patChart" style="max-height:240px;"></canvas>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="chart-card">
+      <h3>Revenue YoY Growth % — Latest Quarter</h3>
+      <p class="sub">Ather leads on growth (+74%); Hero strong at +29%</p>
+      <canvas id="growthChart" style="max-height:240px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Realisation per Unit (₹) — Latest Quarter</h3>
+      <p class="sub">Eicher's ₹1.88 L/unit premium positioning clearly visible</p>
+      <canvas id="realisChart" style="max-height:240px;"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 4 · VALUATION ══ -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuation Matrix <span class="sec-note">· Current market estimates · Research only · Not investment advice</span></div>
+  <div class="g5" style="margin-bottom:22px;">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--bajaj)">Bajaj Auto</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">9,994</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">2,79,330</span></div>
+      <div class="val-row"><span class="val-lbl">TTM P/E</span><span class="val-num">28–30×</span></div>
+      <div class="val-row"><span class="val-lbl">FY26E P/E</span><span class="val-num">~26×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~18×</span></div>
+      <div class="val-row"><span class="val-lbl">52W H/L</span><span class="val-num">11,200/6,790</span></div>
+      <div class="val-row"><span class="val-lbl">Div Yield</span><span class="val-num">~1.8%</span></div>
+      <div class="val-row"><span class="val-lbl">ROE FY25</span><span class="val-num" style="color:var(--pos)">28%</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE FY25</span><span class="val-num" style="color:var(--pos)">37%</span></div>
+      <div class="val-row"><span class="val-lbl">Debt</span><span class="val-num" style="color:var(--pos)">₹18,000 Cr+ Net Surplus</span></div>
+      <div style="margin-top:12px"><span class="badge b-buy">BUY</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--tvs)">TVS Motor</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">~2,450</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">~1,16,000</span></div>
+      <div class="val-row"><span class="val-lbl">TTM P/E</span><span class="val-num">58–70×</span></div>
+      <div class="val-row"><span class="val-lbl">FY26E P/E</span><span class="val-num">~40–45×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~28×</span></div>
+      <div class="val-row"><span class="val-lbl">52W H/L</span><span class="val-num">3,200/1,850</span></div>
+      <div class="val-row"><span class="val-lbl">Div Yield</span><span class="val-num">~0.6%</span></div>
+      <div class="val-row"><span class="val-lbl">ROE FY25</span><span class="val-num" style="color:var(--pos)">24%</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE FY25</span><span class="val-num" style="color:var(--pos)">22%</span></div>
+      <div class="val-row"><span class="val-lbl">Debt</span><span class="val-num" style="color:var(--warn)">Moderate</span></div>
+      <div style="margin-top:12px"><span class="badge b-hold">HOLD</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--eicher)">Eicher Motors</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">~7,310</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">2,00,275</span></div>
+      <div class="val-row"><span class="val-lbl">TTM P/E</span><span class="val-num">~27×</span></div>
+      <div class="val-row"><span class="val-lbl">FY26E P/E</span><span class="val-num">~22–24×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~17×</span></div>
+      <div class="val-row"><span class="val-lbl">52W H/L</span><span class="val-num">8,650/4,825</span></div>
+      <div class="val-row"><span class="val-lbl">Div Yield</span><span class="val-num">~1.5%</span></div>
+      <div class="val-row"><span class="val-lbl">ROE FY25</span><span class="val-num" style="color:var(--pos)">31%</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE FY25</span><span class="val-num" style="color:var(--pos)">40%</span></div>
+      <div class="val-row"><span class="val-lbl">Debt</span><span class="val-num" style="color:var(--pos)">Debt-free</span></div>
+      <div style="margin-top:12px"><span class="badge b-buy">BUY</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--hero)">Hero MotoCorp</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">~4,500</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">~89,750</span></div>
+      <div class="val-row"><span class="val-lbl">TTM P/E</span><span class="val-num">17–21×</span></div>
+      <div class="val-row"><span class="val-lbl">FY26E P/E</span><span class="val-num">~16–18×</span></div>
+      <div class="val-row"><span class="val-lbl">EV/EBITDA</span><span class="val-num">~12×</span></div>
+      <div class="val-row"><span class="val-lbl">52W H/L</span><span class="val-num">6,090/3,420</span></div>
+      <div class="val-row"><span class="val-lbl">Div Yield</span><span class="val-num" style="color:var(--pos)">~4.1%</span></div>
+      <div class="val-row"><span class="val-lbl">ROE FY25</span><span class="val-num" style="color:var(--pos)">26%</span></div>
+      <div class="val-row"><span class="val-lbl">ROCE FY25</span><span class="val-num" style="color:var(--pos)">31%</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 Dividend</span><span class="val-num" style="color:var(--pos)">₹185/share</span></div>
+      <div style="margin-top:12px"><span class="badge b-buy">STRONG BUY</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--ather)">Ather Energy</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">~904</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">~35,943</span></div>
+      <div class="val-row"><span class="val-lbl">TTM P/E</span><span class="val-num" style="color:var(--neg)">Loss-making</span></div>
+      <div class="val-row"><span class="val-lbl">EV/Revenue</span><span class="val-num">~9–10×</span></div>
+      <div class="val-row"><span class="val-lbl">P/Book</span><span class="val-num">~14×</span></div>
+      <div class="val-row"><span class="val-lbl">IPO Price (May 2025)</span><span class="val-num">₹321</span></div>
+      <div class="val-row"><span class="val-lbl">FY26 Net Loss</span><span class="val-num" style="color:var(--neg)">₹517 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">Gross Margin</span><span class="val-num">~25%</span></div>
+      <div class="val-row"><span class="val-lbl">Breakeven Units</span><span class="val-num">~50K/mo</span></div>
+      <div class="val-row"><span class="val-lbl">Cash</span><span class="val-num">IPO proceeds</span></div>
+      <div style="margin-top:12px"><span class="badge b-spec">SPEC HOLD</span></div>
+    </div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Valuation Comparison — FY26E P/E &amp; EV/EBITDA</div>
+    <canvas id="valChart" style="max-height:220px;"></canvas>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Recommendation Summary</div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Company</th><th>Rating</th><th style="text-align:right">CMP (₹)</th><th style="text-align:right">Consensus TP (₹)</th><th style="text-align:right">Upside</th><th>Thesis (One Line)</th><th>Key Risk</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td><span class="badge b-buy">BUY</span></td><td class="num">9,994</td><td class="num">10,500–11,000</td><td class="tpos">+5–10%</td><td>Export king + EV traction + cash fortress</td><td>Domestic share erosion; EM currency risk</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td><span class="badge b-hold">HOLD</span></td><td class="num">~2,450</td><td class="num">~2,600</td><td class="tpos">+6%</td><td>EV #1 + premiumisation — justified rich valuation</td><td>P/E compression if margins miss</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher Motors</td><td><span class="badge b-buy">BUY</span></td><td class="num">~7,310</td><td class="num">~8,000–8,500</td><td class="tpos">+9–16%</td><td>Best margin quality + debt-free + Flying Flea EV</td><td>Competition in middleweight; RE slowdown</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td><span class="badge b-buy">STRONG BUY</span></td><td class="num">~4,500</td><td class="num">~5,250</td><td class="tpos">+16.7%</td><td>Cheapest PE + 4% dividend + Q4 beat + VIDA optionality</td><td>Premium segment gap vs peers</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td><span class="badge b-spec">SPEC HOLD</span></td><td class="num">~904</td><td class="num">700–1,100</td><td class="tpos">~0%</td><td>Loss narrowing fast; EL platform is the prize</td><td>TVS/Bajaj pricing; cash burn; FAME risk</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 5 · BUSINESS SEGMENTS ══ -->
+<div class="panel" id="tab-segments">
+  <div class="sec-hdr">Business Segments <span class="sec-note">· Revenue mix · EV share · Product portfolio by company</span></div>
+
+  <!-- BAJAJ -->
+  <div class="grp-hdr" style="background:var(--bajaj-soft);border-color:var(--bajaj);color:var(--bajaj);margin-bottom:14px;">Bajaj Auto — Motorcycles · 3-Wheelers · Exports · EV (Chetak)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segment Mix (FY26 Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Motorcycles (2W Domestic)</span><span style="font-weight:700">~32%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:32%;background:var(--bajaj)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Motorcycles (Exports)</span><span style="font-weight:700">~44%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:44%;background:var(--bajaj);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>3-Wheelers (Domestic)</span><span style="font-weight:700">~12%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:12%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>3-Wheelers (Exports)</span><span style="font-weight:700">~7%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:7%;background:#64748b;opacity:.7"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Chetak EV (Domestic)</span><span style="font-weight:700">~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:var(--ather)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th style="text-align:right">ASP Range</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>Pulsar Series</td><td>Sports/Premium</td><td class="num">₹1.2–2.5 L</td><td>Volume + margin driver</td></tr>
+          <tr><td>Platina</td><td>Entry commuter</td><td class="num">₹70–80K</td><td>Rural volume base</td></tr>
+          <tr><td>CT Series</td><td>Entry commuter</td><td class="num">₹60–75K</td><td>Africa exports flagship</td></tr>
+          <tr><td>Dominar</td><td>Adventure/touring</td><td class="num">₹2.2–2.5 L</td><td>Premium aspirational</td></tr>
+          <tr><td>Chetak EV</td><td>Premium scooter EV</td><td class="num">₹1.2–1.5 L</td><td>25% domestic EV revenue</td></tr>
+          <tr><td>3-Wheelers</td><td>Commercial</td><td class="num">₹3–5 L</td><td>Market leader domestically</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TVS -->
+  <div class="grp-hdr" style="background:var(--tvs-soft);border-color:var(--tvs);color:var(--tvs);margin-bottom:14px;">TVS Motor — Scooters · Motorcycles · EV (iQube) · Apache</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segment Mix (FY26 Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Scooters (Domestic)</span><span style="font-weight:700">~38%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:38%;background:var(--tvs)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Motorcycles (Domestic)</span><span style="font-weight:700">~25%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:25%;background:var(--tvs);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Exports (2W+3W)</span><span style="font-weight:700">~22%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>iQube EV (Domestic)</span><span style="font-weight:700">~15%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:15%;background:var(--ather)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th style="text-align:right">ASP Range</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>iQube EV</td><td>Premium EV scooter</td><td class="num">₹1.2–1.7 L</td><td>#1 EV 2W share 26%</td></tr>
+          <tr><td>Apache Series</td><td>Sports motorcycle</td><td class="num">₹1.3–2.3 L</td><td>Youth premium segment</td></tr>
+          <tr><td>Jupiter</td><td>Family scooter</td><td class="num">₹85–95K</td><td>Largest volume scooter</td></tr>
+          <tr><td>Raider</td><td>Sport commuter</td><td class="num">₹90–1.1 L</td><td>Rural + semi-urban</td></tr>
+          <tr><td>Ronin</td><td>Lifestyle motorcycle</td><td class="num">₹1.7–2.0 L</td><td>Premium urban</td></tr>
+          <tr><td>Sport King</td><td>Moped</td><td class="num">₹45–55K</td><td>Entry rural</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EICHER -->
+  <div class="grp-hdr" style="background:var(--eicher-soft);border-color:var(--eicher);color:var(--eicher);margin-bottom:14px;">Eicher Motors — Royal Enfield · VECV Commercial Vehicles · Flying Flea EV</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segment Mix (FY26 Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Royal Enfield (Domestic)</span><span style="font-weight:700">~52%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:52%;background:var(--eicher)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Royal Enfield (Exports + CKD)</span><span style="font-weight:700">~20%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:20%;background:var(--eicher);opacity:.7"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>VECV (Commercial Vehicles)</span><span style="font-weight:700">~28%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:28%;background:#64748b"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th style="text-align:right">ASP Range</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>Classic 350</td><td>Heritage motorcycle</td><td class="num">₹1.9–2.1 L</td><td>Highest volume RE model</td></tr>
+          <tr><td>Meteor 350</td><td>Roadster</td><td class="num">₹2.1–2.5 L</td><td>Touring + lifestyle</td></tr>
+          <tr><td>Himalayan 450</td><td>Adventure</td><td class="num">₹2.7–2.8 L</td><td>Global adventure segment</td></tr>
+          <tr><td>Guerrilla 450</td><td>Modern classic</td><td class="num">₹2.6–3.0 L</td><td>Premium urban FY26 launch</td></tr>
+          <tr><td>Flying Flea (FY27)</td><td>Premium EV motorcycle</td><td class="num">~₹4–5 L</td><td>EV premium entry</td></tr>
+          <tr><td>VECV Trucks/Buses</td><td>Commercial</td><td class="num">₹20–60 L</td><td>JV with Volvo, India CV</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="grp-hdr" style="background:var(--hero-soft);border-color:var(--hero);color:var(--hero);margin-bottom:14px;">Hero MotoCorp — Mass Motorcycles · Splendor · VIDA EV · 52-Country Exports</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segment Mix (FY26 Est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Motorcycles (Domestic)</span><span style="font-weight:700">~68%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:68%;background:var(--hero)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Scooters (Domestic)</span><span style="font-weight:700">~14%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:14%;background:var(--hero);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Exports (52 countries)</span><span style="font-weight:700">~10%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:10%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>VIDA EV</span><span style="font-weight:700">~5%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:5%;background:var(--ather)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Spares &amp; Accessories</span><span style="font-weight:700">~3%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:3%;background:#94a3b8"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th style="text-align:right">ASP Range</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>Splendor+</td><td>Mass commuter</td><td class="num">₹75–85K</td><td>India's best-selling vehicle</td></tr>
+          <tr><td>HF Deluxe</td><td>Entry commuter</td><td class="num">₹65–75K</td><td>Rural heartland</td></tr>
+          <tr><td>Passion Pro</td><td>Commuter</td><td class="num">₹80–90K</td><td>Tier-2/3 urban</td></tr>
+          <tr><td>Xtreme 160R</td><td>Sports commuter</td><td class="num">₹1.2–1.4 L</td><td>Youth premium</td></tr>
+          <tr><td>Karizma XMR</td><td>Sports tourer</td><td class="num">₹2.2–2.5 L</td><td>Re-entry premium</td></tr>
+          <tr><td>VIDA V2</td><td>EV scooter</td><td class="num">₹1.1–1.4 L</td><td>+190% YoY growth</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ATHER -->
+  <div class="grp-hdr" style="background:var(--ather-soft);border-color:var(--ather);color:var(--ather);margin-bottom:14px;">Ather Energy — Pure EV Play · 450 Series · Rizta Family · EL Platform (FY27)</div>
+  <div class="g2" style="margin-bottom:8px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segment Mix (FY26)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>450X / 450 Apex (Premium)</span><span style="font-weight:700">~55%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:55%;background:var(--ather)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Rizta (Family/Mass market)</span><span style="font-weight:700">~30%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:30%;background:var(--ather);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Accessories &amp; AtherStack</span><span style="font-weight:700">~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:#64748b"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>AtherGrid (Charging)</span><span style="font-weight:700">~7%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:7%;background:#0ea5e9"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th style="text-align:right">ASP</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>Ather 450X</td><td>Premium EV scooter</td><td class="num">₹1.5–1.7 L</td><td>Tech flagship, AtherStack</td></tr>
+          <tr><td>Ather 450 Apex</td><td>Performance EV</td><td class="num">₹1.8–2.0 L</td><td>Top-of-line performance</td></tr>
+          <tr><td>Rizta</td><td>Family EV scooter</td><td class="num">₹1.1–1.4 L</td><td>Volume expansion play</td></tr>
+          <tr><td>EL Platform (FY27)</td><td>Mass market EV</td><td class="num">~₹80K–1.1 L</td><td>Game-changer: breakeven catalyst</td></tr>
+          <tr><td>AtherGrid</td><td>Charging infrastructure</td><td class="num">Ecosystem</td><td>6,000+ charging points moat</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 6 · BUSINESS ANALYSIS — SWOT ══ -->
+<div class="panel" id="tab-bizanalysis">
+  <div class="sec-hdr">Business Analysis — SWOT <span class="sec-note">· Strengths · Weaknesses · Opportunities · Threats · Q4 FY26 lens</span></div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <!-- BAJAJ -->
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--bajaj-soft);color:var(--bajaj);padding:2px 9px;font-size:9px;">BAJAJ AUTO</span> Bajaj Auto Limited</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>India's #1 motorcycle exporter — 44% of revenue from exports</li><li>EBITDA margin 20.8% — second highest in peer group</li><li>Cash fortress: ₹18,000 Cr+ surplus cash, zero long-term debt</li><li>KTM rescue package: €800M deployed (loan + bonds) — equity cost only ~€50.65M; distressed entry secured KTM + Husqvarna + GasGas (74.9% Pierer Mobility); FY26 KTM-Triumph ₹5,000 Cr revenue (+40%)</li><li>Chetak EV 5L units FY26 — first time double-digit EBITDA margin in EV</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>No meaningful presence in scooters (domestic gap)</li><li>Domestic market share eroding steadily vs TVS/Hero</li><li>Over-reliance on Africa/LatAm for exports — EM currency risk</li><li>Chetak EV still small at 5% of revenue vs TVS iQube</li><li>Premium motorcycle segment (above ₹3L) underdeveloped</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>CNG motorcycle (Bajaj CNG bike) — first-mover in alternate fuel</li><li>RE Africa/LatAm market expansion: 35+ countries already present</li><li>Chetak EV 2.0 + new 125cc category re-entry</li><li>3-wheeler EV: large untapped opportunity in last-mile delivery</li><li>Premiumisation: 200–400cc segment growth structurally rising</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>EM currency depreciation dents export realisation</li><li>Geopolitical disruption in key Africa markets (Nigeria, Ethiopia)</li><li>TVS &amp; Ola Electric eating into domestic commuter share</li><li>FAME subsidy reduction hurts Chetak EV economics</li><li>Raw material inflation (aluminium, steel) squeezes margins</li></ul></div>
+      </div>
+    </div>
+    <!-- TVS -->
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--tvs-soft);color:var(--tvs);padding:2px 9px;font-size:9px;">TVS MOTOR</span> TVS Motor Company</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>EV 2W market leader in India at 26.2% share (March 2026)</li><li>iQube: fastest scaling premium EV scooter platform</li><li>Apache brand: strong youth loyalty in 160–310cc sports bikes</li><li>Established global presence: Indonesia, Brazil, Europe</li><li>Chennai engineering DNA: R&amp;D depth in EVs and hybrids</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>PAT margin only 5.5% — lowest among profitable 2W peers</li><li>P/E at 58–70× — most expensive 2W stock; any disappointment = sharp correction</li><li>EV contribution 15% of domestic revenue; needs faster scaling</li><li>Scooter dominance not yet translating to margin expansion</li><li>Moderate debt on balance sheet unlike Bajaj/Eicher</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>iQube 2.0 + new EV motorcycle — enter Bajaj Chetak territory</li><li>SE Asia + Africa export expansion: TVS Ronin for markets</li><li>Hybrid scooters: first-mover opportunity in India's hybrid gap</li><li>BMW Motorrad partnership: premium co-development leverage</li><li>Ronin / Zeppelin EV expansion into lifestyle segment</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Bajaj Auto (24% EV share) breathing down iQube's neck</li><li>FAME subsidy phase-out raises EV ASP for consumers</li><li>Premium segment: Eicher RE taking addressable market share</li><li>High P/E leaves zero room for earnings misses</li><li>Ola Electric's potential price-war in the EV scooter space</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <!-- EICHER -->
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--eicher-soft);color:var(--eicher);padding:2px 9px;font-size:9px;">EICHER MOTORS</span> Eicher Motors — Royal Enfield</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>EBITDA margin 25.5% — best-in-class among all 2W peers</li><li>Royal Enfield brand moat: cult following across 65+ countries</li><li>Debt-free, ROCE 40%, ROE 31% — exceptional capital efficiency</li><li>₹1,88,000 average realisation — 2.5× industry average</li><li>Himalayan 450 &amp; Guerrilla: global adventure market traction</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Single-segment dependence: 72% revenue from Royal Enfield</li><li>Volume growth cooling: Q2-Q3 sequential decline; Q4 est. ~280K</li><li>No EV product yet — Flying Flea is FY27; late to EV party</li><li>VECV (trucks) susceptible to commercial vehicle cycle downturns</li><li>Middleweight segment (400–650cc) facing KTM/Triumph/Honda competition</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Flying Flea C6/A6 EV: can RE replicate premium margin in EV era?</li><li>125th Anniversary RE models in FY27 = demand catalyst</li><li>CKD exports: ASEAN, Latin America factory assembly expansion</li><li>Super Meteor / Bear 650 global launch: Europe + US premium</li><li>VECV EV trucks: early-mover in commercial EV segment</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Triumph Tiger / KTM Duke / Honda CB 350 RS eating middleweight share</li><li>RE volume deceleration could trigger P/E de-rating</li><li>Flying Flea execution risk: EV premium pricing may not hold</li><li>VECV cycle: any capex slowdown crushes CV segment</li><li>Global premium bike market sensitivity to recession</li></ul></div>
+      </div>
+    </div>
+    <!-- HERO -->
+    <div>
+      <div class="co-hdr-swot"><span class="badge" style="background:var(--hero-soft);color:var(--hero);padding:2px 9px;font-size:9px;">HERO MOTOCORP</span> Hero MotoCorp Limited</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>World's largest 2W manufacturer by volume — 17.14 L units Q4 ✅</li><li>Splendor: India's single best-selling vehicle for 25+ years</li><li>Q4 FY26: Revenue ₹12,797 Cr (+29%), PAT ₹1,401 Cr (+30%) ✅</li><li>Cheapest P/E in sector (16–18×) + highest dividend yield (4.1%)</li><li>Massive rural distribution: 6,000+ dealerships in Tier-3/4 towns</li></ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>EBITDA margin 14.5% — lower than Bajaj/Eicher; thin for scale</li><li>Over-indexed to entry/mass segment; premium gap vs Bajaj/TVS</li><li>VIDA EV at only 5% of revenue — EV transition behind peers</li><li>Post Honda split (2011): technology partnership gap took years to recover</li><li>Global exports at only ~10% — much lower than Bajaj's 44%</li></ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>VIDA V2 EV: +190% YoY growth — strong catch-up momentum</li><li>Premium push: Xtreme, Karizma XMR, Mavrick 440 — margin expansion</li><li>Rural electrification: Hero best-positioned for EV in Tier-3/4</li><li>Export expansion: 52 countries + dedicated export SKUs</li><li>Tech partnership: reactivating global R&amp;D after Honda exit</li></ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Bajaj &amp; TVS both aggressively taking urban commuter share</li><li>Ola Electric / Ather targeting Hero's core customer base with EVs</li><li>Any rural slowdown hits Hero disproportionately (68% domestic motorcycles)</li><li>Margin pressure: commodity cost spikes with low pricing power in mass segment</li><li>EV disruption risk: if 2W EV penetration accelerates beyond 10%</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATHER -->
+  <div style="margin-bottom:8px;">
+    <div class="co-hdr-swot"><span class="badge" style="background:var(--ather-soft);color:var(--ather);padding:2px 9px;font-size:9px;">ATHER ENERGY</span> Ather Energy Limited</div>
+    <div class="swot-grid">
+      <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Technologically superior product: AtherStack OS = best EV software in India</li><li>Q4 FY26: Revenue +74% YoY; loss narrowing fast (₹100 Cr Q4 vs ₹500+ Cr FY25)</li><li>6,000+ AtherGrid charging points: infrastructure moat unmatched by peers</li><li>Gross margin expanded to 25% — structurally improving unit economics</li><li>Premium brand perception: Ather 450X preferred by tech-savvy buyers</li></ul></div>
+      <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Still loss-making: FY26 net loss ₹517 Cr; cash burn continues</li><li>Pure EV only — no ICE revenue to cushion EV transition volatility</li><li>Limited geographic reach vs Hero/TVS/Bajaj's 6,000+ dealer network</li><li>IPO factory (Maharashtra) ramp-up slower than expected</li><li>Dependent on subsidy (FAME/state) for competitive pricing</li></ul></div>
+      <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>EL Platform (FY27): mass-market EV at ₹80K–1.1 L = volume breakeven catalyst</li><li>Maharashtra Greenfield factory: 1+ million units/year capacity at full ramp</li><li>AI-powered OTA updates: each update improves product without hardware change</li><li>B2B fleet EV: large opportunity in delivery, gig economy scooters</li><li>Export potential: South East Asia EV scooter markets opening up</li></ul></div>
+      <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>TVS iQube + Bajaj Chetak aggressive pricing wars in ₹1–1.5 L EV space</li><li>Ola Electric despite troubles — pricing at ₹80K disrupts Rizta's market</li><li>FAME III/subsidy structure changes reduce EV competitiveness</li><li>Cash runway: if EL platform delayed, funding needs may arise</li><li>Battery technology leap by larger OEMs could commoditise Ather's tech edge</li></ul></div>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 7 · ANALYST RATINGS ══ -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Ratings &amp; Consensus <span class="sec-note">· Target prices · Bull/Bear cases · Research only · Not investment advice</span></div>
+
+  <div class="analyst-card">
+    <div class="ac-head">
+      <div class="ac-name" style="color:var(--bajaj)">Bajaj Auto Limited</div>
+      <span class="rat-pill rp-buy">BUY</span>
+    </div>
+    <div class="ac-tp">Target: ₹10,500–11,000</div>
+    <div class="ac-cmp">CMP ~₹9,994 · Upside ~5–10% · FY26E P/E ~26×</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:72%;background:var(--bajaj)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> Export volumes sustain 25%+ growth as Africa/LatAm markets expand; Chetak EV scales to 15%+ of domestic revenue by FY27; ₹18,000 Cr+ surplus cash retained even after €800M KTM financial rescue package (equity cost was only ~€50.65M; rest was structured as loans/bonds to creditors). Chetak EV achieved double-digit EBITDA margins for first time. Q4 FY26 PAT ₹2,746 Cr confirmed; FY26 PAT ₹9,825 Cr declared.<br><br><strong>Bear Case:</strong> Nigeria/Ethiopia political risk disrupts export volumes; Chetak fails to close gap vs TVS iQube; domestic market share declines below 15%.<br><br><strong>Key Trigger:</strong> KTM global turnaround continuation in FY27 + Chetak EV sustaining double-digit EBITDA margins + domestic market share recovery in 125cc+ segment.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head">
+      <div class="ac-name" style="color:var(--tvs)">TVS Motor Company</div>
+      <span class="rat-pill rp-hold">HOLD</span>
+    </div>
+    <div class="ac-tp">Target: ₹2,500–2,700</div>
+    <div class="ac-cmp">CMP ~₹2,450 · Upside ~0–10% · FY26E P/E ~40–45×</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:50%;background:var(--tvs)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> iQube volumes sustain 26%+ EV market share; PAT margin expands from 5.5% toward 7%+ as operating leverage kicks in; BMW Motorrad partnership drives premium motorcycle volumes in FY27.<br><br><strong>Bear Case:</strong> Premium P/E (58–70×) means any miss on EV volumes triggers sharp de-rating; Bajaj narrows EV gap rapidly; margin expansion slower than expected.<br><br><strong>Key Trigger:</strong> iQube monthly run-rate crossing 40,000 units + Q4 FY26 declared results (May–June 2026).</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head">
+      <div class="ac-name" style="color:var(--eicher)">Eicher Motors (Royal Enfield)</div>
+      <span class="rat-pill rp-buy">BUY</span>
+    </div>
+    <div class="ac-tp">Target: ₹8,000–8,500</div>
+    <div class="ac-cmp">CMP ~₹7,310 · Upside ~9–16% · FY26E P/E ~22–24×</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:68%;background:var(--eicher)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> RE volume re-acceleration in FY27 as 125th anniversary models launch; Flying Flea EV proves RE can sustain 25%+ margin in EV era; global CKD expansion drives export revenue; VECV holds steady in commercial cycle.<br><br><strong>Bear Case:</strong> RE volume growth stays below 10% YoY; Flying Flea EV faces stiff competition at ₹4–5L price point; middleweight segment loses share to global OEMs; Q4 est. shows sequential volume decline confirmed.<br><br><strong>Key Trigger:</strong> Flying Flea launch pricing announcement + RE FY27 volume guidance at investor day.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head">
+      <div class="ac-name" style="color:var(--hero)">Hero MotoCorp Limited</div>
+      <span class="rat-pill rp-buy">STRONG BUY</span>
+    </div>
+    <div class="ac-tp">Target: ₹5,000–5,500</div>
+    <div class="ac-cmp">CMP ~₹4,500 · Upside ~11–22% · FY26E P/E ~16–18×</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:80%;background:var(--hero)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> Q4 FY26 beat already confirmed ✅ — Revenue +29%, PAT +30%, volumes 17.14 L (record); FY26 dividend ₹185/share = 4.1% yield; VIDA V2 EV scaling at +190% YoY; cheapest P/E in sector at 16–18× with 30%+ PAT growth is a structural re-rating case.<br><br><strong>Bear Case:</strong> Rural demand slowdown hurts Splendor/HF Deluxe; EV transition faster than expected erodes ICE base; margin fails to expand above 15% EBITDA.<br><br><strong>Key Trigger:</strong> VIDA monthly run-rate crossing 20,000 units + EBITDA margin expansion confirmation.</div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head">
+      <div class="ac-name" style="color:var(--ather)">Ather Energy Limited</div>
+      <span class="rat-pill rp-spec">SPECULATIVE HOLD</span>
+    </div>
+    <div class="ac-tp">Target: ₹700–1,100 (wide range)</div>
+    <div class="ac-cmp">CMP ~₹904 · IPO price ₹321 · Loss-making</div>
+    <div class="ac-bar"><div class="ac-fill" style="width:40%;background:var(--ather)"></div></div>
+    <div class="ac-text"><strong>Bull Case:</strong> EL Platform (FY27) brings Ather into ₹80K–1.1 L segment; monthly volumes cross 50,000 units (current breakeven); Maharashtra factory ramps to 500K units/year; gross margin expands to 30%; path to FY28 profitability opens.<br><br><strong>Bear Case:</strong> EL Platform delayed beyond Q2 FY27; TVS/Bajaj price cuts erode gross margin; cash runway under pressure if volumes miss; FAME III subsidy cuts raise consumer ASP, hurting demand.<br><br><strong>Key Trigger:</strong> EL Platform official launch date + Maharashtra factory capacity utilisation > 50%.</div>
+  </div>
+
+  <div class="card gap-top">
+    <div class="card-lbl">Recommendation Summary</div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Company</th><th>Rating</th><th style="text-align:right">CMP (₹)</th><th style="text-align:right">Target (₹)</th><th style="text-align:right">Upside</th><th>Thesis</th><th>Key Risk</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td><span class="badge b-buy">BUY</span></td><td class="num">9,994</td><td class="num">10,500–11,000</td><td class="tpos">5–10%</td><td>Export dominance + cash fortress + EV traction</td><td>EM currency; domestic share erosion</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td><span class="badge b-hold">HOLD</span></td><td class="num">~2,450</td><td class="num">~2,600</td><td class="tpos">+6%</td><td>EV #1 + premiumisation — rich but justified</td><td>P/E compression; Bajaj EV challenge</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher Motors</td><td><span class="badge b-buy">BUY</span></td><td class="num">~7,310</td><td class="num">8,000–8,500</td><td class="tpos">9–16%</td><td>Best margins + debt-free + Flying Flea EV optionality</td><td>Volume deceleration; competition 400cc+</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td><span class="badge b-buy">STRONG BUY</span></td><td class="num">~4,500</td><td class="num">5,000–5,500</td><td class="tpos">11–22%</td><td>Cheapest PE + Q4 beat + 4.1% yield + VIDA upside</td><td>Rural slowdown; EV transition speed</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td><span class="badge b-spec">SPEC HOLD</span></td><td class="num">~904</td><td class="num">700–1,100</td><td class="tpos">~0%</td><td>Loss narrowing fast; EL Platform is the prize</td><td>Cash burn; TVS/Bajaj price war; subsidy</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 8 · VOLUME & MARKETS ══ -->
+<div class="panel" id="tab-volumes">
+  <div class="sec-hdr">Volume &amp; Market Analysis <span class="sec-note">· Domestic · Exports · EV market · FY26 data</span></div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">Volume Performance — Latest Quarter ('000 units)</div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Company</th><th>Period</th><th style="text-align:right">Total Vol ('000)</th><th style="text-align:right">Domestic</th><th style="text-align:right">Exports</th><th style="text-align:right">EV Vol ('000)</th><th style="text-align:right">Export %</th><th style="text-align:right">Realisation (₹)</th><th style="text-align:right">YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td>Q4 FY26 ✅</td><td class="num">1,371</td><td class="num">~770</td><td class="num">~601</td><td class="num">~30</td><td class="tpos">~44%</td><td class="num">1,16,747</td><td class="tpos">+24% ✅</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td>Q4 FY26 ✅</td><td class="num">~1,550</td><td class="num">~1,240</td><td class="num">~310</td><td class="num">~93</td><td class="tpos">~20%</td><td class="num">82,600</td><td class="tpos">+21% ✅</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher (RE)</td><td>Q3 FY26 (Latest ✅)</td><td class="num">326</td><td class="num">~285</td><td class="num">~41</td><td class="num">0</td><td class="tpos">~12.5%</td><td class="num">1,88,000</td><td class="warn">Q4 due 22 May</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td>Q4 FY26 ✅</td><td class="num">1,714</td><td class="num">~1,550</td><td class="num">~164</td><td class="num">~15</td><td class="tpos">~9.5%</td><td class="num">74,655</td><td class="tpos">+20%</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td>Q4 FY26 ✅</td><td class="num">83</td><td class="num">83</td><td class="num">0</td><td class="num">83</td><td class="num">0%</td><td class="num">1,40,000</td><td class="tpos">+76%</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">EV 2W Market Share — March 2026</div>
+      <canvas id="evPieChart" style="max-height:260px;"></canvas>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">★ TVS leads EV 2W with 26.2% share; Bajaj Auto close at 24%. Ola Electric slumped to ~7.7% from 45%+ peak.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Ather Energy — Quarterly Revenue &amp; Loss Trend (₹ Cr)</div>
+      <canvas id="atherTrendChart" style="max-height:260px;"></canvas>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Operating leverage kicking in — loss narrowing sharply as revenue scales toward breakeven.</div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Export Market Deep-Dive <span class="sec-note">· Geography · Currency risk · Bajaj dominates</span></div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Bajaj Auto — Export Geography (FY26 est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Africa (Nigeria, Ethiopia, Kenya, Egypt)</span><span style="font-weight:700">~48%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:48%;background:var(--bajaj)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Latin America (Colombia, Mexico, Brazil)</span><span style="font-weight:700">~28%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:28%;background:var(--bajaj);opacity:.75"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>South Asia (Sri Lanka, Bangladesh, Nepal)</span><span style="font-weight:700">~14%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:14%;background:var(--bajaj);opacity:.55"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>SE Asia &amp; Others</span><span style="font-weight:700">~10%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:10%;background:#64748b"></div></div></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Bajaj exports 44% of revenue — most exposed to EM currency risk; also most export-diversified</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Export Comparison — Companies (FY26 est.)</div>
+      <table>
+        <thead><tr><th>Company</th><th style="text-align:right">Export Rev %</th><th style="text-align:right">Export '000 Units</th><th>Key Markets</th><th>EV in Exports?</th></tr></thead>
+        <tbody>
+          <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td class="num tpos">~44%</td><td class="num">~2,300</td><td>Africa, LatAm, Asia</td><td>No (Chetak domestic only)</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td class="num">~20%</td><td class="num">~1,000</td><td>Africa, SE Asia, Brazil</td><td>Exploring</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher (RE)</td><td class="num">~12.5%</td><td class="num">~165</td><td>US, Europe, SE Asia</td><td>Flying Flea FY27</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td class="num">~9.5%</td><td class="num">~600</td><td>52 countries — Africa, Asia</td><td>VIDA export planned</td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td class="num tneg">0%</td><td class="num">0</td><td>India only currently</td><td>SE Asia FY27 potential</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Domestic Market Share — FY26 <span class="sec-note">· VAHAN + SIAM estimated</span></div>
+  <div class="card">
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Company</th><th style="text-align:right">FY26 Dom. Vol Est ('000)</th><th style="text-align:right">Market Share</th><th style="text-align:right">YoY Change</th><th>Dominant Segment</th><th>Key State Markets</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--hero)"></span>Hero MotoCorp</td><td class="num">~5,900</td><td class="num tpos">~27%</td><td class="tpos">Stable/slight gain</td><td>100–125cc motorcycles</td><td>UP, Bihar, Rajasthan, MP</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--bajaj)"></span>Bajaj Auto</td><td class="num">~3,000</td><td class="num">~14%</td><td class="tneg">Slight loss</td><td>125–220cc motorcycles</td><td>Maharashtra, South India</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--tvs)"></span>TVS Motor</td><td class="num">~4,100</td><td class="num">~19%</td><td class="tpos">Gaining</td><td>Scooters + 110cc</td><td>South India, Maharashtra</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--eicher)"></span>Eicher (RE)</td><td class="num">~1,150</td><td class="num">~5.3%</td><td class="tpos">Stable</td><td>250–650cc (premium)</td><td>PAN India, South+West urban</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--ather)"></span>Ather Energy</td><td class="num">~250</td><td class="num">~1.1%</td><td class="tpos">Rapidly gaining</td><td>Premium EV scooter</td><td>Karnataka, Tamil Nadu, MH</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 9 · MOATS & USPs ══ -->
+<div class="panel" id="tab-moats">
+  <div class="sec-hdr">Moats &amp; Competitive USPs <span class="sec-note">· What protects each company's position · Structural advantages</span></div>
+
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="moat-card" style="border-top:3px solid var(--bajaj)">
+      <div class="moat-co" style="color:var(--bajaj)">Bajaj Auto — Export &amp; Cash Moat</div>
+      <div class="moat-title">Unbeatable EM Export Distribution in 70+ Countries</div>
+      <div class="moat-body">Bajaj has built distribution infrastructure in Africa and LatAm over 30 years — dealer networks, financing, spare parts ecosystems in 70+ countries. No Indian 2W company can replicate this in under a decade. Exports = 44% of revenue = natural hedge against domestic slowdowns.</div>
+      <span class="moat-tag" style="background:var(--bajaj-soft);color:var(--bajaj)">Structural Export Moat</span>
+    </div>
+    <div class="moat-card" style="border-top:3px solid var(--bajaj)">
+      <div class="moat-co" style="color:var(--bajaj)">Bajaj Auto — Balance Sheet Fortress</div>
+      <div class="moat-title">₹18,000 Cr+ Net Surplus Cash — Absorbed €800M KTM Acquisition, Still Flush</div>
+      <div class="moat-body">Bajaj deployed €800M as a financial rescue package into KTM in 2025 (term loan + bonds to settle creditors), with the actual equity acquisition costing just ~€50.65M (~$58M) — gaining 74.9% control of Pierer Mobility (KTM, Husqvarna, GasGas) at distressed-asset pricing. Despite this deployment, free cash flow of ₹8,000 Cr in FY26 left surplus funds exceeding ₹18,000 Cr — with zero long-term debt on Bajaj’s standalone balance sheet. This allows aggressive capital return (₹150 dividend + ₹5,633 Cr buyback at ₹12,000/share in a single year), global acquisitions, and EV investment — simultaneously. ROCE of 37% is the highest in the sector on this pristine balance sheet.</div>
+      <span class="moat-tag" style="background:var(--bajaj-soft);color:var(--bajaj)">Capital Efficiency Moat</span>
+    </div>
+    <div class="moat-card" style="border-top:3px solid var(--tvs)">
+      <div class="moat-co" style="color:var(--tvs)">TVS Motor — EV First-Mover Moat</div>
+      <div class="moat-title">India's #1 EV 2W — 26.2% Market Share in March 2026</div>
+      <div class="moat-body">TVS committed to iQube EV before any legacy peer did at scale. The result: 26.2% EV market share in March 2026, above Bajaj Chetak (24%), Ather (18.8%), VIDA (11.1%). Being #1 in EV creates a virtuous cycle: more data, better OTA updates, stronger brand in a segment that will be the industry's future.</div>
+      <span class="moat-tag" style="background:var(--tvs-soft);color:var(--tvs)">EV Leadership Moat</span>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="moat-card" style="border-top:3px solid var(--eicher)">
+      <div class="moat-co" style="color:var(--eicher)">Eicher / Royal Enfield — Brand Cult Moat</div>
+      <div class="moat-title">Irreplicable Brand Loyalty — ₹1.88 L ASP, 25.5% EBITDA</div>
+      <div class="moat-body">Royal Enfield is not just a motorcycle brand — it's an identity. Buyers choose RE not on spec sheets but on emotional affiliation. This allows ₹1.88 L avg realisation (2.5× industry avg) and 25.5% EBITDA margin without commodity product pricing. 65+ country presence with cult communities. This moat took 70 years to build.</div>
+      <span class="moat-tag" style="background:var(--eicher-soft);color:var(--eicher)">Brand Identity Moat</span>
+    </div>
+    <div class="moat-card" style="border-top:3px solid var(--eicher)">
+      <div class="moat-co" style="color:var(--eicher)">Eicher — Capital Return Moat</div>
+      <div class="moat-title">Debt-Free · ROCE 40% · Best Capital Allocator in 2W</div>
+      <div class="moat-body">Eicher is the only 2W company with zero debt AND ROCE of 40%. This means every rupee reinvested generates outsized returns. The RE business is so capital-efficient that it funds VECV expansion, Flying Flea EV R&D, global launches, and dividends all from internal accruals. No equity dilution needed.</div>
+      <span class="moat-tag" style="background:var(--eicher-soft);color:var(--eicher)">Capital Efficiency Moat</span>
+    </div>
+    <div class="moat-card" style="border-top:3px solid var(--hero)">
+      <div class="moat-co" style="color:var(--hero)">Hero MotoCorp — Distribution Moat</div>
+      <div class="moat-title">6,000+ Rural Dealerships — Unrivalled Tier-3/4 Penetration</div>
+      <div class="moat-body">Hero's 6,000+ dealer network in Tier-3/4 India is a competitive moat no other OEM has replicated. Splendor's repeat purchase rate in rural India is near-monopolistic in the 100–125cc segment. This distribution depth also positions Hero as the natural winner when EVs reach rural India in FY28–30.</div>
+      <span class="moat-tag" style="background:var(--hero-soft);color:var(--hero)">Distribution Depth Moat</span>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-bottom:8px;">
+    <div class="moat-card" style="border-top:3px solid var(--hero)">
+      <div class="moat-co" style="color:var(--hero)">Hero MotoCorp — Volume Scale Moat</div>
+      <div class="moat-title">World's Largest 2W Manufacturer by Volume</div>
+      <div class="moat-body">17.14 L units in Q4 FY26 alone. Hero's scale means the lowest per-unit fixed cost absorption in the industry. The Splendor platform has been manufactured for 25+ years with incremental improvements — a textbook scale moat. This makes Hero nearly impossible to undercut on cost in its core segments.</div>
+      <span class="moat-tag" style="background:var(--hero-soft);color:var(--hero)">Scale Cost Moat</span>
+    </div>
+    <div class="moat-card" style="border-top:3px solid var(--ather)">
+      <div class="moat-co" style="color:var(--ather)">Ather Energy — Technology &amp; Ecosystem Moat</div>
+      <div class="moat-title">AtherStack OS + 6,000 Charging Points = EV Ecosystem Lock-in</div>
+      <div class="moat-body">Ather's moat is not the scooter hardware — it's AtherStack, an operating system that receives OTA updates improving range, performance, and features post-purchase. Combined with 6,000+ AtherGrid charging points, Ather creates genuine customer lock-in. Switching to a TVS iQube means losing your app, your charging network, and your OTA history.</div>
+      <span class="moat-tag" style="background:var(--ather-soft);color:var(--ather)">Technology Ecosystem Moat</span>
+    </div>
+    <div class="moat-card" style="border-top:3px solid var(--ather)">
+      <div class="moat-co" style="color:var(--ather)">Ather Energy — Data Moat</div>
+      <div class="moat-title">Largest EV Scooter Telematics Dataset in India</div>
+      <div class="moat-body">Ather has been collecting real-world EV scooter data (range, charging patterns, motor stress, battery degradation) since 2018 — far longer than TVS iQube or Bajaj Chetak. This proprietary dataset enables superior battery management algorithms and reliability improvements. In EV, data = durability = brand trust = pricing power.</div>
+      <span class="moat-tag" style="background:var(--ather-soft);color:var(--ather)">Data Intelligence Moat</span>
+    </div>
+  </div>
+</div>
+<!-- ══ TAB 11 · VERDICT ══ -->
+<div class="panel" id="tab-verdict">
+  <div class="sec-hdr">Q4 FY26 Verdict <span class="sec-note">· Performance analysis · Company highlights · Champion performer · No recommendations</span></div>
+
+  <!-- NOTE BOX -->
+  <div style="background:#fff7ed;border:1.5px solid #ea580c;border-radius:10px;padding:14px 18px;margin-bottom:22px;display:flex;gap:12px;align-items:flex-start;">
+    <span style="font-size:1.3rem;flex-shrink:0;">⚠️</span>
+    <div style="font-size:12px;color:#7c2d12;line-height:1.65;">
+      <strong>Data Integrity Notice:</strong> Bajaj Auto (6 May), TVS Motor (13 May), Hero MotoCorp, and Ather Energy have declared actual Q4 FY26 results. <strong>Eicher Motors Q4 FY26 has NOT been published</strong> — their earnings call is scheduled 22 May 2026 at 5:30 PM IST. All Eicher analysis in this section is based on Q3 FY26 actuals and 9M FY26 trend. This section will be updated once Eicher declares results.
+    </div>
+  </div>
+
+  <!-- COMPANY HIGHLIGHTS -->
+  <div class="sec-hdr" style="font-size:1.1rem;">Q4 FY26 Performance Highlights — Company by Company</div>
+
+  <!-- BAJAJ -->
+  <div style="background:var(--surface);border:1.5px solid var(--bajaj);border-radius:12px;padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow-md);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--bajaj);">Bajaj Auto — Record Quarter on All Parameters</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Q4 FY26 Declared · 6 May 2026</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge" style="background:#dcfce7;color:#15803d;font-size:11px;padding:4px 12px;">Revenue +32% YoY</span>
+        <span class="badge" style="background:#dcfce7;color:#15803d;font-size:11px;padding:4px 12px;">PAT +34% YoY</span>
+        <span class="badge" style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:4px 12px;">All-Time High Quarter</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+      <div style="background:var(--bajaj-soft);border-radius:8px;padding:10px 12px;border:1px solid #bfdbfe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--bajaj);letter-spacing:.08em;">Q4 Revenue</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹16,006 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 32% YoY</div>
+      </div>
+      <div style="background:var(--bajaj-soft);border-radius:8px;padding:10px 12px;border:1px solid #bfdbfe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--bajaj);letter-spacing:.08em;">Q4 PAT</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹2,746 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 34% YoY · Highest Ever</div>
+      </div>
+      <div style="background:var(--bajaj-soft);border-radius:8px;padding:10px 12px;border:1px solid #bfdbfe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--bajaj);letter-spacing:.08em;">EBITDA Margin</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">20.8%</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 60 bps YoY</div>
+      </div>
+      <div style="background:var(--bajaj-soft);border-radius:8px;padding:10px 12px;border:1px solid #bfdbfe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--bajaj);letter-spacing:.08em;">Volume</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">13.71 L</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 24% YoY · Record</div>
+      </div>
+    </div>
+      <div style="font-size:12px;color:var(--text);line-height:1.7;border-top:1px dashed var(--border);padding-top:12px;">
+      <strong>Highlights:</strong> Revenue, EBITDA, and PAT all hit all-time quarterly highs simultaneously — a rare trifecta. FY26 full-year PAT of ₹9,825 Cr (+21%) with revenue of ₹58,732 Cr confirms structural compounding. Chetak EV crossed the 1 lakh quarterly retail milestone — and crossed 5 lakh units for full FY26, generating ~₹4,000 Cr in EV revenue. KTM-Triumph delivered its best-ever performance: ~₹5,000 Cr global revenue (+40% YoY) in its first full year post-acquisition. KTM AG was acquired in November 2025 for ~€800M (~₹7,200 Cr); despite this large outlay, Bajaj exited FY26 with <strong>surplus funds exceeding ₹18,000 Cr</strong> on the balance sheet — a fortress balance sheet that swallowed a €800M global acquisition and came out stronger. Free cash flow for FY26 exceeded ₹8,000 Cr (+30% YoY). The board rewarded shareholders with <strong>₹150/share dividend + a ₹5,633 Cr buyback at ₹12,000/share</strong> (a 16% premium to market price) — together amounting to a 100% PAT payout. Bajaj Auto Credit AUM nearly doubled to ₹18,835 Cr with PAT surging 11× to ₹665 Cr and ROE of 23% — a fast-growing financing vertical adding a new compounding engine. Broad-based volume growth: domestic 2W +24%, domestic commercial vehicles strong, exports sustaining, e2W scaling — no single segment carrying the whole story.
+    </div>
+  </div>
+
+  <!-- TVS -->
+  <div style="background:var(--surface);border:1.5px solid var(--tvs);border-radius:12px;padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow-md);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--tvs);">TVS Motor — Highest-Ever Revenue; EV Leadership Firm</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Q4 FY26 Declared · 13 May 2026</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge" style="background:#fee2e2;color:#b91c1c;font-size:11px;padding:4px 12px;">Revenue +34% YoY</span>
+        <span class="badge" style="background:#dcfce7;color:#15803d;font-size:11px;padding:4px 12px;">FY26 EV +33%</span>
+        <span class="badge" style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:4px 12px;">Record FY26 Rev ₹47,270 Cr</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+      <div style="background:var(--tvs-soft);border-radius:8px;padding:10px 12px;border:1px solid #fecaca;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--tvs);letter-spacing:.08em;">Q4 Revenue</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹12,808 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 34% YoY · Record</div>
+      </div>
+      <div style="background:var(--tvs-soft);border-radius:8px;padding:10px 12px;border:1px solid #fecaca;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--tvs);letter-spacing:.08em;">Q4 PAT (Consol.)</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹772 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 19% YoY</div>
+      </div>
+      <div style="background:var(--tvs-soft);border-radius:8px;padding:10px 12px;border:1px solid #fecaca;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--tvs);letter-spacing:.08em;">EBITDA Margin</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">13.1%</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 60 bps YoY</div>
+      </div>
+      <div style="background:var(--tvs-soft);border-radius:8px;padding:10px 12px;border:1px solid #fecaca;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--tvs);letter-spacing:.08em;">FY26 EV Units</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">3.71 L</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 33% YoY</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text);line-height:1.7;border-top:1px dashed var(--border);padding-top:12px;">
+      <strong>Highlights:</strong> Highest-ever quarterly and full-year revenue in company history. FY26 total revenue ₹47,270 Cr (+30%) with 2W+3W volumes of 58.89L units (+24%). EV sales of 3.71L units (+33%) in FY26 cements iQube leadership. Three-wheeler segment surged 63% in FY26 — an underappreciated growth driver. PAT margin improvement (6%) remains the key pending story — operating leverage not fully translating to bottom line. Standalone PAT ₹998 Cr (+33%) is notably better than consolidated ₹772 Cr, reflecting subsidiary drag. Stock fell on results day despite strong numbers — market had already priced in much of the growth at 58–70× P/E.
+    </div>
+  </div>
+
+  <!-- EICHER -->
+  <div style="background:var(--surface);border:1.5px solid #d1d5db;border-radius:12px;padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:#6b7280;">Eicher Motors — Q4 FY26 Results Awaited</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Q3 FY26 Latest Actual · Q4 FY26 Earnings Call: 22 May 2026 at 5:30 PM IST</div>
+      </div>
+      <span class="badge" style="background:#f3f4f6;color:#374151;font-size:11px;padding:4px 12px;">⏳ Q4 FY26 Not Yet Published</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+      <div style="background:#f9fafb;border-radius:8px;padding:10px 12px;border:1px solid #e5e7eb;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:.08em;">Q3 Revenue (Latest)</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹6,114 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 23% YoY</div>
+      </div>
+      <div style="background:#f9fafb;border-radius:8px;padding:10px 12px;border:1px solid #e5e7eb;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:.08em;">Q3 PAT (Latest)</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹1,421 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 21% YoY</div>
+      </div>
+      <div style="background:#f9fafb;border-radius:8px;padding:10px 12px;border:1px solid #e5e7eb;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:.08em;">Q3 EBITDA Margin</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">25.5%</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">Best in sector</div>
+      </div>
+      <div style="background:#f9fafb;border-radius:8px;padding:10px 12px;border:1px solid #e5e7eb;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:.08em;">Q3 RE Volume</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">3.26 L</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 21% YoY</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text);line-height:1.7;border-top:1px dashed var(--border);padding-top:12px;">
+      <strong>Q3 FY26 Highlights (Latest Available):</strong> Highest-ever EBITDA of ₹1,557 Cr (+30% YoY) with sector-best 25.5% margin. PAT of ₹1,421 Cr (+21%). Royal Enfield volumes 3.26L units (+21%). VECV sold 26,086 units (+24%). Realisation sustained at ₹1,88,000/unit — 2.5× industry average. 9M FY26 PAT trajectory suggests a strong full year. <strong>This section will be fully updated once Q4 FY26 is officially declared.</strong> Investors should note the conference call is today (22 May 2026, 5:30 PM IST) hosted by PhillipCapital India.
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div style="background:var(--surface);border:1.5px solid var(--hero);border-radius:12px;padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow-md);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--hero);">Hero MotoCorp — Record Volume · Dividend Beast · Turnaround Confirmed</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Q4 FY26 Declared ✅</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge" style="background:#f3e8ff;color:#7c3aed;font-size:11px;padding:4px 12px;">Revenue +29% YoY</span>
+        <span class="badge" style="background:#f3e8ff;color:#7c3aed;font-size:11px;padding:4px 12px;">PAT +30% YoY</span>
+        <span class="badge" style="background:#f3e8ff;color:#7c3aed;font-size:11px;padding:4px 12px;">₹185 Dividend</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+      <div style="background:var(--hero-soft);border-radius:8px;padding:10px 12px;border:1px solid #ede9fe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--hero);letter-spacing:.08em;">Q4 Revenue</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹12,797 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 29% YoY</div>
+      </div>
+      <div style="background:var(--hero-soft);border-radius:8px;padding:10px 12px;border:1px solid #ede9fe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--hero);letter-spacing:.08em;">Q4 PAT</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹1,401 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 30% YoY</div>
+      </div>
+      <div style="background:var(--hero-soft);border-radius:8px;padding:10px 12px;border:1px solid #ede9fe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--hero);letter-spacing:.08em;">Q4 Volume</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">17.14 L</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">Record Quarter</div>
+      </div>
+      <div style="background:var(--hero-soft);border-radius:8px;padding:10px 12px;border:1px solid #ede9fe;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--hero);letter-spacing:.08em;">FY26 Dividend</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹185/share</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">~4.1% yield</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text);line-height:1.7;border-top:1px dashed var(--border);padding-top:12px;">
+      <strong>Highlights:</strong> Q4 FY26 marked Hero's strongest quarter in years — revenue, PAT, and volume all grew 29–30% simultaneously, with volume hitting an all-time record of 17.14L units. EBITDA margin of 14.5% is improving steadily. VIDA EV grew +190% YoY — the EV transition story is now real, not just aspirational. FY26 dividend of ₹185/share at ~4.1% yield is the highest dividend yield among all listed 2W peers. The sequential acceleration from ₹10,491 Cr (Q2) → ₹11,088 Cr (Q3) → ₹12,797 Cr (Q4) confirms sustainable demand momentum, not just base effects. Hero's premium segment (Xtreme 160R, Karizma XMR) also scaling — the portfolio is no longer purely mass-dependent.
+    </div>
+  </div>
+
+  <!-- ATHER -->
+  <div style="background:var(--surface);border:1.5px solid var(--ather);border-radius:12px;padding:20px 22px;margin-bottom:24px;box-shadow:var(--shadow-md);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--ather);">Ather Energy — Revenue Surge · Loss Narrowing · Path Visible</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Q4 FY26 Declared ✅</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge" style="background:#fef3c7;color:#92400e;font-size:11px;padding:4px 12px;">Revenue +74% YoY</span>
+        <span class="badge" style="background:#fef3c7;color:#92400e;font-size:11px;padding:4px 12px;">Loss ₹100 Cr (Narrowing)</span>
+        <span class="badge" style="background:#fef3c7;color:#92400e;font-size:11px;padding:4px 12px;">Volume +76% YoY</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+      <div style="background:var(--ather-soft);border-radius:8px;padding:10px 12px;border:1px solid #fde68a;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--ather);letter-spacing:.08em;">Q4 Revenue</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">₹1,175 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 74% YoY</div>
+      </div>
+      <div style="background:var(--ather-soft);border-radius:8px;padding:10px 12px;border:1px solid #fde68a;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--ather);letter-spacing:.08em;">Q4 Net Loss</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--neg);">₹100 Cr</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">vs ₹149 Cr (Q1) — Narrowing</div>
+      </div>
+      <div style="background:var(--ather-soft);border-radius:8px;padding:10px 12px;border:1px solid #fde68a;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--ather);letter-spacing:.08em;">Q4 Volume</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">83,418</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">▲ 76% YoY</div>
+      </div>
+      <div style="background:var(--ather-soft);border-radius:8px;padding:10px 12px;border:1px solid #fde68a;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--ather);letter-spacing:.08em;">Gross Margin</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--text);">~25%</div>
+        <div style="font-size:10px;color:var(--pos);font-weight:700;">Structurally improving</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text);line-height:1.7;border-top:1px dashed var(--border);padding-top:12px;">
+      <strong>Highlights:</strong> The most important data point is not the 74% revenue growth — it is the loss trajectory. Net loss narrowed from ₹149 Cr (Q1) → ₹183 Cr (Q2, higher on capacity investment) → ₹85 Cr (Q3) → ₹100 Cr (Q4). This is unmistakably the operating leverage curve kicking in as volumes scale. Gross margin of ~25% confirms unit economics are fundamentally healthy. At 83,418 units in Q4, Ather is approaching the ~50,000/month threshold that analysts estimate as the net-income breakeven point. The EL Platform launch in FY27 targeting the ₹80K–1.1L mass segment is the next pivotal event.
+    </div>
+  </div>
+
+  <!-- CHAMPION PERFORMER -->
+  <div style="background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);border:2px solid #ea580c;border-radius:14px;padding:24px 26px;color:#181511;box-shadow:var(--shadow-md);">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+      <div style="width:48px;height:48px;background:#ea580c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🏆</div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:#9a3412;letter-spacing:-.01em;">Champion Performer — Q4 FY26</div>
+        <div style="font-size:11px;color:#c2410c;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Based on declared Q4 FY26 actuals · All-round performance assessment</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(234,88,12,.08);border:1.5px solid #ea580c;border-radius:12px;padding:18px 20px;margin-bottom:18px;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#9a3412;margin-bottom:4px;">🥇 Bajaj Auto — Champion of Q4 FY26</div>
+      <div style="font-size:11px;color:#c2410c;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:12px;">Standalone basis · Most complete set of actuals · 6 May 2026</div>
+      <div style="font-size:12.5px;color:#1c1917;line-height:1.75;">
+        Bajaj Auto delivered the most complete and convincing Q4 FY26 performance among all 5 companies. The evidence is unambiguous: <strong style="color:#9a3412;">Revenue ₹16,006 Cr (+32%), EBITDA ₹3,323 Cr (+36%), PAT ₹2,746 Cr (+34%)</strong> — all three key metrics hit all-time quarterly records simultaneously. This is not a partial beat; it is a full-spectrum performance.
+        <br><br>
+        What makes it the champion quarter: <strong style="color:#9a3412;">All four business segments grew in double digits</strong> — domestic motorcycles, e2W (Chetak), 3-wheelers, and exports — simultaneously. This breadth of growth is extremely rare. What is even more striking is the balance sheet story: Bajaj deployed a €800M financial rescue package into KTM in 2025 — comprising a €450M secured loan to KTM creditors, €150M in convertible bonds, and €200M in earlier debt support. The actual equity acquisition cost was just ~€50.65M (~$58M). This was a classic “distressed asset” entry: Bajaj got controlling ownership of KTM, Husqvarna, and GasGas (74.9% of Pierer Mobility) for a fraction of what a healthy acquisition would cost. Yet despite this capital deployment, Bajaj exited FY26 with <strong style="color:#9a3412;">surplus funds exceeding ₹18,000 Cr</strong> on the standalone balance sheet, against virtually zero long-term debt. Free cash flow for FY26 exceeded ₹8,000 Cr (+30% YoY). That is the definition of a cash-compounding machine. The KTM acquisition was not just absorbed — it has already turned into a growth engine: KTM-Triumph delivered ~₹5,000 Cr global revenue (+40% YoY) in its first full year under Bajaj. Chetak EV crossed 5 lakh units in FY26, generating ~₹4,000 Cr in EV revenue and achieving double-digit EBITDA margins for the first time. Bajaj then returned 100% of FY26 PAT to shareholders: <strong style="color:#9a3412;">₹150/share dividend + ₹5,633 Cr buyback at ₹12,000/share</strong> (16% premium to market). Even after this full payout, ₹18,000 Cr+ surplus remained. Bajaj Auto Credit (financing subsidiary) saw AUM nearly double to ₹18,835 Cr with PAT surging 11× and ROE of 23% — a new compounding engine entirely absent from most peer analyses.
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+      <div style="background:rgba(255,255,255,.7);border:1.5px solid #fdba74;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:700;color:#9a3412;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">🥈 Runner-Up: Hero MotoCorp</div>
+        <div style="font-size:11.5px;color:#1c1917;line-height:1.65;">Hero delivered its <strong style="color:#7c3aed;">strongest quarter in years</strong> with record volumes (17.14L units), +29% revenue, and +30% PAT. The sequential acceleration across three consecutive quarters is powerful proof of sustained demand. At 16–18× P/E with 4.1% dividend yield and 30% PAT growth — the pure analytical performance-to-valuation ratio makes Hero the most underappreciated Q4 FY26 performer.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.7);border:1.5px solid #fdba74;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:700;color:#9a3412;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">🥉 Notable: Ather Energy</div>
+        <div style="font-size:11.5px;color:#1c1917;line-height:1.65;">On a different dimension — <strong style="color:#d97706;">trajectory</strong> — Ather is the most compelling Q4 story. Revenue grew 74%, volume grew 76%, and the loss is narrowing quarter after quarter. For a pre-profitability company, this is the most important narrative. Operating leverage is clearly kicking in and the path to breakeven is becoming numerically visible.</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(234,88,12,.07);border:1.5px solid #fb923c;border-radius:10px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">📊 Champion Assessment Criteria</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:11px;color:#292524;">
+        <div><strong style="color:#7c2d12;">Revenue Growth</strong><br>Bajaj +32% ▶ Best (breadth)</div>
+        <div><strong style="color:#7c2d12;">PAT Growth</strong><br>Bajaj +34% ▶ Strong absolute</div>
+        <div><strong style="color:#7c2d12;">Margin Quality</strong><br>Bajaj 20.8% held flat ▶ Best ICE</div>
+        <div><strong style="color:#7c2d12;">All-Round Breadth</strong><br>Bajaj: All 4 segments +10%+</div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#78716c;border-top:1px solid #fdba74;padding-top:8px;">Note: Eicher Motors Q4 FY26 results are pending declaration (22 May 2026). This assessment covers the 4 companies with declared Q4 FY26 actuals only. Eicher's Q3 FY26 performance (25.5% EBITDA — best in sector) suggests it remains a strong contender once its Q4 results are official.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 10 · CB ASSIST ══ -->
+<div class="panel" id="tab-cbassist">
+  <div style="max-width:960px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2.5px solid var(--tvs);">
+      <div style="width:44px;height:44px;background:var(--tvs);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0;">CB</div>
+      <div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--text);">CB Assist — Two Wheeler Intelligence</h2>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-top:2px;">AI Research · Cauvery Business · EIL Research · Q4 FY26</div>
+      </div>
+    </div>
+
+    <div class="lang-toggle">
+      <span style="font-weight:700;">Language:</span>
+      <button class="lang-btn active" id="cb2wLangEN" onclick="set2wLang('EN')">English</button>
+      <button class="lang-btn" id="cb2wLangTA" onclick="set2wLang('TA')">தமிழ் (Tamil)</button>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;">📌 Click any question · Answers are short &amp; sharp</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:10px;">
+        <button class="preset-tab pt-sector active" onclick="switch2wPreset('sector',this)">Sector</button>
+        <button class="preset-tab pt-bajaj" onclick="switch2wPreset('bajaj',this)">Bajaj Auto</button>
+        <button class="preset-tab pt-tvs" onclick="switch2wPreset('tvs',this)">TVS Motor</button>
+        <button class="preset-tab pt-eicher" onclick="switch2wPreset('eicher',this)">Eicher / RE</button>
+        <button class="preset-tab pt-hero" onclick="switch2wPreset('hero',this)">Hero MotoCorp</button>
+        <button class="preset-tab pt-ather" onclick="switch2wPreset('ather',this)">Ather Energy</button>
+      </div>
+
+      <!-- SECTOR -->
+      <div class="presets-panel active" id="2w-preset-sector">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">⚡</span><div><div class="pq-en">Which 2W company has the most durable competitive moat for the next 5 years?</div><div class="pq-ta">அடுத்த 5 ஆண்டுகளுக்கு எந்த 2W நிறுவனம் மிகவும் நிலையான competitive moat கொண்டுள்ளது?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🔋</span><div><div class="pq-en">How fast will EV 2W penetration grow in India — and which legacy OEM is best positioned for it?</div><div class="pq-ta">India-ல் EV 2W எவ்வளவு வேகமாக வளரும் — எந்த legacy OEM சிறப்பாக தயாரானது?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">📊</span><div><div class="pq-en">Compare Eicher's 25.5% EBITDA margin vs Hero's 14.5% — what explains the 11% gap?</div><div class="pq-ta">Eicher 25.5% EBITDA margin vs Hero 14.5% — 11% வேற்றுமைக்கான காரணம் என்ன?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🌍</span><div><div class="pq-en">Why is Bajaj Auto's 44% export revenue both its biggest moat and its biggest risk?</div><div class="pq-ta">Bajaj Auto-வின் 44% export revenue அதன் மிகப்பெரிய moat மற்றும் risk ஆக இருப்பது ஏன்?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🏆</span><div><div class="pq-en">Among the 5 companies, who is the best value buy at current prices and why?</div><div class="pq-ta">5 நிறுவனங்களில் தற்போதைய விலையில் சிறந்த value buy யார்? ஏன்?</div></div></div>
+        </div>
+      </div>
+
+      <!-- BAJAJ -->
+      <div class="presets-panel" id="2w-preset-bajaj">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🌍</span><div><div class="pq-en">Bajaj earns 44% from exports — how resilient is this to an African currency crisis?</div><div class="pq-ta">Bajaj 44% exports-ல் இருந்து சம்பாதிக்கிறது — Africa currency crisis-ல் இது எவ்வளவு resilient?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">⚡</span><div><div class="pq-en">Chetak EV at 25% of domestic revenue — is this a real threat to TVS iQube's leadership?</div><div class="pq-ta">Chetak EV domestic revenue-ல் 25% — இது TVS iQube-வின் leadership-க்கு real threat ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">💰</span><div><div class="pq-en">Bajaj has ₹18,000 Cr+ surplus cash even after the €800M KTM rescue package — how does its distressed entry into KTM (equity cost ~€50M) make it the smartest capital allocator in Indian 2W? — how does this make it the most financially fortress 2W company?</div><div class="pq-ta">€800M KTM rescue package-க்கு பிறகும் ₹18,000 Cr+ surplus cash — Bajaj 2W sector-ல் மிகவும் financially fortress company எவ்வாறு ஆகிறது?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🏍️</span><div><div class="pq-en">The Pulsar is Bajaj's most iconic product — but is it facing a platform fatigue problem in FY27?</div><div class="pq-ta">Pulsar Bajaj-வின் iconic product — FY27-ல் platform fatigue problem உள்ளதா?</div></div></div>
+        </div>
+      </div>
+
+      <!-- TVS -->
+      <div class="presets-panel" id="2w-preset-tvs">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">📈</span><div><div class="pq-en">TVS trades at 58–70× P/E — is this justified or is it the most expensive 2W stock in India?</div><div class="pq-ta">TVS 58–70× P/E-ல் trade ஆகிறது — இது justified ஆகுமா, India's most expensive 2W stock ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">⚡</span><div><div class="pq-en">TVS holds 26.2% EV market share in March 2026 — but Bajaj is at 24%. Who wins the EV war?</div><div class="pq-ta">TVS 26.2% EV market share, Bajaj 24% — EV war யார் வெல்வார்கள்?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🔧</span><div><div class="pq-en">TVS's PAT margin is only 5.5% — why is it so thin and when will it expand?</div><div class="pq-ta">TVS PAT margin 5.5% மட்டுமே — ஏன் இவ்வளவு thin? எப்போது expand ஆகும்?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🌏</span><div><div class="pq-en">How does the BMW Motorrad partnership give TVS a structural edge in premium bikes?</div><div class="pq-ta">BMW Motorrad partnership TVS-க்கு premium bikes-ல் structural edge எவ்வாறு தருகிறது?</div></div></div>
+        </div>
+      </div>
+
+      <!-- EICHER -->
+      <div class="presets-panel" id="2w-preset-eicher">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🏍️</span><div><div class="pq-en">Royal Enfield's ₹1.88L realisation is 2.5× the industry average — how durable is this pricing power?</div><div class="pq-ta">RE ₹1.88L realisation industry average-ஐ விட 2.5× — இந்த pricing power எவ்வளவு காலம் நீடிக்கும்?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">📉</span><div><div class="pq-en">Eicher's sequential volume is declining — is Royal Enfield hitting a saturation ceiling?</div><div class="pq-ta">Eicher-வின் sequential volume குறைகிறது — Royal Enfield saturation ceiling-ஐ தொட்டுவிட்டதா?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">⚡</span><div><div class="pq-en">Flying Flea EV — will Royal Enfield's premium brand translate to EV bikes at ₹4–5L?</div><div class="pq-ta">Flying Flea EV — Royal Enfield premium brand ₹4–5L EV bikes-ல் translate ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">💎</span><div><div class="pq-en">Eicher is debt-free with 40% ROCE — how is it deploying capital for FY27 growth?</div><div class="pq-ta">Eicher debt-free, 40% ROCE — FY27 growth-க்கு capital எவ்வாறு deploy செய்கிறது?</div></div></div>
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <div class="presets-panel" id="2w-preset-hero">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">✅</span><div><div class="pq-en">Hero Q4 FY26: Revenue +29%, PAT +30%, volumes record 17.14L — why is the stock still at 16× P/E?</div><div class="pq-ta">Hero Q4 FY26: Revenue +29%, PAT +30%, volumes record — stock 16× P/E-ல் இன்னும் இருப்பது ஏன்?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🌱</span><div><div class="pq-en">VIDA V2 EV is growing +190% YoY — is Hero's EV turnaround finally real?</div><div class="pq-ta">VIDA V2 EV +190% YoY growth — Hero-வின் EV turnaround உண்மையானதா?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">💰</span><div><div class="pq-en">Hero pays ₹185/share FY26 dividend — is a 4.1% yield with 30% PAT growth the best income+growth combo in 2W?</div><div class="pq-ta">Hero ₹185/share dividend — 4.1% yield + 30% PAT growth 2W sector-ல் best income+growth combo ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🚜</span><div><div class="pq-en">Hero is 68% dependent on domestic motorcycles — how vulnerable is it to a rural demand slowdown?</div><div class="pq-ta">Hero 68% domestic motorcycles-ல் dependent — rural demand slowdown-ல் எவ்வளவு vulnerable?</div></div></div>
+        </div>
+      </div>
+
+      <!-- ATHER -->
+      <div class="presets-panel" id="2w-preset-ather">
+        <div class="preset-qs">
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">⚡</span><div><div class="pq-en">Ather's revenue grew 74% but it's still losing ₹100 Cr/quarter — when does breakeven happen?</div><div class="pq-ta">Ather revenue 74% வளர்ந்தும் ₹100 Cr/quarter loss — breakeven எப்போது நடக்கும்?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🔋</span><div><div class="pq-en">AtherGrid has 6,000+ charging points — is this a genuine moat or just an expensive infrastructure spend?</div><div class="pq-ta">AtherGrid 6,000+ charging points — genuine moat ஆகுமா அல்லது expensive infrastructure spend ஆகுமா?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">📱</span><div><div class="pq-en">What makes Ather's AtherStack OS a structural technology moat vs TVS iQube's software?</div><div class="pq-ta">AtherStack OS TVS iQube-வின் software-ஐ விட structural technology moat ஆவதற்கான காரணம்?</div></div></div>
+          <div class="preset-q" onclick="ask2wPreset(this)"><span style="flex-shrink:0">🎯</span><div><div class="pq-en">EL Platform (FY27) — is this Ather's iPhone moment or just another product launch?</div><div class="pq-ta">EL Platform (FY27) — Ather-வின் iPhone moment ஆகுமா அல்லது ordinary product launch ஆகுமா?</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT WINDOW -->
+    <div class="cbassist-chat">
+      <div class="cbassist-title"><span></span> CB Assist — Two Wheeler Sector · Click a question or type your own</div>
+      <div class="chat-msgs" id="cb2wMsgs">
+        <div class="chat-msg bot">Welcome to <strong>CB Assist — Two Wheeler Edition</strong> by Cauvery Business / EIL Research.<br><br>Ask anything about Bajaj Auto, TVS Motor, Eicher Motors / Royal Enfield, Hero MotoCorp, or Ather Energy — Q4 FY26 results, SWOT, moats, EV strategy, valuations, or sector dynamics. Answers are concise and analytical.<br><br>மேலே உள்ள கேள்விகளை click செய்யுங்கள் அல்லது நீங்களே கேளுங்கள்.</div>
+      </div>
+      <div class="typing-ind" id="cb2wTyping">
+        <span></span><span></span><span></span>
+        <span style="font-size:11px;color:var(--muted);margin-left:6px;">Analysing...</span>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="cb2wInput" type="text" placeholder="Ask about any company, EV strategy, valuation, SWOT..." onkeydown="if(event.key==='Enter')send2wChat()"/>
+        <button class="chat-send" id="cb2wSend" onclick="send2wChat()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="footer">Two Wheeler Sector Intelligence Dashboard v2 · Q4 FY26 All Actuals ✅ · 21 May 2026 · Cauvery Business · EIL Research · Elango Industries Limited · For research purposes only · Not investment advice</div>
+
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div>
+    <div class="cb-wm-name">Cauvery Business</div>
+    <div class="cb-wm-sub">2W Dashboard v2</div>
+  </div>
+</div>
+<script>
+// ── TAB LOGIC ──
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'charts') initCharts();
+  if (id === 'valuation') initValChart();
+  if (id === 'volumes') initVolumeCharts();
+}
+
+// ── COLORS ──
+const C = { bajaj:'#1d4ed8', tvs:'#c84b2f', eicher:'#166534', hero:'#7c3aed', ather:'#d97706' };
+const CO = ['Bajaj Auto','TVS Motor','Eicher Motors','Hero MotoCorp','Ather Energy'];
+const BG = [C.bajaj,C.tvs,C.eicher,C.hero,C.ather].map(c=>c+'cc');
+
+// ── CHART DATA ──
+const CD = {
+  revenue:[16006,12808,5843,12797,1175],
+  ebitda:[20.8,13.1,25.5,14.5,-2.5],
+  pat:[2746,772,1500,1401,-100],
+  volume:[1371,1550,310,1714,83],
+  realisation:[116747,82600,188000,74655,140000],
+  growth:[32,34,11,29,74]
+};
+const CL = {revenue:'Revenue (₹ Cr)',ebitda:'EBITDA Margin (%)',pat:'Net Profit (₹ Cr)',volume:"Volume ('000 units)",realisation:'Realisation per Unit (₹)',growth:'Revenue YoY Growth %'};
+
+let mainCh, chartsInited=false;
+
+function makeBar(ctx,data,label,colors){
+  return new Chart(ctx,{
+    type:'bar',
+    data:{labels:CO,datasets:[{label,data,backgroundColor:colors,borderRadius:5,borderSkipped:false}]},
+    options:{
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Number(c.parsed.y).toLocaleString('en-IN')}`}}},
+      scales:{y:{grid:{color:'#eee'},ticks:{font:{family:'IBM Plex Mono',size:10},callback:v=>Number(v).toLocaleString('en-IN')}},x:{grid:{display:false},ticks:{font:{size:11}}}},
+      layout:{padding:{top:24}},animation:{duration:400}
+    },
+    plugins:[{id:'vl',afterDatasetsDraw(chart){
+      const{ctx,data}=chart;ctx.save();
+      chart.getDatasetMeta(0).data.forEach((bar,i)=>{
+        const v=data.datasets[0].data[i];
+        ctx.fillStyle=v<0?'#dc2626':'#181511';ctx.font='600 10px IBM Plex Mono,monospace';
+        ctx.textAlign='center';ctx.textBaseline=v<0?'top':'bottom';
+        ctx.fillText(Number(v).toLocaleString('en-IN'),bar.x,bar.y+(v<0?4:-4));
+      });ctx.restore();
+    }}]
+  });
+}
+
+function initCharts(){
+  if(chartsInited)return;chartsInited=true;
+  mainCh=makeBar(document.getElementById('mainChart').getContext('2d'),CD.revenue,'Revenue (₹ Cr)',BG);
+  makeBar(document.getElementById('ebitdaChart').getContext('2d'),CD.ebitda,'EBITDA %',BG);
+  makeBar(document.getElementById('patChart').getContext('2d'),CD.pat,'Net Profit (₹ Cr)',BG);
+  makeBar(document.getElementById('growthChart').getContext('2d'),CD.growth,'YoY Growth %',BG);
+  makeBar(document.getElementById('realisChart').getContext('2d'),CD.realisation,'Realisation (₹)',BG);
+}
+
+function updateChart(metric,btn){
+  document.querySelectorAll('.m-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mainChartTitle').textContent=CL[metric]+' — Latest Quarter';
+  mainCh.data.datasets[0].data=CD[metric];
+  mainCh.data.datasets[0].label=CL[metric];
+  mainCh.update();
+}
+
+let valInited=false;
+function initValChart(){
+  if(valInited)return;valInited=true;
+  new Chart(document.getElementById('valChart').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:CO,
+      datasets:[
+        {label:'FY26E P/E (×)',data:[26,42,23,17,null],backgroundColor:BG,borderRadius:5,borderSkipped:false}
+      ]
+    },
+    options:{
+      indexAxis:'y',plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#eee'},ticks:{font:{family:'IBM Plex Mono',size:11}}},y:{grid:{display:false},ticks:{font:{size:12,weight:'600'}}}},
+      layout:{padding:{right:60}}
+    },
+    plugins:[{id:'pl',afterDatasetsDraw(chart){
+      const{ctx,data}=chart;ctx.save();
+      chart.getDatasetMeta(0).data.forEach((bar,i)=>{
+        const v=data.datasets[0].data[i];
+        if(!v){ctx.fillStyle='#999';ctx.font='500 11px IBM Plex Mono';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('Loss-making',bar.x+6,bar.y);return;}
+        ctx.fillStyle='#181511';ctx.font='600 12px IBM Plex Mono';ctx.textAlign='left';ctx.textBaseline='middle';
+        ctx.fillText(v+'×',bar.x+6,bar.y);
+      });ctx.restore();
+    }}]
+  });
+}
+
+let volInited=false;
+function initVolumeCharts(){
+  if(volInited)return;volInited=true;
+  // EV Pie
+  new Chart(document.getElementById('evPieChart').getContext('2d'),{
+    type:'doughnut',
+    data:{
+      labels:['TVS iQube','Bajaj Chetak','Ather Energy','Hero VIDA','Ola Electric','Others'],
+      datasets:[{data:[26.2,24.0,18.8,11.1,7.7,12.2],backgroundColor:[C.tvs,C.bajaj,C.ather,C.hero,'#94a3b8','#d1d5db'],borderWidth:2,borderColor:'#fff'}]
+    },
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},padding:12}},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed}%`}}},cutout:'60%'}
+  });
+  // Ather trend
+  new Chart(document.getElementById('atherTrendChart').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'],
+      datasets:[
+        {label:'Revenue (₹ Cr)',data:[729,813,954,1175],backgroundColor:C.ather+'cc',borderRadius:4,yAxisID:'y'},
+        {label:'Net Loss (₹ Cr)',data:[-149,-183,-85,-100],backgroundColor:'#dc262655',borderRadius:4,yAxisID:'y1'}
+      ]
+    },
+    options:{
+      plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},
+      scales:{
+        y:{position:'left',grid:{color:'#eee'},ticks:{font:{family:'IBM Plex Mono',size:10},callback:v=>'₹'+v}},
+        y1:{position:'right',grid:{display:false},ticks:{font:{family:'IBM Plex Mono',size:10},callback:v=>'₹'+v}}
+      }
+    }
+  });
+}
+
+// ── CB ASSIST ──
+let cb2wLang='EN';
+function set2wLang(l){
+  cb2wLang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cb2wLang'+l).classList.add('active');
+}
+function switch2wPreset(id,btn){
+  document.querySelectorAll('.presets-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.preset-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('2w-preset-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function ask2wPreset(el){
+  const key=cb2wLang==='TA'?'.pq-ta':'.pq-en';
+  const txt=el.querySelector(key)?el.querySelector(key).innerText:el.querySelector('.pq-en').innerText;
+  document.getElementById('cb2wInput').value=txt;
+  send2wChat();
+}
+
+async function send2wChat(){
+  const input=document.getElementById('cb2wInput');
+  const msgs=document.getElementById('cb2wMsgs');
+  const btn=document.getElementById('cb2wSend');
+  const typing=document.getElementById('cb2wTyping');
+  const q=input.value.trim();if(!q)return;
+
+  const uMsg=document.createElement('div');uMsg.className='chat-msg user';uMsg.textContent=q;
+  msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+
+  const langInst=cb2wLang==='TA'
+    ?'Answer in Tamil ONLY. தமிழில் மட்டுமே பதில் தாருங்கள். Company names, numbers, and financial terms can stay in English.'
+    :'Answer in English only. Be concise — 5 to 8 sentences max. Lead with the key insight. Cite specific numbers.';
+
+  const sys=`You are CB Assist — expert research analyst at Cauvery Business (EIL Research). You cover Indian two-wheeler sector companies.
+
+${langInst}
+
+RULES: Keep answers SHORT (5–8 sentences). Start with the key insight. Use specific numbers. Do NOT mention any data sources. Research analysis only — no investment advice.
+
+COMPANY DATA (Q4 FY26 where available):
+
+BAJAJ AUTO: Q4 FY26 ACTUAL ✅ (declared 6 May 2026) — Rev ₹16,006 Cr (+32% YoY), PAT ₹2,746 Cr (+34%), EBITDA ₹3,323 Cr margin 20.8%, Volume 13.71L units. FY26 full year: Rev ₹58,732 Cr (+17%), PAT ₹9,825 Cr (+21%), Free cash flow ₹8,000 Cr+ (+30% YoY). BALANCE SHEET: Surplus cash ₹18,000 Cr+ even after KTM rescue/acquisition (Nov 2025): deployed €800M financial package (loan + bonds to creditors); equity acquisition cost only ~€50.65M; gained 74.9% control of Pierer Mobility (KTM, Husqvarna, GasGas). Despite this, still net cash surplus company with zero long-term debt. KTM-Triumph delivered ₹5,000 Cr global revenue (+40% YoY) in first full year under Bajaj. Chetak EV: 5 lakh units FY26, ₹4,000 Cr revenue, first time double-digit EBITDA margins. SHAREHOLDER RETURNS: ₹150/share dividend + ₹5,633 Cr buyback at ₹12,000/share (16% premium to CMP) = 100% of FY26 PAT returned. Bajaj Auto Credit AUM doubled to ₹18,835 Cr, PAT 11× to ₹665 Cr, ROE 23%. Consolidated FY26: Rev ₹62,905 Cr (+23%), PAT ₹10,744 Cr (+47%). CMP ~₹10,614. Mkt Cap ~₹2.96L Cr. Products: Pulsar, Platina, CT, Dominar, Chetak EV, 3-wheelers, KTM/Triumph. MD: Rajiv Bajaj.
+
+TVS MOTOR: Q4 FY26 ACTUAL ✅ (declared 13 May 2026) — Rev ₹12,808 Cr (+34% YoY), consol PAT ₹772 Cr (+19%), standalone PAT ₹998 Cr (+33%), EBITDA margin 13.1%. FY26 full year: Rev ₹47,270 Cr (+30%), FY26 EV sales 3.71L units (+33%), 3W sales 2.19L (+63%). Total 2W+3W 58.89L units (+24%). CMP ~₹2,450. P/E 58–70×. ROCE 22%, ROE 24%. MD: Sudarshan Venu. BMW Motorrad partnership. Products: iQube EV, Apache, Jupiter, Raider, Ronin.
+
+EICHER MOTORS: Q3 FY26 LATEST ACTUAL ✅ — Q4 FY26 results DUE 22 May 2026 (not yet published). Q3 FY26: Rev ₹6,114 Cr (+23%), PAT ₹1,421 Cr (+21%), EBITDA ₹1,557 Cr margin 25.5% (highest in sector), RE volumes 3.26L units (+21%), Realisation ₹1,88,000/unit. Q2 FY26: Rev ₹6,172 Cr, PAT ₹1,369 Cr. Debt-free. ROCE 40%, ROE 31%. CMP ~₹6,870. 9M FY26 PAT ~₹4,200 Cr. Flying Flea EV (C6/A6) FY27. VECV trucks JV with Volvo. Products: Classic 350, Meteor, Himalayan 450, Guerrilla, Bear 650.
+
+HERO MOTOCORP: Q4 FY26 ACTUAL ✅ — Rev ₹12,797 Cr (+29%), PAT ₹1,401 Cr (+30%), EBITDA ₹1,856 Cr (14.5%), Volume 17.14L units (record). FY26 dividend ₹185/share (yield 4.1%). CMP ~₹4,500. FY26E P/E 16–18× (cheapest in sector). ROCE 31%, ROE 26%. Near debt-free. VIDA V2 EV +190% YoY. 6,000+ dealerships rural India. 52-country exports. Products: Splendor, HF Deluxe, Xtreme 160R, Karizma XMR, VIDA V2.
+
+ATHER ENERGY: Q4 FY26 ACTUAL ✅ — Rev ₹1,175 Cr (+74%), Net Loss ₹100 Cr (narrowed from ₹149 Cr Q1), EBITDA -₹30 Cr (-2.5%). Volume 83,418 units (+76% YoY). Gross margin 25% (improving). FY26 net loss ₹517 Cr. CMP ~₹904. IPO May 2025 at ₹321. Mkt Cap ~₹35,943 Cr. 6,000+ AtherGrid charging points. AtherStack OS — OTA updates. EL Platform (FY27) will target ₹80K–1.1L mass market. Maharashtra factory for 1M+ units. EV market share 18.8% (March 2026). Products: Ather 450X, 450 Apex, Rizta.
+
+EV MARKET (March 2026): TVS 26.2%, Bajaj 24%, Ather 18.8%, Hero VIDA 11.1%, Ola Electric 7.7%, Others 12.2%.
+
+Q&A CONTEXT (from published analysis):
+- Eicher's ₹1.88L realisation directly drives 25.5% EBITDA — pricing power = margin power
+- Ather's 74% revenue growth + narrowing losses = operating leverage kicking in; breakeven ~50K units/month
+- Hero Q4 (+29% rev, +30% PAT) shows rural + premiumisation momentum; cheapest P/E at 16–18× is a structural re-rating case
+- Bajaj export 44% is moat AND risk — Africa/LatAm EM currency exposure is real
+- TVS iQube at 26.2% EV share but Bajaj Chetak at 24% — war for #1 EV spot is live
+- Ola Electric slumped to 7.7% from 45%+ peak; VIDA Hero captured 11.1% (+190% YoY)
+- Eicher sequential volume decline Q2→Q3→Q4 est. is the key bear case
+- Flying Flea EV FY27: can Royal Enfield's premium brand translate to EV bikes at ₹4–5L price?
+- Ather EL Platform FY27: mass market game-changer if it hits ₹80K–1.1L range`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
+    });
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:'Unable to process.';
+    typing.style.display='none';
+    const bMsg=document.createElement('div');bMsg.className='chat-msg bot';
+    bMsg.innerHTML=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');eMsg.className='chat-msg bot';
+    eMsg.textContent='CB Assist temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+
+// Init charts on first tab load
+document.addEventListener('DOMContentLoaded',()=>{
+  // Charts init on tab click
+});
+</script>
+</body>
+</html>
