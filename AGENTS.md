@@ -19,6 +19,11 @@ counts, phase order, and the step-by-step recipe for adding a sector. Two of 15 
 (`insurance`, `banking`); 13 remain. Don't re-derive the sector taxonomy by re-auditing the corpus — it's
 already recorded there.
 
+**About to change something that looks arbitrary?** See **[docs/adr/](docs/adr/README.md)**. Several of
+these decisions are counterintuitive and were made against specific corpus evidence — why one skill
+rather than nine, why mode files may not name a sector metric, why cross-sector tables refuse EBITDA for
+banks, why the skill never copies a figure from a prior report.
+
 ---
 
 ## Hard rules
