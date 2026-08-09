@@ -162,6 +162,29 @@ component.
 
 Total 100%.
 
+### Extra sections (`quarterly-report`)
+
+Banking reports in this house consistently carry these beyond the standard mode set:
+
+- **Asset Quality** — its own section, not folded into Financials. GNPA/NNPA levels, the movement table
+  (opening → slippages → recoveries/upgrades → write-offs → closing), PCR and credit cost. It earns
+  separate billing because it is the axis that sinks banks and the one that lags earnings.
+- **Loan Book Composition** — mix by segment (retail / corporate / MSME / agri) and secured vs unsecured.
+- **Margins & Returns** — the NIM walk, yield on advances vs cost of funds, RoA and RoE together.
+- **Capital & Efficiency** — CRAR/CET-1 headroom alongside cost-to-income.
+
+The established banking tab set is: Dashboard · Financials · Charts · Business Analysis · School ·
+Rankings · CB Rating · AI assist panel.
+
+### CB Rating naming (`cb-rating`)
+
+In banking this is presented as the **"CB Earnings-Quality Rating"**, not simply "CB Rating". The name
+carries the meaning: it asks how much of reported profit is core and repeatable versus how much came from
+falling provisions, treasury gains or one-offs. A bank posting 23% PAT growth on 8% NII growth is a
+different proposition from one posting 16% on 12.7% — the rating exists to make that visible.
+
+Pair it with the standing house disclaimer (see `source-hierarchy.md`).
+
 ### Event transmission map (`event-impact`, `risks-outlook`)
 
 | Event | Reaches results via | Exposure basis to cite |

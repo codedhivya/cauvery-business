@@ -82,6 +82,15 @@ doesn't tell an investor anything.
 - **Never issue a buy / sell / hold recommendation in this skill's own voice.** Named brokerage views can
   be reported factually and clearly attributed; a synthesised "verdict" must be framed as a
   research/educational read of the disclosed numbers.
+- **Use the house standing disclaimer** on any artifact carrying a rating, score or ranking. The
+  established wording is:
+
+  > ⚠ Earnings-quality analysis only · No buy / sell / hold recommendation
+
+  It is better than a generic disclaimer because it says what the analysis *is*, not merely what it
+  isn't — the work is an assessment of how sound reported earnings are, which is a factual question,
+  rather than a view on what a reader should do. Place it in the header near the title, where it frames
+  the whole artifact, and keep the fuller disclaimer in the footer.
 - Where a "winner" or ranking is produced, frame it as *best on the fundamentals reviewed*, not as
   investment advice.
 - Every artifact footer states that it is for research/educational purposes and is not investment advice.

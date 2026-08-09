@@ -12,6 +12,23 @@ mode's file for its content rules.
 
 - **Confirm the period** and that results are actually published for it. If a named company hasn't
   reported yet, say so rather than producing a result for it.
+
+### Mixed reporting seasons — the common case, handled explicitly
+
+For a multi-company report, companies rarely all report on the same day. Rather than waiting for the
+slowest or silently omitting them, **show the latest available period per company and label it plainly**:
+
+- State the coverage in the header — e.g. "Q1 FY27 (+ prior quarter for companies yet to report)" and
+  "4 of 14 declared Q1 FY27 as of <date>".
+- Tag each company's row or card with the period its figures come from. A reader scanning a table must
+  never have to assume every row is the same quarter.
+- Never compare a company's current quarter against another's prior quarter as though they were the
+  same period. If a ranking would mix periods, either restrict it to companies that have reported or
+  show the period column alongside.
+- When the laggards report, the report is regenerated rather than patched — see prior-report continuity.
+
+This is worth doing well because a mixed-period table that *looks* uniform is one of the easiest ways to
+mislead a reader who trusts the layout.
 - **Confirm the company scope** — single deep dive, head-to-head, or sector sweep grouped by category.
 - **Confirm the depth.** Drop sections nobody asked for. A focused five-section report beats a bloated
   twelve-section one — every unwanted section dilutes the ones that matter and adds surface area for
