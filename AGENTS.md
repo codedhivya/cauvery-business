@@ -130,6 +130,28 @@ or the owning sector file, and each sector's CB Rating substitution table totals
 
 ---
 
+## When a report arrives that the skill didn't generate
+
+Reports written by hand — by a colleague, or before the skill existed — often carry knowledge the skill
+lacks: a sector with no file, a metric no sector file defines, a section type no mode covers. Left
+unnoticed, that knowledge stays stranded in static HTML, which is the problem the skill exists to solve.
+
+```bash
+python3 scripts/audit_corpus.py            # what's new, and what it introduces
+python3 scripts/audit_corpus.py --accept   # baseline the corpus as reviewed
+python3 scripts/audit_corpus.py --all      # re-audit everything, ignoring the baseline
+```
+
+It compares `reports/published/` against a checksum baseline (`docs/corpus-manifest.json`) and flags, for
+new or changed reports: **unbuilt sectors**, **metrics not defined** in the matching sector file,
+**sections no mode covers**, and **CSS classes** absent from `design-system.md`. Exit code 1 when action
+is needed, so it works in CI or a pre-commit hook.
+
+Findings are **advisory**. A new metric may deserve a sector-file entry, or may be a one-off the author
+chose deliberately — a human decides. After folding in what belongs, re-baseline with `--accept`.
+
+When adding a sector, extend `SECTOR_KEYWORDS` in the script so its reports classify correctly.
+
 ## Conventions
 
 - **Report filenames**: `<Scope>_<Mode>_<Period>.html` — e.g. `HDFCLife_Dashboard_Q1FY27.html`,

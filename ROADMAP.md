@@ -64,6 +64,23 @@ Each phase re-runs the full validation suite in [AGENTS.md](AGENTS.md).
 
 ---
 
+## Keeping the skill current with the corpus
+
+The corpus is not frozen — reports arrive that the skill didn't generate. `scripts/audit_corpus.py`
+detects the gap between what's in `reports/published/` and what the skill knows:
+
+```bash
+python3 scripts/audit_corpus.py            # show drift
+python3 scripts/audit_corpus.py --accept   # baseline as reviewed
+```
+
+It flags unbuilt sectors, undefined metrics, uncovered sections and unknown CSS classes for any new or
+changed report. Run it after a colleague adds a report, and at the start of each phase — `--all` against
+the current corpus is a good way to see the remaining work, since it surfaces exactly what the next
+sector files need to define.
+
+Extend `SECTOR_KEYWORDS` in the script whenever a sector is added.
+
 ## How to add a sector
 
 **This should be a one-file job.** If a sector seems to need a mode file changed, it almost certainly
