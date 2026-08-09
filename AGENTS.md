@@ -14,6 +14,11 @@ docs/                        report URL lists
 
 Reports are published at <https://elangocauvery.github.io/CB-Finance/>.
 
+**Continuing the build?** See **[ROADMAP.md](ROADMAP.md)** — status, the 15-sector inventory with report
+counts, phase order, and the step-by-step recipe for adding a sector. Two of 15 sectors are built
+(`insurance`, `banking`); 13 remain. Don't re-derive the sector taxonomy by re-auditing the corpus — it's
+already recorded there.
+
 ---
 
 ## Hard rules
