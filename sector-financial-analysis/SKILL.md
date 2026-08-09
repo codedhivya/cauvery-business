@@ -1,0 +1,137 @@
+---
+name: sector-financial-analysis
+description: 'Builds research-grade HTML analysis artifacts for Indian listed companies across sectors: KPI dashboards, financial tables, charts, business profiles, segment breakdowns, valuation multiples, SWOT, moats, risks & outlook, brokerage ratings, CB scores and rankers, metric explainers, full quarterly reports, and policy-event or corporate-action impact analysis. Use whenever the user names an Indian company or sector and wants a dashboard, snapshot, "the numbers", results, financials, P&L, a chart, how a company makes money, its business model, product mix or segments, valuation or multiples, a SWOT, strengths and weaknesses, its moat, risks or outlook, analyst views, a CB score or ranking, a verdict or "which is better", sector jargon explained (VNB, Combined Ratio, NIM, GNPA, EV/EBITDA), or a full report — also when a tariff, circular, demerger or buyback needs its impact on named companies assessed. Trigger on implicit asks too, like "how did SBI do". Covers insurance and banking.'
+---
+
+# Sector Financial Analysis
+
+Produces research artifacts on Indian listed companies. One skill covering every sector, because the
+*craft* of building a SWOT or a KPI dashboard is the same everywhere — only the metrics change.
+
+Route every request through three questions: **which sector(s)**, **which mode**, **what scope**. Then
+load only the files those answers point to.
+
+---
+
+## Step 1 — Detect the sector
+
+Identify each company's sector and load `references/sectors/<sector>.md`.
+
+| Sector | Recognise by |
+|---|---|
+| `insurance` | LIC, ICICI Prudential Life, HDFC Life, SBI Life, Axis Max Life, Star Health, Niva Bupa, ICICI Lombard, Medi Assist; VNB, Combined Ratio, solvency, premium |
+| `banking` | SBI, HDFC Bank, ICICI Bank, Axis, Kotak, BoB, PNB, Canara, IndusInd, AU SFB; NIM, GNPA, CASA, advances, deposits |
+
+Sectors not yet built have no file. **If a request names a company from an unbuilt sector, say so
+plainly** — offer to work from general principles without sector-specific benchmarks, or to add that
+sector file. Don't silently substitute another sector's metrics; that is how a bank ends up scored on
+insurance benchmarks.
+
+If the sector genuinely can't be identified, **ask — don't guess.**
+
+**Multiple sectors**: load every relevant sector file. Cross-sector work is supported but constrained —
+see Step 3.
+
+## Step 2 — Detect the mode
+
+Load `references/modes/<mode>.md`.
+
+| Mode | Triggers on |
+|---|---|
+| `dashboard` | dashboard, snapshot, overview, at a glance, "the numbers", how did X do |
+| `financials` | financials, results, P&L, detailed numbers, line items, breakdown |
+| `charts` | chart, graph, plot, visualise, trend, show me visually |
+| `business-profile` | business model, how do they make money, products, distribution, tell me about, management, governance |
+| `segments` | segments, product mix, revenue split, by geography, business lines |
+| `valuation` | valuation, multiples, P/E, P/B, EV/EBITDA, expensive, cheap, what's it worth |
+| `swot` | SWOT, strengths and weaknesses, pros and cons, bull and bear case |
+| `moats` | moat, competitive advantage, USP, why is it hard to compete with, durability |
+| `risks-outlook` | risks, outlook, guidance, what could go wrong, headwinds |
+| `analyst-ratings` | analyst views, brokerage, target price, ratings, what do analysts say |
+| `verdict` | which is better, who wins, verdict, scorecard, ranking, best in sector |
+| `cb-rating` | CB score, CB rating, ranker, rank these companies |
+| `school` | what is <metric>, explain, teach me, I'm new to this, how do I read this |
+| `quarterly-report` | full report, complete dashboard, everything on Q<n>, the whole picture |
+| `event-impact` | a tariff/duty/circular/policy change, demerger, merger, buyback, stake sale — and its effect on named companies |
+
+**Several modes at once** is normal — "compare X and Y with charts and a verdict" loads three. When the
+request is broadly "everything", use `quarterly-report`, which composes the rest.
+
+**Not this skill**: market-news digests and headline roundups. `event-impact` requires an event tied to
+*named companies with a stated exposure basis*; "what happened in the market this week" is journalism,
+not company evaluation.
+
+## Step 3 — Detect the scope
+
+| Scope | Behaviour |
+|---|---|
+| **Single company** | No peer comparison unless asked. Go deeper instead of wider. |
+| **Pair** | Parallel structure throughout so the two read across cleanly. |
+| **Sector sweep** | Group by the sector file's categories; add cross-company summaries. |
+| **Cross-sector** | Constrained — see below. |
+
+### Cross-sector guardrails
+
+Comparing across sectors is supported but is where analysis most easily goes wrong, because the same
+word means different things in different industries.
+
+- **Comparison tables use only universal metrics** — Revenue, EBITDA%, PAT, growth %, Mkt Cap, P/E,
+  EV/EBITDA, Net Debt.
+- **Sector-specific metrics stay quarantined** in their own per-sector section. VNB never appears in a
+  column beside EV/EBITDA.
+- **Every cross-sector table carries a `Sector` column.**
+- **Where a sector genuinely lacks a universal metric, say so.** Banks and insurers have no meaningful
+  EBITDA, and borrowings are their raw material rather than leverage. Those cells read
+  **"n/a — not comparable for this sector"** — never a blank, and never a number borrowed from a
+  different concept. A figure that looks comparable but isn't does more damage than an honest gap.
+- Single-sector is the default. Go cross-sector only when the request genuinely spans sectors.
+
+## Step 4 — Build
+
+Always in play, whatever the mode:
+
+- **`references/design-system.md`** — all HTML, CSS and Chart.js patterns. Read before writing markup.
+- **`references/source-hierarchy.md`** — where numbers may come from, how to attribute them, and the
+  compliance rules. Read before sourcing anything.
+- **`references/output-conventions.md`** — where the artifact goes and how it's delivered. The only
+  file naming paths or tools.
+
+Then follow the loaded mode file, taking every metric, benchmark, threshold and category from the loaded
+sector file.
+
+## Non-negotiables
+
+These come from `source-hierarchy.md` and apply to every mode. They exist because these artifacts are
+dense with numbers that a reader has no independent way to check.
+
+- **Never fabricate a figure.** Unavailable data is marked "Not disclosed", not estimated. A report with
+  honest gaps is worth more than one with confident inventions.
+- **Never invent an attribution** — no imagined brokerage, rating, target price or quote. If no real
+  named view can be sourced, omit the section.
+- **Never issue buy/sell/hold in this skill's own voice.** Report real named brokerage views as theirs;
+  frame any verdict as a research read of disclosed fundamentals.
+- **Prefer company filings over aggregators**, and where sources conflict, flag the discrepancy visibly
+  rather than silently picking one.
+- **Every artifact carries** an explicit `Source:` line with dates, the data as-of date, and the
+  research/educational disclaimer.
+- **Attach the caveat.** Where a figure carries a one-off, a basis change, or a restatement, footnote it.
+  This is the most-skipped element and the one most likely to mislead a trusting reader.
+- **Output is a draft until a human says otherwise.** Everything this skill generates goes to the staging
+  location in `output-conventions.md`, never into the published collection. Promotion is the author's
+  decision after verifying the figures — the skill never makes it.
+
+## Regenerating an existing report
+
+When updating a report for a new period, read the prior artifact for **company scope, section selection,
+layout, chart types and custom sections** — then re-source every number. Inherit the structure; never
+inherit the figures. A ratio carried forward from a previous artifact is exactly how a stale number
+survives unnoticed across quarters.
+
+## Adding a sector
+
+Copy `references/sectors/_template.md` to `references/sectors/<sector>.md` and fill it in — that is the
+whole job. **No mode file should need editing.** If a new sector seems to require changing a mode, it
+almost certainly needs a substitution declared in its own sector file instead; `insurance.md` and
+`banking.md` sit at opposite ends of the metric spectrum and both run on the unmodified modes.
+
+Then add a row to the Step 1 table above.
