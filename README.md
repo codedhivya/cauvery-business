@@ -9,6 +9,10 @@ The reports are published at **[elangocauvery.github.io/CB-Finance](https://elan
 
 ## What's here
 
+Working on this repo with an AI agent? See **[AGENTS.md](AGENTS.md)** for the constraints that aren't
+discoverable from the code — chiefly that generated reports never go straight to `reports/published/`,
+and that mode files must never name a sector-specific metric. (`CLAUDE.md` symlinks to it.)
+
 | Folder | Contents |
 |---|---|
 | `sector-financial-analysis/` | The Claude skill — source of truth |
