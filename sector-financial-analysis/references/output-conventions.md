@@ -8,14 +8,14 @@ this skill to another environment means editing this file alone, not fifteen mod
 
 ## Current target: Claude Code, in the `cauvery-business` repo
 
-**Always save to:** `staging_reports/<Scope>_<Mode>_<Period>.html`
+**Always save to:** `reports/staging/<Scope>_<Mode>_<Period>.html`
 
 **Surface it with:** `SendUserFile`, so the artifact opens rather than sitting unnoticed on disk.
 
 ### Staging is not optional
 
-`cb_research_reports/` is the **published** collection — reports the author has verified and stands
-behind. Generated output never lands there directly. It goes to `staging_reports/`, the author reviews
+`reports/published/` is the **published** collection — reports the author has verified and stands
+behind. Generated output never lands there directly. It goes to `reports/staging/`, the author reviews
 it, and **the author decides** whether it graduates.
 
 This exists because generated analysis is exactly the kind of work that looks finished before it is.
@@ -23,12 +23,12 @@ Every figure needs a human check against the filings before it carries the autho
 that reaches subscribers unverified is a materially different risk from one used for private analysis.
 Writing straight to the published folder would collapse that distinction silently.
 
-So: **never write to `cb_research_reports/`, and never move a file into it.** Promotion is the author's
+So: **never write to `reports/published/`, and never move a file into it.** Promotion is the author's
 action, not the skill's. If asked to "publish" or "finalise" a report, say what the promotion step is
 and let them run it:
 
 ```bash
-mv staging_reports/<file>.html cb_research_reports/
+mv reports/staging/<file>.html reports/published/
 ```
 
 ## Filename convention
@@ -69,7 +69,7 @@ silently either: a sentence of framing tells them what they're about to look at.
 ## Prior-report continuity
 
 When regenerating an existing report for a new period, read the previous file from
-`cb_research_reports/` first — the **published** collection, since those are the versions the author
+`reports/published/` first — the **published** collection, since those are the versions the author
 verified and stands behind. Prefer a published prior over a staged one; a staged draft may contain
 figures nobody has checked yet, and inheriting its structure risks inheriting its unreviewed choices.
 Take from it: company scope, section selection, layout choice, chart types, and any sector-specific
@@ -84,7 +84,7 @@ Only this file changes. Substitute the save location and the file-delivery mecha
 
 | Environment | Save location | Delivery |
 |---|---|---|
-| Claude Code (current) | `staging_reports/` (never the published folder) | `SendUserFile` |
+| Claude Code (current) | `reports/staging/` (never the published folder) | `SendUserFile` |
 | claude.ai | `/mnt/user-data/outputs/` | `present_files` |
 | ChatGPT / Gemini | the environment's file output | that platform's download/attachment affordance |
 | No filesystem | — | emit the HTML inline in the response |

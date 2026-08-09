@@ -12,8 +12,8 @@ The reports are published at **[elangocauvery.github.io/CB-Finance](https://elan
 | Folder | Contents |
 |---|---|
 | `sector-financial-analysis/` | The Claude skill — source of truth |
-| `staging_reports/` | Generated drafts awaiting review |
-| `cb_research_reports/` | Published reports (local mirror of the Pages site) |
+| `reports/staging/` | Generated drafts awaiting review |
+| `reports/published/` | Published reports (local mirror of the Pages site) |
 | `scripts/` | `download_reports.py` — mirrors published reports locally |
 | `docs/` | Report URL lists |
 | `archive/handoff/` | Historical: the 9 per-topic insurance skills this replaced |
@@ -60,13 +60,13 @@ ends of the metric spectrum and both run on the unmodified modes.
 Generated output is a **draft**, never a publication:
 
 ```
-skill generates  →  staging_reports/  →  you verify  →  cb_research_reports/
+skill generates  →  reports/staging/  →  you verify  →  reports/published/
 ```
 
-The skill never writes to `cb_research_reports/` and never promotes a file. Promotion is manual:
+The skill never writes to `reports/published/` and never promotes a file. Promotion is manual:
 
 ```bash
-mv staging_reports/<file>.html cb_research_reports/
+mv reports/staging/<file>.html reports/published/
 ```
 
 This exists because generated analysis looks finished before it is — every figure needs checking
@@ -100,7 +100,7 @@ The resulting `.skill` is a build artifact and is gitignored — distribute it v
 python scripts/download_reports.py docs/report_dashboard_urls.txt
 ```
 
-Downloads into `cb_research_reports/`.
+Downloads into `reports/published/`.
 
 ---
 

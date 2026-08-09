@@ -20,7 +20,7 @@ if not os.path.isfile(input_file):
     sys.exit(1)
 
 # Create output directory
-output_dir = "cb_research_reports"
+output_dir = os.path.join("reports", "published")
 os.makedirs(output_dir, exist_ok=True)
 
 # Read URLs from the given input file
