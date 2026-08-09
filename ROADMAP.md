@@ -13,10 +13,14 @@ in those reports isn't stranded in static HTML.
 | | |
 |---|---|
 | **Architecture** | ✅ Complete — router, 15 modes, 3 shared references, template |
-| **Sectors built** | ✅ `insurance`, `banking` — 10 of 98 reports |
+| **Sectors built** | ✅ `insurance`, `banking` — 10 reports |
 | **Sectors remaining** | 13 sectors, 81 reports |
-| **Cross-sector reports** | 7 — handled by the cross-sector *scope*, not a sector file |
-| **Deliberately excluded** | 2 market-news digests (`Market_breaking_news_*`) — headline roundups are journalism, not company evaluation |
+
+**The 98 reports break down as:** 91 belong to the 15 sector families (10 done, 81 remaining), and 7 are
+cross-sector — handled by the cross-sector *scope* rather than a sector file. **2 of those 7 are the
+market-news digests** (`Market_breaking_news_*`), deliberately excluded: a headline roundup is journalism,
+not company evaluation. That leaves 5 genuine cross-sector reports (the rankers and multi-sector
+dashboards).
 
 Insurance and banking were built together deliberately: their metrics share nothing (VNB / Combined Ratio
 vs NIM / GNPA / CASA), so serving both on unmodified mode files proves the abstraction before it is
