@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private Banks — Q1 FY27 Comparison | CB Research</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --star:#7c3aed;--star-soft:#f5f3ff;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;flex-wrap:wrap;}
+.hdr-left{padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:14px 0;}
+.chip{padding:4px 10px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--star);font-weight:700;}
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;}.panel.active{display:block;}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin:8px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.sec-hdr.mt{margin-top:34px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--co-color,#181511);}
+.co-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.b-pos{background:#dcfce7;color:#15803d;}.b-hold{background:#fef9c3;color:#a16207;}
+.b-neg{background:#fee2e2;color:#b91c1c;}.b-watch{background:#fff7ed;color:#c2410c;}.b-info{background:#dbeafe;color:#1d4ed8;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border-left:4px solid var(--co-color,#181511);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1rem;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;}
+tr:last-child td{border-bottom:none;}tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.cat-tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.cat-private{background:#fee2e2;color:#7f1d1d;}
+.aq-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--co-color,#181511);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.score-row{display:grid;grid-template-columns:1.6fr repeat(5,minmax(62px,1fr));align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);font-size:11.5px;}
+.score-row:last-child{border-bottom:none;}
+.score-row.head{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+.score-pill{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-align:center;padding:3px 0;border-radius:4px;background:var(--surface2);}
+.sp-hi{background:#dcfce7;color:#15803d;}.sp-mid{background:#fef9c3;color:#a16207;}.sp-lo{background:#fee2e2;color:#b91c1c;}
+.fnote{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-top:20px;font-size:11px;color:var(--muted);line-height:1.7;}
+.fnote strong{color:var(--text);}
+.conflict{background:#fff7ed;border:1px solid #fdba74;border-left:4px solid var(--warn);border-radius:8px;padding:14px 16px;margin-top:16px;font-size:11.5px;line-height:1.7;}
+.conflict .cf-t{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--warn);margin-bottom:6px;}
+.chart-box{position:relative;height:300px;}
+.takeaway{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.65;font-style:italic;}
+.footer{text-align:center;font-size:11px;color:var(--muted);padding:22px 40px;border-top:1px solid var(--border);margin-top:26px;background:var(--surface);line-height:1.8;}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr;}.main,.hdr,.tab-nav{padding-left:18px;padding-right:18px;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-left">
+    <h1>Private Banks — Q1 FY27 Comparison</h1>
+    <div class="sub">Quarter ended 30 Jun 2026 · Five private lenders · CB Research</div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip" style="background:#be123c">HDFC Bank</span>
+    <span class="chip" style="background:#c84b2f">ICICI Bank</span>
+    <span class="chip" style="background:#7f1d1d">Axis</span>
+    <span class="chip" style="background:#dc2626">Kotak</span>
+    <span class="chip" style="background:#7c3aed">IndusInd</span>
+    <span class="chip" style="background:#6e6860">As of 9 Aug 2026</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">📊 Dashboard</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">💰 Financials</button>
+  <button class="tab-btn" onclick="showTab('asset',this)">🔍 Asset Quality</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">📈 Charts</button>
+  <button class="tab-btn" onclick="showTab('rating',this)">🏆 CB Rating</button>
+  <button class="tab-btn" onclick="showTab('caveats',this)">⚠️ Caveats &amp; Sources</button>
+</nav>
+
+<div class="main">
+
+<!-- ================= DASHBOARD ================= -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">The Quarter in One Line <span class="sec-note">Q1 FY27 · all banks standalone unless noted</span></div>
+
+  <div class="card" style="border-left:4px solid var(--star);margin-bottom:22px">
+    <p style="font-size:13px;line-height:1.75">
+      <strong>Margins compressed across the sector while asset quality held — and the two largest banks
+      diverged sharply.</strong> ICICI Bank grew profit 16% on 19.6% advances growth and the strongest capital
+      position of the group. HDFC Bank grew profit just 5%, with NIM at 3.26% — described in results coverage as
+      its lowest on record — and CASA slipping to 32.30%. Axis and Kotak both delivered low-20s profit growth,
+      Axis on falling provisions with management calling 3.46% NIM the cycle bottom, Kotak on a sector-leading
+      4.53% margin. IndusInd's 72% profit jump is real but comes off a depressed base, with NII up just 1% and
+      GNPA at 3.25% — roughly triple the big-four average.
+    </p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi" style="--co-color:#be123c"><div class="kl">HDFC Bank PAT</div><div class="kv">₹19,060 cr</div><div class="kc pos">▲ 5.0%</div></div>
+    <div class="kpi" style="--co-color:#c84b2f"><div class="kl">ICICI Bank PAT</div><div class="kv">₹14,805 cr</div><div class="kc pos">▲ 16%</div></div>
+    <div class="kpi" style="--co-color:#7f1d1d"><div class="kl">Axis Bank PAT</div><div class="kv">₹7,114 cr</div><div class="kc pos">▲ 23%</div></div>
+    <div class="kpi" style="--co-color:#dc2626"><div class="kl">Kotak PAT (standalone)</div><div class="kv">₹4,123 cr</div><div class="kc pos">▲ 26%</div></div>
+    <div class="kpi" style="--co-color:#7c3aed"><div class="kl">IndusInd PAT</div><div class="kv">₹1,037 cr</div><div class="kc pos">▲ 72%</div></div>
+  </div>
+
+  <div class="g3">
+    <div class="co-card" style="--co-color:#c84b2f">
+      <div class="co-name" style="color:#c84b2f">ICICI Bank</div>
+      <div class="co-seg">Private · <span class="cat-tag cat-private">Private</span></div>
+      <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val">₹14,805 cr <span class="pos">+16%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NII</span><span class="m-val">₹24,384 cr <span class="pos">+12.7%</span></span></div>
+      <div class="m-row"><span class="m-lbl">Advances</span><span class="m-val"><span class="pos">+19.6%</span> YoY</span></div>
+      <div class="m-row"><span class="m-lbl">Deposits</span><span class="m-val"><span class="pos">+14.0%</span> YoY</span></div>
+      <div class="m-row"><span class="m-lbl">GNPA / NNPA</span><span class="m-val">1.67% / 0.35%</span></div>
+      <div class="m-row"><span class="m-lbl">CRAR / CET-1</span><span class="m-val">16.84% / 16.19%</span></div>
+      <div class="badge-row"><span class="badge b-pos">Best NII growth</span><span class="badge b-pos">Strongest capital</span></div>
+    </div>
+    <div class="co-card" style="--co-color:#7f1d1d">
+      <div class="co-name" style="color:#7f1d1d">Axis Bank</div>
+      <div class="co-seg">Private · <span class="cat-tag cat-private">Private</span></div>
+      <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val">₹7,114 cr <span class="pos">+23%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NII (core)</span><span class="m-val">₹14,646 cr <span class="pos">+8%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NIM</span><span class="m-val">3.46% <span class="neg">−34bps</span></span></div>
+      <div class="m-row"><span class="m-lbl">Advances</span><span class="m-val">₹12.62 L cr <span class="pos">+19%</span></span></div>
+      <div class="m-row"><span class="m-lbl">Deposits</span><span class="m-val"><span class="pos">+18%</span> YoY</span></div>
+      <div class="m-row"><span class="m-lbl">GNPA / NNPA</span><span class="m-val">1.28% / 0.39%</span></div>
+      <div class="m-row"><span class="m-lbl">CRAR / CET-1</span><span class="m-val">16.67% / 14.64%</span></div>
+      <div class="badge-row"><span class="badge b-pos">Best-balanced growth</span><span class="badge b-watch">NIM cycle low</span></div>
+    </div>
+    <div class="co-card" style="--co-color:#dc2626">
+      <div class="co-name" style="color:#dc2626">Kotak Mahindra Bank</div>
+      <div class="co-seg">Private · <span class="cat-tag cat-private">Private</span></div>
+      <div class="m-row"><span class="m-lbl">PAT (standalone)</span><span class="m-val">₹4,123 cr <span class="pos">+26%</span></span></div>
+      <div class="m-row"><span class="m-lbl">PAT (consolidated)</span><span class="m-val">₹5,480 cr <span class="pos">+23%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NII</span><span class="m-val">₹7,928 cr <span class="pos">+9%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NIM</span><span class="m-val">4.53% <span class="neg">−12bps</span></span></div>
+      <div class="m-row"><span class="m-lbl">GNPA / NNPA</span><span class="m-val">1.18% / 0.27%</span></div>
+      <div class="badge-row"><span class="badge b-pos">Highest NIM 4.53%</span><span class="badge b-pos">Lowest NNPA</span></div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:16px">
+    <div class="co-card" style="--co-color:#be123c">
+      <div class="co-name" style="color:#be123c">HDFC Bank</div>
+      <div class="co-seg">Private · largest by assets · <span class="cat-tag cat-private">Private</span></div>
+      <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val">₹19,060 cr <span class="pos">+5.0%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NII</span><span class="m-val">₹33,534 cr <span class="pos">+6.7%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NIM</span><span class="m-val">3.26% <span class="neg">record low</span></span></div>
+      <div class="m-row"><span class="m-lbl">GNPA / NNPA</span><span class="m-val">1.17% / 0.41%</span></div>
+      <div class="m-row"><span class="m-lbl">CASA</span><span class="m-val">32.30% <span class="neg">from 32.80%</span></span></div>
+      <div class="badge-row"><span class="badge b-pos">Best GNPA of big-3</span><span class="badge b-watch">Slowest PAT growth</span><span class="badge b-neg">CASA eroding</span></div>
+    </div>
+    <div class="co-card" style="--co-color:#7c3aed">
+      <div class="co-name" style="color:#7c3aed">IndusInd Bank</div>
+      <div class="co-seg">Private · turnaround · <span class="cat-tag cat-private">Private</span></div>
+      <div class="m-row"><span class="m-lbl">PAT</span><span class="m-val">₹1,037 cr <span class="pos">+72%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NII</span><span class="m-val">₹4,685 cr <span class="pos">+1%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NIM</span><span class="m-val">3.57% <span class="pos">+11bps</span></span></div>
+      <div class="m-row"><span class="m-lbl">GNPA</span><span class="m-val">3.25% <span class="pos">from 3.43%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NNPA</span><span class="m-val">0.95% <span class="pos">from 1.00%</span></span></div>
+      <div class="badge-row"><span class="badge b-pos">Only NIM expansion</span><span class="badge b-neg">GNPA 3.25%</span><span class="badge b-watch">NII flat +1%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FINANCIALS ================= -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Headline Comparison <span class="sec-note">Q1 FY27 · standalone basis</span></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th>Bank</th><th style="text-align:right">PAT ₹cr</th><th style="text-align:right">PAT YoY</th>
+      <th style="text-align:right">NII ₹cr</th><th style="text-align:right">NII YoY</th>
+      <th style="text-align:right">NIM</th><th style="text-align:right">GNPA</th><th style="text-align:right">NNPA</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="tb" style="color:#be123c">HDFC Bank</td><td class="num">19,060</td><td class="tpos">+5.0%</td><td class="num">33,534</td><td class="tpos">+6.7%</td><td class="num">3.26%</td><td class="num tb">1.17%</td><td class="num">0.41%</td></tr>
+      <tr><td class="tb" style="color:#c84b2f">ICICI Bank</td><td class="num">14,805</td><td class="tpos">+16%</td><td class="num">24,384</td><td class="tpos">+12.7%</td><td class="num">Not disclosed</td><td class="num">1.67%</td><td class="num">0.35%</td></tr>
+      <tr><td class="tb" style="color:#7f1d1d">Axis Bank</td><td class="num">7,114</td><td class="tpos">+23%</td><td class="num">14,646</td><td class="tpos">+8%</td><td class="num">3.46%</td><td class="num">1.28%</td><td class="num">0.39%</td></tr>
+      <tr><td class="tb" style="color:#dc2626">Kotak Mahindra*</td><td class="num">4,123</td><td class="tpos">+26%</td><td class="num">7,928</td><td class="tpos">+9%</td><td class="num tb">4.53%</td><td class="num">1.18%</td><td class="num tb">0.27%</td></tr>
+      <tr><td class="tb" style="color:#7c3aed">IndusInd Bank</td><td class="num">1,037</td><td class="tpos">+72%</td><td class="num">4,685</td><td class="tpos">+1%</td><td class="num">3.57%</td><td class="num tneg">3.25%</td><td class="num tneg">0.95%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="fnote">
+    <strong>* Kotak basis.</strong> ₹4,123 cr is <strong>standalone</strong> (+26% YoY, from ₹3,282 cr). Kotak also
+    reported <strong>consolidated</strong> PAT of ₹5,480 cr (+23%, from ₹4,472 cr), which includes its securities,
+    AMC and insurance subsidiaries. Standalone is used in this table so the comparison is like-for-like with the
+    other four banks — using the consolidated figure here would overstate Kotak's banking operation by roughly a
+    third. Both are correct; they answer different questions.<br><br>
+    <strong>ICICI Bank NIM</strong> was not stated in the sources located for this report — marked "Not disclosed"
+    rather than derived, since a NIM computed from partial figures would not match the bank's own basis.<br><br>
+    <strong>IndusInd PAT growth</strong> is reported as +72% YoY (₹604 cr base). One outlet reported "+88%", which
+    appears to be a sequential rather than YoY comparison — the YoY figure is used here.
+  </div>
+
+  <div class="sec-hdr mt">Growth &amp; Capital</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th>Bank</th><th style="text-align:right">Advances YoY</th><th style="text-align:right">Deposits YoY</th>
+      <th style="text-align:right">CASA</th><th style="text-align:right">CRAR</th><th style="text-align:right">CET-1</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="tb" style="color:#be123c">HDFC Bank</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td><td class="num">32.30%</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td></tr>
+      <tr><td class="tb" style="color:#c84b2f">ICICI Bank</td><td class="tpos">+19.6%</td><td class="tpos">+14.0%</td><td class="num">Not disclosed</td><td class="num tb">16.84%</td><td class="num tb">16.19%</td></tr>
+      <tr><td class="tb" style="color:#7f1d1d">Axis Bank</td><td class="tpos">+19%</td><td class="tpos">+18%</td><td class="num">Not disclosed</td><td class="num">16.67%</td><td class="num">14.64%</td></tr>
+      <tr><td class="tb" style="color:#dc2626">Kotak Mahindra</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td></tr>
+      <tr><td class="tb" style="color:#7c3aed">IndusInd Bank</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td><td class="num">Not disclosed</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="fnote">
+    <strong>The "Not disclosed" cells are gaps in what could be sourced for this report, not gaps in the banks'
+    disclosure.</strong> All five publish advances, deposits, CASA and capital ratios in their quarterly investor
+    presentations. Pulling those presentations directly would complete this table — that is the right next step
+    before this report is published, and the reason it stays in staging.
+  </div>
+</div>
+
+<!-- ================= ASSET QUALITY ================= -->
+<div class="panel" id="tab-asset">
+  <div class="sec-hdr">Asset Quality <span class="sec-note">the axis that sinks banks — and the one that lags</span></div>
+  <div class="card" style="margin-bottom:18px">
+    <p style="font-size:12.5px;line-height:1.7">
+      A bank can report record profit while quietly accumulating stress, which is why asset quality is read
+      separately from earnings. On this quarter's disclosure the big four are in comfortable territory — all
+      between 1.17% and 1.67% GNPA — and IndusInd sits well outside it at 3.25%, though improving.
+      <br><br>
+      <strong>The important caveat:</strong> GNPA can fall through write-offs and recoveries while fresh stress
+      keeps forming. <strong>Slippage ratio and credit cost — the metrics that separate genuine improvement from
+      cosmetic improvement — were not disclosed in the sources located here.</strong> Without them, this section
+      shows the level but not the direction of formation, and should not be read as a clean bill of health.
+    </p>
+  </div>
+  <div class="g3">
+    <div class="aq-card" style="--co-color:#be123c">
+      <div class="card-lbl" style="color:#be123c">HDFC Bank</div>
+      <div class="m-row"><span class="m-lbl">GNPA</span><span class="m-val">1.17%</span></div>
+      <div class="m-row"><span class="m-lbl">vs Mar-26 (QoQ)</span><span class="m-val neg">▲ from 1.15%</span></div>
+      <div class="m-row"><span class="m-lbl">vs Jun-25 (YoY)</span><span class="m-val pos">▼ from 1.40%</span></div>
+      <div class="m-row"><span class="m-lbl">NNPA</span><span class="m-val">0.41% <span class="neg">▲3bps QoQ</span></span></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Best absolute GNPA of the group, but the only one that <em>rose</em> sequentially. Down materially YoY.</p>
+    </div>
+    <div class="aq-card" style="--co-color:#c84b2f">
+      <div class="card-lbl" style="color:#c84b2f">ICICI Bank</div>
+      <div class="m-row"><span class="m-lbl">GNPA</span><span class="m-val">1.67%</span></div>
+      <div class="m-row"><span class="m-lbl">NNPA</span><span class="m-val">0.35%</span></div>
+      <div class="m-row"><span class="m-lbl">GNPA–NNPA gap</span><span class="m-val">1.32pp</span></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Highest headline GNPA of the big three, but the widest gap to NNPA — indicating heavy provisioning against what is recognised.</p>
+    </div>
+    <div class="aq-card" style="--co-color:#7f1d1d">
+      <div class="card-lbl" style="color:#7f1d1d">Axis Bank</div>
+      <div class="m-row"><span class="m-lbl">GNPA</span><span class="m-val">1.28% <span class="pos">from 1.54%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NNPA</span><span class="m-val">0.39% <span class="pos">from 0.41%</span></span></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Clearest YoY improvement of the big three — 26bps off GNPA. Lower provisions were a stated driver of the profit jump.</p>
+    </div>
+  </div>
+  <div class="g2" style="margin-top:16px">
+    <div class="aq-card" style="--co-color:#dc2626">
+      <div class="card-lbl" style="color:#dc2626">Kotak Mahindra Bank</div>
+      <div class="m-row"><span class="m-lbl">GNPA</span><span class="m-val">1.18% <span class="pos">from 1.48%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NNPA</span><span class="m-val">0.27% <span class="pos">from 0.34%</span></span></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Lowest NNPA in the group at 0.27%, improved on both measures YoY. Credit cost reported as falling.</p>
+    </div>
+    <div class="aq-card" style="--co-color:#7c3aed">
+      <div class="card-lbl" style="color:#7c3aed">IndusInd Bank</div>
+      <div class="m-row"><span class="m-lbl">GNPA</span><span class="m-val neg">3.25% <span class="pos">from 3.43%</span></span></div>
+      <div class="m-row"><span class="m-lbl">NNPA</span><span class="m-val">0.95% <span class="pos">from 1.00%</span></span></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Roughly triple the big-four GNPA level, but improving sequentially. The 72% profit jump is driven substantially by lower costs and asset-quality gains off a depressed base rather than by revenue — NII grew just 1%.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CHARTS ================= -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Charts</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">PAT Growth YoY (%)</div>
+      <div class="chart-box"><canvas id="chPat"></canvas></div>
+      <p class="takeaway">Growth rank inverts size: the smallest bank grew fastest, the largest slowest. IndusInd's 72% is off a depressed base and is not comparable to the others' underlying momentum.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Net Interest Margin (%)</div>
+      <div class="chart-box"><canvas id="chNim"></canvas></div>
+      <p class="takeaway">Kotak's 4.53% is roughly 130bps above HDFC Bank's 3.26% — a structural difference in business mix, not a one-quarter gap. ICICI's NIM was not disclosed in sourced material.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Gross NPA (%) — lower is better</div>
+      <div class="chart-box"><canvas id="chGnpa"></canvas></div>
+      <p class="takeaway">The big four cluster between 1.17% and 1.67%. IndusInd sits apart at 3.25%. The dashed line marks the peer median of the four largest, for reference — there is no regulatory GNPA threshold.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">NII Growth YoY (%)</div>
+      <div class="chart-box"><canvas id="chNii"></canvas></div>
+      <p class="takeaway">ICICI's 12.7% core income growth is the strongest, and is the cleanest signal in this set — unlike PAT, NII is not flattered by falling provisions.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CB RATING ================= -->
+<div class="panel" id="tab-rating">
+  <div class="sec-hdr">CB Rating <span class="sec-note">banking substitution — Asset Quality replaces PAT Quality; leverage is never a component</span></div>
+  <div class="card">
+    <div class="score-row head">
+      <div>Bank</div><div>Growth 30%</div><div>Profit 25%</div><div>Asset Q 25%</div><div>Capital 20%</div><div>CB Score</div>
+    </div>
+    <div class="score-row">
+      <div><strong style="color:#c84b2f">ICICI Bank</strong></div>
+      <div class="score-pill sp-hi">9</div><div class="score-pill sp-hi">8</div><div class="score-pill sp-mid">7</div><div class="score-pill sp-hi">9</div><div class="score-pill sp-hi">83 🟢</div>
+    </div>
+    <div class="score-row">
+      <div><strong style="color:#dc2626">Kotak Mahindra</strong></div>
+      <div class="score-pill sp-mid">7</div><div class="score-pill sp-hi">9</div><div class="score-pill sp-hi">9</div><div class="score-pill sp-hi">8</div><div class="score-pill sp-hi">82 🟢</div>
+    </div>
+    <div class="score-row">
+      <div><strong style="color:#7f1d1d">Axis Bank</strong></div>
+      <div class="score-pill sp-hi">9</div><div class="score-pill sp-mid">7</div><div class="score-pill sp-hi">8</div><div class="score-pill sp-hi">8</div><div class="score-pill sp-hi">81 🟢</div>
+    </div>
+    <div class="score-row">
+      <div><strong style="color:#be123c">HDFC Bank</strong></div>
+      <div class="score-pill sp-lo">5</div><div class="score-pill sp-mid">6</div><div class="score-pill sp-hi">9</div><div class="score-pill sp-hi">8</div><div class="score-pill sp-mid">69 🟡</div>
+    </div>
+    <div class="score-row">
+      <div><strong style="color:#7c3aed">IndusInd Bank</strong></div>
+      <div class="score-pill sp-lo">4</div><div class="score-pill sp-mid">6</div><div class="score-pill sp-lo">4</div><div class="score-pill sp-mid">6</div><div class="score-pill sp-lo">49 🔴</div>
+    </div>
+  </div>
+  <div class="fnote">
+    <strong>Method.</strong> CB Score = Growth 30% + Profitability 25% + Asset Quality 25% + Capital &amp; Outlook
+    20%, scored 1–10 per component and scaled to 100. <strong>Banking substitution applied:</strong> Asset Quality
+    replaces the generic PAT Quality component, because for a bank asset quality <em>is</em> profit quality; and
+    Debt/Leverage is never a component, since borrowing is a bank's raw material rather than a risk.
+    Bands: ≥75 🟢 · 55–74 🟡 · &lt;55 🔴.<br><br>
+    <strong>Component basis.</strong> <em>Growth</em> = advances and deposits growth, plus NII growth.
+    <em>Profitability</em> = NIM level and direction. <em>Asset Quality</em> = GNPA/NNPA level and trend.
+    <em>Capital</em> = CRAR/CET-1 headroom above the 11.5%/8% minimums.
+    <strong>Where a component input was not disclosed in sourced material — advances and deposits growth for
+    HDFC Bank, Kotak and IndusInd; capital ratios for three banks — the component was scored on the inputs
+    available.</strong> Those scores are therefore weaker evidence than ICICI's and Axis's, and the table should
+    not be read as five equally-grounded numbers.
+  </div>
+  <div class="conflict">
+    <div class="cf-t">Read this before using the ranking</div>
+    IndusInd's 49 reflects this quarter's disclosed position — high GNPA, flat NII — not a judgement on its
+    turnaround, which is visibly underway on both asset quality and margin. A score built from one quarter of a
+    recovery understates a bank that is improving and overstates one that is coasting. This is a research read of
+    disclosed fundamentals, <strong>not investment advice and not a recommendation</strong>.
+  </div>
+</div>
+
+<!-- ================= CAVEATS ================= -->
+<div class="panel" id="tab-caveats">
+  <div class="sec-hdr">Caveats, Conflicts &amp; Sources</div>
+
+  <div class="conflict">
+    <div class="cf-t">⚠ Source conflicts encountered and how they were resolved</div>
+    <strong>Kotak PAT — consolidated vs standalone.</strong> Outlets reported both "₹4,123 cr, +26%" and
+    "₹5,480 cr, +23%" for the same quarter. Both are correct: the first is standalone, the second consolidated
+    (including securities, AMC and insurance subsidiaries). <strong>Standalone is used throughout</strong> for
+    like-for-like comparison with the other four banks; the consolidated figure is shown on the Kotak card.<br><br>
+    <strong>Kotak GNPA — garbled in source.</strong> One outlet stated GNPA "increased from 1.48% to 1.18%",
+    which describes a decrease. The figures are right and the verb is wrong: GNPA <em>improved</em> to 1.18%
+    from 1.48% a year earlier.<br><br>
+    <strong>HDFC Bank NIM direction.</strong> One source reports NIM "narrowed to 3.26% from 3.38% in the March
+    quarter, its lowest level on record"; another describes 3.26% as "flat YoY and QoQ". These are
+    irreconcilable on direction. <strong>The level of 3.26% is consistent across both</strong> and is what this
+    report uses; the sequential direction is flagged as disputed and should be checked against the bank's own
+    presentation.<br><br>
+    <strong>IndusInd PAT growth.</strong> Reported as +72% YoY (from ₹604 cr) by most outlets and +88% by one,
+    the latter appearing to be a sequential comparison. +72% YoY is used.
+  </div>
+
+  <div class="fnote">
+    <strong>What is missing, and why it matters.</strong> This report is built from results coverage rather than
+    the banks' own investor presentations. That leaves real gaps:<br>
+    • <strong>Slippage ratio and credit cost</strong> for all five — the metrics that distinguish genuine
+      asset-quality improvement from write-off-driven improvement. Without them the Asset Quality section shows
+      level, not formation.<br>
+    • <strong>Advances and deposits growth</strong> for HDFC Bank, Kotak and IndusInd.<br>
+    • <strong>CASA</strong> for four of five; <strong>capital ratios</strong> for three of five.<br>
+    • <strong>RoA and RoE</strong> for all five — the cleanest cross-bank profitability comparisons.<br>
+    • <strong>ICICI Bank's NIM.</strong><br>
+    All of this is published in the banks' quarterly investor presentations. Pulling those directly is the right
+    step before this moves out of staging.
+  </div>
+
+  <div class="fnote">
+    <strong>Source:</strong> Q1 FY27 results coverage for the quarter ended 30 June 2026 — HDFC Bank (results
+    18 July 2026), ICICI Bank, Axis Bank (18 July 2026), Kotak Mahindra Bank (18 July 2026), IndusInd Bank
+    (22 July 2026), via Business Standard, Outlook Business, Investing.com, Republic World, BusinessToday and
+    EquityBulls. Figures are press coverage of company disclosures — <strong>Tier 2–4, not read directly from
+    the filings</strong>.<br>
+    <strong>Data as of:</strong> quarter ended 30 June 2026. <strong>Compiled:</strong> 9 August 2026.
+  </div>
+</div>
+
+</div>
+
+<footer class="footer">
+  <strong>CB Research</strong> · Private Banks Comparison · Q1 FY27<br>
+  For research and educational purposes only — <strong>not investment advice</strong>, and not a recommendation
+  to buy, sell or hold any security.<br>
+  Figures are from publicly available company disclosures and press coverage of those disclosures; verify
+  against the banks' own filings before acting on any number.
+</footer>
+
+<script>
+var charted = false;
+function showTab(id, btn){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts') initCharts();
+}
+var BANKS = ['HDFC Bank','ICICI Bank','Axis Bank','Kotak','IndusInd'];
+var COLORS = ['#be123c','#c84b2f','#7f1d1d','#dc2626','#7c3aed'];
+
+var valueLabels = {
+  id:'valueLabels',
+  afterDatasetsDraw:function(c){
+    var ctx=c.ctx; ctx.save();
+    ctx.font='700 11px "IBM Plex Mono", monospace'; ctx.fillStyle='#181511';
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    c.data.datasets.forEach(function(ds,di){
+      c.getDatasetMeta(di).data.forEach(function(bar,i){
+        var v=ds.data[i]; if(v===null||v===undefined) return;
+        ctx.fillText(v+'%', bar.x, bar.y-4);
+      });
+    });
+    ctx.restore();
+  }
+};
+
+function medianLine(value,label){
+  return {
+    id:'medianLine',
+    afterDraw:function(c){
+      var y=c.scales.y.getPixelForValue(value); var ctx=c.ctx;
+      ctx.save(); ctx.setLineDash([6,4]); ctx.strokeStyle='#dc2626'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(c.chartArea.left,y); ctx.lineTo(c.chartArea.right,y); ctx.stroke();
+      ctx.setLineDash([]); ctx.fillStyle='#dc2626';
+      ctx.font='700 10px Inter, sans-serif'; ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText(label, c.chartArea.left+6, y-3);
+      ctx.restore();
+    }
+  };
+}
+
+function bar(canvasId, labels, data, colors, plugins, suggestedMax){
+  return new Chart(document.getElementById(canvasId), {
+    type:'bar',
+    data:{labels:labels, datasets:[{data:data, backgroundColor:colors, borderRadius:6}]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{enabled:true}},
+      scales:{y:{beginAtZero:true, suggestedMax:suggestedMax, grid:{color:'#e2ddd5'}},
+              x:{grid:{display:false}, ticks:{font:{size:11}}}}
+    },
+    plugins:plugins
+  });
+}
+
+function initCharts(){
+  if(charted) return; charted = true;
+  bar('chPat', BANKS, [5.0,16,23,26,72], COLORS, [valueLabels], 85);
+  bar('chNim', ['HDFC Bank','Axis Bank','Kotak','IndusInd'], [3.26,3.46,4.53,3.57],
+      ['#be123c','#7f1d1d','#dc2626','#7c3aed'], [valueLabels], 5.5);
+  bar('chGnpa', BANKS, [1.17,1.67,1.28,1.18,3.25], COLORS,
+      [valueLabels, medianLine(1.23,'Big-4 median 1.23%')], 4);
+  bar('chNii', BANKS, [6.7,12.7,8,9,1], COLORS, [valueLabels], 16);
+}
+</script>
+
+</body>
+</html>

@@ -52,13 +52,19 @@ Examples that match the existing collection:
 
 ## When *not* to produce a file
 
-Judgement matters more than consistency here. If someone asks a short conversational question — "what's
-HDFC Life's VNB margin?", "what is embedded value?" — answer in chat with the same sourcing discipline.
-Forcing an HTML artifact onto a one-line question wastes their time and buries the answer.
+**Producing no file is the default for questions** — see the router's Step 0, which decides this before
+any mode loads. The rule is repeated here because this is where delivery lives:
 
-Build the file when the request is for something to keep, share, or publish; answer inline when it's a
-question. When genuinely ambiguous, a short inline answer plus an offer to build the full artifact
-respects both possibilities.
+If someone asks a question — "what's HDFC Life's VNB margin?", "what is embedded value?", "how did SBI
+do?" — answer in chat with the same sourcing discipline. Forcing an HTML artifact onto a one-line
+question wastes their time and buries the answer inside a file they have to open.
+
+Build the file when the request is for something to keep, share, or publish. When genuinely ambiguous,
+give a short inline answer and offer the artifact.
+
+**Learning sessions are conversations.** Someone working through what a sector's metrics mean may ask
+many questions in a row; each gets a prose answer, not a file. Build the reference artifact only if they
+ask for something to keep.
 
 ## After delivering
 

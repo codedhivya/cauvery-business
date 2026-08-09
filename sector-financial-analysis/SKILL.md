@@ -8,10 +8,35 @@ description: 'Builds research-grade HTML analysis artifacts for Indian listed co
 Produces research artifacts on Indian listed companies. One skill covering every sector, because the
 *craft* of building a SWOT or a KPI dashboard is the same everywhere — only the metrics change.
 
-Route every request through three questions: **which sector(s)**, **which mode**, **what scope**. Then
-load only the files those answers point to.
+Route every request through four questions: **what depth**, **which sector(s)**, **which mode**, **what
+scope**. Then load only the files those answers point to.
 
 ---
+
+## Step 0 — Detect the depth: conversation or artifact?
+
+Decide this **first**, because it changes how much work the rest of the request needs.
+
+**Answer in chat — no file — when the person is asking a question.** Concept questions ("what is NII?",
+"what's the difference between GNPA and NNPA?", "why do insurers use VNB instead of profit?"), a single
+figure ("what was HDFC Life's VNB margin?"), a quick read ("how did SBI do?"), or anything exploratory.
+This is the **default**. Apply the same sourcing discipline — real figures, real attribution, no
+fabrication — just deliver it as prose.
+
+**Build the artifact when the person wants something to keep, share, publish or return to.** Signals:
+"build", "generate", "create a report/dashboard", "compare X and Y" at length, "I want to send this to
+someone", or an explicit request for a file.
+
+When genuinely ambiguous, **answer in chat first and offer the artifact**. That costs the reader one
+sentence; the reverse — burying a one-line answer inside a generated HTML file they have to open — wastes
+their time and hides the answer.
+
+Honour explicit overrides in either direction: "just tell me", "no file", "don't build anything" means
+chat; "give me a report on this" means build it.
+
+A learning session is a conversation. Someone working through what a sector's metrics mean should be
+able to ask twenty questions without generating twenty files — use `school`'s teaching material to
+answer inline, and build the reference artifact only if they ask for something to keep.
 
 ## Step 1 — Detect the sector
 
@@ -86,9 +111,13 @@ word means different things in different industries.
   different concept. A figure that looks comparable but isn't does more damage than an honest gap.
 - Single-sector is the default. Go cross-sector only when the request genuinely spans sectors.
 
-## Step 4 — Build
+## Step 4 — Answer or build
 
-Always in play, whatever the mode:
+If Step 0 said **conversation**, answer in chat now. Read the sector file for the facts and, for teaching
+questions, `modes/school.md` for how to explain them — then stop. Don't write a file, and don't pad a
+two-sentence answer into an essay to justify having loaded a reference.
+
+If Step 0 said **artifact**, continue. Always in play, whatever the mode:
 
 - **`references/design-system.md`** — all HTML, CSS and Chart.js patterns. Read before writing markup.
 - **`references/source-hierarchy.md`** — where numbers may come from, how to attribute them, and the
