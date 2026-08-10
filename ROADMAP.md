@@ -13,18 +13,19 @@ in those reports isn't stranded in static HTML.
 | | |
 |---|---|
 | **Architecture** | ✅ Complete — router, 15 modes, 3 shared references, template |
-| **Sectors built** | ✅ `insurance`, `banking` — 10 reports |
-| **Sectors remaining** | 13 sectors, 81 reports |
+| **Sectors built** | ✅ `insurance`, `banking`, `consumer`, `capital-goods`, `power-energy`, `pharma-health` — 52 reports |
+| **Sectors remaining** | 9 sectors, 39 reports |
 
-**The 98 reports break down as:** 91 belong to the 15 sector families (10 done, 81 remaining), and 7 are
-cross-sector — handled by the cross-sector *scope* rather than a sector file. **2 of those 7 are the
+**The 98 reports break down as:** 91 belong to the 15 sector families (**52 done, 39 remaining**), and 7
+are cross-sector — handled by the cross-sector *scope* rather than a sector file. **2 of those 7 are the
 market-news digests** (`Market_breaking_news_*`), deliberately excluded: a headline roundup is journalism,
 not company evaluation. That leaves 5 genuine cross-sector reports (the rankers and multi-sector
 dashboards).
 
 Insurance and banking were built together deliberately: their metrics share nothing (VNB / Combined Ratio
-vs NIM / GNPA / CASA), so serving both on unmodified mode files proves the abstraction before it is
-replicated 13 more times.
+vs NIM / GNPA / CASA), so serving both on unmodified mode files proved the abstraction before it was
+replicated. Phase 2 confirmed it: four more sectors, spanning order-book manufacturers, hotels, refiners
+and hospitals, needed **zero mode-file changes**.
 
 ## Sector inventory
 
@@ -32,10 +33,10 @@ Derived by auditing all 98 reports. Report counts drive build order — biggest 
 
 | Sector | Reports | Status | Notes |
 |---|---|---|---|
-| consumer | 13 | ⬜ Phase 2 | retail, FMCG, alcobev, sugar, dairy, textiles, gold jewellery, hotels, amusement |
-| capital-goods | 10 | ⬜ Phase 2 | defence, railways, EMS, cables, pumps |
-| power-energy | 10 | ⬜ Phase 2 | power, solar, oil & gas / OMC |
-| pharma-health | 9 | ⬜ Phase 2 | pharma, medtech, hospitals |
+| **consumer** | 13 | ✅ **Done** | retail, FMCG, alcobev, sugar, dairy, textiles, gold jewellery, hotels, amusement |
+| **capital-goods** | 10 | ✅ **Done** | defence, railways, EMS, cables, pumps |
+| **power-energy** | 10 | ✅ **Done** | power, solar, oil & gas / OMC |
+| **pharma-health** | 9 | ✅ **Done** | pharma, medtech, hospitals |
 | auto | 7 | ⬜ Phase 3 | 2W, PV, spares, tyres, batteries |
 | **banking** | **7** | ✅ **Done** | PSU, private, SFB |
 | capital-markets | 6 | ⬜ Phase 3 | broking, exchanges, depositories, AMC, **funds/IPO funds** |
@@ -56,7 +57,7 @@ Their sector files must say plainly that these are analysed as funds/trusts, not
 ## Phases
 
 - **Phase 1** ✅ — architecture + insurance + banking
-- **Phase 2** — consumer (13), capital-goods (10), power-energy (10), pharma-health (9) → 42 reports
+- **Phase 2** ✅ — consumer (13), capital-goods (10), power-energy (10), pharma-health (9) → 42 reports
 - **Phase 3** — auto (7), capital-markets (6), it-services (6), nbfc-hfc (5) → 24 reports
 - **Phase 4** — chemicals (5), metals (4), infra-realty (3), cement (2), telecom (1) → 15 reports
 

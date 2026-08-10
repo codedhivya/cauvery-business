@@ -18,8 +18,8 @@ mode's file for its content rules.
 For a multi-company report, companies rarely all report on the same day. Rather than waiting for the
 slowest or silently omitting them, **show the latest available period per company and label it plainly**:
 
-- State the coverage in the header — e.g. "Q1 FY27 (+ prior quarter for companies yet to report)" and
-  "4 of 14 declared Q1 FY27 as of <date>".
+- State the coverage in the header — e.g. "<period> (+ prior quarter for companies yet to report)" and
+  "<n> of <total> declared <period> as of <date>".
 - Tag each company's row or card with the period its figures come from. A reader scanning a table must
   never have to assume every row is the same quarter.
 - Never compare a company's current quarter against another's prior quarter as though they were the

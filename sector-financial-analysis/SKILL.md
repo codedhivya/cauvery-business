@@ -1,6 +1,6 @@
 ---
 name: sector-financial-analysis
-description: 'Builds research-grade HTML analysis artifacts for Indian listed companies across sectors: KPI dashboards, financial tables, charts, business profiles, segment breakdowns, valuation multiples, SWOT, moats, risks & outlook, brokerage ratings, CB scores and rankers, metric explainers, full quarterly reports, and policy-event or corporate-action impact analysis. Use whenever the user names an Indian company or sector and wants a dashboard, snapshot, "the numbers", results, financials, P&L, a chart, how a company makes money, its business model, product mix or segments, valuation or multiples, a SWOT, strengths and weaknesses, its moat, risks or outlook, analyst views, a CB score or ranking, a verdict or "which is better", sector jargon explained (VNB, Combined Ratio, NIM, GNPA, EV/EBITDA), or a full report — also when a tariff, circular, demerger or buyback needs its impact on named companies assessed. Trigger on implicit asks too, like "how did SBI do". Covers insurance and banking.'
+description: 'Builds research-grade HTML analysis artifacts for Indian listed companies across sectors: KPI dashboards, financial tables, charts, business profiles, segment breakdowns, valuation multiples, SWOT, moats, risks & outlook, brokerage ratings, CB scores and rankers, metric explainers, full quarterly reports, and policy-event or corporate-action impact analysis. Use whenever the user names an Indian company or sector and wants a dashboard, snapshot, "the numbers", results, financials, P&L, a chart, how a company makes money, its business model, product mix or segments, valuation or multiples, a SWOT, strengths and weaknesses, its moat, risks or outlook, analyst views, a CB score or ranking, a verdict or "which is better", sector jargon explained (VNB, NIM, GNPA, SSSG, ARPOB), or a full report — also when a tariff, demerger or buyback needs its impact on named companies assessed. Trigger on implicit asks like "how did SBI do". Covers insurance, banking, consumer, capital goods, power & energy, pharma & healthcare.'
 ---
 
 # Sector Financial Analysis
@@ -46,6 +46,10 @@ Identify each company's sector and load `references/sectors/<sector>.md`.
 |---|---|
 | `insurance` | LIC, ICICI Prudential Life, HDFC Life, SBI Life, Axis Max Life, Star Health, Niva Bupa, ICICI Lombard, Medi Assist; VNB, Combined Ratio, solvency, premium |
 | `banking` | SBI, HDFC Bank, ICICI Bank, Axis, Kotak, BoB, PNB, Canara, IndusInd, AU SFB; NIM, GNPA, CASA, advances, deposits |
+| `consumer` | DMart, V2 Retail, Aditya Birla Fashion, Page, United Spirits, Radico, United Breweries, Sula, IHCL, EIH, Chalet, Lemon Tree, KPR Mill, sugar and dairy names; SSSG, footfall, RevPAR, occupancy, cane crush, yarn |
+| `capital-goods` | BHEL, HAL, RVNL, IRFC, Dixon, Kaynes, Syrma, Amber, Polycab, MTAR, INOX India, Shakti Pumps, ABB, Siemens Energy, Hitachi Energy, CG Power, Voltamp; order book, book-to-bill, execution, EMS, defence, railways |
+| `power-energy` | Adani Power, Tata Power, JSW Energy, NTPC, ACME Solar, Emmvee, ONGC, Reliance, IOC/BPCL/HPCL, IEX; PLF, PPA, merchant tariff, ALMM, cell/module, GRM, crude |
+| `pharma-health` | Sun Pharma, Dr Reddy's, Cipla, Lupin, Divi's, Aurobindo, Zydus, Torrent, Mankind, Alkem, Laurus, Gland, Sai Life, hospitals and diagnostics; USFDA, ANDA, Para IV, ARPOB, occupancy |
 
 Sectors not yet built have no file. **If a request names a company from an unbuilt sector, say so
 plainly** — offer to work from general principles without sector-specific benchmarks, or to add that

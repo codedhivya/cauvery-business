@@ -97,7 +97,13 @@ KNOWN_SECTIONS = {
     "metrics editor", "seasonality", "reasoning",
 }
 
-STOP = {"YOY", "QOQ", "CAGR", "PAT", "EBITDA", "ROE", "ROA"}  # universal; not sector-specific
+# Universal accounting/valuation terms — these appear everywhere and are not sector knowledge,
+# so flagging them as "undefined in the sector file" is noise that trains people to ignore the tool.
+STOP = {
+    "YOY", "QOQ", "CAGR", "PAT", "PBT", "EBITDA", "EBIT", "ROE", "ROA", "ROCE", "EPS",
+    "OPM", "NPM", "BOOK VALUE", "P/B", "P/BV", "P/E", "EV/EBITDA", "CAPEX", "NET DEBT",
+    "GROSS MARGIN", "EBITDA MARGIN", "WORKING CAPITAL",
+}
 
 
 def md5(path):
