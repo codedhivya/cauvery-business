@@ -10,9 +10,9 @@ consistent with how the same metric is described in every other artifact.
 
 ## Step 1 — Match depth to the ask
 
-- **A single concept question** ("what is embedded value?") → answer directly in chat: one or two
-  paragraphs, the sector's analogy, one small worked example. Don't force an HTML artifact onto a
-  one-term question.
+- **A single concept question** ("what does this metric actually measure?") → answer directly in chat:
+  one or two paragraphs, the sector's analogy, one small worked example. Don't force an HTML artifact
+  onto a one-term question.
 - **A full reference guide** — someone wanting the whole metric system, studying the sector, or asking
   for a cheat-sheet → build the artifact.
 - **Personalised** — where a company is named or already under discussion, pull its real disclosed

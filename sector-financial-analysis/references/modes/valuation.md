@@ -5,8 +5,9 @@ peers and the company's own history. Distinct from `verdict.md`, which weighs va
 and quality to reach an overall read — this mode does valuation properly on its own terms.
 
 Read the loaded sector file for **which multiple leads** in that sector. This matters more than it
-sounds: applying a P/E to a business the market values on book, or on embedded value, or on distribution
-yield produces a number that is arithmetically correct and analytically meaningless.
+sounds: applying a P/E to a business the market values on book value, or on a sector-specific measure of
+intrinsic worth, or on distribution yield produces a number that is arithmetically correct and
+analytically meaningless.
 
 ## Step 1 — Establish the right multiple
 

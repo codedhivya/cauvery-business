@@ -65,6 +65,27 @@ Each phase re-runs the full validation suite in [AGENTS.md](AGENTS.md).
 
 ---
 
+## The one thing the checks cannot verify
+
+`scripts/verify_skill.py` confirms the skill's content and rules are present and correct — 49 checks.
+It cannot confirm the router **triggers unprompted**, because any session that authored the files has
+them in context whether the skill loads or not.
+
+That needs a fresh session. Ask these six, in order:
+
+| Ask | Correct behaviour |
+|---|---|
+| `what is CASA and why does it matter` | Answers **in chat**. Says CASA cannot be bought quickly; gives >40% / >45% |
+| `compare HDFC Bank and Tata Steel on EBITDA` | **Refuses** — banks have no meaningful EBITDA. The most dangerous silent failure |
+| `what's India's GDP growth this year` | **Stays quiet** — no skill invocation. Over-triggering is the likelier fault |
+| `how did Tata Steel do in Q1 FY27` | Chat answer citing EBITDA per tonne and captive ore |
+| `should I buy Syrma SGS` | Declines the recommendation, offers a fundamentals read |
+| `build me a full report on Polycab` | **Builds a file**, to `reports/staging/`, with the earnings-quality header |
+
+If only three: the first, second and third — they cover doesn't-trigger, triggers-but-breaks-a-guardrail,
+and triggers-when-it-shouldn't. If triggering is wrong the fix is the description (`skill-creator` has an
+optimisation loop for it); if content is wrong it is a sector-file edit.
+
 ## Keeping the skill current with the corpus
 
 The corpus is not frozen — reports arrive that the skill didn't generate. `scripts/audit_corpus.py`

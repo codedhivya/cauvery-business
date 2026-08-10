@@ -98,7 +98,23 @@ other agent environments — porting means editing one file, not fifteen.
 
 ---
 
-## After changing the skill, run these
+## After changing the skill, run this
+
+```bash
+python3 scripts/verify_skill.py
+```
+
+49 checks in one command: the structural contracts (no sector metric in a mode file, no tool name or path
+outside `output-conventions.md`, no hardcoded period, every CSS class resolves), per-sector completeness
+(10 numbered sections, 9 delegation targets, CB weights totalling 100%), that each sector still carries
+its defining insight, that every refusal survives, and that the router's depth-routing and scope limits
+are intact. Exit 1 on failure, so it works in CI or a pre-commit hook.
+
+**What it cannot check**: whether the router triggers unprompted. That needs a session that did not
+author the files — see the fresh-session questions in [ROADMAP.md](ROADMAP.md).
+
+The individual greps below are what the script automates, kept here for when you want to run one in
+isolation:
 
 ```bash
 cd sector-financial-analysis/references
