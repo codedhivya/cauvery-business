@@ -115,10 +115,21 @@
 | PAT Quality | 25% | |
 | Forward Outlook | 20% | |
 
-> Must total 100%. Substitute only where the generic component is genuinely meaningless or misleading
-> here; keep the core weights otherwise. Capital-intensive sectors typically substitute part of
-> Profitability for Debt/Leverage and Cash Flow. Financial sectors must never use Debt/Leverage, since
-> borrowing is the business model rather than a risk.
+> **Must total 100%.** Substitute only where the generic component is genuinely meaningless or misleading
+> here; keep the core weights otherwise. Financial sectors must never use Debt/Leverage, since borrowing
+> is the business model rather than a risk.
+>
+> **The four rows above are the default, not a limit.** A sector may split or add a component where the
+> economics demand it, provided the total is still 100%. Worked precedents already in the repo:
+> - `banking.md` — Asset Quality replaces PAT Quality (for a bank, asset quality *is* profit quality)
+> - `insurance.md` — capital adequacy replaces Forward Outlook (solvency is the binding growth constraint)
+> - `pharma-health.md` — Regulatory & Outlook replaces Forward Outlook (a USFDA import alert can remove a
+>   site's revenue outright, so regulatory standing *is* the outlook)
+> - `power-energy.md` — **five components**: PAT Quality drops to 15%, an explicit Debt & Cash Flow
+>   component takes 20%, Outlook 10%. An IPP at 5× net debt/EBITDA is normal infrastructure gearing, and
+>   scoring it against a manufacturing threshold would be wrong
+> - `capital-goods.md` — order inflow and book-to-bill substitute into Growth; cash conversion and debtor
+>   days into PAT Quality
 
 ### Extra sections (`quarterly-report`)
 

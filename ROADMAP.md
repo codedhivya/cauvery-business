@@ -84,9 +84,33 @@ Extend `SECTOR_KEYWORDS` in the script whenever a sector is added.
 
 ## How to add a sector
 
-**This should be a one-file job.** If a sector seems to need a mode file changed, it almost certainly
-needs a substitution declared in its own sector file instead — check `insurance.md` and `banking.md`
-first, since they sit at opposite ends of the metric spectrum and neither required a mode change.
+**This should be a one-file job.** Six sectors are built and **none required a mode-file change** — they
+span insurers, banks, hotels, order-book manufacturers, oil refiners and hospitals. If a seventh seems to
+need a mode edited, it almost certainly needs a substitution declared in its own sector file instead.
+
+### Which existing file to copy from
+
+Start from the closest precedent rather than the template alone — it will be substantially complete:
+
+| Building | Closest precedent | Why |
+|---|---|---|
+| `nbfc-hfc` | **`banking.md`** | Lender economics, asset quality, cost of funds. But **no CASA and no deposit franchise** — NBFCs are borrowing-funded, so the funding-cost and ALM discussion replaces CASA entirely |
+| `capital-markets` | **`banking.md`** + fund treatment | Financial sector (never Debt/Leverage). Exchanges and depositories are network businesses on take-rate; AMCs on AUM and yield; **`edelweiss_ipo_fund_analysis` needs mutual-fund metrics** — AUM, NAV, active share, expense ratio, portfolio turnover |
+| `auto` | **`consumer.md`** + **`capital-goods.md`** | Volume, realisation, ASP and capacity utilisation from consumer; supply-chain and input-cost pass-through from capital-goods |
+| `it-services` | none — new territory | Headcount, utilisation, attrition, revenue per employee, deal TCV, constant-currency growth. No close analogue exists yet |
+| `metals`, `cement`, `chemicals` | **`power-energy.md`** | Capital-intensive commodity processors — realisation per tonne, capacity utilisation, and the Debt & Cash Flow CB component |
+| `infra-realty` | **`power-energy.md`** | Long-dated contracted assets; **REITs/InvITs need trust treatment** — DPU, distribution yield, concession period, not operating-company metrics |
+| `telecom` | **`power-energy.md`** | ARPU, subscriber base, capex intensity, spectrum liabilities; heavy regulatory overlay (TRAI) |
+
+### Phase 2 judgment calls, so they aren't re-litigated
+
+- **Power *equipment* makers belong in `capital-goods`, not `power-energy`.** ABB, Siemens Energy, Hitachi
+  Energy, Voltamp and CG Power are order-book businesses judged on book-to-bill; generators are
+  capacity-and-tariff businesses judged on PLF. Both are "power" companies and they are analysed
+  differently.
+- **`power-energy` uses a five-component CB Rating.** Deliberate — see the template's note.
+- **Two disciplines are mandatory, not optional**: refiners must separate inventory gain/loss from core
+  GRM, and capital-goods reports must carry a working-capital table.
 
 ### 1. Find the sector's existing reports
 
