@@ -37,7 +37,8 @@ MANIFEST = os.path.join(ROOT, "docs", "corpus-manifest.json")
 # Sector keyword map — mirrors the taxonomy in ROADMAP.md. Extend when adding a sector.
 SECTOR_KEYWORDS = {
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib"],
-    "nbfc-hfc": ["nbfc", "hfc", "pfc", "rec", "ireda", "jio_financial"],
+    # note: "rec" alone would match "Recycling"; use the paired filename form instead
+    "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jio_financial"],
     "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici"],
     "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss", "ipo"],
     "it-services": ["it_services", "tcs", "hcl", "infoedge", "fractal"],
