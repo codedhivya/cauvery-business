@@ -14,7 +14,9 @@ how fast it turns into revenue, and at what margin. Nearly every metric here ser
 |---|---|---|
 | **Defence** | Platforms, systems and components for the armed forces; long cycles, single dominant customer | HAL-type platform makers, defence electronics, precision components |
 | **Railways** | Rolling stock, track, signalling, and railway financing | RVNL, IRFC, rolling-stock and component makers |
-| **EMS** | Electronics manufacturing services — contract manufacturing for brands | Dixon, Kaynes, Syrma SGS, Amber |
+| **EMS — box-build** | High-volume consumer assembly. The customer owns the design; the manufacturer earns a conversion fee. Enormous revenue, thin margin, working-capital heavy | Dixon |
+| **EMS — design-led / ODM** | Contributes design and owns some IP. ODM work earns materially better margin than pure contract assembly | Syrma SGS, Amber |
+| **EMS — industrial / semiconductor** | Industrial, aerospace, medical and semiconductor packaging (OSAT). Longer qualification cycles, fewer competitors, better pricing — but heavy capex | Kaynes |
 | **Cables & Wires** | Wires, cables, and increasingly FMEG products | Polycab, Bajel |
 | **Power T&D Equipment** | Transformers, switchgear, grid equipment — sells *to* the power sector, not part of it | Hitachi Energy India, ABB India, Siemens Energy India, Voltamp, CG Power |
 | **Industrial Equipment** | Pumps, cryogenic and process equipment, specialised engineering | MTAR Technologies, INOX India, Shakti Pumps, Shaily Engineering, VA Tech Wabag (water) |
@@ -81,7 +83,9 @@ Indicative — read against the company's own cycle and its category.
 | Book-to-bill | >1.0; sustained >1.2 is strong |
 | Order book / revenue | 2–3× for defence and railways; ~1× or less is normal for EMS |
 | EBITDA margin (defence, precision) | 15–25% |
-| EBITDA margin (EMS) | 4–8% — structurally thin; scale and mix are the levers |
+| **EBITDA margin (EMS — box-build)** | **2–4%** — structurally thin; scale and working capital are the levers |
+| **EBITDA margin (EMS — design-led / ODM)** | **9–13%** — design contribution and IP lift the band |
+| **EBITDA margin (EMS — industrial / semiconductor)** | **14–18%** — qualification barriers and fewer competitors |
 | EBITDA margin (cables & wires) | 11–14% |
 | EBITDA margin (power T&D equipment) | 12–18% |
 | Debtor days | <90 comfortable; >120 warrants explanation, especially with PSU customers |
@@ -94,8 +98,11 @@ Indicative — read against the company's own cycle and its category.
   margin)? Are deliveries slipping on supply-chain constraints? How concentrated is the customer?
 - **Railways** — Is the government capex cycle supporting inflow? Are receivables from PSU customers
   lengthening? Is the order mix shifting toward higher-margin systems?
-- **EMS** — Is customer concentration falling? Is the mix moving from box-build assembly toward
-  higher-value components? What is PLI's share of reported profit, and when does it end?
+- **EMS** — **Establish the ladder position before judging the margin.** A box-build assembler earning 3%
+  is performing normally; an industrial EMS earning 3% would be in serious trouble. The comparable
+  question is not the level but the **direction within the band**, and whether the mix is moving up the
+  ladder — box-build → design-led/ODM → industrial. Then: is customer concentration falling? What is
+  PLI's share of reported profit, and when does it end?
 - **Cables & Wires** — Is copper/aluminium cost being passed through? Is the FMEG segment scaling? Is
   distribution reach expanding?
 - **Power T&D Equipment** — Is grid capex driving inflow? Is pricing discipline holding, or is the order
@@ -150,6 +157,11 @@ grid equipment — worth tracking as a sector event, not just company news.
 
 All are industry norms, not regulatory thresholds — label them as such.
 
+**Charting EMS margins needs three reference lines, not one.** Plotting Dixon, Syrma and Kaynes against a
+single band makes the box-build player look broken and the industrial player look exceptional, when both
+are performing normally for their rung. Draw the ladder bands — ~3% box-build, ~11% design-led,
+~16% industrial — and label each, or plot the categories on separate charts.
+
 ### Profile coverage by category (`business-profile`)
 
 Cover for every company: **business model and verticals**, the **order book composition** (by customer
@@ -169,9 +181,12 @@ considerations**, which recur as an explicit section in these reports.
   extremely hard to displace, because requalification is slow and risky for the customer. Cite the
   platforms qualified on.
 - **Railways** — approved-vendor status and long qualification cycles.
-- **EMS** — usually thinner than claimed. Scale and customer intimacy are real; assembly itself is
-  commoditised. Be sceptical of "PLI advantage" as a moat — it is a time-limited subsidy available to
-  competitors too, and it ends.
+- **EMS** — depends entirely on the rung. **Box-build assembly has a thin moat**: it is commoditised, and
+  scale plus customer intimacy is the honest claim. **Industrial and semiconductor EMS has a real one** —
+  qualification cycles for aerospace, medical and OSAT work run years, and a qualified supplier is
+  costly to displace. Design-led/ODM sits between: owned IP and design contribution create some lock-in.
+  Be sceptical of "PLI advantage" as a moat — it is a time-limited subsidy available to competitors too,
+  and it ends.
 - **Cables** — brand plus distribution reach in a market where electricians and contractors drive choice;
   hard to build quickly.
 - **Power T&D** — MNC parent technology access, installed base driving service and replacement revenue.
@@ -192,7 +207,7 @@ Order-driven and working-capital-heavy, so both the growth and quality component
 | Component | Weight | Capital-goods substitution |
 |---|---|---|
 | Growth | 30% | **Order inflow and book-to-bill**, alongside revenue growth — revenue growth without order inflow is executing the backlog down |
-| Profitability | 25% | EBITDA margin level and direction, judged against the category norm (EMS 4–8% is not weak) |
+| Profitability | 25% | EBITDA margin **direction**, judged against the company's own category band — for EMS, its rung on the ladder (box-build 2–4%, design-led 9–13%, industrial 14–18%). Scoring raw margin across rungs measures positioning, not performance |
 | PAT Quality | 25% | **Operating cash conversion and debtor days** — profit stuck in PSU receivables is not profit yet |
 | Forward Outlook | 20% | Order book / revenue visibility, execution commentary, policy and capex pipeline |
 

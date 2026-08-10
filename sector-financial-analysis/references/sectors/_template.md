@@ -48,8 +48,20 @@
 | | |
 
 > Ground these in real disclosed figures from this sector's companies rather than generic rules of
-> thumb. Note where a benchmark differs by category. Where the *trend* matters more than the level, say
-> so — several sectors are like this and a static threshold misleads.
+> thumb. Where the *trend* matters more than the level, say so — several sectors are like this and a
+> static threshold misleads.
+>
+> **Give margin benchmarks per category, never one band for the whole sector.** This is the most common
+> defect in a sector file, and it was found in two of the first ten. A single "sector norm" makes a
+> structurally thin business look broken and a structurally rich one look excellent, when both are
+> performing normally for what they are. `capital-goods.md` originally quoted one EMS band of 4–8%; real
+> data ranged from 3% (box-build assembly) to 15.6% (industrial and semiconductor) — the band described
+> one sub-category and was applied to all of them.
+>
+> The test: **if two companies in this sector could both be performing well while their margins differ by
+> more than a few points, the benchmark must be split** — and §1's taxonomy probably needs splitting too,
+> since a single benchmark across a heterogeneous category usually means the category itself is too
+> coarse.
 
 **What to watch, by category:**
 

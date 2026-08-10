@@ -171,10 +171,15 @@ carrying a figure forward.
 | AMC revenue yield | 50 bps | "Typical blended yield" — industry norm |
 | AMC opex / QAAUM | 25 bps | "Efficient cost structure" |
 | Equity AUM share | 45% | "Mix threshold for yield" |
-| EBITDA margin | 55% | "Sector norm" — these are structurally high-margin businesses |
+| EBITDA margin | **use the category's own band** | AMC 55–70%, depository 55–65%, exchange 50–65%, broker 40–55% |
 
 All industry norms, not regulatory thresholds. For funds, plot NAV returns against the benchmark rather
 than in isolation.
+
+**Do not draw one EBITDA-margin line across these categories.** The bands span 40% to 70%, so a single
+"sector norm" line makes a discount broker at 45% look weak when it is performing normally, and flatters
+an AMC at 56% when it is at the bottom of its own band. Draw the relevant category band, or chart the
+categories separately.
 
 ### Profile coverage by category (`business-profile`)
 
