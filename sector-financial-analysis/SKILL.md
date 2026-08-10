@@ -1,6 +1,6 @@
 ---
 name: sector-financial-analysis
-description: 'Builds research-grade HTML analysis artifacts for Indian listed companies across sectors: KPI dashboards, financial tables, charts, business profiles, segment breakdowns, valuation multiples, SWOT, moats, risks & outlook, brokerage ratings, CB scores and rankers, metric explainers, full quarterly reports, and policy-event or corporate-action impact analysis. Use whenever the user names an Indian company or sector and wants a dashboard, snapshot, "the numbers", results, financials, a chart, how a company makes money, its business model, segments, valuation, a SWOT, its moat, risks or outlook, analyst views, a CB score or ranking, a verdict or "which is better", sector jargon explained (VNB, NIM, GNPA, TCV, ARPOB), or a full report — also when a tariff, demerger or buyback needs its impact on named companies assessed. Trigger on implicit asks like "how did SBI do". Covers 10 sectors: banking, NBFC, insurance, capital markets, IT services, pharma/healthcare, auto, consumer, capital goods, power/energy.'
+description: 'Builds research-grade HTML analysis artifacts for Indian listed companies across sectors: KPI dashboards, financial tables, charts, business profiles, segment breakdowns, valuation multiples, SWOT, moats, risks & outlook, brokerage ratings, CB scores and rankers, metric explainers, full quarterly reports, and policy-event or corporate-action impact analysis. Use whenever the user names an Indian company or sector and wants a dashboard, snapshot, "the numbers", results, financials, a chart, how a company makes money, its business model, segments, valuation, a SWOT, its moat, risks or outlook, analyst views, a CB score or ranking, a verdict or "which is better", sector jargon explained (VNB, NIM, GNPA, TCV, ARPU), or a full report — also when a tariff, demerger or buyback needs its impact assessed. Trigger on implicit asks like "how did SBI do". Covers all 15 sectors: banking, NBFC, insurance, capital markets, IT, pharma, auto, consumer, capital goods, power, metals, cement, chemicals, infra/realty, telecom.'
 ---
 
 # Sector Financial Analysis
@@ -54,6 +54,11 @@ Identify each company's sector and load `references/sectors/<sector>.md`.
 | `capital-markets` | BSE, MCX, CDSL, NSDL, CAMS, KFintech, Angel One, Groww, HDFC/ICICI Pru/SBI/UTI/ABSL AMC, mutual funds; QAAUM, SIP, demat accounts, ADTO, take rate, TER |
 | `it-services` | TCS, Infosys, HCLTech, Wipro, Tech Mahindra, LTIMindtree, Persistent, Coforge, Mphasis, InfoEdge, Fractal; TCV, utilisation, attrition, constant currency, BFSI mix |
 | `auto` | Hero, Bajaj Auto, TVS, Eicher, Ather, Maruti, M&M, Tata Motors, Uno Minda, Endurance, Craftsman, Pricol, Lumax, Belrise, Exide, Amara Raja, tyres; volumes, realisation, OEM vs replacement, EV penetration |
+| `metals` | Tata Steel, JSW Steel, SAIL, Jindal, Shyam Metallics, Hindalco, NALCO, Vedanta, Hindustan Zinc; EBITDA/tonne, captive ore & coal, LME, realisation |
+| `cement` | UltraTech, Ambuja, ACC, Shree, Ramco, JSW Cement, Dalmia, JK Cement; EBITDA/tonne, clinker vs grinding, lead distance, pet coke, regional mix |
+| `chemicals` | SRF, Aarti, Deepak Nitrite, Vinati, Balaji Amines, Alkyl Amines, Galaxy, Finolex, Supreme, Astral, Asian Paints, Berger, Coromandel, Chambal; specialty vs commodity vs fertiliser vs pipes vs paints |
+| `infra-realty` | DLF, Prestige, Oberoi Realty, Sobha, Brigade, Godrej Properties, Anant Raj, Adani Ports, JSW Infrastructure, Gujarat Pipavav, office REITs and InvITs; pre-sales, collections, cargo, DPU |
+| `telecom` | Bharti Airtel, Vodafone Idea, Indus Towers, Tata Communications, Bharti Hexacom; ARPU, subscribers, churn, spectrum and AGR dues |
 
 Sectors not yet built have no file. **If a request names a company from an unbuilt sector, say so
 plainly** — offer to work from general principles without sector-specific benchmarks, or to add that

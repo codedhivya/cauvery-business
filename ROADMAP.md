@@ -13,10 +13,10 @@ in those reports isn't stranded in static HTML.
 | | |
 |---|---|
 | **Architecture** | ✅ Complete — router, 15 modes, 3 shared references, template |
-| **Sectors built** | ✅ 10 of 15 — `insurance`, `banking`, `consumer`, `capital-goods`, `power-energy`, `pharma-health`, `nbfc-hfc`, `capital-markets`, `it-services`, `auto` — 76 reports |
-| **Sectors remaining** | 5 sectors, 15 reports — all Phase 4 |
+| **Sectors built** | ✅ **all 15** — every sector family in the corpus — 91 reports |
+| **Sectors remaining** | **none** — the build is complete |
 
-**The 98 reports break down as:** 91 belong to the 15 sector families (**76 done, 15 remaining**), and 7
+**The 98 reports break down as:** 91 belong to the 15 sector families (**all 91 covered**), and 7
 are cross-sector — handled by the cross-sector *scope* rather than a sector file. **2 of those 7 are the
 market-news digests** (`Market_breaking_news_*`), deliberately excluded: a headline roundup is journalism,
 not company evaluation. That leaves 5 genuine cross-sector reports (the rankers and multi-sector
@@ -42,12 +42,12 @@ Derived by auditing all 98 reports. Report counts drive build order — biggest 
 | **capital-markets** | 6 | ✅ **Done** | broking, exchanges, depositories, AMC, **funds/IPO funds** |
 | **it-services** | 6 | ✅ **Done** | |
 | **nbfc-hfc** | 5 | ✅ **Done** | **separate from banking** — no CASA, borrowing-funded, valued differently |
-| chemicals | 5 | ⬜ Phase 4 | specialty, PVC, paints, fertilizers, recycling |
-| metals | 4 | ⬜ Phase 4 | steel, aluminium |
+| **chemicals** | 5 | ✅ **Done** | specialty, PVC, paints, fertilizers, recycling |
+| **metals** | 4 | ✅ **Done** | steel, aluminium |
 | **insurance** | **3** | ✅ **Done** | life, health (SAHI), general, TPA |
-| infra-realty | 3 | ⬜ Phase 4 | real estate, ports, **REITs/InvITs** |
-| cement | 2 | ⬜ Phase 4 | |
-| telecom | 1 | ⬜ Phase 4 | |
+| **infra-realty** | 3 | ✅ **Done** | real estate, ports, **REITs/InvITs** |
+| **cement** | 2 | ✅ **Done** | |
+| **telecom** | 1 | ✅ **Done** | |
 
 **Two sectors contain non-operating asset classes** needing explicit treatment, not exclusion:
 `capital-markets` covers mutual funds (AUM, NAV, active share, expense ratio — `edelweiss_ipo_fund_analysis`),
@@ -59,7 +59,7 @@ Their sector files must say plainly that these are analysed as funds/trusts, not
 - **Phase 1** ✅ — architecture + insurance + banking
 - **Phase 2** ✅ — consumer (13), capital-goods (10), power-energy (10), pharma-health (9) → 42 reports
 - **Phase 3** ✅ — auto (7), capital-markets (6), it-services (6), nbfc-hfc (5) → 24 reports
-- **Phase 4** — chemicals (5), metals (4), infra-realty (3), cement (2), telecom (1) → 15 reports
+- **Phase 4** ✅ — chemicals (5), metals (4), infra-realty (3), cement (2), telecom (1) → 15 reports
 
 Each phase re-runs the full validation suite in [AGENTS.md](AGENTS.md).
 
@@ -84,22 +84,27 @@ Extend `SECTOR_KEYWORDS` in the script whenever a sector is added.
 
 ## How to add a sector
 
-**This should be a one-file job.** Ten sectors are built and **none required a mode-file change** — they
-span insurers, banks, NBFCs, exchanges, hotels, order-book manufacturers, oil refiners, hospitals, IT
-services and vehicle makers. If the eleventh seems to need a mode edited, it almost certainly needs a
-substitution declared in its own sector file instead.
+**All fifteen sector families in the corpus are built, and none required a mode-file change.** They span
+insurers, banks, NBFCs, exchanges, hotels, order-book manufacturers, refiners, hospitals, IT services,
+vehicle makers, steel mills, cement plants, chemical producers, property developers and telcos — on the
+same fifteen unmodified mode files. That is the strongest available evidence the abstraction holds.
 
-### Which existing file to copy from — the five remaining
+The instructions below apply to a **sixteenth** sector, if the corpus ever grows beyond these families
+(aviation, shipping, media and healthcare-adjacent services are the plausible candidates).
+
+### Which existing file to copy from
 
 Start from the closest precedent rather than the template alone — it will be substantially complete:
 
-| Building | Closest precedent | Why |
+| If the new sector is… | Copy from | Why |
 |---|---|---|
-| `metals` | **`power-energy.md`** + **`auto.md`** | Capital-intensive commodity processor — realisation per tonne, capacity utilisation, the Debt & Cash Flow CB component; volume/realisation framing from auto |
-| `cement` | **`power-energy.md`** + **`auto.md`** | Same shape as metals, plus regional pricing and freight economics. Note existing reports call the school tab **"Cement School"** |
-| `chemicals` | **`power-energy.md`** | Specialty vs commodity split is the key taxonomy — specialty behaves like pharma (customer-embedded, better margin), commodity like metals. Fertilisers carry a subsidy overlay |
-| `infra-realty` | **`power-energy.md`** | Long-dated contracted assets; **REITs/InvITs need trust treatment** — DPU, distribution yield, concession period, not operating-company metrics. Real estate needs pre-sales, collections and unsold inventory |
-| `telecom` | **`power-energy.md`** + **`it-services.md`** | ARPU, subscriber base, capex intensity, spectrum liabilities and AGR dues; heavy regulatory overlay (TRAI). One existing report is **bilingual** |
+| A lender or fee-earning financial | `banking.md`, `nbfc-hfc.md`, `capital-markets.md` | Never uses Debt/Leverage in CB Rating; asset quality or funding substitutes |
+| A capital-intensive commodity processor | `metals.md`, `cement.md`, `power-energy.md` | Per-unit economics, Debt & Cash Flow component, growth scored on **volume not revenue** |
+| An order-book manufacturer | `capital-goods.md` | Order inflow and book-to-bill into Growth; working-capital table mandatory |
+| A people or services business | `it-services.md` | Delivery Quality replaces PAT Quality — utilisation and attrition lead the P&L |
+| A consumer-facing brand or retailer | `consumer.md` | Like-for-like growth (SSSG/RevPAR) rather than headline revenue |
+| A regulated, licence-gated business | `pharma-health.md`, `telecom.md` | Regulatory standing substitutes into Forward Outlook, because a licence action can remove revenue |
+| A trust or fund, not an operating company | `capital-markets.md` (funds), `infra-realty.md` (REITs) | No P&L ranking, no CB Rating, never in a cross-sector table |
 
 ### Judgment calls from earlier phases, so they aren't re-litigated
 
@@ -120,6 +125,18 @@ Start from the closest precedent rather than the template alone — it will be s
   employee deteriorate before the P&L shows it, which is the point of the substitution.
 - **Internet/classifieds names sit inside `it-services` but use different metrics** — billings, paid
   users and segment profitability, never utilisation or TCV.
+- **Commodity sectors score growth on volume, not revenue.** `metals` and `cement` both do this: a steel
+  company whose revenue rose 30% because steel prices rose 30% has not grown, and revenue-based scoring
+  would reward the commodity cycle rather than the company.
+- **Developers are read on pre-sales, not revenue.** Reported revenue describes projects sold two or
+  three years earlier, so `infra-realty` leads its tables with pre-sales and collections. A developer can
+  post falling revenue during a record sales year.
+- **Telecom weights liabilities above profit.** Spectrum and AGR dues get a 25% CB component while PAT
+  Quality drops to 10%, because reported profit is a weak signal there while servicing government-set
+  obligations is the binding constraint. EV must include those dues.
+- **`chemicals` is five businesses, not one.** Specialty behaves like pharma, commodity like metals,
+  fertilisers are subsidy-administered, pipes are building materials and paints are consumer. Margin
+  bands span 8–25%; a single sector band would be meaningless.
 
 ### 1. Find the sector's existing reports
 
