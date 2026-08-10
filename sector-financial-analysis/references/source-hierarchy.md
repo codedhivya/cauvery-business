@@ -71,6 +71,34 @@ disclose something is a fact about that company.
 
 This applies equally to quotes, brokerage views, management commentary and analyst targets.
 
+## …but earn the "Not disclosed" first
+
+The rule above has a failure mode worth naming: **"Not disclosed" can quietly become an excuse for an
+unfinished search.** A gap labelled that way *looks* disciplined while actually meaning "my search didn't
+happen to return it" — and those are entirely different claims to a reader.
+
+**"Not disclosed" means: I made a targeted attempt for this specific figure and it is genuinely
+unavailable.** It does not mean a general search failed to surface it.
+
+### One query per company for market data
+
+Price, market cap, P/E, P/B and 52-week ranges come from market-data aggregators, and **a combined query
+naming several companies typically returns only one of them.** Searching "A, B, C and D market cap P/E"
+and accepting whatever comes back produces a table with one populated row and three false "Not disclosed"
+markers — each of which looks like a disclosure gap and is actually a search gap.
+
+**Run one query per company for market data.** The same applies to any per-company figure a batch search
+returns partially.
+
+### Completeness check before publishing a table
+
+For any table with N companies and a given field, you should be able to say for each cell: this is a real
+figure, or I looked for this specific one and it isn't available. If a row is empty simply because a
+batch search returned nothing for it, **that is not finished work** — go back and query for it directly.
+
+This matters most exactly where the reader is most likely to act: valuation multiples, regulatory status,
+and any figure that drives a ranking or a score.
+
 ## Always show direction
 
 Show the YoY (or QoQ) change alongside the absolute number, and compute it yourself from the two raw
