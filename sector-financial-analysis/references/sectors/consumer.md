@@ -266,6 +266,11 @@ Total 100%.
 - **Store / Room / Capacity Economics** — unit economics: revenue per store or per room, payback,
   maturity curve of new additions.
 - **Working Capital** — for retail, jewellery and textiles, where the cash cycle drives the equity story.
+- **Milk Chain** — dairy. Procurement → chilling → processing → distribution, with volumes and margin at
+  each stage. The corpus gives this its own section, because the chain *is* the business.
+- **Lean Season & Pricing** — dairy. How procurement cost and realisation move between flush and lean,
+  and what pricing action was taken. **Recurs as a standalone section**, and is the honest way to explain
+  a quarter that looks weak on seasonality alone.
 
 ### Event transmission map (`event-impact`, `risks-outlook`)
 
