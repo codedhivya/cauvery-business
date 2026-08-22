@@ -107,6 +107,61 @@ Because distributions are largely contracted and leverage is capped, **the unit 
 — it is rate-sensitive in a way operating companies are not. Rising bond yields compress unit prices
 mechanically, with nothing wrong at the asset level.
 
+## 2b. The explainer — teach this before any number
+
+This class needs more explaining than most, and the corpus carries a full explainer for each vehicle.
+**Reproduce this depth when teaching (`school`), and compress it to a line or two when it is context
+inside another mode.**
+
+### What is a REIT?
+
+**A SEBI-regulated trust that owns and operates income-generating real estate** — principally Grade-A
+commercial offices, retail malls and hospitality. It must distribute the large majority of NDCF to
+unitholders, quarterly.
+
+**How a REIT makes money, in order:**
+
+1. **Collects rent** from corporate tenants — MNCs, global capability centres, large domestic firms —
+   under long leases, typically 5–10 years.
+2. **Built-in escalations** raise that rent at a fixed step on a fixed cycle (Indian office leases
+   commonly step up every three years), locking in growth without any new leasing.
+3. **Re-leases expiring space at market rent.** Where in-place rent sits below market, each expiry is an
+   uplift — this is the **re-leasing spread**, and it is the reason the mark-to-market gap matters.
+4. **Acquires more assets**, funded by issuing units and debt, growing the NOI base.
+5. **Distributes** the large majority of cash flow as **DPU**, quarterly.
+
+**Structure**: a **sponsor** settles the trust and appoints an **investment manager** and a **trustee**.
+The REIT holds assets directly or through **SPVs**. Unitholders receive distributions. *The manager runs
+it; the sponsor sold the assets into it — which is why related-party acquisitions are the governance
+pressure point.*
+
+**Metrics that matter**: NOI · DPU · distribution yield · NAV · occupancy · WALE · re-leasing spread ·
+LTV · cost of debt.
+
+### What is an InvIT?
+
+**A SEBI-regulated trust that owns and operates infrastructure** — highways and toll roads, power
+transmission lines, gas pipelines, warehousing and logistics parks, telecom towers. Same distribution
+obligation as a REIT.
+
+**How an InvIT makes money — and it differs by asset:**
+
+1. **Toll roads** — collect vehicle tolls daily under long government concessions. Revenue = **traffic ×
+   toll rate**, with periodic inflation-linked rate revisions. **Carries genuine traffic risk.**
+2. **Power transmission** — collects fixed transmission tariffs from state utilities. Revenue is
+   contracted and **paid on availability, not on volume carried** — near-annuity income, the most stable
+   in the class.
+3. **Warehousing / logistics** — rent from e-commerce, FMCG, pharma and auto tenants on long leases.
+4. **Gas pipelines** — usage fees for transportation, on a regulated tariff.
+5. **Acquires more assets** to grow NDCF and therefore DPU.
+
+**Metrics that matter**: NDCF · DPU · distribution yield · EBITDA · **residual concession period** ·
+traffic growth (toll) · **availability** (transmission) · LTV · cost of debt · weighted asset life.
+
+**The teaching point to close on**: a REIT's building still stands when the leases roll; an InvIT's
+concession ends and the asset reverts. That single difference explains the yield gap, the NAV
+methodology, and why an InvIT's distribution must be decomposed before it is compared to anything.
+
 ## 3. Metric definitions
 
 ### Core to every category
@@ -416,7 +471,7 @@ Uses the shared design system. Two additions specific to this file:
 | `analyst-ratings` | applies | Coverage is thinner than for large caps; omit rather than pad |
 | `verdict` | applies | Frame as suitability by income objective, **never as buy/sell/hold** |
 | `cb-rating` | core | Substituted parameter set above; state it on any rendered score |
-| `school` | core | "REIT & InvIT School". The corpus carries full **"What is a REIT?"** and **"What is an InvIT?"** explainers — definition, SEBI regulation, how income reaches the unitholder, minimum investment, and the contrast between the two. Reproduce that depth; this class needs more explaining than most |
+| `school` | core | "REIT & InvIT School". **Section 2b carries the full explainer for each vehicle** — definition, structure, how money reaches the unitholder step by step, and the metrics that matter. Teach from it directly; this class needs more explaining than most |
 | `quarterly-report` | core | Distribution & Coverage section effectively mandatory |
 | `event-impact` | core | Rate and regulation moves transmit unusually directly |
 

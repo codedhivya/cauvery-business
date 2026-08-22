@@ -204,6 +204,19 @@ the mixed-reporting-season convention.
 
 ---
 
+## Never point at the corpus for content the skill lacks
+
+A sector file may *cite* the corpus as justification — "a Raw Materials table, which recurs in existing
+reports" — because the instruction still says what to produce: input, price movement, cost per tonne.
+
+It may **not** instruct the skill to match a standard it cannot see. `reit-invit.md` briefly told the
+skill to "reproduce the depth" of the report's "What is a REIT?" explainer without carrying that
+explainer. That is a dangling reference: at runtime the skill has the sector file and not the report, so
+the instruction is unactionable and silently degrades to whatever the model already knew.
+
+**The test**: does the sentence tell the skill *what to produce*, or only tell it to *match something it
+can't see*? The first is fine. The second is a bug — write the content into the file.
+
 ## Taxonomy audit — how sector categories should be derived
 
 Prompted by the REIT/InvIT rebuild (ADR-0012), all 17 sector files were audited against the reports they
