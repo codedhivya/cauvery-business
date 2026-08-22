@@ -274,6 +274,8 @@ industry grew 18% is losing share, and the headline will not say so.
 
 ## 8. Company colour palette
 
+**The companies named here are illustrative as at authoring, not the current universe.** Anything listed since belongs in the analysis too — see "Establish the universe before ranking anything" in `source-hierarchy.md`.
+
 | Company | Main | Soft tint |
 |---|---|---|
 | BSE | #1e3a5f | #eff6ff |

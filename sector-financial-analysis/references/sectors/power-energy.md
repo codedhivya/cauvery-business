@@ -318,6 +318,8 @@ a company's PLF means little without the national or regional average alongside 
 
 ## 8. Company colour palette
 
+**The companies named here are illustrative as at authoring, not the current universe.** Anything listed since belongs in the analysis too — see "Establish the universe before ranking anything" in `source-hierarchy.md`.
+
 | Company | Main | Soft tint |
 |---|---|---|
 | Adani Power | #c84b2f | #fef3f0 |

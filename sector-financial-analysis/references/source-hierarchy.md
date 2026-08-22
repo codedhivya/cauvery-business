@@ -149,3 +149,30 @@ change a conclusion about whether a company is compliant.
 
 **Where a sector file carries a dated value, treat the date as part of the fact.** If it is old relative
 to the period being analysed, re-source before using it.
+
+## Establish the universe before ranking anything
+
+**Company and trust names in a sector file are illustrative, written when that file was authored. They
+are not the current universe.** Companies list, delist, demerge and get renamed; a sector file is a
+reference for *metrics and framing*, never a roster.
+
+This matters most for **sector sweeps, rankings and leaderboards**, where the set being ranked defines
+the answer. A "best distribution yield" table that silently omits a trust listed last quarter is not
+merely incomplete — **it names the wrong winner**, with full confidence and no visible defect.
+
+Before any sweep, ranking, leaderboard or "who is best" answer:
+
+1. **Source the current constituent list** for the period being analysed — the exchange, the industry
+   body, or the regulator's own list of registered entities. The sector file's "Where to look" section
+   names the right body.
+2. **Reconcile against the sector file's names.** Anything in the file that no longer exists, and
+   anything current that the file does not mention, are both findings worth a line.
+3. **State the universe and its as-at date** in the output. "The 5 listed REITs and 7 public InvITs as at
+   <date>" is honest; an unqualified "best yield" is not.
+4. **Say what you excluded and why** — unlisted, privately placed, too recently listed to have a
+   comparable period.
+
+**A ranking also needs a comparable period.** Entities report at different times, so a leaderboard built
+mid-season can mix one company's latest quarter with another's previous one. Either align on the most
+recent period *all* of them have reported, or label each entry with its own period. Never let the two mix
+silently — that is how a stale figure wins a category.

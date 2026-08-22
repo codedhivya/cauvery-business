@@ -213,6 +213,8 @@ broker channel checks — attribute those to the house that published them rathe
 
 ## 8. Company colour palette
 
+**The companies named here are illustrative as at authoring, not the current universe.** Anything listed since belongs in the analysis too — see "Establish the universe before ranking anything" in `source-hierarchy.md`.
+
 | Company | Main | Soft tint |
 |---|---|---|
 | UltraTech Cement | #1d4ed8 | #eff6ff |

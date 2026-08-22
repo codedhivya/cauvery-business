@@ -263,6 +263,8 @@ question — this is one of the few places where a primary source is this direct
 
 ## 8. Company colour palette
 
+**The companies named here are illustrative as at authoring, not the current universe.** Anything listed since belongs in the analysis too — see "Establish the universe before ranking anything" in `source-hierarchy.md`.
+
 | Company | Main | Soft tint |
 |---|---|---|
 | Sun Pharma | #ea580c | #fff7ed |

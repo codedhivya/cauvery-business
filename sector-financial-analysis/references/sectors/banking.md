@@ -215,6 +215,8 @@ and the headline number alone won't say so.
 
 ## 8. Company colour palette
 
+**The companies named here are illustrative as at authoring, not the current universe.** Anything listed since belongs in the analysis too — see "Establish the universe before ranking anything" in `source-hierarchy.md`.
+
 | Bank | Main | Soft tint |
 |---|---|---|
 | SBI | #1e3a5f | #eff6ff |

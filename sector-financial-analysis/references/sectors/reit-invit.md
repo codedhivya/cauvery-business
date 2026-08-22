@@ -414,6 +414,29 @@ lowest LTV — and **carries no composite score for any trust.** That is the rig
 yield, coverage, leverage and governance into one number hides the very thing that matters here, which is
 that a high yield may be capital coming back rather than income.
 
+**Build the universe first.** The trusts named anywhere in this file are illustrative as at authoring,
+**not the current list**. New REITs and InvITs list, SM REIT schemes list individually, and units get
+renamed. Source the current set from the exchanges and SEBI's registered-entity list for the period being
+analysed, state it with an as-at date, and say what you excluded. A leaderboard missing a trust that
+listed last quarter names the wrong winner with full confidence.
+
+**Every entry is sourced live.** Nothing in this table may be carried forward from a prior report:
+
+| Metric | Superlative | Where it comes from |
+|---|---|---|
+| Distribution yield | best | **annualised trailing-twelve-month DPU** from the distribution announcements ÷ **current unit price**. Both move; recompute, never inherit |
+| Price / NAV | best | unit price ÷ NAV per unit from the latest independent valuation |
+| NOI, NOI growth | highest / fastest | the trust's quarterly investor presentation |
+| Occupancy, WALE | best / longest | investor presentation; state committed vs in-place |
+| Availability | best | investor presentation, transmission InvITs |
+| LTV | lowest | investor presentation or the NDCF statement |
+| Credit rating | highest | the rating agency's latest rationale, with agency and date |
+| Residual concession life | longest | the trust's disclosure; **declines every quarter by construction** |
+| Distribution coverage | highest | NDCF statement ÷ distribution declared |
+
+**Align the period.** Trusts do not all report on the same day. Build the leaderboard on the most recent
+period every trust has reported, or label each entry with its own period — never mix silently.
+
 **The leaderboard, and how to build it:**
 
 | Metric | Superlative | Split |
@@ -509,6 +532,10 @@ amendment`.
 | PowerGrid InvIT | `#a16207` | transmission |
 | IRB InvIT | `#7c3aed` | roads |
 | Cube Highways Trust | `#6d28d9` | roads |
+
+**These names are illustrative as at authoring, not the current universe** — see "Establish the universe
+before ranking anything" in `source-hierarchy.md`. A trust listed since is absent here and must still be
+included; assign it a colour from the same family as its category.
 
 Keep office trusts in the blue-teal family, retail in magenta, transmission in amber, roads in violet, so
 category is legible from colour alone in a mixed chart.

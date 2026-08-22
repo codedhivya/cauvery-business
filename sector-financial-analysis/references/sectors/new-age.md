@@ -257,6 +257,8 @@ company-sourced or consultancy-estimated**. Say which, rather than presenting ei
 
 ## 8. Company colour palette
 
+**The companies named here are illustrative as at authoring, not the current universe.** Anything listed since belongs in the analysis too — see "Establish the universe before ranking anything" in `source-hierarchy.md`.
+
 | Company | Main | Soft tint |
 |---|---|---|
 | Eternal (Zomato) | #be123c | #fff1f2 |

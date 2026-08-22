@@ -97,6 +97,7 @@ GUARDRAILS = [
     ("no buy/sell/hold in own voice",     "source-hierarchy.md",       ["never issue a buy / sell / hold"]),
     ('"Not disclosed" must be earned',    "source-hierarchy.md",       ["targeted attempt", "one query per company"]),
     ("house disclaimer recorded",         "source-hierarchy.md",       ["earnings-quality analysis only"]),
+    ("universe sourced, not recalled",    "source-hierarchy.md",       ["are not the current universe"]),
     ("omit analysts if unsourceable",     "modes/analyst-ratings.md",  ["omit the section entirely"]),
     ("news digests excluded",             "modes/event-impact.md",     ["out of scope"]),
     ("mixed reporting seasons handled",   "modes/quarterly-report.md", ["mixed reporting seasons"]),
