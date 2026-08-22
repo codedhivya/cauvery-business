@@ -40,7 +40,7 @@ side by side rather than merging them into one list.
 | **Revenue driver** | Rental income from tenants | Toll fees, transmission tariffs, pipeline charges, warehouse rent |
 | **Contract length** | 5–10 year leases, renewable | 20–30 year government concessions, or regulated tariffs |
 | **Risk profile** | Moderate — vacancy and rental-market risk | Low to moderate — traffic/volume risk on toll; transmission close to zero volume risk |
-| **Typical yield band** | lower | higher — see the asset-life row for why |
+| **Typical yield band** | mid-to-high single digit | **structurally higher** — high single digit into low double digit. **Not better value; see the asset-life row** |
 | **Asset life** | **Perpetual** — property persists and can appreciate | **Finite** — the concession runs off over its term and the asset reverts |
 | **NAV basis** | Independent valuation of the properties | **DCF of the remaining concession cash flows** |
 | **SEBI classification** | Equity | **Hybrid** — debt and equity characteristics |
@@ -187,7 +187,8 @@ Indicative. Verify against the trust's own history, its category, and the prevai
 | Category | Metric | Healthy |
 |---|---|---|
 | All | Distribution coverage (NDCF ÷ distribution) | **≥1.0×** — sustained below 1× is the central warning |
-| All | Distribution yield | 6–8% typical; **judge as a spread over the 10-year G-sec**, not absolute |
+| REIT | Distribution yield | mid-to-high single digit; **judge as a spread over the 10-year G-sec**, not absolute |
+| InvIT | Distribution yield | higher than a REIT's by construction — **decompose it before comparing.** The income component after stripping capital return is the comparable number |
 | All | LTV | <30% comfortable; regulatory cap applies and tightens above a threshold |
 | All | DPU trajectory | **steady and predictable beats fast** — this is an income vehicle |
 | All | Capital-return share of distribution | low and disclosed; a high share means yield overstates income |

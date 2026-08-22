@@ -31,6 +31,16 @@ When genuinely ambiguous, **answer in chat first and offer the artifact**. That 
 sentence; the reverse — burying a one-line answer inside a generated HTML file they have to open — wastes
 their time and hides the answer.
 
+**Either way — chat or artifact — check the published collection first.** If a published report already
+covers the company, sector or comparison being asked about, it is the author's own verified work and it
+outranks anything you would compose from the sector file alone. **Lead with what that report says, cite
+it by name, and give the reader its link.** Then add what it does not cover. See
+`references/output-conventions.md` for where the collection lives.
+
+This matters most for the questions that feel purely conceptual — "what's the difference between X and
+Y", "how does this sector work". Those are exactly the questions a published explainer already answers,
+and answering them from the sector file alone silently discards the author's work and can contradict it.
+
 Honour explicit overrides in either direction: "just tell me", "no file", "don't build anything" means
 chat; "give me a report on this" means build it.
 

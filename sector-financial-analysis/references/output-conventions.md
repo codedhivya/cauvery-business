@@ -90,6 +90,27 @@ This is worth doing every time, for two reasons that are easy to miss:
    if your sourced figure disagrees with the published one for the same period, that disagreement is
    itself the finding, and worth surfacing rather than quietly resolving.
 
+### Give the reader the link
+
+A published report is not just a cross-check for you — it is **the thing the reader most likely wants**.
+Every file in the published collection is live on the author's site at the collection's base URL plus the
+filename, so a local file maps directly to a link the reader can open:
+
+```bash
+grep -i <company or sector> docs/report_dashboard_urls.txt
+```
+
+**When answering in chat about something the collection already covers, name the report and give its
+link before adding your own analysis.** A reader who asked "what's the difference between X and Y" and
+was handed a fresh explanation, when a published dashboard on exactly that question exists, was given
+less than they had. Worse, an answer composed independently can differ from the published one in emphasis
+or detail, which leaves the author's own two sources disagreeing.
+
+**Conceptual questions are the ones this catches.** "How does this sector work", "what's the difference
+between these two structures", "why does this metric matter" — these feel like pure sector-file
+territory, which is exactly why the collection goes unchecked. If a published explainer covers it, lead
+with it.
+
 **What to do with what you find:**
 
 - **Same period, same scope** — say so before building anything. Offer to summarise the existing report,
