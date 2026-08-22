@@ -38,7 +38,7 @@ MANIFEST = os.path.join(ROOT, "docs", "corpus-manifest.json")
 SECTOR_KEYWORDS = {
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib"],
     # note: "rec" alone would match "Recycling"; use the paired filename form instead
-    "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jio_financial", "mfi", "microfin"],
+    "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jiofinancial", "jio_financial", "mfi", "microfin"],
     "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici"],
     # note: bare "ipo" over-matches — a hospital IPO is pharma-health and a solar IPO is
     # power-energy. Only IPO *funds* and IPO-market reports belong here.
@@ -47,7 +47,8 @@ SECTOR_KEYWORDS = {
     "it-services": ["it_services", "tcs", "hcl", "infoedge", "fractal"],
     "pharma-health": ["pharma", "drreddys", "medtech", "hospital", "gland", "generic",
                       "laurus", "neuland", "divislabs", "lupin", "cipla", "torrent"],
-    "auto": ["2w", "tvsmotor", "bajajauto", "auto_spares", "tyre", "battery", "pv_sector"],
+    "auto": ["2w", "tvsmotor", "bajajauto", "auto_spares", "tyre", "battery", "pv_sector",
+             "heromoto", "eichermotors", "maruti", "mahindra"],
     "metals": ["steel", "aluminium", "vedanta", "nalco", "hindalco", "tatasteel"],
     "cement": ["cement", "ultratech"],
     "chemicals": ["chemical", "himadri", "pvc", "paint", "fertilizer", "recycling"],

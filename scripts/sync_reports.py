@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 """
-Sync reports/published/ from the CB Research member portal.
+Sync reports/published/ from the CB Research site.
 
 The published collection is a local mirror of the Pages site. When new reports
-are added there, the mirror falls behind — and the skill's sector files are
-built from that mirror, so anything it hasn't seen is knowledge the skill
+are added there the mirror falls behind — and since the skill's sector files
+were built from that mirror, anything it hasn't seen is knowledge the skill
 doesn't have.
 
-This does three things in one pass:
-  1. extracts every report URL from a saved copy of the member portal page
-  2. downloads only the files missing locally (existing ones are left alone)
-  3. reports what arrived, and what could not be fetched
+By default this reads the live index at the Pages site, so no browser step is
+needed. The index builds its links in JavaScript, so the report list is parsed
+from the embedded `file:` entries rather than from href attributes.
 
-Then run audit_corpus.py to find out whether the new reports introduce
-anything the skill lacks.
+    python3 scripts/sync_reports.py                 # read the live site
+    python3 scripts/sync_reports.py <saved.html>    # or a saved portal page
 
-    # save the member portal page from your browser, then:
-    python3 scripts/sync_reports.py ~/Downloads/"CB Research — Member Portal.html"
-    python3 scripts/audit_corpus.py
+It downloads only the files missing locally, rewrites docs/report_dashboard_urls.txt,
+and reports anything it could not fetch — a 404 there is a broken link on the
+site that members hit too.
 
-Exit 0 = nothing new or all downloaded, 1 = something failed to download.
+Then run audit_corpus.py to find out whether the new reports introduce a
+sector, metric or section the skill doesn't cover.
+
+Exit 0 = in sync or all downloaded, 1 = something failed to download.
 """
 
 import os
@@ -34,45 +36,64 @@ URL_LIST = os.path.join(ROOT, "docs", "report_dashboard_urls.txt")
 BASE = "https://elangocauvery.github.io/CB-Finance/"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
+# Template placeholders in the page's JS, not real reports.
+NOT_REPORTS = {"filename.html"}
+
+
+def fetch(url):
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return r.read()
+
+
+def report_names(html):
+    """Report filenames, from JS `file:` entries and from plain hrefs."""
+    names = set(re.findall(r'file:\s*["\']([^"\']+\.html)["\']', html))
+    names |= {urllib.parse.unquote(u.split("/")[-1])
+              for u in re.findall(r'href="(' + re.escape(BASE) + r'[^"]+\.html)"', html)}
+    return sorted(n for n in names if n not in NOT_REPORTS)
+
 
 def main():
-    if len(sys.argv) < 2:
-        print(__doc__)
-        return 2
-    portal = sys.argv[1]
-    if not os.path.isfile(portal):
-        print(f"error: {portal} not found", file=sys.stderr)
-        return 2
+    if len(sys.argv) > 1:
+        src = sys.argv[1]
+        if not os.path.isfile(src):
+            print(f"error: {src} not found", file=sys.stderr)
+            return 2
+        html = open(src, encoding="utf-8", errors="ignore").read()
+        print(f"Reading saved page: {os.path.basename(src)}")
+    else:
+        print(f"Reading live index: {BASE}")
+        try:
+            html = fetch(BASE).decode("utf-8", "ignore")
+        except Exception as e:
+            print(f"error: could not fetch the index — {e}", file=sys.stderr)
+            return 2
 
-    html = open(portal, encoding="utf-8", errors="ignore").read()
-    urls = sorted(set(re.findall(
-        r'href="(' + re.escape(BASE) + r'[^"]+\.html)"', html)))
-    if not urls:
-        print("No report links found. Is that the member portal page?", file=sys.stderr)
+    names = report_names(html)
+    if not names:
+        print("No report links found.", file=sys.stderr)
         return 2
 
     os.makedirs(os.path.dirname(URL_LIST), exist_ok=True)
     with open(URL_LIST, "w") as fh:
-        fh.write("\n".join(urls) + "\n")
+        fh.write("\n".join(BASE + urllib.parse.quote(n) for n in names) + "\n")
 
     os.makedirs(PUBLISHED, exist_ok=True)
     have = {f for f in os.listdir(PUBLISHED) if f.endswith(".html")}
-    wanted = {urllib.parse.unquote(u.split("/")[-1]): u for u in urls}
-    missing = {n: u for n, u in wanted.items() if n not in have}
+    missing = [n for n in names if n not in have]
 
-    print(f"Portal lists {len(urls)} reports · {len(have)} already local · "
+    print(f"Site lists {len(names)} reports · {len(have)} already local · "
           f"{len(missing)} to fetch\n")
 
     if not missing:
-        print("Already in sync. Nothing to download.")
+        print("Already in sync.")
         return 0
 
     ok, failed = [], []
-    for i, (name, url) in enumerate(sorted(missing.items()), 1):
+    for i, name in enumerate(missing, 1):
         try:
-            req = urllib.request.Request(url, headers=HEADERS)
-            with urllib.request.urlopen(req, timeout=30) as r:
-                data = r.read()
+            data = fetch(BASE + urllib.parse.quote(name))
             with open(os.path.join(PUBLISHED, name), "wb") as fh:
                 fh.write(data)
             ok.append(name)
@@ -83,14 +104,14 @@ def main():
 
     print(f"\nDownloaded {len(ok)}, failed {len(failed)}.")
     if failed:
-        print("\nFailed — these are linked from the portal but not on the site.")
-        print("A 404 means a broken link members would also hit:")
+        print("\nFailed — linked from the site but not present on it.")
+        print("A 404 is a broken link members would also hit:")
         for name, err in failed:
             print(f"  {name}: {err}")
 
     print("\nNext: python3 scripts/audit_corpus.py")
-    print("  — tells you whether the new reports introduce a sector, metric or")
-    print("    section the skill doesn't yet cover. Findings are advisory.")
+    print("  — whether the new reports introduce a sector, metric or section")
+    print("    the skill doesn't cover. Findings are advisory.")
     return 1 if failed else 0
 
 

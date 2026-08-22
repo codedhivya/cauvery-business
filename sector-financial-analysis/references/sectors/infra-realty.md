@@ -82,6 +82,7 @@ debt. **Judge them on yield, distribution stability and leverage, not on earning
 - **DPU (Distribution Per Unit)** — the headline. What a unitholder actually receives.
 - **Distribution yield (%)** = annualised DPU ÷ unit price. The comparison metric against bonds and peers.
 - **NAV per unit** and premium/discount to NAV
+- **AUM / gross asset value** — the portfolio's total asset base, and the denominator for LTV.
 - **NDCF (Net Distributable Cash Flow)** — the cash available for distribution
 - **Occupancy and WALE** for office REITs; **asset-level operating metrics** for InvITs
 - **Loan-to-value (LTV)** — regulatory caps apply; the leverage constraint

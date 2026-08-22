@@ -10,16 +10,16 @@ shaped this way, see [docs/adr/](docs/adr/README.md).
 
 | | |
 |---|---|
-| **Sectors** | 16 — every family in the 126-report corpus |
+| **Sectors** | 16 — every family in the 131-report corpus |
 | **Modes** | 15, unchanged across all four build phases |
-| **Coverage** | 118 of 126 reports; the rest are cross-sector scope, 2 news digests, a macro piece and the glossary |
+| **Coverage** | 123 of 131 reports; the rest are cross-sector scope, 2 news digests, a macro piece and the glossary |
 | **Built in** | 5 phases — insurance+banking, then by report count, then a corpus refresh that added `new-age` |
 
 ---
 
 ## Sector inventory
 
-Derived by auditing all 126 reports. Report counts drive build order — biggest first.
+Derived by auditing all 131 reports. Report counts drive build order — biggest first.
 
 | Sector | Reports | Status | Notes |
 |---|---|---|---|

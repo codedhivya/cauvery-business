@@ -62,6 +62,8 @@ growth rate.
 - **Volumes (units)** — domestic and export, split by segment. Disclosed monthly, so a quarter's
   direction is known in advance.
 - **Realisation per unit (ASP)** = revenue ÷ volumes. Rising ASP means better mix or pricing; check which.
+  A **blended realisation** spans more than one product class (2W + 3W, motorcycles + scooters), so it
+  moves on mix alone — decompose it before reading it as pricing power.
 - **Market share** — by segment, against SIAM industry data.
 - **EV penetration / EV volumes** — the transition metric, and increasingly the valuation driver for 2W.
 - **Export share** — geographic diversification; a hedge against domestic cyclicality but exposed to

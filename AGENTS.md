@@ -6,9 +6,9 @@ it produces (static HTML).
 
 ```
 sector-financial-analysis/   the skill — source of truth
-reports/published/           126 verified reports; the author stands behind these
+reports/published/           131 verified reports; the author stands behind these
 reports/staging/             generated drafts awaiting human review
-scripts/download_reports.py  mirrors published reports from the Pages site
+scripts/sync_reports.py      mirrors published reports from the Pages site
 docs/                        report URL lists
 ```
 
@@ -153,8 +153,8 @@ falls behind — and since the sector files were built from that mirror, anythin
 knowledge the skill doesn't have.
 
 ```bash
-# 1. save the member portal page from the browser, then:
-python3 scripts/sync_reports.py ~/Downloads/"CB Research — Member Portal.html"
+# 1. pull anything the site has that the mirror doesn't
+python3 scripts/sync_reports.py
 
 # 2. find out whether the new reports introduce anything the skill lacks
 python3 scripts/audit_corpus.py
@@ -166,8 +166,13 @@ python3 scripts/audit_corpus.py --accept
 python3 scripts/verify_skill.py
 ```
 
-Step 1 downloads only what's missing and rewrites `docs/report_dashboard_urls.txt`. A 404 there is a
-broken link on the portal itself — worth fixing at the source, since members hit it too.
+Step 1 reads the live index directly — no browser step. The index builds its links in JavaScript, so
+the report list comes from the embedded `file:` entries rather than from hrefs. It downloads only what's
+missing and rewrites `docs/report_dashboard_urls.txt`. Pass a saved portal page as an argument to read
+that instead.
+
+A 404 in step 1 is a **broken link on the site itself** — worth fixing at the source, since members hit
+it too. Two are currently live: `Banking_Q1FY27.html` and `india_steel_fy26_dashboard.ai.html`.
 
 Step 2 is the one that matters. It flags **unbuilt sectors**, **metrics not defined** in the matching
 sector file, **sections no mode covers**, and **unknown CSS classes**. Not everything it flags needs
