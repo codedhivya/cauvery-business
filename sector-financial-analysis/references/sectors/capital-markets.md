@@ -98,6 +98,10 @@ Never assign a fund a P/E, an EBITDA margin, or a CB Rating built for operating 
 - **Net sales / net equity flows** — inflows minus redemptions; distinguishes genuine share gain from
   market appreciation.
 
+- **RoNW (Return on Net Worth)** — net profit ÷ net worth. Quoted in IPO offer documents and
+  required in prospectus disclosure, so it appears whenever a company in this sector lists. Report
+  it alongside the sector's usual return measure rather than in place of it.
+
 ## 4. Benchmarks — what good looks like
 
 Indicative; verify against the company's own history and current regulation.

@@ -84,6 +84,10 @@ nothing about the mature estate.
   and slower payment.
 - **Diagnostics**: test volumes, realisation per test, B2C vs B2B mix, network size.
 
+- **RoNW (Return on Net Worth)** — net profit ÷ net worth. Quoted in IPO offer documents and
+  required in prospectus disclosure, so it appears whenever a company in this sector lists. Report
+  it alongside the sector's usual return measure rather than in place of it.
+
 ## 4. Benchmarks — what good looks like
 
 Indicative; verify against the company's own disclosure.

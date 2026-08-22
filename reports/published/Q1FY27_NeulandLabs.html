@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuland Laboratories — Q1 FY27 Investment Analysis Dashboard · CBF26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f4f8; --card: #ffffff; --card2: #f8fafc;
+    --border: #e2e8f0; --accent: #0369a1; --green: #16a34a;
+    --amber: #d97706; --red: #dc2626; --purple: #7c3aed;
+    --text: #0f172a; --muted: #64748b; --light: #e0f2fe;
+    --cdmo: #0891b2; --ncdmo: #7c3aed; --brand-orange:#FF6A00;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 60%,#0891b2 100%);color:#fff;padding:28px 32px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+  .header h1{font-size:1.7rem;font-weight:700;letter-spacing:-.3px}
+  .header p{opacity:.85;margin-top:4px;font-size:.88rem}
+  .badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+  .b-q1{background:rgba(22,163,74,.3);color:#bbf7d0}
+  .b-q4{background:rgba(217,119,6,.3);color:#fde68a}
+  .b-est{background:rgba(99,102,241,.3);color:#c7d2fe}
+  nav{background:#fff;border-bottom:2px solid var(--border);display:flex;gap:0;overflow-x:auto;position:sticky;top:88px;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+  nav button{padding:13px 18px;border:none;background:none;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);background:#f0f9ff}
+  nav button:hover:not(.active){color:var(--text);background:var(--bg)}
+  .tab{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+  .tab.active{display:block}
+  .section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-bottom:28px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .2s,transform .15s}
+  .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .tag{padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700}
+  .tag-cdmo{background:#cffafe;color:#0e7490}
+  .tag-q1{background:#dcfce7;color:#166534}
+  .cbr{padding:2px 9px;border-radius:10px;font-size:.72rem;font-weight:800;white-space:nowrap;letter-spacing:.2px}
+  .cbr-a{background:#dcfce7;color:#166534}
+  .cbr-b{background:#cffafe;color:#0e7490}
+  .cbr-c{background:#fef9c3;color:#854d0e}
+  .cbr-d{background:#ffedd5;color:#9a3412}
+  .cbr-e{background:#fee2e2;color:#991b1b}
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .metric{background:var(--card2);border-radius:8px;padding:10px 10px;text-align:center}
+  .metric-val{font-size:1.05rem;font-weight:700;color:var(--accent)}
+  .metric-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+  .metric-green .metric-val{color:var(--green)}
+  .metric-amber .metric-val{color:var(--amber)}
+  .metric-red .metric-val{color:var(--red)}
+  .usp-row{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .usp-row strong{color:var(--text)}
+  .debt-bar-wrap{margin-top:8px}
+  .debt-label{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px}
+  .debt-bar{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+  .debt-fill{height:100%;border-radius:3px;transition:width .8s ease}
+  .debt-low{background:var(--green)}
+  .debt-mid{background:var(--amber)}
+  .debt-high{background:var(--red)}
+  .cdmo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+  @media(max-width:700px){.cdmo-grid{grid-template-columns:1fr}}
+  .cdmo-box{background:var(--card);border-radius:12px;border:2px solid;padding:18px}
+  .cdmo-box.cdmo-col{border-color:var(--cdmo)}
+  .cdmo-box.ncdmo-col{border-color:var(--ncdmo)}
+  .cdmo-head{font-size:1rem;font-weight:700;margin-bottom:4px}
+  .cdmo-head.cdmo-t{color:var(--cdmo)}
+  .cdmo-head.ncdmo-t{color:var(--ncdmo)}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:22px;margin-bottom:28px}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .chart-title{font-size:.9rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+  .chart-wrap{position:relative;height:280px}
+  .tbl-wrap{overflow-x:auto;margin-bottom:28px}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  thead tr{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff}
+  th{padding:11px 12px;text-align:left;font-size:.78rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+  th:hover{background:rgba(255,255,255,.15)}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#f8fafc}
+  tr:hover td{background:#f0f9ff}
+  .sort-icon{opacity:.6;font-size:.7rem;margin-left:4px}
+  .td-green{color:var(--green);font-weight:700}
+  .td-red{color:var(--red);font-weight:700}
+  .td-amber{color:var(--amber);font-weight:700}
+  .score-wrap{margin:8px 0}
+  .score-row{display:grid;grid-template-columns:150px 1fr 46px;gap:6px;align-items:center;margin-bottom:7px}
+  .score-lbl{font-size:.75rem;color:var(--muted);text-align:right}
+  .score-bg{background:#e2e8f0;border-radius:4px;height:9px;overflow:hidden}
+  .score-bar{height:100%;border-radius:4px;width:0;transition:width 1s ease}
+  .score-val{font-size:.75rem;font-weight:700;color:var(--text)}
+  .analyst-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .analyst-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .analyst-name{font-weight:700;font-size:.9rem;margin-bottom:6px}
+  .analyst-rec{padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;display:inline-block;margin-bottom:6px}
+  .rec-buy{background:#dcfce7;color:#166534}
+  .rec-hold{background:#fef9c3;color:#854d0e}
+  .rec-sell{background:#fee2e2;color:#991b1b}
+  .analyst-tp{font-size:.8rem;color:var(--muted)}
+  .analyst-note{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.5}
+  .info-box{background:var(--light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .warn-box{background:#fffbeb;border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  @media(max-width:600px){
+    .header h1{font-size:1.2rem}
+    .metrics{grid-template-columns:1fr 1fr}
+    .chart-grid{grid-template-columns:1fr}
+    nav button{padding:10px 12px;font-size:.78rem}
+    .tab{padding:16px 14px}
+  }
+  .val-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:28px}
+  .val-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .val-name{font-weight:700;font-size:.88rem;margin-bottom:8px;color:var(--text)}
+  .val-row{display:flex;justify-content:space-between;font-size:.78rem;padding:3px 0;border-bottom:1px solid #f1f5f9}
+  .val-row:last-child{border-bottom:none}
+  .val-lbl{color:var(--muted)}
+  .val-num{font-weight:700}
+  .swot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  @media(max-width:600px){.swot-wrap{grid-template-columns:1fr}}
+  .swot-box{border-radius:8px;padding:14px;font-size:.8rem;line-height:1.7}
+  .swot-s{background:#dcfce7;border-left:4px solid var(--green)}
+  .swot-w{background:#fee2e2;border-left:4px solid var(--red)}
+  .swot-o{background:#dbeafe;border-left:4px solid var(--accent)}
+  .swot-t{background:#fef9c3;border-left:4px solid var(--amber)}
+  .swot-head{font-weight:700;margin-bottom:6px;font-size:.85rem}
+  .swot-s .swot-head{color:var(--green)}
+  .swot-w .swot-head{color:var(--red)}
+  .swot-o .swot-head{color:var(--accent)}
+  .swot-t .swot-head{color:var(--amber)}
+  .qa-item{border:1px solid var(--border);border-radius:8px;margin-bottom:7px;overflow:hidden}
+  .qa-q{background:#f8fafc;padding:10px 14px;cursor:pointer;font-size:.81rem;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+  .qa-q:hover{background:#e0f2fe}
+  .qa-a{display:none;padding:10px 14px;font-size:.79rem;color:var(--muted);line-height:1.65;border-top:1px solid var(--border)}
+  .qa-a.open{display:block}
+  .qa-chat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:22px}
+  .qa-chat-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .qa-inp{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.8rem;outline:none}
+  .qa-inp:focus{border-color:var(--accent)}
+  .qa-btn{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700}
+  .qa-resp{padding:12px;background:#f8fafc;border-radius:8px;font-size:.79rem;line-height:1.7;display:none;margin-top:6px}
+  .cb-logo{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .cb-logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#fff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#0369a1;letter-spacing:-.5px;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+  .cb-logo-text{font-size:.78rem;line-height:1.35;color:rgba(255,255,255,.9)}
+  .cb-logo-text strong{font-size:.88rem;color:#fff;display:block;letter-spacing:.3px}
+  .cb-watermark{position:fixed;bottom:18px;right:18px;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:7px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.18);border-radius:30px;padding:5px 12px 5px 8px;backdrop-filter:blur(4px)}
+  .cb-watermark-icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0369a1,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+  .cb-watermark-text{font-size:.68rem;color:var(--muted);font-weight:600;white-space:nowrap}
+  .cb-watermark-text span{color:var(--accent)}
+  .lang-bar{background:#fff;border-bottom:1px solid var(--border);padding:6px 28px;display:flex;align-items:center;gap:10px;font-size:.79rem;color:var(--muted)}
+  .lbtn{padding:3px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;background:#fff;color:var(--muted)}
+  .lbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .en{display:block}.ta{display:none}
+  body.tm .en{display:none}body.tm .ta{display:block}
+  .champion{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #f59e0b;border-radius:14px;padding:22px;margin-bottom:28px}
+  .champion h2{font-size:1.15rem;font-weight:900;text-align:center;color:#92400e;margin:8px 0 14px}
+  .champion p{font-size:.85rem;line-height:1.85;color:var(--text)}
+  .proj-card{background:#fff;border:2px solid var(--cdmo);border-radius:12px;padding:18px;margin-bottom:16px}
+  .proj-head{font-weight:700;font-size:.95rem;color:var(--cdmo);margin-bottom:10px}
+  .proj-body{font-size:.81rem;color:var(--muted);line-height:1.75}
+  .proj-body strong{color:var(--text)}
+  .moat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:28px}
+  .moat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .moat-name{font-weight:700;margin-bottom:5px;font-size:.9rem}
+  .moat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;margin-bottom:6px;background:#dbeafe;color:#1e40af}
+  .moat-pts{font-size:.77rem;color:var(--muted);line-height:1.75}
+  .segbar-wrap{margin:14px 0}
+  .timeline{position:relative;margin:20px 0;padding-left:28px;border-left:3px solid var(--cdmo)}
+  .tl-item{position:relative;margin-bottom:22px;padding-left:16px}
+  .tl-item::before{content:'';position:absolute;left:-35px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--cdmo);border:3px solid #fff;box-shadow:0 0 0 2px var(--cdmo)}
+  .tl-year{font-weight:800;font-size:.95rem;color:var(--cdmo);margin-bottom:3px}
+  .tl-text{font-size:.83rem;color:var(--muted);line-height:1.7}
+  .tl-text strong{color:var(--text)}
+  .founder-card{background:linear-gradient(135deg,#fff,#f0f9ff);border:2px solid var(--cdmo);border-radius:14px;padding:20px;margin-bottom:24px}
+  .unique-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .unique-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;border-top:3px solid var(--ncdmo)}
+  .unique-num{font-size:1.3rem;font-weight:900;color:var(--ncdmo);margin-bottom:4px}
+  .unique-name{font-weight:700;font-size:.88rem;margin-bottom:5px}
+  .unique-pts{font-size:.78rem;color:var(--muted);line-height:1.7}
+  .segbar{display:flex;height:34px;border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--border)}
+  .segbar-cs{background:var(--cdmo);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem}
+  .segbar-api{background:var(--ncdmo);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem}
+  .ratio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:28px}
+  .ratio-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+  .ratio-val{font-size:1.4rem;font-weight:900;color:var(--accent)}
+  .ratio-lbl{font-size:.72rem;color:var(--muted);margin-top:4px;line-height:1.4}
+  .ratio-note{font-size:.68rem;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💊 Neuland Laboratories — Q1 FY27 Investment Analysis Dashboard</h1>
+  <p>NSE: NEULANDLAB · BSE: 524558 · API CDMO (GDS + CMS) · Quarter Ended 30 June 2026</p>
+  <div class="badge-row">
+    <span class="badge b-q1">✓ Q1 FY27 Actuals (Consolidated)</span>
+    <span class="badge b-q4">★ 5-Quarter Trend incl. FY26 Annual</span>
+    <span class="badge b-est">⭐ CBF26 Earnings Rating</span>
+    <span style="background:rgba(255,255,255,.15);color:#e0f2fe;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600">Results declared: 5 Aug 2026</span>
+  </div>
+  <div class="cb-logo">
+    <div class="cb-logo-mark">CB</div>
+    <div class="cb-logo-text"><strong>CB Research</strong>Q1 FY27 Company Deep-Dive · Cauvery Business Research</div>
+  </div>
+</div>
+
+<div class="cb-watermark">
+  <div class="cb-watermark-icon">CB</div>
+  <div class="cb-watermark-text"><span>CB Research</span> · Neuland Labs Q1 FY27 · CBF26</div>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="switchTab('overview',this)">📊 Overview</button>
+  <button onclick="switchTab('segments',this)">🔬 Segments</button>
+  <button onclick="switchTab('financials',this)">📄 Financials &amp; Ratios</button>
+  <button onclick="switchTab('valuations',this)">💰 Valuations</button>
+  <button onclick="switchTab('moats',this)">🏰 Moats &amp; USPs</button>
+  <button onclick="switchTab('history',this)">🕰️ History</button>
+  <button onclick="switchTab('projects',this)">🔭 Projects &amp; Capex</button>
+  <button onclick="switchTab('swot',this)">📋 SWOT</button>
+  <button onclick="switchTab('verdict',this)">🏆 Verdict</button>
+  <button onclick="switchTab('qa',this)">🤖 CB Assist</button>
+  <button onclick="switchTab('charts',this)">📈 Charts</button>
+  <button onclick="switchTab('table',this)">📋 Data Table</button>
+</nav>
+<div class="lang-bar">
+  🌐 Language / மொழி:
+  <button class="lbtn on" onclick="setLang('en',this)">English</button>
+  <button class="lbtn" onclick="setLang('ta',this)">தமிழ்</button>
+</div>
+
+<!-- ═══ OVERVIEW ═══ -->
+<div id="tab-overview" class="tab active">
+  <div class="info-box">
+    <span class="en"><strong>Vanakam — Q1 FY27 Snapshot:</strong> Neuland Laboratories delivered its strongest quarter on record for the quarter ended 30 June 2026. <strong>Consolidated revenue from operations</strong> more than doubled, up 119.2% YoY to ₹641.5 Cr (total income ₹650.1 Cr, +116.3% YoY), though down ~17.4% QoQ from the record ₹776 Cr in Q4 FY26 — a reminder that this is a lumpy, project-driven CDMO business. <strong>EBITDA</strong> jumped 448.2% YoY to ₹231.1 Cr at a <strong>35.5% margin</strong> (vs ~11.6% in Q1 FY26), and <strong>consolidated PAT</strong> surged ~962% YoY to ₹147.4 Cr. Growth was driven primarily by commercial CMS (Custom Manufacturing Solutions) projects, operating leverage and a favourable customer/currency mix. The same board meeting (5 Aug 2026) approved an 18 KL capacity expansion at Bonthapally Unit-1 (₹39.8 Cr) and a ₹40 Cr corporate guarantee backing a strategic sterile-API manufacturing partnership with Gland Pharma. The stock jumped over 10% on 6 Aug 2026 to a fresh all-time high near ₹21,200-21,650, from a pre-result close of ₹19,273.</span>
+    <span class="ta">வணக்கம் — Q1 FY27 சுருக்கம்: ஜூன் 30, 2026 முடிவடைந்த காலாண்டில் Neuland Laboratories சாதனை செயல்திறனை பதிவு செய்துள்ளது. ஒருங்கிணைந்த வருவாய் ஆண்டுக்கு ஆண்டு 119.2% உயர்ந்து ₹641.5 கோடியாக உள்ளது; நிகர லாபம் 962% உயர்ந்து ₹147.4 கோடி; EBITDA விளிம்பு 35.5% ஆக உயர்ந்துள்ளது. பங்கு விலை இன்று 10%க்கும் அதிகமாக உயர்ந்து புதிய உச்சத்தை எட்டியது.</span>
+  </div>
+
+  <div class="section-title">📌 Q1 FY27 KPIs at a Glance</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:28px">
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹641.5 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Revenue (+119.2% YoY · -17.4% QoQ)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">35.5%</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">EBITDA Margin (vs ~11.6% Q1 FY26)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹147.4 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">PAT (+~962% YoY · -30.8% QoQ)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--accent)">₹197.5 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">PBT (+1,036.7% YoY)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹114.9</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">EPS Q1 FY27 (vs ₹10.8 Q1 FY26)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--purple)">~₹27,600 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Market Cap (post-jump, 6 Aug 2026)</div>
+    </div>
+  </div>
+
+  <div class="section-title">⚠️ Key Themes &amp; Risks — Q1 FY27</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">✅ Tailwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Commercial CMS projects drove the revenue surge, with CMS the dominant share of Q1 revenue<br>• Working capital days of sale fell sharply to 84 in Q1 FY27 from 137 at FY26-end — better receivables/inventory management<br>• Commercial production commenced at expanded Bonthapally &amp; Gaddapotharam facilities from 31 July 2026<br>• Strategic sterile-API tie-up with Gland Pharma (₹40 Cr corporate guarantee) opens a new specialty GDS platform<br>• Peptide manufacturing facility (Module 1) set to be commissioned next month, with a healthy project pipeline already lined up</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">⚠️ Headwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Management explicitly flagged the 35.5% margin as boosted by favourable FX and product mix — long-term guidance remains a more modest 25%+ EBITDA margin<br>• Revenue fell ~17.4% QoQ from Q4 FY26's record base — commercial CMS growth is concentrated in only ~3 molecules and is inherently lumpy<br>• Entering a higher capex phase (₹121.6 Cr cash outflow in Q1 FY27 alone, plus ₹203 Cr of newly approved investments) which could pressure near-term ROCE<br>• Development-stage CMS revenue (project/NCE-linked) is inherently unpredictable quarter to quarter, per management commentary<br>• Working capital remains elevated on a structural basis — inventory days above 240 and cash conversion cycle over 200 days in FY26</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🔭 Watch Factors</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Peptide facility commercialisation pace — Module 1 fill rate and potential Module 2 activation during FY27<br>• Execution on the Gland Pharma sterile-API collaboration and the newly commissioned Bonthapally/Gaddapotharam capacity<br>• Sustainability of the ~60%+ CMS mix versus a reversion toward the more competitive, lower-margin Prime API (GDS) business<br>• Stock is at an all-time high and trading at a rich trailing P/E even before today's post-result rally — execution over the next 2-3 quarters, not this one beat, will decide whether the re-rating holds<br>• Global trade/tariff and geopolitical developments — management says no material impact so far, but flagged as a watch item</div></div>
+  </div>
+  <div class="warn-box"><strong>House note:</strong> CB Research is not SEBI-registered and does not issue buy/sell/hold recommendations. This dashboard is for educational analysis only.</div>
+</div>
+
+<!-- ═══ SEGMENTS ═══ -->
+<div id="tab-segments" class="tab">
+  <div class="info-box">
+    <strong>Business mix:</strong> Neuland reports two segments — <strong>CMS (Custom/Contract Manufacturing Solutions)</strong>, exclusive contract development &amp; manufacturing of APIs/intermediates (including peptides) for global innovator biotech/pharma customers across pre-clinical, clinical and commercial stages, and <strong>GDS (Generic Drug Substances)</strong>, Neuland's own-account API portfolio, itself split into <em>Prime API</em> (mature, higher-competition, large-volume molecules like Ezetimibe, Levetiracetam, Mirtazapine) and <em>Specialty/Niche API</em> (complex, R&amp;D-intensive molecules like Apixaban, Dorzolamide, Paliperidone). Neuland is a CDMO with 1,000+ regulatory filings, reactor capacity of ~12.18 lakh litres across three cGMP units, and end-markets concentrated in Europe (~53%) and North America (~41%) on a 9M FY26 basis.
+  </div>
+
+  <div class="section-title">🔬 Q1 FY27 Revenue Mix (Approximate)</div>
+  <div class="segbar-wrap">
+    <div class="segbar">
+      <div class="segbar-cs" style="width:63%">CMS (Custom Manufacturing) ~63%</div>
+      <div class="segbar-api" style="width:37%">GDS — Prime + Specialty API ~37%</div>
+    </div>
+  </div>
+  <div class="warn-box" style="margin-top:8px">Neuland's press release does not disclose an exact segment-wise crore split for Q1 FY27. The ~63/37 mix shown is a directional estimate drawn from management's commentary that growth was "driven primarily by commercial CMS projects" and that Q4 FY26 CMS commercial projects alone accounted for "over two-thirds" of that quarter's revenue — treat as indicative, not a disclosed figure.</div>
+  <div class="cdmo-grid">
+    <div class="cdmo-box cdmo-col">
+      <div class="cdmo-head cdmo-t">CMS — Custom Manufacturing Solutions</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Exclusive contract development &amp; manufacturing for global innovator customers — pre-clinical through commercial stage, including peptides and deuterated molecules</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+        <strong style="color:var(--text)">Mix trend:</strong> Rose from a much smaller base in FY25 to the clear majority of revenue by Q4 FY26/Q1 FY27, per management commentary<br>
+        <strong style="color:var(--text)">Drivers:</strong> Commercial ramp of a handful (~3) of high-value molecules; growing development pipeline including new advanced clinical-stage and peptide projects; 98 active CMS projects as of Q3 FY26 (19 in commercial phase)<br>
+        <strong style="color:var(--text)">Nature:</strong> Highly customer-concentrated (exclusive agreements) and molecule-concentrated — management repeatedly cautions that quarterly CMS revenue is inherently lumpy and should be read over multi-quarter periods
+      </div>
+    </div>
+    <div class="cdmo-box ncdmo-col">
+      <div class="cdmo-head ncdmo-t">GDS — Generic Drug Substances (Prime + Specialty)</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Neuland's own-account API portfolio sold to generic formulators worldwide, split between mature Prime molecules and complex, R&amp;D-intensive Specialty molecules</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+        <strong style="color:var(--text)">Prime API:</strong> ~15 mature, large-volume molecules; Ezetimibe and Mirtazapine are the key near-term growth drivers, per Q1 FY27 commentary<br>
+        <strong style="color:var(--text)">Specialty API:</strong> Complex molecules (Apixaban, Dorzolamide) driving segment revenue; Paliperidone has been a recent drag<br>
+        <strong style="color:var(--text)">New platform:</strong> The Gland Pharma strategic collaboration adds a dedicated sterile-API manufacturing capability inside the specialty GDS business
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">💰 Financial Snapshot — Consolidated (₹ Cr)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Line Item</th><th>Q1 FY27</th><th>Q1 FY26</th><th>Q4 FY26</th><th>YoY Δ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Total Income</strong></td><td>650.1</td><td>~300.6</td><td>788.7</td><td class="td-green">+116.3%</td></tr>
+        <tr><td>Revenue from Operations</td><td>641.5</td><td>292.7</td><td>776.3</td><td class="td-green">+119.2%</td></tr>
+        <tr><td>EBITDA</td><td>231.1</td><td>~35.0</td><td>~307-314</td><td class="td-green">+448.2%</td></tr>
+        <tr><td>EBITDA Margin</td><td class="td-green">35.5%</td><td>~11.6%</td><td>40.5%</td><td class="td-green">+~2,390 bps</td></tr>
+        <tr><td>PBT</td><td>197.5</td><td>~17.4</td><td>287</td><td class="td-green">+1,036.7%</td></tr>
+        <tr><td>PAT (Consolidated)</td><td class="td-green">147.4</td><td>13.9</td><td>212.7</td><td class="td-green">+~962%</td></tr>
+        <tr><td>Working Capital Days</td><td class="td-green">84</td><td>145</td><td>137</td><td class="td-green">Sharp improvement</td></tr>
+        <tr><td>Q1 FY27 Capex Cash Outflow</td><td>121.6</td><td>—</td><td>—</td><td>Entering higher capex phase</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn-box"><strong>Reading the QoQ dip:</strong> Revenue fell ~17.4% QoQ from Q4 FY26's record ₹776 Cr — normal for Neuland's project-based CDMO model where commercial CMS shipments land unevenly across quarters. Management's own guidance is to judge the business over multi-quarter, not single-quarter, windows.</div>
+</div>
+
+<!-- ═══ FINANCIALS & RATIOS ═══ -->
+<div id="tab-financials" class="tab">
+  <div class="info-box" style="border-left-color:#2979FF;background:#eff6ff">
+    <span class="en"><strong>🔗 Linked to CB Finance26™ (CBF26):</strong> Neuland Labs carries a <strong>CBF26 Earnings Rating</strong> — the fundamentals layer of the CB Finance26 framework, scoring the quality of the latest quarter on four pillars: <strong>Revenue growth · EBITDA growth · Net-profit (PAT) growth · EBITDA margin</strong>, on the same 1-5 scale used across CB Research dashboards.</span>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;border-left:4px solid #FF6A00">
+    <div style="font-weight:700;color:#1F2937;margin-bottom:8px">⭐ CBF26 Earnings Rating — Neuland Laboratories, Q1 FY27</div>
+    <div style="font-size:.8rem;color:var(--muted);line-height:1.7">
+      Weighted 1-5 composite → Revenue growth <strong>25%</strong> · EBITDA growth <strong>25%</strong> · PAT growth <strong>30%</strong> · EBITDA margin <strong>20%</strong>.
+      <div class="score-wrap" style="margin-top:12px">
+        <div class="score-row"><div class="score-lbl">Revenue growth (+119.2%)</div><div class="score-bg"><div class="score-bar" style="width:100%;background:var(--green)"></div></div><div class="score-val">5.0</div></div>
+        <div class="score-row"><div class="score-lbl">EBITDA growth (+448.2%)</div><div class="score-bg"><div class="score-bar" style="width:100%;background:var(--green)"></div></div><div class="score-val">5.0</div></div>
+        <div class="score-row"><div class="score-lbl">PAT growth (+~962%)</div><div class="score-bg"><div class="score-bar" style="width:100%;background:var(--green)"></div></div><div class="score-val">5.0</div></div>
+        <div class="score-row"><div class="score-lbl">EBITDA margin (35.5%)</div><div class="score-bg"><div class="score-bar" style="width:96%;background:var(--green)"></div></div><div class="score-val">4.8</div></div>
+      </div>
+      <div style="margin-top:10px"><strong>Composite: 4.95/5.0 → <span class="cbr cbr-a">CB-A · Strong</span></strong></div>
+      <div style="margin-top:8px;font-size:.74rem">⚠️ Rating measures <strong>earnings quality/momentum only</strong> for this single quarter — not valuation, and not a buy/sell/hold call. Management itself has flagged this margin as favourably boosted by FX and mix versus its own 25%+ long-term guidance — treat 35.5% as a strong print to be confirmed over future quarters, not the new steady state. CB Research house rule: no recommendations.</div>
+    </div>
+  </div>
+
+  <div class="section-title">📐 Key Ratios — Current Ratio, Asset Turnover, ROCE &amp; More</div>
+  <div class="ratio-grid">
+    <div class="ratio-card"><div class="ratio-val">2.45x</div><div class="ratio-lbl">Current Ratio</div><div class="ratio-note">Latest available (FY25: ₹1,139.5 Cr current assets / ₹465.7 Cr current liabilities); comfortably liquid</div></div>
+    <div class="ratio-card"><div class="ratio-val">~1.6x</div><div class="ratio-lbl">Quick Ratio</div><div class="ratio-note">Even excluding inventory, short-term assets exceed short-term liabilities</div></div>
+    <div class="ratio-card"><div class="ratio-val">~0.69x</div><div class="ratio-lbl">Asset Turnover (FY26)</div><div class="ratio-note">Revenue ₹2,023 Cr / Total Assets ₹2,930 Cr — reflects capital intensity of a reactor-heavy CDMO/API business, further diluted by fresh capex not yet monetised</div></div>
+    <div class="ratio-card"><div class="ratio-val">26.5%</div><div class="ratio-lbl">ROCE (FY26)</div><div class="ratio-note">Improved sharply from 19% (FY25) on the back of the Q4 FY26 profit surge; management flags near-term pressure as the new capex cycle begins</div></div>
+    <div class="ratio-card"><div class="ratio-val">21.2%</div><div class="ratio-lbl">ROE (FY26)</div><div class="ratio-note">3-year average ROE ~20%; 5-year ~18% — steadily improving profile</div></div>
+    <div class="ratio-card"><div class="ratio-val">17% / 39%</div><div class="ratio-lbl">5-Yr Sales / Profit CAGR</div><div class="ratio-note">TTM sales growth 37%, TTM profit growth 108% — momentum has sharply accelerated in FY26/Q1 FY27</div></div>
+    <div class="ratio-card"><div class="ratio-val">245 days</div><div class="ratio-lbl">Inventory Days (FY26)</div><div class="ratio-note">Elevated — typical of a project-based API/CDMO manufacturer holding WIP for exclusive customer orders</div></div>
+    <div class="ratio-card"><div class="ratio-val">214 days</div><div class="ratio-lbl">Cash Conversion Cycle (FY26)</div><div class="ratio-note">Debtor days 98 + Inventory days 245 - Payable days 129; Q1 FY27 working-capital days of sale improved sharply to 84 from 137 at FY26-end</div></div>
+  </div>
+  <div class="warn-box">Current ratio, quick ratio and asset turnover above use the latest full-year (FY25/FY26) consolidated balance sheet figures publicly available; Neuland's Q1 FY27 press release did not include a full balance sheet breakdown by current/non-current assets. ROCE and ROE are FY26 (year ended 31 March 2026) as reported. Sources: company results, screener.in, tipranks.com.</div>
+
+  <div class="section-title">📄 5-Quarter Trend (₹ Cr, Consolidated)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Quarter</th><th>Revenue</th><th>QoQ</th><th>EBITDA Margin</th><th>PAT</th><th>QoQ PAT</th></tr></thead>
+      <tbody>
+        <tr><td>Q1 FY26 (Jun-25)</td><td>293</td><td>—</td><td>11.6%</td><td>14</td><td>—</td></tr>
+        <tr><td>Q2 FY26 (Sep-25)</td><td>514</td><td class="td-green">+75.4%</td><td>30.4%</td><td>97</td><td class="td-green">+592.9%</td></tr>
+        <tr><td>Q3 FY26 (Dec-25)</td><td>440</td><td class="td-red">-14.4%</td><td>19.0%</td><td>41</td><td class="td-red">-57.7%</td></tr>
+        <tr><td>Q4 FY26 (Mar-26)</td><td>776</td><td class="td-green">+76.4%</td><td class="td-green">40.5%</td><td>213</td><td class="td-green">+419.5%</td></tr>
+        <tr><td><strong>Q1 FY27 (Jun-26)</strong></td><td class="td-green"><strong>641</strong></td><td class="td-red">-17.4%</td><td class="td-green"><strong>35.5%</strong></td><td class="td-green"><strong>147</strong></td><td class="td-red">-30.8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">📅 FY26 Annual Actuals (Full Year, ₹ Cr)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>FY26</th><th>YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td>Revenue from Operations</td><td>2,023</td><td class="td-green">+36.98%</td></tr>
+        <tr><td>Total Income</td><td>2,053</td><td class="td-green">+37.1%</td></tr>
+        <tr><td>EBITDA (Operating Profit)</td><td>580</td><td class="td-green">+76%</td></tr>
+        <tr><td>EBITDA Margin</td><td>~29%</td><td class="td-green">from ~22% FY25</td></tr>
+        <tr><td>PBT</td><td>489</td><td class="td-green">+41.2%</td></tr>
+        <tr><td>PAT</td><td class="td-green">364</td><td class="td-green">+39.94%</td></tr>
+        <tr><td>EPS (₹)</td><td>283.71</td><td>—</td></tr>
+        <tr><td>Dividend</td><td>₹34/share (340%)</td><td>—</td></tr>
+        <tr><td>Operating Cash Flow</td><td>347</td><td class="td-green">from 317 (FY25)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title" style="margin-top:24px">💰 Balance Sheet (FY26-end, 31 Mar 2026)</div>
+  <div class="card">
+    <div class="debt-bar-wrap">
+      <div class="debt-label"><span style="font-size:.8rem;color:var(--muted)">Borrowings vs Equity</span><span style="font-size:.8rem;color:var(--green);font-weight:700">₹301 Cr borrowings vs ₹1,875 Cr equity — low leverage ✅</span></div>
+      <div class="debt-bar"><div class="debt-fill debt-low" style="width:14%"></div></div>
+    </div>
+    <div class="usp-row"><strong>Total assets ₹2,930 Cr</strong> (Fixed assets ₹1,177 Cr + CWIP ₹211 Cr + Other assets ₹1,541 Cr). Neuland has historically run near-zero to net-cash positions (net cash of ₹202.6 Cr as at Q3 FY26-end); FY26-end borrowings rose to ₹301 Cr and management flagged Q1 FY27's ₹121.6 Cr capex outflow plus ₹203 Cr of newly approved investments as the start of a higher-capex phase that could pressure ROCE near-term.</div>
+  </div>
+</div>
+
+<!-- ═══ VALUATIONS ═══ -->
+<div id="tab-valuations" class="tab">
+  <div class="section-title">💰 Valuations</div>
+  <div class="val-grid">
+    <div class="val-card">
+      <div class="val-name">💊 Neuland Laboratories</div>
+      <div class="val-row"><span class="val-lbl">CMP (5 Aug 2026, pre-result close)</span><span class="val-num">₹19,273</span></div>
+      <div class="val-row"><span class="val-lbl">Price, 6 Aug 2026 (post-result)</span><span class="val-num td-green">~₹21,200-21,650</span></div>
+      <div class="val-row"><span class="val-lbl">52-week range</span><span class="val-num">₹11,500 – ₹21,650 (fresh ATH)</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap (pre-result)</span><span class="val-num">~₹25,600 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">Trailing P/E (pre-Q1)</span><span class="val-num td-amber">~68-71x</span></div>
+      <div class="val-row"><span class="val-lbl">Price/Book</span><span class="val-num">~13.7-13.8x</span></div>
+      <div class="val-row"><span class="val-lbl">TTM Revenue / Profit growth</span><span class="val-num td-green">37% / 108%</span></div>
+      <div class="val-row"><span class="val-lbl">Consensus 12-mth TP (~4 analysts)</span><span class="val-num">₹19,550–22,913</span></div>
+      <div class="val-row"><span class="val-lbl">Most bullish TP</span><span class="val-num td-green">₹22,913 (post Q4 preview)</span></div>
+      <div class="val-row"><span class="val-lbl">Promoter Holding</span><span class="val-num">~32.6%</span></div>
+    </div>
+  </div>
+  <div class="warn-box"><strong>Valuation flag:</strong> Even before today's ~10% post-result jump, Neuland was trading at ~68-71x trailing earnings and ~13.7x book value — already one of the richer multiples in the Indian API/CDMO space, priced for continued exceptional execution. Today's move pushes the stock to a fresh all-time high and re-rates it further above most pre-result brokerage targets (₹19,550-22,913). The trailing P/E will mechanically compress as Q1 FY27's ₹147.4 Cr PAT rolls into the TTM base, but on a forward basis the stock continues to price in sustained CMS-led margin expansion well above management's own 25%+ long-term EBITDA margin guidance.</div>
+
+  <div class="section-title">📊 Analyst Consensus Views (Pre-Q1 FY27)</div>
+  <div class="analyst-grid">
+    <div class="analyst-card"><div class="analyst-name">Neuland Laboratories</div><span class="analyst-rec rec-buy">BUY (Street Consensus)</span><div class="analyst-tp">Nuvama: ₹22,130 (48x H1FY28E EPS) · Goldman Sachs: ₹19,550 (raised from ₹17,275) · JM Financial: ₹20,000 · ICICI Securities: ₹19,000</div><div class="analyst-note">Ratings skew Buy across covering brokerages, citing CMS/peptide-led growth and capacity ramp-up. Most published targets pre-date today's result and will likely be revised upward given the scale of the beat — but note the stock is now trading at or above several of these targets even before revision.</div></div>
+  </div>
+  <div class="warn-box" style="margin-bottom:0"><strong>⚠️ Disclaimer:</strong> Analyst targets and ratings sourced from public brokerage commentary as reported in financial media; they change frequently, largely pre-date the Q1 FY27 print, and are not verified directly with brokerages. Not investment advice.</div>
+</div>
+
+<!-- ═══ MOATS ═══ -->
+<div id="tab-moats" class="tab">
+  <div class="section-title">🏰 Moats &amp; USPs</div>
+  <div class="moat-grid">
+    <div class="moat-card">
+      <div class="moat-name">Deep Process Chemistry &amp; R&amp;D Bench</div>
+      <div class="moat-badge">Wide Moat</div>
+      <div class="moat-pts">180+ R&amp;D scientists (31+ PhDs), decades of complex-molecule process chemistry including deuterated compounds and peptides — the technical depth that lets Neuland win exclusive innovator contracts rather than compete purely on price.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Exclusive, Sticky CMS Relationships</div>
+      <div class="moat-badge">Wide Moat</div>
+      <div class="moat-pts">CMS contracts are exclusive by design — once Neuland is qualified into an innovator's regulatory filing for a molecule, switching costs are very high. 98 active CMS projects (19 commercial, per Q3 FY26) underpin multi-year revenue visibility, even if lumpy quarter to quarter.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Global Regulatory Track Record</div>
+      <div class="moat-badge">Compliance Moat</div>
+      <div class="moat-pts">1,000+ regulatory filings and approvals from USFDA, EDQM, PMDA, ANVISA and others across three cGMP manufacturing units — a prerequisite for winning and retaining innovator CMS business and for entering new geographies.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Reactor Capacity Scale</div>
+      <div class="moat-badge">Scale Moat</div>
+      <div class="moat-pts">~12.18 lakh litres of total reactor volume across Bonthapally (Unit-1), Pashamylaram (Unit-2) and Gaddapotharam (Unit-3), with ongoing 18 KL and other expansions — gives Neuland the flexibility to onboard new commercial-scale CMS molecules without long lead times.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Founder-Family Continuity</div>
+      <div class="moat-badge">Governance Moat</div>
+      <div class="moat-pts">Second-generation leadership transition completed in a structured, orderly way in FY26 (Saharsh Davuluri as CEO &amp; MD, Sucheth Davuluri as Executive Vice Chairman) while founder Dr. Davuluri Rama Mohan Rao continues as Executive Chairman — continuity of technical vision spanning four decades.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Emerging Peptide &amp; Sterile-API Optionality</div>
+      <div class="moat-badge">Optionality</div>
+      <div class="moat-pts">Dedicated peptide manufacturing facility commissioning imminently, plus a new strategic collaboration with Gland Pharma for sterile-API manufacturing — two early-stage but potentially large multi-year growth vectors layered on top of the core CDMO business.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HISTORY ═══ -->
+<div id="tab-history" class="tab">
+  <div class="section-title">🕰️ Company History — From a Hyderabad Chemistry Startup to a Global API CDMO</div>
+
+  <div class="founder-card">
+    <div style="font-weight:800;font-size:1rem;color:var(--cdmo);margin-bottom:8px">👤 The Founder — Dr. Davuluri Rama Mohan Rao</div>
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.8">
+      Holds a Master's in Science from Andhra University, a postgraduate diploma in technology from IIT Kharagpur, and a PhD in Organic Chemistry from the University of Notre Dame, USA. Before founding Neuland, he spent roughly a decade in senior R&amp;D, production and quality-assurance roles at Glaxo India, and was Director of R&amp;D and QA at Unique Chemicals, Mumbai.<br><br>
+      He founded <strong>Neuland Laboratories</strong> in Hyderabad on 7 January 1984, naming the company after Reverend Julius Aloysius Nieuwland — an inspirational scientist at the University of Notre Dame whose work influenced Dr. Rao's own path into organic chemistry.<br><br>
+      Today Dr. Rao serves as <strong>Executive Chairman</strong>, having handed day-to-day operating control to his sons — <strong>D. Sucheth Rao</strong> (Executive Vice Chairman) and <strong>D. Saharsh Rao</strong> (CEO &amp; Managing Director, appointed in a structured transition completed in FY26) — while remaining Chief Promoter of the company he built over four decades.
+    </div>
+  </div>
+
+  <div class="section-title">📜 Timeline</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-year">1984</div><div class="tl-text">Dr. Davuluri Rama Mohan Rao founds <strong>Neuland Laboratories</strong> in Hyderabad, naming it after Reverend Julius Nieuwland — a CDMO focused on Active Pharmaceutical Ingredients (APIs) and advanced intermediates.</div></div>
+    <div class="tl-item"><div class="tl-year">1986</div><div class="tl-text">First API sale — Salbutamol Sulphate and Albuterol Sulphate — marking Neuland's transition from pure R&amp;D to commercial manufacturing.</div></div>
+    <div class="tl-item"><div class="tl-year">~1994</div><div class="tl-text">In its tenth year, Neuland <strong>goes public</strong> on Indian stock exchanges (BSE: 524558), broadening its ownership base beyond the founding family.</div></div>
+    <div class="tl-item"><div class="tl-year">1997</div><div class="tl-text">Neuland's manufacturing facilities are successfully audited by the <strong>US FDA</strong> for the first time — a foundational moment for its global regulated-market ambitions.</div></div>
+    <div class="tl-item"><div class="tl-year">2004-2013</div><div class="tl-text">Strategic realignment toward niche APIs and Custom Manufacturing Solutions (CMS); US operations begin in 2004; a Japan subsidiary opens in 2007; the dedicated R&amp;D centre opens in 2008, alongside EDQM and PMDA (Japan) approvals and the company's first New Chemical Entity (NCE) approval.</div></div>
+    <div class="tl-item"><div class="tl-year">2014-2021</div><div class="tl-text">Expansion into complex Specialty API manufacturing; <strong>Unit-3 (Gaddapotharam)</strong> acquired in FY2018 (~197 kL capacity) and commercialised in FY2021, broadening manufacturing capacity beyond the original Bonthapally and Pashamylaram units.</div></div>
+    <div class="tl-item"><div class="tl-year">2023</div><div class="tl-text">Unit-3 reactor capacity scaled up to 320 kL reaction volume, supporting the growing CMS commercial pipeline.</div></div>
+    <div class="tl-item"><div class="tl-year">FY26</div><div class="tl-text">Leadership transition completed — <strong>Saharsh Davuluri</strong> becomes CEO &amp; Managing Director, <strong>Sucheth Davuluri</strong> becomes Executive Vice Chairman. Record annual results: revenue ₹2,023 Cr (+37%), PAT ₹364 Cr (+40%), EBITDA margin expands to ~29%. Peptide manufacturing facility under construction; ₹34/share (340%) final dividend declared.</div></div>
+    <div class="tl-item"><div class="tl-year">Q1 FY27 (Jun-26)</div><div class="tl-text">Best-ever quarterly print — revenue ₹641.5 Cr (+119% YoY), EBITDA margin 35.5%, PAT ₹147.4 Cr (+~962% YoY). Strategic sterile-API collaboration announced with <strong>Gland Pharma</strong>; 18 KL Bonthapally Unit-1 expansion approved; commercial production begins at expanded Bonthapally/Gaddapotharam capacity; peptide facility commissioning imminent; Dr. Mauricio Futran joins the Board (AGM, 4 Aug 2026). Stock hits a fresh all-time high, up over 10% on the results.</div></div>
+  </div>
+
+  <div class="section-title">✨ What Makes Neuland Genuinely Unique</div>
+  <div class="unique-grid">
+    <div class="unique-card"><div class="unique-num">01</div><div class="unique-name">Named After a Notre Dame Scientist, Not a Family Name</div><div class="unique-pts">Unlike most promoter-led Indian pharma companies, Neuland is named after Reverend Julius Nieuwland — the University of Notre Dame chemist whose work inspired founder Dr. Rama Mohan Rao's own path into organic chemistry — an unusual origin story that signals the company's research-first identity from day one.</div></div>
+    <div class="unique-card"><div class="unique-num">02</div><div class="unique-name">Dual Engine: Generic APIs + Innovator CDMO</div><div class="unique-pts">Few mid-cap Indian API players run both a mature Prime Generic API business and a high-growth, exclusive-contract CMS/CDMO business for global innovators side by side — giving Neuland a base-load generic business plus optionality on the faster-growing, higher-margin CDMO opportunity.</div></div>
+    <div class="unique-card"><div class="unique-num">03</div><div class="unique-name">Orderly Second-Generation Transition</div><div class="unique-pts">The FY26 handover from founder Dr. Rama Mohan Rao to sons Sucheth and Saharsh Davuluri was executed as a structured, shareholder-approved re-designation rather than an abrupt exit — continuity of family ownership and technical vision across four decades.</div></div>
+    <div class="unique-card"><div class="unique-num">04</div><div class="unique-name">Explosive but Genuinely Lumpy Growth</div><div class="unique-pts">Neuland's revenue can swing 75%+ QoQ in either direction purely from CMS order timing — Q1 FY27's ~962% YoY profit surge followed a soft Q1 FY26 base, illustrating both the operating leverage in the model and the need to read results over several quarters, not one.</div></div>
+    <div class="unique-card"><div class="unique-num">05</div><div class="unique-name">Deep Peptide &amp; Complex-Chemistry Bet</div><div class="unique-pts">A dedicated peptide manufacturing facility and deuterated-molecule capabilities position Neuland at the front edge of next-generation CDMO demand (GLP-1 adjacent peptide chemistry), a relatively early and differentiated bet for a company of its size.</div></div>
+    <div class="unique-card"><div class="unique-num">06</div><div class="unique-name">Strategic Platform Partnerships, Not Just Organic Capex</div><div class="unique-pts">The new Gland Pharma sterile-API collaboration shows Neuland extending its model beyond organic capacity build-out into capital-light strategic partnerships with other listed Indian pharma companies — a newer lever for growth alongside its traditional in-house expansion playbook.</div></div>
+  </div>
+  <div class="warn-box" style="margin-bottom:0">Historical details compiled from public company disclosures (including Neuland's own "Our History" page), financial media and investor presentations; some early-year figures and dates vary slightly across sources and should be treated as broadly accurate rather than exact.</div>
+</div>
+
+<!-- ═══ PROJECTS ═══ -->
+<div id="tab-projects" class="tab">
+  <div class="section-title">🔭 Key Strategic Projects</div>
+  <div class="proj-card">
+    <div class="proj-head">🏗️ 18 KL Capacity Expansion — Bonthapally Unit-1</div>
+    <div class="proj-body">Investment of <strong>₹39.8 Cr</strong> approved at the 5 August 2026 board meeting, expected to rapidly scale up within <strong>6-7 months</strong>. Adds to capacity that supports both the GDS and CMS businesses at Neuland's original manufacturing site.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">🏭 Commercial Production at Expanded Bonthapally &amp; Gaddapotharam Capacity</div>
+    <div class="proj-body">Commercial production commenced <strong>31 July 2026</strong> at newly expanded capacities across Unit-1 (Bonthapally) and Unit-3 (Gaddapotharam), timed to start contributing to revenue from Q2 FY27 onward.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">💊 Peptide Manufacturing Facility</div>
+    <div class="proj-body">Set to be commissioned <strong>next month</strong> (management commentary on the Q1 FY27 call). Management expects Module 1 to be fully occupied with a pipeline of projects, with potential activation of <strong>Module 2</strong> later in the year depending on demand.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">🤝 Strategic Sterile-API Collaboration — Gland Pharma</div>
+    <div class="proj-body">Board approved a <strong>₹40 Cr corporate guarantee</strong> for Gland Pharma to help establish dedicated manufacturing capacity for complex sterile APIs — a differentiated platform combining Neuland's API process chemistry with Gland's sterile injectables manufacturing strength, and a signal of Neuland's growing commitment to the specialty GDS business.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">👥 Board &amp; Leadership Update</div>
+    <div class="proj-body">At the 42nd AGM held 4 August 2026, shareholders approved a <strong>₹34/share final dividend</strong> for FY26 and the appointment of <strong>Dr. Mauricio Futran</strong> to the Board — adding fresh strategic and operational expertise as the company enters a higher-capex, higher-complexity growth phase.</div>
+  </div>
+</div>
+
+<!-- ═══ SWOT ═══ -->
+<div id="tab-swot" class="tab">
+  <div class="section-title">📋 SWOT Analysis — Neuland Laboratories, Q1 FY27</div>
+  <div class="swot-wrap">
+    <div class="swot-box swot-s">
+      <div class="swot-head">💪 Strengths</div>
+      Best-ever quarterly print — revenue +119% YoY, PAT +~962% YoY, EBITDA margin 35.5% · Healthy current ratio (~2.45x) and low leverage · ROCE improved sharply to 26.5% and ROE to 21.2% (FY26) · Working capital days of sale nearly halved to 84 in Q1 FY27 · Deep, sticky exclusive CMS relationships with global innovators backed by a strong regulatory track record
+    </div>
+    <div class="swot-box swot-w">
+      <div class="swot-head">⚠️ Weaknesses</div>
+      Extremely lumpy quarter-to-quarter revenue — Q1 FY27 fell ~17.4% QoQ despite the YoY surge · Commercial CMS growth concentrated in only ~3 molecules, a customer/product-concentration risk · Low asset turnover (~0.69x FY26) reflecting capital intensity · Elevated inventory days (245) and cash-conversion cycle (214 days) in FY26 · Management itself flags the 35.5% margin as favourably boosted by FX/mix versus its 25%+ long-term guide
+    </div>
+    <div class="swot-box swot-o">
+      <div class="swot-head">🌍 Opportunities</div>
+      Peptide/GLP-1-adjacent CDMO ramp with facility commissioning imminent · New Gland Pharma sterile-API platform · Growing CMS development pipeline including new advanced clinical-stage peptide projects · China+1 supply-chain diversification continuing to favour Indian CDMO/API players · Capacity additions at Bonthapally/Gaddapotharam beginning to contribute from Q2 FY27
+    </div>
+    <div class="swot-box swot-t">
+      <div class="swot-head">🔻 Threats</div>
+      Stock at an all-time high and already trading at a rich ~68-71x trailing P/E even before today's ~10% jump — limited room for a "beat and no reaction" outcome if a future quarter disappoints · Entering a higher-capex phase (₹121.6 Cr Q1 outflow, ₹203 Cr newly approved) that could pressure near-term ROCE · Development/CMS revenue timing risk if key customer projects slip · Generic Prime API segment faces persistent competitive/pricing pressure · Global trade, tariff and geopolitical developments flagged by management as an ongoing watch item
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VERDICT ═══ -->
+<div id="tab-verdict" class="tab">
+  <div class="section-title">🏆 Verdict — Q1 FY27 Read</div>
+  <div class="champion">
+    <div style="text-align:center;font-size:2rem">👑</div>
+    <h2>
+      <span class="en">Q1 FY27: A Blowout Quarter — With the Same Lumpiness Caveat That Always Applies to Neuland</span>
+      <span class="ta">Q1 FY27: மிகச் சிறந்த காலாண்டு — கவனிக்க வேண்டிய விஷயங்கள்</span>
+    </h2>
+    <p>
+      <span class="en">
+        <strong>1. The headline numbers are exceptional by any benchmark.</strong> 119.2% revenue growth, 448.2% EBITDA growth and ~962% PAT growth YoY, with EBITDA margin expansion of roughly 2,390 bps to 35.5%, is a standout quarter for an Indian API/CDMO company — and the reason the stock jumped over 10% to a fresh all-time high today.<br><br>
+        <strong>2. This is also, by Neuland's own history, an inherently lumpy business.</strong> Revenue still fell ~17.4% QoQ from Q4 FY26's record base, and commercial CMS growth is concentrated in a handful of molecules. Management has said this consistently for years — the trend across 4-6 quarters matters more than any single print.<br><br>
+        <strong>3. Management itself is flagging the margin as elevated.</strong> The 35.5% EBITDA margin was explicitly attributed to favourable FX and a favourable customer mix, against a long-term guidance of 25%+ — a meaningful gap that argues for treating this quarter as a strong outlier to confirm over time, not a new baseline.<br><br>
+        <strong>4. Balance sheet and returns are genuinely improving.</strong> ROCE rose to 26.5% and ROE to 21.2% in FY26, current ratio stands at a comfortable ~2.45x, and working capital days of sale nearly halved sequentially — real operational progress alongside the headline growth.<br><br>
+        <strong>5. Valuation has run far ahead, and today's move stretches it further.</strong> Even before this result, the stock traded at ~68-71x trailing earnings; today's rally to a fresh all-time high near ₹21,200-21,650 pushes it above most pre-result brokerage targets (₹19,550-22,913). The bar for the next few quarters is sustained execution on CMS/peptide/Gland Pharma commercialisation, not just another headline beat.<br><br>
+        <strong>CBF26 Earnings Rating: CB-A · Strong</strong> — reflecting genuine earnings quality and momentum this quarter, with the standard house caveat that this measures earnings quality only, not valuation, and is not a buy/sell/hold call.
+      </span>
+      <span class="ta">
+        தலைப்புச் செய்திகள் தெளிவாக வலுவானவை — வருவாய் 119.2%, PAT 962% வளர்ச்சி. ஆனால் இது இயல்பாகவே unpredictable ஆன CMS வணிகம். நிர்வாகமே margin இயல்பு நிலைக்குத் திரும்பக்கூடும் என்று குறிப்பிட்டுள்ளது. மதிப்பீடு ஏற்கனவே உயர்ந்த நிலையில் உள்ளது, இன்றைய உயர்வுக்குப் பிறகு இன்னும் அதிகமாக உள்ளது.
+      </span>
+    </p>
+  </div>
+  <div class="warn-box" style="margin-bottom:0"><strong>⚠️ Disclaimer:</strong> This analysis is for educational and informational purposes only. It does not constitute financial advice. All data is compiled from public sources (exchange filings, company press releases and investor presentations, financial media) and may contain estimates or reporting variances across sources. Consult a SEBI-registered investment advisor before making investment decisions. CB Research is not SEBI-registered.</div>
+</div>
+
+<!-- ═══ Q&A ═══ -->
+<div id="tab-qa" class="tab">
+  <div class="section-title">🤖 CB Assist</div>
+  <div class="info-box">
+    <span class="en">Pre-loaded smart questions covering Neuland's Q1 FY27 financials, segments, ratios, risks, and outlook — plus an interactive box where you can ask your own question using the data in this dashboard. No API key needed.</span>
+    <span class="ta">Neuland Q1 FY27 குறித்த முன்னே ஏற்றப்பட்ட கேள்வி-பதில்கள், மேலும் உங்கள் சொந்த கேள்விகளையும் கேட்கலாம்.</span>
+  </div>
+  <div id="qaAcc">
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>Why did Neuland's share price jump today?</span><span>+</span></div><div class="qa-a">Neuland reported a blockbuster Q1 FY27 (revenue +119% YoY, PAT +~962% YoY, EBITDA margin 35.5%) well ahead of prior brokerage estimates, alongside a bundle of positive news at the same 5 August board meeting: an 18 KL Bonthapally capacity expansion, a strategic sterile-API collaboration with Gland Pharma, confirmation that commercial production had already started at expanded facilities, sharply improved working capital days, and management's confidence that "FY27 and FY28 will be good years." The stock jumped over 10% on 6 August 2026 to a fresh all-time high, from a pre-result close of ₹19,273 to roughly ₹21,200-21,650.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is Neuland's current ratio and what does it mean?</span><span>+</span></div><div class="qa-a">Neuland's current ratio is around 2.45x on the latest available annual balance sheet (current assets of ~₹1,139.5 Cr against current liabilities of ~₹465.7 Cr), up from ~2.15x a year earlier. A ratio well above 1x indicates the company can comfortably cover its short-term obligations with short-term assets, consistent with its low-leverage balance sheet.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is Neuland's asset turnover and why is it relatively low?</span><span>+</span></div><div class="qa-a">Asset turnover (revenue ÷ total assets) was approximately 0.69x for FY26 (₹2,023 Cr revenue on ₹2,930 Cr total assets). This is relatively low because Neuland is a capital-intensive reactor-based CDMO/API manufacturer, and a growing share of assets (capital work-in-progress, new capacity) is not yet generating revenue — asset turnover should improve as the peptide facility, Bonthapally expansion and Gland Pharma capacity ramp up.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is Neuland's ROCE and how has it trended?</span><span>+</span></div><div class="qa-a">ROCE was 26.5% for FY26 (year ended 31 March 2026), up sharply from 19% in FY25, reflecting the strong profit surge in H2 FY26. Historically ROCE has been volatile — it fell to single digits around FY18-FY20 during Unit-3's commercialisation phase, then recovered to 33% in FY24 before settling around 19-26% more recently. Management has flagged that the new capex cycle beginning in Q1 FY27 (₹121.6 Cr outflow plus ₹203 Cr newly approved) could put near-term pressure on this ratio.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>How is Neuland's CMS business performing and what is CMS commercialisation?</span><span>+</span></div><div class="qa-a">CMS (Custom Manufacturing Solutions) is Neuland's exclusive contract development &amp; manufacturing business for global innovator pharma/biotech customers, spanning pre-clinical through commercial stages. "Commercialisation" refers to a molecule moving from development/clinical-stage revenue (process R&amp;D, trial-quantity manufacturing) to commercial-stage revenue (large-volume manufacturing once the innovator's drug is approved and launched). Q1 FY27's growth was "driven primarily by commercial CMS projects" — meaning revenue from molecules that have already reached the commercial stage, currently concentrated in roughly three molecules, which management says will be joined by a growing pipeline of new advanced clinical and peptide-stage projects over time.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>Is the ~962% PAT growth sustainable?</span><span>+</span></div><div class="qa-a">Not at this rate. The comparison base (Q1 FY26) was an unusually soft quarter (PAT of just ₹13.9 Cr), and management has explicitly said the 35.5% EBITDA margin benefited from favourable FX and customer mix relative to its own long-term guidance of 25%+. Revenue itself fell ~17.4% QoQ from Q4 FY26, underlining that quarter-to-quarter comparisons in this business are unreliable — multi-quarter trends matter more.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is the debt and capex position?</span><span>+</span></div><div class="qa-a">Neuland has historically run a low-leverage, often net-cash balance sheet (net cash of ₹202.6 Cr as at Q3 FY26-end). Borrowings rose to ₹301 Cr by FY26-end as the company enters a new capex cycle — Q1 FY27 alone saw a capex cash outflow of ₹121.6 Cr, with a further ₹203 Cr of investments newly approved, funding the peptide facility, 18 KL Bonthapally expansion and other capacity additions.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is the CBF26 Earnings Rating and why CB-A?</span><span>+</span></div><div class="qa-a">The CBF26 Earnings Rating is a weighted 1-5 score across revenue growth (25%), EBITDA growth (25%), PAT growth (30%) and EBITDA margin (20%). All four components scored close to the top of the scale this quarter given the scale of the beat, producing a composite of 4.95/5.0 → CB-A (Strong). This measures earnings quality/momentum only for the quarter — not valuation, and not an investment recommendation.</div></div>
+  </div>
+  <div class="qa-chat">
+    <div style="font-weight:700;font-size:.93rem;color:var(--accent);margin-bottom:10px">💬 Ask Your Own Question — Dashboard Data (No API Key)</div>
+    <div class="qa-chat-row">
+      <input type="text" id="qaInp" class="qa-inp" placeholder="E.g. What was the QoQ revenue growth?" />
+      <button class="qa-btn" onclick="answerQ()">Ask ▶</button>
+    </div>
+    <div id="qaResp" class="qa-resp"></div>
+    <div style="font-size:.71rem;color:var(--muted);margin-top:6px">📌 Try: "revenue", "margin", "current ratio", "asset turnover", "roce", "debt", "analyst", "moat", "capex", "cms", "segment", "price jump". Press Enter or click Ask.</div>
+  </div>
+</div>
+
+<!-- ═══ CHARTS ═══ -->
+<div id="tab-charts" class="tab">
+  <div class="section-title">📈 Visual Analytics</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Revenue Trend — Quarterly (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="revChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA Margin % Trend</div>
+      <div class="chart-wrap"><canvas id="ebitdaChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA — ₹ Cr Trend (Quarterly)</div>
+      <div class="chart-wrap"><canvas id="ebitdaAbsChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Net Profit (PAT) — ₹ Cr Trend</div>
+      <div class="chart-wrap"><canvas id="patChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q1 FY27 Revenue Mix — CMS vs GDS (Approx.)</div>
+      <div class="chart-wrap"><canvas id="segChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Key Ratios Trend — Current Ratio &amp; ROCE (%)</div>
+      <div class="chart-wrap"><canvas id="ratioChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">CBF26 Earnings Rating — Component Scores</div>
+      <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DATA TABLE ═══ -->
+<div id="tab-table" class="tab">
+  <div class="info-box">Click column headers to sort. All figures consolidated unless noted. Source: BSE/NSE filings, company press release &amp; investor presentation (5 Aug 2026), financial media, screener.in. No investment advice.</div>
+  <div class="tbl-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th onclick="sortT(0)">Quarter <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(1)">Revenue (Cr) <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(2)">EBITDA% <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(3)">PAT (Cr) <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(4)">PAT Margin% <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(5)">QoQ Revenue <span class="sort-icon">⇅</span></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td><strong>Q1 FY26</strong></td><td>293</td><td>11.6%</td><td>14</td><td>4.8%</td><td>—</td></tr>
+        <tr><td><strong>Q2 FY26</strong></td><td>514</td><td>30.4%</td><td class="td-green">97</td><td>18.9%</td><td class="td-green">+75.4%</td></tr>
+        <tr><td><strong>Q3 FY26</strong></td><td>440</td><td>19.0%</td><td class="td-red">41</td><td>9.3%</td><td class="td-red">-14.4%</td></tr>
+        <tr><td><strong>Q4 FY26</strong></td><td>776</td><td class="td-green">40.5%</td><td class="td-green">213</td><td>27.4%</td><td class="td-green">+76.4%</td></tr>
+        <tr><td><strong>Q1 FY27</strong></td><td class="td-green">641</td><td class="td-green">35.5%</td><td class="td-green">147</td><td>23.0%</td><td class="td-red">-17.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='charts') setTimeout(initCharts,80);
+}
+
+function setLang(lang,btn){
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  lang==='ta'?document.body.classList.add('tm'):document.body.classList.remove('tm');
+}
+
+let sortDir={};
+function sortT(col){
+  const tbody=document.getElementById('tableBody');
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const dir=(sortDir[col]=!sortDir[col]);
+  rows.sort((a,b)=>{
+    const av=a.cells[col].innerText.replace(/[₹,+★†✓~%#]/g,'').trim();
+    const bv=b.cells[col].innerText.replace(/[₹,+★†✓~%#]/g,'').trim();
+    const an=parseFloat(av),bn=parseFloat(bv);
+    if(!isNaN(an)&&!isNaN(bn))return dir?an-bn:bn-an;
+    return dir?av.localeCompare(bv):bv.localeCompare(av);
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+
+function toggleQAItem(el){
+  const a=el.nextElementSibling;
+  a.classList.toggle('open');
+  el.querySelector('span:last-child').textContent=a.classList.contains('open')?'−':'+';
+}
+
+const qaKB=[
+  {k:['jump','surge today','why did the stock','share price today','rally','all-time high','ath'],a:'Neuland reported a blockbuster Q1 FY27 (revenue +119% YoY, PAT +~962% YoY, EBITDA margin 35.5%) well ahead of prior estimates, alongside an 18 KL Bonthapally expansion, a strategic sterile-API collaboration with Gland Pharma, confirmation that commercial production had already started at expanded facilities, and sharply improved working capital days. The stock jumped over 10% on 6 August 2026 to a fresh all-time high, from a pre-result close of ₹19,273 to roughly ₹21,200-21,650.'},
+  {k:['history','founder','davuluri','rama mohan rao','founded','when was','1984','origin','nieuwland'],a:'Neuland Laboratories was founded on 7 January 1984 in Hyderabad by Dr. Davuluri Rama Mohan Rao, named after Reverend Julius Nieuwland of Notre Dame University. The company went public roughly ten years later and passed USFDA audit in 1997. Leadership has since transitioned to Dr. Rao\'s sons Sucheth (Executive Vice Chairman) and Saharsh (CEO & MD) as of FY26. See the History tab for the full timeline.'},
+  {k:['unique','different','moat','why special','competitive advantage'],a:'What sets Neuland apart: deep process chemistry (180+ scientists) built over four decades, exclusive/sticky CMS contracts with global innovators, ~12.18 lakh litre reactor capacity across three cGMP units, an orderly second-generation family leadership transition, and emerging optionality in peptide manufacturing and sterile APIs. See the Moats tab for the full breakdown.'},
+  {k:['revenue','sales','topline','top line'],a:'Q1 FY27 consolidated revenue from operations was ₹641.5 Cr, up 119.2% YoY from ₹292.7 Cr but down ~17.4% QoQ from ₹776 Cr in Q4 FY26. Total income (incl. other income) was ₹650.1 Cr, up 116.3% YoY.'},
+  {k:['margin','ebitda'],a:'EBITDA margin expanded to 35.5% in Q1 FY27 from ~11.6% in Q1 FY26 — roughly 2,390 bps YoY improvement — though down from 40.5% in Q4 FY26. Management has flagged this as boosted by favourable FX and mix versus its long-term guidance of 25%+.'},
+  {k:['pat','profit','net profit','earnings'],a:'Consolidated PAT was ₹147.4 Cr in Q1 FY27, up ~962% YoY from ₹13.9 Cr, but down ~30.8% QoQ from ₹212.7 Cr in Q4 FY26. EPS was ₹114.9 versus ₹10.8 in Q1 FY26.'},
+  {k:['current ratio','liquidity','quick ratio'],a:'Neuland\'s current ratio is around 2.45x on the latest available annual balance sheet (~₹1,139.5 Cr current assets vs ~₹465.7 Cr current liabilities), up from ~2.15x a year earlier. Quick ratio is roughly 1.6x — comfortably liquid even excluding inventory.'},
+  {k:['asset turnover','asset efficiency'],a:'Asset turnover (revenue ÷ total assets) was approximately 0.69x for FY26 — relatively low because Neuland is a capital-intensive reactor-based CDMO, and a growing share of assets is fresh capex (capital work-in-progress) not yet generating revenue.'},
+  {k:['roce','return on capital'],a:'ROCE was 26.5% for FY26, up sharply from 19% in FY25. Historically ROCE has been volatile (single digits around FY18-FY20 during Unit-3 commercialisation, 33% in FY24). Management flags that the new capex cycle beginning Q1 FY27 could pressure this ratio near-term.'},
+  {k:['debt','balance sheet','leverage'],a:'Neuland has historically run a low-leverage, often net-cash balance sheet (net cash of ₹202.6 Cr as at Q3 FY26-end). Borrowings rose to ₹301 Cr by FY26-end as a new capex cycle begins — Q1 FY27 alone saw a ₹121.6 Cr capex outflow, with ₹203 Cr more newly approved.'},
+  {k:['analyst','rating','target','tp'],a:'Street consensus (pre-Q1 FY27) is broadly Buy. Nuvama: ₹22,130; Goldman Sachs: ₹19,550; JM Financial: ₹20,000; ICICI Securities: ₹19,000. The stock is now trading at or above several of these targets even before likely post-result revisions.'},
+  {k:['capex','project','peptide','bonthapally','gaddapotharam'],a:'Key projects: an 18 KL Bonthapally Unit-1 expansion (₹39.8 Cr, approved 5 Aug 2026), commercial production started 31 July 2026 at expanded Bonthapally/Gaddapotharam capacity, and a peptide manufacturing facility set to be commissioned next month.'},
+  {k:['gland pharma','sterile'],a:'Neuland\'s board approved a ₹40 Cr corporate guarantee for Gland Pharma to establish dedicated manufacturing capacity for complex sterile APIs — a strategic collaboration combining Neuland\'s process chemistry with Gland\'s sterile injectables strength, extending Neuland\'s specialty GDS platform.'},
+  {k:['segment','cms','custom manufacturing','commercialisation','commercialization','gds','api mix'],a:'Neuland reports two segments: CMS (Custom Manufacturing Solutions — exclusive contract development & manufacturing for innovators, spanning pre-clinical to commercial stage) and GDS (Generic Drug Substances — Neuland\'s own Prime and Specialty API portfolio). Q1 FY27 growth was driven primarily by commercial CMS projects — molecules that have moved from development-stage revenue to large-volume commercial-stage manufacturing — currently concentrated in about three molecules, with a growing pipeline of new clinical and peptide-stage projects behind them.'},
+  {k:['valuation','pe','price to earnings','expensive'],a:'Pre-Q1 trailing P/E was roughly 68-71x. The stock closed at ₹19,273 on 5 Aug 2026 (pre-result) and jumped over 10% on 6 Aug 2026 to a fresh all-time high near ₹21,200-21,650 — pushing it further above most pre-result brokerage targets (₹19,550-22,913).'},
+  {k:['guidance','outlook','fy27'],a:'Management has reiterated confidence that FY27 and FY28 will be good years, while flagging that the 25%+ EBITDA margin (not the 35.5% Q1 FY27 print) remains the long-term guided level, and that the development/CMS revenue pipeline is "only getting better" even if individual quarters stay lumpy.'},
+];
+function answerQ(){
+  const inp=document.getElementById('qaInp');
+  const resp=document.getElementById('qaResp');
+  const q=inp.value.toLowerCase().trim();
+  if(!q){return;}
+  let hit=null;
+  for(const item of qaKB){
+    if(item.k.some(kw=>q.includes(kw))){hit=item;break;}
+  }
+  resp.style.display='block';
+  resp.textContent=hit?hit.a:'No direct match found in this dashboard\'s data. Try keywords like "revenue", "margin", "PAT", "current ratio", "asset turnover", "roce", "debt", "analyst", "moat", "capex", "cms", "segment", or "price jump".';
+  inp.value='';
+}
+document.getElementById('qaInp').addEventListener('keypress',e=>{if(e.key==='Enter')answerQ();});
+
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;
+  chartsInit=true;
+  const labels=['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'];
+  new Chart(document.getElementById('revChart'),{type:'bar',data:{labels,datasets:[{label:'Revenue (₹ Cr)',data:[293,514,440,776,641],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('ebitdaChart'),{type:'line',data:{labels,datasets:[{label:'EBITDA Margin %',data:[11.6,30.4,19.0,40.5,35.5],borderColor:'#0369a1',backgroundColor:'rgba(3,105,161,.12)',fill:true,tension:.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('ebitdaAbsChart'),{type:'bar',data:{labels,datasets:[{label:'EBITDA (₹ Cr)',data:[34,156,85,307,231],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('patChart'),{type:'bar',data:{labels,datasets:[{label:'PAT (₹ Cr)',data:[14,97,41,213,147],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('segChart'),{type:'doughnut',data:{labels:['CMS (Custom Manufacturing)','GDS (Prime + Specialty API)'],datasets:[{data:[63,37],backgroundColor:['#0891b2','#7c3aed']}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('ratioChart'),{type:'line',data:{labels:['FY22','FY23','FY24','FY25','FY26'],datasets:[{label:'ROCE %',data:[10,21,33,19,26.5],borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.1)',tension:.3,pointRadius:4},{label:'Current Ratio (x10 for scale)',data:[17.3,16.0,21.5,21.5,24.5],borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.08)',tension:.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Revenue Growth','EBITDA Growth','PAT Growth','EBITDA Margin'],datasets:[{label:'CBF26 Score (Q1 FY27)',data:[5,5,5,4.8],borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.15)',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5}}}});
+}
+</script>
+</body>
+</html>

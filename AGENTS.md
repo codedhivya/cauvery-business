@@ -6,7 +6,7 @@ it produces (static HTML).
 
 ```
 sector-financial-analysis/   the skill — source of truth
-reports/published/           98 verified reports; the author stands behind these
+reports/published/           126 verified reports; the author stands behind these
 reports/staging/             generated drafts awaiting human review
 scripts/download_reports.py  mirrors published reports from the Pages site
 docs/                        report URL lists
@@ -14,10 +14,10 @@ docs/                        report URL lists
 
 Reports are published at <https://elangocauvery.github.io/CB-Finance/>.
 
-**Continuing the build?** See **[ROADMAP.md](ROADMAP.md)** — status, the 15-sector inventory with report
-counts, phase order, and the step-by-step recipe for adding a sector. Two of 15 sectors are built
-(`insurance`, `banking`); 13 remain. Don't re-derive the sector taxonomy by re-auditing the corpus — it's
-already recorded there.
+**Continuing the build?** See **[ROADMAP.md](ROADMAP.md)** — status, the sector inventory with report
+counts, phase order, and the step-by-step recipe for adding a sector. **All 16 sectors are built**; the
+build is complete. Don't re-derive the sector taxonomy by re-auditing the corpus — it's already recorded
+there.
 
 **About to change something that looks arbitrary?** See **[docs/adr/](docs/adr/README.md)**. Several of
 these decisions are counterintuitive and were made against specific corpus evidence — why one skill
@@ -82,7 +82,7 @@ sector-financial-analysis/
     ├── source-hierarchy.md       sourcing tiers, attribution, compliance
     ├── output-conventions.md     THE ONLY FILE NAMING PATHS OR TOOLS
     ├── modes/                    HOW to build (15 files)
-    └── sectors/                  WHAT the metrics are (+ _template.md)
+    └── sectors/                  WHAT the metrics are (16 files + _template.md)
 ```
 
 **The split**: mode files own the craft, sector files own the domain. How to build a SWOT grid is
@@ -104,7 +104,7 @@ other agent environments — porting means editing one file, not fifteen.
 python3 scripts/verify_skill.py
 ```
 
-49 checks in one command: the structural contracts (no sector metric in a mode file, no tool name or path
+50 checks in one command: the structural contracts (no sector metric in a mode file, no tool name or path
 outside `output-conventions.md`, no hardcoded period, every CSS class resolves), per-sector completeness
 (10 numbered sections, 9 delegation targets, CB weights totalling 100%), that each sector still carries
 its defining insight, that every refusal survives, and that the router's depth-routing and scope limits

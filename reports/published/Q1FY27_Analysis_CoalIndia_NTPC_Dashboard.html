@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CB Research | Coal India &amp; NTPC Q1 FY27 Dashboard</title>
+<style>
+  :root{
+    --orange:#FF8C42;
+    --orange-light:#FFF1E6;
+    --orange-dark:#E86A17;
+    --ink:#101418;
+    --sub:#4A5058;
+    --border:#E4E4E4;
+    --green:#0E8A3E;
+    --red:#C62828;
+    --bg:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  header{ background:#fff; border-bottom:3px solid var(--orange); padding:18px 24px; position:sticky; top:0; z-index:50; }
+  .brandrow{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
+  .brand h1{margin:0; font-size:22px; font-weight:800; letter-spacing:.3px;}
+  .brand span{color:var(--orange-dark);}
+  .brand p{margin:2px 0 0; font-size:12.5px; color:var(--sub); font-weight:600;}
+  .tag{background:var(--orange-light); color:var(--orange-dark); font-weight:800; font-size:11px; padding:5px 10px; border-radius:20px; border:1px solid var(--orange);}
+  nav{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;}
+  nav button{ background:#fff; border:2px solid var(--border); color:var(--ink); font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:10px; cursor:pointer; transition:.15s; }
+  nav button:hover{border-color:var(--orange);}
+  nav button.active{background:var(--orange); border-color:var(--orange); color:#fff;}
+  main{max-width:1180px; margin:0 auto; padding:24px;}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .hero{ background:linear-gradient(135deg,var(--orange-light),#fff); border:2px solid var(--orange); border-radius:16px; padding:20px 24px; margin-bottom:20px; }
+  .hero h2{margin:0 0 4px; font-size:24px; font-weight:900;}
+  .hero .sub{font-size:14px; color:var(--sub); font-weight:700;}
+  .heropills{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+  .pill{background:#fff; border:2px solid var(--orange); border-radius:10px; padding:10px 14px; min-width:140px;}
+  .pill .lbl{font-size:11px; font-weight:800; color:var(--sub); text-transform:uppercase;}
+  .pill .val{font-size:19px; font-weight:900; color:var(--ink); margin-top:2px;}
+  .pill .chg{font-size:12px; font-weight:800;}
+  .up{color:var(--green);} .down{color:var(--red);}
+
+  h3.sec{font-size:18px; font-weight:900; margin:28px 0 12px; padding-bottom:8px; border-bottom:3px solid var(--orange); display:inline-block;}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-bottom:10px;}
+  .card{border:2px solid var(--border); border-radius:12px; padding:16px; background:#fff;}
+  .card:hover{border-color:var(--orange);}
+  .card h4{margin:0 0 8px; font-size:14.5px; font-weight:900; color:var(--orange-dark);}
+  .card p{margin:0; font-size:13.5px; color:var(--ink); line-height:1.5; font-weight:600;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0 22px; font-size:13.5px;}
+  th,td{padding:10px 12px; text-align:right; border-bottom:1px solid var(--border);}
+  th:first-child,td:first-child{text-align:left; font-weight:700;}
+  thead th{background:var(--orange); color:#fff; font-weight:800; font-size:12.5px;}
+  tbody tr:nth-child(even){background:#FFFAF5;}
+  tbody tr:hover{background:var(--orange-light);}
+  td.up{color:var(--green); font-weight:800;}
+  td.down{color:var(--red); font-weight:800;}
+  .note{font-size:12px; color:var(--sub); font-weight:600; margin-top:-14px; margin-bottom:20px;}
+
+  .hbarchart{margin:14px 0 24px;}
+  .hbar-row{display:grid; grid-template-columns:150px 1fr 100px; align-items:center; gap:12px; margin-bottom:10px;}
+  .hbar-name{font-size:13px; font-weight:800; color:var(--ink);}
+  .hbar-track{background:#F0F0F0; border-radius:8px; height:26px; overflow:hidden; position:relative;}
+  .hbar-fill{height:100%; border-radius:8px 0 0 8px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;}
+  .hbar-fill span{color:#fff; font-size:11px; font-weight:800; white-space:nowrap;}
+  .hbar-val{font-size:12.5px; font-weight:800; text-align:right; color:var(--sub);}
+  @media(max-width:600px){.hbar-row{grid-template-columns:100px 1fr 80px; gap:8px;} .hbar-name{font-size:11.5px;}}
+
+  .verdictbox{background:var(--orange-light); border:2px solid var(--orange); border-radius:12px; padding:18px 20px; margin:20px 0;}
+  .verdictbox h4{margin:0 0 8px; font-size:15px; font-weight:900; color:var(--orange-dark);}
+  .verdictbox p{margin:0 0 8px; font-size:13.5px; font-weight:600; line-height:1.6;}
+  .verdictbox ul{margin:6px 0 0; padding-left:20px; font-size:13.5px; font-weight:600; line-height:1.7;}
+
+  .langtoggle{display:flex; justify-content:flex-end; gap:8px; margin:14px 0 4px;}
+  .langtoggle button{background:#fff; border:2px solid var(--orange); color:var(--orange-dark); font-weight:800; font-size:12px; padding:6px 14px; border-radius:20px; cursor:pointer;}
+  .langtoggle button.on{background:var(--orange); color:#fff;}
+
+  footer{text-align:center; padding:24px; color:var(--sub); font-size:12px; font-weight:700; border-top:1px solid var(--border); margin-top:30px;}
+  .disc{background:#FFF8EF; border:1px dashed var(--orange); border-radius:10px; padding:12px 16px; font-size:11.5px; color:var(--sub); font-weight:600; margin-top:18px; line-height:1.6;}
+
+  .searchwrap{display:flex; gap:10px; margin:14px 0 18px; flex-wrap:wrap;}
+  .searchwrap input{flex:1; min-width:220px; padding:13px 16px; border:2px solid var(--orange); border-radius:10px; font-size:14px; font-weight:600; color:var(--ink); outline:none;}
+  .searchwrap input:focus{border-color:var(--orange-dark); box-shadow:0 0 0 3px var(--orange-light);}
+  .searchwrap button{background:var(--orange); color:#fff; border:none; border-radius:10px; padding:0 22px; font-weight:800; font-size:14px; cursor:pointer;}
+  .searchwrap button:hover{background:var(--orange-dark);}
+  .chipwrap{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .chip{background:var(--orange-light); border:1.5px solid var(--orange); color:var(--orange-dark); font-weight:700; font-size:12px; padding:7px 13px; border-radius:20px; cursor:pointer;}
+  .chip:hover{background:var(--orange); color:#fff;}
+  .catlabel{font-size:12px; font-weight:900; color:var(--sub); text-transform:uppercase; margin:16px 0 6px;}
+  .noresult{font-size:13.5px; font-weight:600; color:var(--sub); padding:14px 4px;}
+  .answercard{background:#fff; border:2px solid var(--orange); border-radius:12px; padding:16px 18px; margin-bottom:12px;}
+  .answercard .q{font-weight:900; font-size:14px; color:var(--orange-dark); margin-bottom:8px;}
+  .answercard .a{font-size:13.5px; font-weight:600; line-height:1.6; color:var(--ink);}
+
+  .scoreboard{display:flex; gap:14px; flex-wrap:wrap; margin:14px 0 20px;}
+  .scorepill{background:#fff; border:2px solid var(--orange); border-radius:10px; padding:10px 18px; font-weight:900; font-size:14px;}
+  .scorepill span{color:var(--orange-dark);}
+  .quizcard{border:2px solid var(--border); border-radius:12px; padding:18px; margin-bottom:16px; background:#fff;}
+  .quizcard .qtag{display:inline-block; font-size:10.5px; font-weight:900; color:#fff; background:var(--orange); padding:3px 10px; border-radius:20px; margin-bottom:8px;}
+  .quizcard .qtext{font-size:14.5px; font-weight:800; margin-bottom:12px; line-height:1.5;}
+  .opts{display:grid; gap:8px;}
+  .opt{border:2px solid var(--border); border-radius:8px; padding:10px 14px; font-size:13.5px; font-weight:700; cursor:pointer; transition:.15s;}
+  .opt:hover{border-color:var(--orange);}
+  .opt.correct{background:#E8F7EC; border-color:var(--green); color:var(--green);}
+  .opt.wrong{background:#FDECEC; border-color:var(--red); color:var(--red);}
+  .opt.disabled{pointer-events:none;}
+  .explain{display:none; margin-top:10px; font-size:12.5px; font-weight:600; color:var(--sub); background:var(--orange-light); border-radius:8px; padding:10px 12px; line-height:1.5;}
+  .explain.show{display:block;}
+  .resetbtn{background:#fff; border:2px solid var(--orange); color:var(--orange-dark); font-weight:800; font-size:13px; padding:9px 18px; border-radius:10px; cursor:pointer; margin-top:6px;}
+  .resetbtn:hover{background:var(--orange); color:#fff;}
+
+  .ratingbadge{display:inline-block; font-size:11px; font-weight:900; padding:4px 12px; border-radius:20px; color:#fff;}
+  .rb-buy{background:var(--green);} .rb-hold{background:#B08B00;} .rb-sell{background:var(--red);} .rb-outperform{background:#0E8A3E;} .rb-neutral{background:#4A5058;}
+  .consensuspills{display:flex; gap:12px; flex-wrap:wrap; margin:14px 0 20px;}
+  .cpill{background:#fff; border:2px solid var(--border); border-radius:10px; padding:12px 18px; min-width:150px;}
+  .cpill .lbl{font-size:11px; font-weight:800; color:var(--sub); text-transform:uppercase;}
+  .cpill .val{font-size:18px; font-weight:900; margin-top:2px;}
+
+  .scorecard{border:2px solid var(--orange); border-radius:14px; padding:20px; margin-bottom:24px; background:#fff;}
+  .scorecard-head{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--orange-light);}
+  .scorecard-head h4{margin:0; font-size:18px; font-weight:900;}
+  .gradebadge{font-size:22px; font-weight:900; padding:8px 20px; border-radius:12px; color:#fff;}
+  .grade-Aplus{background:#0E8A3E;} .grade-A{background:#3FA34D;} .grade-Bplus{background:var(--orange);} .grade-B{background:#B08B00;} .grade-C{background:var(--red);}
+  .metricrow{display:grid; grid-template-columns:200px 1fr 60px 70px; align-items:center; gap:12px; margin-bottom:12px;}
+  .metricrow .mname{font-size:12.5px; font-weight:800;}
+  .metricrow .mtrack{background:#F0F0F0; border-radius:6px; height:18px; overflow:hidden;}
+  .metricrow .mfill{height:100%; background:var(--orange);}
+  .metricrow .mscore{font-size:12.5px; font-weight:900; text-align:center;}
+  .metricrow .mweight{font-size:11px; font-weight:700; color:var(--sub); text-align:right;}
+  .metricnote{font-size:11.5px; color:var(--sub); font-weight:600; margin:-6px 0 14px 0; padding-left:2px;}
+  .overallscore{text-align:center; margin-top:16px; padding-top:16px; border-top:2px solid var(--orange-light);}
+  .overallscore .num{font-size:32px; font-weight:900; color:var(--orange-dark);}
+  .overallscore .lbl{font-size:12px; font-weight:800; color:var(--sub); text-transform:uppercase;}
+
+  .nexusgrid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0;}
+  @media(max-width:760px){.nexusgrid{grid-template-columns:1fr;}}
+  .impactcard{border:2px solid var(--border); border-radius:12px; padding:16px;}
+  .impactcard h4{margin:0 0 8px; font-size:14px; font-weight:900; color:var(--orange-dark); border-bottom:2px solid var(--orange-light); padding-bottom:6px;}
+  .impactcard p{font-size:13px; font-weight:600; line-height:1.6; margin:0 0 8px;}
+  .scoretag{display:inline-block; font-size:11px; font-weight:900; padding:3px 10px; border-radius:20px; color:#fff;}
+  .pos{background:var(--green);} .neu{background:#B08B00;} .watch{background:var(--red);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brandrow">
+    <div class="brand">
+      <h1>CB <span>Research</span> — Coal India &amp; NTPC Dashboard</h1>
+      <p>Cauvery Business Research | Q1 FY27 Results Analysis | Vanakam! வணக்கம்</p>
+    </div>
+    <div class="tag">Q1 FY27 · Qtr Ended 30 June 2026</div>
+  </div>
+  <nav>
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="cil">Coal India (CIL)</button>
+    <button class="tab" data-tab="ntpc">NTPC</button>
+    <button class="tab" data-tab="compare">Compare</button>
+    <button class="tab" data-tab="nexus">Coal-to-Power Nexus</button>
+    <button class="tab" data-tab="capacity">Capacity Plans</button>
+    <button class="tab" data-tab="analysts">Analysts Rating</button>
+    <button class="tab" data-tab="cbrating">CB Rating</button>
+    <button class="tab" data-tab="assist">CB Assist</button>
+    <button class="tab" data-tab="socrates">Cauvery Socrates</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- OVERVIEW -->
+<div class="panel active" id="overview">
+  <div class="hero">
+    <h2>Coal India &amp; NTPC — Q1 FY27 Snapshot</h2>
+    <div class="sub">India's largest coal miner and largest power generator — two Maharatna CPSEs sitting at opposite ends of the same fuel-to-power value chain — posted very different Q1 FY27 prints: Coal India's profit stayed flat under cost pressure, while NTPC delivered a capacity-led beat.</div>
+    <div class="heropills">
+      <div class="pill"><div class="lbl">Coal India PAT</div><div class="val">₹8,852 Cr</div><div class="chg up">▲ 0.6% YoY</div></div>
+      <div class="pill"><div class="lbl">NTPC Standalone PAT</div><div class="val">₹5,342 Cr</div><div class="chg up">▲ 12% YoY</div></div>
+      <div class="pill"><div class="lbl">NTPC Consolidated PAT</div><div class="val">₹6,896 Cr</div><div class="chg up">▲ 13% YoY</div></div>
+      <div class="pill"><div class="lbl">Combined Revenue*</div><div class="val">~₹90,087 Cr</div><div class="chg up">▲ ~8% YoY</div></div>
+    </div>
+  </div>
+  <div class="note" style="margin-top:0;">*Coal India revenue from operations (₹46,255 Cr) + NTPC standalone revenue from operations (₹43,832 Cr). See Compare tab for consolidated-basis figures and sourcing notes.</div>
+
+  <h3 class="sec">Two Ends of the Same Value Chain</h3>
+  <div class="cards">
+    <div class="card"><h4>Coal India (CIL)</h4><p>Maharatna CPSE, world's largest coal mining company, ~80% of India's domestic coal output. Sells coal to power, steel, cement and other sectors via Fuel Supply Agreements (FSAs) and e-auctions. NSE/BSE: COALINDIA.</p></div>
+    <div class="card"><h4>NTPC Limited</h4><p>Maharatna CPSE, India's largest integrated power utility — thermal (coal-led), hydro, nuclear (JV) and renewables (via listed subsidiary NTPC Green Energy). One of Coal India's single largest coal-consuming customers. NSE/BSE: NTPC.</p></div>
+    <div class="card"><h4>The Nexus</h4><p>NTPC's coal-fired fleet ran at a sector-beating 76.71% PLF in Q1 FY27 — a demand pull-through for CIL even as CIL's own e-auction premiums widened. But NTPC is also building its own captive coal-mining arm (NTPC Mining Ltd) — a long-term diversification away from pure CIL dependence. See the Coal-to-Power Nexus tab.</p></div>
+  </div>
+
+  <div class="verdictbox">
+    <h4>CB Research Quick Take</h4>
+    <p>Coal India's Q1 FY27 was a mixed quarter — revenue grew a healthy 7.8% YoY on stronger offtake, but production fell 7% YoY, EBITDA declined 4.1% YoY on cost inflation, and consolidated PAT was effectively flat (+0.6%), down 18.3% sequentially. The bright spots were a sharp 22% cut in pit-head inventory and e-auction premiums widening to 47%, alongside a ₹5.50/share interim dividend. NTPC, by contrast, posted a genuine beat — standalone PAT up 12% and consolidated PAT up 13%, powered by capacity additions, a 76.71% coal PLF (vs 70.32% national average) and margin expansion, with its renewable arm NTPC Green Energy growing profit 38% YoY. The stock market's reaction diverged sharply: Coal India fell over 3% intraday post-results while NTPC's stronger print reinforces its "regulated earnings + growth" thesis.</p>
+  </div>
+</div>
+
+<!-- COAL INDIA -->
+<div class="panel" id="cil">
+  <div class="hero">
+    <h2>Coal India Limited (CIL)</h2>
+    <div class="sub">World's largest coal mining company | Maharatna CPSE, Ministry of Coal | NSE/BSE: COALINDIA</div>
+    <div class="heropills">
+      <div class="pill"><div class="lbl">Revenue from Ops</div><div class="val">₹46,255 Cr</div><div class="chg up">▲ 7.8% YoY</div></div>
+      <div class="pill"><div class="lbl">Consol. PAT</div><div class="val">₹8,852 Cr</div><div class="chg up">▲ 0.6% YoY</div></div>
+      <div class="pill"><div class="lbl">EBITDA</div><div class="val">₹12,069 Cr</div><div class="chg down">▼ 4.1% YoY</div></div>
+      <div class="pill"><div class="lbl">Interim Dividend</div><div class="val">₹5.50/sh</div><div class="chg">Record date 31-Jul-26</div></div>
+    </div>
+  </div>
+
+  <h3 class="sec">Business Model &amp; Key Developments</h3>
+  <div class="cards">
+    <div class="card"><h4>Core Business</h4><p>Coal mining and sale to power, steel, cement and other core-sector consumers via long-term Fuel Supply Agreements (FSAs) and e-auctions, through subsidiaries such as SECL, NCL, MCL, ECL, BCCL, CCL and WCL.</p></div>
+    <div class="card"><h4>Volume vs Output Gap</h4><p>Production fell 7% YoY to 169.63 MT while offtake rose 4% YoY to 197.86 MT — CIL sold more coal than it mined this quarter, drawing down pit-head inventory rather than relying on fresh output.</p></div>
+    <div class="card"><h4>E-Auction Strength</h4><p>E-auction volumes jumped 25% YoY with premiums widening to 47% over notified prices — a positive realization lever that partly offsets cost inflation, and came in well ahead of pre-results brokerage estimates of ~35%.</p></div>
+    <div class="card"><h4>Diversification — Solar &amp; Coal Gasification</h4><p>Commissioned a 100 MW solar plant at Bhadramali, Gujarat (first-ever energy sales revenue, ₹5.68 Cr) and a further 200 MW at Khavda, Gujarat (8 July 2026) — early steps into renewable energy alongside its core coal business.</p></div>
+  </div>
+
+  <h3 class="sec">Leadership &amp; Governance</h3>
+  <div class="cards">
+    <div class="card"><h4>Chairman-cum-Managing Director</h4><p>B Sairam took charge as CMD effective 15 December 2025, succeeding P M Prasad (superannuated 31 October 2025). He was earlier CMD of subsidiary Northern Coalfields Ltd (NCL). The Board subsequently also appointed him as CIL's first-ever CEO, alongside his CMD role.</p></div>
+    <div class="card"><h4>Board Approval</h4><p>Q1 FY27 results and the interim dividend of ₹5.50/share were approved by the Board of Directors on 27 July 2026.</p></div>
+    <div class="card"><h4>Subsidiary Watch</h4><p>Mahanadi Coalfields Ltd (subsidiary) is seeking banker proposals for a ~₹10,000 Cr IPO — a potential value-unlocking event for the CIL group over the coming quarters.</p></div>
+  </div>
+
+  <h3 class="sec">Q1 FY27 Financial Results (Consolidated, ₹ Crore)</h3>
+  <table>
+    <thead><tr><th>Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>YoY</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue from Operations</td><td>46,255</td><td>42,919</td><td class="up">▲7.8%</td></tr>
+      <tr><td>Total Income</td><td>48,295</td><td>44,535</td><td class="up">▲8.4%</td></tr>
+      <tr><td>Total Expenditure</td><td>36,816</td><td>32,903</td><td class="down">▲12.0%*</td></tr>
+      <tr><td>EBITDA</td><td>12,069</td><td>12,588</td><td class="down">▼4.1%</td></tr>
+      <tr><td>Net Profit Attributable to Owners</td><td>8,852</td><td>8,797</td><td class="up">▲0.6%</td></tr>
+      <tr><td>Net Profit — QoQ Comparison</td><td>8,852</td><td>10,839 (Q4 FY26)</td><td class="down">▼18.3% QoQ</td></tr>
+      <tr><td>Coal Production (MT)</td><td>169.63</td><td>183.32</td><td class="down">▼7.0%</td></tr>
+      <tr><td>Coal Offtake (MT)</td><td>197.86</td><td>190.96</td><td class="up">▲3.6%</td></tr>
+      <tr><td>Raw Coal Inventory (MT, qtr-end)</td><td>101.35</td><td>130.28 (1-Apr-26)</td><td class="up">▼22.0% QoQ</td></tr>
+      <tr><td>Contractual Expenses</td><td>8,658</td><td>7,800*</td><td class="down">▲11.0%</td></tr>
+    </tbody>
+  </table>
+  <div class="note">*Denotes an increase, shown in red as a cost-side rise (not a "down is bad" convention issue — expenditure growing YoY is a margin headwind, consistent with the EBITDA decline). Inventory of 101.35 MT was down 22% from 1-Apr-26 levels but still ~2% higher than the year-ago June 2025 level (98.94 MT). Net profit figures are reported variously as ₹8,850–8,852 Cr across sources depending on rounding/attributable-vs-consolidated basis; this table uses the PTI/exchange-filing figure of ₹8,852.11 Cr. Source: Coal India exchange filing &amp; press coverage, 27 July 2026.</div>
+
+  <h3 class="sec">Subsidiary-wise PAT Movement</h3>
+  <table>
+    <thead><tr><th>Subsidiary</th><th>Q1 FY27 PAT</th><th>Q1 FY26 PAT</th><th>Trend</th></tr></thead>
+    <tbody>
+      <tr><td>Eastern Coalfields Ltd (ECL)</td><td>₹377 Cr</td><td>~₹188 Cr*</td><td class="up">▲ Doubled YoY</td></tr>
+      <tr><td>Bharat Coking Coal Ltd (BCCL)</td><td>−₹68 Cr (loss)</td><td>₹177 Cr (profit)</td><td class="down">▼ Swung to loss</td></tr>
+    </tbody>
+  </table>
+  <div class="note">*Derived from "PAT doubled" commentary; precise Q1 FY26 ECL figure not separately disclosed in reviewed coverage. Divergent subsidiary performance is a key monitorable within the CIL group. Source: company disclosures via press coverage, 27 July 2026.</div>
+
+  <div class="verdictbox">
+    <h4>CB Research View — Coal India</h4>
+    <ul>
+      <li><b>Strength:</b> Revenue growth (+7.8%) was driven by genuine volume (offtake +4%) and pricing (e-auction premium +47%) tailwinds even as own production fell — a sign of healthy end-demand and inventory monetization.</li>
+      <li><b>Watch:</b> EBITDA fell 4.1% YoY and net profit was effectively flat — cost inflation (contractual/outsourcing expenses, diesel prices) is outpacing revenue growth. The pending non-executive wage revision (estimated ~₹3,400 Cr impact through December 2026) is a further margin overhang not yet fully reflected.</li>
+      <li><b>Balance sheet:</b> CIL remains a virtually debt-light, high-dividend PSU — the ₹5.50/share interim dividend continues its reputation as one of India's most consistent dividend payers (~6% trailing yield cited by brokerages pre-results).</li>
+      <li><b>Read-through:</b> Falling own production (-7% YoY) while offtake and e-auction volumes rose means CIL leaned on drawing down inventory this quarter — sustainability of offtake growth into H2 FY27 without a production recovery is the key monitorable flagged by brokerages.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- NTPC -->
+<div class="panel" id="ntpc">
+  <div class="hero">
+    <h2>NTPC Limited</h2>
+    <div class="sub">India's largest integrated power utility | Maharatna CPSE, Ministry of Power | NSE/BSE: NTPC</div>
+    <div class="heropills">
+      <div class="pill"><div class="lbl">Standalone Revenue</div><div class="val">₹43,832 Cr</div><div class="chg up">▲ 3.0% YoY</div></div>
+      <div class="pill"><div class="lbl">Standalone PAT</div><div class="val">₹5,342 Cr</div><div class="chg up">▲ 12% YoY</div></div>
+      <div class="pill"><div class="lbl">Consolidated PAT</div><div class="val">₹6,896 Cr</div><div class="chg up">▲ 13% YoY</div></div>
+      <div class="pill"><div class="lbl">Coal Fleet PLF</div><div class="val">76.71%</div><div class="chg up">vs 70.32% national avg</div></div>
+    </div>
+  </div>
+
+  <h3 class="sec">Business Model &amp; Segments</h3>
+  <div class="cards">
+    <div class="card"><h4>Thermal Generation (Core)</h4><p>Coal and gas-based generation sold largely under regulated cost-plus tariffs to state discoms via long-term PPAs — providing revenue visibility (~15.5% regulated RoE on equity) that anchors the earnings base.</p></div>
+    <div class="card"><h4>Hydro &amp; Nuclear</h4><p>Hydro capacity plus a nuclear JV footprint, adding diversification beyond thermal — part of a broader push to balance the generation mix as India's power demand grows.</p></div>
+    <div class="card"><h4>NTPC Green Energy (Listed Subsidiary)</h4><p>The group's dedicated renewable energy vehicle — Q1 FY27 consolidated PAT of ₹305 Cr (+38% YoY) on revenue of ₹1,107 Cr (+63% YoY), EBITDA margin 89.3%. Group installed RE capacity reached 10,671 MW after fresh Gujarat/Rajasthan commissionings, targeting 60 GW renewable capacity by FY32.</p></div>
+    <div class="card"><h4>Captive Coal Mining (NTPC Mining Ltd)</h4><p>NML completed acquisition of the remaining coal mine business effective 1 April 2026 for a total consideration of ₹6,339.18 Cr (₹8,651.86 Cr balance payable by 30 September 2026) — a strategic move to secure captive fuel supply and reduce reliance on external coal linkages.</p></div>
+  </div>
+
+  <h3 class="sec">Leadership &amp; Governance</h3>
+  <div class="cards">
+    <div class="card"><h4>Chairman &amp; Managing Director</h4><p>Gurdeep Singh was re-employed as CMD on a one-year contract basis by the Ministry of Power, effective 1 August 2025 until 31 July 2026 (or until a regular incumbent takes charge, whichever is earlier) — a tenure that concludes almost immediately after this results announcement, making CMD succession a near-term governance watchpoint.</p></div>
+    <div class="card"><h4>Board Approval</h4><p>Q1 FY27 results were approved by the Board of Directors on 24 July 2026.</p></div>
+    <div class="card"><h4>Capacity Expansion Approval</h4><p>The Board approved a ₹20,456.70 Cr investment for the Lara Super Thermal Power Project Stage-III (2×800 MW) in Chhattisgarh on 11 July 2026, underscoring continued brownfield thermal capacity addition alongside the renewables push.</p></div>
+  </div>
+
+  <h3 class="sec">Q1 FY27 Financial Results (₹ Crore)</h3>
+  <table>
+    <thead><tr><th>Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>YoY</th><th>Basis</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue from Operations</td><td>43,832</td><td>42,557</td><td class="up">▲3.0%</td><td>Standalone</td></tr>
+      <tr><td>Total Income</td><td>44,512</td><td>43,215*</td><td class="up">▲3.0%</td><td>Standalone</td></tr>
+      <tr><td>EBITDA</td><td>12,600</td><td>10,280</td><td class="up">▲22.6%</td><td>Standalone</td></tr>
+      <tr><td>Operating Margin</td><td>21.20%</td><td>—</td><td>—</td><td>Standalone</td></tr>
+      <tr><td>Net Profit (PAT)</td><td>5,342</td><td>4,775</td><td class="up">▲11.9%</td><td>Standalone</td></tr>
+      <tr><td>EPS (₹, incl. regulatory deferral)</td><td>5.51</td><td>—</td><td>—</td><td>Standalone</td></tr>
+      <tr><td>Revenue from Operations</td><td>50,741</td><td>47,064</td><td class="up">▲7.8%</td><td>Consolidated</td></tr>
+      <tr><td>Total Income</td><td>51,142</td><td>47,821</td><td class="up">▲6.9%</td><td>Consolidated</td></tr>
+      <tr><td>Net Profit (PAT)</td><td>6,896</td><td>6,108</td><td class="up">▲12.9%</td><td>Consolidated</td></tr>
+      <tr><td>Net Profit Margin</td><td>13.59%</td><td>12.98%</td><td class="up">▲61 bps</td><td>Consolidated</td></tr>
+      <tr><td>Group Companies' Profit Contribution</td><td>1,832</td><td>1,131</td><td class="up">▲62.0%</td><td>Consolidated</td></tr>
+    </tbody>
+  </table>
+  <div class="note">*Derived. Consolidated PAT is also cited as ₹6,721 Cr (+11.8% YoY) in one Business Standard/Capital Market report versus the ₹6,896 Cr figure in the company's own press release and most other coverage — this table uses the company release figure. Coal-fired stations achieved a 76.71% PLF versus the all-India coal PLF average of 70.32%. Capacity charges of ₹15,012.68 Cr and energy charges of ₹23,675.73 Cr were billed under the CERC Tariff Regulations 2024. Source: NTPC exchange filing &amp; press release, 24 July 2026.</div>
+
+  <div class="verdictbox">
+    <h4>CB Research View — NTPC</h4>
+    <ul>
+      <li><b>Strength:</b> A genuine earnings beat — standalone PAT (+12%) and EBITDA (+22.6%) both topped street estimates, driven by capacity additions and a sector-leading 76.71% coal PLF. Consolidated PAT growth (+13%) was further boosted by a 62% jump in group companies' profit contribution.</li>
+      <li><b>Watch:</b> Gurdeep Singh's CMD contract runs only to 31 July 2026 — leadership continuity/succession at the very top is an immediate governance item to track into Q2 FY27.</li>
+      <li><b>Growth engine:</b> NTPC Green Energy's 38% PAT growth and 89.3% EBITDA margin show the renewable arm scaling profitably; combined with the ₹62,200 Cr FY27-32 renewable capex plan and 60 GW FY32 target, this remains the key re-rating lever alongside the stable thermal base.</li>
+      <li><b>Structural driver:</b> The NTPC Mining Ltd captive coal acquisition (₹6,339 Cr, plus ₹8,652 Cr payable by Sep-26) is a long-term hedge against fuel-supply risk from external sources including Coal India — see the Coal-to-Power Nexus tab.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- COMPARE -->
+<div class="panel" id="compare">
+  <div class="hero">
+    <h2>Q1 FY27 Head-to-Head Comparison</h2>
+    <div class="sub">Coal India vs NTPC — key financial and operating metrics side by side.</div>
+  </div>
+
+  <h3 class="sec">Financial Snapshot (₹ Crore)</h3>
+  <table>
+    <thead><tr><th>Metric</th><th>Coal India (Consol.)</th><th>NTPC (Standalone)</th><th>NTPC (Consol.)</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue from Operations</td><td>46,255</td><td>43,832</td><td>50,741</td></tr>
+      <tr><td>Net Profit (PAT)</td><td>8,852</td><td>5,342</td><td>6,896</td></tr>
+      <tr><td>PAT Growth YoY</td><td class="up">▲0.6%</td><td class="up">▲11.9%</td><td class="up">▲12.9%</td></tr>
+      <tr><td>Revenue Growth YoY</td><td class="up">▲7.8%</td><td class="up">▲3.0%</td><td class="up">▲7.8%</td></tr>
+      <tr><td>EBITDA</td><td>12,069</td><td>12,600</td><td>—</td></tr>
+      <tr><td>EBITDA Growth YoY</td><td class="down">▼4.1%</td><td class="up">▲22.6%</td><td>—</td></tr>
+      <tr><td>Net Profit Margin</td><td>~19.1%</td><td>~12.2%</td><td>13.59%</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Coal India margin computed on total income basis; NTPC standalone margin on total income basis. Dashes indicate not separately disclosed on that basis in reviewed filings. Source: Company exchange filings, 24 &amp; 27 July 2026.</div>
+
+  <h3 class="sec">Net Profit — Visual Comparison</h3>
+  <div class="hbarchart">
+    <div class="hbar-row"><div class="hbar-name">Coal India</div><div class="hbar-track"><div class="hbar-fill" style="width:100%; background:#C62828;"><span>₹8,852 Cr</span></div></div><div class="hbar-val">▲0.6%</div></div>
+    <div class="hbar-row"><div class="hbar-name">NTPC (Standalone)</div><div class="hbar-track"><div class="hbar-fill" style="width:60%; background:var(--orange-dark);"><span>₹5,342 Cr</span></div></div><div class="hbar-val">▲11.9%</div></div>
+    <div class="hbar-row"><div class="hbar-name">NTPC (Consolidated)</div><div class="hbar-track"><div class="hbar-fill" style="width:78%; background:#0E8A3E;"><span>₹6,896 Cr</span></div></div><div class="hbar-val">▲12.9%</div></div>
+  </div>
+
+  <h3 class="sec">Business Model Contrast</h3>
+  <table>
+    <thead><tr><th>Dimension</th><th>Coal India</th><th>NTPC</th></tr></thead>
+    <tbody>
+      <tr><td>Core Business</td><td>Coal mining &amp; sale (FSA + e-auction)</td><td>Power generation (thermal, hydro, renewables)</td></tr>
+      <tr><td>Revenue Visibility</td><td>FSA-linked, exposed to e-auction spot pricing</td><td>Regulated cost-plus tariffs under long-term PPAs</td></tr>
+      <tr><td>Q1 FY27 Standout</td><td>E-auction premium widened to 47%; inventory cut 22%</td><td>76.71% coal PLF vs 70.32% national average</td></tr>
+      <tr><td>Q1 FY27 Weak Spot</td><td>Production fell 7%; EBITDA down 4.1%</td><td>None flagged — beat on both revenue and PAT</td></tr>
+      <tr><td>Key Monitorable</td><td>Wage revision cost overhang (~₹3,400 Cr through Dec-26)</td><td>CMD succession post 31-Jul-26 contract end</td></tr>
+      <tr><td>Growth Optionality</td><td>Early-stage solar (300 MW commissioned) &amp; coal gasification</td><td>NTPC Green Energy — 60 GW renewable target by FY32</td></tr>
+    </tbody>
+  </table>
+
+  <div class="verdictbox">
+    <h4>CB Research Comparative Take</h4>
+    <p>On pure earnings momentum, <b>NTPC clearly outperformed Coal India this quarter</b> — both PAT growth (12–13% vs 0.6%) and EBITDA growth (+22.6% vs −4.1%) favour NTPC decisively. Coal India's headline revenue growth (7.8%) was comparable to NTPC's consolidated revenue growth, but cost inflation ate into CIL's profitability while NTPC converted its volume and efficiency gains straight into margin expansion. Both remain regulated, dividend-paying Maharatna CPSEs at opposite ends of India's coal-to-power value chain — CIL's e-auction pricing strength and NTPC's record PLF are, in fact, two sides of the same strong power-demand story, even though it showed up very differently in each company's P&amp;L this quarter.</p>
+  </div>
+</div>
+
+<!-- COAL-TO-POWER NEXUS -->
+<div class="panel" id="nexus">
+  <div class="hero">
+    <h2>Coal-to-Power Nexus — Reading CIL and NTPC Together</h2>
+    <div class="sub">Coal India is the fuel supplier; NTPC is one of its largest customers. Reading their Q1 FY27 results side by side reveals the health of India's core power-generation value chain.</div>
+  </div>
+
+  <h3 class="sec">How the Two Companies Connect</h3>
+  <div class="nexusgrid">
+    <div class="impactcard">
+      <h4>Demand Pull-Through <span class="scoretag pos">Positive for Both</span></h4>
+      <p>NTPC's coal-fired fleet ran at a 76.71% PLF in Q1 FY27, well above the 70.32% national average — meaning strong, above-average draw on coal supply from producers including CIL. CIL's own power-sector supplies rose in tandem, supporting the 4% YoY offtake growth reported this quarter.</p>
+    </div>
+    <div class="impactcard">
+      <h4>E-Auction Pricing vs Regulated Tariffs <span class="scoretag neu">Structural</span></h4>
+      <p>CIL's e-auction premiums widening to 47% reflects tight coal availability at the margin — a positive for CIL's realizations, but a potential future cost pass-through consideration for power producers buying outside long-term FSA linkage. NTPC's regulated cost-plus tariff structure, however, insulates it from most spot coal price volatility relative to merchant power generators.</p>
+    </div>
+    <div class="impactcard">
+      <h4>NTPC's Captive Coal Mining Push <span class="scoretag watch">Watch</span></h4>
+      <p>NTPC Mining Ltd's acquisition of the remaining coal mine business (₹6,339 Cr, effective 1 April 2026) is a structural long-term diversification away from full reliance on CIL and other external suppliers. While immaterial to CIL's volumes today, sustained expansion of NTPC's captive mining capacity is a monitorable for CIL's largest-customer concentration over the coming years.</p>
+    </div>
+    <div class="impactcard">
+      <h4>Shared Cost Pressures <span class="scoretag watch">Watch</span></h4>
+      <p>CIL flagged rising diesel prices (~8.6% hike in May 2026) and an upcoming non-executive wage revision (~₹3,400 Cr impact through December 2026) as margin headwinds. Any resulting increase in CIL's e-auction or FSA pricing would flow through, with a lag, into power producers' fuel costs — though NTPC's regulated tariff mechanism allows pass-through of fuel cost variations to discoms within CERC norms.</p>
+    </div>
+  </div>
+
+  <div class="disc">
+    <b>Disclosure:</b> This nexus analysis reflects publicly available information as of 28 July 2026 and is CB Research's own independent read-through connecting two separately listed, separately regulated companies under different central ministries (Coal and Power). It is for informational/educational purposes only and does not constitute investment advice. CB Research is not SEBI-registered and does not issue buy/sell/hold recommendations.
+  </div>
+</div>
+
+<!-- CAPACITY PLANS -->
+<div class="panel" id="capacity">
+  <div class="hero">
+    <h2>Capacity &amp; Expansion Roadmap</h2>
+    <div class="sub">Where each company stands today, and where it is headed — production/capacity targets, ongoing capex, and diversification plans.</div>
+  </div>
+
+  <h3 class="sec">Coal India — Production &amp; Diversification Roadmap</h3>
+  <div class="cards">
+    <div class="card"><h4>FY27 Production Target</h4><p>Company-guided FY27 production target is 815 MT, with dispatch capacity of up to 850 MT if rail-rake logistics cooperate. CIL has explicitly clarified that "1 billion tonnes" is <b>not</b> its FY27 production target, despite that figure circulating widely — see note below.</p></div>
+    <div class="card"><h4>Inventory Normalization</h4><p>Pit-head stock stood above 130 MT at the start of FY27; CIL is targeting a reduction to around 95–50 MT over the year (a ~27%+ cut), shifting strategy from stockpiling toward a "produce-and-sell" model with more direct dispatch.</p></div>
+    <div class="card"><h4>₹1 Lakh Crore Capex Plan (through FY31)</h4><p>Covers mining, coal evacuation/first-mile connectivity (FMC) and power projects. FMC network is planned to scale to 94 projects by FY30 with a combined handling capacity of ~995 MT.</p></div>
+    <div class="card"><h4>Renewable Diversification</h4><p>Targeting 3,000 MW of solar capacity by FY28 to become a net-zero entity (~675 MW expected by FY26-end, up from ~247 MW as of December 2025). A broader group ambition of ~9.5 GW renewable capacity by FY29-30 is also cited, built via subsidiary/JV routes including 1,000 MW joint ventures each with NTPC and NLC India, and a dedicated SPV, CIL Navikarniya Urja Ltd.</p></div>
+  </div>
+
+  <h3 class="sec">Coal India Production Trajectory (Million Tonnes)</h3>
+  <table>
+    <thead><tr><th>Year</th><th>Target</th><th>Actual</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>FY24</td><td>780</td><td>773.65</td><td class="down">Missed, +11% YoY growth</td></tr>
+      <tr><td>FY25</td><td>838 (revised to 806–810)</td><td>781.1</td><td class="down">Missed vs original target</td></tr>
+      <tr><td>FY26</td><td>868</td><td>—</td><td>In progress</td></tr>
+      <tr><td>FY27</td><td>815 (company-guided)</td><td>169.63 (Q1 only)</td><td>Q1 production down 7% YoY</td></tr>
+    </tbody>
+  </table>
+  <div class="note">CIL's own FY27 guidance of 815 MT is notably <b>lower</b> than the FY26 target of 868 MT — a deliberate moderation reflecting already-elevated pithead and power-plant coal stocks, not a demand problem. This is distinct from the Government of India's broader national FY27 coal production target of 1.31 billion tonnes (of which Coal India, captive miners and Singareni Collieries are all separate contributors) — some press coverage has conflated the two figures. Source: company guidance and Ministry of Coal statements, various dates through July 2026.</div>
+
+  <h3 class="sec">NTPC Group — Capacity Expansion Roadmap</h3>
+  <div class="cards">
+    <div class="card"><h4>Current Scale</h4><p>NTPC Group crossed 90 GW of installed power generation capacity in May 2026 (following commissioning of the Patratu/PVUNL 800 MW unit), with roughly 32 GW under construction across thermal, hydro/pumped-storage and renewables.</p></div>
+    <div class="card"><h4>FY32 Target: 149 GW</h4><p>NTPC has raised its total capacity target for FY32 to 149 GW, up from an earlier 130 GW goal — split broadly across ~30 GW of incremental thermal, 60 GW of renewables, plus hydro, nuclear and other emerging businesses.</p></div>
+    <div class="card"><h4>Thermal Buildout</h4><p>Targeting 30,000 MW of new coal-based capacity by FY32 (raised from 26,000 MW), executed entirely via brownfield expansion of existing sites. The newly approved Lara Super Thermal Power Project Stage-III (2×800 MW, ₹20,456.70 Cr, approved 11 July 2026) is the latest instalment.</p></div>
+    <div class="card"><h4>Renewable Push (NTPC Green Energy)</h4><p>Targeting 60 GW of renewable capacity by FY32, backed by a ₹62,200 Cr FY27-32 capex plan and a 30 GW project pipeline; the group added ~5,488 MW of renewable capacity in FY26 alone (solar, wind, pumped storage) and over 23 GW is already contracted/awarded.</p></div>
+    <div class="card"><h4>Nuclear &amp; Emerging Businesses</h4><p>A long-dated target of 30 GW nuclear capacity by FY47, alongside early-stage moves into green hydrogen, battery energy storage systems, e-mobility and waste-to-energy — diversification beyond the traditional thermal/hydro base.</p></div>
+  </div>
+
+  <h3 class="sec">NTPC Capacity Roadmap at a Glance</h3>
+  <table>
+    <thead><tr><th>Segment</th><th>Current / As-of</th><th>FY32 Target</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Total Group Installed Capacity</td><td>&gt;90 GW (May 2026)</td><td>149 GW</td><td>Raised from an earlier 130 GW target</td></tr>
+      <tr><td>Thermal (Coal-based) Addition</td><td>3,580 MW targeted in FY26</td><td>+30,000 MW cumulative by FY32</td><td>Entirely brownfield; raised from 26,000 MW earlier goal</td></tr>
+      <tr><td>Renewable Capacity (NTPC Green Energy)</td><td>10,671 MW (Q1 FY27, NGEL)</td><td>60,000 MW</td><td>~23 GW already contracted/awarded; ₹62,200 Cr FY27-32 capex</td></tr>
+      <tr><td>Nuclear</td><td>Early-stage JV</td><td>30,000 MW</td><td>Long-dated target, by FY47</td></tr>
+      <tr><td>Under Construction (Group)</td><td>~32 GW</td><td>—</td><td>As of May 2026</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Figures compiled from NTPC's investor-day disclosures, exchange filings and press coverage across FY26 and Q1 FY27 (various dates through July 2026); capacity targets are periodically revised upward as execution progresses, so treat these as management's latest stated guidance rather than fixed outcomes.</div>
+
+  <div class="verdictbox">
+    <h4>CB Research Read — Capacity Plans Compared</h4>
+    <p>The two companies' roadmaps point in almost opposite directions on volume. <b>Coal India's FY27 production guidance (815 MT) is actually lower than its FY26 target (868 MT)</b> — a deliberate destocking/normalization move rather than a growth story, even as it pursues a large ₹1 lakh crore capex programme aimed more at evacuation efficiency (first-mile connectivity) and diversification (solar, coal gasification) than at raw output growth. <b>NTPC, by contrast, is in an unambiguous capacity expansion phase</b> — targeting a jump from ~90 GW to 149 GW by FY32, with both thermal (+30 GW) and renewables (60 GW via NTPC Green Energy) growing simultaneously. This asymmetry is worth watching: if NTPC's own captive coal mining (NTPC Mining Ltd) scales up meaningfully while CIL's production growth stays deliberately modest, the demand-supply balance in the coal-to-power nexus could shift gradually over the FY27-32 window.</p>
+  </div>
+</div>
+
+<!-- ANALYSTS RATING -->
+<div class="panel" id="analysts">
+  <div class="hero">
+    <h2>Analysts Rating — Street View</h2>
+    <div class="sub">Consensus ratings and price targets from brokerages and data aggregators, compiled as of 28 July 2026.</div>
+  </div>
+  <div class="disc" style="margin-top:0;">These are third-party brokerage/aggregator views sourced from public data, not CB Research's own opinion. CB Research is not SEBI-registered and does not issue buy/sell/hold calls — see the CB Rating tab for our own fundamentals-based scorecard instead.</div>
+
+  <h3 class="sec">Coal India Limited</h3>
+  <div class="consensuspills">
+    <div class="cpill"><div class="lbl">CMP (intraday, 28-Jul-26)</div><div class="val">₹413.05</div></div>
+    <div class="cpill"><div class="lbl">Day Range</div><div class="val">₹412.00 – ₹423.60</div></div>
+    <div class="cpill"><div class="lbl">Consensus Target (TradingView)</div><div class="val">₹424 (20 analysts)</div></div>
+    <div class="cpill"><div class="lbl">Analyst Mix</div><div class="val">Neutral consensus</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Source</th><th>Rating</th><th>Target Price</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>Moneycontrol Pro Research</td><td><span class="ratingbadge rb-buy">Overweight</span></td><td>—</td><td>Rating referenced against pre-results CMP of ₹428</td></tr>
+      <tr><td>TradingView consensus (20 analysts, 3-month)</td><td><span class="ratingbadge rb-neutral">Neutral</span></td><td>₹424 (range ₹350–₹501)</td><td>Overall trend backed as neutral by most of the 20 analysts polled</td></tr>
+      <tr><td>Trendlyne (19 reports, 7 sources)</td><td>Mixed</td><td>~₹499 average</td><td>3 weeks old, pre-dates Q1 FY27 print</td></tr>
+      <tr><td>Select Buy-rated notes (Antique, Motilal Oswal, Phillip Capital — pre-results)</td><td><span class="ratingbadge rb-buy">Buy</span></td><td>₹477 – ₹611</td><td>Based on volume-CAGR and EV/EBITDA multiple assumptions; issued before the Q1 FY27 print</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Coal India shares fell sharply intraday on 28 July 2026 (down 3.38% to ₹413.05 as of 12:29 IST) following the mixed Q1 FY27 print — a live market reaction that sits below most brokerage targets referenced above, several of which pre-date the results. Ratings and targets change frequently; verify against the latest research before use.</div>
+
+  <h3 class="sec">NTPC Limited</h3>
+  <div class="consensuspills">
+    <div class="cpill"><div class="lbl">CMP (25-Jul-26 close)</div><div class="val">₹347.20</div></div>
+    <div class="cpill"><div class="lbl">52-Week Range</div><div class="val">₹315.55 – ₹414.40</div></div>
+    <div class="cpill"><div class="lbl">Consensus Target</div><div class="val">₹421 – ₹437</div></div>
+    <div class="cpill"><div class="lbl">Analyst Mix</div><div class="val">25 Buy / 1 Sell (Strong Buy)</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Source</th><th>Rating</th><th>Target Price</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>Investing.com consensus (26 analysts)</td><td><span class="ratingbadge rb-buy">Strong Buy</span></td><td>₹437.11 avg (₹345 – ₹485 range)</td><td>25 Buy, 1 Sell; ~26% upside cited from ₹347 CMP</td></tr>
+      <tr><td>Univest / Uniresearch consensus</td><td><span class="ratingbadge rb-buy">Buy</span></td><td>₹421</td><td>P/E ~15.0x basis; issued ahead of Q1 FY27 print</td></tr>
+      <tr><td>TradingView-style bull/bear framing</td><td>—</td><td>Bull ₹500–580 / Bear ₹260–265</td><td>Scenario range from an April 2026 note, pre-Q1 FY27</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Most cited targets pre-date the 24 July 2026 Q1 FY27 results; given the earnings beat (PAT +12–13%, EBITDA +22.6% standalone), some estimates may see upward revision in the days following this print. Verify against post-results updated notes before use.</div>
+
+  <div class="disc">Analyst figures compiled from public brokerage notes, exchange data and financial aggregators as of 28 July 2026; targets and ratings change frequently and should be verified against the latest research. CB Research does not endorse any individual brokerage or aggregator view.</div>
+</div>
+
+<!-- CB RATING -->
+<div class="panel" id="cbrating">
+  <div class="hero">
+    <h2>CB Rating</h2>
+    <div class="sub">CB Research's own fundamentals-based scorecard for Q1 FY27 — earnings quality (growth + margin) as the primary benchmark, with debt and cash flow assessed separately.</div>
+  </div>
+
+  <h3 class="sec">Methodology</h3>
+  <div class="cards">
+    <div class="card"><h4>Revenue Growth — 20%</h4><p>YoY revenue growth vs company's own trend and sector context.</p></div>
+    <div class="card"><h4>EBITDA Growth &amp; Margin — 25%</h4><p>Combines YoY EBITDA growth with margin direction — rewards companies growing profitably, not just growing.</p></div>
+    <div class="card"><h4>Net Profit Growth &amp; Margin — 25%</h4><p>Combines YoY PAT growth with net margin trend, adjusted for one-off items where disclosed.</p></div>
+    <div class="card"><h4>Debt / Leverage — 15%</h4><p>Assessed via balance-sheet strength, debt levels and dividend/payout sustainability.</p></div>
+    <div class="card"><h4>Cash Flow — 15%</h4><p>Cash generation and working-capital movement (e.g. inventory trends) — a check on earnings quality.</p></div>
+  </div>
+  <div class="note">Each metric scored 1–10 based on Q1 FY27 disclosures; weighted sum gives the overall CB Rating. Grades: A+ (9.0–10) · A (8.0–8.9) · B+ (7.0–7.9) · B (6.0–6.9) · C (below 6.0). This is CB Research's independent analytical view, not investment advice — CB Research is not SEBI-registered.</div>
+
+  <div class="scorecard">
+    <div class="scorecard-head"><h4>Coal India Limited</h4><div class="gradebadge grade-B">B · 6.05/10</div></div>
+    <div class="metricrow"><div class="mname">Revenue Growth (20%)</div><div class="mtrack"><div class="mfill" style="width:70%;"></div></div><div class="mscore">7/10</div><div class="mweight">wt 1.40</div></div>
+    <div class="metricnote">7.8% YoY revenue growth on stronger offtake and e-auction pricing — solid, though driven more by realization/inventory than fresh production.</div>
+    <div class="metricrow"><div class="mname">EBITDA Growth &amp; Margin (25%)</div><div class="mtrack"><div class="mfill" style="width:40%;"></div></div><div class="mscore">4/10</div><div class="mweight">wt 1.00</div></div>
+    <div class="metricnote">EBITDA declined 4.1% YoY as cost inflation (contractual expenses, diesel, wage-revision provisioning) outpaced revenue growth.</div>
+    <div class="metricrow"><div class="mname">Net Profit Growth &amp; Margin (25%)</div><div class="mtrack"><div class="mfill" style="width:50%;"></div></div><div class="mscore">5/10</div><div class="mweight">wt 1.25</div></div>
+    <div class="metricnote">PAT essentially flat (+0.6% YoY), down 18.3% sequentially — a genuinely mixed profitability quarter.</div>
+    <div class="metricrow"><div class="mname">Debt / Leverage (15%)</div><div class="mtrack"><div class="mfill" style="width:90%;"></div></div><div class="mscore">9/10</div><div class="mweight">wt 1.35</div></div>
+    <div class="metricnote">Virtually debt-light PSU balance sheet with a strong, consistent dividend track record (₹5.50/share interim declared this quarter).</div>
+    <div class="metricrow"><div class="mname">Cash Flow (15%)</div><div class="mtrack"><div class="mfill" style="width:70%;"></div></div><div class="mscore">7/10</div><div class="mweight">wt 1.05</div></div>
+    <div class="metricnote">Healthy cash-generative PSU; pit-head inventory cut 22% in the quarter, freeing up working capital even as production fell.</div>
+    <div class="overallscore"><div class="num">6.05 / 10</div><div class="lbl">CB Rating: B (Fair)</div></div>
+  </div>
+
+  <div class="scorecard">
+    <div class="scorecard-head"><h4>NTPC Limited</h4><div class="gradebadge grade-A">A · 8.15/10</div></div>
+    <div class="metricrow"><div class="mname">Revenue Growth (20%)</div><div class="mtrack"><div class="mfill" style="width:70%;"></div></div><div class="mscore">7/10</div><div class="mweight">wt 1.40</div></div>
+    <div class="metricnote">Standalone revenue +3% YoY (consolidated revenue from operations +7.8%) — steady, regulated-tariff-driven growth.</div>
+    <div class="metricrow"><div class="mname">EBITDA Growth &amp; Margin (25%)</div><div class="mtrack"><div class="mfill" style="width:90%;"></div></div><div class="mscore">9/10</div><div class="mweight">wt 2.25</div></div>
+    <div class="metricnote">Standalone EBITDA +22.6% YoY, beating consensus (₹10,800 Cr est.) — strong operating leverage from capacity additions and record PLF.</div>
+    <div class="metricrow"><div class="mname">Net Profit Growth &amp; Margin (25%)</div><div class="mtrack"><div class="mfill" style="width:90%;"></div></div><div class="mscore">9/10</div><div class="mweight">wt 2.25</div></div>
+    <div class="metricnote">PAT +12% standalone / +13% consolidated, both ahead of street estimates; consolidated net margin improved to 13.59% from 12.98%.</div>
+    <div class="metricrow"><div class="mname">Debt / Leverage (15%)</div><div class="mtrack"><div class="mfill" style="width:70%;"></div></div><div class="mscore">7/10</div><div class="mweight">wt 1.05</div></div>
+    <div class="metricnote">100%+ security cover maintained on secured listed debt; regulated cost-plus tariff structure keeps leverage serviceable despite a large capex programme.</div>
+    <div class="metricrow"><div class="mname">Cash Flow (15%)</div><div class="mtrack"><div class="mfill" style="width:80%;"></div></div><div class="mscore">8/10</div><div class="mweight">wt 1.20</div></div>
+    <div class="metricnote">Group companies' profit contribution up 62% YoY; consistent cash generation supporting both the thermal capex pipeline and the renewable build-out.</div>
+    <div class="overallscore"><div class="num">8.15 / 10</div><div class="lbl">CB Rating: A (Strong)</div></div>
+  </div>
+
+  <div class="verdictbox">
+    <h4>CB Research Rating Summary</h4>
+    <p><b>NTPC earns an "A" CB Rating (8.15)</b> on the back of a broad-based beat — revenue, EBITDA and PAT all grew ahead of expectations, led by capacity additions and a sector-leading coal PLF. <b>Coal India earns a "B" (6.05)</b> — its balance-sheet strength and cash generation remain excellent, but the operating quarter itself was genuinely mixed, with EBITDA declining and PAT flat under cost pressure even as revenue grew. Note this rating is earnings- and balance-sheet-driven only; it does not incorporate valuation (share price vs fundamentals) — pair it with the Analysts Rating tab for the market's view on price.</p>
+  </div>
+</div>
+
+<!-- CB ASSIST -->
+<div class="panel" id="assist">
+  <div class="hero">
+    <h2>CB Assist</h2>
+    <div class="sub">Ask a question about Coal India, NTPC, or how they connect — type below or tap a suggested question. Bilingual: English / தமிழ்.</div>
+  </div>
+
+  <div class="langtoggle">
+    <button id="assistBtnEN" class="on">English</button>
+    <button id="assistBtnTA">தமிழ்</button>
+  </div>
+
+  <div class="searchwrap">
+    <input type="text" id="assistInput" placeholder="Type your question... e.g. 'Coal India dividend' or 'NTPC PLF'">
+    <button id="assistSearchBtn">Ask</button>
+  </div>
+
+  <div class="catlabel">Suggested questions</div>
+  <div class="chipwrap" id="assistChips"></div>
+
+  <div id="assistResults"></div>
+</div>
+
+<!-- CAUVERY SOCRATES -->
+<div class="panel" id="socrates">
+  <div class="hero">
+    <h2>Cauvery Socrates</h2>
+    <div class="sub">Test your understanding of this quarter's results — answer each question, get instant feedback with explanation. Bilingual: English / தமிழ்.</div>
+  </div>
+
+  <div class="langtoggle">
+    <button id="socBtnEN" class="on">English</button>
+    <button id="socBtnTA">தமிழ்</button>
+  </div>
+
+  <div class="scoreboard">
+    <div class="scorepill">Score: <span id="socScore">0</span> / <span id="socTotal">0</span></div>
+    <div class="scorepill">Attempted: <span id="socAttempted">0</span></div>
+  </div>
+
+  <div id="socratesQuiz"></div>
+  <button class="resetbtn" id="socResetBtn">Reset Quiz</button>
+</div>
+
+</main>
+
+<footer>
+  CB Research | Cauvery Business Research — Not a SEBI-registered entity. No buy/sell/hold recommendations issued. For informational and educational purposes only.<br>
+  Data compiled from Coal India and NTPC exchange filings and press releases dated 24–27 July 2026, and public brokerage/aggregator commentary through 28 July 2026.
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+function $id(id){ return document.getElementById(id); }
+function on(id, evt, fn){ const el = $id(id); if(el){ el.addEventListener(evt, fn); } else { console.warn('CB Research: element not found ->', id); } }
+
+/* ============ TAB SWITCHING ============ */
+document.querySelectorAll('nav .tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav .tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+/* ============ CB ASSIST DATA ============ */
+const assistData = [
+  {kw:["coal india","profit flat","pat","0.6","why"],
+   qEN:"Why was Coal India's Q1 FY27 profit almost flat?",
+   aEN:"Revenue grew a healthy 7.8% YoY, but total expenditure rose 12% on higher contractual/outsourcing costs, and EBITDA actually fell 4.1% YoY. Net profit crept up just 0.6% YoY as a result, and was down 18.3% sequentially from the March 2026 quarter.",
+   qTA:"Coal India இன் Q1 FY27 லாபம் ஏன் கிட்டத்தட்ட மாறாமல் இருந்தது?",
+   aTA:"வருவாய் 7.8% ஆண்டுக்கு ஆண்டு வளர்ந்தது, ஆனால் ஒப்பந்த/அவுட்சோர்சிங் செலவுகள் அதிகரித்ததால் மொத்த செலவு 12% உயர்ந்தது, EBITDA 4.1% குறைந்தது. இதன் விளைவாக நிகர லாபம் வெறும் 0.6% மட்டுமே உயர்ந்தது, மார்ச் 2026 காலாண்டுடன் ஒப்பிடும்போது 18.3% குறைந்தது."},
+
+  {kw:["coal india","production fell","7%","output"],
+   qEN:"Why did Coal India's production fall while offtake rose?",
+   aEN:"Coal production fell 7% YoY to 169.63 MT, but offtake (coal sold/dispatched) rose 4% YoY to 197.86 MT. CIL bridged the gap by drawing down pit-head inventory, which fell 22% from the start of the quarter — selling more than it mined this quarter.",
+   qTA:"Coal India இன் உற்பத்தி குறைந்தும் off-take ஏன் அதிகரித்தது?",
+   aTA:"நிலக்கரி உற்பத்தி 7% குறைந்து 169.63 MT ஆனது, ஆனால் off-take 4% அதிகரித்து 197.86 MT ஆனது. CIL பிட்-ஹெட் இருப்பை 22% குறைத்து இந்த இடைவெளியை ஈடுசெய்தது — இந்த காலாண்டில் சுரங்கம் செய்ததை விட அதிகமாக விற்றது."},
+
+  {kw:["coal india","e-auction","premium","47"],
+   qEN:"What happened with Coal India's e-auction pricing?",
+   aEN:"E-auction volumes jumped 25% YoY, and the premium over notified prices widened to 47% — well ahead of pre-results brokerage estimates of around 35%. This is a positive realization lever that partly offsets the cost inflation pressuring EBITDA.",
+   qTA:"Coal India இன் e-auction விலை நிர்ணயத்தில் என்ன நடந்தது?",
+   aTA:"E-auction அளவு 25% அதிகரித்தது, மற்றும் அறிவிக்கப்பட்ட விலைகளுக்கு மேலான பிரீமியம் 47% ஆக விரிவடைந்தது — முடிவுகளுக்கு முன்பான தரகு நிறுவனங்களின் மதிப்பீடான 35% ஐ விட அதிகம்."},
+
+  {kw:["coal india","dividend","5.50","record date"],
+   qEN:"What dividend did Coal India announce with Q1 FY27 results?",
+   aEN:"Coal India declared an interim dividend of ₹5.50 per equity share for FY27. The record date is 31 July 2026, and the dividend will be paid on or before 25 August 2026.",
+   qTA:"Q1 FY27 முடிவுகளுடன் Coal India என்ன டிவிடெண்ட் அறிவித்தது?",
+   aTA:"Coal India FY27 க்கான ஒரு பங்குக்கு ₹5.50 இடைக்கால டிவிடெண்ட் அறிவித்தது. பதிவு தேதி 31 ஜூலை 2026, மற்றும் டிவிடெண்ட் 25 ஆகஸ்ட் 2026க்குள் வழங்கப்படும்."},
+
+  {kw:["ntpc","pat growth","12","13","driver"],
+   qEN:"What drove NTPC's 12-13% PAT growth in Q1 FY27?",
+   aEN:"Capacity additions and operational efficiencies were the key drivers — NTPC's coal-fired stations achieved a 76.71% Plant Load Factor, well above the 70.32% national average, while EBITDA grew 22.6% YoY on the standalone basis, beating consensus estimates.",
+   qTA:"NTPC இன் Q1 FY27 இல் 12-13% PAT வளர்ச்சிக்கு காரணம் என்ன?",
+   aTA:"திறன் கூட்டல் மற்றும் செயல்பாட்டு திறன் முக்கிய காரணிகள் — NTPC இன் நிலக்கரி நிலையங்கள் 76.71% Plant Load Factor ஐ அடைந்தன, தேசிய சராசரி 70.32% ஐ விட அதிகம், standalone அடிப்படையில் EBITDA 22.6% வளர்ந்தது."},
+
+  {kw:["ntpc","plf","76.71","national average"],
+   qEN:"How does NTPC's PLF compare to the national average?",
+   aEN:"NTPC's coal-fired power stations recorded a Plant Load Factor of 76.71% in Q1 FY27, significantly outperforming the Rest-of-India coal PLF average of 70.32% — reflecting industry-leading operational efficiency.",
+   qTA:"NTPC இன் PLF தேசிய சராசரியுடன் எப்படி ஒப்பிடப்படுகிறது?",
+   aTA:"NTPC இன் நிலக்கரி மின் நிலையங்கள் Q1 FY27 இல் 76.71% Plant Load Factor ஐ பதிவு செய்தன, இந்தியாவின் மற்ற பகுதிகளின் சராசரி 70.32% ஐ விட கணிசமாக சிறந்தது."},
+
+  {kw:["ntpc green energy","renewable","305","subsidiary"],
+   qEN:"How did NTPC Green Energy perform in Q1 FY27?",
+   aEN:"NTPC Green Energy, the group's listed renewable arm, posted consolidated PAT of ₹305 Cr (+38% YoY) on revenue of ₹1,107 Cr (+63% YoY), with EBITDA margin at 89.3%. Group installed renewable capacity reached 10,671 MW, with a 60 GW target by FY32.",
+   qTA:"NTPC Green Energy Q1 FY27 இல் எப்படி செயல்பட்டது?",
+   aTA:"குழுவின் பட்டியலிடப்பட்ட புதுப்பிக்கத்தக்க கிளை NTPC Green Energy, ₹1,107 கோடி வருவாயில் (63% வளர்ச்சி) ₹305 கோடி ஒருங்கிணைந்த லாபத்தை (38% வளர்ச்சி) பதிவு செய்தது, EBITDA மார்ஜின் 89.3%."},
+
+  {kw:["ntpc","cmd","gurdeep singh","leadership","tenure"],
+   qEN:"Who is NTPC's CMD and what is the leadership situation?",
+   aEN:"Gurdeep Singh is NTPC's Chairman & Managing Director, re-employed on a one-year contract from 1 August 2025 to 31 July 2026 (or until a regular incumbent takes charge). His contract concludes almost immediately after this Q1 FY27 results announcement, making CMD succession a near-term watch item.",
+   qTA:"NTPC இன் CMD யார், தலைமை நிலைமை என்ன?",
+   aTA:"Gurdeep Singh NTPC இன் தலைவர் மற்றும் மேலாண்மை இயக்குனர், 1 ஆகஸ்ட் 2025 முதல் 31 ஜூலை 2026 வரை ஒரு வருட ஒப்பந்த அடிப்படையில் மீண்டும் நியமிக்கப்பட்டார். இந்த Q1 FY27 முடிவுகள் அறிவிப்புக்கு பின் உடனடியாக அவரது ஒப்பந்தம் முடிவடைகிறது."},
+
+  {kw:["combined","overview","coal india ntpc","together","nexus"],
+   qEN:"How should investors read Coal India and NTPC together?",
+   aEN:"They sit at opposite ends of India's fuel-to-power value chain. NTPC's record 76.71% coal PLF signals strong demand pull-through for coal producers like CIL, while CIL's widening e-auction premiums reflect that same tight demand. But NTPC's own captive coal-mining push (via NTPC Mining Ltd) is a long-term diversification away from full reliance on external suppliers — worth tracking together rather than in isolation.",
+   qTA:"முதலீட்டாளர்கள் Coal India மற்றும் NTPC ஐ ஒன்றாக எப்படி படிக்க வேண்டும்?",
+   aTA:"அவை இந்தியாவின் எரிபொருள்-மின்சார மதிப்பு சங்கிலியின் எதிர் முனைகளில் உள்ளன. NTPC இன் சாதனை 76.71% நிலக்கரி PLF, CIL போன்ற நிலக்கரி உற்பத்தியாளர்களுக்கு வலுவான தேவையை காட்டுகிறது, அதே நேரத்தில் CIL இன் விரிவடையும் e-auction பிரீமியங்கள் அதே இறுக்கமான தேவையை பிரதிபலிக்கின்றன."},
+
+  {kw:["coal india","market cap","cmp","stock fall","413"],
+   qEN:"Why did Coal India's stock fall on results day?",
+   aEN:"Coal India shares fell about 3.4% intraday to ₹413.05 on 28 July 2026, following the mixed Q1 FY27 print — flat profit, falling EBITDA and declining production offset the positive revenue, offtake and e-auction premium trends, leading the market to react negatively.",
+   qTA:"Coal India பங்கு முடிவு நாளில் ஏன் குறைந்தது?",
+   aTA:"கலவையான Q1 FY27 முடிவுகளை (மாறாத லாபம், குறையும் EBITDA மற்றும் உற்பத்தி) தொடர்ந்து Coal India பங்குகள் 28 ஜூலை 2026 இல் ₹413.05 ஆக சுமார் 3.4% குறைந்தன."}
+];
+
+function renderAssistChips(){
+  const wrap = document.getElementById('assistChips');
+  wrap.innerHTML = '';
+  const lang = document.getElementById('assistBtnTA').classList.contains('on') ? 'ta' : 'en';
+  assistData.forEach((item,i)=>{
+    const c = document.createElement('div');
+    c.className = 'chip';
+    c.textContent = lang==='ta' ? item.qTA : item.qEN;
+    c.addEventListener('click', ()=>showAssistAnswer(i));
+    wrap.appendChild(c);
+  });
+}
+
+function showAssistAnswer(i){
+  const lang = document.getElementById('assistBtnTA').classList.contains('on') ? 'ta' : 'en';
+  const item = assistData[i];
+  const results = document.getElementById('assistResults');
+  const card = document.createElement('div');
+  card.className = 'answercard';
+  card.innerHTML = `<div class="q">${lang==='ta'?item.qTA:item.qEN}</div><div class="a">${lang==='ta'?item.aTA:item.aEN}</div>`;
+  results.prepend(card);
+  document.getElementById('assistInput').value = '';
+}
+
+function searchAssist(){
+  const lang = document.getElementById('assistBtnTA').classList.contains('on') ? 'ta' : 'en';
+  const query = document.getElementById('assistInput').value.trim().toLowerCase();
+  const results = document.getElementById('assistResults');
+  if(!query){ return; }
+  const matches = assistData.filter(item=>{
+    const hay = (item.kw.join(' ')+' '+item.qEN+' '+item.qTA).toLowerCase();
+    return query.split(' ').some(word=> word.length>2 && hay.includes(word));
+  });
+  results.innerHTML = '';
+  if(matches.length===0){
+    const msg = lang==='ta'
+      ? 'மன்னிக்கவும், இந்த கேள்விக்கு தயார் பதில் இல்லை. மேலே உள்ள பரிந்துரைக்கப்பட்ட கேள்விகளை முயற்சிக்கவும்.'
+      : "Sorry, no prepared answer for that yet. Try one of the suggested questions above, or rephrase using company names (Coal India / NTPC).";
+    results.innerHTML = `<div class="noresult">${msg}</div>`;
+    return;
+  }
+  matches.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'answercard';
+    card.innerHTML = `<div class="q">${lang==='ta'?item.qTA:item.qEN}</div><div class="a">${lang==='ta'?item.aTA:item.aEN}</div>`;
+    results.appendChild(card);
+  });
+}
+
+on('assistSearchBtn','click', searchAssist);
+on('assistInput','keydown', e=>{ if(e.key==='Enter') searchAssist(); });
+on('assistBtnEN','click', ()=>{
+  $id('assistBtnEN').classList.add('on');
+  $id('assistBtnTA').classList.remove('on');
+  $id('assistResults').innerHTML='';
+  renderAssistChips();
+});
+on('assistBtnTA','click', ()=>{
+  $id('assistBtnTA').classList.add('on');
+  $id('assistBtnEN').classList.remove('on');
+  $id('assistResults').innerHTML='';
+  renderAssistChips();
+});
+renderAssistChips();
+
+/* ============ CAUVERY SOCRATES DATA ============ */
+const socData = [
+  {tag:"Coal India", qEN:"By how much did Coal India's consolidated PAT grow YoY in Q1 FY27?", qTA:"Q1 FY27 இல் Coal India இன் ஒருங்கிணைந்த PAT ஆண்டுக்கு ஆண்டு எவ்வளவு வளர்ந்தது?",
+   optEN:["0.6%","7.8%","12%","-4.1%"], optTA:["0.6%","7.8%","12%","-4.1%"], correct:0,
+   expEN:"Coal India's consolidated net profit attributable to owners rose just 0.6% YoY to ₹8,852 Cr — essentially flat, and down 18.3% sequentially from Q4 FY26.",
+   expTA:"Coal India இன் ஒருங்கிணைந்த நிகர லாபம் 0.6% மட்டுமே அதிகரித்து ₹8,852 கோடியாக உயர்ந்தது — கிட்டத்தட்ட மாறாமல், Q4 FY26 உடன் ஒப்பிடும்போது 18.3% குறைந்தது."},
+
+  {tag:"Coal India", qEN:"What happened to Coal India's coal production in Q1 FY27?", qTA:"Q1 FY27 இல் Coal India இன் நிலக்கரி உற்பத்தியில் என்ன நடந்தது?",
+   optEN:["Rose 4%","Fell 7%","Stayed flat","Rose 25%"], optTA:["4% உயர்ந்தது","7% குறைந்தது","மாறாமல் இருந்தது","25% உயர்ந்தது"], correct:1,
+   expEN:"Coal production fell 7% YoY to 169.63 MT, even as offtake (coal sold) rose 4% YoY to 197.86 MT — the gap was bridged by drawing down inventory.",
+   expTA:"நிலக்கரி உற்பத்தி 7% குறைந்து 169.63 MT ஆனது, ஆனால் off-take 4% அதிகரித்து 197.86 MT ஆனது — இருப்பை குறைத்து இடைவெளியை ஈடுசெய்தனர்."},
+
+  {tag:"Coal India", qEN:"What interim dividend did Coal India declare for FY27?", qTA:"Coal India FY27 க்கு என்ன இடைக்கால டிவிடெண்ட் அறிவித்தது?",
+   optEN:["₹2.75/share","₹5.50/share","₹8.00/share","₹10.00/share"], optTA:["₹2.75/share","₹5.50/share","₹8.00/share","₹10.00/share"], correct:1,
+   expEN:"Coal India declared an interim dividend of ₹5.50 per equity share, with a record date of 31 July 2026.",
+   expTA:"Coal India ₹5.50 இடைக்கால டிவிடெண்ட் அறிவித்தது, பதிவு தேதி 31 ஜூலை 2026."},
+
+  {tag:"Coal India", qEN:"What was Coal India's e-auction premium over notified prices in Q1 FY27?", qTA:"Q1 FY27 இல் அறிவிக்கப்பட்ட விலைகளுக்கு மேலான Coal India இன் e-auction பிரீமியம் என்ன?",
+   optEN:["25%","35%","47%","60%"], optTA:["25%","35%","47%","60%"], correct:2,
+   expEN:"The e-auction premium widened to 47% over notified prices, well ahead of pre-results brokerage estimates of around 35%.",
+   expTA:"E-auction பிரீமியம் அறிவிக்கப்பட்ட விலைகளுக்கு மேல் 47% ஆக விரிவடைந்தது, முடிவுகளுக்கு முன்பான 35% மதிப்பீட்டை விட அதிகம்."},
+
+  {tag:"Coal India", qEN:"Who is Coal India's current Chairman-cum-Managing Director?", qTA:"Coal India இன் தற்போதைய தலைவர்-மேலாண்மை இயக்குனர் யார்?",
+   optEN:["P M Prasad","B Sairam","Anil Kumar Jha","Sanoj Kumar Jha"], optTA:["P M Prasad","B Sairam","Anil Kumar Jha","Sanoj Kumar Jha"], correct:1,
+   expEN:"B Sairam took charge as CMD effective 15 December 2025, succeeding P M Prasad, and was subsequently also appointed CIL's first-ever CEO.",
+   expTA:"B Sairam 15 டிசம்பர் 2025 முதல் CMD ஆக பொறுப்பேற்றார், P M Prasad க்கு பின், மேலும் CIL இன் முதல் CEO ஆகவும் நியமிக்கப்பட்டார்."},
+
+  {tag:"NTPC", qEN:"What was NTPC's standalone PAT growth in Q1 FY27?", qTA:"Q1 FY27 இல் NTPC இன் standalone PAT வளர்ச்சி என்ன?",
+   optEN:["3%","~12%","22.6%","38%"], optTA:["3%","~12%","22.6%","38%"], correct:1,
+   expEN:"NTPC's standalone PAT rose about 12% YoY to ₹5,342 Cr from ₹4,775 Cr, beating the street estimate of ₹4,790 Cr.",
+   expTA:"NTPC இன் standalone PAT சுமார் 12% அதிகரித்து ₹5,342 கோடியாக உயர்ந்தது, தெரு மதிப்பீடான ₹4,790 கோடியை விட அதிகம்."},
+
+  {tag:"NTPC", qEN:"What was NTPC's coal-fired fleet PLF in Q1 FY27, compared to the national average?", qTA:"Q1 FY27 இல் NTPC இன் நிலக்கரி நிலையங்களின் PLF, தேசிய சராசரியுடன் ஒப்பிடும்போது என்ன?",
+   optEN:["70.32% vs 76.71%","76.71% vs 70.32%","89.3% vs 70.32%","60% vs 55%"], optTA:["70.32% vs 76.71%","76.71% vs 70.32%","89.3% vs 70.32%","60% vs 55%"], correct:1,
+   expEN:"NTPC's coal stations achieved a 76.71% PLF, well above the Rest-of-India average of 70.32% — a sign of industry-leading operational efficiency.",
+   expTA:"NTPC இன் நிலக்கரி நிலையங்கள் 76.71% PLF ஐ அடைந்தன, மற்ற இந்தியாவின் சராசரி 70.32% ஐ விட அதிகம்."},
+
+  {tag:"NTPC", qEN:"What is NTPC Green Energy's target renewable capacity by FY32?", qTA:"NTPC Green Energy இன் FY32 இலக்கு புதுப்பிக்கத்தக்க திறன் என்ன?",
+   optEN:["30 GW","45 GW","60 GW","100 GW"], optTA:["30 GW","45 GW","60 GW","100 GW"], correct:2,
+   expEN:"NTPC Green Energy, the group's renewable arm, is targeting 60 GW of renewable capacity by FY32, backed by a ₹62,200 Cr FY27-32 capex plan.",
+   expTA:"NTPC Green Energy, குழுவின் புதுப்பிக்கத்தக்க கிளை, FY32 க்குள் 60 GW திறனை இலக்காக கொண்டுள்ளது, ₹62,200 கோடி FY27-32 மூலதன செலவு திட்டத்தால் ஆதரிக்கப்படுகிறது."},
+
+  {tag:"NTPC", qEN:"When does NTPC CMD Gurdeep Singh's current contract term end?", qTA:"NTPC இன் CMD Gurdeep Singh இன் தற்போதைய ஒப்பந்த காலம் எப்போது முடிகிறது?",
+   optEN:["31 July 2026","31 December 2026","1 August 2026","31 March 2027"], optTA:["31 ஜூலை 2026","31 டிசம்பர் 2026","1 ஆகஸ்ட் 2026","31 மார்ச் 2027"], correct:0,
+   expEN:"Gurdeep Singh was re-employed as CMD on a one-year contract from 1 August 2025 to 31 July 2026 — meaning his term concludes almost immediately after this Q1 FY27 results announcement.",
+   expTA:"Gurdeep Singh 1 ஆகஸ்ட் 2025 முதல் 31 ஜூலை 2026 வரை ஒரு வருட ஒப்பந்தத்தில் மீண்டும் நியமிக்கப்பட்டார் — இந்த Q1 FY27 முடிவுகளுக்கு பின் உடனடியாக அவரது காலம் முடிவடைகிறது."},
+
+  {tag:"Overview", qEN:"Which of the two companies had the stronger Q1 FY27 quarter on CB Research's own scorecard?", qTA:"CB Research இன் சொந்த ஸ்கோர்கார்டில் இரண்டு நிறுவனங்களில் எது வலுவான Q1 FY27 காலாண்டை கொண்டிருந்தது?",
+   optEN:["Coal India (Grade A)","NTPC (Grade A)","Both graded equally","Both graded C"], optTA:["Coal India (Grade A)","NTPC (Grade A)","இரண்டும் சமமாக","இரண்டும் C தரம்"], correct:1,
+   expEN:"NTPC earned an 'A' CB Rating (8.15/10) versus Coal India's 'B' (6.05/10) — NTPC's revenue, EBITDA and PAT all grew ahead of expectations, while Coal India's EBITDA declined and PAT stayed flat under cost pressure.",
+   expTA:"NTPC 'A' CB Rating (8.15/10) பெற்றது, Coal India இன் 'B' (6.05/10) உடன் ஒப்பிடும்போது — NTPC இன் வருவாய், EBITDA மற்றும் PAT அனைத்தும் எதிர்பார்ப்புகளை விட அதிகமாக வளர்ந்தன."}
+];
+
+let socState = socData.map(()=>({answered:false, correct:false}));
+
+function renderSocratesQuiz(){
+  const lang = document.getElementById('socBtnTA').classList.contains('on') ? 'ta' : 'en';
+  const wrap = document.getElementById('socratesQuiz');
+  wrap.innerHTML = '';
+  socData.forEach((q,i)=>{
+    const card = document.createElement('div');
+    card.className = 'quizcard';
+    const opts = lang==='ta' ? q.optTA : q.optEN;
+    let optsHtml = '';
+    opts.forEach((o,j)=>{
+      let cls = 'opt';
+      if(socState[i].answered){
+        cls += ' disabled';
+        if(j===q.correct) cls += ' correct';
+        else if(j===socState[i].chosen) cls += ' wrong';
+      }
+      optsHtml += `<div class="${cls}" data-idx="${i}" data-opt="${j}">${o}</div>`;
+    });
+    card.innerHTML = `
+      <div class="qtag">${q.tag}</div>
+      <div class="qtext">${i+1}. ${lang==='ta'?q.qTA:q.qEN}</div>
+      <div class="opts">${optsHtml}</div>
+      <div class="explain ${socState[i].answered?'show':''}">${lang==='ta'?q.expTA:q.expEN}</div>
+    `;
+    wrap.appendChild(card);
+  });
+  wrap.querySelectorAll('.opt:not(.disabled)').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const i = parseInt(el.dataset.idx);
+      const j = parseInt(el.dataset.opt);
+      if(socState[i].answered) return;
+      socState[i].answered = true;
+      socState[i].chosen = j;
+      socState[i].correct = (j===socData[i].correct);
+      renderSocratesQuiz();
+      updateScoreboard();
+    });
+  });
+}
+
+function updateScoreboard(){
+  const attempted = socState.filter(s=>s.answered).length;
+  const correct = socState.filter(s=>s.correct).length;
+  document.getElementById('socScore').textContent = correct;
+  document.getElementById('socTotal').textContent = socData.length;
+  document.getElementById('socAttempted').textContent = attempted;
+}
+
+on('socResetBtn','click', ()=>{
+  socState = socData.map(()=>({answered:false, correct:false}));
+  renderSocratesQuiz();
+  updateScoreboard();
+});
+on('socBtnEN','click', ()=>{
+  $id('socBtnEN').classList.add('on');
+  $id('socBtnTA').classList.remove('on');
+  renderSocratesQuiz();
+});
+on('socBtnTA','click', ()=>{
+  $id('socBtnTA').classList.add('on');
+  $id('socBtnEN').classList.remove('on');
+  renderSocratesQuiz();
+});
+renderSocratesQuiz();
+updateScoreboard();
+
+}); // end DOMContentLoaded
+</script>
+
+</body>
+</html>

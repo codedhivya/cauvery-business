@@ -38,25 +38,34 @@ MANIFEST = os.path.join(ROOT, "docs", "corpus-manifest.json")
 SECTOR_KEYWORDS = {
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib"],
     # note: "rec" alone would match "Recycling"; use the paired filename form instead
-    "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jio_financial"],
+    "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jio_financial", "mfi", "microfin"],
     "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici"],
-    "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss", "ipo"],
+    # note: bare "ipo" over-matches — a hospital IPO is pharma-health and a solar IPO is
+    # power-energy. Only IPO *funds* and IPO-market reports belong here.
+    "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss",
+                        "ipo_fund", "uti_nippon", "kfintech", "cams"],
     "it-services": ["it_services", "tcs", "hcl", "infoedge", "fractal"],
-    "pharma-health": ["pharma", "drreddys", "medtech", "hospital", "gland", "generic"],
+    "pharma-health": ["pharma", "drreddys", "medtech", "hospital", "gland", "generic",
+                      "laurus", "neuland", "divislabs", "lupin", "cipla", "torrent"],
     "auto": ["2w", "tvsmotor", "bajajauto", "auto_spares", "tyre", "battery", "pv_sector"],
-    "metals": ["steel", "aluminium", "vedanta", "nalco", "hindalco"],
+    "metals": ["steel", "aluminium", "vedanta", "nalco", "hindalco", "tatasteel"],
     "cement": ["cement", "ultratech"],
     "chemicals": ["chemical", "himadri", "pvc", "paint", "fertilizer", "recycling"],
-    "power-energy": ["power", "solar", "acme", "emmvee", "oilgas", "omc", "ril", "adani_power", "iex"],
+    "power-energy": ["power", "solar", "acme", "emmvee", "oilgas", "omc", "ril", "adani_power",
+                     "iex", "ongc", "coalindia", "ntpc", "waaree", "junipergreen"],
     "capital-goods": ["bhel", "defence", "railway", "mtar", "inox", "ems", "cables", "polycab",
-                      "shaily", "shaktipumps", "pacedigitek"],
+                      "shaily", "shaktipumps", "pacedigitek", "syrma", "dixon", "kaynes",
+                      "_lt_", "larsen"],
     "consumer": ["dmart", "fmcg", "alcobev", "sugar", "dairy", "textile", "nitinspinners",
-                 "v2retail", "abfashion", "gold", "amusement", "hotel", "india-hotels"],
+                 "v2retail", "abfashion", "gold", "amusement", "hotel", "india-hotels",
+                 "itc_hul", "balrampur", "jewellery"],
     "infra-realty": ["realestate", "ports", "reit", "invit"],
     "telecom": ["telecom", "airtel"],
-    "_cross-sector": ["multisector", "multico", "ranker", "cross_sector", "newage",
+    "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage"],
+    "_cross-sector": ["multisector", "multico", "ranker", "cross_sector",
                       "powerproxy", "india_pv"],
-    "_excluded": ["market_breaking"],
+    # Not company evaluation: news digests, macro/thematic pieces, and site furniture.
+    "_excluded": ["market_breaking", "carrytrade", "macro_analysis", "glossary"],
 }
 
 # Finance terms worth noticing if a sector file doesn't define them.

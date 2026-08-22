@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sun Pharma &amp; Torrent Pharma — Q1 FY27 Results Dashboard · CB Research</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f4f8; --card: #ffffff; --card2: #f8fafc;
+    --border: #e2e8f0; --accent: #0369a1; --green: #16a34a;
+    --amber: #d97706; --red: #dc2626; --purple: #7c3aed;
+    --text: #0f172a; --muted: #64748b; --light: #e0f2fe;
+    --sun: #f59e0b; --torrent: #dc2626;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 60%,#0891b2 100%);color:#fff;padding:28px 32px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+  .header h1{font-size:1.6rem;font-weight:700;letter-spacing:-.3px}
+  .header p{opacity:.85;margin-top:4px;font-size:.88rem}
+  .badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+  .b-q1{background:rgba(22,163,74,.3);color:#bbf7d0}
+  .b-tar{background:rgba(220,38,38,.3);color:#fecaca}
+  nav{background:#fff;border-bottom:2px solid var(--border);display:flex;gap:0;overflow-x:auto;position:sticky;top:96px;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+  nav button{padding:13px 20px;border:none;background:none;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);background:#f0f9ff}
+  nav button:hover:not(.active){color:var(--text);background:var(--bg)}
+  .tab{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+  .tab.active{display:block}
+  .section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-bottom:28px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .2s,transform .15s}
+  .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+  .card-name{font-size:1.05rem;font-weight:700}
+  .card-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .tag{padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700}
+  .tag-q1{background:#dcfce7;color:#166534}
+  .tag-generic{background:#ede9fe;color:#5b21b6}
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .metric{background:var(--card2);border-radius:8px;padding:8px 10px;text-align:center}
+  .metric-val{font-size:1rem;font-weight:700;color:var(--accent)}
+  .metric-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+  .metric-green .metric-val{color:var(--green)}
+  .metric-amber .metric-val{color:var(--amber)}
+  .metric-red .metric-val{color:var(--red)}
+  .usp-row{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .usp-row strong{color:var(--text)}
+  .debt-bar-wrap{margin-top:8px}
+  .debt-label{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px}
+  .debt-bar{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+  .debt-fill{height:100%;border-radius:3px;transition:width .8s ease}
+  .debt-low{background:var(--green)}
+  .debt-mid{background:var(--amber)}
+  .debt-high{background:var(--red)}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:22px;margin-bottom:28px}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .chart-title{font-size:.9rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+  .chart-wrap{position:relative;height:280px}
+  .tbl-wrap{overflow-x:auto;margin-bottom:28px}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  thead tr{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff}
+  th{padding:11px 12px;text-align:left;font-size:.78rem;font-weight:700;white-space:nowrap}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#f8fafc}
+  tr:hover td{background:#f0f9ff}
+  .td-green{color:var(--green);font-weight:700}
+  .td-red{color:var(--red);font-weight:700}
+  .td-amber{color:var(--amber);font-weight:700}
+  .analyst-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .analyst-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .analyst-name{font-weight:700;font-size:.9rem;margin-bottom:6px}
+  .analyst-rec{padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;display:inline-block;margin-bottom:6px}
+  .rec-buy{background:#dcfce7;color:#166534}
+  .rec-hold{background:#fef9c3;color:#854d0e}
+  .analyst-tp{font-size:.8rem;color:var(--muted)}
+  .analyst-note{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.5}
+  .info-box{background:var(--light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .warn-box{background:#fffbeb;border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .red-box{background:#fef2f2;border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  @media(max-width:600px){
+    .header h1{font-size:1.15rem}
+    .metrics{grid-template-columns:1fr 1fr}
+    .chart-grid{grid-template-columns:1fr}
+    nav button{padding:10px 13px;font-size:.78rem}
+    .tab{padding:16px 14px}
+  }
+  .timeline{border-left:3px solid var(--accent);margin-left:10px;padding-left:20px}
+  .tl-item{position:relative;margin-bottom:20px}
+  .tl-item::before{content:'';position:absolute;left:-26px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:0 0 0 2px var(--accent)}
+  .tl-item.tl-red::before{background:var(--red);box-shadow:0 0 0 2px var(--red)}
+  .tl-date{font-weight:700;font-size:.85rem;color:var(--accent)}
+  .tl-item.tl-red .tl-date{color:var(--red)}
+  .tl-body{font-size:.82rem;color:var(--muted);line-height:1.6;margin-top:3px}
+  .waterfall-tbl td:first-child{font-weight:600}
+  .cb-logo{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .cb-logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#fff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#0369a1;letter-spacing:-.5px;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+  .cb-logo-text{font-size:.78rem;line-height:1.35;color:rgba(255,255,255,.9)}
+  .cb-logo-text strong{font-size:.88rem;color:#fff;display:block;letter-spacing:.3px}
+  .cb-watermark{position:fixed;bottom:18px;right:18px;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:7px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.18);border-radius:30px;padding:5px 12px 5px 8px;backdrop-filter:blur(4px)}
+  .cb-watermark-icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0369a1,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+  .cb-watermark-text{font-size:.68rem;color:var(--muted);font-weight:600;white-space:nowrap}
+  .cb-watermark-text span{color:var(--accent)}
+  .lang-bar{background:#fff;border-bottom:1px solid var(--border);padding:6px 28px;display:flex;align-items:center;gap:10px;font-size:.79rem;color:var(--muted)}
+  .lbtn{padding:3px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;background:#fff;color:var(--muted)}
+  .lbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .en{display:block}.ta{display:none}
+  body.tm .en{display:none}body.tm .ta{display:block}
+  .qa-item{border:1px solid var(--border);border-radius:8px;margin-bottom:7px;overflow:hidden}
+  .qa-q{background:#f8fafc;padding:10px 14px;cursor:pointer;font-size:.81rem;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+  .qa-q:hover{background:#e0f2fe}
+  .qa-a{display:none;padding:10px 14px;font-size:.79rem;color:var(--muted);line-height:1.65;border-top:1px solid var(--border)}
+  .qa-a.open{display:block}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💊 Sun Pharma &amp; Torrent Pharma — Q1 FY27 Results Dashboard</h1>
+  <p>Quarter ended 30 June 2026 · Actuals as reported 30–31 July 2026 · US Generic Tariff Watch · CB Rating</p>
+  <div class="badge-row">
+    <span class="badge b-q1">✓ Q1 FY27 Actuals (both)</span>
+    <span class="badge b-tar">⚠️ US Generic Tariff Timeline (Jul 2026)</span>
+    <span style="background:rgba(255,255,255,.15);color:#e0f2fe;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600">Updated: 1 Aug 2026 IST</span>
+  </div>
+  <div class="cb-logo">
+    <div class="cb-logo-mark">CB</div>
+    <div class="cb-logo-text"><strong>CB Research</strong>Pharma Sector · Q1 FY27 Deep Dive</div>
+  </div>
+</div>
+
+<div class="cb-watermark">
+  <div class="cb-watermark-icon">CB</div>
+  <div class="cb-watermark-text"><span>CB Research</span> · Sun Pharma + Torrent · Q1 FY27</div>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="switchTab('overview',this)">📊 Q1 FY27 Highlights</button>
+  <button onclick="switchTab('cards',this)">🏢 Company Cards</button>
+  <button onclick="switchTab('torrent',this)">📉 Torrent — Why PAT Lagged</button>
+  <button onclick="switchTab('tariff',this)">🇺🇸 US Generic Tariff &amp; Sun Pharma</button>
+  <button onclick="switchTab('charts',this)">📈 Charts</button>
+  <button onclick="switchTab('verdict',this)">🏆 Verdict &amp; Analyst Views</button>
+  <button onclick="switchTab('qa',this)">🤖 CB Assist</button>
+</nav>
+<div class="lang-bar">
+  🌐 Language / மொழி:
+  <button class="lbtn on" onclick="setLang('en',this)">English</button>
+  <button class="lbtn" onclick="setLang('ta',this)">தமிழ்</button>
+</div>
+
+<!-- ═══════════════ OVERVIEW ═══════════════ -->
+<div id="tab-overview" class="tab active">
+  <div class="info-box">
+    <span class="en"><strong>Q1 FY27 (Apr–Jun 2026) snapshot:</strong> Sun Pharma delivered a clean, broad-based beat — revenue +10.5% YoY to ₹15,299.88 Cr and reported PAT +27% YoY to ₹2,894.79 Cr, powered by India formulations (+16%) and continued innovative-medicines traction (Leqselvi, Unloxcyt), even as US generics stayed soft (-9.7%). Torrent Pharma posted its highest-ever quarterly revenue (₹4,921 Cr, +55% YoY) on JB Chemicals consolidation, but PAT grew only 3.3% YoY to ₹566 Cr as acquisition-debt interest cost and depreciation ballooned — the topline-vs-bottomline gap is this quarter's central Torrent story. Separately, Washington's 21 July 2026 phased tariff announcement on generic drug imports (0% now → 100% Aug 2028 → 200% 2029) is the swing factor to watch across Indian pharma, including Sun Pharma's US generics book.</span>
+    <span class="ta">முதல் காலாண்டு FY27 (ஏப்ரல்–ஜூன் 2026) சுருக்கம்: Sun Pharma வருவாய் +10.5% (₹15,299.88 கோடி), நிகர லாபம் +27% (₹2,894.79 கோடி) — இந்திய வணிகம் (+16%) மற்றும் புதிய மருந்துகள் (Leqselvi, Unloxcyt) இழுத்துச் சென்றன; US generics பலவீனமாகவே உள்ளது (-9.7%). Torrent Pharma சாதனை வருவாயை பதிவு செய்தது (₹4,921 கோடி, +55%) JB Chemicals இணைப்பால், ஆனால் நிகர லாபம் +3.3% மட்டுமே வளர்ந்தது — கடன் வட்டி மற்றும் தேய்மானச் செலவு அதிகரித்ததால். ஜூலை 21, 2026 அன்று அமெரிக்கா அறிவித்த generic மருந்துகள் மீதான படிப்படியான வரி (இப்போது 0% → ஆகஸ்ட் 2028-ல் 100% → 2029-ல் 200%) இந்திய மருந்துத் துறைக்கு முக்கிய கவனிக்கத்தக்க அம்சம்.</span>
+  </div>
+
+  <div class="section-title">📊 Headline Numbers — Q1 FY27 vs Q1 FY26</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>Sun Pharma Q1 FY27</th><th>YoY</th><th>Torrent Q1 FY27</th><th>YoY</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue from Ops</strong></td><td>₹15,299.88 Cr</td><td class="td-green">+10.5%</td><td>₹4,921 Cr</td><td class="td-green">+54.9%</td></tr>
+        <tr><td><strong>EBITDA</strong></td><td>₹4,417.70 Cr</td><td class="td-green">+2.7%</td><td>₹1,664 Cr (Op.)</td><td class="td-green">+61%</td></tr>
+        <tr><td><strong>EBITDA Margin</strong></td><td>28.9%</td><td class="td-red">−220 bps</td><td>33.8%</td><td>steady</td></tr>
+        <tr><td><strong>Reported PAT</strong></td><td>₹2,894.79 Cr</td><td class="td-green">+27.0%</td><td>₹566 Cr</td><td class="td-amber">+3.3%</td></tr>
+        <tr><td><strong>Adjusted PAT</strong></td><td>₹3,089.4 Cr</td><td class="td-green">+3.1%</td><td>—</td><td>—</td></tr>
+        <tr><td><strong>PAT Margin</strong></td><td>~18.9%</td><td>—</td><td>11.71%</td><td class="td-red">−581 bps</td></tr>
+        <tr><td><strong>EPS (Basic)</strong></td><td>₹12.1</td><td class="td-green">vs ₹9.5</td><td>₹14.87</td><td class="td-red">vs ₹16.19</td></tr>
+        <tr><td><strong>R&amp;D Spend</strong></td><td>₹826.35 Cr (5.4% of sales)</td><td>—</td><td>within opex</td><td>—</td></tr>
+        <tr><td><strong>Exceptional Items</strong></td><td>₹204.09 Cr charge (Organon deal costs + Labour Codes)</td><td>—</td><td>~₹21 Cr charge (JBCPL merger costs)</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);margin-bottom:26px">Source: company Q1 FY27 (Apr–Jun 2026) filings, BSE/NSE disclosures, and reported analyst coverage (Business Standard, EquityBulls, Free Press Journal — 30–31 Jul 2026).</div>
+
+  <div class="section-title">🔑 Q1 FY27 Highlights</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card">
+      <div style="font-weight:700;color:var(--sun);margin-bottom:6px">☀️ Sun Pharma — Steady Beat, Mix Shift Continues</div>
+      <div style="font-size:.82rem;line-height:1.75;color:var(--muted)">
+      • India formulations sales +16% YoY — single biggest growth driver<br>
+      • US Formulations $427 Mn (₹4,041.9 Cr), −9.7% YoY — generics erosion (lenalidomide) offsetting specialty growth<br>
+      • Leqselvi crossed 1,000 US prescribers in June; Unloxcyt added to more cancer-centre formularies<br>
+      • Emerging Markets $311 Mn (+4.2%); ROW $218 Mn; API external sales ₹597.2 Cr (+10.5%)<br>
+      • Exceptional charge of ₹204 Cr — mainly Organon &amp; Co. acquisition-related costs (₹167 Cr) plus New Labour Codes impact<br>
+      • FY27 guidance: high single-digit consolidated revenue growth reaffirmed
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;color:var(--torrent);margin-bottom:6px">🩺 Torrent Pharma — Record Revenue, Squeezed PAT</div>
+      <div style="font-size:.82rem;line-height:1.75;color:var(--muted)">
+      • Highest-ever quarterly revenue ₹4,921 Cr on first full-quarter JB Chemicals consolidation<br>
+      • India revenue ₹2,157 Cr, +19% vs IPM growth of 12% — now #1 in IPM cardiac market<br>
+      • Base business (ex-JB) organically strong: revenue +17%, EBITDA +20%, margin 33.3%<br>
+      • Interest cost jumped to ₹305 Cr from ₹56 Cr (+445%); depreciation to ₹593 Cr from ₹201 Cr — acquisition financing swallowed the EBITDA gain<br>
+      • Gx Semaglutide 36% combined market share, though a supply issue will dent sales through August<br>
+      • JB Pharma legal merger completed 8 July 2026 (post quarter-end); D/E eased slightly to 0.78 from 0.81
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">🎯 5 Key Takeaways — Sun Pharma Q1 FY27</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Takeaway</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1</strong></td><td><strong>India, not the US, drove the quarter.</strong> India formulations +16% YoY was the single biggest growth lever, while US Formulations fell 9.7% YoY as generics erosion (lenalidomide, competition) outweighed specialty gains.</td></tr>
+        <tr><td><strong>2</strong></td><td><strong>Reported PAT (+27%) overstates the operating trend.</strong> Adjusted PAT (ex-exceptional items) grew a more modest 3.1% YoY to ₹3,089.4 Cr — closer to the true like-for-like performance than the headline 27% number.</td></tr>
+        <tr><td><strong>3</strong></td><td><strong>EBITDA margin slipped 220 bps to 28.9%</strong>, and the ₹204 Cr exceptional charge (mainly Organon &amp; Co. acquisition costs + New Labour Codes impact) shows integration/regulatory costs are already showing up ahead of any deal completion.</td></tr>
+        <tr><td><strong>4</strong></td><td><strong>Specialty franchise is scaling on schedule.</strong> Leqselvi crossed 1,000 US prescribers in June; Unloxcyt is gaining cancer-centre formulary adds — both tracking toward the $600 Mn+ FY28 innovative-medicines target.</td></tr>
+        <tr><td><strong>5</strong></td><td><strong>US generic tariff risk is real but not immediate.</strong> Zero tariff holds through August 2028; Sun Pharma's own mix-shift away from commodity generics is its biggest natural hedge, though its patented US brands' exposure to the already-live branded-drug tariff remains an open item (no confirmed MFN/onshoring deal reported).</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">🎯 5 Key Takeaways — Torrent Pharma Q1 FY27</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Takeaway</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1</strong></td><td><strong>Record revenue, but the JB Chemicals acquisition — not demand — explains the weak bottom line.</strong> Revenue hit an all-time high ₹4,921 Cr (+55% YoY), yet PAT rose only 3.3% because acquisition-debt interest (+445%) and depreciation (+195%) absorbed nearly the entire EBITDA gain.</td></tr>
+        <tr><td><strong>2</strong></td><td><strong>EPS actually fell YoY</strong> — ₹14.87 vs ₹16.19 — because merger consideration shares issued to JB Chemicals shareholders diluted the share count by ~12%, more than offsetting the modest PAT growth.</td></tr>
+        <tr><td><strong>3</strong></td><td><strong>The base business (ex-JB) is genuinely strong.</strong> Stripped of JB Chemicals, Torrent's own operations grew revenue 17% and EBITDA 20% at a 33.3% margin — the "fall in performance" is a leverage/accounting story, not a franchise problem.</td></tr>
+        <tr><td><strong>4</strong></td><td><strong>India franchise now #1 in cardiac.</strong> India revenue ₹2,157 Cr (+19% vs IPM's 12%) outpaced the market meaningfully, and Gx Semaglutide holds a 36% combined market share despite a supply disruption expected through August.</td></tr>
+        <tr><td><strong>5</strong></td><td><strong>Deleveraging path is defined, not yet delivered.</strong> D/E eased slightly to 0.78 from 0.81, but net debt/EBITDA is guided to peak at ~2.3–2.8x this year; a ₹5,000 Cr QIP and merger synergies (₹300–400 Cr/yr) are the levers to watch toward the &lt;0.5x medium-term target.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">⚠️ Key Themes &amp; Risks — Both Names</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">✅ Tailwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Sun Pharma innovative medicines franchise scaling (Ilumya, Cequa, Winlevi, Leqselvi, Unloxcyt)<br>• Torrent's India branded franchise now India's #1 cardiac player<br>• Two-year zero-tariff grace window (to Aug 2028) on US generics gives both companies time to plan<br>• Torrent base-business margins expanding on operating leverage + JB cost synergies</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">⚠️ Headwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Sun Pharma US generics book still shrinking (lenalidomide erosion, competition)<br>• <strong>Torrent's JB Chemicals acquisition</strong> (₹25,689 Cr deal, debt-funded) is the direct cause of −581 bps PAT margin compression and ~8% EPS decline this quarter — interest cost +445%, depreciation +195%, employee cost +47.6%, all acquisition-related<br>• Semaglutide supply disruption at Torrent through August<br>• US generic-drug tariff clock (0%→100%→200%) now running for the whole sector</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🔭 Watch Factors</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Torrent's net debt/EBITDA trajectory (guided to peak ~2.3–2.8x) and pace of deleveraging<br>• Sun Pharma's Organon-related deal — scope and integration<br>• Whether Indian pharma majors sign US "Most Favored Nation" + onshoring deals to pre-empt tariff risk<br>• India NPPA DPCO pricing amendment (30 June 2026) — domestic pricing overhang</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ COMPANY CARDS ═══════════════ -->
+<div id="tab-cards" class="tab">
+  <div class="grid">
+
+    <!-- Sun Pharma -->
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-name">Sun Pharma</div><div class="card-sub">NSE: SUNPHARMA · Specialty + Generics</div></div>
+        <div style="text-align:right"><span class="tag tag-q1">✓ Q1 FY27</span><br><span class="tag tag-generic" style="margin-top:4px;display:inline-block">Generics+Specialty</span></div>
+      </div>
+      <div class="metrics">
+        <div class="metric metric-green"><div class="metric-val">₹15,300 Cr</div><div class="metric-lbl">Revenue (+10.5% YoY)</div></div>
+        <div class="metric metric-amber"><div class="metric-val">28.9%</div><div class="metric-lbl">EBITDA% (−220 bps YoY)</div></div>
+        <div class="metric metric-green"><div class="metric-val">₹2,895 Cr</div><div class="metric-lbl">PAT (+27% YoY)</div></div>
+      </div>
+      <div class="debt-bar-wrap">
+        <div class="debt-label"><span style="font-size:.75rem;color:var(--muted)">Balance Sheet</span><span style="font-size:.75rem;color:var(--green);font-weight:700">Net Cash ✅</span></div>
+        <div class="debt-bar"><div class="debt-fill debt-low" style="width:10%"></div></div>
+      </div>
+      <div class="usp-row"><strong>Segment mix:</strong> US Formulations $427 Mn / 26.6% of sales (−9.7% YoY, generics-led decline); India Formulations +16% YoY; Emerging Markets $311 Mn (+4.2%, 19.4% share); ROW $218 Mn (13.6% share); API external sales ₹597.2 Cr (+10.5%).</div>
+      <div class="usp-row"><strong>Specialty ramp:</strong> Leqselvi crossed 1,000 US prescribers in June; Unloxcyt gaining cancer-centre formulary adds. R&amp;D ₹826.35 Cr (5.4% of sales), 30% directed to innovative medicines. Exceptional charge ₹204 Cr (Organon &amp; Co. deal costs ₹167 Cr + New Labour Codes ₹37 Cr, net of tax credit).</div>
+      <div class="usp-row"><strong>Watch:</strong> US generic-tariff overhang (see dedicated tab) flagged by management as a medium-term, not immediate, risk. FY27 guidance: high single-digit consolidated revenue growth.</div>
+    </div>
+
+    <!-- Torrent Pharma -->
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-name">Torrent Pharmaceuticals</div><div class="card-sub">NSE: TORNTPHARM · India + Brazil + Germany + US + JB Pharma</div></div>
+        <div style="text-align:right"><span class="tag tag-q1">✓ Q1 FY27</span><br><span class="tag tag-generic" style="margin-top:4px;display:inline-block">Branded Generics</span></div>
+      </div>
+      <div class="metrics">
+        <div class="metric metric-green"><div class="metric-val">₹4,921 Cr</div><div class="metric-lbl">Revenue (+54.9% YoY, incl. JB)</div></div>
+        <div class="metric metric-green"><div class="metric-val">33.8%</div><div class="metric-lbl">Op. EBITDA% (steady)</div></div>
+        <div class="metric metric-amber"><div class="metric-val">₹566 Cr</div><div class="metric-lbl">PAT (+3.3% only — see below)</div></div>
+      </div>
+      <div class="debt-bar-wrap">
+        <div class="debt-label"><span style="font-size:.75rem;color:var(--muted)">Gross Debt / D-E</span><span style="font-size:.75rem;color:var(--red);font-weight:700">D/E 0.78 · Net Debt/EBITDA ~2.3–2.8x 🔴</span></div>
+        <div class="debt-bar"><div class="debt-fill debt-high" style="width:82%"></div></div>
+      </div>
+      <div class="usp-row"><strong>Geography:</strong> India ₹2,157 Cr (+19% vs IPM +12%, now #1 in cardiac); US ₹418 Cr (+36%, incl. one-time opportunities); Brazil ₹277 Cr (+27% reported, +3% constant currency); Germany +3%.</div>
+      <div class="usp-row"><strong>JB Pharma integration:</strong> JB standalone contributed revenue ₹1,201 Cr (+10%) and EBITDA ₹424 Cr (35.3% margin); Torrent base business (ex-JB) grew revenue +17%, EBITDA +20% — the underlying core is healthy. Legal merger completed 8 Jul 2026.</div>
+      <div class="usp-row"><strong>Margin drag:</strong> Interest cost ₹305 Cr (vs ₹56 Cr), depreciation ₹593 Cr (vs ₹201 Cr) — both acquisition-debt effects — consumed nearly all of the 61% EBITDA growth before it reached PAT. Full breakdown in the dedicated tab.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TORRENT DEEP DIVE ═══════════════ -->
+<div id="tab-torrent" class="tab">
+  <div class="section-title">📉 Torrent Pharma — Why PAT Lagged Far Behind Revenue</div>
+  <div class="warn-box"><strong>The paradox in one line:</strong> Revenue grew 55% YoY and EBITDA grew 61% YoY, yet PAT grew only 3.3% and EPS actually <em>fell</em> from ₹16.19 to ₹14.87. This is not a demand problem — it is the financial cost of digesting the ₹25,689 Cr JB Chemicals acquisition landing squarely in this quarter's P&amp;L.</div>
+
+  <div class="section-title">🧾 PBT → PAT Bridge, Q1 FY27 vs Q1 FY26</div>
+  <div class="tbl-wrap">
+    <table class="waterfall-tbl">
+      <thead><tr><th>Line Item</th><th>Q1 FY26</th><th>Q1 FY27</th><th>Change</th><th>Why it moved</th></tr></thead>
+      <tbody>
+        <tr><td>Revenue from Operations</td><td>₹3,178 Cr</td><td>₹4,921 Cr</td><td class="td-green">+54.9%</td><td>JB Chemicals consolidation + 17% organic growth in base business</td></tr>
+        <tr><td>Operating EBITDA</td><td>~₹1,033 Cr</td><td>₹1,664 Cr</td><td class="td-green">+61%</td><td>JB contribution (₹424 Cr) + base-business operating leverage</td></tr>
+        <tr><td>Employee Costs</td><td>₹605 Cr</td><td>₹893 Cr</td><td class="td-red">+47.6%</td><td>JBCPL headcount consolidation + severance provisioning</td></tr>
+        <tr><td>Depreciation &amp; Amortisation</td><td>₹201 Cr</td><td>₹593 Cr</td><td class="td-red">+195%</td><td>Purchase-price-allocation intangibles (brands, tech) created on JB Chemicals consolidation</td></tr>
+        <tr><td>Interest / Finance Cost</td><td>₹56 Cr</td><td>₹305 Cr</td><td class="td-red">+445%</td><td>~₹12,500 Cr bonds + ₹1,500 Cr commercial paper raised to fund the JB Chemicals buyout</td></tr>
+        <tr><td>Exceptional Items</td><td>₹15 Cr (one-off)</td><td>~₹21 Cr</td><td class="td-red">merger-related</td><td>JBCPL merger regulatory/statutory fees, a fire-related inventory write-off at a former JBCPL warehouse, and distribution-restructuring severance</td></tr>
+        <tr><td><strong>Profit Before Tax</strong></td><td><strong>₹738 Cr</strong></td><td><strong>₹733 Cr</strong></td><td class="td-red"><strong>flat / slightly down</strong></td><td><strong>Financing + D&amp;A costs absorbed the entire EBITDA gain</strong></td></tr>
+        <tr><td>Effective Tax Rate</td><td>25.75%</td><td>22.78%</td><td class="td-green">−297 bps</td><td>Partial offset — lower tax rate cushioned the bottom line</td></tr>
+        <tr><td><strong>Net Profit (PAT)</strong></td><td><strong>₹548 Cr</strong></td><td><strong>₹566 Cr</strong></td><td class="td-amber"><strong>+3.3%</strong></td><td><strong>A tax-rate saving is nearly the entire reason PAT grew at all</strong></td></tr>
+        <tr><td>Shares Outstanding (dilution)</td><td>~33.9 Cr</td><td>~38.1 Cr</td><td class="td-red">+~12%</td><td>Merger consideration shares issued to JB Chemicals shareholders</td></tr>
+        <tr><td><strong>EPS</strong></td><td><strong>₹16.19</strong></td><td><strong>₹14.87</strong></td><td class="td-red"><strong>−8.2%</strong></td><td><strong>PAT rose only 3.3% while share count rose ~12% — EPS declined YoY</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);margin-bottom:26px">Note: Q1 FY26 EBITDA/PBT restated on a like-for-like operating basis where required; headline figures per company disclosures and reported analyst commentary (EquityBulls, MarketsMojo, Investing.com transcript — 30–31 Jul 2026). Share-count change is indicative of the dilution effect from JB Chemicals merger consideration shares (100 JBCPL : 51 Torrent shares).</div>
+
+  <div class="section-title">🔍 Seven Reasons Behind the Fall in Per-Share / Bottom-Line Performance</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card" style="border:2px solid var(--red)"><div style="font-weight:700;color:var(--red);margin-bottom:6px">1. The JB Chemicals acquisition itself — the root cause</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">Every other item on this list is a downstream consequence of the ₹25,689 Cr JB Chemicals &amp; Pharmaceuticals deal (46.39% promoter stake for ₹11,917 Cr + 26% mandatory open offer for ₹6,843 Cr + employee stake, funded almost entirely by debt). This is Torrent's largest-ever acquisition, and Q1 FY27 is the first quarter carrying its full financing and accounting weight — merger legally completed 8 Jul 2026, appointed date 21 Jan 2026. The size and structure of the deal is why a 55% revenue jump produced only a 3.3% PAT gain.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">2. Acquisition debt: interest cost up 445%</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">₹56 Cr → ₹305 Cr. Torrent raised ~₹12,500 Cr in short-term bonds and ₹1,500 Cr commercial paper (rated AA+) specifically to fund the JB Chemicals purchase. This is the single largest line-item drag on PAT, and it is a direct, unavoidable cost of how the acquisition was financed.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">3. Acquisition accounting: depreciation nearly tripled</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">₹201 Cr → ₹593 Cr. Purchase price allocation on the JB Chemicals deal created intangible assets (brands, technology, customer relationships) that must now be amortised — a standard but material non-cash effect that exists purely because of the acquisition.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">4. Integration costs: employee cost +47.6%</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">₹605 Cr → ₹893 Cr, from consolidating JBCPL's workforce onto Torrent's books plus one-time severance for restructuring its distribution network — a transitional cost of absorbing the acquired company.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">5. Acquisition-related exceptional items</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">~₹21 Cr of one-off charges tied directly to JB Chemicals: merger regulatory/statutory fees, a fire-related inventory write-off at a former JBCPL warehouse, and severance for restructuring JBCPL's distribution network.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">6. Share dilution from the acquisition — EPS down ~8%</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">Merger consideration shares (100 JBCPL shares : 51 Torrent shares) issued to JB Chemicals shareholders expanded Torrent's share count by roughly 12%, so even the modest PAT gain translated into a per-share <em>decline</em> — the metric investors actually price the stock on.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">7. Silver lining — base business is healthy</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">Strip out JB and Torrent's own business still grew revenue 17% and EBITDA 20% with a 33.3% margin. Management guides net debt/EBITDA (elevated specifically because of the JB Chemicals financing) to peak this year (~2.3–2.8x) and fall toward &lt;0.5x within a couple of years as merger synergies (₹300–400 Cr/yr) and cash flows (~₹2,500 Cr/yr) kick in. A ₹5,000 Cr QIP has been approved as a further deleveraging lever specifically to pay down the acquisition debt.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--amber);margin-bottom:6px">Also worth noting</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">A one-time channel inventory reduction was undertaken in response to trade-channel requests for extended credit periods amid the higher interest-rate environment — a minor secondary drag on reported sell-in, though IQVIA secondary-sales data confirms underlying demand momentum stayed intact. The Gx Semaglutide franchise (36% combined market share) also faces a temporary supply disruption through August.</div></div>
+  </div>
+  <div class="info-box"><strong>Bottom line:</strong> Torrent's Q1 FY27 "fall in performance" is a leverage/accounting story tied to the JB Chemicals acquisition, not a demand or franchise-quality problem — India, Brazil and US all grew, and the base business margin actually expanded. The stock's own reaction bears this out: after an initial muted move, it rallied over 5% as the market looked through the accounting drag to the underlying trend.</div>
+</div>
+
+<!-- ═══════════════ US TARIFF TAB ═══════════════ -->
+<div id="tab-tariff" class="tab">
+  <div class="section-title">🇺🇸 The US Generic-Drug Tariff Announcement — and What It Means for Sun Pharma</div>
+  <div class="red-box"><strong>What was announced:</strong> On 21 July 2026, President Trump posted on Truth Social that imported generic drugs will carry a <strong>0% tariff through 1 August 2026</strong> for a two-year window, after which the rate rises to <strong>100% for one year (from Aug 2028)</strong>, and then to <strong>200% from 2029</strong> — intended to push generic manufacturers to build US plants within the grace period.</div>
+
+  <div class="section-title">🗓️ Full Tariff Timeline on Pharma Imports (as disclosed to date)</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">2 April 2026 — Section 232 order on patented/branded drugs</div>
+      <div class="tl-body">A 100% tariff was placed on imported <strong>patented/branded</strong> pharmaceutical products and APIs. Companies that sign both a Most-Favoured-Nation (MFN) pricing deal with HHS <em>and</em> a US-onshoring deal with Commerce get 0% tariff through 20 Jan 2029; onshoring-only deals get 20%. <strong>Generic drugs, biosimilars and their ingredients were explicitly exempted "at this time," with a note that this would be reassessed within a year.</strong></div>
+    </div>
+    <div class="tl-item tl-red">
+      <div class="tl-date">21–22 July 2026 — The one-year reassessment lands: generic tariff schedule</div>
+      <div class="tl-body">Zero tariff on generics through 1 Aug 2026 (extended two-year window), then 100% from Aug 2028, then 200% from 2029. No detail yet on administration mechanics or whether complex generics/biosimilars are swept in. Nifty Pharma fell ~2% on the news; India supplies roughly 47–50% of all US generic prescriptions and exported ~$10.5 Bn of pharma to the US in FY25 (about a third of India's pharma exports).</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Legal footing</div>
+      <div class="tl-body">Unlike Trump's broader "reciprocal" tariffs (struck down by the US Supreme Court in Feb 2026, which relied on emergency powers), pharma tariffs rest on Section 232 national-security authority — a different, firmer legal basis the Court left untouched.</div>
+    </div>
+  </div>
+
+  <div class="section-title">☀️ How This Maps Onto Sun Pharma's Q1 FY27 US Business</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>US Revenue Bucket</th><th>Q1 FY27</th><th>YoY</th><th>Which tariff regime applies</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Generics (base US business)</strong></td><td>Declining share of $427 Mn total</td><td class="td-red">segment −9.7% overall</td><td>Future <strong>generic-drug tariff</strong> (0% now → 100% Aug 2028 → 200% 2029)</td></tr>
+        <tr><td><strong>Innovative / Specialty (Ilumya, Cequa, Winlevi, Leqselvi, Unloxcyt)</strong></td><td>Growing offset within the same $427 Mn</td><td class="td-green">rising mix, Leqselvi &gt;1,000 prescribers</td><td>Already-live <strong>patented/branded drug tariff</strong> (100%, effective since Apr 2026) unless an MFN + onshoring deal is in place</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">🧭 Sun Pharma's Positioning</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">✅ Structural cushion</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">Sun Pharma has been deliberately shrinking its reliance on commodity US generics for several years — US generics revenue is already declining (−9.7% YoY this quarter) as innovative medicines (targeting $600 Mn+ by FY28) take a larger share of the US mix. A smaller and shrinking generics base mechanically limits future exposure to the new tariff.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🕒 No near-term P&amp;L hit</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">The 0% tariff runs through August 2028 — management has flagged the tariff explicitly as a "medium-term overhang," not a Q1 FY27/FY28 earnings risk. That gives the company roughly two more years of visibility before any generics-tariff cost could bite.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--amber);margin-bottom:6px">🏭 Possible onshoring lever (unconfirmed)</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">Sun Pharma already owns US/Israel/Canada manufacturing through its Taro Pharmaceutical Industries subsidiary — an existing asset base it could, in principle, expand to relocate some US-bound generic production ahead of Aug 2028. No company announcement of a specific onshoring or MFN commitment has been reported to date, so this remains a possibility rather than a confirmed plan.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">⚠️ Unresolved risk on the specialty side</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">Publicly listed MFN-deal signatories to date are large US/EU originators (Lilly, Pfizer, Novo Nordisk, J&amp;J, Merck and others) — no Sun Pharma MFN/onshoring deal has been reported. Its patented US brands (Ilumya, Leqselvi, Winlevi, etc.) could in theory sit inside the <strong>already-live</strong> 100% branded-drug tariff regime absent such a deal — this is a genuine open item to track, not a settled exemption.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">💰 Balance-sheet room</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">With ~₹8,000 Cr net cash, Sun Pharma has materially more room than most Indian peers to fund US capacity investment or absorb near-term cost if the tariff regime hardens — a relative competitive advantage within the sector.</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🏆 Sector positioning</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">Since India supplies roughly half of all US generic prescriptions, a hardened 2028 tariff would pressure the entire sector's cost base broadly and simultaneously — pricing power in the US generics market could shift depending on which companies onshore first and which pass on higher costs.</div></div>
+  </div>
+  <div class="warn-box"><strong>Net read:</strong> Sun Pharma's Q1 FY27 numbers show no tariff impact yet — none is due until August 2028 at the earliest. Its ongoing mix-shift toward specialty/innovative medicines is the single biggest natural hedge against the future generics tariff, while the branded-drug side (already tariffed since April 2026 for non-exempt companies) is the item to watch for any MFN/onshoring announcement. This is analysis of publicly disclosed information, not investment advice — CB Research is not SEBI-registered and does not issue buy/sell/hold recommendations.</div>
+</div>
+
+<!-- ═══════════════ CHARTS ═══════════════ -->
+<div id="tab-charts" class="tab">
+  <div class="section-title">📈 Charts — Q1 FY27</div>
+  <div class="chart-grid">
+    <div class="chart-card"><div class="chart-title">Revenue: Q1 FY27 vs Q1 FY26 (₹ Cr)</div><div class="chart-wrap"><canvas id="revChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">PAT: Q1 FY27 vs Q1 FY26 (₹ Cr)</div><div class="chart-wrap"><canvas id="patChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Torrent: PBT Bridge — What Ate the EBITDA Gain (₹ Cr)</div><div class="chart-wrap"><canvas id="bridgeChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">US Generic Tariff Escalation Path (%)</div><div class="chart-wrap"><canvas id="tariffChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Sun Pharma US Mix: Generics vs Innovative Direction</div><div class="chart-wrap"><canvas id="sunMixChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Torrent: Interest &amp; Depreciation Jump YoY (₹ Cr)</div><div class="chart-wrap"><canvas id="torrentCostChart"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ VERDICT ═══════════════ -->
+<div id="tab-verdict" class="tab">
+  <div class="section-title">🏆 Verdict — Q1 FY27</div>
+  <div class="info-box">
+    <span class="en"><strong>Sun Pharma</strong> delivered a clean quarter — double-digit revenue growth, strong India momentum, and continuing specialty scale-up, with the US generic tariff risk not yet live and structurally cushioned by its own portfolio mix-shift. <strong>Torrent Pharma</strong> delivered record revenue and a genuinely strong operating quarter, but the reported PAT and EPS numbers understate that strength because acquisition-debt interest and depreciation are running through the P&amp;L in full this quarter — a transition cost that should ease as JB Chemicals synergies land and debt is paid down over the next 18–24 months.</span>
+    <span class="ta">Sun Pharma சிறப்பான காலாண்டைக் கொடுத்துள்ளது — இரு இலக்க வருவாய் வளர்ச்சி, இந்திய வணிக வேகம், மற்றும் US generic வரி இன்னும் அமலுக்கு வரவில்லை. Torrent Pharma சாதனை வருவாயைக் கொடுத்தாலும், JB Chemicals கடன் வட்டி மற்றும் தேய்மானச் செலவு இந்தக் காலாண்டில் முழுவதுமாக பதிவாகியுள்ளதால் நிகர லாபம் குறைவாகத் தெரிகிறது — அடுத்த 18-24 மாதங்களில் இது குறையும் என எதிர்பார்க்கப்படுகிறது.</span>
+  </div>
+  <div class="section-title">📊 Analyst Consensus Views</div>
+  <div class="analyst-grid">
+    <div class="analyst-card"><div class="analyst-name">Sun Pharma</div><span class="analyst-rec rec-buy">BUY (Street consensus)</span><div class="analyst-tp">Avg TP: ₹2,050–2,200</div><div class="analyst-note">Specialty ramp (Ilumya, Leqselvi) = re-rating catalyst. Net cash + dividend = safety cushion against US tariff uncertainty. Watch: Organon deal integration, US generic tariff developments toward 2028.</div></div>
+    <div class="analyst-card"><div class="analyst-name">Torrent Pharma</div><span class="analyst-rec rec-hold">HOLD (Street consensus)</span><div class="analyst-tp">Avg TP: ₹3,400–3,600 (pre-Q1 FY27 print)</div><div class="analyst-note">Hold until leverage visibly declines and JB Chemicals synergies show up below the EBITDA line. Best-in-class India branded franchise; base business momentum is genuinely strong.</div></div>
+  </div>
+  <div class="warn-box"><strong>⚠️ Disclaimer:</strong> This analysis is for educational purposes only and is based on publicly reported Q1 FY27 company disclosures and press coverage. It is not financial advice. CB Research is not SEBI-registered — consult a SEBI-registered advisor before investing.</div>
+</div>
+
+<!-- ═══════════════ CB ASSIST ═══════════════ -->
+<div id="tab-qa" class="tab">
+  <div class="section-title">🤖 CB Assist — Q1 FY27 Q&amp;A</div>
+  <div class="info-box">Tap a question, or read through the highlights above. Bilingual EN/TA content available via the language toggle at the top.</div>
+  <div id="qaAcc"></div>
+</div>
+
+<script>
+const qaData=[
+  {q:"Why did Sun Pharma's PAT grow 27% but revenue only 10.5%?",a:"Reported PAT growth (27%) looks stronger than the underlying trend because the prior-year (Q1 FY26) base included its own one-off items. On an adjusted basis (excluding exceptional items in both years), PAT grew a more modest 3.1% YoY to ₹3,089.4 Cr — closer to the revenue growth rate. The reported number is the accounting-correct YoY comparison; the adjusted number is the better like-for-like operating comparison."},
+  {q:"Why did Torrent's revenue jump 55% but PAT only 3.3%?",a:"The 55% revenue jump reflects JB Chemicals' full first-quarter consolidation into Torrent's books. PAT barely moved because the interest cost on the acquisition debt (+445% YoY to ₹305 Cr) and depreciation on acquisition-related intangibles (+195% YoY to ₹593 Cr) absorbed almost the entire 61% EBITDA gain before it reached the bottom line. See the 'Torrent — Why PAT Lagged' tab for the full bridge."},
+  {q:"Is the US tariff already hurting Sun Pharma's results?",a:"No — not yet. The new generic-drug tariff schedule announced 21 July 2026 keeps a 0% rate through August 2028. Sun Pharma's management has described it as a medium-term overhang to monitor, not a current earnings risk."},
+  {q:"What's Sun Pharma's biggest natural hedge against the tariff?",a:"Its own multi-year strategic shift away from commodity US generics toward innovative/specialty medicines (Ilumya, Cequa, Winlevi, Leqselvi, Unloxcyt). US generics revenue is already shrinking (−9.7% YoY this quarter), which mechanically reduces the base exposed to the future generic tariff."},
+  {q:"Is Torrent's underlying business actually weak?",a:"No. Strip out JB Chemicals and Torrent's own base business grew revenue 17% and EBITDA 20% with a 33.3% margin — genuinely strong. The weak PAT/EPS optics are a leverage and acquisition-accounting effect, not a demand problem."},
+  {q:"What is Torrent's debt position after the JB Chemicals deal?",a:"Debt/Equity stood at 0.78 as of June 2026 (slightly better than 0.81 in March 2026). Net debt/EBITDA is guided to peak around 2.3–2.8x this year, with management targeting below 0.5x within a couple of years, aided by a ₹5,000 Cr QIP and merger synergies."},
+  {q:"What happened to the generic-drug tariff timeline exactly?",a:"21 July 2026: 0% tariff on generics continues through 1 August 2026 for a two-year window; then 100% from August 2028 for one year; then 200% from 2029. This followed an earlier 2 April 2026 order that put a 100% tariff on patented/branded drugs (with MFN + onshoring exemptions) while explicitly leaving generics untaxed 'for now,' pending a one-year review — the July announcement is that review."}
+];
+function buildQA(){
+  const acc=document.getElementById('qaAcc');
+  qaData.forEach((item,i)=>{
+    const d=document.createElement('div');d.className='qa-item';
+    d.innerHTML=`<div class="qa-q" onclick="this.nextElementSibling.classList.toggle('open')"><span>${item.q}</span><span>▾</span></div><div class="qa-a">${item.a}</div>`;
+    acc.appendChild(d);
+  });
+}
+buildQA();
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('tab-'+name);
+  if(el) el.classList.add('active');
+  btn.classList.add('active');
+  if(name==='charts') initCharts();
+}
+function setLang(lang,btn){
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  lang==='ta'?document.body.classList.add('tm'):document.body.classList.remove('tm');
+}
+
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;chartsInit=true;
+  const def={plugins:{legend:{display:true}},responsive:true,maintainAspectRatio:false};
+
+  new Chart(document.getElementById('revChart'),{type:'bar',data:{labels:['Sun Pharma','Torrent'],datasets:[
+    {label:'Q1 FY26',data:[13851,3178],backgroundColor:'rgba(100,116,139,0.6)',borderRadius:4},
+    {label:'Q1 FY27',data:[15300,4921],backgroundColor:'rgba(3,105,161,0.85)',borderRadius:4}
+  ]},options:{...def,scales:{y:{title:{display:true,text:'₹ Crore'}}}}});
+
+  new Chart(document.getElementById('patChart'),{type:'bar',data:{labels:['Sun Pharma','Torrent'],datasets:[
+    {label:'Q1 FY26',data:[2279,548],backgroundColor:'rgba(100,116,139,0.6)',borderRadius:4},
+    {label:'Q1 FY27',data:[2895,566],backgroundColor:'rgba(22,163,74,0.85)',borderRadius:4}
+  ]},options:{...def,scales:{y:{title:{display:true,text:'₹ Crore'}}}}});
+
+  new Chart(document.getElementById('bridgeChart'),{type:'bar',data:{labels:['EBITDA Growth','Employee Cost ↑','Depreciation ↑','Interest Cost ↑','Net PBT Change'],datasets:[{
+    data:[631,-288,-392,-249,-5],
+    backgroundColor:['rgba(22,163,74,0.85)','rgba(220,38,38,0.75)','rgba(220,38,38,0.85)','rgba(220,38,38,0.95)','rgba(217,119,6,0.85)'],borderRadius:4
+  }]},options:{...def,plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:'₹ Crore YoY change'}}}}});
+
+  new Chart(document.getElementById('tariffChart'),{type:'line',data:{labels:['Aug 2026','2027','Aug 2028','2029'],datasets:[{
+    label:'Generic Drug Tariff Rate (%)',data:[0,0,100,200],borderColor:'#dc2626',backgroundColor:'rgba(220,38,38,.15)',fill:true,tension:0,pointRadius:5,pointBackgroundColor:'#dc2626'
+  }]},options:{...def,scales:{y:{min:0,max:220,title:{display:true,text:'Tariff %'}}}}});
+
+  new Chart(document.getElementById('sunMixChart'),{type:'bar',data:{labels:['US Generics (declining)','Innovative/Specialty (growing)'],datasets:[{
+    data:[100,100],backgroundColor:['rgba(220,38,38,0.7)','rgba(22,163,74,0.7)'],borderRadius:4
+  }]},options:{...def,plugins:{legend:{display:false},tooltip:{callbacks:{label:()=>'Directional trend within $427 Mn US sales — see Tariff tab for detail'}}},indexAxis:'y',scales:{x:{display:false}}}});
+
+  new Chart(document.getElementById('torrentCostChart'),{type:'bar',data:{labels:['Interest Cost','Depreciation'],datasets:[
+    {label:'Q1 FY26',data:[56,201],backgroundColor:'rgba(100,116,139,0.6)',borderRadius:4},
+    {label:'Q1 FY27',data:[305,593],backgroundColor:'rgba(220,38,38,0.85)',borderRadius:4}
+  ]},options:{...def,scales:{y:{title:{display:true,text:'₹ Crore'}}}}});
+}
+</script>
+</body>
+</html>

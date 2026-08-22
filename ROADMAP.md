@@ -3,7 +3,7 @@
 Status and remaining work for `sector-financial-analysis`. Read this before starting a new phase; it
 carries an audit of `reports/published/` that is expensive to re-derive.
 
-**Goal**: every report type in the 98-report collection reproducible by the skill, so the analytical work
+**Goal**: every report type in the 126-report collection reproducible by the skill, so the analytical work
 in those reports isn't stranded in static HTML.
 
 ---
@@ -13,14 +13,14 @@ in those reports isn't stranded in static HTML.
 | | |
 |---|---|
 | **Architecture** | ✅ Complete — router, 15 modes, 3 shared references, template |
-| **Sectors built** | ✅ **all 15** — every sector family in the corpus — 91 reports |
+| **Sectors built** | ✅ **16** — all 15 original families plus `new-age` (quick commerce, food delivery, marketplaces) |
 | **Sectors remaining** | **none** — the build is complete |
 
-**The 98 reports break down as:** 91 belong to the 15 sector families (**all 91 covered**), and 7
+**The 126 reports break down as:** 118 belong to the 16 sector families (**all covered**), and 5
 are cross-sector — handled by the cross-sector *scope* rather than a sector file. **2 of those 7 are the
-market-news digests** (`Market_breaking_news_*`), deliberately excluded: a headline roundup is journalism,
-not company evaluation. That leaves 5 genuine cross-sector reports (the rankers and multi-sector
-dashboards).
+market-news digests** (`Market_breaking_news_*`), plus a macro/thematic piece and the site glossary —
+all deliberately excluded: a headline roundup or a currency-and-oil essay is journalism, not company
+evaluation. That leaves 5 genuine cross-sector reports (the rankers and multi-sector dashboards).
 
 Insurance and banking were built together deliberately: their metrics share nothing (VNB / Combined Ratio
 vs NIM / GNPA / CASA), so serving both on unmodified mode files proved the abstraction before it was
@@ -29,7 +29,7 @@ and hospitals, needed **zero mode-file changes**.
 
 ## Sector inventory
 
-Derived by auditing all 98 reports. Report counts drive build order — biggest first.
+Derived by auditing all 126 reports. Report counts drive build order — biggest first.
 
 | Sector | Reports | Status | Notes |
 |---|---|---|---|
@@ -48,6 +48,7 @@ Derived by auditing all 98 reports. Report counts drive build order — biggest 
 | **infra-realty** | 3 | ✅ **Done** | real estate, ports, **REITs/InvITs** |
 | **cement** | 2 | ✅ **Done** | |
 | **telecom** | 1 | ✅ **Done** | |
+| **new-age** | 3 | ✅ **Done** | quick commerce, food delivery, marketplaces — **pre-profit platforms, not judged on PAT** |
 
 **Two sectors contain non-operating asset classes** needing explicit treatment, not exclusion:
 `capital-markets` covers mutual funds (AUM, NAV, active share, expense ratio — `edelweiss_ipo_fund_analysis`),
@@ -60,6 +61,8 @@ Their sector files must say plainly that these are analysed as funds/trusts, not
 - **Phase 2** ✅ — consumer (13), capital-goods (10), power-energy (10), pharma-health (9) → 42 reports
 - **Phase 3** ✅ — auto (7), capital-markets (6), it-services (6), nbfc-hfc (5) → 24 reports
 - **Phase 4** ✅ — chemicals (5), metals (4), infra-realty (3), cement (2), telecom (1) → 15 reports
+- **Phase 5** ✅ — corpus refresh to 126 reports; `new-age` added as the 16th sector; RoNW and an IPO
+  block added to `event-impact`; 16 recurring CSS classes defined
 
 Each phase re-runs the full validation suite in [AGENTS.md](AGENTS.md).
 
@@ -67,7 +70,7 @@ Each phase re-runs the full validation suite in [AGENTS.md](AGENTS.md).
 
 ## The one thing the checks cannot verify
 
-`scripts/verify_skill.py` confirms the skill's content and rules are present and correct — 49 checks.
+`scripts/verify_skill.py` confirms the skill's content and rules are present and correct — 50 checks.
 It cannot confirm the router **triggers unprompted**, because any session that authored the files has
 them in context whether the skill loads or not.
 
@@ -105,12 +108,13 @@ Extend `SECTOR_KEYWORDS` in the script whenever a sector is added.
 
 ## How to add a sector
 
-**All fifteen sector families in the corpus are built, and none required a mode-file change.** They span
+**All sixteen sector families in the corpus are built, and none required a mode-file change.** They span
 insurers, banks, NBFCs, exchanges, hotels, order-book manufacturers, refiners, hospitals, IT services,
 vehicle makers, steel mills, cement plants, chemical producers, property developers and telcos — on the
-same fifteen unmodified mode files. That is the strongest available evidence the abstraction holds.
+same fifteen unmodified mode files — including `new-age`, added after the corpus refresh. That is the
+strongest available evidence the abstraction holds.
 
-The instructions below apply to a **sixteenth** sector, if the corpus ever grows beyond these families
+The instructions below apply to a **seventeenth** sector, if the corpus grows beyond these families
 (aviation, shipping, media and healthcare-adjacent services are the plausible candidates).
 
 ### Which existing file to copy from

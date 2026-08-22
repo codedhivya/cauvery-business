@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divi's Laboratories — Q1 FY27 Investment Analysis Dashboard · CBF26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f4f8; --card: #ffffff; --card2: #f8fafc;
+    --border: #e2e8f0; --accent: #0369a1; --green: #16a34a;
+    --amber: #d97706; --red: #dc2626; --purple: #7c3aed;
+    --text: #0f172a; --muted: #64748b; --light: #e0f2fe;
+    --cdmo: #0891b2; --ncdmo: #7c3aed; --brand-orange:#FF6A00;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 60%,#0891b2 100%);color:#fff;padding:28px 32px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+  .header h1{font-size:1.7rem;font-weight:700;letter-spacing:-.3px}
+  .header p{opacity:.85;margin-top:4px;font-size:.88rem}
+  .badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+  .b-q1{background:rgba(22,163,74,.3);color:#bbf7d0}
+  .b-q4{background:rgba(217,119,6,.3);color:#fde68a}
+  .b-est{background:rgba(99,102,241,.3);color:#c7d2fe}
+  nav{background:#fff;border-bottom:2px solid var(--border);display:flex;gap:0;overflow-x:auto;position:sticky;top:88px;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+  nav button{padding:13px 18px;border:none;background:none;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);background:#f0f9ff}
+  nav button:hover:not(.active){color:var(--text);background:var(--bg)}
+  .tab{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+  .tab.active{display:block}
+  .section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-bottom:28px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .2s,transform .15s}
+  .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .tag{padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700}
+  .tag-cdmo{background:#cffafe;color:#0e7490}
+  .tag-q1{background:#dcfce7;color:#166534}
+  .cbr{padding:2px 9px;border-radius:10px;font-size:.72rem;font-weight:800;white-space:nowrap;letter-spacing:.2px}
+  .cbr-a{background:#dcfce7;color:#166534}
+  .cbr-b{background:#cffafe;color:#0e7490}
+  .cbr-c{background:#fef9c3;color:#854d0e}
+  .cbr-d{background:#ffedd5;color:#9a3412}
+  .cbr-e{background:#fee2e2;color:#991b1b}
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .metric{background:var(--card2);border-radius:8px;padding:10px 10px;text-align:center}
+  .metric-val{font-size:1.05rem;font-weight:700;color:var(--accent)}
+  .metric-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+  .metric-green .metric-val{color:var(--green)}
+  .metric-amber .metric-val{color:var(--amber)}
+  .metric-red .metric-val{color:var(--red)}
+  .usp-row{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .usp-row strong{color:var(--text)}
+  .debt-bar-wrap{margin-top:8px}
+  .debt-label{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px}
+  .debt-bar{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+  .debt-fill{height:100%;border-radius:3px;transition:width .8s ease}
+  .debt-low{background:var(--green)}
+  .debt-mid{background:var(--amber)}
+  .debt-high{background:var(--red)}
+  .cdmo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+  @media(max-width:700px){.cdmo-grid{grid-template-columns:1fr}}
+  .cdmo-box{background:var(--card);border-radius:12px;border:2px solid;padding:18px}
+  .cdmo-box.cdmo-col{border-color:var(--cdmo)}
+  .cdmo-box.ncdmo-col{border-color:var(--ncdmo)}
+  .cdmo-head{font-size:1rem;font-weight:700;margin-bottom:4px}
+  .cdmo-head.cdmo-t{color:var(--cdmo)}
+  .cdmo-head.ncdmo-t{color:var(--ncdmo)}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:22px;margin-bottom:28px}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .chart-title{font-size:.9rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+  .chart-wrap{position:relative;height:280px}
+  .tbl-wrap{overflow-x:auto;margin-bottom:28px}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  thead tr{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff}
+  th{padding:11px 12px;text-align:left;font-size:.78rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+  th:hover{background:rgba(255,255,255,.15)}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#f8fafc}
+  tr:hover td{background:#f0f9ff}
+  .sort-icon{opacity:.6;font-size:.7rem;margin-left:4px}
+  .td-green{color:var(--green);font-weight:700}
+  .td-red{color:var(--red);font-weight:700}
+  .td-amber{color:var(--amber);font-weight:700}
+  .score-wrap{margin:8px 0}
+  .score-row{display:grid;grid-template-columns:150px 1fr 46px;gap:6px;align-items:center;margin-bottom:7px}
+  .score-lbl{font-size:.75rem;color:var(--muted);text-align:right}
+  .score-bg{background:#e2e8f0;border-radius:4px;height:9px;overflow:hidden}
+  .score-bar{height:100%;border-radius:4px;width:0;transition:width 1s ease}
+  .score-val{font-size:.75rem;font-weight:700;color:var(--text)}
+  .analyst-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .analyst-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .analyst-name{font-weight:700;font-size:.9rem;margin-bottom:6px}
+  .analyst-rec{padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;display:inline-block;margin-bottom:6px}
+  .rec-buy{background:#dcfce7;color:#166534}
+  .rec-hold{background:#fef9c3;color:#854d0e}
+  .rec-sell{background:#fee2e2;color:#991b1b}
+  .analyst-tp{font-size:.8rem;color:var(--muted)}
+  .analyst-note{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.5}
+  .info-box{background:var(--light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .warn-box{background:#fffbeb;border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  @media(max-width:600px){
+    .header h1{font-size:1.2rem}
+    .metrics{grid-template-columns:1fr 1fr}
+    .chart-grid{grid-template-columns:1fr}
+    nav button{padding:10px 12px;font-size:.78rem}
+    .tab{padding:16px 14px}
+  }
+  .val-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:28px}
+  .val-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .val-name{font-weight:700;font-size:.88rem;margin-bottom:8px;color:var(--text)}
+  .val-row{display:flex;justify-content:space-between;font-size:.78rem;padding:3px 0;border-bottom:1px solid #f1f5f9}
+  .val-row:last-child{border-bottom:none}
+  .val-lbl{color:var(--muted)}
+  .val-num{font-weight:700}
+  .swot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  @media(max-width:600px){.swot-wrap{grid-template-columns:1fr}}
+  .swot-box{border-radius:8px;padding:14px;font-size:.8rem;line-height:1.7}
+  .swot-s{background:#dcfce7;border-left:4px solid var(--green)}
+  .swot-w{background:#fee2e2;border-left:4px solid var(--red)}
+  .swot-o{background:#dbeafe;border-left:4px solid var(--accent)}
+  .swot-t{background:#fef9c3;border-left:4px solid var(--amber)}
+  .swot-head{font-weight:700;margin-bottom:6px;font-size:.85rem}
+  .swot-s .swot-head{color:var(--green)}
+  .swot-w .swot-head{color:var(--red)}
+  .swot-o .swot-head{color:var(--accent)}
+  .swot-t .swot-head{color:var(--amber)}
+  .qa-item{border:1px solid var(--border);border-radius:8px;margin-bottom:7px;overflow:hidden}
+  .qa-q{background:#f8fafc;padding:10px 14px;cursor:pointer;font-size:.81rem;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+  .qa-q:hover{background:#e0f2fe}
+  .qa-a{display:none;padding:10px 14px;font-size:.79rem;color:var(--muted);line-height:1.65;border-top:1px solid var(--border)}
+  .qa-a.open{display:block}
+  .qa-chat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:22px}
+  .qa-chat-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .qa-inp{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.8rem;outline:none}
+  .qa-inp:focus{border-color:var(--accent)}
+  .qa-btn{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700}
+  .qa-resp{padding:12px;background:#f8fafc;border-radius:8px;font-size:.79rem;line-height:1.7;display:none;margin-top:6px}
+  .cb-logo{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .cb-logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#fff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#0369a1;letter-spacing:-.5px;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+  .cb-logo-text{font-size:.78rem;line-height:1.35;color:rgba(255,255,255,.9)}
+  .cb-logo-text strong{font-size:.88rem;color:#fff;display:block;letter-spacing:.3px}
+  .cb-watermark{position:fixed;bottom:18px;right:18px;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:7px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.18);border-radius:30px;padding:5px 12px 5px 8px;backdrop-filter:blur(4px)}
+  .cb-watermark-icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0369a1,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+  .cb-watermark-text{font-size:.68rem;color:var(--muted);font-weight:600;white-space:nowrap}
+  .cb-watermark-text span{color:var(--accent)}
+  .lang-bar{background:#fff;border-bottom:1px solid var(--border);padding:6px 28px;display:flex;align-items:center;gap:10px;font-size:.79rem;color:var(--muted)}
+  .lbtn{padding:3px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;background:#fff;color:var(--muted)}
+  .lbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .en{display:block}.ta{display:none}
+  body.tm .en{display:none}body.tm .ta{display:block}
+  .champion{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #f59e0b;border-radius:14px;padding:22px;margin-bottom:28px}
+  .champion h2{font-size:1.15rem;font-weight:900;text-align:center;color:#92400e;margin:8px 0 14px}
+  .champion p{font-size:.85rem;line-height:1.85;color:var(--text)}
+  .proj-card{background:#fff;border:2px solid var(--cdmo);border-radius:12px;padding:18px;margin-bottom:16px}
+  .proj-head{font-weight:700;font-size:.95rem;color:var(--cdmo);margin-bottom:10px}
+  .proj-body{font-size:.81rem;color:var(--muted);line-height:1.75}
+  .proj-body strong{color:var(--text)}
+  .moat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:28px}
+  .moat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .moat-name{font-weight:700;margin-bottom:5px;font-size:.9rem}
+  .moat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;margin-bottom:6px;background:#dbeafe;color:#1e40af}
+  .moat-pts{font-size:.77rem;color:var(--muted);line-height:1.75}
+  .segbar-wrap{margin:14px 0}
+  .timeline{position:relative;margin:20px 0;padding-left:28px;border-left:3px solid var(--cdmo)}
+  .tl-item{position:relative;margin-bottom:22px;padding-left:16px}
+  .tl-item::before{content:'';position:absolute;left:-35px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--cdmo);border:3px solid #fff;box-shadow:0 0 0 2px var(--cdmo)}
+  .tl-year{font-weight:800;font-size:.95rem;color:var(--cdmo);margin-bottom:3px}
+  .tl-text{font-size:.83rem;color:var(--muted);line-height:1.7}
+  .tl-text strong{color:var(--text)}
+  .founder-card{background:linear-gradient(135deg,#fff,#f0f9ff);border:2px solid var(--cdmo);border-radius:14px;padding:20px;margin-bottom:24px}
+  .unique-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .unique-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;border-top:3px solid var(--ncdmo)}
+  .unique-num{font-size:1.3rem;font-weight:900;color:var(--ncdmo);margin-bottom:4px}
+  .unique-name{font-weight:700;font-size:.88rem;margin-bottom:5px}
+  .unique-pts{font-size:.78rem;color:var(--muted);line-height:1.7}
+  .segbar{display:flex;height:34px;border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--border)}
+  .segbar-cs{background:var(--cdmo);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem}
+  .segbar-api{background:var(--ncdmo);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧪 Divi's Laboratories — Q1 FY27 Investment Analysis Dashboard</h1>
+  <p>NSE: DIVISLAB · BSE: 532454 · API + Custom Synthesis (CDMO) Leader · Quarter Ended 30 June 2026</p>
+  <div class="badge-row">
+    <span class="badge b-q1">✓ Q1 FY27 Actuals (Consolidated + Standalone)</span>
+    <span class="badge b-q4">★ 5-Quarter Trend incl. FY26 Annual</span>
+    <span class="badge b-est">⭐ CBF26 Earnings Rating</span>
+    <span style="background:rgba(255,255,255,.15);color:#e0f2fe;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600">Results declared: 1 Aug 2026</span>
+  </div>
+  <div class="cb-logo">
+    <div class="cb-logo-mark">CB</div>
+    <div class="cb-logo-text"><strong>CB Research</strong>Q1 FY27 Company Deep-Dive · Cauvery Business Research</div>
+  </div>
+</div>
+
+<div class="cb-watermark">
+  <div class="cb-watermark-icon">CB</div>
+  <div class="cb-watermark-text"><span>CB Research</span> · Divi's Labs Q1 FY27 · CBF26</div>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="switchTab('overview',this)">📊 Overview</button>
+  <button onclick="switchTab('segments',this)">🔬 Segments</button>
+  <button onclick="switchTab('financials',this)">📄 Financials</button>
+  <button onclick="switchTab('valuations',this)">💰 Valuations</button>
+  <button onclick="switchTab('moats',this)">🏰 Moats &amp; USPs</button>
+  <button onclick="switchTab('history',this)">🕰️ History</button>
+  <button onclick="switchTab('projects',this)">🔭 Projects &amp; Capex</button>
+  <button onclick="switchTab('swot',this)">📋 SWOT</button>
+  <button onclick="switchTab('verdict',this)">🏆 Verdict</button>
+  <button onclick="switchTab('qa',this)">🤖 CB Assist</button>
+  <button onclick="switchTab('charts',this)">📈 Charts</button>
+  <button onclick="switchTab('table',this)">📋 Data Table</button>
+</nav>
+<div class="lang-bar">
+  🌐 Language / மொழி:
+  <button class="lbtn on" onclick="setLang('en',this)">English</button>
+  <button class="lbtn" onclick="setLang('ta',this)">தமிழ்</button>
+</div>
+
+<!-- ═══ OVERVIEW ═══ -->
+<div id="tab-overview" class="tab active">
+  <div class="info-box">
+    <span class="en"><strong>Vanakam — Q1 FY27 Snapshot:</strong> Divi's Laboratories delivered a standout quarter ended 30 June 2026. <strong>Consolidated revenue from operations</strong> rose 27.8% YoY to ₹3,080 Cr (+8.8% QoQ from ₹2,831 Cr in Q4 FY26); <strong>consolidated PAT</strong> surged 65.5% YoY to ₹902 Cr (+20.1% QoQ); <strong>EBITDA margin</strong> expanded a dramatic 1,050 bps YoY to 40.75% — the highest in the company's recent history and best-in-class across Indian pharma/API peers. On a standalone basis, total income was ₹3,037 Cr and PAT ₹891 Cr. The board also approved two Senior Management Personnel appointments (B. Vara Prasad, J. Srinivasa Rao) effective 1 Aug 2026, alongside the retirement of two long-serving VPs. The stock closed at a 52-week high of ₹8,056.65 on 31 July 2026 (day before results), pushing market cap past ₹2.1 lakh Cr.</span>
+    <span class="ta">வணக்கம் — Q1 FY27 சுருக்கம்: ஜூன் 30, 2026 முடிவடைந்த காலாண்டில் Divi's Laboratories சிறப்பான செயல்திறனை பதிவு செய்துள்ளது. ஒருங்கிணைந்த வருவாய் ஆண்டுக்கு ஆண்டு 27.8% உயர்ந்து ₹3,080 கோடியாக உள்ளது; நிகர லாபம் 65.5% உயர்ந்து ₹902 கோடி; EBITDA விளிம்பு 40.75% ஆக உயர்ந்துள்ளது — இந்திய மருந்துத் துறையில் சிறந்தது.</span>
+  </div>
+
+  <div class="section-title">📌 Q1 FY27 KPIs at a Glance</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:28px">
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹3,080 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Revenue (+27.8% YoY · +8.8% QoQ)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">40.75%</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">EBITDA Margin (+1,050 bps YoY)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹902 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">PAT (+65.5% YoY · +20.1% QoQ)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--accent)">₹1,180 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">PBT (+61.0% YoY)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">Zero Debt</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Standalone, as of 31 Mar 2026</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--purple)">~₹2.14L Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Market Cap (2nd largest India pharma)</div>
+    </div>
+  </div>
+
+  <div class="section-title">⚠️ Key Themes &amp; Risks — Q1 FY27</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">✅ Tailwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Custom synthesis mix rose to ~60% of Q1 revenue (from 55-57% in Q3/Q4 FY26) — sticky, contract-backed<br>• USD/INR at ~96.6 (late Jul-26) vs Q1 FY26 average ~85.5-86.0 — a ~12-13% mechanical currency tailwind on export revenue<br>• Three dedicated custom synthesis capex projects (~₹2,000 Cr) now ~70% complete<br>• Zero standalone debt — fully self-funded capacity expansion<br>• China+1 supply-chain diversification continues to favour Indian CDMO/API players</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">⚠️ Headwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Management flagged the 40.75% margin as partly quarter-specific — full-year gross margin is guided around ~60% vs. ~68% seen in Q1, implying normalisation ahead<br>• Prior formal FY27 EBITDA margin guidance was a more modest 32-32.5% — Q1 print is well above that run-rate<br>• Generic API pricing pressure has persisted for 6+ quarters with no clear structural inflection<br>• Raw material cost inflation risk in spot-market geographies (South America, Asia)<br>• Trailing 5-year revenue CAGR of only ~8.7% (per Screener) — a reminder that growth has been lumpy historically</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🔭 Watch Factors</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• US generic-drug tariff overhang: Divi's has an estimated ~2-year tariff-free runway per ICICI Securities, and Europe (not the US) is its largest export market — more insulated than pure finished-formulation exporters<br>• Peptide/GLP-1 building-block ramp and Kakinada Unit-3 commercialisation progress<br>• Stock is trading above most brokerage 12-month targets post-rally — execution and FY27 guidance credibility now matter more than the headline beat<br>• FDA/regulatory inspection outcomes at Kakinada and peptide facilities expected over the next 1-2 years</div></div>
+  </div>
+  <div class="warn-box"><strong>House note:</strong> CB Research is not SEBI-registered and does not issue buy/sell/hold recommendations. This dashboard is for educational analysis only.</div>
+</div>
+
+<!-- ═══ SEGMENTS ═══ -->
+<div id="tab-segments" class="tab">
+  <div class="info-box">
+    <strong>Business mix:</strong> Divi's operates two broad revenue streams — <strong>Custom Synthesis (CDMO)</strong>, contract manufacturing of APIs/intermediates for global innovator pharma companies under long-term agreements, and <strong>Generic API + Nutraceuticals</strong>, where Divi's sells its own portfolio of off-patent APIs (it is the world's largest producer of select molecules such as Naproxen and Dextromethorphan) plus carotenoid/vitamin nutraceutical ingredients.
+  </div>
+
+  <div class="section-title">🔬 Q1 FY27 Revenue Mix</div>
+  <div class="segbar-wrap">
+    <div class="segbar">
+      <div class="segbar-cs" style="width:60%">Custom Synthesis (CDMO) ~60%</div>
+      <div class="segbar-api" style="width:40%">Generic API + Nutraceuticals ~40%</div>
+    </div>
+  </div>
+  <div class="cdmo-grid">
+    <div class="cdmo-box cdmo-col">
+      <div class="cdmo-head cdmo-t">Custom Synthesis (CDMO)</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Contract manufacturing for global innovator pharma under long-term supply agreements — sticky, IP-light, less price-competitive than generics</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+        <strong style="color:var(--text)">Mix trend:</strong> ~51% (Q4 FY25) → 55-57% (Q3/Q4 FY26) → ~60% (Q1 FY27)<br>
+        <strong style="color:var(--text)">Drivers:</strong> Three dedicated capex projects (~₹2,000 Cr, ~70% complete) coming onstream; peptide/GLP-1 building blocks; backward integration<br>
+        <strong style="color:var(--text)">Nature:</strong> 2-year typical cycle from capex deployment to revenue recognition, tied to customer validation + regulatory approval
+      </div>
+    </div>
+    <div class="cdmo-box ncdmo-col">
+      <div class="cdmo-head ncdmo-t">Generic API + Nutraceuticals</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Own-account API sales into regulated + emerging markets, plus carotenoid/vitamin nutraceutical ingredients (astaxanthin, beta-carotene, lycopene, canthaxanthin)</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+        <strong style="color:var(--text)">Position:</strong> World's largest producer of select generic APIs (Naproxen, Dextromethorphan); leading global nutraceutical ingredient maker<br>
+        <strong style="color:var(--text)">Pressure:</strong> Multi-year generic API pricing pressure persists; ~80% capacity utilisation through FY26<br>
+        <strong style="color:var(--text)">Capacity utilization</strong> has been broadly steady, with the mix shift toward CDMO doing the heavy lifting on margin expansion
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">💰 Cost Structure — Consolidated (₹ Cr)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Line Item</th><th>Q1 FY27</th><th>Q1 FY26</th><th>Q4 FY26</th><th>YoY Δ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Total Consolidated Expenses</strong></td><td>1,964</td><td>1,796</td><td>2,023</td><td class="td-amber">+9.4%</td></tr>
+        <tr><td>Cost of Materials Consumed</td><td>1,503</td><td>1,010</td><td>—</td><td class="td-red">+48.8%</td></tr>
+        <tr><td>Change in Inventories (FG/WIP)</td><td>-517</td><td>-54</td><td>—</td><td>Large build-up</td></tr>
+        <tr><td>Employee Benefits Expense</td><td>408</td><td>340</td><td>—</td><td class="td-amber">+20.0%</td></tr>
+        <tr><td>Depreciation &amp; Amortisation</td><td>133</td><td>112</td><td>—</td><td class="td-amber">+18.8%</td></tr>
+        <tr><td>Finance Costs</td><td>6</td><td>—</td><td>—</td><td class="td-green">Minimal — zero debt</td></tr>
+        <tr><td>Other Expenses</td><td>431</td><td>385</td><td>—</td><td class="td-amber">+11.9%</td></tr>
+        <tr><td>Forex Impact</td><td class="td-red">Loss ₹7 Cr</td><td class="td-green">Gain ₹39 Cr</td><td>—</td><td>Swing of ₹46 Cr</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn-box"><strong>Reading the inventory swing:</strong> The sharp change-in-inventories line (-₹517 Cr vs -₹54 Cr in Q1 FY26) reflects a large build-up of finished/WIP goods rather than a cash cost — a normal feature of custom synthesis order execution, but worth tracking next quarter for whether it converts cleanly to billed revenue.</div>
+</div>
+
+<!-- ═══ FINANCIALS ═══ -->
+<div id="tab-financials" class="tab">
+  <div class="info-box" style="border-left-color:#2979FF;background:#eff6ff">
+    <span class="en"><strong>🔗 Linked to CB Finance26™ (CBF26):</strong> Divi's carries a <strong>CBF26 Earnings Rating</strong> — the fundamentals layer of the CB Finance26 framework, scoring the quality of the latest quarter on four pillars: <strong>Revenue growth · EBITDA growth · Net-profit (PAT) growth · EBITDA margin</strong>, on the same 1-5 scale used across CB Research dashboards.</span>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;border-left:4px solid #FF6A00">
+    <div style="font-weight:700;color:#1F2937;margin-bottom:8px">⭐ CBF26 Earnings Rating — Divi's Laboratories, Q1 FY27</div>
+    <div style="font-size:.8rem;color:var(--muted);line-height:1.7">
+      Weighted 1-5 composite → Revenue growth <strong>25%</strong> · EBITDA growth <strong>25%</strong> · PAT growth <strong>30%</strong> · EBITDA margin <strong>20%</strong>.
+      <div class="score-wrap" style="margin-top:12px">
+        <div class="score-row"><div class="score-lbl">Revenue growth (+27.8%)</div><div class="score-bg"><div class="score-bar" style="width:96%;background:var(--green)"></div></div><div class="score-val">5.0</div></div>
+        <div class="score-row"><div class="score-lbl">EBITDA growth (+72.2%)</div><div class="score-bg"><div class="score-bar" style="width:100%;background:var(--green)"></div></div><div class="score-val">5.0</div></div>
+        <div class="score-row"><div class="score-lbl">PAT growth (+65.5%)</div><div class="score-bg"><div class="score-bar" style="width:100%;background:var(--green)"></div></div><div class="score-val">5.0</div></div>
+        <div class="score-row"><div class="score-lbl">EBITDA margin (40.75%)</div><div class="score-bg"><div class="score-bar" style="width:100%;background:var(--green)"></div></div><div class="score-val">5.0</div></div>
+      </div>
+      <div style="margin-top:10px"><strong>Composite: 5.0/5.0 → <span class="cbr cbr-a">CB-A · Strong</span></strong></div>
+      <div style="margin-top:8px;font-size:.74rem">⚠️ Rating measures <strong>earnings quality/momentum only</strong> for this single quarter — not valuation, and not a buy/sell/hold call. Management's own commentary suggests the 40.75% margin is not the sustainable run-rate; treat this as a "peak quarter" print rather than the new normal until confirmed over 2-3 quarters. CB Research house rule: no recommendations.</div>
+    </div>
+  </div>
+
+  <div class="section-title">📄 5-Quarter Trend (₹ Cr, Consolidated)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Quarter</th><th>Revenue</th><th>QoQ</th><th>EBITDA Margin</th><th>PAT</th><th>QoQ PAT</th></tr></thead>
+      <tbody>
+        <tr><td>Q1 FY26 (Jun-25)</td><td>2,410</td><td>—</td><td>30.2%</td><td>545</td><td>—</td></tr>
+        <tr><td>Q2 FY26 (Sep-25)</td><td>2,860</td><td class="td-green">+18.7%</td><td>32.7%</td><td>689</td><td class="td-green">+26.4%</td></tr>
+        <tr><td>Q3 FY26 (Dec-25)</td><td>2,604</td><td class="td-red">-8.9%</td><td>34.2%</td><td>583</td><td class="td-red">-15.4%</td></tr>
+        <tr><td>Q4 FY26 (Mar-26)</td><td>2,831</td><td class="td-green">+8.7%</td><td>33.0%</td><td>751</td><td class="td-green">+28.8%</td></tr>
+        <tr><td><strong>Q1 FY27 (Jun-26)</strong></td><td class="td-green"><strong>3,080</strong></td><td class="td-green">+8.8%</td><td class="td-green"><strong>40.75%</strong></td><td class="td-green"><strong>902</strong></td><td class="td-green">+20.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">📅 FY26 Annual Actuals (Full Year, ₹ Cr)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>FY26</th><th>YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td>Revenue from Operations</td><td>10,388</td><td class="td-green">+12.9%</td></tr>
+        <tr><td>EBITDA</td><td>3,920</td><td class="td-green">+17.7%</td></tr>
+        <tr><td>PBT</td><td>3,436</td><td class="td-green">+17.3%</td></tr>
+        <tr><td>PAT</td><td class="td-green">2,607</td><td class="td-green">+18.0%</td></tr>
+        <tr><td>EPS (₹)</td><td>98.19</td><td>—</td></tr>
+        <tr><td>Capex Invested</td><td>&gt;1,500</td><td>—</td></tr>
+        <tr><td>Dividend</td><td>₹30/share</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="usp-row">FY26 also saw a successful US FDA inspection outcome and the inauguration of a dedicated Peptide Centre of Excellence — both relevant to the custom-synthesis and GLP-1 building-block growth thesis playing out in Q1 FY27.</div>
+
+  <div class="section-title" style="margin-top:24px">💰 Balance Sheet</div>
+  <div class="card">
+    <div class="debt-bar-wrap">
+      <div class="debt-label"><span style="font-size:.8rem;color:var(--muted)">Standalone Gross Debt</span><span style="font-size:.8rem;color:var(--green);font-weight:700">Zero (as of 31 Mar 2026) ✅</span></div>
+      <div class="debt-bar"><div class="debt-fill debt-low" style="width:2%"></div></div>
+    </div>
+    <div class="usp-row"><strong>Capital work-in-progress:</strong> ₹2,113 Cr as of 31 Mar 2026, tied to the three custom synthesis expansion projects and Kakinada Unit-3 — fully self-funded from internal accruals given the debt-free balance sheet.</div>
+  </div>
+</div>
+
+<!-- ═══ VALUATIONS ═══ -->
+<div id="tab-valuations" class="tab">
+  <div class="section-title">💰 Valuations</div>
+  <div class="val-grid">
+    <div class="val-card">
+      <div class="val-name">🧪 Divi's Laboratories</div>
+      <div class="val-row"><span class="val-lbl">CMP (31 Jul 2026, pre-result)</span><span class="val-num">₹8,056.65</span></div>
+      <div class="val-row"><span class="val-lbl">52-week range</span><span class="val-num">₹5,000 – ₹8,087</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num">~₹2.14L Cr</span></div>
+      <div class="val-row"><span class="val-lbl">Trailing P/E (pre-Q1 TTM)</span><span class="val-num td-amber">~78-86x</span></div>
+      <div class="val-row"><span class="val-lbl">Price/Book</span><span class="val-num">~12.8x</span></div>
+      <div class="val-row"><span class="val-lbl">5-yr Revenue CAGR</span><span class="val-num td-amber">~8.7%</span></div>
+      <div class="val-row"><span class="val-lbl">Consensus 12-mth TP (~30 brokerages)</span><span class="val-num">₹6,900–7,100</span></div>
+      <div class="val-row"><span class="val-lbl">Most bullish TP</span><span class="val-num td-green">₹9,140–9,450 (Citi)</span></div>
+      <div class="val-row"><span class="val-lbl">Promoter Holding</span><span class="val-num">~51.9%</span></div>
+    </div>
+  </div>
+  <div class="warn-box"><strong>Valuation flag:</strong> As of 31 July 2026, Divi's was trading <em>above</em> the ₹6,900-7,100 consensus 12-month target cluster from roughly 30 brokerages — the market had already priced in an exceptional Q1 print before it was announced. The stock's own trailing P/E will mechanically re-rate lower once Q1 FY27's ₹902 Cr PAT rolls into the TTM base (replacing the weaker Q1 FY26 quarter), but on a like-for-like forward basis the stock still commands one of the richest multiples in Indian pharma — consistent with its "quality compounder" positioning. One brokerage (post-Q4 FY26, pre-Q1 FY27) had trimmed FY27/28E estimates by ~4.5% on near-term caution while still raising its target to ₹7,375 (from ₹6,300) at 50x FY28E EPS on an 'Add' rating — illustrative of the split between near-term caution and long-term conviction that characterises Street coverage.</div>
+
+  <div class="section-title">📊 Analyst Consensus Views</div>
+  <div class="analyst-grid">
+    <div class="analyst-card"><div class="analyst-name">Divi's Laboratories</div><span class="analyst-rec rec-buy">BUY (Street Consensus)</span><div class="analyst-tp">Consensus TP: ₹6,900–7,100 | Bull case: ₹9,140–9,450 (Citi) | CMP ~₹8,000-8,100</div><div class="analyst-note">Ratings split Buy/Hold; stock trading above most brokerage targets post-rally. Citi maintains Buy at ₹9,450. Execution on custom-synthesis ramp and FY27 guidance credibility are the swing factors from here, not the Q1 beat itself.</div></div>
+  </div>
+  <div class="warn-box" style="margin-bottom:0"><strong>⚠️ Disclaimer:</strong> Analyst targets and ratings sourced from public brokerage commentary as reported in financial media; they change frequently and are not verified directly with brokerages. Not investment advice.</div>
+</div>
+
+<!-- ═══ MOATS ═══ -->
+<div id="tab-moats" class="tab">
+  <div class="section-title">🏰 Moats &amp; USPs</div>
+  <div class="moat-grid">
+    <div class="moat-card">
+      <div class="moat-name">Process Chemistry Depth</div>
+      <div class="moat-badge">Wide Moat</div>
+      <div class="moat-pts">World's largest producer of select generic APIs (Naproxen, Dextromethorphan) via multi-step synthesis expertise built over decades. Higher yields and cost advantages that are difficult for competitors to replicate quickly.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Custom Synthesis Client Stickiness</div>
+      <div class="moat-badge">Wide Moat</div>
+      <div class="moat-pts">Long-duration (5-10 year) supply agreements with global innovator pharma companies. Revenue recognition tied to a ~2-year validation/regulatory-approval cycle — high switching costs once qualified into a customer's supply chain.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Fortress Balance Sheet</div>
+      <div class="moat-badge">Financial Moat</div>
+      <div class="moat-pts">Zero standalone debt; ~₹2,000 Cr custom synthesis capex programme fully self-funded from internal accruals. Can absorb demand cyclicality without financial stress, unlike leveraged CDMO peers.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Scale &amp; Regulatory Track Record</div>
+      <div class="moat-badge">Compliance Moat</div>
+      <div class="moat-pts">Two large manufacturing complexes plus the Kakinada greenfield site; consistent clean US FDA inspection history (successful outcome noted in FY26) — a prerequisite for winning innovator custom synthesis contracts.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Nutraceuticals Leadership</div>
+      <div class="moat-badge">Niche Leader</div>
+      <div class="moat-pts">World-leading position in carotenoid/vitamin nutraceutical ingredients (astaxanthin, beta-carotene, lycopene, canthaxanthin) — a diversification away from pure pharma APIs with its own demand cycle.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Emerging Peptide/GLP-1 Platform</div>
+      <div class="moat-badge">Optionality</div>
+      <div class="moat-pts">Dedicated Peptide Centre of Excellence and building-block capacity aimed at the GLP-1 opportunity — an early-stage but potentially large multi-year growth vector as global GLP-1 demand scales.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HISTORY ═══ -->
+<div id="tab-history" class="tab">
+  <div class="section-title">🕰️ Company History — From a Small Research Firm to a Global API Leader</div>
+
+  <div class="founder-card">
+    <div style="font-weight:800;font-size:1rem;color:var(--cdmo);margin-bottom:8px">👤 The Founder — Dr. Murali K. Divi</div>
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.8">
+      Born on 17 March 1951 in Machilipatnam, Andhra Pradesh, the youngest of thirteen siblings in a modest household — his father managed the family on a government pension. Murali Divi failed his Class 12 exams twice, went on to earn a Bachelor of Pharmacy from Manipal, and left for the United States in 1976-77 with barely any money, working as a chemist in San Antonio.<br><br>
+      After nearly a decade in America, he returned to India in 1984 and partnered with the late <strong>Dr. Kallam Anji Reddy</strong> (founder of Dr. Reddy's Laboratories) to acquire and build a company called <strong>Keminar</strong> — an early proving ground in Indian API manufacturing. Six years later, he struck out on his own.<br><br>
+      Today Dr. Divi remains <strong>Managing Director</strong> of the company he founded, holds roughly <strong>~52% promoter ownership</strong> directly and through Divi's Biotech, and is one of the world's richest self-made scientists (Forbes/Bloomberg estimate his net worth in the multi-billion-dollar range). He continues to run the company with the same process-chemistry-first, organically-funded philosophy he started with in 1990.
+    </div>
+  </div>
+
+  <div class="section-title">📜 Timeline</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-year">1990</div><div class="tl-text">Dr. Murali K. Divi founds <strong>Divi's Laboratories</strong> in Hyderabad — initially a pure R&amp;D outfit developing commercial processes for Active Pharmaceutical Ingredients (APIs), with no manufacturing of its own for the first several years.</div></div>
+    <div class="tl-item"><div class="tl-year">1995</div><div class="tl-text">First manufacturing facility (<strong>Unit-1</strong>) commissioned at Choutuppal, Telangana, near Hyderabad — the company's process-chemistry R&amp;D finally gets a commercial-scale home.</div></div>
+    <div class="tl-item"><div class="tl-year">2000</div><div class="tl-text">Significant expansion phase — manufacturing capacity and workforce scale up to meet growing global demand as the company builds a reputation for quality and reliability among international buyers.</div></div>
+    <div class="tl-item"><div class="tl-year">2002</div><div class="tl-text"><strong>Unit-2</strong> commissioned near Visakhapatnam — the company's second major manufacturing complex, broadening capacity beyond Choutuppal.</div></div>
+    <div class="tl-item"><div class="tl-year">March 2003</div><div class="tl-text">Divi's Laboratories <strong>goes public</strong> on Indian stock exchanges — the IPO marks the transition from a founder-funded private company to a listed, professionally-governed entity, while the Divi family retains majority control.</div></div>
+    <div class="tl-item"><div class="tl-year">2000s–2010s</div><div class="tl-text">Steady climb to become one of the <strong>world's top 3 API manufacturers</strong>, and the world's largest producer of several individual generic APIs (including Naproxen and Dextromethorphan) — built entirely through organic capex and process-chemistry advantage, without leverage or major acquisitions.</div></div>
+    <div class="tl-item"><div class="tl-year">2010s</div><div class="tl-text">Custom synthesis (CDMO) business scales meaningfully — Divi's becomes a trusted long-term manufacturing partner to global innovator pharmaceutical companies, alongside its Nutraceuticals business (carotenoids: astaxanthin, beta-carotene, lycopene) growing into a world-leading position of its own.</div></div>
+    <div class="tl-item"><div class="tl-year">2020s</div><div class="tl-text">Greenfield <strong>Kakinada complex (Unit-3)</strong> development begins — a multi-phase site for key starting materials, complex APIs, contrast-media intermediates and nutraceuticals, alongside three dedicated custom synthesis capacity projects (~₹2,000 Cr).</div></div>
+    <div class="tl-item"><div class="tl-year">FY26</div><div class="tl-text">Peptide Centre of Excellence inaugurated, positioning Divi's for the emerging GLP-1/peptide building-block opportunity. Successful US FDA inspection outcome reaffirms its clean regulatory track record. FY26 revenue crosses <strong>₹10,388 Cr</strong>, PAT <strong>₹2,607 Cr</strong>.</div></div>
+    <div class="tl-item"><div class="tl-year">Q1 FY27 (Jun-26)</div><div class="tl-text">Best-ever quarterly print — revenue ₹3,080 Cr, EBITDA margin 40.75%, PAT ₹902 Cr — with custom synthesis mix crossing ~60% of revenue for the first time, and market capitalisation crossing <strong>₹2.1 lakh Cr</strong>, making Divi's one of India's most valuable pharmaceutical companies.</div></div>
+  </div>
+
+  <div class="section-title">✨ What Makes Divi's Genuinely Unique</div>
+  <div class="unique-grid">
+    <div class="unique-card"><div class="unique-num">01</div><div class="unique-name">Built on Process Chemistry, Not M&amp;A</div><div class="unique-pts">Unlike many Indian pharma peers that grew through acquisitions or leveraged expansion, Divi's built its global #1/#2/#3 positions in individual API molecules almost entirely through superior in-house process chemistry — better yields, lower costs, fewer synthesis steps — developed and refined over three-plus decades.</div></div>
+    <div class="unique-card"><div class="unique-num">02</div><div class="unique-name">Zero-Debt, Self-Funded Growth</div><div class="unique-pts">Every major capacity expansion — from Unit-1 in 1995 to the current Kakinada Unit-3 and custom synthesis projects — has been funded from internal accruals rather than debt or dilutive equity raises. Genuinely rare in a capex-heavy, cyclical industry.</div></div>
+    <div class="unique-card"><div class="unique-num">03</div><div class="unique-name">Founder-Led for Three-Plus Decades</div><div class="unique-pts">Dr. Murali Divi has run the company continuously since founding it in 1990 — no professional-management churn, no founder exit. That continuity of technical vision is unusual among Indian pharma companies of comparable scale and age.</div></div>
+    <div class="unique-card"><div class="unique-num">04</div><div class="unique-name">Trusted Custom Synthesis Partner to Big Pharma</div><div class="unique-pts">Long-duration, IP-sensitive contract manufacturing relationships with global innovator pharmaceutical companies require a level of regulatory trust and process discipline that takes decades to build — Divi's clean US FDA inspection history has been central to winning and retaining this business.</div></div>
+    <div class="unique-card"><div class="unique-num">05</div><div class="unique-name">Started as an R&amp;D Firm, Not a Factory</div><div class="unique-pts">The company spent its first five years (1990-95) purely developing commercial synthesis processes before building a single manufacturing plant — an unusual sequencing that embedded a research-first culture from day one, rather than bolting R&amp;D onto an existing manufacturing operation.</div></div>
+    <div class="unique-card"><div class="unique-num">06</div><div class="unique-name">Dual Leadership in APIs and Nutraceuticals</div><div class="unique-pts">Few companies hold world-leading positions in both generic pharmaceutical APIs and nutraceutical ingredients (carotenoids like astaxanthin and beta-carotene) simultaneously — a diversification that spreads demand-cycle risk across two genuinely different end markets.</div></div>
+  </div>
+  <div class="warn-box" style="margin-bottom:0">Historical details compiled from public company disclosures, founder interviews and financial media; some early-year figures and dates vary slightly across sources and should be treated as broadly accurate rather than exact.</div>
+</div>
+
+<!-- ═══ PROJECTS ═══ -->
+<div id="tab-projects" class="tab">
+  <div class="section-title">🔭 Key Strategic Projects</div>
+  <div class="proj-card">
+    <div class="proj-head">🏗️ Three Dedicated Custom Synthesis Projects</div>
+    <div class="proj-body">Total cost ~<strong>₹2,000 Cr</strong>, backed by long-term supply agreements with global innovator customers — reported <strong>~70% complete</strong> as of the Q1 FY27 earnings call. Revenue recognition typically follows a 2-year cycle from capex deployment through customer validation and regulatory approval, so full commercial contribution is still building.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">🏭 Kakinada Complex (Unit-3)</div>
+    <div class="proj-body">Multi-phase greenfield site intended to manufacture key starting materials, complex APIs, contrast-media intermediates and nutraceuticals. Capital work-in-progress stood at <strong>₹2,113 Cr</strong> as of 31 March 2026, requiring continued conversion into revenue-generating capacity through FY27.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">💊 Peptide / GLP-1 Building Blocks</div>
+    <div class="proj-body">Dedicated Peptide Centre of Excellence inaugurated in FY26; management continues to flag peptide and GLP-1-related building-block supply as a multi-year growth driver, alongside backward integration to protect margins on complex intermediates.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">👥 Leadership Transition</div>
+    <div class="proj-body">Board approved appointment of <strong>B. Vara Prasad</strong> and <strong>J. Srinivasa Rao</strong> as Senior Management Personnel effective 1 August 2026, alongside the retirement of <strong>L. Ramesh Babu</strong> (VP – Procurement) and <strong>D. Madhu Babu</strong> (VP – Projects), effective 31 July 2026 — routine succession rather than a red flag, but worth tracking for continuity on the capex-heavy custom synthesis programme.</div>
+  </div>
+</div>
+
+<!-- ═══ SWOT ═══ -->
+<div id="tab-swot" class="tab">
+  <div class="section-title">📋 SWOT Analysis — Divi's Laboratories, Q1 FY27</div>
+  <div class="swot-wrap">
+    <div class="swot-box swot-s">
+      <div class="swot-head">💪 Strengths</div>
+      Zero standalone debt with a fully self-funded capex programme · Best-in-class 40.75% EBITDA margin this quarter · World-leading position in select generic APIs and nutraceutical ingredients · Custom synthesis mix rising toward 60% of revenue, improving revenue quality and stickiness · Clean regulatory/FDA track record enabling continued innovator contract wins
+    </div>
+    <div class="swot-box swot-w">
+      <div class="swot-head">⚠️ Weaknesses</div>
+      Trailing 5-year revenue CAGR of only ~8.7% — growth has historically been lumpy quarter to quarter · Generic API segment still faces persistent multi-year pricing pressure with no clear inflection · Large inventory build-up this quarter (-₹517 Cr change) needs to convert cleanly to billed revenue · Limited near-term disclosure on segment-level (CDMO vs API) revenue split in the headline release
+    </div>
+    <div class="swot-box swot-o">
+      <div class="swot-head">🌍 Opportunities</div>
+      China+1 supply-chain diversification continuing to favour Indian CDMO/API players · GLP-1/peptide building-block demand scaling globally · Kakinada Unit-3 and the three custom synthesis projects (~70% complete) still to reach full commercial ramp · Weak rupee (~₹96.6/USD) provides a structural export tailwind if sustained
+    </div>
+    <div class="swot-box swot-t">
+      <div class="swot-head">🔻 Threats</div>
+      US phased tariff plan on generic drugs — Divi's has an estimated ~2-year tariff-free runway, but the eventual scope for complex generics/API exposure is unresolved · Stock trading above most brokerage 12-month targets, leaving limited room for a "beat and no reaction" outcome if FY27 guidance disappoints · Raw material cost inflation risk in spot-market geographies · Any reversal in USD/INR would remove a meaningful part of this quarter's reported growth tailwind
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VERDICT ═══ -->
+<div id="tab-verdict" class="tab">
+  <div class="section-title">🏆 Verdict — Q1 FY27 Read</div>
+  <div class="champion">
+    <div style="text-align:center;font-size:2rem">👑</div>
+    <h2>
+      <span class="en">Q1 FY27: A Genuinely Strong Quarter — With Two Caveats Worth Watching</span>
+      <span class="ta">Q1 FY27: மிகச் சிறந்த காலாண்டு — கவனிக்க வேண்டிய 2 விஷயங்கள்</span>
+    </h2>
+    <p>
+      <span class="en">
+        <strong>1. The headline numbers are unambiguously strong.</strong> 27.8% revenue growth, 72.2% EBITDA growth and 65.5% PAT growth YoY, with margin expansion of 1,050 bps to 40.75%, is a standout quarter by any Indian pharma/API benchmark — comfortably beating Street estimates across the board.<br><br>
+        <strong>2. Custom synthesis mix shift is the real structural story.</strong> The move from ~51% CDMO mix a year ago toward ~60% this quarter is the more durable driver than any single quarter's margin print — it reflects three large capex projects finally converting from investment to revenue.<br><br>
+        <strong>3. But management itself is signalling caution on the margin run-rate.</strong> Full-year gross margin guidance of ~60% (vs. ~68% in Q1) and the prior formal EBITDA margin guidance band of 32-32.5% both suggest this quarter benefited from a favourable mix/timing/currency combination that may not repeat every quarter. Treat 40.75% as a peak print to be confirmed over 2-3 quarters, not a new steady state.<br><br>
+        <strong>4. Currency did meaningful heavy lifting.</strong> A ~12-13% INR depreciation versus the Q1 FY26 comparison base is a mechanical tailwind on reported export revenue and margin — worth separating from the underlying volume/mix improvement when assessing quality of growth.<br><br>
+        <strong>5. Valuation has run ahead of consensus targets.</strong> With the stock above the ₹6,900-7,100 average 12-month target from ~30 brokerages even before results, the market had already priced in a strong quarter. The bar for the next 2-3 quarters is now Street upgrades and FY27 guidance credibility, not just sequential beats.<br><br>
+        <strong>CBF26 Earnings Rating: CB-A · Strong</strong> — reflecting genuine earnings quality and momentum this quarter, with the standard house caveat that this measures earnings quality only, not valuation, and is not a buy/sell/hold call.
+      </span>
+      <span class="ta">
+        தலைப்புச் செய்திகள் தெளிவாக வலுவானவை — வருவாய் 27.8%, PAT 65.5% வளர்ச்சி. custom synthesis கலவை மாற்றமே நீடித்த கதை. ஆனால் நிர்வாகமே margin இயல்பு நிலைக்குத் திரும்பக்கூடும் என்று குறிப்பிட்டுள்ளது. மதிப்பீடு ஏற்கனவே ஆய்வாளர் இலக்குகளுக்கு மேல் உள்ளது.
+      </span>
+    </p>
+  </div>
+  <div class="warn-box" style="margin-bottom:0"><strong>⚠️ Disclaimer:</strong> This analysis is for educational and informational purposes only. It does not constitute financial advice. All data is compiled from public sources (exchange filings, financial media) and may contain estimates or reporting variances across sources. Consult a SEBI-registered investment advisor before making investment decisions. CB Research is not SEBI-registered.</div>
+</div>
+
+<!-- ═══ Q&A ═══ -->
+<div id="tab-qa" class="tab">
+  <div class="section-title">🤖 CB Assist</div>
+  <div class="info-box">
+    <span class="en">Pre-loaded smart questions covering Divi's Q1 FY27 financials, segments, risks, and outlook — plus an interactive box where you can ask your own question using the data in this dashboard. No API key needed.</span>
+    <span class="ta">Divi's Q1 FY27 குறித்த முன்னே ஏற்றப்பட்ட கேள்வி-பதில்கள், மேலும் உங்கள் சொந்த கேள்விகளையும் கேட்கலாம்.</span>
+  </div>
+  <div id="qaAcc">
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>Why did Divi's EBITDA margin jump to 40.75%?</span><span>+</span></div><div class="qa-a">A combination of rising custom-synthesis mix (~60% of Q1 revenue, which carries better economics than generic API), operating leverage as the three large capex projects begin contributing, and a ~12-13% favourable INR depreciation versus the Q1 FY26 comparison base. Management itself has flagged this as elevated versus its 32-32.5% formal guidance band, so some normalisation is likely.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>Is the 65.5% PAT growth sustainable?</span><span>+</span></div><div class="qa-a">Not at this rate. The comparison base (Q1 FY26) was a relatively soft quarter, and this quarter benefited from currency and mix tailwinds that management does not expect to fully repeat. FY27 revenue guidance itself is only "double-digit growth" — the margin/PAT beat is the standout, not a change in the top-line growth algorithm.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>How exposed is Divi's to US tariffs on generic drugs?</span><span>+</span></div><div class="qa-a">Less than pure finished-formulation exporters. Europe, not the US, is Divi's largest export market, and roughly half its revenue comes from custom synthesis contracts with global innovators rather than branded/generic finished-dose sales. ICICI Securities has flagged an estimated ~2-year tariff-free runway, though the eventual scope for complex generics/APIs remains an open question.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is the debt and capex position?</span><span>+</span></div><div class="qa-a">Zero standalone debt as of 31 March 2026. Capital work-in-progress of ₹2,113 Cr is tied to the Kakinada complex and three dedicated custom synthesis projects (~₹2,000 Cr total, ~70% complete), all funded from internal accruals rather than borrowing.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>Is the stock expensive after this quarter?</span><span>+</span></div><div class="qa-a">On a trailing basis, yes — pre-Q1 TTM P/E was in the high-70s to mid-80s, and the stock traded above the ₹6,900-7,100 average brokerage 12-month target even before results. Q1's strong PAT will lower the trailing P/E mechanically as it rolls into the TTM base, but the forward multiple remains among the richest in Indian pharma, consistent with the market pricing Divi's as a quality compounder rather than a value name.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is the CBF26 Earnings Rating and why CB-A?</span><span>+</span></div><div class="qa-a">The CBF26 Earnings Rating is a weighted 1-5 score across revenue growth (25%), EBITDA growth (25%), PAT growth (30%) and EBITDA margin (20%). All four components scored at the top of the scale this quarter given the magnitude of the beat, producing a composite of 5.0/5.0 → CB-A (Strong). This measures earnings quality/momentum only for the quarter — not valuation, and not an investment recommendation.</div></div>
+  </div>
+  <div class="qa-chat">
+    <div style="font-weight:700;font-size:.93rem;color:var(--accent);margin-bottom:10px">💬 Ask Your Own Question — Dashboard Data (No API Key)</div>
+    <div class="qa-chat-row">
+      <input type="text" id="qaInp" class="qa-inp" placeholder="E.g. What was the QoQ revenue growth?" />
+      <button class="qa-btn" onclick="answerQ()">Ask ▶</button>
+    </div>
+    <div id="qaResp" class="qa-resp"></div>
+    <div style="font-size:.71rem;color:var(--muted);margin-top:6px">📌 Try: "revenue", "margin", "debt", "analyst", "moat", "capex", "tariff", "segment". Press Enter or click Ask.</div>
+  </div>
+</div>
+
+<!-- ═══ CHARTS ═══ -->
+<div id="tab-charts" class="tab">
+  <div class="section-title">📈 Visual Analytics</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Revenue Trend — Quarterly (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="revChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA Margin % Trend</div>
+      <div class="chart-wrap"><canvas id="ebitdaChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA — ₹ Cr Trend (Quarterly)</div>
+      <div class="chart-wrap"><canvas id="ebitdaAbsChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Net Profit (PAT) — ₹ Cr Trend</div>
+      <div class="chart-wrap"><canvas id="patChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q1 FY27 Revenue Mix — Custom Synthesis vs Generic API</div>
+      <div class="chart-wrap"><canvas id="segChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q1 FY27 Cost Structure — Consolidated (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="costChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">CBF26 Earnings Rating — Component Scores</div>
+      <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DATA TABLE ═══ -->
+<div id="tab-table" class="tab">
+  <div class="info-box">Click column headers to sort. All figures consolidated unless noted. Source: BSE/NSE filings, company press release (1 Aug 2026), financial media. No investment advice.</div>
+  <div class="tbl-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th onclick="sortT(0)">Quarter <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(1)">Revenue (Cr) <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(2)">EBITDA% <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(3)">PAT (Cr) <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(4)">PAT Margin% <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(5)">QoQ Revenue <span class="sort-icon">⇅</span></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td><strong>Q1 FY26</strong></td><td>2,410</td><td>30.2%</td><td>545</td><td>22.6%</td><td>—</td></tr>
+        <tr><td><strong>Q2 FY26</strong></td><td>2,860</td><td>32.7%</td><td class="td-green">689</td><td>24.1%</td><td class="td-green">+18.7%</td></tr>
+        <tr><td><strong>Q3 FY26</strong></td><td>2,604</td><td>34.2%</td><td class="td-red">583</td><td>22.4%</td><td class="td-red">-8.9%</td></tr>
+        <tr><td><strong>Q4 FY26</strong></td><td>2,831</td><td class="td-green">33.0%</td><td class="td-green">751</td><td>26.5%</td><td class="td-green">+8.7%</td></tr>
+        <tr><td><strong>Q1 FY27</strong></td><td class="td-green">3,080</td><td class="td-green">40.75%</td><td class="td-green">902</td><td class="td-green">29.3%</td><td class="td-green">+8.8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='charts') setTimeout(initCharts,80);
+}
+
+function setLang(lang,btn){
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  lang==='ta'?document.body.classList.add('tm'):document.body.classList.remove('tm');
+}
+
+let sortDir={};
+function sortT(col){
+  const tbody=document.getElementById('tableBody');
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const dir=(sortDir[col]=!sortDir[col]);
+  rows.sort((a,b)=>{
+    const av=a.cells[col].innerText.replace(/[₹,+★†✓~%#]/g,'').trim();
+    const bv=b.cells[col].innerText.replace(/[₹,+★†✓~%#]/g,'').trim();
+    const an=parseFloat(av),bn=parseFloat(bv);
+    if(!isNaN(an)&&!isNaN(bn))return dir?an-bn:bn-an;
+    return dir?av.localeCompare(bv):bv.localeCompare(av);
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+
+function toggleQAItem(el){
+  const a=el.nextElementSibling;
+  a.classList.toggle('open');
+  el.querySelector('span:last-child').textContent=a.classList.contains('open')?'−':'+';
+}
+
+const qaKB=[
+  {k:['history','founder','murali divi','founded','when was','1990','origin'],a:'Divi\'s Laboratories was founded in 1990 by Dr. Murali K. Divi in Hyderabad, initially as a pure R&D firm developing API synthesis processes — its first manufacturing plant (Unit-1, Choutuppal) didn\'t come until 1995. The company went public in March 2003. Dr. Divi remains Managing Director today and holds roughly 52% promoter ownership. See the History tab for the full timeline.'},
+  {k:['unique','different','moat','why special','competitive advantage'],a:'What genuinely sets Divi\'s apart: it built global #1-#3 API positions almost entirely through in-house process chemistry rather than M&A, has funded every major expansion from internal accruals with zero debt, has been led continuously by its founder since 1990, and holds world-leading positions in both APIs and nutraceuticals simultaneously. See the History tab for the full breakdown.'},
+  {k:['revenue','sales','topline','top line'],a:'Q1 FY27 consolidated revenue from operations was ₹3,080 Cr, up 27.8% YoY from ₹2,410 Cr and up 8.8% QoQ from ₹2,831 Cr in Q4 FY26. Total income (incl. other income) was ₹3,144 Cr, up 24.3% YoY.'},
+  {k:['margin','ebitda'],a:'EBITDA margin expanded to 40.75% in Q1 FY27 from 30.2% in Q1 FY26 — a 1,050 bps YoY improvement, and up from 33.0% in Q4 FY26. Management has flagged this as elevated versus its prior 32-32.5% formal guidance band.'},
+  {k:['pat','profit','net profit','earnings'],a:'Consolidated PAT was ₹902 Cr in Q1 FY27, up 65.5% YoY from ₹545 Cr and up 20.1% QoQ from ₹751 Cr in Q4 FY26. Standalone PAT was ₹891 Cr.'},
+  {k:['debt','balance sheet','leverage'],a:'Divi\'s carries zero standalone debt as of 31 March 2026. Capital work-in-progress of ₹2,113 Cr (Kakinada + custom synthesis capex) is fully self-funded from internal accruals.'},
+  {k:['analyst','rating','target','tp'],a:'Street consensus rating is broadly Buy. Average 12-month target from ~30 brokerages clustered at ₹6,900-7,100 as of end-July 2026, with a bull case near ₹9,140-9,450 (Citi). The stock was trading above the consensus cluster even before Q1 results.'},
+  {k:['moat','competitive advantage'],a:'Key moats: process chemistry depth (world-leading in select generic APIs), long-duration custom synthesis contracts with high switching costs, a debt-free balance sheet enabling self-funded capex, and a clean regulatory/FDA track record that supports continued innovator contract wins.'},
+  {k:['capex','project','kakinada'],a:'Three dedicated custom synthesis projects (~₹2,000 Cr total) are ~70% complete. The Kakinada complex (Unit-3) carried ₹2,113 Cr of capital work-in-progress as of 31 March 2026, aimed at complex APIs, contrast-media intermediates and nutraceuticals.'},
+  {k:['tariff','us','trump'],a:'Divi\'s is less exposed to the proposed US generic-drug tariff plan than pure finished-formulation exporters — Europe is its largest export market, and roughly half its revenue comes from custom synthesis contracts rather than branded finished-dose sales. ICICI Securities estimates a ~2-year tariff-free runway.'},
+  {k:['segment','cdmo','custom synthesis','api mix'],a:'Custom synthesis (CDMO) reached roughly 60% of Q1 FY27 revenue, up from 55-57% in Q3/Q4 FY26 and ~51% a year earlier. The balance is Generic API + Nutraceuticals, where pricing pressure has persisted for several quarters.'},
+  {k:['valuation','pe','price to earnings','expensive'],a:'Pre-Q1 trailing P/E was roughly 78-86x on the TTM base ending March 2026. The stock was trading at ~₹8,056 (31 Jul 2026 close) above its ~₹6,900-7,100 average brokerage target, and at ~12.8x book value — among the richer multiples in Indian pharma.'},
+  {k:['guidance','outlook','fy27'],a:'Management has reaffirmed a double-digit revenue growth target for FY27, alongside prior formal EBITDA margin guidance of 32-32.5% — implying the Q1 FY27 40.75% margin print is viewed internally as elevated rather than the new steady state.'},
+];
+function answerQ(){
+  const inp=document.getElementById('qaInp');
+  const resp=document.getElementById('qaResp');
+  const q=inp.value.toLowerCase().trim();
+  if(!q){return;}
+  let hit=null;
+  for(const item of qaKB){
+    if(item.k.some(kw=>q.includes(kw))){hit=item;break;}
+  }
+  resp.style.display='block';
+  resp.textContent=hit?hit.a:'No direct match found in this dashboard\'s data. Try keywords like "revenue", "margin", "PAT", "debt", "analyst", "moat", "capex", "tariff", or "segment".';
+  inp.value='';
+}
+document.getElementById('qaInp').addEventListener('keypress',e=>{if(e.key==='Enter')answerQ();});
+
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;
+  chartsInit=true;
+  const labels=['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'];
+  new Chart(document.getElementById('revChart'),{type:'bar',data:{labels,datasets:[{label:'Revenue (₹ Cr)',data:[2410,2860,2604,2831,3080],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('ebitdaChart'),{type:'line',data:{labels,datasets:[{label:'EBITDA Margin %',data:[30.2,32.7,34.2,33.0,40.75],borderColor:'#0369a1',backgroundColor:'rgba(3,105,161,.12)',fill:true,tension:.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('ebitdaAbsChart'),{type:'bar',data:{labels,datasets:[{label:'EBITDA (₹ Cr)',data:[728,935,891,934,1255],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('patChart'),{type:'bar',data:{labels,datasets:[{label:'PAT (₹ Cr)',data:[545,689,583,751,902],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('segChart'),{type:'doughnut',data:{labels:['Custom Synthesis (CDMO)','Generic API + Nutraceuticals'],datasets:[{data:[60,40],backgroundColor:['#0891b2','#7c3aed']}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('costChart'),{type:'bar',data:{labels:['Materials','Employee','D&A','Other Exp'],datasets:[{label:'Q1 FY26',data:[1010,340,112,385],backgroundColor:'#94a3b8'},{label:'Q1 FY27',data:[1503,408,133,431],backgroundColor:'#0369a1'}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Revenue Growth','EBITDA Growth','PAT Growth','EBITDA Margin'],datasets:[{label:'CBF26 Score (Q1 FY27)',data:[5,5,5,5],borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.15)',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5}}}});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tata Steel – Q1 FY27 Dashboard · NINL Expansion, Dutch Prosecution &amp; UK EAF</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:#e0ddd6;--text:#1a1714;--muted:#6b6660;
+  --tata:#0b3d78;--india:#5b5652;--ninl:#166534;--neth:#c2650c;--uk:#7c2d12;--val:#7c3aed;
+  --accent:#0b3d78;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+
+.hdr{background:#1a1714;padding:24px 36px 18px;display:flex;justify-content:space-between;align-items:flex-end}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;letter-spacing:2px;line-height:1}
+.hdr p{color:#aaa;font-size:0.75rem;font-family:'DM Mono',monospace;margin-top:4px;letter-spacing:1px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bdg{padding:3px 9px;border-radius:3px;font-size:0.68rem;font-family:'DM Mono',monospace}
+.bdg-r{background:var(--accent);color:#fff}
+.bdg-g{background:#333;color:#bbb;border:1px solid #555}
+
+.tabs{background:#111;padding:0 36px;display:flex;border-bottom:2px solid var(--accent);overflow-x:auto}
+.tab{padding:12px 18px;cursor:pointer;font-size:0.76rem;font-weight:500;color:#777;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.4px}
+.tab:hover{color:#ccc}
+.tab.on{color:#fff;border-bottom-color:var(--accent)}
+
+.main{padding:24px 36px;max-width:1440px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1.5px;margin:0 0 14px;padding-bottom:6px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.st .sq{width:9px;height:9px;border-radius:2px;background:var(--accent)}
+
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--tata)}
+.kpi[data-c=india]::before{background:var(--india)}
+.kpi[data-c=ninl]::before{background:var(--ninl)}
+.kpi[data-c=uk]::before{background:var(--uk)}
+.kpi[data-c=val]::before{background:var(--val)}
+.kpi-co{font-size:.65rem;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;line-height:1}
+.kpi-lbl{font-size:.62rem;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.kpi-yoy{margin-top:7px;font-size:.7rem;font-weight:600;padding:2px 6px;border-radius:3px;display:inline-block}
+.up{background:#dcfce7;color:#15803d}.dn{background:#fee2e2;color:#b91c1c}.flat{background:#f3f4f6;color:#6b7280}
+.kpi-sub{font-size:.65rem;color:var(--muted);margin-top:5px}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:24px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:24px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:18px;margin-bottom:24px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+.ct{font-size:.72rem;font-weight:600;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.cw{position:relative;height:240px}
+.cw-lg{position:relative;height:300px}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl th{background:#1a1714;color:#fff;padding:9px 12px;text-align:left;font-size:.68rem;letter-spacing:.8px;font-family:'DM Mono',monospace;font-weight:400;white-space:nowrap}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#faf9f6}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
+.mono{font-family:'DM Mono',monospace;font-size:.78rem}
+.tag{padding:2px 7px;border-radius:3px;font-size:.65rem;font-weight:600;font-family:'DM Mono',monospace}
+.buy{background:#dcfce7;color:#15803d}.hold{background:#fef9c3;color:#854d0e}.neutral{background:#f3f4f6;color:#6b7280}.red{background:#fee2e2;color:#b91c1c}
+
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:-10px;right:-10px;width:70px;height:70px;border-radius:50%;opacity:.06;background:var(--tata)}
+.pc[data-c=neth]::after{background:var(--neth)}
+.pc[data-c=uk]::after{background:var(--uk)}
+.pc[data-c=ninl]::after{background:var(--ninl)}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px}
+.ptype{font-size:.63rem;padding:2px 7px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:500}
+.pure{background:#e0f2fe;color:#0369a1}.hybrid{background:#fef3c7;color:#92400e}.spec{background:#ede9fe;color:#5b21b6}
+.sb{margin-bottom:6px}
+.sl{display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:2px;color:var(--muted)}
+.st2{height:5px;background:#f0ede8;border-radius:3px;overflow:hidden}
+.sf{height:100%;border-radius:3px}
+.pdiv{border:none;border-top:1px solid var(--border);margin:10px 0}
+.pi{font-size:.74rem;color:var(--muted);line-height:1.5}
+.pi strong{color:var(--text)}
+
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.ac-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;margin-bottom:8px}
+.ac-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ac-lbl{font-size:.7rem;color:var(--muted)}
+.ac-val{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500}
+.ac-view{font-size:.73rem;color:var(--muted);line-height:1.5;margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.rc-title{font-weight:600;font-size:.78rem;margin-bottom:9px}
+.ri{display:flex;gap:7px;align-items:flex-start;font-size:.74rem;color:var(--muted);margin-bottom:5px;line-height:1.5}
+
+.fn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;margin-top:20px}
+.wm{text-align:center;padding:10px;font-size:.66rem;color:#ccc;font-family:'DM Mono',monospace;letter-spacing:1px}
+
+.mp-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.mp{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.mp-co{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.mp-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem}
+.mp-chg{font-size:.68rem;font-family:'DM Mono',monospace;margin-top:3px}
+.mp-hi{font-size:.62rem;color:var(--muted);margin-top:3px}
+.mp-pe{font-size:.7rem;font-weight:600;margin-top:4px;font-family:'DM Mono',monospace}
+
+.tl{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:24px}
+.tl-item{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-date{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);min-width:110px;padding-top:2px}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--tata);margin-top:4px;flex-shrink:0}
+.tl-dot.rev{background:#b91c1c}
+.tl-dot.upheld{background:#15803d}
+.tl-body strong{display:block;font-size:.82rem;margin-bottom:2px}
+.tl-body span{font-size:.75rem;color:var(--muted);line-height:1.5}
+
+.notebox{background:#fdf6e9;border:1px solid #eadfc0;border-radius:8px;padding:12px 16px;font-size:.78rem;color:#5c4a1a;line-height:1.6;margin-bottom:18px}
+.notebox strong{color:#3d3010}
+
+.mb{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:18px}
+.mb-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--border);gap:10px}
+.mb-row:last-child{border-bottom:none}
+.mb-name{font-weight:600;font-size:.82rem}
+.mb-role{font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* CB ASSIST */
+.cbwrap{display:grid;grid-template-columns:1fr;gap:18px}
+.cbchat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;max-width:760px;margin:0 auto;width:100%}
+.cbmsgs{height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:8px 4px;margin-bottom:12px}
+.cmsg{max-width:80%;padding:9px 12px;border-radius:10px;font-size:.8rem;line-height:1.5}
+.cmsg.u{align-self:flex-end;background:var(--tata);color:#fff}
+.cmsg.b{align-self:flex-start;background:#f3f1eb;color:var(--text)}
+.cbinput{display:flex;gap:8px}
+.cbinput input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem}
+.cbinput button{padding:9px 16px;border:none;border-radius:8px;background:var(--tata);color:#fff;font-weight:600;cursor:pointer;font-size:.8rem}
+.cbinput button:disabled{opacity:.5;cursor:default}
+.cbtyping{display:none;gap:4px;align-self:flex-start;padding:9px 12px}
+.cbtyping span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+.cbtyping span:nth-child(2){animation-delay:.2s}.cbtyping span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.cbsug{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.cbsug span{background:#f3f1eb;padding:5px 10px;border-radius:14px;font-size:.7rem;cursor:pointer;color:var(--muted)}
+.cbsug span:hover{background:#e7e3d8}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>TATA STEEL · Q1 FY27</h1>
+    <p>QUARTER ENDED 30 JUN 2026 · CONSOLIDATED · FILED 30 JUL 2026 · CB RESEARCH (EIL)</p>
+  </div>
+  <div class="badges">
+    <span class="bdg bdg-r">NSE: TATASTEEL · BSE: 500470</span>
+    <span class="bdg bdg-g">CBF26 SCORE: 6.4/10</span>
+    <span class="bdg bdg-g">MCAP ~₹2.37L Cr</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="sw('ov')">Overview</div>
+  <div class="tab" onclick="sw('ninl')">NINL &amp; India Capacity</div>
+  <div class="tab" onclick="sw('neth')">Netherlands &amp; Dutch Case</div>
+  <div class="tab" onclick="sw('uk')">UK &amp; Port Talbot EAF</div>
+  <div class="tab" onclick="sw('rm')">Raw Material &amp; Trade</div>
+  <div class="tab" onclick="sw('price')">Price Realisation</div>
+  <div class="tab" onclick="sw('jsw')">Tata vs JSW</div>
+  <div class="tab" onclick="sw('val')">Valuation</div>
+  <div class="tab" onclick="sw('cbassist')">CB Assist</div>
+</div>
+
+<div class="main">
+
+<!-- ============ OVERVIEW ============ -->
+<div class="pane on" id="pov">
+  <div class="kpi-row">
+    <div class="kpi" data-c=tata>
+      <div class="kpi-co">Revenue (Consol.)</div>
+      <div class="kpi-val">₹60,794 Cr</div>
+      <div class="kpi-lbl">Q1 FY27</div>
+      <div class="kpi-yoy up">▲ 14.3% YoY</div>
+    </div>
+    <div class="kpi" data-c=tata>
+      <div class="kpi-co">EBITDA (Consol.)</div>
+      <div class="kpi-val">₹9,370 Cr</div>
+      <div class="kpi-lbl">Margin 15.4%</div>
+      <div class="kpi-yoy up">▲ 25.3% YoY</div>
+    </div>
+    <div class="kpi" data-c=india>
+      <div class="kpi-co">Net Profit (PAT, owners)</div>
+      <div class="kpi-val">₹2,318 Cr</div>
+      <div class="kpi-lbl">EPS ₹1.86 (basic/diluted)</div>
+      <div class="kpi-yoy up">▲ 11.6% YoY</div>
+      <div class="kpi-sub">▼ 20.8% QoQ — one-off ₹345 Cr exceptional loss</div>
+    </div>
+    <div class="kpi" data-c=india>
+      <div class="kpi-co">EBITDA / Tonne</div>
+      <div class="kpi-val">₹12,898</div>
+      <div class="kpi-lbl">3rd straight qtr of sequential rise</div>
+      <div class="kpi-yoy up">▲ 22.8% YoY</div>
+    </div>
+    <div class="kpi" data-c=val>
+      <div class="kpi-co">Crude Steel Prod. (Group)</div>
+      <div class="kpi-val">7.69 MT</div>
+      <div class="kpi-lbl">Deliveries 7.27 MT</div>
+      <div class="kpi-yoy up">▲ 4.9% YoY</div>
+    </div>
+    <div class="kpi" data-c=uk>
+      <div class="kpi-co">Net Debt</div>
+      <div class="kpi-val">₹84,173 Cr</div>
+      <div class="kpi-lbl">Capex ₹3,579 Cr in Qtr</div>
+      <div class="kpi-yoy flat">≈ flat YoY (D/E 0.80x vs 0.91x)</div>
+    </div>
+  </div>
+
+  <div class="notebox"><strong>Reader's note (QoQ &amp; one-off):</strong> PAT fell 20.8% sequentially from ₹2,926 Cr in Q4 FY26, driven by a one-time exceptional loss of ₹345 Cr — not an operating slowdown. Consolidated EBITDA actually grew 25.3% YoY and beat Nomura's and the Bloomberg consensus adjusted-EBITDA estimate by ~3% and ~2% respectively, on stronger-than-expected realisations. Tata Steel did, however, miss the Bloomberg consensus PAT estimate of ₹2,501.6 Cr, while beating the consensus revenue estimate of ₹58,154.7 Cr — a beat-on-revenue, miss-on-profit quarter.</div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Revenue &amp; EBITDA — Available Quarters (₹ Cr)</div>
+      <div class="cw-lg"><canvas id="c_revebitda"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Revenue Mix — India vs Europe (Pre-Elimination, Approx.)</div>
+      <div class="cw"><canvas id="c_geomix"></canvas></div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="cc">
+      <div class="ct">Segment EBITDA (₹ Cr)</div>
+      <div class="cw"><canvas id="c_entityebitda"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">India Domestic Deliveries by Vertical (MT, approx.)</div>
+      <div class="cw"><canvas id="c_volmix"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Net Debt — YoY (₹ Cr)</div>
+      <div class="cw"><canvas id="c_debt"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>Q4 FY26</th><th>YoY</th><th>QoQ</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue from Operations</td><td class="mono">₹60,794 Cr</td><td class="mono">₹53,178 Cr</td><td class="mono">₹63,270 Cr</td><td class="mono">+14.3%</td><td class="mono">-3.9%</td></tr>
+      <tr><td>Consolidated EBITDA</td><td class="mono">₹9,370 Cr</td><td class="mono">₹7,263 Cr</td><td class="mono">₹9,807 Cr (est.)</td><td class="mono">+25.3%</td><td class="mono">~-4.5% (est.)</td></tr>
+      <tr><td>EBITDA Margin</td><td class="mono">15.4%</td><td class="mono">~14.1% (est.)</td><td class="mono">15.5%</td><td class="mono">+130 bps</td><td class="mono">-10 bps</td></tr>
+      <tr><td>PBT (before exceptional)</td><td class="mono">₹3,838 Cr</td><td class="mono">₹3,067 Cr</td><td class="mono">n/a</td><td class="mono">+25.1%</td><td class="mono">n/a</td></tr>
+      <tr><td>PAT (owners)</td><td class="mono">₹2,318 Cr</td><td class="mono">₹2,078 Cr</td><td class="mono">₹2,926 Cr†</td><td class="mono">+11.6%</td><td class="mono">-20.8%†</td></tr>
+      <tr><td>Basic/Diluted EPS (not annualised)</td><td class="mono">₹1.86</td><td class="mono">₹1.67</td><td class="mono">₹2.34†</td><td class="mono">+11.4%</td><td class="mono">-20.5%†</td></tr>
+      <tr><td>Crude Steel Production (Group)</td><td class="mono">7.69 MT</td><td class="mono">~7.33 MT (est.)</td><td class="mono">n/a</td><td class="mono">+4.9%</td><td class="mono">n/a</td></tr>
+      <tr><td>Steel Deliveries (Group)</td><td class="mono">7.27 MT</td><td class="mono">~7.12 MT (est.)</td><td class="mono">n/a</td><td class="mono">+2.1%</td><td class="mono">-12% to -17% (seasonal; sources vary)</td></tr>
+      <tr><td>Net Debt</td><td class="mono">₹84,173 Cr</td><td class="mono">~₹84,800 Cr (est.)</td><td class="mono">n/a</td><td class="mono">~flat</td><td class="mono">n/a</td></tr>
+      <tr><td>Capex (Consolidated)</td><td class="mono">₹3,579 Cr</td><td class="mono">n/a</td><td class="mono">n/a</td><td class="mono">n/a</td><td class="mono">FY27E capex guidance raised ~38% to ~₹20,000 Cr</td></tr>
+      <tr><td>Net Worth</td><td class="mono">₹1,01,055 Cr</td><td class="mono">n/a</td><td class="mono">₹98,768 Cr</td><td class="mono">n/a</td><td class="mono">Crossed ₹1 lakh Cr for the first time</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">† Q4 FY26 PAT/EPS shown for QoQ comparison; Q1 FY27's own sequential fall reflects a ₹345 Cr one-off exceptional loss. Figures per Tata Steel Q1 FY27 BSE/NSE filing (30 Jul 2026), investor presentation and press release; Nomura and Motilal Oswal Q1 review notes (31 Jul 2026). Estimated/back-calculated cells marked "(est.)". No buy/sell/hold view is offered by CB Research; third-party broker views (Valuation tab) are attributed explicitly.</div>
+</div>
+
+<!-- ============ NINL & INDIA CAPACITY ============ -->
+<div class="pane" id="pninl">
+  <div class="notebox"><strong>Headline move this quarter:</strong> the board approved a ₹33,873 Cr capex to expand Neelachal Ispat Nigam Ltd (NINL, a wholly-owned subsidiary) by 4.8 MTPA, taking its total steelmaking capacity to 6.2 MTPA. This is Phase-I of NINL's growth and is explicitly aimed at the high-margin branded long-products/retail segment (Tata Tiscon-style rebar), not flat/export steel — a deliberate tilt toward India's domestic infrastructure and retail demand cycle.</div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">India Capacity Roadmap (MTPA, approx.)</div>
+      <div class="cw-lg"><canvas id="c_roadmap"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Domestic Retail/Branded Growth, Q1 FY27 (YoY)</div>
+      <div class="cw-lg"><canvas id="c_brand"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl" style="margin-bottom:24px">
+    <thead><tr><th>Plant / Unit</th><th>State</th><th>Current Capacity</th><th>Expansion in Progress</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Jamshedpur</td><td class="mono">Jharkhand</td><td class="mono">Flagship integrated works</td><td class="mono">No major new expansion flagged this quarter</td><td class="mono">—</td></tr>
+      <tr><td>Kalinganagar</td><td class="mono">Odisha</td><td class="mono">8 MTPA (5 MTPA phase added, ~₹27,000 Cr invested)</td><td class="mono">CAGL lines ramping for automotive/hi-end products</td><td class="mono">Ongoing ramp-up</td></tr>
+      <tr><td>Meramandali</td><td class="mono">Odisha</td><td class="mono">5.6 MTPA</td><td class="mono">Brownfield expansion to 8.2 MTPA</td><td class="mono">FY28-29 (indicative)</td></tr>
+      <tr><td>NINL (Neelachal Ispat)</td><td class="mono">Odisha</td><td class="mono">~1.4 MTPA (wholly owned subsidiary)</td><td class="mono"><strong>Phase-I: +4.8 MTPA, ₹33,873 Cr capex — new board approval, Q1 FY27</strong></td><td class="mono">Multi-year build-out</td></tr>
+      <tr><td>Ludhiana (new EAF)</td><td class="mono">Punjab</td><td class="mono">Under construction</td><td class="mono">0.75 MTPA EAF for long products</td><td class="mono">FY27 (targeted)</td></tr>
+      <tr><td>Overall India roadmap</td><td class="mono">Multi-state</td><td class="mono">~27-28 MTPA current</td><td class="mono">NINL + Meramandali + Ludhiana + downstream additions</td><td class="mono">~37-40 MTPA by FY30-32 (broker estimates)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Record Q1 Volumes Across Verticals</div>
+      <div class="pi">India crude steel production rose <strong>11% YoY to 5.82 MT</strong> and domestic deliveries rose <strong>11% YoY to 5.17 MT</strong> — the strongest India headline growth of any major domestic peer this quarter. Automotive &amp; Special Products logged its <strong>best-ever Q1</strong> (~0.9 MT, hi-end products +20% YoY on Kalinganagar CAGL ramp-up); Branded Products &amp; Retail also posted a <strong>best-ever Q1</strong> (~1.7 MT), with Tata Tiscon rebar +33% YoY and Tata Steelium (cold-rolled) +41% YoY, both best-ever Q1 volumes. Industrial Products &amp; Projects delivered ~1.6 MT. Management commentary cites e-commerce platforms Aashiyana and DigECA generating GMV of ~₹2,200 Cr, up 61% YoY.</div>
+    </div>
+    <div class="cc">
+      <div class="ct">Why NINL, Why Now — Strategic Read</div>
+      <div class="pi">The ₹33,873 Cr NINL capex is large relative to Tata Steel's quarterly capex run-rate (₹3,579 Cr) and full-year guidance (~₹20,000 Cr, itself raised ~38% for FY27) — it is a multi-year commitment, not a one-quarter spend. Directing it toward long/retail products rather than flat steel diversifies Tata's India portfolio mix and reduces reliance on HRC/CRC pricing cycles where global oversupply risk is highest. The read-through for the balance sheet: with net debt already at ₹84,173 Cr and a criminal-prosecution overhang in the Netherlands (see next tab), funding discipline on NINL will be a key monitorable over FY27-28.</div>
+    </div>
+  </div>
+  <div class="fn">Sources: Tata Steel Q1 FY27 press release and investor presentation (30 Jul 2026); EquityBulls, Business Standard, Free Press Journal, ScanX Trade coverage of the NINL board approval and India production update (Jul 2026). Capacity roadmap figures beyond FY27 are broker estimates (Motilal Oswal, Business Standard), not company guidance, and are flagged as such.</div>
+</div>
+
+<!-- ============ NETHERLANDS & DUTCH CASE ============ -->
+<div class="pane" id="pneth">
+  <div class="notebox"><strong>Where it stands today (1 Aug 2026):</strong> Dutch prosecutors (Openbaar Ministerie) formally summoned Tata Steel Ijmuiden BV on 8 Jul 2026 to face criminal charges over the "intentional and unlawful" release of harmful substances near its IJmuiden plant. A fine of up to <strong>€600 million</strong> has been reported as a possible outcome, and the first preliminary court hearing is scheduled for <strong>20 November 2026</strong> in Amsterdam. Tata Steel calls the allegations "fundamentally unjustified." Segment-wise, Netherlands EBITDA for Q1 FY27 was a thin €4 Mn — a sharp sequential collapse from €58 Mn in Q4 FY26.</div>
+
+  <div class="tl">
+    <div class="ct" style="margin-bottom:14px">Timeline — Tata Steel Ijmuiden Pollution Case</div>
+    <div class="tl-item">
+      <div class="tl-date">2022</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>Criminal investigation opened</strong><span>Dutch prosecutors launch a probe following a formal complaint filed by lawyer Bénédicte Ficq on behalf of over 800 residents near the IJmuiden plant, alleging black dust and polluted water exposure.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Dec 2025</div>
+      <div class="tl-dot rev"></div>
+      <div class="tl-body"><strong>Class-action compensation claim</strong><span>The Frisse Wind foundation files a class-action lawsuit against Tata Steel seeking at least €1.4 billion in compensation for residents affected by years of emissions exposure.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">8 Jul 2026</div>
+      <div class="tl-dot rev"></div>
+      <div class="tl-body"><strong>Prosecutors summon Tata Steel Ijmuiden</strong><span>OM cites insufficient maintenance, operating without a permit, and failing to report raw-coke incidents at coke and gas plants KGF 1 and 2; also considering personal liability of individual managers.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">12 Jul 2026</div>
+      <div class="tl-dot rev"></div>
+      <div class="tl-body"><strong>Possible €600 Mn fine reported</strong><span>NOS/NL Times report the scale of financial exposure the company could face if convicted, alongside earlier RIVM/GGD findings that nearby residents' life expectancy may be reduced by up to 2.5 years.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">13 Jul 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>€2 Bn subsidy package thrown into question</strong><span>The Dutch government's conditional €2 billion support package for Tata Steel's decarbonisation (DRI + EAF) plans is now under review; a government decision is expected in September 2026.</span></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">20 Nov 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><strong>First preliminary hearing (scheduled)</strong><span>Case to be heard before an Amsterdam court; outcome and timeline for a substantive verdict remain open as of this dashboard's publication.</span></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">Financial &amp; Strategic Exposure</div>
+      <div class="pi">Beyond the potential €600 Mn fine, the case directly threatens the €2 billion Dutch government subsidy earmarked for Tata Steel's transition to lower-carbon DRI+EAF steelmaking at IJmuiden — a decision now pushed to September 2026. Netherlands EBITDA of just €4 Mn this quarter (vs €58 Mn in Q4 FY26) reflects both the Direct Sheet Plant shutdown since April 2026 (trial runs only, pending restart) and an already-thin margin base that a prosecution-driven capex/reputational overhang could pressure further.</div>
+    </div>
+    <div class="cc">
+      <div class="ct">Operating Detail — Q1 FY27</div>
+      <div class="pi">Tata Steel Netherlands reported liquid steel production of <strong>1.55 MT</strong> and deliveries of <strong>1.40 MT</strong> for the quarter, with revenue of €1,445 Mn (~₹15,803 Cr) vs €1,344 Mn a year earlier. Segment EBITDA of €4 Mn (~₹4 Cr) is near break-even. Greenpeace Netherlands welcomed the prosecution as a signal that "wilfully polluting to make more profit is criminal"; Tata Steel maintains the allegations are unjustified, and no financial provision for the case appears to have been recognised in Q1 FY27 results.</div>
+    </div>
+  </div>
+  <div class="fn">Sources: DutchNews.nl, NL Times, Bloomberg, Business Standard (8-13 Jul 2026) on the OM prosecution; EquityBulls segment-result disclosure for Tata Steel Netherlands Q1 FY27 revenue/EBITDA. This is a factual case summary, not legal advice; the case is at the pre-trial stage and no verdict has been reached.</div>
+</div>
+
+<!-- ============ UK & PORT TALBOT EAF ============ -->
+<div class="pane" id="puk">
+  <div class="notebox"><strong>Net read:</strong> UK EBITDA loss narrowed to £27 Mn in Q1 FY27 (revenue £484 Mn) — an improving trajectory, continuing a trend where UK losses had already halved QoQ in Q4 FY26. The £1.25 billion Port Talbot Electric Arc Furnace remains the key swing factor for UK profitability, with commissioning still targeted for end-2027, though an electricity-grid-connection issue flagged in June 2026 carries a reported risk of up to a one-year delay.</div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">UK Segment Trend — EBITDA (Loss), Illustrative</div>
+      <div class="cw"><canvas id="c_ukebitda"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Port Talbot EAF — Key Facts</div>
+      <div class="pi"><strong>Investment:</strong> £1.25 billion, including £500 Mn of UK government funding.<br><strong>Furnace:</strong> 3.0-3.2 MTPA EAF designed/built by Italy's Tenova — among the largest of its kind.<br><strong>Jobs:</strong> aims to preserve ~5,000 UK roles, after ~2,800 jobs were lost when blast furnaces closed (process began March 2024).<br><strong>Emissions:</strong> targeted 90% cut in on-site CO₂ vs prior blast-furnace route.<br><strong>Commissioning:</strong> end of 2027 (company-stated), with construction of the EAF shell workshop and scrap yard (70,000 t/week capacity) underway as of mid-2026.</div>
+    </div>
+  </div>
+
+  <table class="tbl" style="margin-bottom:24px">
+    <thead><tr><th>Milestone</th><th>Date</th><th>Status / Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Blast furnace closure begins</td><td class="mono">Mar 2024</td><td class="mono">~2,800 jobs lost in the transition away from coal-based steelmaking</td></tr>
+      <tr><td>Planning approval for EAF</td><td class="mono">18 Feb 2025</td><td class="mono">Neath Port Talbot Council approves the £1.25bn EAF project</td></tr>
+      <tr><td>Construction begins</td><td class="mono">2025</td><td class="mono">Site clearance, demolition of legacy blast-furnace infrastructure</td></tr>
+      <tr><td>Shipping delay flagged</td><td class="mono">Mar 2026</td><td class="mono">Middle East-linked freight-cost disruption delays EAF equipment delivery by several weeks; company says overall timeline unaffected</td></tr>
+      <tr><td>National Grid connection risk</td><td class="mono">Jun 2026</td><td class="mono"><span class="tag red">Delay risk flagged</span> — up to a 1-year delay possible pending electricity-supply connection; National Grid says it is working with Tata and government to accelerate</td></tr>
+      <tr><td>EAF shell manufactured</td><td class="mono">Jun 2026</td><td class="mono">Main furnace components produced by Tenova, in transit to Port Talbot from multiple global locations</td></tr>
+      <tr><td>Targeted commissioning</td><td class="mono">End 2027</td><td class="mono">Company-stated target as of latest project update; grid-connection risk is the key watch-item</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">Sources: Tata Steel UK project updates, SteelOrbis, ITV News Wales, The Chemical Engineer, Neath Port Talbot Council (Feb 2025-Jun 2026). UK segment revenue/EBITDA per Tata Steel Q1 FY27 segment disclosure (EquityBulls, Business Standard Capital Market, 30-31 Jul 2026).</div>
+</div>
+
+<!-- ============ RAW MATERIAL & TRADE ============ -->
+<div class="pane" id="prm">
+  <div class="notebox"><strong>Cost pressure was real this quarter:</strong> raw material cost per tonne rose 5% QoQ to ₹31,574/tonne (higher coking-coal consumption cost, per Nomura), while conversion cost per tonne surged 25% QoQ to ₹39,306/tonne, reflecting elevated power and fuel costs following disruptions in West Asia (company commentary). EBITDA/tonne still rose to ₹12,898 (+22.8% YoY) because average selling price rose 12% YoY and 15% QoQ to ₹83,624/tonne — realisation gains outran cost inflation this quarter, but the margin cushion versus Q4 FY26 narrowed slightly (margin -10 bps QoQ).</div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Cost per Tonne — QoQ Change (Illustrative)</div>
+      <div class="cw-lg"><canvas id="c_rmtrend"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Realisation vs Cost Growth, Q1 FY27 (QoQ)</div>
+      <div class="cw-lg"><canvas id="c_rmmix"></canvas></div>
+    </div>
+  </div>
+
+  <div class="ct" style="margin:6px 0 14px">India's Anti-Dumping / Safeguard Actions on Steel — Relevant to Tata Steel</div>
+  <table class="tbl" style="margin-bottom:24px">
+    <thead><tr><th>Date / Status</th><th>Product</th><th>Origin</th><th>Measure</th><th>Relevance to Tata Steel</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Apr–Nov 2025</td><td>Broad flat steel products</td><td class="mono">Mainly China</td><td>Temporary 12% safeguard duty for 200 days (expired early Nov 2025)</td><td>Supported domestic HRC/CRC price floor as Kalinganagar/Meramandali flat capacity ramped</td></tr>
+      <tr><td class="mono">Dec 2025 — imposed</td><td>Cold-rolled non-oriented (CRNO) electrical steel</td><td class="mono">China</td><td>Anti-dumping duty $223.82–$414.92/tonne, 5 years</td><td>Adjacent to Tata's automotive/electrical-steel push at Kalinganagar's CAGL lines</td></tr>
+      <tr><td class="mono">Dec 2025 (extension)</td><td>Seamless steel pipes</td><td class="mono">China</td><td>AD duty $961.33–$1,610.67/tonne extended to Jan 2027</td><td>Indirect support for domestic tube/pipe realisations (Tata Steel Tubes business)</td></tr>
+      <tr><td class="mono">25 Jun 2026 — new probe</td><td>Hot-rolled coil (HRC)</td><td class="mono">China, Japan, Russia</td><td>Anti-dumping investigation launched</td><td>Directly material — Tata is a major HRC producer via Kalinganagar; a positive finding would tighten the India flat-steel import floor</td></tr>
+      <tr><td class="mono">Jun 2026 — new probe</td><td>Cold-rolled grain-oriented (CRGO) electrical steel</td><td class="mono">Multiple origins</td><td>New investigation opened</td><td>Relevant to Tata's downstream electrical-steel ambitions for the EV/transformer segment</td></tr>
+      <tr><td class="mono">Structural, 2025-26</td><td>All flat steel categories</td><td class="mono">China primarily</td><td>Layered safeguard + anti-dumping approach</td><td>Broad-based tailwind for all large domestic integrated producers, including Tata Steel</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">Sources: Nomura Q1 FY27 review note (31 Jul 2026, via Business Standard); DGTR case log; Ministry of Finance notifications via Business Standard/Deccan Herald reporting. Duty figures are those recommended/notified as of source-report dates; final applicability can vary by exporter and is not tax/trade advice.</div>
+</div>
+
+<!-- ============ PRICE REALISATION ============ -->
+<div class="pane" id="pprice">
+  <div class="notebox"><strong>Realisation did the heavy lifting:</strong> average selling price rose 12% YoY and a strong 15% QoQ to ₹83,624/tonne (Motilal Oswal), and India net steel realisations improved by ₹5,991/tonne sequentially — management credits an "agile commercial strategy and calibrated market mix" for maximising value realisation even as blended deliveries fell QoQ on seasonality. Revenue of ₹60,800 Cr came in ~8% above Motilal Oswal's estimate, driven mainly by this realisation strength rather than volume.</div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Net Steel Realisation — QoQ Improvement (₹/tonne, Illustrative)</div>
+      <div class="cw-lg"><canvas id="c_realisation"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Deliveries — YoY vs QoQ (MT)</div>
+      <div class="cw-lg"><canvas id="c_delivmix"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>Driver</th><th>Direction in Q1 FY27</th><th>Reader Impact</th></tr></thead>
+    <tbody>
+      <tr><td>Average selling price</td><td><span class="tag buy">Up 12% YoY, 15% QoQ</span></td><td class="mono">₹83,624/tonne — primary driver of the revenue beat vs street estimates</td></tr>
+      <tr><td>India net steel realisation</td><td><span class="tag buy">Up ₹5,991/tonne QoQ</span></td><td class="mono">Credited to agile commercial strategy and market-mix calibration</td></tr>
+      <tr><td>Domestic deliveries (India)</td><td><span class="tag buy">Up 11% YoY to 5.17 MT</span></td><td class="mono">Record Q1 across Automotive, Retail/Branded and Industrial verticals</td></tr>
+      <tr><td>Group deliveries (Consol.)</td><td><span class="tag hold">Up 2.1% YoY, down 12-17% QoQ</span></td><td class="mono">Sequential fall is seasonal (Q4 typically front-loaded); YoY trend still positive</td></tr>
+      <tr><td>Raw material + conversion cost/tonne</td><td><span class="tag red">Up 5% and 25% QoQ respectively</span></td><td class="mono">Coking coal and power/fuel cost inflation partly offset realisation gains</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">Realisation and cost figures per Nomura and Motilal Oswal Q1 FY27 review notes (Business Standard, 31 Jul 2026); India delivery/production figures per Tata Steel's own Q1 FY27 investor presentation. Chart directions are illustrative visualisations of the qualitative commentary above, not tick-by-tick market data.</div>
+</div>
+
+<!-- ============ TATA vs JSW ============ -->
+<div class="pane" id="pjsw">
+  <div class="notebox"><strong>Both companies have now reported Q1 FY27:</strong> JSW Steel filed on 17 Jul 2026, Tata Steel on 30 Jul 2026. This is a like-for-like comparison of two fully reported quarters.</div>
+
+  <div class="g2">
+    <div class="cc">
+      <div class="ct">India Production Growth, Q1 FY27 (YoY)</div>
+      <div class="cw"><canvas id="c_prodcompare"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">EBITDA Margin Comparison, Q1 FY27</div>
+      <div class="cw"><canvas id="c_margincompare"></canvas></div>
+    </div>
+  </div>
+
+  <table class="tbl" style="margin-bottom:24px">
+    <thead><tr><th>Metric</th><th>Tata Steel (Q1 FY27)</th><th>JSW Steel (Q1 FY27)</th><th>Read</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue (consolidated)</td><td class="mono">₹60,794 Cr</td><td class="mono">₹47,364 Cr</td><td class="mono">Tata is the larger topline — scale advantage from Europe + NINL + Thailand</td></tr>
+      <tr><td>EBITDA</td><td class="mono">₹9,370 Cr</td><td class="mono">₹9,383 Cr</td><td class="mono">Near-identical absolute EBITDA despite Tata's ~28% larger revenue base</td></tr>
+      <tr><td>EBITDA margin</td><td class="mono">15.4%</td><td class="mono">19.8%</td><td class="mono">JSW's India-heavy, higher-value-mix portfolio converts revenue to EBITDA far more efficiently</td></tr>
+      <tr><td>EBITDA / tonne</td><td class="mono">₹12,898</td><td class="mono">₹14,990</td><td class="mono">JSW ahead on a per-tonne basis too — a mix and cost-structure gap, not just a scale one</td></tr>
+      <tr><td>PAT (owners)</td><td class="mono">₹2,318 Cr (+11.6% YoY)</td><td class="mono">₹4,696 Cr (+112.6% YoY)</td><td class="mono">JSW's absolute profit now more than double Tata's, and growing far faster YoY</td></tr>
+      <tr><td>India production growth</td><td class="mono">+11% YoY (5.82 MT)</td><td class="mono">+3% YoY headline; ~+15% ex-BF3 shutdown base</td><td class="mono">Tata's headline India growth is stronger this quarter; JSW's like-for-like growth is comparable once BF3 shutdown is adjusted for</td></tr>
+      <tr><td>Net debt</td><td class="mono">₹84,173 Cr (~flat YoY)</td><td class="mono">₹46,157 Cr (down 14.3% QoQ)</td><td class="mono">Tata carries ~1.8x JSW's absolute net debt, largely legacy European liabilities</td></tr>
+      <tr><td>Overseas footprint</td><td class="mono">Netherlands + UK (in EAF transition) + Thailand</td><td class="mono">USA (Ohio, EBITDA-positive) + Italy (Piombino, EBITDA-positive)</td><td class="mono">JSW's overseas units are small and profitable; Tata's are larger, one loss-making (UK) and one facing criminal prosecution (Netherlands)</td></tr>
+      <tr><td>Market cap</td><td class="mono">~₹2.37 lakh Cr (31 Jul 2026)</td><td class="mono">~₹3.03 lakh Cr (Jul 2026)</td><td class="mono">JSW trades at a materially higher market cap despite Tata's larger revenue base</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ct" style="margin:6px 0 14px">Verdict — Who Has Done Better This Quarter, and Why</div>
+  <div class="pg">
+    <div class="pc" data-c=ninl>
+      <div class="pc-top"><div class="pc-name">On Profitability &amp; Quality of Earnings</div><span class="ptype pure">JSW Ahead</span></div>
+      <div class="pi">JSW converts a smaller revenue base into <strong>near-identical absolute EBITDA</strong> and <strong>more than double Tata's PAT</strong>, with EBITDA margin nearly 440 bps higher and EBITDA/tonne ~16% higher. JSW's PAT also grew 112.6% YoY versus Tata's 11.6% — even allowing for very different bases, this is a clear gap in earnings quality and operating leverage this quarter, driven by JSW's India-heavy, higher-value-added product mix and smaller, profitable overseas units.</div>
+    </div>
+    <div class="pc" data-c=uk>
+      <div class="pc-top"><div class="pc-name">On Balance Sheet &amp; Legal/Regulatory Risk</div><span class="ptype hybrid">JSW Ahead</span></div>
+      <div class="pi">JSW's net debt is roughly half Tata's in absolute terms and fell 14.3% QoQ, aided by the BPSL-JFE monetisation. Tata's net debt is broadly flat YoY at a much higher base, and Tata alone carries a live criminal prosecution in the Netherlands (potential €600 Mn fine, €2 Bn subsidy at risk) plus UK EAF execution/delay risk — a materially heavier legal and execution overhang than JSW's largely resolved BPSL matter.</div>
+    </div>
+    <div class="pc" data-c=tata>
+      <div class="pc-top"><div class="pc-name">On Scale &amp; Domestic Volume Momentum</div><span class="ptype spec">Tata Ahead</span></div>
+      <div class="pi">Tata remains the larger company by revenue and posted the stronger headline India production/delivery growth this quarter (+11% YoY vs JSW's headline +3%), with record Q1 volumes across Automotive, Retail/Branded and Industrial verticals, plus a large, deliberate ₹33,873 Cr bet on domestic long-products capacity via NINL. Tata's India-standalone business, taken on its own, is executing very well — the group-level profitability gap versus JSW is substantially a story of Europe (Netherlands, UK) dragging on an otherwise strong India core.</div>
+    </div>
+  </div>
+  <div class="fn">Figures per Tata Steel and JSW Steel Q1 FY27 investor presentations and press releases (17 Jul and 30 Jul 2026 respectively), and Business Standard/Nomura/Motilal Oswal post-results coverage. This is a factual, data-led comparison, not a recommendation to buy, sell or hold either stock — CB Research does not issue its own buy/sell/hold rating.</div>
+</div>
+
+<!-- ============ VALUATION ============ -->
+<div class="pane" id="pval">
+  <div class="mp-row">
+    <div class="mp">
+      <div class="mp-co">Share Price</div>
+      <div class="mp-price">₹189.70</div>
+      <div class="mp-chg" style="color:#15803d">as of 31 Jul 2026 (+1.5% post-results)</div>
+      <div class="mp-hi">52W: ₹152.51 – ₹224.40</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Market Cap</div>
+      <div class="mp-price">~₹2.37L Cr</div>
+      <div class="mp-chg">Est. from latest share price × shares o/s</div>
+      <div class="mp-hi">Recent print: ₹2.28L Cr @ ₹182.63 (28 Jul 2026)</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Trailing PE</div>
+      <div class="mp-price">~14.5x</div>
+      <div class="mp-chg">Normalising post FY26 earnings recovery</div>
+      <div class="mp-hi">vs ~35x a year earlier on a much smaller earnings base</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">P/B Ratio (est.)</div>
+      <div class="mp-price">~2.3x</div>
+      <div class="mp-hi">Computed off net worth ₹1,01,055 Cr; third-party sites show anomalous P/B data — treat those with caution</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Dividend Yield</div>
+      <div class="mp-price">~2.1%</div>
+      <div class="mp-hi">₹4.00/share paid 15 May 2026 (FY26 final dividend)</div>
+    </div>
+    <div class="mp">
+      <div class="mp-co">Net Debt / Equity</div>
+      <div class="mp-price">0.80x</div>
+      <div class="mp-chg" style="color:#15803d">Improved from 0.91x YoY</div>
+      <div class="mp-hi">ISCR 4.53x · DSCR 1.03x · Current ratio 0.88x</div>
+    </div>
+  </div>
+
+  <div class="g21">
+    <div class="cc">
+      <div class="ct">Broker Target Prices — Post/Around Q1 FY27</div>
+      <div class="cw-lg"><canvas id="c_targets"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Tata vs JSW — Market Cap Comparison (₹ Lakh Cr)</div>
+      <div class="cw-lg"><canvas id="c_mcapcompare"></canvas></div>
+    </div>
+  </div>
+
+  <div class="ct" style="margin:6px 0 14px">Third-Party Broker Views (attributed — not a CB Research recommendation)</div>
+  <div class="ag">
+    <div class="ac">
+      <div class="ac-name">Nomura</div>
+      <div class="ac-row"><span class="ac-lbl">Call</span><span class="tag buy">Buy</span></div>
+      <div class="ac-row"><span class="ac-lbl">Target</span><span class="ac-val">₹240</span></div>
+      <div class="ac-view">Post-Q1 note (31 Jul 2026): adjusted EBITDA beat its own and Bloomberg consensus estimates by ~3% and ~2%, driven by stronger-than-expected realisations, even as raw-material and conversion costs rose sharply QoQ.</div>
+    </div>
+    <div class="ac">
+      <div class="ac-name">Motilal Oswal</div>
+      <div class="ac-row"><span class="ac-lbl">Call</span><span class="tag buy">Buy</span></div>
+      <div class="ac-row"><span class="ac-lbl">Target</span><span class="ac-val">₹210</span></div>
+      <div class="ac-view">SOTP-based target (Sep 2027E EPS) reiterated as of its Dec 2025 note; post-Q1 review (31 Jul 2026) called operating performance "in-line," with revenue 8% above its estimate on better realisations. Target may have moved since — verify current levels.</div>
+    </div>
+    <div class="ac">
+      <div class="ac-name">Elara Capital / Nuvama</div>
+      <div class="ac-row"><span class="ac-lbl">Call</span><span class="tag hold">Accumulate / Hold</span></div>
+      <div class="ac-row"><span class="ac-lbl">Target</span><span class="ac-val">₹187 (Elara)</span></div>
+      <div class="ac-view">Dec 2025 notes: Elara flagged near-term profitability pressure from soft steel prices but constructive on NINL's terminal-value impact; Nuvama held a cautious 'Hold' citing the scale of the India capacity build-out (up to 10 MTPA more by FY32). Both views are dated and should be re-verified post-Q1.</div>
+    </div>
+  </div>
+
+  <div class="mb" style="margin-top:20px">
+    <div class="ct" style="margin-bottom:10px">Management &amp; Board</div>
+    <div class="mb-row">
+      <div><div class="mb-name">N. Chandrasekaran</div><div class="mb-role">Chairman, Non-Executive (also Chairman, Tata Sons)</div></div>
+    </div>
+    <div class="mb-row">
+      <div><div class="mb-name">T. V. Narendran</div><div class="mb-role">CEO &amp; Managing Director; also Chairman, Tata Steel Europe</div></div>
+    </div>
+    <div class="mb-row">
+      <div><div class="mb-name">Koushik Chatterjee</div><div class="mb-role">Executive Director &amp; Chief Financial Officer</div></div>
+    </div>
+    <div class="mb-row">
+      <div><div class="mb-name">Board approval, Q1 FY27</div><div class="mb-role">Cleared the ₹33,873 Cr NINL Phase-I expansion (4.8 MTPA) alongside the quarterly results, 30 Jul 2026</div></div>
+    </div>
+  </div>
+
+  <table class="tbl" style="margin-top:4px">
+    <thead><tr><th>Valuation Angle</th><th>Bull Case</th><th>Bear Case</th></tr></thead>
+    <tbody>
+      <tr><td>Earnings quality</td><td class="mono">EBITDA/tonne up for a 3rd straight quarter; revenue and adj-EBITDA both beat Street/Nomura estimates</td><td class="mono">PAT missed Bloomberg consensus (₹2,501.6 Cr est. vs ₹2,318 Cr actual); QoQ PAT fall partly one-off but margin also slipped 10 bps QoQ</td></tr>
+      <tr><td>India franchise</td><td class="mono">Record Q1 volumes across Auto, Retail/Branded, Industrial; +11% YoY production growth outpaces JSW's headline; NINL bet doubles down on branded long products</td><td class="mono">₹33,873 Cr NINL capex is large relative to current capex run-rate; execution and funding discipline will be watched closely over FY27-28</td></tr>
+      <tr><td>Europe overhang</td><td class="mono">UK EBITDA loss narrowing; Port Talbot EAF targeted for end-2027 commissioning would structurally fix the UK's biggest cost problem</td><td class="mono">Dutch criminal prosecution (potential €600 Mn fine) and a National-Grid-linked EAF delay risk (up to 1 year) both remain open, unresolved tail risks</td></tr>
+      <tr><td>Balance sheet</td><td class="mono">Net debt broadly flat YoY even as capex rose; D/E improved to 0.80x; net worth crossed ₹1 lakh Cr for the first time</td><td class="mono">Absolute net debt (₹84,173 Cr) remains ~1.8x JSW's, leaving less headroom for the large NINL and Port Talbot commitments simultaneously</td></tr>
+      <tr><td>Trade-defence tailwind</td><td class="mono">Layered India anti-dumping/safeguard measures on Chinese flat steel, plus a pending HRC probe (China/Japan/Russia), support domestic pricing as new capacity ramps</td><td class="mono">Re-export loophole via advance-authorisation scheme partially blunts protection; global steel-price cycle risk remains a swing factor</td></tr>
+    </tbody>
+  </table>
+  <div class="fn">Broker views attributed to Nomura, Motilal Oswal (both post-Q1, 31 Jul 2026), Elara Capital and Nuvama (Dec 2025, via Business Standard) — Elara/Nuvama views may have been updated since; verify current targets before acting. Market cap, PE and 52-week range per ICICI Direct, INDmoney, Kotak Neo and Bajaj Broking data points dated 23-31 Jul 2026. This dashboard presents third-party views for reference only; CB Research does not issue its own buy/sell/hold recommendation.</div>
+</div>
+
+<!-- ============ CB ASSIST ============ -->
+<div class="pane" id="pcbassist">
+  <div class="cbwrap">
+    <div class="cbchat">
+      <div class="ct" style="margin-bottom:10px">CB Assist — Tata Steel Q1 FY27 (English / தமிழ்)</div>
+      <div class="cbsug">
+        <span onclick="askQ('Why did PAT fall QoQ despite strong EBITDA growth?')">Why did PAT fall QoQ?</span>
+        <span onclick="askQ('What is the Dutch prosecution against Tata Steel Ijmuiden about?')">Dutch Ijmuiden case?</span>
+        <span onclick="askQ('How does Tata Steel compare with JSW Steel this quarter?')">Tata vs JSW Steel?</span>
+        <span onclick="askQ('What is the NINL expansion and why did the board approve it?')">NINL expansion?</span>
+      </div>
+      <div class="cbmsgs" id="cbaMsgs">
+        <div class="cmsg b">Hi! I'm CB Assist — ask me anything about Tata Steel's Q1 FY27 results, the NINL expansion, the Dutch Ijmuiden prosecution, the UK Port Talbot EAF, or valuation. நான் தமிழிலும் பதிலளிக்க முடியும்.</div>
+      </div>
+      <div class="cbtyping" id="cbaTyping"><span></span><span></span><span></span></div>
+      <div class="cbinput">
+        <input id="cbaInput" type="text" placeholder="Ask about Tata Steel Q1 FY27..." onkeydown="if(event.key==='Enter')sendCBA()">
+        <button id="cbaSendBtn" onclick="sendCBA()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wm">CB RESEARCH · CAUVERY BUSINESS (EIL) · TATA STEEL Q1 FY27 · FOR EDUCATIONAL PURPOSES ONLY · NOT INVESTMENT ADVICE · SEBI-REGISTERED RESEARCH ANALYST</div>
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.plugins.datalabels.display=false;
+const CL={tata:'#0b3d78',tata2:'rgba(11,61,120,.55)',india:'#5b5652',ninl:'#166534',neth:'#c2650c',uk:'#7c2d12',val:'#7c3aed',green:'#15803d',red:'#b91c1c',grey:'#d1cdc4',jsw:'#9e1b1e'};
+
+function bar(id,labels,data,suffix,colors){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderRadius:4}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',font:{family:'DM Mono',size:10},formatter:v=>v+suffix,color:'#1a1714'}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9.5}}},y:{grid:{color:'#eee'},ticks:{font:{family:'DM Mono',size:9.5}},beginAtZero:true}}}});
+}
+function line(id,labels,datasets,suffix){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'line',data:{labels:labels,datasets:datasets.map(d=>({...d,tension:.3,pointRadius:3}))},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:9.5},boxWidth:10}},datalabels:{display:false}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9.5}}},y:{grid:{color:'#eee'},ticks:{font:{family:'DM Mono',size:9.5}}}}}});
+}
+function doughnut(id,labels,data,colors){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:9.5},boxWidth:10,padding:10}},datalabels:{display:true,color:'#fff',font:{family:'DM Mono',size:10,weight:'600'},formatter:v=>v+'%'}},cutout:'58%'}});
+}
+function grouped(id,labels,datasets,suffix){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'bar',data:{labels:labels,datasets:datasets},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:9.5},boxWidth:10}},datalabels:{display:true,anchor:'end',align:'top',font:{family:'DM Mono',size:9},formatter:v=>v+suffix,color:'#1a1714'}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9.5}}},y:{grid:{color:'#eee'},ticks:{font:{family:'DM Mono',size:9.5}},beginAtZero:true}}}});
+}
+
+// — Overview —
+(function(){
+  const ctx=document.getElementById('c_revebitda');
+  if(!ctx)return;
+  new Chart(ctx,{type:'bar',data:{labels:['Q1 FY26','Q4 FY26','Q1 FY27'],datasets:[
+    {label:'Revenue (₹ Cr)',data:[53178,63270,60794],backgroundColor:CL.tata,borderRadius:4},
+    {label:'EBITDA (₹ Cr, est. Q4)',data:[7263,9807,9370],backgroundColor:CL.ninl,borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:9.5},boxWidth:10}},datalabels:{display:true,anchor:'end',align:'top',font:{family:'DM Mono',size:9},formatter:v=>v,color:'#1a1714'}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9.5}}},y:{grid:{color:'#eee'},ticks:{font:{family:'DM Mono',size:9.5}},beginAtZero:true}}}});
+})();
+
+doughnut('c_geomix',['India ~71%','Netherlands ~26%','UK & Other ~10% (est.)'],[71,26,10],[CL.tata,CL.neth,CL.uk]);
+
+bar('c_entityebitda',['Tata Steel India','Other Indian Ops','Netherlands (~₹4 Cr)','UK (~-₹34 Cr)'],[9908,439,4,-34],' Cr',[CL.tata,CL.ninl,CL.neth,CL.uk]);
+
+doughnut('c_volmix',['Retail/Branded ~33%','Automotive ~17%','Industrial Products ~31%','Other ~19%'],[33,17,31,19],[CL.tata,CL.ninl,CL.india,CL.grey]);
+
+bar('c_debt',['Q1 FY26 (est.)','Q1 FY27'],[84800,84173],' Cr',[CL.grey,CL.uk]);
+
+// — NINL & India Capacity —
+line('c_roadmap',['FY26','FY27','FY28','FY29','FY30','FY31-32'],[
+  {label:'India capacity (MTPA, broker est.)',data:[28,29,31,34,37,40],borderColor:CL.tata,backgroundColor:'rgba(11,61,120,.08)',fill:true}
+],' MTPA');
+
+bar('c_brand',['Tata Tiscon (Rebar)','Tata Steelium (CR)','Auto Hi-End','Domestic Deliveries'],[33,41,20,11],'% YoY',[CL.ninl,CL.tata,CL.india,CL.val]);
+
+// — UK —
+bar('c_ukebitda',['Q1 FY26 (loss, narrowing YoY)','Q4 FY26 (loss, halved QoQ)','Q1 FY27 (-£27 Mn)'],[null,null,-27],' £Mn',[CL.grey,CL.grey,CL.uk]);
+
+// — Raw Material —
+bar('c_rmtrend',['Raw Material Cost/t','Conversion Cost/t'],[5,25],'% QoQ',[CL.india,CL.uk]);
+
+bar('c_rmmix',['ASP (YoY)','ASP (QoQ)','RM Cost (QoQ)','Conversion Cost (QoQ)'],[12,15,5,25],'%',[CL.ninl,CL.tata,CL.neth,CL.uk]);
+
+// — Price Realisation —
+bar('c_realisation',['Q4 FY26 (base)','Q1 FY27 (+₹5,991/t QoQ)'],[0,5991],' ₹/t chg',[CL.grey,CL.tata]);
+
+grouped('c_delivmix',['India (Domestic)','Group (Consol.)'],[
+  {label:'YoY %',data:[11,2.1],backgroundColor:CL.tata},
+  {label:'QoQ %',data:[null,-14.5],backgroundColor:CL.uk}
+],'%');
+
+// — Tata vs JSW —
+bar('c_prodcompare',['Tata Steel India','JSW Steel India'],[11,3],'% YoY',[CL.tata,CL.jsw]);
+
+grouped('c_margincompare',['Tata Steel','JSW Steel'],[
+  {label:'EBITDA Margin %',data:[15.4,19.8],backgroundColor:[CL.tata,CL.jsw]}
+],'%');
+
+// — Valuation —
+bar('c_targets',['Elara (Accumulate)','Motilal Oswal (Buy)','Nomura (Buy)','CMP (31 Jul \'26)'],[187,210,240,189.7],'',[CL.india,CL.ninl,CL.tata,CL.grey]);
+
+bar('c_mcapcompare',['Tata Steel','JSW Steel'],[2.37,3.03],'L Cr',[CL.tata,CL.jsw]);
+
+function sw(t){
+  const ids=['ov','ninl','neth','uk','rm','price','jsw','val','cbassist'];
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('on',ids[i]===t);
+  });
+  document.querySelectorAll('.pane').forEach(p=>{
+    p.classList.toggle('on',p.id==='p'+t);
+  });
+}
+
+function askQ(q){document.getElementById('cbaInput').value=q;sendCBA();}
+
+async function sendCBA(){
+  const input=document.getElementById('cbaInput');
+  const msgs=document.getElementById('cbaMsgs');
+  const btn=document.getElementById('cbaSendBtn');
+  const typing=document.getElementById('cbaTyping');
+  const q=input.value.trim();
+  if(!q)return;
+  const uMsg=document.createElement('div');
+  uMsg.className='cmsg u';uMsg.textContent=q;
+  msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';
+  msgs.scrollTop=msgs.scrollHeight;
+
+  const sys=`You are CB Assist, an expert financial research assistant for Cauvery Business (EIL Research). You specialise in Tata Steel and the Indian steel sector, with deep focus on the NINL expansion, the Dutch Ijmuiden prosecution, the UK Port Talbot EAF transition, and comparison with JSW Steel.
+
+MANDATORY: Always answer in BOTH English AND Tamil. Format: full English answer first, then a "---" separator line, then Tamil answer starting with "தமிழில்:".
+
+Tata Steel Q1 FY27 actuals (quarter ended 30 Jun 2026, filed 30 Jul 2026, consolidated):
+- Revenue from operations ₹60,794.29 Cr (+14.3% YoY vs ₹53,178.12 Cr; -3.9% QoQ from ₹63,270.13 Cr). Total income ₹61,026.97 Cr including ₹232.68 Cr other income
+- Consolidated EBITDA ₹9,370 Cr (+25.3% YoY from ₹7,262.68 Cr), margin 15.4% (+130 bps YoY, -10 bps QoQ vs 15.5%). Beat Nomura's and Bloomberg consensus adjusted-EBITDA estimates by ~3% and ~2%
+- PAT (owners) ₹2,318.35 Cr (+11.6% YoY from ₹2,077.68 Cr), DOWN 20.8% QoQ from ₹2,926 Cr in Q4 FY26 due to a one-off ₹345 Cr exceptional loss — not an operating slowdown. Missed Bloomberg consensus PAT estimate of ₹2,501.6 Cr; beat consensus revenue estimate of ₹58,154.7 Cr. Basic/diluted EPS (not annualised) ₹1.86 vs ₹1.67 Q1FY26, ₹2.34 Q4FY26. A separate reported net-profit figure (before minority-interest adjustments in some press coverage) of ₹2,385.24 Cr (+18.8-19% YoY) also appeared in some media reports
+- EBITDA/tonne ₹12,898, up 22.8% YoY — a 3rd consecutive quarter of sequential improvement. Average selling price up 12% YoY, 15% QoQ to ₹83,624/tonne. India net steel realisation improved ₹5,991/tonne QoQ
+- Raw material cost/tonne ₹31,574 (+5% QoQ) on higher coking coal cost; conversion cost/tonne ₹39,306 (+25% QoQ) on elevated power/fuel costs following West Asia disruptions (Nomura, company commentary)
+- Group crude steel production 7.69 MT (+4.9% YoY); group deliveries 7.27 MT (+2.1% YoY, down ~12-17% QoQ on seasonality, sources vary). Tata Steel India: crude steel production 5.82 MT (+11% YoY); domestic deliveries 5.17 MT (+11% YoY) — record Q1 across Automotive & Special Products (~0.9 MT, hi-end +20% YoY), Branded Products & Retail (~1.7 MT; Tata Tiscon +33% YoY, Tata Steelium +41% YoY, both best-ever Q1), Industrial Products & Projects (~1.6 MT). Aashiyana/DigECA e-commerce GMV ~₹2,200 Cr, +61% YoY (management commentary)
+- Segment results: Tata Steel India revenue ₹36,989 Cr, EBITDA ₹9,908 Cr. Other Indian Operations revenue ₹4,395.03 Cr, EBITDA ₹438.55 Cr. NINL revenue ₹1,712.24 Cr (+84.75% YoY). Netherlands revenue €1,445 Mn (~₹15,802.71 Cr), EBITDA €4 Mn (vs €58 Mn Q4FY26) — near break-even, hurt by Direct Sheet Plant shutdown since Apr 2026 (trial runs only). UK revenue £484 Mn, EBITDA loss narrowed to £27 Mn (was narrowing further from a wider loss YoY; UK loss had also halved QoQ in Q4 FY26). Thailand deliveries 334,000 tons (flattish), revenue 6,781 Mn THB, PBT 524 Mn THB (up sharply YoY)
+- Net debt ₹84,173 Cr (roughly flat YoY vs ~₹84,800 Cr a year earlier). Net debt/equity improved to 0.80x from 0.91x YoY (equity growth, not debt paydown, drove this). ISCR 4.53x, DSCR 1.03x, current ratio 0.88x (up from 0.80x at FY26-end). Net worth crossed ₹1 lakh Cr for the first time, at ₹1,01,054.51 Cr (up from ₹98,768.46 Cr). Total consolidated assets ₹3,08,662.33 Cr; total segment liabilities ₹2,02,546.77 Cr
+- Capex ₹3,579 Cr in the quarter; FY27 capex guidance raised ~38% to roughly ₹20,000 Cr
+
+NINL (NEELACHAL ISPAT NIGAM LTD) EXPANSION — key Q1 FY27 development:
+- Board approved a ₹33,873 Cr capex to add 4.8 MTPA of steelmaking capacity at NINL (a wholly-owned Tata Steel subsidiary in Odisha), taking total NINL capacity to 6.2 MTPA
+- This is "Phase-I" of NINL's growth, explicitly targeted at strengthening the long-products/branded-retail portfolio (rebar, Tata Tiscon-style products) to meet rising infrastructure and retail demand — not flat/export steel
+- Part of a broader India roadmap from current ~27-28 MTPA toward ~37-40 MTPA by FY30-32 (broker estimates, not formal company guidance), alongside Meramandali expansion (5.6→8.2 MTPA) and a new 0.75 MTPA EAF at Ludhiana, Punjab (targeted FY27)
+- Funding/balance-sheet question: ₹33,873 Cr is large relative to Tata's quarterly capex run-rate (₹3,579 Cr) and even the raised FY27 guidance (~₹20,000 Cr) — a genuine multi-year commitment against a backdrop of already-elevated net debt (₹84,173 Cr) and the Dutch legal overhang
+
+DUTCH PROSECUTION — TATA STEEL IJMUIDEN (Netherlands):
+- Criminal investigation originally opened in 2022 following a complaint by lawyer Bénédicte Ficq on behalf of 800+ residents near the IJmuiden plant (black dust, polluted water, health complaints)
+- Dec 2025: the Frisse Wind foundation separately filed a class-action lawsuit seeking at least €1.4 billion in compensation for affected residents
+- 8 Jul 2026: Dutch Public Prosecution Service (Openbaar Ministerie, OM) formally summoned Tata Steel Ijmuiden BV (TSIJ) to face criminal charges — "intentional and unlawful" release of harmful substances into air/soil/water, insufficient maintenance, operating without a permit, and failing to report raw-coke incidents at coke and gas plants KGF 1 and 2. OM is also considering personal liability of individual managers
+- 12 Jul 2026: NOS/NL Times report Tata Steel Netherlands could face a fine of up to €600 million if convicted. RIVM/GGD studies cited show nearby residents' life expectancy may be cut by up to 2.5 years, and Tata Steel workers are 1.5x more likely to die before retirement than other Dutch workers
+- 13 Jul 2026: the Dutch government's conditional €2 billion subsidy package to help Tata Steel decarbonise IJmuiden (DRI + EAF transition) is now under review; a government decision is expected in September 2026
+- First preliminary court hearing scheduled for 20 November 2026 in Amsterdam. Case is at the pre-trial stage; no verdict has been reached
+- Tata Steel Netherlands calls the allegations "fundamentally unjustified" / "essentially unjust" and says there have only been a handful of pollution incidents at the plant
+- Greenpeace Netherlands welcomed the prosecution as a sign that "impunity is over" for major industrial polluters
+- No financial provision for this case appears to have been recognised in Tata Steel's Q1 FY27 results
+
+UK — PORT TALBOT ELECTRIC ARC FURNACE (EAF) TRANSITION:
+- £1.25 billion investment (some reports say £1.3bn), including £500 million of UK government funding — the largest UK steel industry investment in decades
+- New 3.0-3.2 MTPA Electric Arc Furnace, designed/manufactured by Italy's Tenova, described as one of the largest of its kind ever built
+- Blast furnace closures began March 2024, with ~2,800 jobs lost in that transition; the EAF aims to preserve ~5,000 UK jobs going forward and cut on-site CO2 emissions by ~90% vs the old blast-furnace route
+- Planning approval granted 18 Feb 2025 by Neath Port Talbot Council; construction/demolition of legacy infrastructure underway through 2025-26
+- Mar 2026: shipping delays linked to Middle East geopolitical tensions pushed back EAF equipment delivery by several weeks; company said the overall project timeline remained unaffected
+- Jun 2026: a National Grid electricity-supply connection issue was flagged, carrying a reported risk of up to a ONE-YEAR delay to the project; National Grid says it is working with Tata Steel and government to accelerate the connection
+- Jun 2026: main EAF furnace components (shell etc.) reported as manufactured and in transit to Port Talbot from multiple global locations; site construction includes a new scrap yard (70,000 tonnes/week capacity) and shell workshop
+- Commissioning still targeted for END OF 2027 per company statements, though the National Grid delay risk is the key watch-item
+- UK Q1 FY27 segment: revenue £484 Mn, EBITDA loss narrowed to £27 Mn — an improving trend (UK losses had also halved QoQ in Q4 FY26)
+
+TATA STEEL vs JSW STEEL (both Q1 FY27 fully reported — JSW filed 17 Jul 2026, Tata filed 30 Jul 2026):
+- Revenue: Tata ₹60,794 Cr vs JSW ₹47,364 Cr — Tata larger on topline (~28% bigger), reflecting Europe + NINL + Thailand scale
+- EBITDA: Tata ₹9,370 Cr vs JSW ₹9,383 Cr — almost identical in absolute terms despite Tata's much larger revenue base
+- EBITDA margin: Tata 15.4% vs JSW 19.8% — a ~440 bps gap; JSW's India-heavy, higher-value-added mix converts revenue to profit far more efficiently
+- EBITDA/tonne: Tata ₹12,898 vs JSW ₹14,990 — JSW ahead here too (~16% higher)
+- PAT: Tata ₹2,318 Cr (+11.6% YoY) vs JSW ₹4,696 Cr (+112.6% YoY) — JSW's absolute profit is now more than double Tata's, and growing dramatically faster YoY
+- India production growth: Tata +11% YoY (5.82 MT) vs JSW's headline +3% YoY (though JSW's like-for-like growth ex a BF3 shutdown base is closer to +15%) — Tata had the stronger reported India growth headline this quarter
+- Net debt: Tata ₹84,173 Cr (roughly flat YoY) vs JSW ₹46,157 Cr (down 14.3% QoQ) — Tata carries roughly 1.8x JSW's absolute net debt
+- Overseas footprint: Tata's Netherlands + UK + Thailand vs JSW's USA (Ohio, EBITDA-positive) + Italy (Piombino, EBITDA-positive) — JSW's overseas units are smaller and both profitable; Tata's are larger, with UK still loss-making and Netherlands facing a criminal prosecution
+- Market cap: Tata ~₹2.37 lakh Cr vs JSW ~₹3.03 lakh Cr (both late Jul 2026) — JSW trades at a materially higher market cap despite Tata's bigger revenue
+- Overall CB Research read: on profitability, earnings quality, and balance-sheet/legal risk, JSW currently looks ahead of Tata this quarter. On scale and India-specific volume momentum (including the large NINL bet), Tata's domestic core is executing very well — the group-level gap versus JSW is substantially a story of Europe (Netherlands prosecution, UK EAF transition) weighing on an otherwise strong India business
+
+VALUATION (as of 31 Jul 2026):
+- Share price ₹189.70 (31 Jul 2026, +1.5% intraday post-results), 52-week range ₹152.51-₹224.40
+- Market cap approx ₹2.37 lakh Cr (estimated from latest price); a slightly earlier print showed ₹2.28 lakh Cr at ₹182.63 on 28 Jul 2026
+- Trailing PE approx 14.5x (normalising after FY26 earnings recovery, versus ~35x roughly a year earlier on a much smaller earnings base)
+- P/B approximately 2.3x, computed off net worth ₹1,01,055 Cr — some third-party sites show anomalous/unreliable P/B figures and should be treated with caution
+- Dividend: ₹4.00/share paid 15 May 2026 (FY26 final dividend), yield approx 2.1%
+- Net debt/equity 0.80x (improved from 0.91x YoY), ISCR 4.53x, DSCR 1.03x
+- Broker targets: Nomura 'Buy' ₹240 (fresh post-Q1 note, 31 Jul 2026); Motilal Oswal 'Buy' ₹210 (SOTP-based on Sep 2027E EPS, reiterated as "in-line" post-Q1 though exact target not restated in that specific note — treat ₹210 as the last stated MOFSL target, from Dec 2025); Elara Capital 'Accumulate' ₹187 (Dec 2025); Nuvama 'Hold' (Dec 2025, no specific target cited in available reporting). Elara/Nuvama views are dated and should be re-verified
+- Management: N. Chandrasekaran (Chairman, Non-Executive, also Chairman of Tata Sons); T. V. Narendran (CEO & Managing Director, also Chairman of Tata Steel Europe); Koushik Chatterjee (Executive Director & CFO)
+
+Be rigorous, analytical, and non-elementary. Address the NINL expansion, the Dutch Ijmuiden prosecution, the UK Port Talbot EAF, raw materials/realisation, the Tata vs JSW comparison, and valuation using ONLY the facts given above. Never give investment advice — provide analysis, and note that any broker targets cited may be dated. If asked something not covered by the data above, say so honestly rather than inventing numbers.`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1000,
+        system:sys,
+        messages:[{role:"user",content:q}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:"Unable to process response.";
+    typing.style.display='none';
+    const bMsg=document.createElement('div');
+    bMsg.className='cmsg b';
+    const fmt=text
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/---/g,'<hr style="border:none;border-top:1px dashed var(--border);margin:8px 0;">')
+      .replace(/\n/g,'<br>');
+    bMsg.innerHTML=fmt;
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');
+    eMsg.className='cmsg b';
+    eMsg.textContent='CB Assist is temporarily unavailable. Please try again.';
+    msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

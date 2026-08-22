@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSE & MCX — Exchange Intelligence Dashboard | Q4 FY26</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --surface2: #f2f0eb;
+  --border: #e2ddd5;
+  --text: #181511;
+  --muted: #6e6860;
+  --bse: #bf3a0a;
+  --bse-soft: #fbeee8;
+  --bse-mid: #e8855a;
+  --mcx: #0f6640;
+  --mcx-soft: #e5f3ec;
+  --mcx-mid: #5aad7e;
+  --gold: #b8911e;
+  --gold-soft: #fdf5e0;
+  --pos: #0f6640;
+  --neg: #bf3a0a;
+  --shadow: 0 1px 8px rgba(24,21,17,0.07);
+  --shadow-md: 0 4px 20px rgba(24,21,17,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 13.5px; line-height: 1.55; }
+
+.top-header { background: #181511; color: #fff; padding: 0 40px; display: flex; align-items: stretch; justify-content: space-between; gap: 0; min-height: 70px; }
+.top-header-left { display: flex; align-items: center; padding: 16px 0; }
+.top-header-left h1 { font-family: 'Playfair Display', serif; font-size: 1.55rem; letter-spacing: -0.01em; color: #fff; line-height: 1.15; }
+.top-header-left .sub { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.45); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+.top-header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 16px 0; }
+.chip { padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.chip-bse { background: var(--bse); color: #fff; }
+.chip-mcx { background: var(--mcx); color: #fff; }
+.chip-date { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.12); }
+.chip-warn { background: var(--gold); color: #181511; }
+
+.tab-nav { background: var(--surface); border-bottom: 2px solid var(--border); display: flex; align-items: center; padding: 0 40px; gap: 0; overflow-x: auto; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(24,21,17,0.06); }
+.tab-nav::-webkit-scrollbar { height: 0; }
+.tab-btn { padding: 14px 18px 12px; font-size: 12px; font-weight: 600; color: var(--muted); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; letter-spacing: 0.02em; transition: color 0.18s, border-color 0.18s; margin-bottom: -2px; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--bse); font-weight: 700; }
+
+.main { padding: 28px 40px 48px; max-width: 1380px; margin: 0 auto; }
+.panel { display: none; animation: fadeIn 0.22s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.sec-heading { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+.sec-heading h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+.sec-heading .sec-note { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.gap-top { margin-top: 22px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; box-shadow: var(--shadow); }
+.card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 14px; }
+
+.company-banner { border-radius: 14px; padding: 22px 24px; border: 1.5px solid; box-shadow: var(--shadow-md); }
+.banner-bse { border-color: var(--bse); background: #fff; }
+.banner-mcx { border-color: var(--mcx); background: #fff; }
+.co-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.co-badge-bse { background: var(--bse); color: #fff; }
+.co-badge-mcx { background: var(--mcx); color: #fff; }
+.company-banner h2 { font-family: 'Playfair Display', serif; font-size: 1.35rem; margin-bottom: 3px; }
+.company-banner .tagline { font-size: 11.5px; color: var(--muted); margin-bottom: 14px; }
+.co-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.co-meta span { font-size: 11.5px; color: var(--muted); }
+.co-meta strong { color: var(--text); }
+.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.metric-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.mb-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.mb-val { font-size: 1.05rem; font-weight: 800; color: var(--text); line-height: 1.2; margin: 3px 0 2px; }
+.mb-chg { font-size: 10px; font-weight: 700; }
+.pos { color: var(--pos); } .neg { color: var(--neg); } .neu { color: var(--muted); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); }
+.kpi.bse-accent { border-left: 4px solid var(--bse); }
+.kpi.mcx-accent { border-left: 4px solid var(--mcx); }
+.kpi .kl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 5px; }
+.kpi .kv { font-size: 1.25rem; font-weight: 800; color: var(--text); }
+.kpi .kc { font-size: 10.5px; font-weight: 700; margin-top: 2px; }
+
+svg.chart { display: block; width: 100%; }
+.cl { font-family: 'Inter', sans-serif; font-size: 10.5px; fill: var(--muted); }
+.cv { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: #181511; }
+.ct { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; fill: #181511; }
+
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 9px 11px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+td { padding: 9px 11px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--surface2); }
+.tn { font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-align: right; }
+.tb { font-weight: 700; }
+.tpos { color: var(--pos); font-weight: 700; }
+.tneg { color: var(--neg); font-weight: 700; }
+
+.seg-bar-wrap { margin: 14px 0 4px; }
+.seg-bar { height: 24px; border-radius: 8px; overflow: hidden; display: flex; }
+.seg-bar div { display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 700; color: #fff; }
+.seg-label-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.seg-dot { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: var(--muted); }
+.seg-dot span { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+.usp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.usp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.usp-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--border); line-height: 1; margin-bottom: 8px; }
+.usp-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.usp-body { font-size: 11px; color: var(--muted); line-height: 1.55; }
+.usp-tag { display: inline-block; margin-top: 8px; padding: 2px 9px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.utag-bse { background: var(--bse-soft); color: var(--bse); }
+.utag-mcx { background: var(--mcx-soft); color: var(--mcx); }
+.utag-both { background: var(--gold-soft); color: var(--gold); }
+
+.why-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.why-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.why-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; line-height: 1; color: var(--border); margin-bottom: 8px; }
+.why-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.why-body { font-size: 11px; color: var(--muted); line-height: 1.55; }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+
+.takeaway-list { list-style: none; padding: 0; margin: 0; counter-reset: tw; }
+.takeaway-list li { counter-increment: tw; position: relative; padding: 10px 0 10px 40px; font-size: 12px; color: var(--text); line-height: 1.65; border-bottom: 1px solid var(--border); }
+.takeaway-list li:last-child { border-bottom: none; }
+.takeaway-list li::before { content: counter(tw); position: absolute; left: 0; top: 10px; width: 26px; height: 26px; border-radius: 50%; background: var(--surface2); border: 1.5px solid var(--border); color: var(--muted); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.takeaway-list li strong { color: var(--text); }
+.pill { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+
+.score-bse-hdr { background: var(--bse); color: #fff; text-align: center; padding: 8px 11px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.score-mcx-hdr { background: var(--mcx); color: #fff; text-align: center; padding: 8px 11px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.edge-bse { color: var(--bse); font-weight: 800; text-align: center; }
+.edge-mcx { color: var(--mcx); font-weight: 800; text-align: center; }
+.edge-tie { color: var(--muted); text-align: center; }
+
+.wm { text-align: center; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--border); padding: 16px; }
+.disclaimer { text-align: center; font-size: 10.5px; color: var(--muted); padding: 14px 40px 4px; border-top: 1px solid var(--border); margin-top: 28px; }
+
+/* ── FLOATING WATERMARK ── */
+.cb-watermark {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.92);
+  border: 1.5px solid var(--border);
+  border-radius: 30px;
+  padding: 7px 14px 7px 8px;
+  box-shadow: 0 4px 20px rgba(24,21,17,0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: default;
+  transition: box-shadow 0.2s;
+}
+.cb-watermark:hover { box-shadow: 0 6px 28px rgba(24,21,17,0.18); }
+.cb-wm-logo {
+  width: 28px;
+  height: 28px;
+  background: #c8420f;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+.cb-wm-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.cb-wm-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+.cb-wm-sub {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+@media (max-width: 600px) {
+  .cb-watermark { bottom: 12px; right: 12px; padding: 5px 10px 5px 6px; }
+  .cb-wm-logo { width: 24px; height: 24px; font-size: 0.75rem; }
+  .cb-wm-name { font-size: 10px; }
+  .cb-wm-sub { display: none; }
+}
+
+@media (max-width: 860px) {
+  .main { padding: 14px 16px 40px; }
+  .top-header { padding: 0 16px; flex-wrap: wrap; }
+  .tab-nav { padding: 0 8px; }
+  .g2,.g3,.g4,.kpi-row,.metric-grid,.usp-grid,.why-grid { grid-template-columns: 1fr; }
+}
+
+/* ── CDSL/NSDL COLORS ── */
+:root {
+  --cdsl: #4a2d82;
+  --cdsl-soft: #f0eaf8;
+  --cdsl-mid: #9b7ac4;
+  --nsdl: #0a4d7a;
+  --nsdl-soft: #e5f0f8;
+  --nsdl-mid: #4a90c4;
+}
+
+/* ── CB ASSIST ── */
+.cb-assist-section { max-width: 860px; margin: 0 auto; }
+.cb-assist-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 2.5px solid #c8420f; }
+.cb-assist-heading .cb-icon { width: 42px; height: 42px; background: #c8420f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 1.1rem; color: #fff; flex-shrink: 0; }
+.cb-assist-heading h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #181511; }
+.cb-assist-heading .cb-sub { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-top: 2px; }
+
+.qa-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; box-shadow: var(--shadow); }
+.qa-q { padding: 14px 18px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; transition: background 0.15s; }
+.qa-q:hover { background: var(--surface2); }
+.qa-q .q-en { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.qa-q .q-ta { font-size: 12px; color: #c8420f; font-weight: 600; }
+.qa-q-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--border); line-height: 1; flex-shrink: 0; width: 28px; }
+.qa-q-icon { margin-left: auto; font-size: 14px; color: var(--muted); flex-shrink: 0; transition: transform 0.2s; }
+.qa-block.open .qa-q-icon { transform: rotate(180deg); }
+.qa-ans { display: none; padding: 0 18px 16px 58px; border-top: 1px solid var(--border); }
+.qa-block.open .qa-ans { display: block; }
+.qa-ans .a-en { font-size: 12px; color: var(--text); line-height: 1.7; margin-top: 12px; }
+.qa-ans .a-ta { font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 8px; font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; }
+.a-label { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
+
+/* Live Q&A chat */
+.cbassist-chat { background: var(--surface); border: 1.5px solid #c8420f; border-radius: 14px; padding: 20px 22px; margin-top: 22px; }
+.cbassist-chat-title { font-weight: 800; font-size: 12.5px; color: #c8420f; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.cbassist-chat-title span { width: 8px; height: 8px; background: #0f6640; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+.chat-messages { min-height: 120px; max-height: 320px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
+.chat-msg { padding: 9px 13px; border-radius: 10px; font-size: 12px; max-width: 88%; line-height: 1.5; }
+.chat-msg.user { background: #181511; color: #fff; align-self: flex-end; border-radius: 10px 10px 2px 10px; }
+.chat-msg.bot { background: var(--surface2); border: 1px solid var(--border); align-self: flex-start; border-radius: 10px 10px 10px 2px; }
+.chat-msg.bot strong { color: #c8420f; }
+.chat-input-row { display: flex; gap: 8px; }
+.chat-input { flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 12px; font-family: 'Inter', sans-serif; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.2s; }
+.chat-input:focus { border-color: #c8420f; }
+.chat-send { background: #c8420f; color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.chat-send:hover { opacity: 0.85; }
+.chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+.typing-indicator { display: none; align-items: center; gap: 5px; padding: 8px 12px; }
+.typing-indicator span { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: bounce 1.2s infinite; }
+.typing-indicator span:nth-child(2){animation-delay:.2s;}
+.typing-indicator span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+/* CDSL/NSDL cards */
+.banner-cdsl { border-color: var(--cdsl); background: #fff; }
+.banner-nsdl { border-color: var(--nsdl); background: #fff; }
+.co-badge-cdsl { background: var(--cdsl); color: #fff; }
+.co-badge-nsdl { background: var(--nsdl); color: #fff; }
+.cdsl-accent { border-left: 4px solid var(--cdsl); }
+.nsdl-accent { border-left: 4px solid var(--nsdl); }
+
+/* CAMS / KFintech colors */
+:root {
+  --cams: #b5550a;
+  --cams-soft: #fdf0e8;
+  --cams-mid: #d98a5c;
+  --kfin: #16547a;
+  --kfin-soft: #e5f2f8;
+  --kfin-mid: #4e9bbf;
+}
+.banner-cams { border-color: var(--cams); background: #fff; }
+.banner-kfin { border-color: var(--kfin); background: #fff; }
+.co-badge-cams { background: var(--cams); color: #fff; }
+.co-badge-kfin { background: var(--kfin); color: #fff; }
+.cams-accent { border-left: 4px solid var(--cams); }
+.kfin-accent { border-left: 4px solid var(--kfin); }
+
+</style>
+</head>
+<body>
+
+<div class="top-header">
+  <div class="top-header-left">
+    <div>
+      <h1>BSE, MCX, CDSL, NSDL, CAMS &amp; KFintech — Capital Markets Intelligence</h1>
+      <div class="sub">Integrated Business &amp; Financial Intelligence · Q1 FY27 · All Audited/Reviewed Actuals · Q4 FY26 Retained for Trend</div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <span class="chip chip-bse">BSE · Q1 FY27 Actual</span>
+    <span class="chip chip-mcx">MCX · Q1 FY27 Actual</span>
+    <span class="chip chip-date" style="background:rgba(15,102,64,0.18);color:#0f6640;border-color:rgba(15,102,64,0.25);">✓ All 6 Cos. Declared Q1 FY27 by 04–05 Aug 2026</span>
+    <span class="chip" style="background:#b5550a;color:#fff;">CAMS · Q1 FY27 Actual</span>
+    <span class="chip" style="background:#16547a;color:#fff;">KFintech · Q1 FY27 Actual</span>
+    <span class="chip chip-date">06 Aug 2026 · EIL Research</span>
+  </div>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab-btn active"  onclick="showTab('snapshot',this)">Company Snapshot</button>
+  <button class="tab-btn" onclick="showTab('takeaways',this)">Key Takeaways</button>
+  <button class="tab-btn" onclick="showTab('quarterly',this)">Quarterly Results</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Revenue Segments</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('annual',this)">Annual Performance</button>
+  <button class="tab-btn" onclick="showTab('usps',this)">USPs &amp; Moats</button>
+  <button class="tab-btn" onclick="showTab('whygood',this)">Why Good Performance?</button>
+  <button class="tab-btn" onclick="showTab('scorecard',this)">Scorecard</button>
+  <button class="tab-btn" onclick="showTab('cdsl',this)">CDSL</button>
+  <button class="tab-btn" onclick="showTab('nsdl',this)">NSDL</button>
+  <button class="tab-btn" onclick="showTab('cams',this)">CAMS</button>
+  <button class="tab-btn" onclick="showTab('kfintech',this)">KFintech</button>
+  <button class="tab-btn" onclick="showTab('analysts',this)">Analysts &amp; Management</button>
+  <button class="tab-btn cb-assist-btn" onclick="showTab('cbassist',this)" style="color:#c8420f;font-weight:800;border-bottom-color:transparent;">🤖 CB Assist</button>
+</nav>
+
+<div class="main">
+
+<!-- ══════════════════════ TAB 1 · COMPANY SNAPSHOT ══════════════════════ -->
+<div class="panel active" id="tab-snapshot">
+  <div class="sec-heading">
+    <h2>Company Snapshot</h2>
+    <span class="sec-note">At-a-glance overview of all six companies · Q1 FY27 (quarter ended 30 June 2026)</span>
+  </div>
+  <div class="g2">
+    <div class="company-banner banner-bse">
+      <span class="co-badge co-badge-bse">BSE Limited · NSE: BSE</span>
+      <h2>Bombay Stock Exchange</h2>
+      <div class="tagline">Asia's oldest exchange (est. 1875, 150th anniversary FY27) — equities, derivatives, mutual fund distribution, SME platform, clearing &amp; settlement. 14 consecutive quarters of record revenue.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹3,618</strong></span>
+        <span>Mkt Cap <strong>~ ₹1,47,000 Cr</strong></span>
+        <span>P/E <strong>~ 51.6x FY27E</strong></span>
+        <span>Registered Investors <strong>25.5 Cr</strong></span>
+        <span class="pos" style="font-weight:700;">Record Q1, stock range-bound post-print</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue (Ops)</div><div class="mb-val">₹1,566 Cr</div><div class="mb-chg pos">▲ 63.5% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit</div><div class="mb-val">₹873 Cr</div><div class="mb-chg pos">▲ 62% YoY · ▲ 9.7% QoQ</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹797 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Total Income</div><div class="mb-val">₹1,707 Cr</div><div class="mb-chg pos">▲ 63.6% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 EBITDA Margin</div><div class="mb-val">67–68%</div><div class="mb-chg pos">vs 65% Q1 FY26</div></div>
+        <div class="metric-box"><div class="mb-label">Transaction Charges</div><div class="mb-val">₹1,328 Cr</div><div class="mb-chg pos">▲ 80% YoY</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Asia's oldest exchange · 150 yrs</span>
+        <span class="pill">14 straight record-revenue quarters</span>
+        <span class="pill">Focused IT index derivatives (11 May 2026)</span>
+        <span class="pill">IIBH stake raised to 20%</span>
+        <span class="pill">Zero debt</span>
+        <span class="pill">April 2026 STT hike — industry headwind</span>
+      </div>
+    </div>
+    <div class="company-banner banner-mcx">
+      <span class="co-badge co-badge-mcx">MCX India · NSE: MCX</span>
+      <h2>Multi Commodity Exchange</h2>
+      <div class="tagline">India's dominant commodity derivatives exchange — bullion, base metals, energy, agri (est. 2003). World's #1 commodity options exchange by volume (FIA 2025). Q1 normalised after a blockbuster Q4.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹2,598</strong></span>
+        <span>Mkt Cap <strong>~ ₹66,700 Cr</strong></span>
+        <span>P/E <strong>~ 45.6x FY27E</strong></span>
+        <span>Market Share <strong>98.5%+ commodities</strong></span>
+        <span class="pos" style="font-weight:700;">+73% in 1 yr</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue (Ops)</div><div class="mb-val">₹702 Cr</div><div class="mb-chg pos">▲ 88% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit</div><div class="mb-val">₹413 Cr</div><div class="mb-chg pos">▲ 103% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹530 Cr</div><div class="mb-chg neg">▼ 22% QoQ from this base</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Total Income</div><div class="mb-val">₹752 Cr</div><div class="mb-chg pos">▲ 85% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 EBITDA Margin</div><div class="mb-val">70.4%</div><div class="mb-chg neg">vs 74.9% in Q4 FY26</div></div>
+        <div class="metric-box"><div class="mb-label">Options ADT Growth</div><div class="mb-val">▲266% YoY</div><div class="mb-chg pos">Bullion &amp; energy led</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">98.5%+ commodity share</span>
+        <span class="pill">World #1 commodity options exchange</span>
+        <span class="pill">Jefferies Buy · TP ₹3,600</span>
+        <span class="pill">Bombay HC upholds crude settlement policy</span>
+        <span class="pill">Coal Exchange progressing</span>
+        <span class="pill">EPS ₹16.68 (miss ~ 1.6% vs est.)</span>
+      </div>
+    </div>
+  </div>
+  <div class="g2 gap-top">
+    <div class="company-banner banner-cdsl">
+      <span class="co-badge co-badge-cdsl">CDSL · NSE: CDSL</span>
+      <h2>Central Depository Services (India)</h2>
+      <div class="tagline">India's largest depository by demat account count. First to cross 18 crore accounts (Mar 2026); now at 18.59 crore.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹1,330</strong></span>
+        <span>Mkt Cap <strong>~ ₹27,900 Cr</strong></span>
+        <span>Demat A/Cs <strong>18.59 Cr</strong></span>
+        <span class="neg" style="font-weight:700;">−8% YTD / −10% 1-yr</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue</div><div class="mb-val">₹292.76 Cr</div><div class="mb-chg pos">▲ 13.1% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit</div><div class="mb-val">₹117.67 Cr</div><div class="mb-chg pos">▲ 14.9% YoY · ▲ 47.5% QoQ</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹79.79 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">18.59 Cr demat accounts</span>
+        <span class="pill">+58 lakh new A/Cs in Q1</span>
+        <span class="pill">EPS ₹5.62–5.65 (miss ~ 21.5%)</span>
+      </div>
+    </div>
+    <div class="company-banner banner-nsdl">
+      <span class="co-badge co-badge-nsdl">NSDL · NSE: NSDL</span>
+      <h2>National Securities Depository Limited</h2>
+      <div class="tagline">Pioneer of dematerialisation (est. 1996) — largest by demat value. Banking Services now its largest revenue segment.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹823</strong></span>
+        <span>Mkt Cap <strong>~ ₹16,444 Cr</strong></span>
+        <span>DP Network <strong>317 DPs</strong></span>
+        <span class="neg" style="font-weight:700;">−22% YTD 2026</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Total Income</div><div class="mb-val">₹560.5 Cr</div><div class="mb-chg pos">▲ 61.6% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit</div><div class="mb-val">₹98.31 Cr</div><div class="mb-chg pos">▲ 9.68% YoY · ▲ 8.85% QoQ</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹90.32 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Banking Services now #1 segment</span>
+        <span class="pill">EBITDA margin 19.55% (▼1343bps)</span>
+        <span class="pill">Insurance Repository demerger by Dec 2026</span>
+      </div>
+    </div>
+  </div>
+  <div class="g2 gap-top">
+    <div class="company-banner banner-cams">
+      <span class="co-badge co-badge-cams">CAMS · NSE: CAMS</span>
+      <h2>Computer Age Management Services</h2>
+      <div class="tagline">India's largest MF Registrar &amp; Transfer Agent — record-keeping, transaction processing, SIP administration, plus growing non-MF services.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹760</strong></span>
+        <span>Mkt Cap <strong>~ ₹19,984 Cr</strong></span>
+        <span>MF Market Share <strong>67.2%</strong></span>
+        <span class="pos" style="font-weight:700;">+9% YTD / +10% 1-yr</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue</div><div class="mb-val">₹395.03 Cr</div><div class="mb-chg pos">▲ 11.5% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit</div><div class="mb-val">₹128.02 Cr</div><div class="mb-chg pos">▲ 17.35% YoY · ▲ 1.25% QoQ</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹126.43 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">MF AUM serviced ₹56L Cr (record)</span>
+        <span class="pill">SIP collections ₹59,681 Cr (▲20.7%)</span>
+        <span class="pill">Interim dividend ₹2.50/sh</span>
+      </div>
+    </div>
+    <div class="company-banner banner-kfin">
+      <span class="co-badge co-badge-kfin">KFintech · NSE: KFINTECH</span>
+      <h2>KFin Technologies Limited</h2>
+      <div class="tagline">India's #2 MF RTA (~32% share) with a growing global footprint — 18 countries via Ascent Fund Services.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹932</strong></span>
+        <span>Diluted EPS Q1 <strong>₹4.34</strong></span>
+        <span>Cash <strong>₹687 Cr</strong></span>
+        <span class="pos" style="font-weight:700;">+8.7% on results day</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue</div><div class="mb-val">₹356.54 Cr</div><div class="mb-chg pos">▲ 30.1% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit</div><div class="mb-val">₹75.21 Cr</div><div class="mb-chg neg">▼ 2.6% YoY · ▼ 7.3% QoQ</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹81.15 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">International revenue ▲182% YoY</span>
+        <span class="pill">Non-domestic MF 39.6% of mix</span>
+        <span class="pill">Dinesh Khara to be CEO from Oct 2026</span>
+      </div>
+    </div>
+  </div>
+  <div class="gap-top">
+    <div class="kpi-row">
+      <div class="kpi bse-accent"><div class="kl">BSE Q1 FY27 PAT Growth</div><div class="kv">+62% YoY</div><div class="kc pos">₹873 Cr vs ₹538 Cr PY (consol.)</div></div>
+      <div class="kpi bse-accent"><div class="kl">BSE Q1 FY27 QoQ</div><div class="kv">+9.7%</div><div class="kc pos">vs ₹795 Cr in Q4 FY26 (retained)</div></div>
+      <div class="kpi mcx-accent"><div class="kl">MCX Q1 FY27 PAT Growth</div><div class="kv">+103% YoY</div><div class="kc pos">₹413 Cr vs ₹203 Cr PY</div></div>
+      <div class="kpi mcx-accent"><div class="kl">MCX Q1 FY27 QoQ</div><div class="kv">−22%</div><div class="kc neg">Normalising off Q4 FY26's ₹530 Cr peak</div></div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi cdsl-accent"><div class="kl">CDSL Q1 FY27 PAT Growth</div><div class="kv">+14.9% YoY</div><div class="kc pos">₹117.67 Cr vs ₹102 Cr PY</div></div>
+      <div class="kpi nsdl-accent"><div class="kl">NSDL Q1 FY27 PAT Growth</div><div class="kv">+9.68% YoY</div><div class="kc pos">₹98.31 Cr vs ₹89.63 Cr PY</div></div>
+      <div class="kpi cams-accent"><div class="kl">CAMS Q1 FY27 PAT Growth</div><div class="kv">+17.35% YoY</div><div class="kc pos">₹128.02 Cr vs ₹109.09 Cr PY</div></div>
+      <div class="kpi kfin-accent"><div class="kl">KFintech Q1 FY27 PAT Growth</div><div class="kv">−2.6% YoY</div><div class="kc neg">₹75.21 Cr vs ₹77.26 Cr PY</div></div>
+    </div>
+  </div>
+  <div class="card gap-top" style="border-left:4px solid var(--gold);">
+    <div class="card-label" style="color:var(--gold);">Reading Q1 FY27 Correctly — Why Both Trends Matter</div>
+    <div style="font-size:11.5px;color:var(--muted);line-height:1.7;">BSE's Q1 FY27 print is a genuine YoY and QoQ record — its 14th consecutive quarter of record revenue, aided by an 80% surge in transaction charges and continued Sensex derivatives share gains, even as the April 2026 STT hike created industry-wide volume friction. MCX's Q1 FY27 print is YoY-spectacular (PAT more than doubled) but QoQ-softer, because Q4 FY26 was an exceptional bullion/energy volatility quarter that is not a repeatable quarterly run-rate. Across the depositories and RTAs, CDSL and CAMS both accelerated profitably, NSDL grew revenue fastest of all six but at a compressing margin, and KFintech is the only one of the six with a YoY PAT decline — a deliberate near-term trade-off for its Ascent-led international expansion. Retaining Q4 FY26 figures throughout this dashboard lets all these realities show side by side rather than being masked by a single "latest quarter" number.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB · KEY TAKEAWAYS ══════════════════════ -->
+<div class="panel" id="tab-takeaways">
+  <div class="sec-heading">
+    <h2>Key Takeaways</h2>
+    <span class="sec-note">The 5 most important things to know about each company's Q1 FY27 print</span>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card" style="border-top:4px solid var(--bse);">
+      <div class="card-label" style="color:var(--bse);">BSE Limited — 5 Key Takeaways</div>
+      <ol class="takeaway-list">
+        <li><strong>Record on every count.</strong> PAT ₹873 Cr (▲62% YoY, ▲9.7% QoQ) — 14th consecutive record-revenue quarter, in BSE's 150th anniversary year.</li>
+        <li><strong>Still heavily concentrated.</strong> Transaction charges (₹1,328 Cr, ▲80% YoY) are ~78% of revenue — the growth engine and the key risk are the same line item.</li>
+        <li><strong>Margin expansion was cost-led, not just volume-led.</strong> EBITDA margin rose to 67–68% from 65% as total expenses actually fell 6.6% QoQ, plus investment income nearly doubled QoQ.</li>
+        <li><strong>Outgrowing a real headwind.</strong> The April 2026 STT hike created industry-wide volume friction, yet BSE still posted a record — a sign of structural Sensex-derivatives share gains, not just a favourable market backdrop.</li>
+        <li><strong>Brokerages are more cautious than the print.</strong> Mostly Neutral/Hold post-results (JPMorgan TP ₹4,090, Jefferies Hold TP ₹3,520) — valuation (~51.6x FY27E) is the pushback, not the business.</li>
+      </ol>
+    </div>
+    <div class="card" style="border-top:4px solid var(--mcx);">
+      <div class="card-label" style="color:var(--mcx);">MCX India — 5 Key Takeaways</div>
+      <ol class="takeaway-list">
+        <li><strong>QoQ drop, YoY strength — read both.</strong> PAT ₹413 Cr is down 22% QoQ off Q4 FY26's exceptional base, but still more than double (▲103%) the year-ago quarter.</li>
+        <li><strong>The underlying franchise kept accelerating.</strong> Options ADT growth actually rose to 266% YoY (from 224% in Q3 FY26) even as headline profit normalised.</li>
+        <li><strong>Bullion dominates activity.</strong> Combined bullion futures+options ADT hit ₹7.2 lakh crore (▲427% YoY) — gold/silver volatility is still the single biggest swing factor for MCX earnings.</li>
+        <li><strong>Legal overhangs cleared this quarter.</strong> Bombay High Court dismissed a long-pending 2017 writ petition and upheld MCX's crude-oil settlement policy.</li>
+        <li><strong>Brokerages are genuinely split.</strong> Jefferies Buy (TP ₹3,600, 22% earnings CAGR to FY29E) vs JPMorgan Underweight (TP ₹2,550) — the debate is entirely about how much of the volatility cycle is sustainable.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card" style="border-top:4px solid var(--cdsl);">
+      <div class="card-label" style="color:var(--cdsl);">CDSL — 5 Key Takeaways</div>
+      <ol class="takeaway-list">
+        <li><strong>Sharp recovery from Q4's dip.</strong> PAT ₹117.67 Cr, up 14.9% YoY and a strong 47.5% QoQ bounce back after Q4 FY26's margin squeeze.</li>
+        <li><strong>The account moat keeps compounding.</strong> 18.59 crore demat accounts, with 58 lakh added in this quarter alone — each one a recurring AMC-fee source independent of trading activity.</li>
+        <li><strong>Standalone PAT decline is noise, not signal.</strong> The reported 5.3% YoY standalone fall was purely a lower subsidiary-dividend payout; ex-dividend standalone PAT actually grew 15.6% YoY.</li>
+        <li><strong>Consensus EPS was missed by a wide margin.</strong> ₹5.62–5.65 actual vs ~₹7.20 expected (~21.5% miss) — worth understanding why estimates were that far off before reacting to the "miss" headline.</li>
+        <li><strong>Brokerage views span the full range.</strong> From Add (Equirus, TP ₹1,675) to Underweight (JPMorgan, TP ₹1,200) to Reduce (JM Financial) — CDSL's historic premium-to-peers valuation is the central debate.</li>
+      </ol>
+    </div>
+    <div class="card" style="border-top:4px solid var(--nsdl);">
+      <div class="card-label" style="color:var(--nsdl);">NSDL — 5 Key Takeaways</div>
+      <ol class="takeaway-list">
+        <li><strong>Fastest revenue growth, slowest profit growth.</strong> Revenue +65.6% YoY was tops among all six companies, but PAT grew just 9.68% YoY — the mix shift matters more than the top line here.</li>
+        <li><strong>Banking Services is not a depository business.</strong> It's NSDL's payments-bank subsidiary (deposits, mobile payments, debit cards) — now 61% of revenue, but only ~1% segment margin vs Depository's ~44%.</li>
+        <li><strong>Margin compression is structural, not operational failure.</strong> EBITDA margin fell to 19.55% from 30.51% YoY purely because the low-margin Banking Services segment is growing faster than the high-margin Depository core.</li>
+        <li><strong>Two structural items to track.</strong> Karvy litigation remains an overhang, and the Insurance Repository business must demerge into a separate entity by December 2026 under an IRDAI mandate.</li>
+        <li><strong>The stock has been the weakest of the six.</strong> Down 22% YTD 2026, with Equirus rating it an outright "Short" (TP ₹950) — the worst brokerage stance among all six companies covered here.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="border-top:4px solid var(--cams);">
+      <div class="card-label" style="color:var(--cams);">CAMS — 5 Key Takeaways</div>
+      <ol class="takeaway-list">
+        <li><strong>Best PAT growth among the depositories/RTAs.</strong> PAT ₹128.02 Cr, up 17.35% YoY, with EBITDA margin holding near all-time-high levels (46.26%).</li>
+        <li><strong>The core moat hit a fresh record.</strong> MF AUM serviced reached ₹56 lakh crore (▲14.8% YoY) at 67.2% market share — still the dominant RTA in India by a wide margin over KFintech.</li>
+        <li><strong>Diversification is working, if still small.</strong> Non-MF revenue (CAMSPay, Alternatives, KRA) grew 28.4% YoY — more than double the overall growth rate — though it's still only ~15% of revenue.</li>
+        <li><strong>Management put numbers behind its guidance.</strong> ~13% FY27 revenue growth and ~16% EBITDA growth guided explicitly — one of the few companies here giving that level of forward specificity.</li>
+        <li><strong>The market has rewarded the consistency.</strong> Stock +9% YTD / +10% 1-yr, a relative outperformer, with Axis Capital initiating at Buy.</li>
+      </ol>
+    </div>
+    <div class="card" style="border-top:4px solid var(--kfin);">
+      <div class="card-label" style="color:var(--kfin);">KFintech — 5 Key Takeaways</div>
+      <ol class="takeaway-list">
+        <li><strong>The only YoY profit decline among the six.</strong> PAT fell 2.6% YoY to ₹75.21 Cr despite revenue growing a strong 30.1% YoY — a deliberate near-term trade-off, not a demand problem.</li>
+        <li><strong>International expansion is the real growth story.</strong> Non-domestic MF revenue (via Ascent Fund Services) surged 182% YoY and is now 39.6% of the mix, up from 34.5% in FY26.</li>
+        <li><strong>Margin compression was flagged in advance.</strong> PAT margin fell to 21.1% from 28.2% YoY due to Ascent integration costs; management guides FY27 EBITDA margin back up to 44–45% as the acquisition scales.</li>
+        <li><strong>The market looked past the headline miss.</strong> Stock rose 8.7% on results day — investors rewarded the revenue beat and diversification trajectory over the YoY PAT dip.</li>
+        <li><strong>A major leadership change is coming.</strong> Dinesh Khara (former SBI Chairman) becomes CEO from October 2026 — the most significant governance development of the quarter across all six companies.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 2 · QUARTERLY RESULTS ══════════════════════ -->
+<div class="panel" id="tab-quarterly">
+  <div class="sec-heading">
+    <h2>Quarterly Results</h2>
+    <span class="sec-note">All six companies · Q1 FY27 Actual (Aug 2026) · Q1–Q4 FY26 retained for trend · Quarterly tables with PAT trend charts</span>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-label" style="color:var(--bse);">BSE Limited — Quarterly Financial Summary, Consolidated (₹ Crore)</div>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q2 FY26</th><th class="tn">Q3 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY</th><th class="tn">QoQ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="tn">958</td><td class="tn">1,000</td><td class="tn">1,244</td><td class="tn">1,564</td><td class="tn tb">1,566</td><td class="tn tpos">▲ 63.5%</td><td class="tn">▲ 0.1%</td></tr>
+        <tr><td class="tb">Transaction Charges</td><td class="tn">~ 737</td><td class="tn">—</td><td class="tn">949</td><td class="tn">1,311</td><td class="tn tb">1,328</td><td class="tn tpos">▲ 80%</td><td class="tn tpos">▲ 1.3%</td></tr>
+        <tr><td class="tb">Total Income</td><td class="tn">1,044</td><td class="tn">—</td><td class="tn">—</td><td class="tn">1,630</td><td class="tn tb">1,707</td><td class="tn tpos">▲ 63.6%</td><td class="tn tpos">▲ 4.7%</td></tr>
+        <tr><td class="tb">Total Expenses</td><td class="tn">—</td><td class="tn">511</td><td class="tn">511</td><td class="tn">557</td><td class="tn tb">520</td><td class="tn tpos">▲ 56.2%</td><td class="tn tneg">▼ 6.6%</td></tr>
+        <tr><td class="tb">Operating EBITDA</td><td class="tn">~ 625</td><td class="tn">—</td><td class="tn">—</td><td class="tn">~ 1,061</td><td class="tn tb">1,046</td><td class="tn tpos">▲ 67.4%</td><td class="tn neu">≈ flat</td></tr>
+        <tr style="background:var(--bse-soft);"><td class="tb" style="color:var(--bse);">Net Profit (PAT)</td><td class="tn tb">538</td><td class="tn tb">602</td><td class="tn tb">602</td><td class="tn tb">797</td><td class="tn tb" style="color:var(--bse);">873</td><td class="tn tpos">▲ 62%</td><td class="tn tpos">▲ 9.7%</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">★ Q1 FY27 unaudited results approved by Board 04 Aug 2026, limited review by S.R. Batliboi &amp; Co. LLP (unmodified opinion). Consolidated Q1 FY26 PAT restated at ₹538 Cr (includes associate income; standalone Q1 FY26 PAT was ₹410 Cr as reported historically). 150th anniversary quarter; 14th consecutive record-revenue quarter.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--bse);">BSE — Net Profit After Tax, Quarterly (₹ Crore, Consolidated)</div>
+      <svg viewBox="0 0 900 245" class="chart">
+<line x1="80" y1="20" x2="880" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="23" class="cl" text-anchor="end">1,000</text>
+<line x1="80" y1="62" x2="880" y2="62" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="66" class="cl" text-anchor="end">750</text>
+<line x1="80" y1="105" x2="880" y2="105" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="108" class="cl" text-anchor="end">500</text>
+<line x1="80" y1="148" x2="880" y2="148" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="150" class="cl" text-anchor="end">250</text>
+<line x1="80" y1="190" x2="880" y2="190" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="72" y="193" class="cl" text-anchor="end">0</text>
+<rect x="126.4" y="98.5" width="67.2" height="91.5" fill="var(--bse)" opacity="0.32" rx="3"/>
+<text x="160.0" y="92.5" class="cv" text-anchor="middle">₹538</text>
+<text x="160.0" y="207" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="286.4" y="87.7" width="67.2" height="102.3" fill="var(--bse)" opacity="0.48" rx="3"/>
+<text x="320.0" y="81.7" class="cv" text-anchor="middle">₹602</text>
+<text x="320.0" y="207" class="cl" text-anchor="middle">Q2 FY26</text>
+<rect x="446.4" y="87.7" width="67.2" height="102.3" fill="var(--bse)" opacity="0.62" rx="3"/>
+<text x="480.0" y="81.7" class="cv" text-anchor="middle">₹602</text>
+<text x="480.0" y="207" class="cl" text-anchor="middle">Q3 FY26</text>
+<rect x="606.4" y="54.5" width="67.2" height="135.5" fill="var(--bse)" opacity="0.8" rx="3"/>
+<text x="640.0" y="48.5" class="cv" text-anchor="middle">₹797</text>
+<text x="640.0" y="207" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="766.4" y="41.6" width="67.2" height="148.4" fill="var(--bse)" rx="3"/>
+<text x="800.0" y="35.6" class="cv" text-anchor="middle" font-weight="700">₹873 ★</text>
+<text x="800.0" y="207" class="cl" text-anchor="middle" font-weight="700">Q1 FY27</text>
+<polyline points="160.0,98.5 320.0,87.7 480.0,87.7 640.0,54.5 800.0,41.6" fill="none" stroke="var(--bse)" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.45"/>
+</svg>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-label" style="color:var(--mcx);">MCX India — Quarterly Financial Summary, Consolidated (₹ Crore)</div>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q2 FY26</th><th class="tn">Q3 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY</th><th class="tn">QoQ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="tn">373</td><td class="tn">377</td><td class="tn">666</td><td class="tn">889</td><td class="tn tb">702</td><td class="tn tpos">▲ 88%</td><td class="tn tneg">▼ 21%</td></tr>
+        <tr><td class="tb">Total Income</td><td class="tn">406</td><td class="tn">—</td><td class="tn">—</td><td class="tn">~ 960</td><td class="tn tb">752</td><td class="tn tpos">▲ 85%</td><td class="tn tneg">▼ 21.7%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">~ 240</td><td class="tn">~ 245</td><td class="tn">527</td><td class="tn">666</td><td class="tn tb">494</td><td class="tn tpos">▲ ~ 106%</td><td class="tn tneg">▼ 25.8%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn">~ 65%</td><td class="tn">~ 65%</td><td class="tn">76%</td><td class="tn">74.9%</td><td class="tn tb">70.4%</td><td class="tn pos">▲ ~ 5.4pp</td><td class="tn tneg">▼ 4.5pp</td></tr>
+        <tr style="background:var(--mcx-soft);"><td class="tb" style="color:var(--mcx);">Net Profit (PAT)</td><td class="tn tb">203</td><td class="tn tb">197</td><td class="tn tb">401</td><td class="tn tb">530</td><td class="tn tb" style="color:var(--mcx);">413</td><td class="tn tpos">▲ 103%</td><td class="tn tneg">▼ 22%</td></tr>
+        <tr><td class="tb">Options ADT Growth (YoY)</td><td class="tn">Base</td><td class="tn">—</td><td class="tn">▲224%</td><td class="tn">Peak volatility</td><td class="tn tb">▲266%</td><td class="tn tpos">Accelerating</td><td class="tn neg">Off record base</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">★ Q1 FY27 unaudited results, Board approved 04 Aug 2026. EPS ₹16.68 vs ₹16.95 consensus (1.6% miss). Sequential moderation reflects normalisation after an exceptionally strong Q4 FY26 bullion/energy volatility quarter, not a structural reversal.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--mcx);">MCX — Net Profit After Tax, Quarterly (₹ Crore, Consolidated)</div>
+      <svg viewBox="0 0 900 245" class="chart">
+<line x1="80" y1="20" x2="880" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="23" class="cl" text-anchor="end">600</text>
+<line x1="80" y1="62" x2="880" y2="62" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="66" class="cl" text-anchor="end">450</text>
+<line x1="80" y1="105" x2="880" y2="105" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="108" class="cl" text-anchor="end">300</text>
+<line x1="80" y1="148" x2="880" y2="148" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="150" class="cl" text-anchor="end">150</text>
+<line x1="80" y1="190" x2="880" y2="190" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="72" y="193" class="cl" text-anchor="end">0</text>
+<rect x="126.4" y="132.5" width="67.2" height="57.5" fill="var(--mcx)" opacity="0.32" rx="3"/>
+<text x="160.0" y="126.5" class="cv" text-anchor="middle">₹203</text>
+<text x="160.0" y="207" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="286.4" y="134.2" width="67.2" height="55.8" fill="var(--mcx)" opacity="0.48" rx="3"/>
+<text x="320.0" y="128.2" class="cv" text-anchor="middle">₹197</text>
+<text x="320.0" y="207" class="cl" text-anchor="middle">Q2 FY26</text>
+<rect x="446.4" y="76.4" width="67.2" height="113.6" fill="var(--mcx)" opacity="0.62" rx="3"/>
+<text x="480.0" y="70.4" class="cv" text-anchor="middle">₹401</text>
+<text x="480.0" y="207" class="cl" text-anchor="middle">Q3 FY26</text>
+<rect x="606.4" y="39.8" width="67.2" height="150.2" fill="var(--mcx)" opacity="0.8" rx="3"/>
+<text x="640.0" y="33.8" class="cv" text-anchor="middle">₹530</text>
+<text x="640.0" y="207" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="766.4" y="73.0" width="67.2" height="117.0" fill="var(--mcx)" rx="3"/>
+<text x="800.0" y="67.0" class="cv" text-anchor="middle" font-weight="700">₹413 ★</text>
+<text x="800.0" y="207" class="cl" text-anchor="middle" font-weight="700">Q1 FY27</text>
+<polyline points="160.0,132.5 320.0,134.2 480.0,76.4 640.0,39.8 800.0,73.0" fill="none" stroke="var(--mcx)" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.45"/>
+</svg>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;border-top:4px solid var(--cdsl);">
+    <div class="card-label" style="color:var(--cdsl);">CDSL — Quarterly Financial Summary, Consolidated (₹ Crore)</div>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th class="tn">Q2 FY26</th><th class="tn">Q3 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY</th><th class="tn">QoQ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="tn">~ 278</td><td class="tn">304.36</td><td class="tn">262.85</td><td class="tn tb">292.76</td><td class="tn tpos">▲ 13.1%</td><td class="tn tpos">▲ 11.4%</td></tr>
+        <tr><td class="tb">Total Income (Consol.)</td><td class="tn">—</td><td class="tn">—</td><td class="tn">~ 295</td><td class="tn tb">340.50</td><td class="tn tpos">▲ 15.4%</td><td class="tn tpos">▲ 15.4%</td></tr>
+        <tr><td class="tb">Total Expenses</td><td class="tn">—</td><td class="tn">—</td><td class="tn">163.95</td><td class="tn tb">~ 175</td><td class="tn">Rising</td><td class="tn">▲ ~ 7%</td></tr>
+        <tr style="background:var(--cdsl-soft);"><td class="tb" style="color:var(--cdsl);">Net Profit (PAT, Consol.)</td><td class="tn tb">—</td><td class="tn tb">132.95</td><td class="tn tb">79.79</td><td class="tn tb" style="color:var(--cdsl);">117.67</td><td class="tn tpos">▲ 14.9%</td><td class="tn tpos">▲ 47.5%</td></tr>
+        <tr><td class="tb">Standalone PAT</td><td class="tn">—</td><td class="tn">—</td><td class="tn">~ 152</td><td class="tn tb">144</td><td class="tn tneg">▼ 5.3%</td><td class="tn neg">▼ QoQ</td></tr>
+        <tr><td class="tb">Demat Accounts (Cr)</td><td class="tn">~ 16.6</td><td class="tn">~ 17.2</td><td class="tn">18.0+</td><td class="tn tb">18.59</td><td class="tn tpos">▲ 17.2%</td><td class="tn tpos">+58 lakh added</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">★ Q1 FY27 audited results announced 01 Aug 2026. Standalone PAT declined YoY only because dividend income from subsidiaries fell to ₹39.50 Cr from ₹62 Cr — standalone PAT excluding that dividend actually grew 15.6% YoY to ₹104 Cr, showing genuine operating strength. EPS ₹5.62–5.65, missing ~ ₹7.20 consensus (~ 21.5% miss).</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--cdsl);">CDSL — Net Profit After Tax, Quarterly (₹ Crore, Consolidated)</div>
+      <svg viewBox="0 0 900 245" class="chart">
+<line x1="80" y1="20" x2="880" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="23" class="cl" text-anchor="end">150</text>
+<line x1="80" y1="62" x2="880" y2="62" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="66" class="cl" text-anchor="end">112</text>
+<line x1="80" y1="105" x2="880" y2="105" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="108" class="cl" text-anchor="end">75</text>
+<line x1="80" y1="148" x2="880" y2="148" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="150" class="cl" text-anchor="end">38</text>
+<line x1="80" y1="190" x2="880" y2="190" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="72" y="193" class="cl" text-anchor="end">0.0</text>
+<rect x="126.4" y="74.4" width="67.2" height="115.6" fill="var(--cdsl)" opacity="0.32" rx="3"/>
+<text x="160.0" y="68.4" class="cv" text-anchor="middle">₹102.0</text>
+<text x="160.0" y="207" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="286.4" y="75.5" width="67.2" height="114.5" fill="var(--cdsl)" opacity="0.48" rx="3"/>
+<text x="320.0" y="69.5" class="cv" text-anchor="middle">₹101.0</text>
+<text x="320.0" y="207" class="cl" text-anchor="middle">Q2 FY26</text>
+<rect x="446.4" y="39.3" width="67.2" height="150.7" fill="var(--cdsl)" opacity="0.62" rx="3"/>
+<text x="480.0" y="33.3" class="cv" text-anchor="middle">₹132.9</text>
+<text x="480.0" y="207" class="cl" text-anchor="middle">Q3 FY26</text>
+<rect x="606.4" y="99.6" width="67.2" height="90.4" fill="var(--cdsl)" opacity="0.8" rx="3"/>
+<text x="640.0" y="93.6" class="cv" text-anchor="middle">₹79.8</text>
+<text x="640.0" y="207" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="766.4" y="56.6" width="67.2" height="133.4" fill="var(--cdsl)" rx="3"/>
+<text x="800.0" y="50.6" class="cv" text-anchor="middle" font-weight="700">₹117.7 ★</text>
+<text x="800.0" y="207" class="cl" text-anchor="middle" font-weight="700">Q1 FY27</text>
+<polyline points="160.0,74.4 320.0,75.5 480.0,39.3 640.0,99.6 800.0,56.6" fill="none" stroke="var(--cdsl)" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.45"/>
+</svg>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;border-top:4px solid var(--nsdl);">
+    <div class="card-label" style="color:var(--nsdl);">NSDL — Quarterly Financial Summary, Consolidated (₹ Crore)</div>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th class="tn">Q3 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY</th><th class="tn">QoQ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Total Income (Consol.)</td><td class="tn">~ 420</td><td class="tn">486.8</td><td class="tn tb">560.5</td><td class="tn tpos">▲ 61.6%</td><td class="tn tpos">▲ 15.1%</td></tr>
+        <tr><td class="tb">Revenue from Operations</td><td class="tn">~ 370</td><td class="tn">~ 460</td><td class="tn tb">516.63</td><td class="tn tpos">▲ 65.6%</td><td class="tn tpos">▲ ~ 12%</td></tr>
+        <tr><td class="tb">Banking Services Revenue</td><td class="tn">—</td><td class="tn">▲49% YoY</td><td class="tn tb">313.84 (61%)</td><td class="tn tpos">More than doubled</td><td class="tn tpos">Largest segment now</td></tr>
+        <tr><td class="tb">Depository Segment Revenue</td><td class="tn">—</td><td class="tn">—</td><td class="tn tb">182.14 (35%)</td><td class="tn tpos">▲ 13.2% (standalone)</td><td class="tn">Steady</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn">~ 29.9%</td><td class="tn">22.7%</td><td class="tn tb">19.55%</td><td class="tn tneg">▼ 1343 bps</td><td class="tn tneg">▼ 315 bps</td></tr>
+        <tr style="background:var(--nsdl-soft);"><td class="tb" style="color:var(--nsdl);">Net Profit (Consol. PAT)</td><td class="tn tb">~ 98</td><td class="tn tb">90.32</td><td class="tn tb" style="color:var(--nsdl);">98.31</td><td class="tn tpos">▲ 9.68%</td><td class="tn tpos">▲ 8.85%</td></tr>
+        <tr><td class="tb">Standalone PAT</td><td class="tn">—</td><td class="tn">79.70</td><td class="tn tb">89.13</td><td class="tn tpos">▲ 7.9%</td><td class="tn tpos">▲ 11.9%</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">★ Q1 FY27 unaudited results approved 30 Jul 2026 (corrigendum filed 31 Jul 2026 to fix an omitted notes page — no change to figures). Banking Services has overtaken Depository as NSDL's largest revenue line; margin compression reflects the lower-margin nature of that fast-growing segment. EPS ₹4.91 consol. (▲9.6% YoY).</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--nsdl);">NSDL — Net Profit After Tax, Quarterly (₹ Crore, Consolidated)</div>
+      <svg viewBox="0 0 900 245" class="chart">
+<line x1="80" y1="20" x2="880" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="23" class="cl" text-anchor="end">120</text>
+<line x1="80" y1="62" x2="880" y2="62" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="66" class="cl" text-anchor="end">90</text>
+<line x1="80" y1="105" x2="880" y2="105" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="108" class="cl" text-anchor="end">60</text>
+<line x1="80" y1="148" x2="880" y2="148" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="150" class="cl" text-anchor="end">30</text>
+<line x1="80" y1="190" x2="880" y2="190" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="72" y="193" class="cl" text-anchor="end">0.0</text>
+<rect x="126.4" y="63.0" width="67.2" height="127.0" fill="var(--nsdl)" opacity="0.32" rx="3"/>
+<text x="160.0" y="57.0" class="cv" text-anchor="middle">₹89.6</text>
+<text x="160.0" y="207" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="286.4" y="59.7" width="67.2" height="130.3" fill="var(--nsdl)" opacity="0.48" rx="3"/>
+<text x="320.0" y="53.7" class="cv" text-anchor="middle">₹92.0</text>
+<text x="320.0" y="207" class="cl" text-anchor="middle">Q2 FY26</text>
+<rect x="446.4" y="51.2" width="67.2" height="138.8" fill="var(--nsdl)" opacity="0.62" rx="3"/>
+<text x="480.0" y="45.2" class="cv" text-anchor="middle">₹98.0</text>
+<text x="480.0" y="207" class="cl" text-anchor="middle">Q3 FY26</text>
+<rect x="606.4" y="62.0" width="67.2" height="128.0" fill="var(--nsdl)" opacity="0.8" rx="3"/>
+<text x="640.0" y="56.0" class="cv" text-anchor="middle">₹90.3</text>
+<text x="640.0" y="207" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="766.4" y="50.7" width="67.2" height="139.3" fill="var(--nsdl)" rx="3"/>
+<text x="800.0" y="44.7" class="cv" text-anchor="middle" font-weight="700">₹98.3 ★</text>
+<text x="800.0" y="207" class="cl" text-anchor="middle" font-weight="700">Q1 FY27</text>
+<polyline points="160.0,63.0 320.0,59.7 480.0,51.2 640.0,62.0 800.0,50.7" fill="none" stroke="var(--nsdl)" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.45"/>
+</svg>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;border-top:4px solid var(--cams);">
+    <div class="card-label" style="color:var(--cams);">CAMS — Quarterly Financial Summary, Consolidated (₹ Crore)</div>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th class="tn">Q2 FY26</th><th class="tn">Q3 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY</th><th class="tn">QoQ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="tn">~ 373</td><td class="tn">390.14</td><td class="tn">395.22</td><td class="tn tb">395.03</td><td class="tn tpos">▲ 11.5%</td><td class="tn">≈ flat</td></tr>
+        <tr><td class="tb">Total Revenue</td><td class="tn">—</td><td class="tn">403.02</td><td class="tn">408.16</td><td class="tn tb">411.61</td><td class="tn tpos">▲ ~ 11%</td><td class="tn tpos">▲ 0.8%</td></tr>
+        <tr><td class="tb">Total Expenses</td><td class="tn">—</td><td class="tn">~ 224</td><td class="tn">~ 225</td><td class="tn tb">238.32</td><td class="tn">▲ 8%</td><td class="tn tpos">▲ 6%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn">~ 44%</td><td class="tn">~ 44.9%</td><td class="tn">46.5%</td><td class="tn tb">46.26%</td><td class="tn pos">Stable/high</td><td class="tn">≈ flat</td></tr>
+        <tr style="background:var(--cams-soft);"><td class="tb" style="color:var(--cams);">Net Profit (Consol. PAT)</td><td class="tn tb">~ 117</td><td class="tn tb">124.60</td><td class="tn tb">126.43</td><td class="tn tb" style="color:var(--cams);">128.02</td><td class="tn tpos">▲ 17.35%</td><td class="tn tpos">▲ 1.25%</td></tr>
+        <tr><td class="tb">Standalone PAT</td><td class="tn">—</td><td class="tn">—</td><td class="tn">—</td><td class="tn tb">121.81</td><td class="tn tpos">▲ 15.8%</td><td class="tn">—</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">★ Q1 FY27 unaudited results approved 03 Aug 2026 (resubmitted to fix a typographical error), limited review by S.R. Batliboi &amp; Associates LLP (unmodified opinion). MF AUM serviced hit a record ₹56 lakh crore (▲14.8% YoY), 67.2% market share. Interim dividend ₹2.50/share declared, record date 12 Aug 2026.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--cams);">CAMS — Net Profit After Tax, Quarterly (₹ Crore, Consolidated)</div>
+      <svg viewBox="0 0 900 245" class="chart">
+<line x1="80" y1="20" x2="880" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="23" class="cl" text-anchor="end">150</text>
+<line x1="80" y1="62" x2="880" y2="62" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="66" class="cl" text-anchor="end">112</text>
+<line x1="80" y1="105" x2="880" y2="105" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="108" class="cl" text-anchor="end">75</text>
+<line x1="80" y1="148" x2="880" y2="148" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="150" class="cl" text-anchor="end">38</text>
+<line x1="80" y1="190" x2="880" y2="190" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="72" y="193" class="cl" text-anchor="end">0.0</text>
+<rect x="126.4" y="66.4" width="67.2" height="123.6" fill="var(--cams)" opacity="0.32" rx="3"/>
+<text x="160.0" y="60.4" class="cv" text-anchor="middle">₹109.1</text>
+<text x="160.0" y="207" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="286.4" y="57.4" width="67.2" height="132.6" fill="var(--cams)" opacity="0.48" rx="3"/>
+<text x="320.0" y="51.4" class="cv" text-anchor="middle">₹117.0</text>
+<text x="320.0" y="207" class="cl" text-anchor="middle">Q2 FY26</text>
+<rect x="446.4" y="48.8" width="67.2" height="141.2" fill="var(--cams)" opacity="0.62" rx="3"/>
+<text x="480.0" y="42.8" class="cv" text-anchor="middle">₹124.6</text>
+<text x="480.0" y="207" class="cl" text-anchor="middle">Q3 FY26</text>
+<rect x="606.4" y="46.7" width="67.2" height="143.3" fill="var(--cams)" opacity="0.8" rx="3"/>
+<text x="640.0" y="40.7" class="cv" text-anchor="middle">₹126.4</text>
+<text x="640.0" y="207" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="766.4" y="44.9" width="67.2" height="145.1" fill="var(--cams)" rx="3"/>
+<text x="800.0" y="38.9" class="cv" text-anchor="middle" font-weight="700">₹128.0 ★</text>
+<text x="800.0" y="207" class="cl" text-anchor="middle" font-weight="700">Q1 FY27</text>
+<polyline points="160.0,66.4 320.0,57.4 480.0,48.8 640.0,46.7 800.0,44.9" fill="none" stroke="var(--cams)" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.45"/>
+</svg>
+  </div>
+
+  <div class="card" style="border-top:4px solid var(--kfin);">
+    <div class="card-label" style="color:var(--kfin);">KFin Technologies — Quarterly Financial Summary, Consolidated (₹ Crore)</div>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th class="tn">Q2 FY26</th><th class="tn">Q3 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY</th><th class="tn">QoQ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Revenue from Operations</td><td class="tn">~ 300</td><td class="tn">~ 329</td><td class="tn">347.30</td><td class="tn tb">356.54</td><td class="tn tpos">▲ 30.1%</td><td class="tn tpos">▲ 2.7%</td></tr>
+        <tr><td class="tb">Total Income</td><td class="tn">—</td><td class="tn">—</td><td class="tn">~ 355</td><td class="tn tb">366.90</td><td class="tn tpos">▲ 29.1%</td><td class="tn tpos">▲ 3.4%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">—</td><td class="tn">~ 124</td><td class="tn">128.48</td><td class="tn tb">121.98</td><td class="tn tpos">▲ 7.1%</td><td class="tn tneg">▼ 5.1%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn">—</td><td class="tn">~ 37.7%</td><td class="tn">~ 35.5%</td><td class="tn tb">34.2%</td><td class="tn tneg">Compressed (Ascent)</td><td class="tn tneg">▼ 1.3pp</td></tr>
+        <tr style="background:var(--kfin-soft);"><td class="tb" style="color:var(--kfin);">Net Profit (Consol. PAT)</td><td class="tn tb">—</td><td class="tn tb">~ 68</td><td class="tn tb">81.15</td><td class="tn tb" style="color:var(--kfin);">75.21</td><td class="tn tneg">▼ 2.6%</td><td class="tn tneg">▼ 7.3%</td></tr>
+        <tr><td class="tb">PAT Margin</td><td class="tn">—</td><td class="tn">—</td><td class="tn">~ 23.4%</td><td class="tn tb">21.1%</td><td class="tn tneg">vs 28.2% Q1 FY26</td><td class="tn tneg">Compressing</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">★ Q1 FY27 unaudited results, earnings call held 27 Jul 2026. Diluted EPS ₹4.34 vs ₹4.45 (Q1 FY26) vs ₹4.67 (Q4 FY26). Margin compression attributed to Ascent Fund Services' integration stage, annual increments, and lower mark-to-market gains; management guides FY27 EBITDA margin to 44–45% as Ascent scales.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--kfin);">KFintech — Net Profit After Tax, Quarterly (₹ Crore, Consolidated)</div>
+      <svg viewBox="0 0 900 245" class="chart">
+<line x1="80" y1="20" x2="880" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="23" class="cl" text-anchor="end">100</text>
+<line x1="80" y1="62" x2="880" y2="62" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="66" class="cl" text-anchor="end">75</text>
+<line x1="80" y1="105" x2="880" y2="105" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="108" class="cl" text-anchor="end">50</text>
+<line x1="80" y1="148" x2="880" y2="148" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="150" class="cl" text-anchor="end">25</text>
+<line x1="80" y1="190" x2="880" y2="190" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="72" y="193" class="cl" text-anchor="end">0.0</text>
+<rect x="126.4" y="58.7" width="67.2" height="131.3" fill="var(--kfin)" opacity="0.32" rx="3"/>
+<text x="160.0" y="52.7" class="cv" text-anchor="middle">₹77.3</text>
+<text x="160.0" y="207" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="286.4" y="67.6" width="67.2" height="122.4" fill="var(--kfin)" opacity="0.48" rx="3"/>
+<text x="320.0" y="61.6" class="cv" text-anchor="middle">₹72.0</text>
+<text x="320.0" y="207" class="cl" text-anchor="middle">Q2 FY26</text>
+<rect x="446.4" y="74.4" width="67.2" height="115.6" fill="var(--kfin)" opacity="0.62" rx="3"/>
+<text x="480.0" y="68.4" class="cv" text-anchor="middle">₹68.0</text>
+<text x="480.0" y="207" class="cl" text-anchor="middle">Q3 FY26</text>
+<rect x="606.4" y="52.0" width="67.2" height="138.0" fill="var(--kfin)" opacity="0.8" rx="3"/>
+<text x="640.0" y="46.0" class="cv" text-anchor="middle">₹81.2</text>
+<text x="640.0" y="207" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="766.4" y="62.1" width="67.2" height="127.9" fill="var(--kfin)" rx="3"/>
+<text x="800.0" y="56.1" class="cv" text-anchor="middle" font-weight="700">₹75.2 ★</text>
+<text x="800.0" y="207" class="cl" text-anchor="middle" font-weight="700">Q1 FY27</text>
+<polyline points="160.0,58.7 320.0,67.6 480.0,74.4 640.0,52.0 800.0,62.1" fill="none" stroke="var(--kfin)" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.45"/>
+</svg>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 4 · REVENUE SEGMENTS ══════════════════════ -->
+<div class="panel" id="tab-segments">
+  <div class="sec-heading">
+    <h2>Revenue Segments</h2>
+    <span class="sec-note">Q1 FY27 revenue mix by business line, all six companies — with plain-language definitions</span>
+  </div>
+
+  <div class="card gap-top" style="border-left:4px solid var(--gold);margin-bottom:20px;">
+    <div class="card-label" style="color:var(--gold);">How to Read This Page — Definitions</div>
+    <div class="g3">
+      <div>
+        <div style="font-size:11px;font-weight:700;margin-bottom:5px;">Revenue from Operations vs Total Income</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">"Revenue from Operations" = money earned from the company's core licensed activity (transaction fees, AMC charges, RTA fees, etc.). "Total Income" adds investment/treasury income and other non-core income on top. The segment splits below are of <strong>Revenue from Operations</strong> unless stated otherwise.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;margin-bottom:5px;">Segment = How the Company Earns, Not Just a Product Name</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Each bar below breaks revenue into the actual business lines a company reports to SEBI/exchanges — e.g. "Transaction Charges" (BSE) is fees on every trade executed; "Banking Services" (NSDL) is fee income from its banking-services subsidiary, not interest income; "Depository Activity" (CDSL) is demat/settlement fees, separate from AMC (account-maintenance) charges.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;margin-bottom:5px;">Where a Company Doesn't Disclose a Rupee Split</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">MCX and CAMS don't publish an exact rupee-crore product-line revenue split in their Q1 FY27 filings. For those two, this page uses the closest disclosed proxy (turnover/ADT by commodity for MCX; MF vs non-MF revenue share for CAMS) and labels it clearly as such — no invented rupee figures.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-label" style="color:var(--bse);">BSE — Q1 FY27 Revenue Mix (₹ Crore, Consolidated Revenue from Operations)</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Definitions: <strong>Transaction Charges</strong> = fees on every equity, derivatives and SME trade executed on BSE, including StAR MF distribution fees. <strong>Investment Income</strong> = treasury yield on BSE's own cash/investment book (not a fee from customers). <strong>Other Operating Income</strong> = listing fees, data/terminal fees and other minor licensed-activity income.</div>
+    <div class="seg-bar-wrap">
+      <div class="seg-bar">
+        <div style="width:77.8%;background:var(--bse);">Transaction Charges 77.8%</div>
+        <div style="width:8.3%;background:var(--bse-mid);">Investment Income 8.3%</div>
+        <div style="width:5.7%;background:var(--gold);">Other Op. Income 5.7%</div>
+        <div style="width:8.1%;background:#c8bfb4;">Other 8.1%</div>
+      </div>
+    </div>
+    <div class="seg-label-row">
+      <span class="seg-dot"><span style="background:var(--bse);"></span>Transaction Charges — ₹1,328 Cr (▲80% YoY)</span>
+      <span class="seg-dot"><span style="background:var(--bse-mid);"></span>Investment/Other Income — ₹141 Cr (▲62% YoY)</span>
+      <span class="seg-dot"><span style="background:var(--gold);"></span>Other Operating Income — ₹98 Cr</span>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">Transaction charges remain BSE's overwhelming revenue driver at ~ 78% of total income, up 80% YoY — Sensex derivatives, cash equity, and StAR MF distribution all contributed. Listing and treasury lines are comparatively small but stable.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-label" style="color:var(--mcx);">MCX — Q1 FY27 Turnover Mix by Commodity Segment (Proxy for Revenue Drivers)</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Definitions: MCX earns transaction fees as a small percentage of <strong>ADT (Average Daily Turnover)</strong> — the value of contracts traded per day. It does not publish rupee-crore revenue by commodity, but ADT by segment is the direct driver of fee revenue and is disclosed in the investor presentation, so it is shown here instead. <strong>Futures</strong> = fixed-price forward contracts; <strong>Options (Notional)</strong> = the notional contract value underlying options premiums traded — the primary reason total ADT figures look very large relative to revenue.</div>
+    <table style="margin-bottom:8px;">
+      <thead><tr><th>Segment</th><th class="tn">Q1 FY27 ADT (₹ Crore)</th><th class="tn">YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Bullion (Futures + Options combined)</td><td class="tn tb">₹719,959 Cr</td><td class="tn tpos">▲ 427%</td></tr>
+        <tr><td class="tb">— Bullion Futures ADT</td><td class="tn">₹38,350 Cr</td><td class="tn tpos">▲ 27%</td></tr>
+        <tr><td class="tb">— Bullion Options Notional ADT</td><td class="tn">₹681,609 Cr</td><td class="tn tpos">▲ 541%</td></tr>
+        <tr><td class="tb">Energy Futures ADT</td><td class="tn">₹15,175 Cr</td><td class="tn tpos">▲ ~100% (doubled)</td></tr>
+        <tr><td class="tb">Energy Options Notional ADT</td><td class="tn">₹297,913 Cr</td><td class="tn tpos">▲ 82%</td></tr>
+        <tr style="background:var(--mcx-soft);"><td class="tb" style="color:var(--mcx);">Total Futures ADT (all commodities)</td><td class="tn tb">₹59,674 Cr</td><td class="tn tpos">▲ 47%</td></tr>
+        <tr style="background:var(--mcx-soft);"><td class="tb" style="color:var(--mcx);">Total Options Notional ADT (all commodities)</td><td class="tn tb">₹989,691 Cr</td><td class="tn tpos">▲ 266%</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--muted);line-height:1.7;">Bullion (gold/silver) is unambiguously MCX's largest fee driver by a wide margin — its combined futures+options ADT of ₹7.2 lakh crore dwarfs energy. Options notional turnover is not directly comparable to futures turnover rupee-for-rupee (options fees are charged on premium, not notional), so this table should be read as "which commodity/instrument dominates activity," not as a literal revenue split.</div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-label" style="color:var(--cdsl);">CDSL — Q1 FY27 Segment Revenue (₹ Crore)</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Definitions: <strong>Depository Activity</strong> = demat account transaction charges, Annual Maintenance Charges (AMC), corporate-action and settlement fees. <strong>Data Entry &amp; Storage</strong> = KYC record-keeping, e-locker and data-services fees charged to intermediaries.</div>
+      <div class="seg-bar-wrap">
+        <div class="seg-bar">
+          <div style="width:84.2%;background:var(--cdsl);">Depository Activity 84.2%</div>
+          <div style="width:15.8%;background:var(--cdsl-mid);">Data Entry &amp; Storage 15.8%</div>
+        </div>
+      </div>
+      <div class="seg-label-row">
+        <span class="seg-dot"><span style="background:var(--cdsl);"></span>Depository Activity — ₹246.70 Cr</span>
+        <span class="seg-dot"><span style="background:var(--cdsl-mid);"></span>Data Entry &amp; Storage — ~ ₹46.3 Cr</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--nsdl);">NSDL — Q1 FY27 Segment Revenue &amp; Profit (₹ Crore)</div>
+      <div style="background:var(--nsdl-soft);border-left:3px solid var(--nsdl);border-radius:6px;padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:700;margin-bottom:4px;">What is "Banking Services"?</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">It is <strong>not</strong> depository or trading-related. It's the business of NSDL's payments-bank subsidiary: accepting savings/demand deposits, mobile-app payments, remittances and mobile recharges, and issuing debit cards used for POS, e-commerce and ATM transactions. Think of it as NSDL running a small digital bank alongside its core depository business — the revenue line includes card/transaction fees and interchange income, not the depository's demat/settlement fees.</div>
+      </div>
+      <div class="seg-bar-wrap">
+        <div class="seg-bar">
+          <div style="width:60.75%;background:var(--nsdl);">Banking Services 60.8%</div>
+          <div style="width:35.26%;background:var(--nsdl-mid);">Depository 35.3%</div>
+          <div style="width:4%;background:var(--gold);">DBMS 4%</div>
+        </div>
+      </div>
+      <div class="seg-label-row">
+        <span class="seg-dot"><span style="background:var(--nsdl);"></span>Banking Services — ₹313.84 Cr revenue</span>
+        <span class="seg-dot"><span style="background:var(--nsdl-mid);"></span>Depository — ₹182.14 Cr revenue</span>
+        <span class="seg-dot"><span style="background:var(--gold);"></span>Database Mgmt Svcs — ₹20.65 Cr revenue</span>
+      </div>
+      <table style="margin-top:12px;">
+        <thead><tr><th>Segment</th><th class="tn">Revenue</th><th class="tn">Segment Profit</th><th class="tn">Implied Margin</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Banking Services</td><td class="tn">₹313.84 Cr</td><td class="tn tneg">₹3.30 Cr</td><td class="tn tneg">~1%</td></tr>
+          <tr><td class="tb">Depository</td><td class="tn">₹182.14 Cr</td><td class="tn tpos">₹80.01 Cr</td><td class="tn tpos">~44%</td></tr>
+          <tr><td class="tb">Database Mgmt Services</td><td class="tn">₹20.65 Cr</td><td class="tn">₹3.16 Cr</td><td class="tn">~15%</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.7;">This is the real story behind NSDL's margin compression: Banking Services generated 61% of revenue but only ~2% of segment profit this quarter — its profit fell 44.7% QoQ even as its revenue rose 17.8% QoQ, partly due to a one-time card-onboarding project with fees shared with an implementation partner. Depository remains the profit engine (~44% margin) despite being the smaller, slower-growing segment. Whether Banking Services' margin improves as the card-onboarding cost normalises is the key swing factor for NSDL's blended profitability in coming quarters.</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-label" style="color:var(--cams);">CAMS — Q1 FY27 Revenue Mix: MF vs Non-MF (₹ Crore, Operating Revenue)</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Definitions: <strong>MF (Mutual Fund) revenue</strong> = RTA record-keeping and transaction-processing fees earned from AMCs, tied to the ₹56 lakh crore of AUM serviced. <strong>Non-MF revenue</strong> = CAMSPay (payments), CAMS Alternatives (AIF/PMS servicing), KRA (KYC registration agency), insurance repository and account-aggregator (MFCentral) fees — businesses that don't depend on mutual-fund AUM.</div>
+      <div class="seg-bar-wrap">
+        <div class="seg-bar">
+          <div style="width:85%;background:var(--cams);">MF Revenue ~85%</div>
+          <div style="width:15%;background:var(--cams-mid);">Non-MF Revenue ~15%</div>
+        </div>
+      </div>
+      <div class="seg-label-row">
+        <span class="seg-dot"><span style="background:var(--cams);"></span>MF Revenue — ~ ₹336 Cr (core RTA fees)</span>
+        <span class="seg-dot"><span style="background:var(--cams-mid);"></span>Non-MF Revenue — ~ ₹59 Cr (▲28.4% YoY)</span>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.7;">Non-MF revenue grew 28.4% YoY — more than double the 11.5% growth of overall revenue — led by CAMSPay (▲69.1% YoY on 17 new client deals) and CAMS Alternatives (▲25.6% YoY, AUM crossing ₹3.2 lakh crore). It's still only ~15% of the base, but it's the fastest-growing, least AUM-cyclical part of the business — management's FY27 guidance targets 20–23% non-MF growth vs a minimum 12% for MF revenue.</div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--kfin);">KFintech — Q1 FY27 Revenue Mix: Domestic vs Non-Domestic MF (₹ Crore)</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Definitions: <strong>Domestic MF &amp; Other</strong> = India mutual-fund RTA fees plus Issuer Solutions (corporate registry/RTA for share issuers) and NPS. <strong>Non-Domestic MF (incl. Ascent)</strong> = international fund-services revenue, mainly via the Ascent Fund Services acquisition spanning 18 countries.</div>
+      <div class="seg-bar-wrap">
+        <div class="seg-bar">
+          <div style="width:60.4%;background:var(--kfin);">Domestic MF &amp; Other 60.4%</div>
+          <div style="width:39.6%;background:var(--kfin-mid);">Non-Domestic MF (incl. Ascent) 39.6%</div>
+        </div>
+      </div>
+      <div class="seg-label-row">
+        <span class="seg-dot"><span style="background:var(--kfin);"></span>Domestic MF solutions — ▲7% YoY</span>
+        <span class="seg-dot"><span style="background:var(--kfin-mid);"></span>Non-domestic MF / Intl. — 39.6% of mix (▲182% YoY intl. revenue)</span>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Non-domestic mutual fund revenue share expanded from 34.5% in FY26 to 39.6% in Q1 FY27 — the clearest evidence of KFintech's diversification thesis via Ascent Fund Services, even though the acquisition is diluting near-term consolidated margins. Issuer Solutions revenue grew 8% YoY, beating estimates.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════ TAB 5 · CHARTS ══════════════════════ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-heading">
+    <h2>Charts</h2>
+    <span class="sec-note">Revenue, EBITDA &amp; Net Profit — levels, margins and growth — for all six companies, Q1 FY26 → Q4 FY26 → Q1 FY27</span>
+  </div>
+  <div class="card" style="border-left:4px solid var(--gold);margin-bottom:4px;">
+    <div class="card-label" style="color:var(--gold);">How to Read These Charts</div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.7;">Each chart shows three bars per quarter — <strong>Revenue</strong> (full colour), <strong>EBITDA</strong> (mid opacity) and <strong>Net Profit/PAT</strong> (light opacity) — all on the same ₹ Crore scale, so the gap between the bars is a visual read on cost structure: a large Revenue-to-EBITDA gap means high operating costs relative to revenue; a large EBITDA-to-PAT gap means high depreciation, tax or finance costs. The table below each chart gives the same three metrics as exact figures, their YoY/QoQ growth, and the EBITDA and PAT margin trend across the three periods shown.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--bse);">BSE Limited — Revenue, EBITDA &amp; Net Profit Trend (₹ Crore)</div>
+<svg viewBox="0 0 900 260" class="chart">
+<line x1="90" y1="20" x2="870" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="23" class="cl" text-anchor="end">2,000</text>
+<line x1="90" y1="65" x2="870" y2="65" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="68" class="cl" text-anchor="end">1,500</text>
+<line x1="90" y1="110" x2="870" y2="110" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="113" class="cl" text-anchor="end">1,000</text>
+<line x1="90" y1="155" x2="870" y2="155" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="158" class="cl" text-anchor="end">500</text>
+<line x1="90" y1="200" x2="870" y2="200" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="82" y="203" class="cl" text-anchor="end">0.0</text>
+<rect x="105.6" y="113.8" width="57.2" height="86.2" fill="var(--bse)" opacity="1.0" rx="2.5"/>
+<text x="134.2" y="108.8" class="cv" text-anchor="middle" font-size="9.5">958</text>
+<rect x="166.8" y="143.8" width="57.2" height="56.2" fill="var(--bse)" opacity="0.62" rx="2.5"/>
+<text x="195.4" y="138.8" class="cv" text-anchor="middle" font-size="9.5">625</text>
+<rect x="228.0" y="151.6" width="57.2" height="48.4" fill="var(--bse)" opacity="0.32" rx="2.5"/>
+<text x="256.6" y="146.6" class="cv" text-anchor="middle" font-size="9.5">538</text>
+<text x="220.0" y="218" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="365.6" y="59.2" width="57.2" height="140.8" fill="var(--bse)" opacity="1.0" rx="2.5"/>
+<text x="394.2" y="54.2" class="cv" text-anchor="middle" font-size="9.5">1,564</text>
+<rect x="426.8" y="104.5" width="57.2" height="95.5" fill="var(--bse)" opacity="0.62" rx="2.5"/>
+<text x="455.4" y="99.5" class="cv" text-anchor="middle" font-size="9.5">1,061</text>
+<rect x="488.0" y="128.3" width="57.2" height="71.7" fill="var(--bse)" opacity="0.32" rx="2.5"/>
+<text x="516.6" y="123.3" class="cv" text-anchor="middle" font-size="9.5">797</text>
+<text x="480.0" y="218" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="625.6" y="59.1" width="57.2" height="140.9" fill="var(--bse)" opacity="1.0" rx="2.5"/>
+<text x="654.2" y="54.1" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">1,566</text>
+<rect x="686.8" y="105.9" width="57.2" height="94.1" fill="var(--bse)" opacity="0.62" rx="2.5"/>
+<text x="715.4" y="100.9" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">1,046</text>
+<rect x="748.0" y="121.4" width="57.2" height="78.6" fill="var(--bse)" opacity="0.32" rx="2.5"/>
+<text x="776.6" y="116.4" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">873</text>
+<text x="740.0" y="218" class="cl" text-anchor="middle" font-weight="700">Q1 FY27 ★</text>
+<rect x="90" y="238" width="11" height="9" fill="var(--bse)" opacity="1.0" rx="1"/><text x="105" y="246" class="cl" font-size="9">Revenue</text>
+<rect x="185" y="238" width="11" height="9" fill="var(--bse)" opacity="0.62" rx="1"/><text x="200" y="246" class="cl" font-size="9">EBITDA</text>
+<rect x="275" y="238" width="11" height="9" fill="var(--bse)" opacity="0.32" rx="1"/><text x="290" y="246" class="cl" font-size="9">Net Profit</text>
+</svg>
+    <table style="margin-top:10px;">
+      <thead><tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY Growth</th><th class="tn">QoQ Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue</td><td class="tn">958.0</td><td class="tn">1,564.0</td><td class="tn tb">1,566.0</td><td class="tn tpos">▲63.5%</td><td class="tn">▲0.1%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">625.0</td><td class="tn">1,061.0</td><td class="tn tb">1,046.0</td><td class="tn tpos">▲67.4%</td><td class="tn">≈flat</td></tr>
+        <tr style="background:var(--surface2);"><td class="tb" style="color:var(--bse);">Net Profit (PAT)</td><td class="tn tb">538.0</td><td class="tn tb">797.0</td><td class="tn tb" style="color:var(--bse);">873.0</td><td class="tn tpos">▲62%</td><td class="tn">▲9.7%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">65.0% → 67.9% → 66.8%</td><td class="tn" colspan="2"></td></tr>
+        <tr><td class="tb">Net Profit (PAT) Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">56.2% → 51.0% → 55.7%</td><td class="tn" colspan="2"></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">★ Revenue essentially flat QoQ, but PAT grew 9.7% QoQ on cost discipline (expenses ▼6.6% QoQ) and a near-doubling of investment income — EBITDA margin near 67%.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--mcx);">MCX India — Revenue, EBITDA &amp; Net Profit Trend (₹ Crore)</div>
+<svg viewBox="0 0 900 260" class="chart">
+<line x1="90" y1="20" x2="870" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="23" class="cl" text-anchor="end">1,200</text>
+<line x1="90" y1="65" x2="870" y2="65" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="68" class="cl" text-anchor="end">900</text>
+<line x1="90" y1="110" x2="870" y2="110" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="113" class="cl" text-anchor="end">600</text>
+<line x1="90" y1="155" x2="870" y2="155" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="158" class="cl" text-anchor="end">300</text>
+<line x1="90" y1="200" x2="870" y2="200" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="82" y="203" class="cl" text-anchor="end">0.0</text>
+<rect x="105.6" y="144.1" width="57.2" height="56.0" fill="var(--mcx)" opacity="1.0" rx="2.5"/>
+<text x="134.2" y="139.1" class="cv" text-anchor="middle" font-size="9.5">373</text>
+<rect x="166.8" y="164.0" width="57.2" height="36.0" fill="var(--mcx)" opacity="0.62" rx="2.5"/>
+<text x="195.4" y="159.0" class="cv" text-anchor="middle" font-size="9.5">240</text>
+<rect x="228.0" y="169.6" width="57.2" height="30.4" fill="var(--mcx)" opacity="0.32" rx="2.5"/>
+<text x="256.6" y="164.6" class="cv" text-anchor="middle" font-size="9.5">203</text>
+<text x="220.0" y="218" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="365.6" y="66.7" width="57.2" height="133.3" fill="var(--mcx)" opacity="1.0" rx="2.5"/>
+<text x="394.2" y="61.7" class="cv" text-anchor="middle" font-size="9.5">889</text>
+<rect x="426.8" y="100.1" width="57.2" height="99.9" fill="var(--mcx)" opacity="0.62" rx="2.5"/>
+<text x="455.4" y="95.1" class="cv" text-anchor="middle" font-size="9.5">666</text>
+<rect x="488.0" y="120.5" width="57.2" height="79.5" fill="var(--mcx)" opacity="0.32" rx="2.5"/>
+<text x="516.6" y="115.5" class="cv" text-anchor="middle" font-size="9.5">530</text>
+<text x="480.0" y="218" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="625.6" y="94.7" width="57.2" height="105.3" fill="var(--mcx)" opacity="1.0" rx="2.5"/>
+<text x="654.2" y="89.7" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">702</text>
+<rect x="686.8" y="125.9" width="57.2" height="74.1" fill="var(--mcx)" opacity="0.62" rx="2.5"/>
+<text x="715.4" y="120.9" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">494</text>
+<rect x="748.0" y="138.1" width="57.2" height="62.0" fill="var(--mcx)" opacity="0.32" rx="2.5"/>
+<text x="776.6" y="133.1" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">413</text>
+<text x="740.0" y="218" class="cl" text-anchor="middle" font-weight="700">Q1 FY27 ★</text>
+<rect x="90" y="238" width="11" height="9" fill="var(--mcx)" opacity="1.0" rx="1"/><text x="105" y="246" class="cl" font-size="9">Revenue</text>
+<rect x="185" y="238" width="11" height="9" fill="var(--mcx)" opacity="0.62" rx="1"/><text x="200" y="246" class="cl" font-size="9">EBITDA</text>
+<rect x="275" y="238" width="11" height="9" fill="var(--mcx)" opacity="0.32" rx="1"/><text x="290" y="246" class="cl" font-size="9">Net Profit</text>
+</svg>
+    <table style="margin-top:10px;">
+      <thead><tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY Growth</th><th class="tn">QoQ Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue</td><td class="tn">373.0</td><td class="tn">889.0</td><td class="tn tb">702.0</td><td class="tn tpos">▲88%</td><td class="tn">▼21%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">240.0</td><td class="tn">666.0</td><td class="tn tb">494.0</td><td class="tn tpos">▲106%</td><td class="tn">▼25.8%</td></tr>
+        <tr style="background:var(--surface2);"><td class="tb" style="color:var(--mcx);">Net Profit (PAT)</td><td class="tn tb">203.0</td><td class="tn tb">530.0</td><td class="tn tb" style="color:var(--mcx);">413.0</td><td class="tn tpos">▲103%</td><td class="tn">▼22%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">64.3% → 74.9% → 70.4%</td><td class="tn" colspan="2"></td></tr>
+        <tr><td class="tb">Net Profit (PAT) Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">54.4% → 59.6% → 58.8%</td><td class="tn" colspan="2"></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">★ All three metrics down QoQ off an exceptional Q4 FY26 volatility peak, but still 88–106% higher YoY — read this as normalisation, not deterioration.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--cdsl);">CDSL — Revenue, EBITDA &amp; Net Profit Trend (₹ Crore)</div>
+<svg viewBox="0 0 900 260" class="chart">
+<line x1="90" y1="20" x2="870" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="23" class="cl" text-anchor="end">400</text>
+<line x1="90" y1="65" x2="870" y2="65" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="68" class="cl" text-anchor="end">300</text>
+<line x1="90" y1="110" x2="870" y2="110" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="113" class="cl" text-anchor="end">200</text>
+<line x1="90" y1="155" x2="870" y2="155" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="158" class="cl" text-anchor="end">100</text>
+<line x1="90" y1="200" x2="870" y2="200" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="82" y="203" class="cl" text-anchor="end">0.0</text>
+<rect x="105.6" y="83.5" width="57.2" height="116.5" fill="var(--cdsl)" opacity="1.0" rx="2.5"/>
+<text x="134.2" y="78.5" class="cv" text-anchor="middle" font-size="9.5">259</text>
+<rect x="166.8" y="141.3" width="57.2" height="58.7" fill="var(--cdsl)" opacity="0.62" rx="2.5"/>
+<text x="195.4" y="136.3" class="cv" text-anchor="middle" font-size="9.5">130</text>
+<rect x="228.0" y="153.9" width="57.2" height="46.1" fill="var(--cdsl)" opacity="0.32" rx="2.5"/>
+<text x="256.6" y="148.9" class="cv" text-anchor="middle" font-size="9.5">102</text>
+<text x="220.0" y="218" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="365.6" y="81.7" width="57.2" height="118.3" fill="var(--cdsl)" opacity="1.0" rx="2.5"/>
+<text x="394.2" y="76.7" class="cv" text-anchor="middle" font-size="9.5">263</text>
+<rect x="426.8" y="147.5" width="57.2" height="52.5" fill="var(--cdsl)" opacity="0.62" rx="2.5"/>
+<text x="455.4" y="142.5" class="cv" text-anchor="middle" font-size="9.5">117</text>
+<rect x="488.0" y="164.1" width="57.2" height="35.9" fill="var(--cdsl)" opacity="0.32" rx="2.5"/>
+<text x="516.6" y="159.1" class="cv" text-anchor="middle" font-size="9.5">80</text>
+<text x="480.0" y="218" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="625.6" y="68.3" width="57.2" height="131.7" fill="var(--cdsl)" opacity="1.0" rx="2.5"/>
+<text x="654.2" y="63.3" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">293</text>
+<rect x="686.8" y="137.9" width="57.2" height="62.1" fill="var(--cdsl)" opacity="0.62" rx="2.5"/>
+<text x="715.4" y="132.9" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">138</text>
+<rect x="748.0" y="147.0" width="57.2" height="53.0" fill="var(--cdsl)" opacity="0.32" rx="2.5"/>
+<text x="776.6" y="142.0" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">118</text>
+<text x="740.0" y="218" class="cl" text-anchor="middle" font-weight="700">Q1 FY27 ★</text>
+<rect x="90" y="238" width="11" height="9" fill="var(--cdsl)" opacity="1.0" rx="1"/><text x="105" y="246" class="cl" font-size="9">Revenue</text>
+<rect x="185" y="238" width="11" height="9" fill="var(--cdsl)" opacity="0.62" rx="1"/><text x="200" y="246" class="cl" font-size="9">EBITDA</text>
+<rect x="275" y="238" width="11" height="9" fill="var(--cdsl)" opacity="0.32" rx="1"/><text x="290" y="246" class="cl" font-size="9">Net Profit</text>
+</svg>
+    <table style="margin-top:10px;">
+      <thead><tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY Growth</th><th class="tn">QoQ Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue</td><td class="tn">258.8</td><td class="tn">262.9</td><td class="tn tb">292.8</td><td class="tn tpos">▲13.1%</td><td class="tn">▲11.4%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">130.5</td><td class="tn">116.7</td><td class="tn tb">137.9</td><td class="tn tpos">▲5.7%</td><td class="tn">▲18.2%</td></tr>
+        <tr style="background:var(--surface2);"><td class="tb" style="color:var(--cdsl);">Net Profit (PAT)</td><td class="tn tb">102.4</td><td class="tn tb">79.8</td><td class="tn tb" style="color:var(--cdsl);">117.7</td><td class="tn tpos">▲14.9%</td><td class="tn">▲47.5%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">50.4% → 44.4% → 47.1%</td><td class="tn" colspan="2"></td></tr>
+        <tr><td class="tb">Net Profit (PAT) Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">39.6% → 30.4% → 40.2%</td><td class="tn" colspan="2"></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">★ EBITDA margin recovered 2.7pp QoQ to 47.1% (still 3.3pp below Q1 FY26) as the Q4 FY26 cost/margin squeeze partially unwound.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--nsdl);">NSDL — Revenue, EBITDA &amp; Net Profit Trend (₹ Crore)</div>
+<svg viewBox="0 0 900 260" class="chart">
+<line x1="90" y1="20" x2="870" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="23" class="cl" text-anchor="end">600</text>
+<line x1="90" y1="65" x2="870" y2="65" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="68" class="cl" text-anchor="end">450</text>
+<line x1="90" y1="110" x2="870" y2="110" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="113" class="cl" text-anchor="end">300</text>
+<line x1="90" y1="155" x2="870" y2="155" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="158" class="cl" text-anchor="end">150</text>
+<line x1="90" y1="200" x2="870" y2="200" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="82" y="203" class="cl" text-anchor="end">0.0</text>
+<rect x="105.6" y="106.4" width="57.2" height="93.6" fill="var(--nsdl)" opacity="1.0" rx="2.5"/>
+<text x="134.2" y="101.4" class="cv" text-anchor="middle" font-size="9.5">312</text>
+<rect x="166.8" y="171.4" width="57.2" height="28.6" fill="var(--nsdl)" opacity="0.62" rx="2.5"/>
+<text x="195.4" y="166.4" class="cv" text-anchor="middle" font-size="9.5">95</text>
+<rect x="228.0" y="173.1" width="57.2" height="26.9" fill="var(--nsdl)" opacity="0.32" rx="2.5"/>
+<text x="256.6" y="168.1" class="cv" text-anchor="middle" font-size="9.5">90</text>
+<text x="220.0" y="218" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="365.6" y="62.0" width="57.2" height="138.0" fill="var(--nsdl)" opacity="1.0" rx="2.5"/>
+<text x="394.2" y="57.0" class="cv" text-anchor="middle" font-size="9.5">460</text>
+<rect x="426.8" y="168.7" width="57.2" height="31.3" fill="var(--nsdl)" opacity="0.62" rx="2.5"/>
+<text x="455.4" y="163.7" class="cv" text-anchor="middle" font-size="9.5">104</text>
+<rect x="488.0" y="172.9" width="57.2" height="27.1" fill="var(--nsdl)" opacity="0.32" rx="2.5"/>
+<text x="516.6" y="167.9" class="cv" text-anchor="middle" font-size="9.5">90</text>
+<text x="480.0" y="218" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="625.6" y="45.0" width="57.2" height="155.0" fill="var(--nsdl)" opacity="1.0" rx="2.5"/>
+<text x="654.2" y="40.0" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">517</text>
+<rect x="686.8" y="169.7" width="57.2" height="30.3" fill="var(--nsdl)" opacity="0.62" rx="2.5"/>
+<text x="715.4" y="164.7" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">101</text>
+<rect x="748.0" y="170.5" width="57.2" height="29.5" fill="var(--nsdl)" opacity="0.32" rx="2.5"/>
+<text x="776.6" y="165.5" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">98</text>
+<text x="740.0" y="218" class="cl" text-anchor="middle" font-weight="700">Q1 FY27 ★</text>
+<rect x="90" y="238" width="11" height="9" fill="var(--nsdl)" opacity="1.0" rx="1"/><text x="105" y="246" class="cl" font-size="9">Revenue</text>
+<rect x="185" y="238" width="11" height="9" fill="var(--nsdl)" opacity="0.62" rx="1"/><text x="200" y="246" class="cl" font-size="9">EBITDA</text>
+<rect x="275" y="238" width="11" height="9" fill="var(--nsdl)" opacity="0.32" rx="1"/><text x="290" y="246" class="cl" font-size="9">Net Profit</text>
+</svg>
+    <table style="margin-top:10px;">
+      <thead><tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY Growth</th><th class="tn">QoQ Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue</td><td class="tn">312.0</td><td class="tn">460.0</td><td class="tn tb">516.6</td><td class="tn tpos">▲65.6%</td><td class="tn">▲12.3%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">95.2</td><td class="tn">104.4</td><td class="tn tb">101.0</td><td class="tn tpos">▲6.1%</td><td class="tn">▼3.3%</td></tr>
+        <tr style="background:var(--surface2);"><td class="tb" style="color:var(--nsdl);">Net Profit (PAT)</td><td class="tn tb">89.6</td><td class="tn tb">90.3</td><td class="tn tb" style="color:var(--nsdl);">98.3</td><td class="tn tpos">▲9.68%</td><td class="tn">▲8.85%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">30.5% → 22.7% → 19.6%</td><td class="tn" colspan="2"></td></tr>
+        <tr><td class="tb">Net Profit (PAT) Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">28.7% → 19.6% → 19.0%</td><td class="tn" colspan="2"></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">★ EBITDA growth (▲6.1% YoY) lagged revenue growth (▲65.6% YoY) by a wide margin — the Banking Services mix shift is diluting margin even as absolute EBITDA grows.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--cams);">CAMS — Revenue, EBITDA &amp; Net Profit Trend (₹ Crore)</div>
+<svg viewBox="0 0 900 260" class="chart">
+<line x1="90" y1="20" x2="870" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="23" class="cl" text-anchor="end">500</text>
+<line x1="90" y1="65" x2="870" y2="65" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="68" class="cl" text-anchor="end">375</text>
+<line x1="90" y1="110" x2="870" y2="110" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="113" class="cl" text-anchor="end">250</text>
+<line x1="90" y1="155" x2="870" y2="155" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="158" class="cl" text-anchor="end">125</text>
+<line x1="90" y1="200" x2="870" y2="200" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="82" y="203" class="cl" text-anchor="end">0.0</text>
+<rect x="105.6" y="72.5" width="57.2" height="127.5" fill="var(--cams)" opacity="1.0" rx="2.5"/>
+<text x="134.2" y="67.5" class="cv" text-anchor="middle" font-size="9.5">354</text>
+<rect x="166.8" y="144.3" width="57.2" height="55.7" fill="var(--cams)" opacity="0.62" rx="2.5"/>
+<text x="195.4" y="139.3" class="cv" text-anchor="middle" font-size="9.5">155</text>
+<rect x="228.0" y="160.7" width="57.2" height="39.3" fill="var(--cams)" opacity="0.32" rx="2.5"/>
+<text x="256.6" y="155.7" class="cv" text-anchor="middle" font-size="9.5">109</text>
+<text x="220.0" y="218" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="365.6" y="57.7" width="57.2" height="142.3" fill="var(--cams)" opacity="1.0" rx="2.5"/>
+<text x="394.2" y="52.7" class="cv" text-anchor="middle" font-size="9.5">395</text>
+<rect x="426.8" y="133.9" width="57.2" height="66.1" fill="var(--cams)" opacity="0.62" rx="2.5"/>
+<text x="455.4" y="128.9" class="cv" text-anchor="middle" font-size="9.5">184</text>
+<rect x="488.0" y="154.5" width="57.2" height="45.5" fill="var(--cams)" opacity="0.32" rx="2.5"/>
+<text x="516.6" y="149.5" class="cv" text-anchor="middle" font-size="9.5">126</text>
+<text x="480.0" y="218" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="625.6" y="57.8" width="57.2" height="142.2" fill="var(--cams)" opacity="1.0" rx="2.5"/>
+<text x="654.2" y="52.8" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">395</text>
+<rect x="686.8" y="134.1" width="57.2" height="65.9" fill="var(--cams)" opacity="0.62" rx="2.5"/>
+<text x="715.4" y="129.1" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">183</text>
+<rect x="748.0" y="153.9" width="57.2" height="46.1" fill="var(--cams)" opacity="0.32" rx="2.5"/>
+<text x="776.6" y="148.9" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">128</text>
+<text x="740.0" y="218" class="cl" text-anchor="middle" font-weight="700">Q1 FY27 ★</text>
+<rect x="90" y="238" width="11" height="9" fill="var(--cams)" opacity="1.0" rx="1"/><text x="105" y="246" class="cl" font-size="9">Revenue</text>
+<rect x="185" y="238" width="11" height="9" fill="var(--cams)" opacity="0.62" rx="1"/><text x="200" y="246" class="cl" font-size="9">EBITDA</text>
+<rect x="275" y="238" width="11" height="9" fill="var(--cams)" opacity="0.32" rx="1"/><text x="290" y="246" class="cl" font-size="9">Net Profit</text>
+</svg>
+    <table style="margin-top:10px;">
+      <thead><tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY Growth</th><th class="tn">QoQ Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue</td><td class="tn">354.1</td><td class="tn">395.2</td><td class="tn tb">395.0</td><td class="tn tpos">▲11.5%</td><td class="tn">≈flat</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">154.8</td><td class="tn">183.7</td><td class="tn tb">183.0</td><td class="tn tpos">▲18.2%</td><td class="tn">▼0.4%</td></tr>
+        <tr style="background:var(--surface2);"><td class="tb" style="color:var(--cams);">Net Profit (PAT)</td><td class="tn tb">109.1</td><td class="tn tb">126.4</td><td class="tn tb" style="color:var(--cams);">128.0</td><td class="tn tpos">▲17.35%</td><td class="tn">▲1.25%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">43.7% → 46.5% → 46.4%</td><td class="tn" colspan="2"></td></tr>
+        <tr><td class="tb">Net Profit (PAT) Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">30.8% → 32.0% → 32.4%</td><td class="tn" colspan="2"></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">★ The steadiest of the six — EBITDA and PAT margins both expanded YoY, with EBITDA hitting an all-time-high ₹183 Cr.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--kfin);">KFin Technologies — Revenue, EBITDA &amp; Net Profit Trend (₹ Crore)</div>
+<svg viewBox="0 0 900 260" class="chart">
+<line x1="90" y1="20" x2="870" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="23" class="cl" text-anchor="end">500</text>
+<line x1="90" y1="65" x2="870" y2="65" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="68" class="cl" text-anchor="end">375</text>
+<line x1="90" y1="110" x2="870" y2="110" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="113" class="cl" text-anchor="end">250</text>
+<line x1="90" y1="155" x2="870" y2="155" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="82" y="158" class="cl" text-anchor="end">125</text>
+<line x1="90" y1="200" x2="870" y2="200" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="82" y="203" class="cl" text-anchor="end">0.0</text>
+<rect x="105.6" y="101.3" width="57.2" height="98.7" fill="var(--kfin)" opacity="1.0" rx="2.5"/>
+<text x="134.2" y="96.3" class="cv" text-anchor="middle" font-size="9.5">274</text>
+<rect x="166.8" y="159.0" width="57.2" height="41.0" fill="var(--kfin)" opacity="0.62" rx="2.5"/>
+<text x="195.4" y="154.0" class="cv" text-anchor="middle" font-size="9.5">114</text>
+<rect x="228.0" y="172.2" width="57.2" height="27.8" fill="var(--kfin)" opacity="0.32" rx="2.5"/>
+<text x="256.6" y="167.2" class="cv" text-anchor="middle" font-size="9.5">77</text>
+<text x="220.0" y="218" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="365.6" y="75.0" width="57.2" height="125.0" fill="var(--kfin)" opacity="1.0" rx="2.5"/>
+<text x="394.2" y="70.0" class="cv" text-anchor="middle" font-size="9.5">347</text>
+<rect x="426.8" y="153.7" width="57.2" height="46.3" fill="var(--kfin)" opacity="0.62" rx="2.5"/>
+<text x="455.4" y="148.7" class="cv" text-anchor="middle" font-size="9.5">128</text>
+<rect x="488.0" y="170.8" width="57.2" height="29.2" fill="var(--kfin)" opacity="0.32" rx="2.5"/>
+<text x="516.6" y="165.8" class="cv" text-anchor="middle" font-size="9.5">81</text>
+<text x="480.0" y="218" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="625.6" y="71.6" width="57.2" height="128.4" fill="var(--kfin)" opacity="1.0" rx="2.5"/>
+<text x="654.2" y="66.6" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">357</text>
+<rect x="686.8" y="156.1" width="57.2" height="43.9" fill="var(--kfin)" opacity="0.62" rx="2.5"/>
+<text x="715.4" y="151.1" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">122</text>
+<rect x="748.0" y="172.9" width="57.2" height="27.1" fill="var(--kfin)" opacity="0.32" rx="2.5"/>
+<text x="776.6" y="167.9" class="cv" text-anchor="middle" font-weight="700" font-size="9.5">75</text>
+<text x="740.0" y="218" class="cl" text-anchor="middle" font-weight="700">Q1 FY27 ★</text>
+<rect x="90" y="238" width="11" height="9" fill="var(--kfin)" opacity="1.0" rx="1"/><text x="105" y="246" class="cl" font-size="9">Revenue</text>
+<rect x="185" y="238" width="11" height="9" fill="var(--kfin)" opacity="0.62" rx="1"/><text x="200" y="246" class="cl" font-size="9">EBITDA</text>
+<rect x="275" y="238" width="11" height="9" fill="var(--kfin)" opacity="0.32" rx="1"/><text x="290" y="246" class="cl" font-size="9">Net Profit</text>
+</svg>
+    <table style="margin-top:10px;">
+      <thead><tr><th>Metric</th><th class="tn">Q1 FY26</th><th class="tn">Q4 FY26</th><th class="tn">Q1 FY27 ★</th><th class="tn">YoY Growth</th><th class="tn">QoQ Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Revenue</td><td class="tn">274.1</td><td class="tn">347.3</td><td class="tn tb">356.5</td><td class="tn tpos">▲30.1%</td><td class="tn">▲2.7%</td></tr>
+        <tr><td class="tb">EBITDA</td><td class="tn">113.9</td><td class="tn">128.5</td><td class="tn tb">122.0</td><td class="tn tpos">▲7.1%</td><td class="tn">▼5.1%</td></tr>
+        <tr style="background:var(--surface2);"><td class="tb" style="color:var(--kfin);">Net Profit (PAT)</td><td class="tn tb">77.3</td><td class="tn tb">81.2</td><td class="tn tb" style="color:var(--kfin);">75.2</td><td class="tn tpos">▼2.6%</td><td class="tn">▼7.3%</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">41.6% → 37.0% → 34.2%</td><td class="tn" colspan="2"></td></tr>
+        <tr><td class="tb">Net Profit (PAT) Margin</td><td class="tn" colspan="3" style="text-align:left;padding-left:14px;">28.2% → 23.4% → 21.1%</td><td class="tn" colspan="2"></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">★ The only company where EBITDA and PAT both fell QoQ and PAT fell YoY — Ascent integration costs are visibly compressing margins across every metric.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--mcx);">MCX — Average Daily Turnover, Options, Quarterly (₹ Lakh Crore, Estimated Trend) — The Volume Story</div>
+<svg viewBox="0 0 900 245" class="chart">
+<line x1="80" y1="20" x2="880" y2="20" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="23" class="cl" text-anchor="end">10.0L</text>
+<line x1="80" y1="62" x2="880" y2="62" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="66" class="cl" text-anchor="end">7.5L</text>
+<line x1="80" y1="105" x2="880" y2="105" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="108" class="cl" text-anchor="end">5.0L</text>
+<line x1="80" y1="148" x2="880" y2="148" stroke="#ede9e0" stroke-width="0.8"/>
+<text x="72" y="150" class="cl" text-anchor="end">2.5L</text>
+<line x1="80" y1="190" x2="880" y2="190" stroke="#c8bfb4" stroke-width="1.2"/>
+<text x="72" y="193" class="cl" text-anchor="end">0</text>
+<rect x="126.4" y="130" width="67.2" height="60" fill="var(--mcx)" opacity="0.32" rx="3"/>
+<text x="160.0" y="124" class="cv" text-anchor="middle">₹2.5L Cr</text>
+<text x="160.0" y="207" class="cl" text-anchor="middle">Q1 FY26</text>
+<rect x="446.4" y="45" width="67.2" height="145" fill="var(--mcx)" opacity="0.62" rx="3"/>
+<text x="480.0" y="39" class="cv" text-anchor="middle">₹7.2L Cr</text>
+<text x="480.0" y="207" class="cl" text-anchor="middle">Q4 FY26</text>
+<rect x="766.4" y="53" width="67.2" height="137" fill="var(--mcx)" rx="3"/>
+<text x="800.0" y="47" class="cv" text-anchor="middle" font-weight="700">₹9.9L Cr ★</text>
+<text x="800.0" y="207" class="cl" text-anchor="middle" font-weight="700">Q1 FY27</text>
+<text x="480" y="14" class="ct" text-anchor="middle" fill="var(--mcx)" font-size="10">Options Notional ADT reached ₹989,691 Cr in Q1 FY27 — 266% YoY growth, still accelerating</text>
+</svg>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">Bullion + Energy notional options ADT combined. Q1 FY27 figure of ₹989,691 Cr (₹9.9 lakh crore) is per MCX's disclosed Total Options Notional ADT; Q4 FY26 and Q1 FY26 are CB Research estimates consistent with the disclosed YoY growth rates, since MCX does not restate prior-quarter ADT in the Q1 FY27 presentation.</div>
+  </div>
+</div>
+<!-- ══════════════════════ TAB 6 · ANNUAL PERFORMANCE ══════════════════════ -->
+<div class="panel" id="tab-annual">
+  <div class="sec-heading">
+    <h2>Annual Performance</h2>
+    <span class="sec-note">FY24 → FY25 → FY26 (audited) → FY27 (Q1 run-rate, indicative) growth trajectory</span>
+  </div>
+  <div class="card">
+    <div class="card-label">FY26 Audited Annual Financials — All Six Companies (₹ Crore)</div>
+    <table>
+      <thead><tr><th>Company</th><th class="tn">FY26 Revenue</th><th class="tn">FY26 PAT</th><th class="tn">FY25→26 PAT Growth</th><th class="tn">Q1 FY27 PAT (Retained Run-Rate Signal)</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--bse);">BSE Limited</td><td class="tn">₹4,834</td><td class="tn tb">₹2,487</td><td class="tn tpos">▲ 88%</td><td class="tn tpos">₹873 Cr, ▲62% YoY</td></tr>
+        <tr><td class="tb" style="color:var(--mcx);">MCX India</td><td class="tn">₹2,305</td><td class="tn tb">₹1,332</td><td class="tn tpos">▲ 138%</td><td class="tn tpos">₹413 Cr, ▲103% YoY</td></tr>
+        <tr><td class="tb" style="color:var(--cdsl);">CDSL</td><td class="tn">₹1,145</td><td class="tn tb">₹455</td><td class="tn tneg">▼ 13.5%</td><td class="tn tpos">₹118 Cr, ▲15% YoY</td></tr>
+        <tr><td class="tb" style="color:var(--nsdl);">NSDL</td><td class="tn">₹1,530 (consol.)</td><td class="tn tb">₹380 (consol.)</td><td class="tn tpos">▲ 10.7%</td><td class="tn tpos">₹98 Cr, ▲9.7% YoY</td></tr>
+        <tr><td class="tb" style="color:var(--cams);">CAMS</td><td class="tn">₹1,516</td><td class="tn tb">₹476</td><td class="tn tpos">▲ 1.2%</td><td class="tn tpos">₹128 Cr, ▲17.3% YoY</td></tr>
+        <tr><td class="tb" style="color:var(--kfin);">KFintech</td><td class="tn">₹1,301</td><td class="tn tb">₹344</td><td class="tn tpos">▲ 3.3%</td><td class="tn tneg">₹75 Cr, ▼2.6% YoY</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:10.5px;color:var(--muted);">FY26 figures are audited actuals as originally reported (unchanged, retained from the Q4 FY26 dashboard). Q1 FY27 column shows the newly declared quarter's YoY PAT growth as a directional signal for FY27 — it is one quarter, not a full-year estimate, and MCX/BSE especially are highly seasonal around volatility events.</div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label">FY27 Trajectory Read — What Q1 Tells Us and What It Doesn't</div>
+    <div class="g3">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--bse);margin-bottom:6px;">Accelerating into FY27</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">BSE (▲62% PAT YoY on an already-record FY26 base) and CAMS (▲17.3%, still accelerating off FY26's near-flat 1.2%) both start FY27 with genuine momentum, not just an easy comparison.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--mcx);margin-bottom:6px;">Strong YoY, Normalising QoQ</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">MCX and NSDL both post strong YoY growth but sit below (MCX) or just above (NSDL) their Q4 FY26 print — a reminder that FY26 exit run-rates were unusually elevated for MCX specifically.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--kfin);margin-bottom:6px;">Margin Investment Phase</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">KFintech is the only one of the six with a YoY PAT decline in Q1 FY27, despite 30% revenue growth — a deliberate near-term trade-off as Ascent integration costs weigh on margins ahead of a targeted 44–45% FY27 EBITDA margin.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 7 · USPs & MOATS ══════════════════════ -->
+<div class="panel" id="tab-usps">
+  <div class="sec-heading">
+    <h2>USPs &amp; Competitive Moats</h2>
+    <span class="sec-note">What makes each of the six companies structurally defensible, refreshed for Q1 FY27</span>
+  </div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card" style="border-top:4px solid var(--bse);">
+      <div class="card-label" style="color:var(--bse);">BSE Limited — Unique Selling Propositions</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--bse);margin-bottom:14px;">150 Years Old, Still Setting Records</div>
+      <div style="background:var(--bse-soft);border-left:3px solid var(--bse);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">🏛 14 Consecutive Record-Revenue Quarters</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Q1 FY27 marks BSE's 150th anniversary quarter and its 14th straight quarter of record revenue — an unusually long streak that speaks to durable, structural share gains in index derivatives rather than a one-off cyclical spike.</div>
+      </div>
+      <div style="background:var(--bse-soft);border-left:3px solid var(--bse);border-radius:6px;padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">🚀 New Product &amp; Ownership Moves</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Focused IT index derivatives launched 11 May 2026; stake in India International Bullion Holding (IIBH) raised to 20%; BSE will directly manage international market-data licensing from Jan 2027 as its Deutsche Börse partnership winds down — each a small but real expansion of the addressable revenue base.</div>
+      </div>
+      <span class="usp-tag utag-bse" style="margin-top:10px;display:inline-block;">BSE Specific</span>
+    </div>
+    <div class="card" style="border-top:4px solid var(--mcx);">
+      <div class="card-label" style="color:var(--mcx);">MCX India — Unique Selling Propositions</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--mcx);margin-bottom:14px;">Options Growth Still Accelerating, Even Post-Peak</div>
+      <div style="background:var(--mcx-soft);border-left:3px solid var(--mcx);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">📈 266% YoY Options ADT Growth</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Even as headline PAT normalised 22% QoQ off the record Q4 FY26 base, options average daily turnover growth actually accelerated YoY in Q1 FY27 (266% vs 224% in Q3 FY26) — the underlying franchise is still expanding, just off an elevated prior quarter.</div>
+      </div>
+      <div style="background:var(--mcx-soft);border-left:3px solid var(--mcx);border-radius:6px;padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">⚖️ Legal Overhangs Clearing</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">The Bombay High Court dismissed a long-pending 2017 criminal writ petition and upheld MCX's negative crude oil settlement policy — removing two multi-year legal overhangs. Jefferies initiated coverage with a Buy and ₹3,600 target, citing a 22% earnings CAGR through FY29E.</div>
+      </div>
+      <span class="usp-tag utag-mcx" style="margin-top:10px;display:inline-block;">MCX Specific</span>
+    </div>
+  </div>
+  <div class="usp-grid">
+    <div class="usp-card">
+      <div class="usp-num">01</div>
+      <div class="usp-title">CDSL — 18.59 Crore Demat Accounts</div>
+      <div class="usp-body">First depository to cross 18 crore accounts (FY26) and now at 18.59 crore (Q1 FY27), adding ~ 58 lakh new accounts in a single quarter. Every account is a recurring AMC-fee source independent of trading activity.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">CDSL</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-num">02</div>
+      <div class="usp-title">NSDL — Banking Services Diversification</div>
+      <div class="usp-body">Banking Services revenue more than doubled YoY to overtake core Depository revenue for the first time (60.75% of Q1 FY27 revenue) — real evidence NSDL is no longer a single-line depository business, even as the mix shift compresses blended EBITDA margin near-term.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">NSDL</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-num">03</div>
+      <div class="usp-title">CAMS — Widening RTA Lead, Record AUM</div>
+      <div class="usp-body">67.2% MF market share, ₹56 lakh crore AUM serviced (a record, ▲14.8% YoY), and SIP collections of ₹59,681 crore (▲20.7% YoY) with 48.5 million unique investors (▲16.8% YoY) — CAMS keeps compounding off India's structural SIP growth story.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">CAMS</span>
+    </div>
+  </div>
+  <div class="usp-grid gap-top">
+    <div class="usp-card">
+      <div class="usp-num">04</div>
+      <div class="usp-title">KFintech — Fastest International Scale-Up</div>
+      <div class="usp-body">International/non-domestic MF revenue jumped to 39.6% of the mix (from 34.5% in FY26), with international solutions revenue up 182% YoY on the Ascent Fund Services acquisition — the clearest diversification-away-from-India-MF-RTA story among the six.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">KFintech</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-num">05</div>
+      <div class="usp-title">All Six — Zero/Low Debt, MII Regulatory Moat</div>
+      <div class="usp-body">All six operate as SEBI-regulated Market Infrastructure Institutions or MII-adjacent entities with near-zero leverage. New entrants face multi-year regulatory approval timelines, making the competitive set effectively closed at 1–2 players per category.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">All Six</span>
+    </div>
+    <div class="usp-card">
+      <div class="usp-num">06</div>
+      <div class="usp-title">Operating Leverage — Still the Common Thread</div>
+      <div class="usp-body">Fixed-cost infrastructure businesses mean incremental volume drops through to profit disproportionately in up-quarters (BSE, MCX in FY26) and the reverse compresses margin fast when investment cycles hit (NSDL's banking build-out, KFintech's Ascent integration) — the same structural lever cuts both ways.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">All Six</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 8 · WHY GOOD/MIXED PERFORMANCE ══════════════════════ -->
+<div class="panel" id="tab-whygood">
+  <div class="sec-heading">
+    <h2>Why Good Performance? — Q1 FY27 Drivers &amp; Risks</h2>
+    <span class="sec-note">The structural forces behind the numbers — and where they could reverse</span>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-num">01</div>
+      <div class="why-title">STT Hike Was a Headwind, Not a Wall</div>
+      <div class="why-body">The April 2026 Securities Transaction Tax hike created industry-wide volume friction across derivatives, and analysts (MOFSL, Jefferies) flagged a "declining volume trajectory" post-print. Yet BSE still delivered its 14th straight record-revenue quarter — evidence that structural share gains in Sensex derivatives are, so far, outrunning the tax-driven volume drag.</div>
+      <span class="usp-tag utag-bse" style="margin-top:10px;display:inline-block;">BSE</span>
+    </div>
+    <div class="why-card">
+      <div class="why-num">02</div>
+      <div class="why-title">Gold/Silver Volatility Cycle Normalising, Not Reversing</div>
+      <div class="why-body">MCX's Q4 FY26 was an exceptional bullion/energy volatility quarter; Q1 FY27's 22% QoQ PAT moderation is that exceptional quarter fading, not underlying demand collapsing — options ADT growth actually accelerated YoY to 266%. The distinction between "normalising from a peak" and "deteriorating" matters for how the stock should be priced.</div>
+      <span class="usp-tag utag-mcx" style="margin-top:10px;display:inline-block;">MCX</span>
+    </div>
+    <div class="why-card">
+      <div class="why-num">03</div>
+      <div class="why-title">Depositories Diverge on Cost Discipline</div>
+      <div class="why-body">CDSL's Q1 FY27 PAT (▲14.9% YoY) recovered sharply from Q4 FY26's dip, aided by 58 lakh new demat accounts; NSDL's Q1 FY27 EBITDA margin compressed a further 315bps QoQ to 19.55% as the lower-margin Banking Services segment keeps growing faster than Depository. Same industry, opposite near-term margin direction.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">CDSL / NSDL</span>
+    </div>
+    <div class="why-card">
+      <div class="why-num">04</div>
+      <div class="why-title">RTA Duopoly Splits on Strategy</div>
+      <div class="why-body">CAMS grew PAT 17.3% YoY on margin discipline and India-focused SIP growth; KFintech grew revenue faster (30.1% YoY) but PAT fell 2.6% YoY as Ascent integration costs bite. Both are rational strategies — CAMS optimising the India MF moat, KFintech buying global diversification at a near-term margin cost.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">CAMS / KFintech</span>
+    </div>
+    <div class="why-card">
+      <div class="why-num">05</div>
+      <div class="why-title">Regulatory Overhangs Are Clearing, Not Accumulating</div>
+      <div class="why-body">MCX's Bombay High Court wins, NSDL's Insurance Repository demerger progressing on IRDAI's mandated timeline, and CDSL's Sahamati Foundation stake (account-aggregator ecosystem governance) all point to companies actively resolving legacy legal/structural risk rather than accumulating new regulatory exposure this quarter.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">All Six</span>
+    </div>
+    <div class="why-card">
+      <div class="why-num">06</div>
+      <div class="why-title">India's Capital-Market Structural Expansion Continues</div>
+      <div class="why-body">CAMS's record ₹56 lakh crore AUM, CDSL's 18.59 crore demat accounts, and NSDL's Banking Services build-out all sit on the same underlying trend: deepening retail and institutional participation in Indian capital markets. This is the multi-year tailwind common to all six names, independent of any single quarter's print.</div>
+      <span class="usp-tag utag-both" style="margin-top:10px;display:inline-block;">All Six</span>
+    </div>
+  </div>
+  <div class="card gap-top" style="border-left:4px solid var(--gold);">
+    <div class="card-label" style="color:var(--gold);">Key Risks to Watch Into Q2 FY27</div>
+    <div class="g3">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--bse);margin-bottom:8px;">BSE &amp; MCX — Volume/Regulatory Risk</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">⚖️ Further SEBI tightening on derivatives (post-STT hike) could compound volume drag. 🥇 MCX's bullion concentration means any material cooling in gold/silver volatility from current elevated levels normalises ADT and margin faster than models assume. Both trade at rich multiples (BSE ~ 51.6x, MCX ~ 45.6x FY27E per JP Morgan) that need sustained growth to justify.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--cdsl);margin-bottom:8px;">Depositories &amp; RTAs — Margin/Litigation Risk</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">📉 NSDL's EBITDA margin compression needs to find a floor before the Banking Services scale benefits show through. ⚠️ NSDL carries Karvy litigation risk. 🏦 CDSL's standalone dividend-income volatility (subsidiary payouts) can distort headline standalone PAT even when operating trends are healthy. KFintech's margin recovery to the guided 44–45% FY27 range is not yet visible in the data.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 9 · SCORECARD ══════════════════════ -->
+<div class="panel" id="tab-scorecard">
+  <div class="sec-heading">
+    <h2>Scorecard</h2>
+    <span class="sec-note">BSE vs MCX — head-to-head across key financial and strategic parameters, Q1 FY27</span>
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:25%;">Parameter</th>
+          <th class="score-bse-hdr" style="width:31%;border-radius:4px 0 0 0;">BSE Limited</th>
+          <th class="score-mcx-hdr" style="width:31%;border-radius:0 4px 0 0;">MCX India</th>
+          <th style="width:13%;text-align:center;">Edge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Business Type</td><td style="font-size:12px;">Multi-asset: equities, derivatives, MF distribution, listing, clearing, SME, NPS</td><td style="font-size:12px;">Commodity derivatives: futures &amp; options — bullion, metals, energy, agri</td><td class="edge-bse">BSE (diversified)</td></tr>
+        <tr><td class="tb">Q1 FY27 Revenue Growth</td><td class="tn tpos">▲ 63.5% YoY</td><td class="tn tpos">▲ 88% YoY</td><td class="edge-mcx">MCX</td></tr>
+        <tr><td class="tb">Q1 FY27 PAT Growth</td><td class="tn tpos">▲ 62% YoY (₹873 Cr)</td><td class="tn tpos">▲ 103% YoY (₹413 Cr)</td><td class="edge-mcx">MCX</td></tr>
+        <tr><td class="tb">Q1 FY27 QoQ Trend</td><td class="tn tpos">▲ 9.7% (still climbing)</td><td class="tn tneg">▼ 22% (normalising)</td><td class="edge-bse">BSE (momentum)</td></tr>
+        <tr><td class="tb">EBITDA Margin</td><td class="tn">67–68% (Q1 FY27)</td><td class="tn">70.4% (Q1 FY27)</td><td class="edge-mcx">MCX</td></tr>
+        <tr><td class="tb">Q4 FY26 PAT (Retained)</td><td class="tn tb">₹797 Cr</td><td class="tn tb">₹530 Cr</td><td class="edge-bse">BSE (absolute)</td></tr>
+        <tr><td class="tb">FY26 Annual PAT (Audited)</td><td class="tn tb">₹2,487 Cr</td><td class="tn tb">₹1,332 Cr</td><td class="edge-bse">BSE (absolute)</td></tr>
+        <tr><td class="tb">Approx. Market Cap</td><td class="tn">~ ₹1,47,000 Cr</td><td class="tn">~ ₹66,700 Cr</td><td class="edge-bse">BSE (scale)</td></tr>
+        <tr><td class="tb">FY27E P/E (JPMorgan est.)</td><td class="tn">~ 51.6x</td><td class="tn">~ 45.6x</td><td class="edge-mcx">MCX (lower multiple)</td></tr>
+        <tr><td class="tb">Brokerage Consensus</td><td class="tn">Neutral/Hold (UBS, JPM, MOFSL, Jefferies, 360 One)</td><td class="tn tpos">Buy (Jefferies, TP ₹3,600) / Underweight (JPM)</td><td class="edge-tie">Split views</td></tr>
+        <tr><td class="tb">Market Share (Primary)</td><td style="font-size:12px;">Equity derivatives — growing; Cash — smaller vs NSE</td><td class="tn">98.5%+ commodity derivatives</td><td class="edge-mcx">MCX (dominance)</td></tr>
+        <tr><td class="tb">Revenue Concentration Risk</td><td class="tn tneg">~ 78% transaction charges</td><td class="tn tneg">Bullion/energy volatility-linked</td><td class="edge-tie">Both risky</td></tr>
+        <tr><td class="tb">Registered Investors</td><td class="tn">~ 25.5 crore (equity)</td><td class="tn">Growing; FPI participation active</td><td class="edge-bse">BSE (scale)</td></tr>
+        <tr><td class="tb">New Growth/Legal Catalysts Q1</td><td style="font-size:12px;">Focused IT derivatives, IIBH stake ▲20%, direct data licensing from Jan 2027</td><td style="font-size:12px;">Bombay HC wins, Coal Exchange progress, Executive Director appointments</td><td class="edge-tie">Both active</td></tr>
+        <tr><td class="tb">Debt Position</td><td class="tn tpos">Zero debt</td><td class="tn tpos">Minimal debt</td><td class="edge-tie">Both clean</td></tr>
+        <tr style="background:var(--gold-soft);"><td class="tb" style="color:var(--gold);">Character</td><td style="font-size:11px;">Quality compounder · Diversified revenue base · 14 straight record quarters · Safer, multi-engine business</td><td style="font-size:11px;">Higher risk-reward · Extreme operating leverage · This quarter shows normalisation, not weakness · Coal Exchange is 2–3yr optionality</td><td style="text-align:center;font-size:16px;">⚖️</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 10 · CDSL ══════════════════════ -->
+<div class="panel" id="tab-cdsl">
+  <div class="sec-heading">
+    <h2>CDSL — Central Depository Services (India)</h2>
+    <span class="sec-note">India's largest depository by demat account count · Q1 FY27 Audited Actuals (declared 01 Aug 2026)</span>
+  </div>
+  <div class="g2">
+    <div class="company-banner banner-cdsl">
+      <span class="co-badge co-badge-cdsl">CDSL · NSE: CDSL</span>
+      <h2>Central Depository Services (India)</h2>
+      <div class="tagline">India's largest depository by demat account count — holding, settlement, transfer of securities. First depository to cross 18 crore demat accounts (March 2026); now at 18.59 crore (June 2026).</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹1,329–1,333</strong></span>
+        <span>Mkt Cap <strong>~ ₹27,800–28,100 Cr</strong></span>
+        <span>Demat Accounts <strong>18.59 Cr</strong></span>
+        <span>EPS Q1 <strong>₹5.62–5.65</strong></span>
+        <span class="neg" style="font-weight:700;">−8% YTD 2026 / −10% 1-yr</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue</div><div class="mb-val">₹292.76 Cr</div><div class="mb-chg pos">▲ 13.1% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit (Consol.)</div><div class="mb-val">₹117.67 Cr</div><div class="mb-chg pos">▲ 14.9% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹79.79 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+        <div class="metric-box"><div class="mb-label">QoQ PAT Growth</div><div class="mb-val">+47.5%</div><div class="mb-chg pos">Sharp Q4 recovery</div></div>
+        <div class="metric-box"><div class="mb-label">New Demat A/Cs Added</div><div class="mb-val">58 lakh</div><div class="mb-chg pos">In the quarter alone</div></div>
+        <div class="metric-box"><div class="mb-label">EPS Miss vs Estimate</div><div class="mb-val">~ 21.5%</div><div class="mb-chg neg">₹5.65 actual vs ₹7.20 est.</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">18.59 Cr demat accounts</span>
+        <span class="pill">Sahamati Foundation stake (2%)</span>
+        <span class="pill">New Executive Director appointments</span>
+        <span class="pill">Amar Chitra Katha investor education</span>
+        <span class="pill">SEBI regulated MII</span>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--cdsl);">
+      <div class="card-label" style="color:var(--cdsl);">CDSL — Business Model &amp; Q1 FY27 Context</div>
+      <div style="background:var(--cdsl-soft);border-left:3px solid var(--cdsl);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">📊 Why PAT Grew Faster Than Revenue</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Revenue grew 13.1% YoY while consolidated PAT grew 14.9% YoY and jumped 47.5% QoQ — a sharp reversal of Q4 FY26's margin squeeze, as the technology/compliance cost build-out from FY26 begins to be absorbed against a larger revenue base.</div>
+      </div>
+      <div style="background:var(--cdsl-soft);border-left:3px solid var(--cdsl);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">⚠ Standalone vs Consolidated Divergence</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Standalone PAT fell 5.3% YoY to ₹144 Cr — but only because dividend income received from subsidiaries fell to ₹39.5 Cr from ₹62 Cr a year ago. Excluding that dividend swing, standalone PAT actually grew 15.6% YoY to ₹104 Cr, confirming the underlying operating business is healthy; the headline standalone number is noisy quarter to quarter.</div>
+      </div>
+      <div style="background:var(--cdsl-soft);border-left:3px solid var(--cdsl);border-radius:6px;padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">🏆 CEO Commentary</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">MD &amp; CEO Nehal Vora: "This quarter reflects CDSL's continued focus on building scale and depth of leadership," citing new Executive Director appointments strengthening operations, technology, regulatory, risk, compliance and investor-facing functions, alongside continued investor-education initiatives.</div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-top">
+    <div class="kpi-row">
+      <div class="kpi cdsl-accent"><div class="kl">Q1 FY27 Revenue Growth</div><div class="kv">+13.1% YoY</div><div class="kc pos">₹292.76 Cr vs ₹258.84 Cr</div></div>
+      <div class="kpi cdsl-accent"><div class="kl">Q1 FY27 PAT QoQ</div><div class="kv">+47.5%</div><div class="kc pos">Sharp recovery from Q4 FY26 dip</div></div>
+      <div class="kpi cdsl-accent"><div class="kl">Demat Accounts</div><div class="kv">18.59 Cr</div><div class="kc pos">+58 lakh added in Q1 FY27</div></div>
+      <div class="kpi cdsl-accent"><div class="kl">Market Cap</div><div class="kv">~ ₹27,800–28,100 Cr</div><div class="kc neu">Stock down 8–10% over YTD/1-yr</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 11 · NSDL ══════════════════════ -->
+<div class="panel" id="tab-nsdl">
+  <div class="sec-heading">
+    <h2>NSDL — National Securities Depository Limited</h2>
+    <span class="sec-note">India's largest depository by value of assets · Q1 FY27 Unaudited Actuals (approved 30 Jul 2026)</span>
+  </div>
+  <div class="g2">
+    <div class="company-banner banner-nsdl">
+      <span class="co-badge co-badge-nsdl">NSDL · NSE: NSDL</span>
+      <h2>National Securities Depository Limited</h2>
+      <div class="tagline">Pioneer of dematerialisation in India (est. 1996) — largest by demat value, custody &amp; issuer base. Banking Services now its largest revenue segment, ahead of core Depository.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹823</strong></span>
+        <span>Mkt Cap <strong>~ ₹16,444 Cr</strong></span>
+        <span>EPS Q1 (Consol.) <strong>₹4.91</strong></span>
+        <span>DP Network <strong>317 DPs</strong></span>
+        <span class="neg" style="font-weight:700;">−22% YTD 2026</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Total Income</div><div class="mb-val">₹560.5 Cr</div><div class="mb-chg pos">▲ 61.6% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit (Consol.)</div><div class="mb-val">₹98.31 Cr</div><div class="mb-chg pos">▲ 9.68% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹90.32 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+        <div class="metric-box"><div class="mb-label">Standalone PAT Q1</div><div class="mb-val">₹89.13 Cr</div><div class="mb-chg pos">▲ 7.9% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Banking Services Revenue</div><div class="mb-val">₹313.84 Cr</div><div class="mb-chg pos">60.75% of total — now largest segment</div></div>
+        <div class="metric-box"><div class="mb-label">EBITDA Margin</div><div class="mb-val">19.55%</div><div class="mb-chg neg">▼ 1343bps YoY</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Largest by demat value</span>
+        <span class="pill">Banking Services now #1 segment</span>
+        <span class="pill">Insurance Repository demerger by Dec 2026</span>
+        <span class="pill">317 Depository Participants</span>
+        <span class="pill">14.7 lakh new demat accounts (Q1)</span>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--nsdl);">
+      <div class="card-label" style="color:var(--nsdl);">NSDL — Business Model &amp; Q1 FY27 Context</div>
+      <div style="background:var(--nsdl-soft);border-left:3px solid var(--nsdl);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">🏦 What "Banking Services" Actually Is</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Not a depository line — it's NSDL's payments-bank subsidiary: savings/demand deposits, mobile-app payments and remittances, and debit cards for POS/e-commerce/ATM use. For the first time it's a larger revenue line (₹313.84 Cr) than core Depository (₹182.14 Cr). But revenue leadership masks a profitability gap: Banking Services earned only ₹3.30 Cr of segment profit on that ₹313.84 Cr (~1% margin, down 44.7% QoQ), versus Depository's ₹80.01 Cr profit on ₹182.14 Cr (~44% margin). The EBITDA margin compression is this mix shift showing up at the consolidated level, not a sign the core depository business is weakening.</div>
+      </div>
+      <div style="background:var(--nsdl-soft);border-left:3px solid var(--nsdl);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">📋 Corrigendum &amp; Governance Note</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">NSDL filed a corrigendum on 31 Jul 2026 to resubmit its Q1 FY27 results after a page of notes was inadvertently omitted from the original scan — management explicitly confirmed no change to any financial figures, disclosures or the Limited Review Report.</div>
+      </div>
+      <div style="background:var(--nsdl-soft);border-left:3px solid var(--nsdl);border-radius:6px;padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">⚠ Key Risks</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Karvy litigation remains an overhang. Subsidiary NSDL Database Management is demerging its Insurance Repository business into a separate wholly-owned entity by December 2026 under an IRDAI mandate — execution risk during the transition. EBITDA margin needs to find a floor as Banking Services scales.</div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-top">
+    <div class="kpi-row">
+      <div class="kpi nsdl-accent"><div class="kl">Q1 FY27 Revenue Growth</div><div class="kv">+65.6% YoY</div><div class="kc pos">₹516.63 Cr vs ₹312.04 Cr</div></div>
+      <div class="kpi nsdl-accent"><div class="kl">Q1 FY27 PAT QoQ</div><div class="kv">+8.85%</div><div class="kc pos">Consol. PAT ₹98.31 Cr</div></div>
+      <div class="kpi nsdl-accent"><div class="kl">Banking Services Growth</div><div class="kv">More than 2x</div><div class="kc pos">Now 60.75% of revenue mix</div></div>
+      <div class="kpi nsdl-accent"><div class="kl">EPS Q1 FY27 (Consol.)</div><div class="kv">₹4.91</div><div class="kc pos">vs ₹4.48 Q1 FY26</div></div>
+    </div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--nsdl);">NSDL vs CDSL — Q1 FY27 Head-to-Head</div>
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th class="tn" style="color:var(--nsdl);">NSDL</th><th class="tn" style="color:var(--cdsl);">CDSL</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">Q1 FY27 Revenue Growth YoY</td><td class="tn tpos">▲ 65.6%</td><td class="tn tpos">▲ 13.1%</td></tr>
+        <tr><td class="tb">Q1 FY27 PAT Growth YoY (Consol.)</td><td class="tn tpos">▲ 9.68%</td><td class="tn tpos">▲ 14.9%</td></tr>
+        <tr><td class="tb">Q1 FY27 PAT QoQ</td><td class="tn tpos">▲ 8.85%</td><td class="tn tpos">▲ 47.5%</td></tr>
+        <tr><td class="tb">EBITDA Margin Q1 FY27</td><td class="tn tneg">19.55% (compressing)</td><td class="tn">~ 38–40% (recovering)</td></tr>
+        <tr><td class="tb">Q1 FY27 EPS</td><td class="tn">₹4.91 (consol.)</td><td class="tn">₹5.62–5.65 (consol.)</td></tr>
+        <tr><td class="tb">Stock Performance (YTD/1yr 2026)</td><td class="tn tneg">−22% YTD</td><td class="tn tneg">−8% YTD / −10% 1yr</td></tr>
+        <tr><td class="tb">Demat Accounts</td><td class="tn">Dominant by value</td><td class="tn tpos">18.59 Cr (count leader)</td></tr>
+        <tr><td class="tb">Key Q1 FY27 Driver</td><td class="tn">Banking Services (now largest segment)</td><td class="tn">58 lakh new demat accounts</td></tr>
+        <tr style="background:var(--gold-soft);"><td class="tb" style="color:var(--gold);">Q1 FY27 Verdict</td><td class="tn" style="color:var(--nsdl);font-weight:800;">Revenue growth leader, margin under pressure</td><td class="tn" style="color:var(--cdsl);font-weight:800;">Sharp PAT recovery, standalone noise from dividends</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB · CAMS ══════════════════════ -->
+<div class="panel" id="tab-cams">
+  <div class="sec-heading">
+    <h2>CAMS — Computer Age Management Services</h2>
+    <span class="sec-note">India's largest MF Registrar &amp; Transfer Agent · Q1 FY27 Unaudited Actuals (approved 03 Aug 2026)</span>
+  </div>
+  <div class="g2">
+    <div class="company-banner banner-cams">
+      <span class="co-badge co-badge-cams">CAMS · NSE: CAMS</span>
+      <h2>Computer Age Management Services</h2>
+      <div class="tagline">India's largest SEBI-regulated Registrar &amp; Transfer Agent for mutual funds — record-keeping, transaction processing, SIP administration, KYC, and expanding non-MF services (insurance repository, account aggregator).</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹760</strong></span>
+        <span>Mkt Cap <strong>~ ₹19,984 Cr</strong></span>
+        <span>MF Market Share <strong>67.2%</strong></span>
+        <span>AUM Serviced <strong>₹56L Cr</strong></span>
+        <span class="pos" style="font-weight:700;">+9% YTD / +10% 1-yr</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue</div><div class="mb-val">₹395.03 Cr</div><div class="mb-chg pos">▲ 11.5% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit (Consol.)</div><div class="mb-val">₹128.02 Cr</div><div class="mb-chg pos">▲ 17.35% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹126.43 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 EBITDA Margin</div><div class="mb-val">46.26%</div><div class="mb-chg pos">Holding near ATH levels</div></div>
+        <div class="metric-box"><div class="mb-label">MF AUM Serviced (Record)</div><div class="mb-val">₹56L Cr</div><div class="mb-chg pos">▲ 14.8% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Interim Dividend</div><div class="mb-val">₹2.50/sh</div><div class="mb-chg neu">Record date 12 Aug 2026</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">67.2% MF market share</span>
+        <span class="pill">48.5M unique investors (▲16.8%)</span>
+        <span class="pill">SIP collections ₹59,681 Cr (▲20.7%)</span>
+        <span class="pill">Fintuple now wholly-owned</span>
+        <span class="pill">Think Analytics acquisition (₹17.73 Cr)</span>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--cams);">
+      <div class="card-label" style="color:var(--cams);">CAMS — Business Model &amp; Q1 FY27 Context</div>
+      <div style="background:var(--cams-soft);border-left:3px solid var(--cams);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">🏆 Steady Compounding, Not Spectacular but Consistent</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">17.35% PAT growth and 11.5% revenue growth continue CAMS's pattern of dependable double-digit compounding, powered by record AUM and SIP flows rather than any single one-off. PhonePe's daily SIP base alone crossed 500,000 during the quarter, illustrating the breadth of India's SIP culture that underpins CAMS's fee base.</div>
+      </div>
+      <div style="background:var(--cams-soft);border-left:3px solid var(--cams);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">📈 FY27 Guidance</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Management concall guidance: ~ 13% overall revenue growth and ~ 16% EBITDA growth for FY27, non-MF revenue growth 20–23%, MF revenue growth of at least 12%, EBITDA margin expansion of 1–1.5% annually, and PAT margin guided around 30–31%.</div>
+      </div>
+      <div style="background:var(--cams-soft);border-left:3px solid var(--cams);border-radius:6px;padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">⚠ Risk: AuM-Linked &amp; Fee Compression</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Revenue remains tied to AuM — any sharp equity market correction compresses fees. SEBI's ongoing expense-ratio rationalisation continues to be a watch item for AMC TERs flowing through to CAMS fee income.</div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-top">
+    <div class="kpi-row">
+      <div class="kpi cams-accent"><div class="kl">Q1 FY27 Revenue Growth</div><div class="kv">+11.5% YoY</div><div class="kc pos">₹395.03 Cr vs ₹354.15 Cr</div></div>
+      <div class="kpi cams-accent"><div class="kl">Q1 FY27 EBITDA Margin</div><div class="kv">46.26%</div><div class="kc pos">Near all-time-high levels</div></div>
+      <div class="kpi cams-accent"><div class="kl">MF AuM Serviced</div><div class="kv">₹56L Cr (Record)</div><div class="kc pos">▲ 14.8% YoY, 67.2% share</div></div>
+      <div class="kpi cams-accent"><div class="kl">SIP Collections</div><div class="kv">₹59,681 Cr</div><div class="kc pos">▲ 20.7% YoY</div></div>
+    </div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-label" style="color:var(--cams);">CAMS vs KFintech — RTA Duopoly Head-to-Head (Q1 FY27)</div>
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th class="tn" style="color:var(--cams);">CAMS</th><th class="tn" style="color:var(--kfin);">KFintech</th><th>Edge</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tb">MF Market Share</td><td class="tn tpos">~ 67.2%</td><td class="tn">~ 32%</td><td style="color:var(--cams);font-weight:800;text-align:center;">CAMS</td></tr>
+        <tr><td class="tb">Q1 FY27 Revenue</td><td class="tn tb">₹395.03 Cr</td><td class="tn tb">₹356.54 Cr</td><td style="color:var(--cams);font-weight:800;text-align:center;">CAMS</td></tr>
+        <tr><td class="tb">Q1 FY27 Revenue YoY Growth</td><td class="tn">▲ 11.5%</td><td class="tn tpos">▲ 30.1%</td><td style="color:var(--kfin);font-weight:800;text-align:center;">KFintech</td></tr>
+        <tr><td class="tb">Q1 FY27 PAT</td><td class="tn tb">₹128.02 Cr</td><td class="tn tb">₹75.21 Cr</td><td style="color:var(--cams);font-weight:800;text-align:center;">CAMS</td></tr>
+        <tr><td class="tb">Q1 FY27 PAT YoY Growth</td><td class="tn tpos">▲ 17.35%</td><td class="tn tneg">▼ 2.6%</td><td style="color:var(--cams);font-weight:800;text-align:center;">CAMS</td></tr>
+        <tr><td class="tb">EBITDA Margin Q1 FY27</td><td class="tn tpos">46.26%</td><td class="tn">34.2%</td><td style="color:var(--cams);font-weight:800;text-align:center;">CAMS</td></tr>
+        <tr><td class="tb">International Presence</td><td class="tn">India-focused</td><td class="tn tpos">18 countries (Ascent), 39.6% of revenue</td><td style="color:var(--kfin);font-weight:800;text-align:center;">KFintech</td></tr>
+        <tr><td class="tb">Stock 1-yr / YTD</td><td class="tn tpos">+10% / +9%</td><td class="tn">Not confirmed in sources reviewed</td><td style="color:var(--cams);font-weight:800;text-align:center;">CAMS (data confirmed)</td></tr>
+        <tr style="background:var(--gold-soft);"><td class="tb" style="color:var(--gold);">Character</td><td style="font-size:11px;">Dominant domestic MF RTA · Higher margin · Steady compounder, on-guidance</td><td style="font-size:11px;">Faster top-line growth · Global diversification via Ascent · Margin under near-term pressure</td><td style="text-align:center;font-size:16px;">⚖️</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB · KFINTECH ══════════════════════ -->
+<div class="panel" id="tab-kfintech">
+  <div class="sec-heading">
+    <h2>KFin Technologies — KFintech</h2>
+    <span class="sec-note">Tech-driven financial services platform · MF RTA, Corporate Registry, International · Q1 FY27 Unaudited Actuals (call held 27 Jul 2026)</span>
+  </div>
+  <div class="g2">
+    <div class="company-banner banner-kfin">
+      <span class="co-badge co-badge-kfin">KFintech · NSE: KFINTECH</span>
+      <h2>KFin Technologies Limited</h2>
+      <div class="tagline">India's #2 MF Registrar &amp; Transfer Agent (~ 32% market share) with a growing global footprint — 18 countries via Ascent Fund Services. Non-domestic revenue now 39.6% of the mix.</div>
+      <div class="co-meta">
+        <span>CMP <strong>~ ₹932</strong></span>
+        <span>Diluted EPS Q1 <strong>₹4.34</strong></span>
+        <span>Cash Balance <strong>₹687 Cr</strong></span>
+        <span>Countries <strong>18 (Global)</strong></span>
+        <span class="pos" style="font-weight:700;">Stock +8.7% on results day</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Revenue</div><div class="mb-val">₹356.54 Cr</div><div class="mb-chg pos">▲ 30.1% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 Net Profit (Consol.)</div><div class="mb-val">₹75.21 Cr</div><div class="mb-chg neg">▼ 2.6% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Q4 FY26 PAT (Retained)</div><div class="mb-val">₹81.15 Cr</div><div class="mb-chg neu">Prior quarter actual</div></div>
+        <div class="metric-box"><div class="mb-label">Q1 FY27 EBITDA</div><div class="mb-val">₹121.98 Cr</div><div class="mb-chg pos">▲ 7.1% YoY</div></div>
+        <div class="metric-box"><div class="mb-label">Non-Domestic MF Revenue</div><div class="mb-val">39.6% of mix</div><div class="mb-chg pos">vs 34.5% in FY26</div></div>
+        <div class="metric-box"><div class="mb-label">FY27 EBITDA Margin Guidance</div><div class="mb-val">44–45%</div><div class="mb-chg neu">As Ascent scales</div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">International revenue ▲182% YoY</span>
+        <span class="pill">NPS subscribers 2.3M (▲39.4%)</span>
+        <span class="pill">Dinesh Khara to be CEO from Oct 2026</span>
+        <span class="pill">Singapore capital infusion $2M</span>
+        <span class="pill">FY26 final dividend ₹12/sh approved</span>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--kfin);">
+      <div class="card-label" style="color:var(--kfin);">KFintech — Business Model &amp; Q1 FY27 Context</div>
+      <div style="background:var(--kfin-soft);border-left:3px solid var(--kfin);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">🌍 Growth vs Margin — A Deliberate Trade-off</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Revenue grew 30.1% YoY, led by international solutions (▲182% YoY) via Ascent Fund Services, while PAT margin compressed to 21.1% from 28.2% a year ago. Management links the decline to Ascent's current integration stage, planned annual increments, and lower mark-to-market gains — framed as investment-phase, not a structural deterioration, with margins expected to expand as Ascent scales and synergies land.</div>
+      </div>
+      <div style="background:var(--kfin-soft);border-left:3px solid var(--kfin);border-radius:6px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">👤 Leadership Transition</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Dinesh Khara — former SBI Chairman — is set to take over as CEO from October 2026, a high-profile leadership change worth tracking for strategic continuity and any shift in capital allocation or global-expansion pace.</div>
+      </div>
+      <div style="background:var(--kfin-soft);border-left:3px solid var(--kfin);border-radius:6px;padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:5px;">⚠ Key Risks</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Ascent integration costs could persist longer than guided if global fund-services demand softens. Domestic MF and Issuer Solutions growth (7–8% YoY) is comparatively modest next to the international engine — over-reliance on Ascent for growth headline numbers is a concentration risk to monitor.</div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-top">
+    <div class="kpi-row">
+      <div class="kpi kfin-accent"><div class="kl">Q1 FY27 Revenue Growth</div><div class="kv">+30.1% YoY</div><div class="kc pos">₹356.54 Cr vs ₹274.06 Cr</div></div>
+      <div class="kpi kfin-accent"><div class="kl">Q1 FY27 PAT</div><div class="kv">−2.6% YoY</div><div class="kc neg">₹75.21 Cr vs ₹77.26 Cr</div></div>
+      <div class="kpi kfin-accent"><div class="kl">International Revenue Growth</div><div class="kv">+182% YoY</div><div class="kc pos">Ascent-driven</div></div>
+      <div class="kpi kfin-accent"><div class="kl">NPS Subscriber Growth</div><div class="kv">+39.4% YoY</div><div class="kc pos">2.3M subscribers, vs 12.7% industry</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB 14 · ANALYSTS & MANAGEMENT ══════════════════════ -->
+<div class="panel" id="tab-analysts">
+  <div class="sec-heading">
+    <h2>Analysts &amp; Management</h2>
+    <span class="sec-note">Third-party broker ratings (attributed) and management commentary post Q1 FY27 — CB Research does not issue its own Buy/Sell/Hold calls</span>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-label" style="color:var(--bse);">BSE Limited — Brokerage Views (post Q1 FY27, early Aug 2026)</div>
+    <table>
+      <thead><tr><th>Broker</th><th>Rating</th><th class="tn">Target Price</th><th>Sources</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">JPMorgan</td><td>Neutral</td><td class="tn">₹4,090 (cut from ₹4,330)</td><td style="font-size:10.5px;color:var(--muted);">Post Q1 FY27 note, Aug 2026</td></tr>
+        <tr><td class="tb">UBS</td><td>Neutral</td><td class="tn">₹4,500 (maintained)</td><td style="font-size:10.5px;color:var(--muted);">Post Q1 FY27 note, Aug 2026</td></tr>
+        <tr><td class="tb">Jefferies</td><td>Hold</td><td class="tn">₹3,520 (up from ₹3,440)</td><td style="font-size:10.5px;color:var(--muted);">Post Q1 FY27 note, Aug 2026</td></tr>
+        <tr><td class="tb">MOFSL</td><td>Neutral</td><td class="tn">Not disclosed in sources reviewed</td><td style="font-size:10.5px;color:var(--muted);">Cut FY27E/FY28E EPS est. 9%/8%</td></tr>
+        <tr><td class="tb">Centrum Broking</td><td>Neutral</td><td class="tn">₹3,940</td><td style="font-size:10.5px;color:var(--muted);">Post Q1 FY27 note, Aug 2026</td></tr>
+        <tr><td class="tb">360 One Capital</td><td>Hold</td><td class="tn">₹3,765</td><td style="font-size:10.5px;color:var(--muted);">Post Q1 FY27 note, Aug 2026</td></tr>
+        <tr><td class="tb">Haitong International</td><td>n/a</td><td class="tn">₹4,060</td><td style="font-size:10.5px;color:var(--muted);">Post Q1 FY27 note, Aug 2026</td></tr>
+        <tr><td class="tb">Avendus Spark</td><td>n/a</td><td class="tn">₹3,950</td><td style="font-size:10.5px;color:var(--muted);">Post Q1 FY27 note, Aug 2026</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">Consensus tone after Q1 FY27: mostly Neutral/Hold despite the record print — brokers cite a declining volume trajectory across cash and derivatives into July/August, and the risk of RBI tightening affecting proprietary book lending, against an elevated valuation (~ 51.6x FY27E per JPMorgan).</div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-label" style="color:var(--mcx);">MCX India — Brokerage Views</div>
+      <table>
+        <thead><tr><th>Broker</th><th>Rating</th><th class="tn">Target</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Jefferies</td><td class="tpos" style="font-weight:700;">Buy</td><td class="tn">₹3,600 (22% earnings CAGR to FY29E)</td></tr>
+          <tr><td class="tb">JPMorgan</td><td class="tneg" style="font-weight:700;">Underweight</td><td class="tn">₹2,550 (~ 10% downside implied)</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">A genuine split: Jefferies sees multi-year earnings growth from Coal Exchange and institutional deepening; JPMorgan flags valuation running ahead of a normalising volatility cycle (FY27E P/E ~ 45.6x, PEG 2.3x).</div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--cdsl);">CDSL &amp; NSDL — Brokerage Views</div>
+      <table>
+        <thead><tr><th>Broker</th><th>CDSL</th><th>NSDL</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">JPMorgan</td><td class="tneg" style="font-weight:700;">Underweight, TP ₹1,200</td><td>Not covered in sources reviewed</td></tr>
+          <tr><td class="tb">Equirus Securities</td><td>Add, TP ₹1,675</td><td class="tneg" style="font-weight:700;">Short, TP ₹950</td></tr>
+          <tr><td class="tb">JM Financial</td><td>Reduce, TP ₹1,500</td><td>Not covered in sources reviewed</td></tr>
+          <tr><td class="tb">Axis Capital</td><td>Add (initiation)</td><td>Add (initiation)</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">Equirus notes CDSL has historically traded at a 10–30% premium to capital-market peers, while NSDL has traded at a 15–20% discount to CDSL — a valuation gap analysts attribute to CDSL's dominance in the faster-growing digital-broker/retail segment.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-label" style="color:var(--cams);">CAMS &amp; KFintech — Brokerage Views</div>
+    <table>
+      <thead><tr><th>Broker</th><th>CAMS</th><th>KFintech</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Axis Capital</td><td class="tpos" style="font-weight:700;">Buy (initiation)</td><td class="tpos" style="font-weight:700;">Buy (initiation)</td></tr>
+        <tr><td class="tb">JPMorgan</td><td>Neutral, ~ 43x FY27E P/E cited</td><td>Neutral, TP ₹960 (~ 5% upside)</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--muted);">JPMorgan's broader market-infrastructure note frames both RTAs as sitting in a "lower pricing power, lower operating leverage" layer versus exchanges/depositories/AMCs — its Neutral on KFintech specifically cites waiting for a better entry point after the Ascent-driven margin dip.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label" style="color:var(--gold);">Management Commentary &amp; Board Actions — Q1 FY27</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--bse);margin-bottom:6px;">BSE</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:12px;">Board approved raising the IIBH stake to 20% and confirmed BSE will directly manage international market-data licensing from Jan 2027 as the Deutsche Börse partnership concludes. Results reviewed by the Audit Committee; S.R. Batliboi &amp; Co. LLP issued an unmodified limited review report.</div>
+        <div style="font-size:11px;font-weight:700;color:var(--mcx);margin-bottom:6px;">MCX</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">MD &amp; CEO Praveena Rai and CFO Chandresh Shah led the 05 Aug 2026 analyst call. Board appointed Sanjay Rajpal as Executive Director (5-year term, 30 Jun 2026); shareholder ratification of critical Executive Director appointments runs 16 Jul–14 Aug 2026.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--cdsl);margin-bottom:6px;">CDSL</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:12px;">MD &amp; CEO Nehal Vora highlighted new Executive Director appointments (incl. Amit Mahajan for Critical Operations) and continued investor-education initiatives (Amar Chitra Katha partnership).</div>
+        <div style="font-size:11px;font-weight:700;color:var(--kfin);margin-bottom:6px;">KFintech</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;">Board confirmed Dinesh Khara (former SBI Chairman) as incoming CEO effective October 2026 — the most significant governance development among the six this quarter. Shareholders approved a ₹12/share FY26 final dividend at the 22 Jul 2026 AGM.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TAB · CB ASSIST ══════════════════════ -->
+<div class="panel" id="tab-cbassist">
+  <div class="cb-assist-section">
+    <div class="cb-assist-heading">
+      <div class="cb-icon">CB</div>
+      <div>
+        <h2>CB Assist</h2>
+        <div class="cb-sub">Curated Q&amp;A + Live Chat · English / Tamil · Q1 FY27</div>
+      </div>
+    </div>
+
+    <div class="qa-block" onclick="toggleQA(this)">
+      <div class="qa-q">
+        <div class="qa-q-num">01</div>
+        <div>
+          <div class="q-en">MCX's Q1 FY27 PAT fell 22% QoQ even as it more than doubled YoY. Is this a red flag or just normalisation after an exceptional quarter?</div>
+          <div class="q-ta">MCX Q1 FY27 PAT QoQ 22% குறைந்தது, ஆனால் YoY இரட்டிப்பானது. இது கவலைக்குரியதா அல்லது சாதாரண normalisation-ஆ?</div>
+        </div>
+        <span class="qa-q-icon">▼</span>
+      </div>
+      <div class="qa-ans">
+        <div class="a-label">English</div>
+        <div class="a-en">This reads as normalisation, not deterioration. Q4 FY26 was an exceptional bullion/energy volatility quarter (₹530 Cr PAT, 74.9% EBITDA margin) — a level analysts themselves flagged as unlikely to repeat every quarter. Q1 FY27's ₹413 Cr PAT is still 103% above the year-ago quarter, and options ADT growth actually accelerated YoY to 266% (from 224% in Q3 FY26) — the underlying franchise kept expanding even as the extraordinary Q4 print faded. The more useful question is whether Q1 FY27's ₹702 Cr revenue / 70.4% margin is closer to a sustainable run-rate than Q4's peak was — most analyst models (JPMorgan's Underweight, Jefferies' Buy) both implicitly treat something closer to Q1's level, not Q4's, as the base case going forward.</div>
+        <div class="a-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+        <div class="a-ta">இது சரிவு அல்ல, normalisation. Q4 FY26 ஒரு விதிவிலக்கான bullion/energy volatility காலாண்டு (₹530 Cr PAT). Q1 FY27 PAT ₹413 Cr — இன்னும் YoY 103% அதிகம், Options ADT growth உண்மையில் 266% ஆக வேகமடைந்தது. Q4-ஐ விட Q1 நிலைத்தன்மையான run-rate-க்கு நெருக்கமானது என analysts கருதுகின்றனர்.</div>
+      </div>
+    </div>
+
+    <div class="qa-block" onclick="toggleQA(this)">
+      <div class="qa-q">
+        <div class="qa-q-num">02</div>
+        <div>
+          <div class="q-en">BSE's Q1 FY27 revenue grew only 0.1% QoQ, but PAT grew 9.7% QoQ and 62% YoY. How does profit grow so much faster than revenue?</div>
+          <div class="q-ta">BSE Q1 FY27 revenue QoQ 0.1% மட்டுமே வளர்ந்தது, ஆனால் PAT QoQ 9.7%, YoY 62% வளர்ந்தது. Revenue-ஐ விட profit ஏன் இவ்வளவு வேகமாக வளர்கிறது?</div>
+        </div>
+        <span class="qa-q-icon">▼</span>
+      </div>
+      <div class="qa-ans">
+        <div class="a-label">English</div>
+        <div class="a-en">Two forces are doing the work. First, total expenses actually fell 6.6% QoQ (₹520 Cr vs ₹557 Cr in Q4 FY26) even as revenue held flat — cost discipline directly lifting the operating margin (EBITDA margin expanded to 67–68% from 65% a year ago). Second, investment/other income jumped to ₹135.2 Cr in the June quarter from ₹61.7 Cr in March — nearly doubling QoQ — reflecting higher treasury yields on BSE's large cash/investment book, which flows straight to PAT without a matching revenue-line increase. Together, flat topline plus falling costs plus a big jump in other income produces PAT growth well ahead of revenue growth — a genuinely high-quality quarter on the cost side, though the other-income jump specifically is less likely to repeat at the same magnitude every quarter.</div>
+        <div class="a-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+        <div class="a-ta">செலவுகள் QoQ 6.6% குறைந்தது, EBITDA margin 65% இலிருந்து 67–68% ஆக உயர்ந்தது. Investment income ₹61.7 Cr இலிருந்து ₹135.2 Cr ஆக almost இரட்டிப்பானது — இது நேரடியாக PAT-ஐ உயர்த்தியது, revenue-ஐ பாதிக்காமல். Cost discipline + other income surge இணைந்து revenue-ஐ விட வேகமான PAT வளர்ச்சியை தந்தது.</div>
+      </div>
+    </div>
+
+    <div class="qa-block" onclick="toggleQA(this)">
+      <div class="qa-q">
+        <div class="qa-q-num">03</div>
+        <div>
+          <div class="q-en">NSDL's revenue grew 65.6% YoY in Q1 FY27 — the fastest of all six companies — yet its EBITDA margin fell to 19.55% from 30.51%. Is faster revenue growth actually good news here?</div>
+          <div class="q-ta">NSDL revenue Q1 FY27-இல் 65.6% YoY வளர்ந்தது — ஆறு நிறுவனங்களிலும் வேகமானது — ஆனால் EBITDA margin 30.51% இலிருந்து 19.55% ஆக குறைந்தது. இங்கு வேகமான revenue வளர்ச்சி உண்மையிலேயே நல்ல செய்தியா?</div>
+        </div>
+        <span class="qa-q-icon">▼</span>
+      </div>
+      <div class="qa-ans">
+        <div class="a-label">English</div>
+        <div class="a-en">It's genuinely mixed, and the mix explains the margin move mechanically. Banking Services revenue more than doubled YoY to ₹313.84 Cr and is now NSDL's largest segment (60.75% of total) — but banking-services-type revenue structurally carries a lower margin than the core depository business (custody, settlement), which is a high-margin, largely fixed-cost franchise. So the 1,343 bps margin compression isn't a sign NSDL is becoming less efficient at its existing business — it's a sign the revenue mix is shifting toward a lower-margin (but real, cash-generating) line. The open question for investors is whether Banking Services margins improve with scale over the next several quarters, the way depository margins did in NSDL's earlier growth phase, or whether this is simply a permanently lower-margin business NSDL has chosen to build for diversification's sake.</div>
+        <div class="a-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+        <div class="a-ta">Banking Services revenue இரட்டிப்பாகி ₹313.84 Cr ஆனது — இப்போது NSDL-இன் மிகப்பெரிய segment (60.75%). ஆனால் இந்த வகை revenue-க்கு depository business-ஐ விட margin குறைவு. எனவே margin compression என்பது efficiency இழப்பு அல்ல — revenue mix shift-இன் இயந்திர விளைவு. Banking Services scale-ஆகும்போது margin மேம்படுமா என்பதே முக்கிய கேள்வி.</div>
+      </div>
+    </div>
+
+    <div class="qa-block" onclick="toggleQA(this)">
+      <div class="qa-q">
+        <div class="qa-q-num">04</div>
+        <div>
+          <div class="q-en">KFintech is the only one of the six with a YoY PAT decline in Q1 FY27, despite the stock jumping 8.7% on results day. Why would the market react positively to falling profit?</div>
+          <div class="q-ta">KFintech மட்டும் Q1 FY27-இல் YoY PAT சரிவு கண்டது, ஆனால் results day அன்று stock 8.7% உயர்ந்தது. குறையும் profit-க்கு market ஏன் positive-ஆக reaction காட்டியது?</div>
+        </div>
+        <span class="qa-q-icon">▼</span>
+      </div>
+      <div class="qa-ans">
+        <div class="a-label">English</div>
+        <div class="a-en">The market appears to have been reacting to the beat-versus-expectations and the growth story, not the headline YoY comparison. MOFSL characterised the print as "a 7% beat led by operational efficiency" against consensus, even with PAT down YoY — meaning analysts had priced in worse. Revenue grew 30% YoY and international solutions revenue surged 182% YoY, validating the Ascent Fund Services acquisition thesis that management has been selling to investors since the deal. The margin compression (PAT margin 21.1% vs 28.2% a year ago) was pre-flagged as an investment-phase cost, not a surprise. In short: when a company guides the market to expect a margin dip during an acquisition-integration phase, and then delivers strong revenue growth with a smaller-than-feared margin hit, the stock can rally even on a YoY profit decline — the market is pricing the trajectory, not the single quarter.</div>
+        <div class="a-label" style="margin-top:10px;">தமிழ் (Tamil)</div>
+        <div class="a-ta">Market consensus-ஐ விட better-than-feared performance-ஐ market பாராட்டியது, YoY ஒப்பீட்டை அல்ல. Revenue 30% YoY வளர்ந்தது, international revenue 182% YoY உயர்ந்தது — Ascent acquisition thesis-ஐ உறுதிசெய்தது. Margin compression முன்னரே எதிர்பார்க்கப்பட்டதே — ஆச்சரியம் இல்லை. Trajectory-ஐ market பாராட்டுகிறது, ஒரு காலாண்டின் profit-ஐ மட்டும் அல்ல.</div>
+      </div>
+    </div>
+
+    <!-- Live CB Assist Chat -->
+    <div class="cbassist-chat">
+      <div class="cbassist-chat-title"><span></span> CB Assist — Ask Your Question (English or Tamil)</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg bot">Welcome to <strong>CB Assist</strong> by Cauvery Business. Ask any analytical question about BSE, MCX, CDSL, NSDL, CAMS or KFintech — Q1 FY27 earnings, valuations, strategy, risks, comparisons. I answer in English and Tamil. <br><br>கேள்விகளை English அல்லது Tamil-ல் கேளுங்கள். BSE, MCX, CDSL, NSDL, CAMS, KFintech-இன் Q1 FY27 results பற்றிய ஆழமான analysis தருகிறேன்.</div>
+      </div>
+      <div class="typing-indicator" id="typingIndicator">
+        <span></span><span></span><span></span>
+        <span style="font-size:11px;color:var(--muted);margin-left:6px;">CB Assist is thinking...</span>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" type="text" placeholder="Ask about BSE, MCX, CDSL, NSDL, CAMS, KFintech Q1 FY27 earnings, valuation, strategy..." onkeydown="if(event.key==='Enter')sendChat()"/>
+        <button class="chat-send" id="chatSendBtn" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="disclaimer">
+  All BSE Q1 FY27 figures are unaudited/limited-review actuals declared 04 Aug 2026 · MCX Q1 FY27 unaudited actuals declared 04 Aug 2026 · CDSL Q1 FY27 audited actuals declared 01 Aug 2026 · NSDL Q1 FY27 unaudited actuals approved 30 Jul 2026 (corrigendum 31 Jul 2026) · CAMS Q1 FY27 unaudited actuals approved 03 Aug 2026 · KFintech Q1 FY27 unaudited actuals, earnings call 27 Jul 2026 · Q4 FY26 and prior-quarter figures retained from company filings for trend continuity · Brokerage ratings/targets are third-party views attributed to named brokers, not CB Research recommendations · Data from BSE/NSE exchange filings, investor presentations and cited news sources · For informational and research purposes only
+</div>
+<div class="wm">EIL Research · Elango Industries Limited · 06 Aug 2026</div>
+
+<!-- FLOATING CAUVERY BUSINESS WATERMARK -->
+<div class="cb-watermark">
+  <div class="cb-wm-logo">CB</div>
+  <div class="cb-wm-text">
+    <span class="cb-wm-name">Cauvery Business</span>
+    <span class="cb-wm-sub">Research Dashboard</span>
+  </div>
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+<script>
+function toggleQA(block) {
+  block.classList.toggle('open');
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const messages = document.getElementById('chatMessages');
+  const btn = document.getElementById('chatSendBtn');
+  const typing = document.getElementById('typingIndicator');
+  const q = input.value.trim();
+  if (!q) return;
+
+  const userMsg = document.createElement('div');
+  userMsg.className = 'chat-msg user';
+  userMsg.textContent = q;
+  messages.appendChild(userMsg);
+  messages.scrollTop = messages.scrollHeight;
+  input.value = '';
+  btn.disabled = true;
+  typing.style.display = 'flex';
+  messages.scrollTop = messages.scrollHeight;
+
+  const systemPrompt = `You are CB Assist, an expert financial research assistant for Cauvery Business (EIL Research). You specialise in Indian capital market infrastructure companies: BSE Limited, MCX India, CDSL, NSDL, CAMS, and KFintech.
+
+MANDATORY: Always answer in BOTH English AND Tamil. Format: first give the full English answer, then a horizontal rule (---), then the Tamil answer starting with "தமிழில்:".
+
+Key data you know (Q1 FY27 Actuals, quarter ended 30 June 2026, with Q4 FY26 retained for context):
+BSE (Consolidated): Q1 FY27 Revenue from Ops ₹1,566 Cr (▲63.5% YoY, ▲0.1% QoQ), Q1 FY27 PAT ₹873 Cr (▲62% YoY, ▲9.7% QoQ vs ₹797 Cr Q4 FY26), Total Income ₹1,707 Cr (▲63.6% YoY), EBITDA margin 67-68% (vs 65% Q1 FY26), Transaction charges ₹1,328 Cr (▲80% YoY), 14 consecutive record-revenue quarters, 150th anniversary quarter, IIBH stake raised to 20%, Focused IT index derivatives launched 11 May 2026, April 2026 STT hike an industry headwind, brokerage consensus mostly Neutral/Hold (JPM TP ₹4,090, UBS TP ₹4,500, Jefferies Hold TP ₹3,520).
+MCX (Consolidated): Q1 FY27 Revenue ₹702 Cr (▲88% YoY, ▼21% QoQ from ₹889 Cr Q4 FY26), Q1 FY27 PAT ₹413 Cr (▲103% YoY, ▼22% QoQ from ₹530 Cr), EBITDA margin 70.4% (vs 74.9% Q4 FY26), Options ADT ▲266% YoY, EPS ₹16.68 (missed ₹16.95 est.), 98.5%+ commodity market share, Bombay HC dismissed 2017 writ petition & upheld crude settlement policy, Jefferies Buy TP ₹3,600 vs JPMorgan Underweight TP ₹2,550.
+CDSL (Consolidated): Q1 FY27 Revenue ₹292.76 Cr (▲13.1% YoY, ▲11.4% QoQ from ₹262.85 Cr Q4 FY26), Q1 FY27 PAT ₹117.67 Cr (▲14.9% YoY, ▲47.5% QoQ from ₹79.79 Cr), 18.59 Cr demat accounts (+58 lakh in Q1), standalone PAT fell 5.3% YoY only due to lower subsidiary dividend income (ex-dividend standalone PAT actually +15.6%), EPS ₹5.62-5.65 (missed ₹7.20 est.), stock -8% YTD/-10% 1yr.
+NSDL (Consolidated): Q1 FY27 Total Income ₹560.5 Cr (▲61.6% YoY, ▲15.1% QoQ), Revenue from Ops ₹516.63 Cr (▲65.6% YoY), Q1 FY27 PAT ₹98.31 Cr (▲9.68% YoY, ▲8.85% QoQ from ₹90.32 Cr Q4 FY26), Standalone PAT ₹89.13 Cr (▲7.9% YoY), Banking Services now largest segment ₹313.84 Cr (60.75% of revenue, more than doubled YoY), Depository ₹182.14 Cr (35.26%), EBITDA margin fell to 19.55% from 30.51% YoY, EPS ₹4.91, Karvy litigation risk, Insurance Repository demerger by Dec 2026.
+CAMS (Consolidated): Q1 FY27 Revenue ₹395.03 Cr (▲11.5% YoY, ~ flat QoQ vs ₹395.22 Cr Q4 FY26), Q1 FY27 PAT ₹128.02 Cr (▲17.35% YoY, ▲1.25% QoQ from ₹126.43 Cr), EBITDA margin 46.26%, MF AUM serviced record ₹56 lakh Cr (▲14.8% YoY), 67.2% market share, SIP collections ₹59,681 Cr (▲20.7% YoY), 48.5M unique investors (▲16.8%), interim dividend ₹2.50/sh, FY27 guidance ~ 13% revenue growth/~ 16% EBITDA growth, Axis Capital Buy rating.
+KFintech (Consolidated): Q1 FY27 Revenue ₹356.54 Cr (▲30.1% YoY, ▲2.7% QoQ from ₹347.30 Cr Q4 FY26), Q1 FY27 PAT ₹75.21 Cr (▼2.6% YoY, ▼7.3% QoQ from ₹81.15 Cr), EBITDA ₹121.98 Cr (▲7.1% YoY), margin 34.2% (vs 35.5% Q4 FY26), PAT margin 21.1% (vs 28.2% Q1 FY26), international revenue ▲182% YoY (Ascent), non-domestic MF revenue 39.6% of mix (vs 34.5% FY26), NPS subscribers 2.3M (▲39.4% YoY), Dinesh Khara (ex-SBI Chairman) to be CEO from Oct 2026, FY27 EBITDA margin guidance 44-45%, JPMorgan Neutral TP ₹960.
+
+Be analytical, rigorous, and not elementary. Address risks, valuation, competitive dynamics, and structural factors. Distinguish clearly between YoY strength and QoQ normalisation where relevant (especially MCX). Keep answers concise but substantive. Never give investment advice or your own Buy/Sell/Hold call — attribute any rating language to named third-party brokers only, and note CB Research does not issue recommendations.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: q }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content && data.content[0] && data.content[0].text ? data.content[0].text : "Unable to process response.";
+
+    typing.style.display = 'none';
+    const botMsg = document.createElement('div');
+    botMsg.className = 'chat-msg bot';
+    const formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/---/g, '<hr style="border:none;border-top:1px dashed var(--border);margin:8px 0;">')
+      .replace(/\n/g, '<br>');
+    botMsg.innerHTML = formatted;
+    messages.appendChild(botMsg);
+    messages.scrollTop = messages.scrollHeight;
+  } catch(e) {
+    typing.style.display = 'none';
+    const errMsg = document.createElement('div');
+    errMsg.className = 'chat-msg bot';
+    errMsg.textContent = 'CB Assist is temporarily unavailable. Please try again.';
+    messages.appendChild(errMsg);
+    messages.scrollTop = messages.scrollHeight;
+  }
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>

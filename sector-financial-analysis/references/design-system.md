@@ -160,6 +160,34 @@ td.tb{font-weight:700;}
 .metric-sel button{font-size:11px;font-weight:600;padding:5px 12px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;}
 .metric-sel button.on{background:var(--star);border-color:var(--star);color:#fff;}
 
+/* analyst-ratings component — recurs across the corpus */
+.analyst-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--co-color,#181511);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);}
+.analyst-firm{font-size:11.5px;font-weight:700;margin-bottom:3px;}
+.analyst-rating{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
+.analyst-tp{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:700;margin-top:5px;}
+.analyst-date{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* chart containers */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.chart-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:10px;}
+.chart-wrap{position:relative;height:300px;}
+
+/* callout boxes */
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #1d4ed8;border-radius:8px;padding:13px 15px;font-size:11.5px;line-height:1.7;}
+.warn-box{background:#fff7ed;border:1px solid #fdba74;border-left:4px solid var(--warn);border-radius:8px;padding:13px 15px;font-size:11.5px;line-height:1.7;}
+
+/* small inline labels */
+.pill{display:inline-block;padding:2px 10px;border-radius:14px;font-size:10px;font-weight:700;background:var(--surface2);border:1px solid var(--border);}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:var(--surface2);color:var(--muted);}
+
+/* embedded Q&A panel */
+.qa-q{font-size:11.5px;font-weight:700;padding:8px 0 4px;}
+.qa-a{font-size:11.5px;color:var(--muted);line-height:1.65;padding-bottom:8px;border-bottom:1px dashed var(--border);}
+
+/* watermark / attribution */
+.wm{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+
 /* notes & footer */
 .fnote{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-top:20px;font-size:11px;color:var(--muted);line-height:1.7;}
 .footer{text-align:center;font-size:11px;color:var(--muted);padding:20px 40px;border-top:1px solid var(--border);margin-top:20px;background:var(--surface);}

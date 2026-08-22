@@ -79,6 +79,7 @@ SECTOR_CONTENT = {
     "chemicals":       ["never draw one ebitda-margin line", "specialty", "commodity"],
     "infra-realty":    ["pre-sales", "should not appear in a cross-sector"],
     "telecom":         ["agr", "spectrum"],
+    "new-age":         ["contribution margin", "runway", "not p/e"],
 }
 
 # Refusals and disciplines that must survive any edit.
@@ -167,7 +168,7 @@ def main():
     check("structure", f"SKILL.md under 500 lines ({skill_lines})", skill_lines < 500)
 
     check("structure", f"15 mode files present ({len(mode_files)})", len(mode_files) == 15)
-    check("structure", f"15 sector files present ({len(sector_files)})", len(sector_files) == 15)
+    check("structure", f"16 sector files present ({len(sector_files)})", len(sector_files) == 16)
 
     # ---- PER-SECTOR COMPLETENESS ----------------------------------------
     header("PER-SECTOR — template sections, delegation targets, CB weights")

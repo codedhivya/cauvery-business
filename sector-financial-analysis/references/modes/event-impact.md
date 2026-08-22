@@ -45,6 +45,31 @@ misses half of it.
 **6 — What to watch next.** The concrete triggers, dates and thresholds that would change the read —
 an implementation date, a court ruling, a scheme record date, a threshold price.
 
+## IPOs and pre-listing analysis specifically
+
+An IPO is a corporate action with its own disclosure set, and the company is not yet listed — so there is
+no market price, no trading history, and the only primary source is the offer document. Cover:
+
+- **The offer** — issue size, fresh issue vs offer-for-sale split, price band, lot size, and the
+  implied market capitalisation at each end of the band.
+- **Use of proceeds** — what the fresh issue funds. A pure offer-for-sale raises nothing for the company
+  and is a shareholder exit; say so plainly when that is the case.
+- **RoNW (Return on Net Worth)** — the profitability measure quoted in offer documents, and the one
+  regulators require. Report it alongside the sector's usual return metric rather than instead of it.
+- **Anchor book** — who anchored and at what price. Institutional participation is a real signal.
+- **Post-issue shareholding** — promoter stake after dilution, and any lock-in expiry schedule.
+- **Valuation against listed peers** — the only valuation anchor available pre-listing. Name the peers
+  and the multiple used, and take the sector file's primary multiple rather than defaulting to P/E.
+- **Risk factors** — the offer document lists them exhaustively; select the ones that are genuinely
+  company-specific rather than boilerplate.
+
+**Load the sector file of whatever business is listing** — a hospital IPO is analysed on `pharma-health`
+metrics, a renewable IPO on `power-energy` metrics. The IPO framing sits on top of the sector's own
+analysis, it does not replace it.
+
+**The offer document is Tier 1 and is public.** Prefer the RHP or DRHP over press coverage of it; the
+prospectus contains the financials, the risk factors and the use of proceeds in the company's own words.
+
 ## Corporate actions specifically
 
 For demergers, mergers and similar, add:

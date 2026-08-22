@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syrma SGS Technology — Q1 FY27 Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #ffffff;
+    --off-white: #f9f7f4;
+    --cream: #f2ede6;
+    --border: #e8e2da;
+
+    --syrma-main: #7b2d8b;
+    --syrma-light: #f0d8f7;
+    --syrma-accent: #e8a020;
+    --syrma-dark: #4a1a54;
+
+    --text-dark: #1a1a2e;
+    --text-mid: #444;
+    --text-light: #777;
+    --positive: #1a7a4a;
+    --negative: #c0392b;
+    --neutral: #e67e22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--text-dark);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ─── BACK BAR ─── */
+  #cb-back-bar{position:fixed;top:0;left:0;right:0;z-index:99999;background:#0f172a;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;box-shadow:0 2px 12px rgba(0,0,0,.3);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  #cb-back-btn{background:linear-gradient(135deg,var(--syrma-main),#9b3dab);color:#fff;font-size:12px;font-weight:700;padding:6px 16px;border-radius:20px;border:none;cursor:pointer;font-family:inherit}
+  #cb-spacer{height:46px}
+
+  /* ─── HERO ─── */
+  .hero {
+    background: linear-gradient(135deg, #2e0e38 0%, #4a1a54 50%, #34123e 100%);
+    color: white;
+    padding: 56px 48px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 20%;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #d6a8e0;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 18px;
+  }
+  .hero h1 span { color: var(--syrma-accent); }
+  .hero-sub {
+    font-size: 15.5px;
+    color: #cbb0d4;
+    max-width: 640px;
+    margin-bottom: 36px;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item { text-align: center; }
+  .hero-meta-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--syrma-accent);
+  }
+  .hero-meta-label { font-size: 11px; color: #d6a8e0; letter-spacing: 1px; }
+
+  /* ─── NAV TABS ─── */
+  .nav-bar {
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 46px;
+    z-index: 100;
+    display: flex;
+    gap: 0;
+    padding: 0 48px;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 16px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    color: var(--text-light);
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .nav-tab:hover { color: var(--text-dark); }
+  .nav-tab.active { color: var(--syrma-main); border-bottom-color: var(--syrma-accent); }
+
+  /* ─── SECTIONS ─── */
+  .section { display: none; padding: 44px 48px; max-width: 1180px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+  }
+  .section-sub { color: var(--text-light); font-size: 14px; margin-bottom: 36px; }
+  .sub-heading { font-family:'Playfair Display',serif; font-size: 19px; font-weight: 700; margin: 30px 0 14px; color: var(--syrma-main); }
+  .sub-heading:first-of-type{margin-top:0}
+
+  /* ─── KPI STRIP ─── */
+  .kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom: 32px; }
+  @media(max-width:900px){ .kpi-strip{grid-template-columns:repeat(2,1fr);} }
+  .kpi-box { background: var(--off-white); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+  .kpi-box .kpi-label { font-size: 11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color: var(--text-light); }
+  .kpi-box .kpi-value { font-family:'DM Mono',monospace; font-size: 24px; font-weight:500; margin-top:4px; color: var(--text-dark); }
+  .kpi-box .kpi-change { font-size: 12.5px; margin-top: 3px; font-weight:600; }
+  .up { color: var(--positive); }
+  .dn { color: var(--negative); }
+  .neu { color: var(--neutral); }
+
+  /* ─── FIN TABLE ─── */
+  .fin-table, .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 28px; }
+  .fin-table thead th, .compare-table thead th {
+    padding: 12px 16px; text-align: left; font-weight: 600; font-size: 11px;
+    letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-light);
+    border-bottom: 2px solid var(--border); background: var(--off-white);
+  }
+  .fin-table tbody td, .compare-table tbody td { padding: 11px 16px; border-bottom: 1px solid var(--border); }
+  .fin-table tbody tr:hover, .compare-table tbody tr:hover { background: var(--off-white); }
+  .fin-table .metric, .compare-table td:first-child { font-weight: 600; color: var(--text-dark); }
+  .fin-table .num, .compare-table .num { font-family: 'DM Mono', monospace; text-align: right; }
+  .compare-wrap { overflow-x: auto; }
+
+  /* ─── SEGMENT BARS ─── */
+  .segment-bar-wrap { margin-bottom: 28px; }
+  .segment-label-row { display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 4px; font-weight: 600; }
+  .segment-bar-track { height: 10px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
+  .segment-bar-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+
+  /* ─── USP LIST ─── */
+  .usp-list { list-style: none; margin-bottom: 28px; }
+  .usp-list li { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .usp-list li:last-child { border-bottom: none; }
+  .usp-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: var(--syrma-light); }
+
+  /* ─── JV GRID ─── */
+  .jv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .jv-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--off-white); }
+  .jv-co { font-weight: 700; font-size: 14px; }
+  .jv-partner { font-size: 12px; color: var(--text-light); margin: 2px 0 8px; }
+  .jv-desc { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
+  .jv-status { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 99px; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
+  .status-active { background: #d4f0e3; color: #1a6b4a; }
+  .status-pending { background: #fef3cd; color: #855e00; }
+  .status-pipeline { background: #d6e4f5; color: #1a4f8c; }
+  .status-terminated { background: #fde8e8; color: #c0392b; }
+
+  /* ─── CB RATING SCORECARD ─── */
+  .cb-score-hero { display:flex; gap:32px; align-items:center; flex-wrap:wrap; background: linear-gradient(135deg,#2e0e38,#4a1a54); border-radius:18px; padding:30px 34px; margin-bottom:30px; color:#fff; }
+  .cb-score-ring { width:150px; height:150px; border-radius:50%; background: conic-gradient(var(--syrma-accent) calc(var(--pct)*1%), rgba(255,255,255,.12) 0); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .cb-score-inner { width:120px; height:120px; border-radius:50%; background:#2e0e38; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .cb-score-num { font-family:'Playfair Display',serif; font-size:36px; font-weight:900; color:var(--syrma-accent); }
+  .cb-score-den { font-size:11px; color:#cbb0d4; }
+  .cb-score-tier { display:inline-block; margin-top:10px; padding:5px 14px; border-radius:99px; background:rgba(232,160,32,.18); border:1px solid var(--syrma-accent); color:var(--syrma-accent); font-weight:700; font-size:12px; letter-spacing:.6px; text-transform:uppercase; }
+  .cb-score-desc { font-size:14px; color:#e4d0ea; max-width:520px; line-height:1.6; }
+  .cb-score-desc strong{color:#fff;}
+
+  .cb-metric-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-bottom:28px; }
+  .cb-metric-card { border:1px solid var(--border); border-radius:12px; padding:16px 18px; background:var(--white); }
+  .cb-metric-name { font-size:12px; font-weight:700; color:var(--text-dark); margin-bottom:6px; }
+  .cb-metric-weight { font-size:10.5px; color:var(--text-light); font-family:'DM Mono',monospace; margin-bottom:10px; }
+  .cb-metric-bar-track { height:8px; background:var(--cream); border-radius:99px; overflow:hidden; margin-bottom:6px; }
+  .cb-metric-bar-fill { height:100%; background: linear-gradient(90deg,var(--syrma-main),var(--syrma-accent)); border-radius:99px; }
+  .cb-metric-score { font-family:'DM Mono',monospace; font-size:13px; font-weight:600; color:var(--syrma-main); }
+
+  /* ─── RISK GRID ─── */
+  .risk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .risk-card { border-radius: 12px; padding: 16px 20px; border-left: 4px solid; }
+  .risk-high { background: #fef5f5; border-color: #e53935; }
+  .risk-med { background: #fff8f0; border-color: #fb8c00; }
+  .risk-low { background: #f0faf4; border-color: #43a047; }
+  .risk-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .risk-desc { font-size: 12px; color: var(--text-mid); line-height: 1.5; }
+  .risk-badge { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.7; }
+
+  /* ─── ANALYST CARDS ─── */
+  .analyst-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .analyst-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--white); }
+  .analyst-broker { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); }
+  .analyst-rating { display: inline-block; margin: 6px 0; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+  .rating-buy { background: #d4f0e3; color: #1a6b4a; }
+  .rating-hold { background: #fef3cd; color: #855e00; }
+  .rating-neu { background: #eef1f5; color: #4a5568; }
+  .analyst-tp { font-family: 'DM Mono', monospace; font-size: 19px; font-weight: 500; }
+  .analyst-note { font-size: 12px; color: var(--text-light); margin-top: 6px; line-height: 1.4; }
+
+  /* ─── GOVERNANCE / NOTES ─── */
+  .gov-card { border-radius: 12px; padding: 18px 22px; margin-bottom: 14px; display: flex; gap: 14px; }
+  .gov-flag { font-size: 22px; flex-shrink: 0; }
+  .gov-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .gov-desc { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
+  .note-box { background: var(--syrma-light); border-radius: 12px; padding: 16px 20px; font-size: 13.5px; color: var(--text-dark); margin-bottom: 20px; line-height:1.6; }
+  .disclaimer { font-size: 11.5px; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 14px; margin-top: 20px; line-height: 1.6; }
+
+  /* ─── CB SCORE / CASH GRID ─── */
+  .cf-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-bottom:28px; }
+  .cf-card { border:1px solid var(--border); border-radius:12px; padding:18px 20px; background:var(--off-white); }
+  .cf-item { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--border); font-size:12.5px; }
+  .cf-item:last-child{border-bottom:none;}
+  .cf-key{color:var(--text-light);}
+  .cf-val{font-family:'DM Mono',monospace; font-weight:600;}
+
+  /* ─── CB ASSIST ─── */
+  .cba-wrap{display:flex;flex-direction:column;gap:14px}
+  .cba-lang-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+  .cba-lang-btn{padding:5px 14px;border-radius:20px;border:1.5px solid var(--syrma-main);background:#fff;color:var(--syrma-main);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .14s}
+  .cba-lang-btn.active{background:var(--syrma-main);color:#fff}
+  .cba-header{background:linear-gradient(135deg,#2e0e38,#4a1a54);border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:14px}
+  .cba-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--syrma-accent),#f0c060);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .cba-title{font-size:18px;font-weight:800;color:#fff}
+  .cba-sub{font-size:12px;color:#cbb0d4;margin-top:2px}
+  .cba-section-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-top:4px}
+  .cba-messages{min-height:320px;max-height:480px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;border:1px solid #e2e8f0;border-radius:12px;background:#fafbff}
+  .cba-messages::-webkit-scrollbar{width:4px}
+  .cba-messages::-webkit-scrollbar-thumb{background:var(--syrma-light);border-radius:2px}
+  .msg{max-width:88%;padding:11px 15px;border-radius:14px;font-size:13px;line-height:1.7}
+  .msg-bot{background:#fff;color:#0f172a;border-bottom-left-radius:4px;align-self:flex-start;border:1px solid #dde3f0;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .msg-user{background:linear-gradient(135deg,var(--syrma-main),#9b3dab);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+  .msg-bot strong{color:var(--syrma-main)}
+  .cba-chips-wrap{overflow-x:auto;padding-bottom:6px}
+  .cba-chips{display:flex;gap:7px;flex-wrap:wrap;padding:2px}
+  .cba-chip{background:var(--syrma-light);color:var(--syrma-main);border:1px solid #ddb6e8;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .14s;white-space:nowrap;flex-shrink:0}
+  .cba-chip:hover{background:var(--syrma-main);color:#fff;border-color:var(--syrma-main)}
+  .cba-input-wrap{display:flex;gap:10px}
+  .cba-input{flex:1;padding:12px 16px;border-radius:12px;border:1.5px solid #dde3f0;background:#f8fafc;color:#0f172a;font-size:13px;font-family:inherit;outline:none}
+  .cba-input:focus{border-color:var(--syrma-main);background:#fff}
+  .cba-send{padding:12px 22px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--syrma-main),#9b3dab);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0}
+  .cba-send:hover{opacity:.9}
+  .typing{display:flex;gap:4px;padding:11px 15px;background:#fff;border-radius:14px;border-bottom-left-radius:4px;align-self:flex-start;border:1px solid #dde3f0}
+  .typing span{width:7px;height:7px;background:var(--syrma-main);border-radius:50%;animation:bounce .8s infinite}
+  .typing span:nth-child(2){animation-delay:.15s}
+  .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+</style>
+</head>
+<body>
+
+<!-- ═══ CB RESEARCH — BACK TO PORTAL BUTTON ═══ -->
+<div id="cb-back-bar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--syrma-main),#9b3dab);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px">📊</div>
+    <span style="color:#94a3b8;font-size:10px;font-family:monospace">CB RESEARCH · MEMBER PORTAL</span>
+  </div>
+  <button id="cb-back-btn" onclick="window.opener&&!window.opener.closed?window.close():window.location.href='https://elangocauvery.github.io/CB-Finance/'">← Back to Portal</button>
+</div>
+<div id="cb-spacer"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Company Deep Dive · Vanakam · July 2026</div>
+  <h1>Syrma SGS Technology<br>Q1 <span>FY27</span> Business &amp; Investment Analysis</h1>
+  <p class="hero-sub">Results for the quarter ended 30 June 2026 (Q1 FY27) — revenue, margins, new CEO, Kaga Electronics JV, ₹1,000 Cr QIP, credit upgrade and what it all means for FY27.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <div class="hero-meta-val">₹1,589 Cr</div>
+      <div class="hero-meta-label">Q1 FY27 Revenue (+67% YoY)</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-val">₹106 Cr</div>
+      <div class="hero-meta-label">Q1 FY27 PAT (+112% YoY)</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-val">11.0%</div>
+      <div class="hero-meta-label">EBITDA Margin (incl. other income)</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-val">~₹27,000 Cr</div>
+      <div class="hero-meta-label">Market Cap (post-result)</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <div class="nav-tab active" onclick="showSection('overview')">📊 Overview</div>
+  <div class="nav-tab" onclick="showSection('business')">🏭 Business Model</div>
+  <div class="nav-tab" onclick="showSection('results')">💰 Q1 FY27 Results</div>
+  <div class="nav-tab" onclick="showSection('cbrating')">⭐ CB Rating</div>
+  <div class="nav-tab" onclick="showSection('jvs')">🤝 JVs &amp; Corporate Actions</div>
+  <div class="nav-tab" onclick="showSection('valuation')">📈 Cash, Debt &amp; Valuation</div>
+  <div class="nav-tab" onclick="showSection('risks')">⚠️ Risks</div>
+  <div class="nav-tab" style="color:var(--syrma-accent);font-weight:700" onclick="showSection('cbassist')">🤖 CB Assist</div>
+</div>
+
+<!-- ═══════════ SECTION: OVERVIEW ═══════════ -->
+<div id="overview" class="section active">
+  <div class="section-title">Q1 FY27 Snapshot</div>
+  <p class="section-sub">Chennai-headquartered EMS major · NSE: SYRMA · Quarter ended 30 June 2026 · Results approved by board on 29 July 2026</p>
+
+  <div class="kpi-strip">
+    <div class="kpi-box">
+      <div class="kpi-label">Revenue from Ops</div>
+      <div class="kpi-value">₹1,588.6 Cr</div>
+      <div class="kpi-change up">▲ 67.1% YoY · ▲ 7.6% QoQ</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">Operating EBITDA</div>
+      <div class="kpi-value">₹161.6 Cr</div>
+      <div class="kpi-change up">▲ 68.8% YoY · 10.2% margin</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">PAT (Consolidated)</div>
+      <div class="kpi-value">₹105.7 Cr</div>
+      <div class="kpi-change up">▲ 111.8% YoY · ▼ 11.3% QoQ*</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">Exports</div>
+      <div class="kpi-value">₹381.3 Cr</div>
+      <div class="kpi-change up">~24% of revenue · +67% YoY</div>
+    </div>
+  </div>
+  <div style="font-size:11.5px;color:var(--text-light);margin-top:-18px;margin-bottom:28px;">*QoQ PAT dip is sequential, not YoY — Q4 FY26 PAT of ₹119.2 Cr included seasonal strength; EBITDA margin narrowed to 11.0% from 12.6% in Q4 FY26 mainly on a 49% YoY jump in employee costs tied to new hiring for PCB/Kaga capacity build-out.</div>
+
+  <div class="sub-heading">The Quarter in One Paragraph</div>
+  <p style="margin-bottom:20px;color:var(--text-mid);">Syrma SGS opened FY27 with its strongest revenue growth print in several quarters — 67% YoY — powered by the automotive and consumer electronics verticals and a sharp export ramp. Profitability more than doubled YoY, though the EBITDA margin cooled sequentially as the company front-loaded hiring ahead of new capacity. The quarter was also an inflection point on the corporate side: a McKinsey-veteran CEO took charge, a new Japan-focused JV was signed with Kaga Electronics, credit rating was upgraded to AA, and the board lined up a ₹1,000 Cr QIP war chest — even as an earlier solar JV (K-Solare, with Premier Energies) was quietly shelved.</p>
+
+  <div class="sub-heading">Key Positives</div>
+  <ul class="usp-list">
+    <li><div class="usp-icon">🚀</div><div><strong>Fastest revenue growth in recent memory:</strong> 67.1% YoY revenue growth is well ahead of FY26's full-year 27% pace, and management has reaffirmed — and signalled confidence in exceeding — its 30–35% FY27 revenue growth guidance.</div></li>
+    <li><div class="usp-icon">🌍</div><div><strong>Export engine firing:</strong> Exports of ₹381.3 Cr in a single quarter puts the company on a credible path to its ₹1,500 Cr FY27 export target, with the Kaga Electronics JV adding a dedicated Japanese-OEM manufacturing line.</div></li>
+    <li><div class="usp-icon">💳</div><div><strong>Credit upgrade:</strong> India Ratings upgraded Syrma's long-term rating to IND AA/Stable (from IND AA-/Stable), citing an improved business risk profile and strong liquidity — a validation of the FY26 balance-sheet clean-up.</div></li>
+    <li><div class="usp-icon">👔</div><div><strong>Leadership refresh:</strong> Jaidit Singh Brar (ex-McKinsey Senior Partner, 25+ years) joined as CEO effective 26 June 2026, with a mandate to push Syrma into higher-value compute and defence electronics.</div></li>
+  </ul>
+
+  <div class="sub-heading">Key Watch-Items</div>
+  <ul class="usp-list">
+    <li><div class="usp-icon" style="background:#fdebd0;">📉</div><div><strong>Sequential margin cooling:</strong> Total EBITDA margin fell from 12.6% (Q4 FY26) to 11.0% (Q1 FY27) as employee expenses jumped 49% YoY — a cost the company is bearing ahead of the Kaga and PCB capacity coming online.</div></li>
+    <li><div class="usp-icon" style="background:#fdebd0;">🧩</div><div><strong>Solar ambitions paused:</strong> The 50:50 JV with Premier Energies to acquire inverter-maker K-Solare was mutually terminated in May 2026 after conditions precedent were not met — a modest step back for Syrma's renewable-electronics diversification plan.</div></li>
+    <li><div class="usp-icon" style="background:#fdebd0;">💰</div><div><strong>QIP overhang:</strong> The board's ₹1,000 Cr QIP approval is, per management, an annual "enabling resolution" rather than an immediate raise — but it keeps a dilution question live for shareholders tracking per-share metrics.</div></li>
+  </ul>
+</div>
+
+<!-- ═══════════ SECTION: BUSINESS MODEL ═══════════ -->
+<div id="business" class="section">
+  <div class="section-title">Business Model &amp; Verticals</div>
+  <p class="section-sub">Diversified EMS platform across automotive, industrial, healthcare, defence, consumer &amp; exports</p>
+
+  <p style="margin-bottom:22px;color:var(--text-mid);">Syrma SGS was formed through the merger of Syrma (Tandon Group, electronics manufacturing since the late 1970s) and SGS Tekniks (automotive electronics since the 1990s), bringing together over four decades of combined manufacturing experience. The company provides engineering, design and manufacturing services (turnkey EMS) across a diversified mix of end-markets, with a fast-growing export book and a widening footprint in premium, high-reliability electronics — PCBs, defence, and Japanese-OEM contract manufacturing.</p>
+
+  <div class="sub-heading">Revenue Mix (Directional, FY26 base — Q1 FY27 growth led by Auto &amp; Consumer)</div>
+  <div class="segment-bar-wrap">
+    <div class="segment-label-row"><span>🚗 Automotive Electronics</span><span style="font-family:DM Mono,monospace">Top growth driver, Q1 FY27</span></div>
+    <div class="segment-bar-track"><div class="segment-bar-fill" style="width:24%;background:var(--syrma-main);"></div></div>
+
+    <div class="segment-label-row"><span>📱 Consumer Electronics &amp; IT</span><span style="font-family:DM Mono,monospace">Joint top growth driver, Q1 FY27</span></div>
+    <div class="segment-bar-track"><div class="segment-bar-fill" style="width:22%;background:#9b3dab;"></div></div>
+
+    <div class="segment-label-row"><span>🏭 Industrial Electronics</span><span style="font-family:DM Mono,monospace">Steady contributor</span></div>
+    <div class="segment-bar-track"><div class="segment-bar-fill" style="width:20%;background:#b04dc0;"></div></div>
+
+    <div class="segment-label-row"><span>🏥 Healthcare &amp; Medical Devices</span><span style="font-family:DM Mono,monospace">Steady contributor</span></div>
+    <div class="segment-bar-track"><div class="segment-bar-fill" style="width:15%;background:#c05dce;"></div></div>
+
+    <div class="segment-label-row"><span>🛡 Defence &amp; Aerospace (Elcome)</span><span style="font-family:DM Mono,monospace">Growing, consolidating</span></div>
+    <div class="segment-bar-track"><div class="segment-bar-fill" style="width:12%;background:#d070dc;"></div></div>
+
+    <div class="segment-label-row"><span>🌍 Exports (Japan, US, Europe)</span><span style="font-family:DM Mono,monospace">₹381 Cr in Q1 FY27 alone (+67% YoY)</span></div>
+    <div class="segment-bar-track"><div class="segment-bar-fill" style="width:24%;background:var(--syrma-accent);"></div></div>
+  </div>
+  <div style="font-size:11.5px;color:var(--text-light);margin-bottom:24px;">Note: exact quarterly segment percentages were not separately disclosed in the Q1 FY27 press release; the bars reflect FY26 baseline mix with the automotive and consumer verticals flagged as the named growth drivers of the June 2026 quarter.</div>
+
+  <div class="sub-heading">Unique Strengths (USPs)</div>
+  <ul class="usp-list">
+    <li><div class="usp-icon">🌍</div><div><strong>Export momentum:</strong> ₹381.3 Cr of exports in a single quarter (Q1 FY27) versus a full-year FY26 export target that had itself been the sector's fastest-growing. Management is targeting ₹1,500 Cr of exports for FY27.</div></li>
+    <li><div class="usp-icon">🇯🇵</div><div><strong>New Japan corridor:</strong> The Kaga Electronics JV gives Syrma a purpose-built facility (at its existing Haryana plant) to compete for Japanese-OEM contract manufacturing — a segment Indian EMS players have historically under-penetrated relative to China and Southeast Asia.</div></li>
+    <li><div class="usp-icon">🏭</div><div><strong>PCB backward integration:</strong> The Shinhyup Electronics (South Korea) JV is building a multi-layer PCB and copper-clad-laminate facility in Andhra Pradesh under the ECMS scheme, with government land allotment and incentives approved.</div></li>
+    <li><div class="usp-icon">📊</div><div><strong>Balanced diversification:</strong> No single vertical dominates revenue — auto, industrial, healthcare, defence and consumer are all meaningful contributors, reducing single-customer or single-sector concentration risk relative to peers.</div></li>
+    <li><div class="usp-icon">🛡</div><div><strong>Defence consolidation via Elcome:</strong> The 60% stake in Elcome brings naval electronics and secure-communications expertise, deepening Syrma's defence-electronics presence alongside the broader Make-in-India defence manufacturing push.</div></li>
+  </ul>
+</div>
+
+<!-- ═══════════ SECTION: Q1 FY27 RESULTS ═══════════ -->
+<div id="results" class="section">
+  <div class="section-title">Q1 FY27 Financial Performance</div>
+  <p class="section-sub">Consolidated results, quarter ended 30 June 2026 — compared with Q1 FY26 (YoY) and Q4 FY26 (QoQ)</p>
+
+  <div class="sub-heading">Quarterly Comparison</div>
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>Metric</th><th>Q1 FY27 (Jun&nbsp;2026)</th><th>Q1 FY26 (Jun&nbsp;2025)</th><th>YoY Change</th><th>Q4 FY26 (Mar&nbsp;2026)</th><th>QoQ Change</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Revenue from Operations</td><td class="num">₹1,588.6 Cr</td><td class="num">₹944.0 Cr</td><td class="num up">+67.1%</td><td class="num">₹1,476.8 Cr</td><td class="num up">+7.6%</td></tr>
+        <tr><td>Total Revenue (incl. other income)</td><td class="num">₹1,603.7 Cr</td><td class="num">₹960.0 Cr</td><td class="num up">+67.1%</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>Operating EBITDA</td><td class="num">₹161.6 Cr</td><td class="num">~₹95.7 Cr</td><td class="num up">+68.8%</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>Total EBITDA (incl. other income)</td><td class="num">₹176.6 Cr</td><td class="num">~₹102.7 Cr</td><td class="num up">+72.0%</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>EBITDA Margin (total)</td><td class="num">11.0%</td><td class="num">~10.7%</td><td class="num neu">+30 bps</td><td class="num">12.6%</td><td class="num dn">-160 bps</td></tr>
+        <tr><td>Operating EBITDA Margin</td><td class="num">10.2%</td><td class="num">~10.1%</td><td class="num neu">~flat</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>PAT (Consolidated)</td><td class="num">₹105.7 Cr</td><td class="num">₹49.7 Cr</td><td class="num up">+111.8%</td><td class="num">₹119.2 Cr</td><td class="num dn">-11.3%</td></tr>
+        <tr><td>PAT Margin</td><td class="num">6.6%</td><td class="num">~5.3%</td><td class="num up">+130 bps</td><td class="num">~8.1%</td><td class="num dn">-150 bps</td></tr>
+        <tr><td>Employee Expenses</td><td class="num">₹75.3 Cr</td><td class="num">~₹50.5 Cr</td><td class="num dn">+49.0%</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>Exports</td><td class="num">₹381.3 Cr</td><td class="num">~₹228 Cr</td><td class="num up">+67.0%</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>Annualised ROCE</td><td class="num">20.1%</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>Basic EPS</td><td class="num">₹5.19</td><td class="num">₹2.79</td><td class="num up">+86.0%</td><td class="num">—</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:12px;color:var(--text-light);margin-bottom:28px;">Figures compiled from the company's board-approved Q1 FY27 results (30 June 2026 quarter) and press disclosures dated 29 July 2026. Certain Q1 FY26 and Q4 FY26 base figures are back-calculated from disclosed growth percentages where the absolute number was not separately reported, and are marked with "~".</div>
+
+  <div class="sub-heading">FY26 Full-Year Base (for context)</div>
+  <div class="fin-table-wrap">
+    <table class="fin-table">
+      <thead><tr><th>Metric (FY26)</th><th>Value</th><th>YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td class="metric">Revenue</td><td class="num">₹4,857 Cr</td><td class="num up">+27%</td></tr>
+        <tr><td class="metric">Operating EBITDA</td><td class="num">₹545 Cr</td><td class="num up">+68%</td></tr>
+        <tr><td class="metric">EBITDA Margin</td><td class="num">11.3%</td><td class="num">—</td></tr>
+        <tr><td class="metric">PAT</td><td class="num">₹346 Cr</td><td class="num up">+87%</td></tr>
+        <tr><td class="metric">Net Cash Position</td><td class="num">₹467 Cr</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note-box">💡 <strong>Reading the margin story:</strong> Syrma's Q1 FY27 EBITDA margin expansion is real on a YoY basis (+30 bps) but the QoQ dip (-160 bps) is the number to watch next quarter. A 49% YoY jump in employee costs — ahead of Kaga JV and PCB-plant ramp-up — is the main driver. If this hiring converts into revenue on schedule over FY27, the margin dip is a timing effect; if capacity ramps slip, it becomes a genuine cost overhang.</div>
+
+  <div class="sub-heading">FY27 Management Guidance</div>
+  <ul class="usp-list">
+    <li><div class="usp-icon">📈</div><div><strong>Revenue growth:</strong> 30–35% guided for FY27, reaffirmed post-Q1, with management expressing confidence of exceeding the range on the back of the 67% Q1 print.</div></li>
+    <li><div class="usp-icon">🌍</div><div><strong>Exports:</strong> ₹1,500 Cr target for FY27 — roughly 4x the pace implied by Q1's ₹381 Cr run-rate if sustained.</div></li>
+    <li><div class="usp-icon">💰</div><div><strong>EBITDA:</strong> ~₹700 Cr targeted for FY27, up from FY26's ₹545 Cr.</div></li>
+  </ul>
+  <div class="disclaimer">⚠️ Guidance figures are management's stated targets as communicated around the Q1 FY27 results and earnings call; actual outcomes may differ materially.</div>
+</div>
+
+<!-- ═══════════ SECTION: CB RATING ═══════════ -->
+<div id="cbrating" class="section">
+  <div class="section-title">CB Rating — Syrma SGS Technology</div>
+  <p class="section-sub">Cauvery Business Research's proprietary quality &amp; momentum scorecard — a research framework, not a buy/sell/hold recommendation</p>
+
+  <div class="cb-score-hero">
+    <div class="cb-score-ring" style="--pct:83">
+      <div class="cb-score-inner">
+        <div class="cb-score-num">83</div>
+        <div class="cb-score-den">/ 100</div>
+      </div>
+    </div>
+    <div>
+      <span class="cb-score-tier">Strong</span>
+      <p class="cb-score-desc" style="margin-top:12px;">Syrma SGS scores <strong>83/100</strong> on the CB Rating framework for Q1 FY27 — anchored by exceptional revenue momentum and export resilience, tempered by a sequential margin dip and a still-below-peer ROE base. This is a proprietary CB Research quality score reflecting business fundamentals and execution, <strong>not</strong> a recommendation to buy, sell or hold the stock.</p>
+    </div>
+  </div>
+
+  <div class="sub-heading">Five Weighted Metrics</div>
+  <div class="cb-metric-grid">
+    <div class="cb-metric-card">
+      <div class="cb-metric-name">Revenue Growth &amp; Momentum</div>
+      <div class="cb-metric-weight">WEIGHT: 25%</div>
+      <div class="cb-metric-bar-track"><div class="cb-metric-bar-fill" style="width:95%;"></div></div>
+      <div class="cb-metric-score">9.5 / 10</div>
+    </div>
+    <div class="cb-metric-card">
+      <div class="cb-metric-name">Margin Trajectory</div>
+      <div class="cb-metric-weight">WEIGHT: 20%</div>
+      <div class="cb-metric-bar-track"><div class="cb-metric-bar-fill" style="width:70%;"></div></div>
+      <div class="cb-metric-score">7.0 / 10</div>
+    </div>
+    <div class="cb-metric-card">
+      <div class="cb-metric-name">Balance Sheet &amp; Capital Strength</div>
+      <div class="cb-metric-weight">WEIGHT: 20%</div>
+      <div class="cb-metric-bar-track"><div class="cb-metric-bar-fill" style="width:80%;"></div></div>
+      <div class="cb-metric-score">8.0 / 10</div>
+    </div>
+    <div class="cb-metric-card">
+      <div class="cb-metric-name">Diversification &amp; Export Resilience</div>
+      <div class="cb-metric-weight">WEIGHT: 20%</div>
+      <div class="cb-metric-bar-track"><div class="cb-metric-bar-fill" style="width:85%;"></div></div>
+      <div class="cb-metric-score">8.5 / 10</div>
+    </div>
+    <div class="cb-metric-card">
+      <div class="cb-metric-name">Execution &amp; Governance</div>
+      <div class="cb-metric-weight">WEIGHT: 15%</div>
+      <div class="cb-metric-bar-track"><div class="cb-metric-bar-fill" style="width:80%;"></div></div>
+      <div class="cb-metric-score">8.0 / 10</div>
+    </div>
+  </div>
+
+  <div class="sub-heading">Score Rationale</div>
+  <ul class="usp-list">
+    <li><div class="usp-icon">🚀</div><div><strong>Revenue Growth &amp; Momentum (9.5/10):</strong> 67.1% YoY revenue growth is a standout print, well ahead of FY26's already-strong 27% full-year pace and comfortably ahead of guidance.</div></li>
+    <li><div class="usp-icon">📉</div><div><strong>Margin Trajectory (7.0/10):</strong> YoY margin expansion is positive but modest (+30 bps), and the QoQ compression (-160 bps) on rising employee costs keeps this metric below the other four — the single biggest swing factor for next quarter's score.</div></li>
+    <li><div class="usp-icon">💳</div><div><strong>Balance Sheet &amp; Capital Strength (8.0/10):</strong> Net cash position of ₹467 Cr (FY26) and a credit-rating upgrade to IND AA/Stable support a strong score; the pending ₹1,000 Cr QIP is an enabling resolution rather than a confirmed raise, so it isn't yet penalised as dilution.</div></li>
+    <li><div class="usp-icon">🌍</div><div><strong>Diversification &amp; Export Resilience (8.5/10):</strong> A balanced vertical mix plus a fast-scaling export book (₹381 Cr in one quarter) and a new Japan-facing JV meaningfully derisk the revenue base.</div></li>
+    <li><div class="usp-icon">👔</div><div><strong>Execution &amp; Governance (8.0/10):</strong> A credible new CEO hire, continuity via Executive Chairman reappointment, and a clean, amicable exit from the K-Solare JV (no financial penalty) all support execution discipline; the score is not higher because the leadership transition itself is a near-term integration variable to monitor.</div></li>
+  </ul>
+  <div class="disclaimer">⚠️ CB Rating is a proprietary research framework developed by Cauvery Business Research for educational and informational purposes. It is not investment advice, and CB Research is not a SEBI-registered investment adviser or research analyst. This is not a recommendation to buy, sell or hold any security. Please conduct your own due diligence or consult a SEBI-registered advisor before investing.</div>
+</div>
+
+<!-- ═══════════ SECTION: JVs & CORPORATE ACTIONS ═══════════ -->
+<div id="jvs" class="section">
+  <div class="section-title">JVs, Acquisitions &amp; Corporate Actions</div>
+  <p class="section-sub">Everything that moved around the Q1 FY27 results — new CEO, new JV, credit upgrade, QIP, and a JV that didn't happen</p>
+
+  <div class="jv-grid">
+    <div class="jv-card">
+      <div class="jv-co">Kaga Electronics JV (New)</div>
+      <div class="jv-partner">Kaga Electronics India Pvt Ltd, Japan | Signed 22 June 2026</div>
+      <div class="jv-desc">60:40 JV (Syrma:Kaga) to build a state-of-the-art EMS facility at Syrma's existing Haryana plant, targeting Japanese OEM clients. Total initial investment ₹25 Cr (Syrma ₹15 Cr / Kaga ₹10 Cr). Four-member board, two directors nominated by each partner.</div>
+      <span class="jv-status status-pending">Agreement Signed — Conditions Precedent Pending</span>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">PCB JV — Shinhyup Electronics</div>
+      <div class="jv-partner">Shinhyup Electronics, South Korea | Andhra Pradesh</div>
+      <div class="jv-desc">ECMS-scheme multi-layer PCB and copper-clad-laminate manufacturing plant. Government of Andhra Pradesh has approved land allotment and incentives. Phase 1 construction targeted for completion by December 2026.</div>
+      <span class="jv-status status-pipeline">Construction Phase</span>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">K-Solare Acquisition (Terminated)</div>
+      <div class="jv-partner">Was: 50:50 JV with Premier Energies | Terminated 11 May 2026</div>
+      <div class="jv-desc">Planned joint acquisition of a controlling stake in Pune-based inverter maker K-Solare Energy (~₹100–170 Cr deal) was mutually called off after conditions precedent were not fulfilled. Both companies confirmed no material financial impact; Syrma said it remains open to alternative solar-electronics opportunities.</div>
+      <span class="jv-status status-terminated">Terminated — No Financial Impact</span>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Elcome Acquisition (Defence)</div>
+      <div class="jv-partner">60% stake, ₹2,350 Mn | Consolidated FY26</div>
+      <div class="jv-desc">Naval and defence communication electronics. Strengthens Syrma's defence vertical with specialised MoD supply relationships and secure-communications capability.</div>
+      <span class="jv-status status-active">Active</span>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Elemaster JV (Industrial/Railways)</div>
+      <div class="jv-partner">Elemaster S.p.A., Italy | Syrma holds 60%</div>
+      <div class="jv-desc">High-reliability electronics for industrial clients and Indian Railways, giving Syrma access to European design capability and a global railway client base.</div>
+      <span class="jv-status status-active">Operational</span>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">₹1,000 Cr QIP (Enabling Resolution)</div>
+      <div class="jv-partner">Approved by board, 29 July 2026</div>
+      <div class="jv-desc">Board approved raising up to ₹1,000 Cr via QIP or other permissible modes. Per CFO commentary on the earnings call, this is an annually-renewed enabling resolution to keep a funding "war chest" ready for opportunities (semiconductors and other capex-heavy areas) — not confirmation of an imminent raise.</div>
+      <span class="jv-status status-pending">Enabling Resolution — No Immediate Raise</span>
+    </div>
+  </div>
+
+  <div class="sub-heading">Leadership Changes</div>
+  <div class="gov-card" style="background:#f0faf4;">
+    <div class="gov-flag">👔</div>
+    <div>
+      <div class="gov-title">Jaidit Singh Brar Appointed CEO</div>
+      <div class="gov-desc">Effective 26 June 2026. Brings over 25 years of leadership experience, including a tenure as Senior Partner at McKinsey &amp; Company. Mandate reportedly includes driving Syrma's diversification into high-end compute and defence electronics.</div>
+    </div>
+  </div>
+  <div class="gov-card" style="background:#f0faf4;">
+    <div class="gov-flag">✅</div>
+    <div>
+      <div class="gov-title">Sandeep Tandon Reappointed Executive Chairman</div>
+      <div class="gov-desc">Reappointment for a further five-year term approved alongside the Q1 FY27 results on 29 July 2026, providing continuity in strategic direction through the leadership transition at the CEO level.</div>
+    </div>
+  </div>
+  <div class="gov-card" style="background:#eff6ff;">
+    <div class="gov-flag">💳</div>
+    <div>
+      <div class="gov-title">Credit Rating Upgraded to IND AA/Stable</div>
+      <div class="gov-desc">India Ratings &amp; Research upgraded the long-term rating for bank loan facilities to IND AA/Stable (from IND AA-/Stable) and affirmed the short-term rating at IND A1+, citing an improved business risk profile and strong liquidity.</div>
+    </div>
+  </div>
+  <div class="note-box">📅 AGM scheduled for 25 August 2026, where the QIP enabling resolution and Executive Chairman reappointment are expected to come up for shareholder approval.</div>
+</div>
+
+<!-- ═══════════ SECTION: VALUATION ═══════════ -->
+<div id="valuation" class="section">
+  <div class="section-title">Cash, Debt &amp; Valuation</div>
+  <p class="section-sub">Balance sheet health, stock reaction to Q1 FY27 results, and where analysts stand</p>
+
+  <div class="sub-heading">Balance Sheet Snapshot (FY26 base)</div>
+  <div class="cf-grid">
+    <div class="cf-card">
+      <div style="font-weight:700;font-size:14px;color:var(--syrma-main);margin-bottom:10px;">🟣 Syrma SGS Technology</div>
+      <div class="cf-item"><span class="cf-key">Net Cash Position (FY26)</span><span class="cf-val up">₹467 Cr</span></div>
+      <div class="cf-item"><span class="cf-key">Credit Rating (Long-term)</span><span class="cf-val up">IND AA / Stable</span></div>
+      <div class="cf-item"><span class="cf-key">Credit Rating (Short-term)</span><span class="cf-val up">IND A1+</span></div>
+      <div class="cf-item"><span class="cf-key">Book Value / Share</span><span class="cf-val">~₹148</span></div>
+      <div class="cf-item"><span class="cf-key">Annualised ROCE (Q1 FY27)</span><span class="cf-val up">20.1%</span></div>
+      <div class="cf-item"><span class="cf-key">Pending Capital Action</span><span class="cf-val neu">₹1,000 Cr QIP (enabling)</span></div>
+    </div>
+  </div>
+
+  <div class="sub-heading">Stock Reaction to Q1 FY27 Results</div>
+  <div class="compare-wrap">
+    <table class="fin-table">
+      <thead><tr><th style="width:220px;">Metric</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td class="metric">Price move on results day (29 Jul 2026)</td><td class="num">+3.97% to +5.2%, to ~₹1,397–1,413</td></tr>
+        <tr><td class="metric">Market Cap (post-result)</td><td class="num">~₹26,900–27,000 Cr</td></tr>
+        <tr><td class="metric">52-week Range</td><td class="num">₹600.90 – ₹1,517.70</td></tr>
+        <tr><td class="metric">Distance from 52-week High</td><td class="num">~7–8% below high</td></tr>
+        <tr><td class="metric">Stock P/E (early July 2026, pre-results)</td><td class="num">~82x</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sub-heading">Analyst Views</div>
+  <div class="analyst-grid">
+    <div class="analyst-card">
+      <div class="analyst-broker">Consensus (24 Analysts)</div>
+      <span class="analyst-rating rating-buy">BUY — 18 of 24</span>
+      <div class="analyst-tp">Avg. TP ₹1,197</div>
+      <div class="analyst-note">18 Buy, 5 Hold, 1 Sell. Average 12-month target of ~₹1,196.79, range ₹940–₹1,601 across the panel — reflecting a genuinely wide spread of views on how much of the growth is already priced in.</div>
+    </div>
+    <div class="analyst-card">
+      <div class="analyst-broker">Post-Result Read</div>
+      <span class="analyst-rating rating-neu">Watching margin trend</span>
+      <div class="analyst-tp">Valuation stretched near highs</div>
+      <div class="analyst-note">With the stock trading near its 52-week high post-results and the average consensus target sitting below the current price, near-term upside may hinge on FY27 guidance delivery and margin recovery rather than re-rating.</div>
+    </div>
+    <div class="analyst-card">
+      <div class="analyst-broker">Management Commentary</div>
+      <span class="analyst-rating rating-buy">Confident on guidance</span>
+      <div class="analyst-tp">35%+ revenue growth eyed</div>
+      <div class="analyst-note">Management has expressed confidence in exceeding its 30-35% FY27 revenue growth guidance and reaffirmed the ₹1,500 Cr export target, framing the QIP as a readiness measure rather than a funding need.</div>
+    </div>
+  </div>
+  <div class="note-box">📌 <strong>Key themes analysts are tracking into Q2 FY27:</strong> (1) whether the Q1 margin dip reverses as new hires ramp productivity, (2) Kaga JV and Shinhyup PCB JV execution timelines, (3) whether/when the ₹1,000 Cr QIP is actually drawn down and at what dilution, (4) new CEO's strategic imprint on the compute/defence electronics push, (5) export trajectory toward the ₹1,500 Cr FY27 target.</div>
+  <div class="disclaimer">⚠️ Analyst targets and ratings cited reflect data available as of late July 2026 and are illustrative of market sentiment, not CB Research's own recommendation. CB Research is not SEBI-registered and does not offer investment advice. Prices, ratings and targets change frequently — verify current data before making any investment decision.</div>
+</div>
+
+<!-- ═══════════ SECTION: RISKS ═══════════ -->
+<div id="risks" class="section">
+  <div class="section-title">Risk Analysis</div>
+  <p class="section-sub">Key risks for investors tracking Syrma SGS into the rest of FY27</p>
+
+  <div class="risk-grid">
+    <div class="risk-card risk-med">
+      <div class="risk-badge">MEDIUM RISK</div>
+      <div class="risk-title">Sequential Margin Compression</div>
+      <div class="risk-desc">EBITDA margin narrowed from 12.6% (Q4 FY26) to 11.0% (Q1 FY27) on a 49% YoY jump in employee costs. If new capacity (Kaga, PCB) doesn't convert to revenue on schedule, this could persist rather than reverse as a timing effect.</div>
+    </div>
+    <div class="risk-card risk-med">
+      <div class="risk-badge">MEDIUM RISK</div>
+      <div class="risk-title">Valuation Near 52-Week High</div>
+      <div class="risk-desc">Stock trades close to its 52-week high (~₹1,518) post-results at a rich P/E, while the average analyst consensus target (~₹1,197) sits below the current price — leaving limited room for execution disappointment.</div>
+    </div>
+    <div class="risk-card risk-med">
+      <div class="risk-badge">MEDIUM RISK</div>
+      <div class="risk-title">Multiple Concurrent JV/Capex Programs</div>
+      <div class="risk-desc">Kaga (Haryana), Shinhyup PCB (Andhra Pradesh), Elemaster (industrial/rail) and Elcome (defence) are all live simultaneously. Management bandwidth and execution discipline across four parallel programs is a genuine watch-item.</div>
+    </div>
+    <div class="risk-card risk-low">
+      <div class="risk-badge">LOW-MED RISK</div>
+      <div class="risk-title">Leadership Transition</div>
+      <div class="risk-desc">A new CEO joined mid-quarter (26 June 2026). While the Executive Chairman's reappointment provides continuity, any strategy shift under new leadership carries near-term execution and integration risk.</div>
+    </div>
+    <div class="risk-card risk-low">
+      <div class="risk-badge">LOW-MED RISK</div>
+      <div class="risk-title">QIP Dilution Overhang</div>
+      <div class="risk-desc">The ₹1,000 Cr QIP is currently an enabling resolution, not a confirmed raise — but if and when drawn, it would dilute existing shareholders' EPS and book value depending on issue pricing and timing.</div>
+    </div>
+    <div class="risk-card risk-low">
+      <div class="risk-badge">LOW RISK</div>
+      <div class="risk-title">Stalled Solar Diversification</div>
+      <div class="risk-desc">The K-Solare acquisition (via the Premier Energies JV) fell through in May 2026. Financially immaterial, but it removes one specific avenue the company had flagged for renewable-electronics diversification.</div>
+    </div>
+  </div>
+  <div class="disclaimer">⚠️ This risk analysis is for educational purposes and is not exhaustive. It does not constitute investment advice. Please conduct independent due diligence or consult a SEBI-registered investment adviser.</div>
+</div>
+
+<!-- ═══════════ SECTION: CB ASSIST ═══════════ -->
+<script>
+var cbaLang = 'en';
+
+var CBA_CHIPS = {
+  en: [
+    "Why did margin fall QoQ despite a strong quarter?",
+    "What is the Kaga Electronics JV?",
+    "Why did the board approve a ₹1,000 Cr QIP?",
+    "What happened to the K-Solare solar JV?",
+    "Who is the new Syrma CEO?",
+    "Is Syrma overvalued after the rally?",
+    "What is Syrma's FY27 guidance?",
+    "Status of the PCB JV with Shinhyup?"
+  ],
+  ta: [
+    "Margin ஏன் QoQ குறைந்தது?",
+    "Kaga Electronics JV என்ன?",
+    "₹1,000 கோடி QIP ஏன் approve செய்யப்பட்டது?",
+    "K-Solare solar JV-க்கு என்ன ஆனது?",
+    "புதிய CEO யார்?",
+    "Syrma stock overvalued ஆ?",
+    "FY27 guidance என்ன?",
+    "Shinhyup PCB JV நிலை என்ன?"
+  ]
+};
+
+var CBA_KB = [
+  { keys:['margin fall','margin drop','margin qoq','margin compress','why margin','ebitda margin fell',
+          'margin ஏன்','margin குறைந்தது'],
+    en:`<strong>Why did EBITDA margin fall QoQ in Q1 FY27?</strong><br><br>
+Total EBITDA margin narrowed to <strong>11.0%</strong> in Q1 FY27 (Jun 2026 quarter) from <strong>12.6%</strong> in Q4 FY26 — a 160 bps sequential decline.<br><br>
+<strong>Main driver:</strong> Employee expenses jumped <strong>49% YoY to ₹75.3 Cr</strong>, well ahead of revenue growth in percentage terms for that specific cost line, as the company hired ahead of capacity coming online at the Kaga JV facility and the Shinhyup PCB plant.<br><br>
+<strong>Is this a red flag?</strong> On a YoY basis, margin actually expanded slightly (+30 bps), so this looks more like a timing effect — costs booked ahead of revenue — than a structural deterioration. The read-through depends on whether Q2–Q3 FY27 show the new capacity converting to revenue as guided.<br><br>
+📌 Operating EBITDA margin (excluding other income) was roughly flat YoY at ~10.2%, reinforcing the "timing, not structural" read — but this needs confirmation next quarter.`,
+    ta:`<strong>Margin ஏன் QoQ குறைந்தது?</strong><br><br>
+Total EBITDA margin Q4 FY26-ல் 12.6%-ல் இருந்து Q1 FY27-ல் 11.0%-ஆக குறைந்தது (160 bps குறைவு).<br><br>
+முக்கிய காரணம்: Employee expenses 49% YoY அதிகரித்து ₹75.3 கோடி ஆனது — Kaga JV மற்றும் Shinhyup PCB plant capacity வருவதற்கு முன் hiring செய்ததால்.<br><br>
+YoY அடிப்படையில் margin சற்று உயர்ந்துள்ளது (+30 bps) — எனவே இது structural பிரச்சனை அல்ல, timing effect ஆக இருக்கலாம். அடுத்த quarter results இதை உறுதிப்படுத்தும்.`
+  },
+  { keys:['kaga','kaga electronics','japan jv','japanese oem'],
+    en:`<strong>What is the Kaga Electronics JV?</strong><br><br>
+Signed on <strong>22 June 2026</strong>, this is a <strong>60:40 joint venture</strong> (Syrma:Kaga Electronics India) to build an advanced EMS manufacturing facility at Syrma's <strong>existing Haryana plant</strong>, specifically targeting <strong>Japanese OEM clients</strong>.<br><br>
+<strong>Investment:</strong> ₹25 Cr total (Syrma ₹15 Cr for 60%, Kaga ₹10 Cr for 40%). Board has 4 directors, 2 nominated by each partner.<br><br>
+<strong>Why it matters:</strong> Indian EMS players have historically had limited penetration into Japanese OEM contract manufacturing compared to Chinese and Southeast Asian rivals. This JV gives Syrma a dedicated bridge into that client base, complementing its export push.<br><br>
+📌 Management is investing ₹25 Cr through FY27 to get this facility operational — a small capital commitment relative to the strategic optionality it opens up.`,
+    ta:`<strong>Kaga Electronics JV என்ன?</strong><br><br>
+22 ஜூன் 2026 அன்று கையெழுத்தான 60:40 JV (Syrma:Kaga) — Haryana plant-ல் Japanese OEM clients-க்காக advanced EMS facility அமைக்க.<br><br>
+Investment: மொத்தம் ₹25 கோடி (Syrma ₹15 கோடி 60%-க்கு, Kaga ₹10 கோடி 40%-க்கு).<br><br>
+இது Syrma-வுக்கு Japanese OEM வாடிக்கையாளர்களை அணுக ஒரு புதிய வழியை திறக்கிறது — export வளர்ச்சிக்கு துணை.`
+  },
+  { keys:['qip','1000 crore','fundraise','fund raise','capital raise'],
+    en:`<strong>Why did the board approve a ₹1,000 Cr QIP?</strong><br><br>
+On 29 July 2026, alongside Q1 FY27 results, the board approved raising up to <strong>₹1,000 Cr via QIP</strong> or other permissible modes.<br><br>
+<strong>Important context:</strong> Per the CFO's earnings-call commentary, this is <strong>not an immediate fundraise</strong> — it's described as an <strong>annually-renewed "enabling resolution"</strong> the company takes at every AGM cycle, so it has a ready funding pipeline for opportunities (e.g. semiconductors, other capex-heavy areas) if they emerge. A similar ₹1,000 Cr QIP resolution was also approved in May 2025.<br><br>
+<strong>What to watch:</strong> Whether the company actually draws on this in FY27, and at what valuation/dilution, will matter more than the resolution itself. Until drawn, it's a war chest, not a confirmed dilution event.`,
+    ta:`<strong>₹1,000 கோடி QIP ஏன்?</strong><br><br>
+29 ஜூலை 2026 அன்று Q1 FY27 results-உடன், board ₹1,000 கோடி வரை QIP மூலம் fund raise செய்ய approve செய்தது.<br><br>
+CFO விளக்கம்: இது உடனடி fundraise இல்லை — ஒவ்வொரு ஆண்டும் AGM-ல் எடுக்கப்படும் "enabling resolution" — எதிர்கால வாய்ப்புகளுக்கு (semiconductor போன்றவை) ready funding pipeline வைத்திருக்க.<br><br>
+கவனிக்க வேண்டியது: உண்மையில் இது எப்போது பயன்படுத்தப்படுகிறது, எந்த விலையில் — dilution அளவை தீர்மானிக்கும்.`
+  },
+  { keys:['k-solare','ksolare','solar jv','premier energies','solar terminated'],
+    en:`<strong>What happened to the K-Solare solar JV?</strong><br><br>
+In October 2025, Syrma SGS and Premier Energies had agreed a <strong>50:50 JV</strong> to jointly acquire Pune-based solar-inverter maker <strong>K-Solare Energy</strong> (deal size reported between ₹100–170 Cr).<br><br>
+On <strong>11 May 2026</strong>, both companies <strong>mutually terminated</strong> the arrangement after "conditions precedent" were not fulfilled. Both confirmed <strong>no material financial impact</strong> from the termination.<br><br>
+<strong>What it means:</strong> This was a step toward solar/renewable-electronics diversification that didn't materialise. Syrma said it remains open to alternative approaches in the solar-inverter space, but as of the Q1 FY27 results, no replacement deal has been announced.<br><br>
+📌 Financially immaterial, but worth tracking as a signal on Syrma's appetite (and discipline) around inorganic solar-electronics expansion.`,
+    ta:`<strong>K-Solare solar JV-க்கு என்ன ஆனது?</strong><br><br>
+அக்டோபர் 2025-ல் Syrma மற்றும் Premier Energies 50:50 JV மூலம் K-Solare Energy (Pune) ஐ acquire செய்ய ஒப்பந்தம் செய்திருந்தன (₹100-170 கோடி).<br><br>
+11 மே 2026 அன்று இரு நிறுவனங்களும் ஒப்புக்கொண்டு இந்த ஒப்பந்தத்தை நிறுத்தின — "conditions precedent" நிறைவேறாததால். நிதி impact இல்லை என உறுதி செய்யப்பட்டது.<br><br>
+📌 நிதி ரீதியாக முக்கியமில்லை, ஆனால் Syrma-வின் solar diversification தந்திரோபாயத்தை கவனிக்க வேண்டிய signal.`
+  },
+  { keys:['ceo','new ceo','jaidit','brar','leadership change'],
+    en:`<strong>Who is Syrma's new CEO?</strong><br><br>
+<strong>Jaidit Singh Brar</strong> was appointed CEO effective <strong>26 June 2026</strong>. He brings over <strong>25 years of leadership experience</strong>, including a tenure as <strong>Senior Partner at McKinsey &amp; Company</strong>.<br><br>
+His reported mandate is to drive Syrma's diversification into <strong>higher-value compute and defence electronics</strong> — a step up from the company's traditional EMS/contract-manufacturing base.<br><br>
+<strong>Continuity:</strong> Alongside this change, <strong>Sandeep Tandon was reappointed Executive Chairman</strong> for a further five-year term on 29 July 2026, which should provide strategic continuity through the CEO transition.<br><br>
+📌 A McKinsey-veteran CEO taking charge mid-quarter is a leadership-quality positive, but any new CEO also carries near-term execution/integration risk worth watching over the next 2-3 quarters.`,
+    ta:`<strong>புதிய CEO யார்?</strong><br><br>
+Jaidit Singh Brar 26 ஜூன் 2026 முதல் CEO ஆக நியமிக்கப்பட்டார். 25+ ஆண்டுகள் தலைமைத்துவ அனுபவம், McKinsey & Company-ல் Senior Partner ஆக பணியாற்றியவர்.<br><br>
+அவரது நோக்கம்: high-end compute மற்றும் defence electronics நோக்கி Syrma-வை move செய்வது.<br><br>
+Sandeep Tandon Executive Chairman ஆக மேலும் 5 ஆண்டுகளுக்கு reappoint செய்யப்பட்டார் — தொடர்ச்சிக்காக.`
+  },
+  { keys:['overvalued','valuation','expensive','stock price','52 week high','pe ratio','p/e'],
+    en:`<strong>Is Syrma overvalued after the post-result rally?</strong><br><br>
+The stock rose <strong>~4–5%</strong> on results day (29 July 2026) to around <strong>₹1,397–1,413</strong>, close to its <strong>52-week high of ₹1,517.70</strong> (52-week low: ₹600.90). Market cap is around <strong>₹26,900–27,000 Cr</strong>. Stock P/E was around <strong>82x</strong> just before results (early July).<br><br>
+<strong>The tension worth noting:</strong> The 24-analyst consensus average target is around <strong>₹1,197</strong> — actually <em>below</em> the post-result trading price — even though the consensus rating is "Buy" (18 Buy / 5 Hold / 1 Sell). The target range is wide (₹940–₹1,601), reflecting real disagreement on how much of the growth story is already priced in.<br><br>
+📌 This isn't a call on whether to buy or sell — it simply means: at current levels, the stock is pricing in continued strong execution, and there's limited room for disappointment given how rich the multiple already is.`,
+    ta:`<strong>Syrma stock overvalued ஆ?</strong><br><br>
+Results day-ல் (29 ஜூலை 2026) stock ~4-5% உயர்ந்து ₹1,397-1,413 அளவை எட்டியது — 52-week high ₹1,517.70-க்கு அருகில். Market cap ~₹26,900-27,000 கோடி. P/E ~82x (results-க்கு முன்).<br><br>
+கவனிக்க வேண்டியது: 24 analysts-ன் சராசரி target price ₹1,197 — இது current price-க்கு கீழே! Consensus rating "Buy" (18 Buy/5 Hold/1 Sell) என்றாலும், target range wide-ஆக உள்ளது (₹940-1,601).<br><br>
+📌 இது buy/sell recommendation இல்லை — தற்போதைய விலையில் தொடர் strong execution எதிர்பார்க்கப்படுகிறது என்பதைக் காட்டுகிறது.`
+  },
+  { keys:['fy27 guidance','guidance','outlook','fy27 target','revenue growth target'],
+    en:`<strong>What is Syrma's FY27 guidance?</strong><br><br>
+Management has guided for:<br>
+• <strong>Revenue growth: 30–35% YoY</strong> for FY27 — reaffirmed post-Q1, with management expressing confidence of <em>exceeding</em> this range given the 67% Q1 print<br>
+• <strong>Exports: ₹1,500 Cr</strong> target for FY27<br>
+• <strong>EBITDA: ~₹700 Cr</strong> target for FY27 (up from FY26's ₹545 Cr)<br><br>
+<strong>Context:</strong> FY26 closed with ₹4,857 Cr revenue (+27% YoY), ₹545 Cr EBITDA (+68% YoY, 11.3% margin) and ₹346 Cr PAT (+87% YoY) — so the FY27 guidance implies continued, and in revenue terms even accelerating, growth.<br><br>
+📌 With Q1 FY27 already at 67% YoY revenue growth, the full-year 30-35% guidance looks conservative on the surface — but a lot depends on whether Q2-Q4 sustain anything close to Q1's pace, given a tougher YoY base later in the year.`,
+    ta:`<strong>FY27 guidance என்ன?</strong><br><br>
+• Revenue growth: 30-35% YoY — Q1 results-க்கு பிறகு reaffirm செய்யப்பட்டது, exceed செய்யும் நம்பிக்கை<br>
+• Exports: ₹1,500 கோடி target<br>
+• EBITDA: ~₹700 கோடி target (FY26-ல் ₹545 கோடியில் இருந்து)<br><br>
+FY26: Revenue ₹4,857 கோடி (+27%), EBITDA ₹545 கோடி (+68%, 11.3% margin), PAT ₹346 கோடி (+87%).<br><br>
+📌 Q1 FY27-லேயே 67% YoY revenue வளர்ச்சி என்பதால், 30-35% full-year guidance conservative-ஆக தெரிகிறது — ஆனால் அடுத்த quarters-ல் base effect கடினமாகும்.`
+  },
+  { keys:['shinhyup','pcb jv','pcb plant','andhra pradesh pcb','pcb status'],
+    en:`<strong>Status of the PCB JV with Shinhyup Electronics?</strong><br><br>
+This is a JV with <strong>Shinhyup Electronics (South Korea)</strong> to manufacture <strong>multi-layer PCBs and copper-clad laminates</strong> at a new facility in <strong>Andhra Pradesh</strong>, under the government's ECMS scheme.<br><br>
+<strong>Status:</strong> The Andhra Pradesh government has approved land allotment and incentives. The project is in its <strong>construction phase</strong>, with <strong>Phase 1 targeted for completion by December 2026</strong>.<br><br>
+<strong>Why it matters:</strong> This is part of Syrma's broader backward-integration strategy (reducing reliance on imported PCBs) and is expected to be a meaningful contributor to margin expansion and revenue once operational — alongside the Kaga JV, it's one of two major new manufacturing capacity additions the company is executing on simultaneously.<br><br>
+📌 Watch the Phase 1 commissioning timeline (Dec 2026) closely — any slippage would be a relevant data point for the Q3/Q4 FY27 results.`,
+    ta:`<strong>Shinhyup PCB JV நிலை என்ன?</strong><br><br>
+Shinhyup Electronics (South Korea)-உடன் JV — Andhra Pradesh-ல் multi-layer PCB மற்றும் copper-clad laminate தயாரிக்க, ECMS scheme கீழ்.<br><br>
+நிலை: AP government land allotment மற்றும் incentives approve செய்துள்ளது. Construction phase-ல் உள்ளது, Phase 1 டிசம்பர் 2026-க்குள் நிறைவடையும் என எதிர்பார்க்கப்படுகிறது.<br><br>
+📌 இது Kaga JV உடன் சேர்ந்து, Syrma ஒரே நேரத்தில் நிறைவேற்றும் இரண்டு முக்கிய manufacturing capacity expansion-களில் ஒன்று.`
+  }
+];
+
+function setLang(lang){
+  cbaLang = lang;
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+  document.getElementById('lang-ta').classList.toggle('active', lang==='ta');
+  document.getElementById('cbaInput').placeholder = lang==='ta'
+    ? 'உங்கள் கேள்வியை இங்கே தட்டச்சு செய்யுங்கள்…'
+    : 'Type your question here…';
+  document.getElementById('chips-label').textContent = lang==='ta'
+    ? '📌 Analyst கேள்விகள் — click செய்து கேளுங்கள்'
+    : '📌 Analyst Questions — Click to ask';
+  document.getElementById('cba-sub-text').textContent = lang==='ta'
+    ? 'Syrma SGS Technology · Q1 FY27 பற்றி ஆழமான கேள்விகள் கேளுங்கள்'
+    : 'Ask deep questions about Syrma SGS Technology · Q1 FY27 results';
+  buildChips();
+  var wm = document.getElementById('cba-welcome');
+  if(wm){
+    wm.innerHTML = lang==='ta'
+      ? '👋 <strong>CB Assist-க்கு வரவேற்கிறோம்!</strong><br><br>நான் உங்கள் <strong>Syrma SGS Q1 FY27</strong> research analyst. Margin dip, Kaga JV, QIP, K-Solare, புதிய CEO — கடினமான கேள்விகளை கேளுங்கள். மேலே உள்ள கேள்விகளை click செய்யுங்கள் அல்லது கீழே type செய்யுங்கள்.'
+      : "👋 <strong>Welcome to CB Assist!</strong><br><br>I'm your research analyst for <strong>Syrma SGS Technology — Q1 FY27</strong>. Ask me the hard questions — margin dip, the Kaga JV, the QIP, the K-Solare exit, the new CEO. Click a question above or type below.";
+  }
+}
+
+function buildChips(){
+  var wrap = document.getElementById('cbaChips');
+  var chips = CBA_CHIPS[cbaLang] || CBA_CHIPS['en'];
+  wrap.innerHTML = chips.map(function(q){
+    return '<button class="cba-chip" onclick="askChip(this)">'+q+'</button>';
+  }).join('');
+}
+
+function sendCBA(){
+  var input = document.getElementById('cbaInput');
+  var q = input.value.trim();
+  if(!q) return;
+  input.value = '';
+  addMsg(q,'user');
+  var typing = document.createElement('div');
+  typing.className='typing';typing.id='cbaTyping';
+  typing.innerHTML='<span></span><span></span><span></span>';
+  document.getElementById('cbaMessages').appendChild(typing);
+  scrollCBA();
+  setTimeout(function(){
+    var t=document.getElementById('cbaTyping');
+    if(t)t.remove();
+    var ans = cbaFind(q);
+    addMsg(ans,'bot');
+  }, 500+Math.random()*400);
+}
+
+function askChip(btn){
+  document.getElementById('cbaInput').value=btn.textContent;
+  sendCBA();
+}
+
+function cbaFind(q){
+  var lower=q.toLowerCase();
+  for(var i=0;i<CBA_KB.length;i++){
+    var item = CBA_KB[i];
+    for(var j=0;j<item.keys.length;j++){
+      if(lower.indexOf(item.keys[j].toLowerCase())!==-1){
+        return cbaLang==='ta' && item.ta ? item.ta : item.en;
+      }
+    }
+  }
+  return cbaLang==='ta'
+    ? '"<strong>'+q+'</strong>" பற்றிய குறிப்பிட்ட தகவல் என்னிடம் இல்லை.<br><br>இவற்றைப் பற்றி கேளுங்கள்:<br>• Margin ஏன் QoQ குறைந்தது?<br>• Kaga Electronics JV என்ன?<br>• புதிய CEO யார்?<br>• Syrma overvalued ஆ?'
+    : 'I don\'t have specific data on "<strong>'+q+'</strong>" in my knowledge base.<br><br>Try asking:<br>• Why did margin fall QoQ?<br>• What is the Kaga Electronics JV?<br>• Who is the new CEO?<br>• Is Syrma overvalued?';
+}
+
+function addMsg(text,type){
+  var div=document.createElement('div');
+  div.className='msg msg-'+type;
+  div.innerHTML=text;
+  document.getElementById('cbaMessages').appendChild(div);
+  scrollCBA();
+}
+
+function scrollCBA(){
+  var m=document.getElementById('cbaMessages');
+  if(m)setTimeout(function(){m.scrollTop=m.scrollHeight;},50);
+}
+
+function showSection(id){
+  var sections = document.querySelectorAll('.section');
+  for(var i=0;i<sections.length;i++){ sections[i].classList.remove('active'); }
+  document.getElementById(id).classList.add('active');
+  var tabs = document.querySelectorAll('.nav-tab');
+  for(var i=0;i<tabs.length;i++){ tabs[i].classList.remove('active'); }
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+window.addEventListener('load',function(){
+  if(document.getElementById('cbaChips')) buildChips();
+},true);
+</script>
+
+<div id="cbassist" class="section">
+  <div class="cba-wrap">
+
+    <div class="cba-header">
+      <div class="cba-logo">🤖</div>
+      <div>
+        <div class="cba-title">CB Assist — Syrma SGS Analyst</div>
+        <div class="cba-sub" id="cba-sub-text">Ask deep questions about Syrma SGS Technology · Q1 FY27 results</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="cba-section-label">Language / மொழி</div>
+      <div class="cba-lang-bar">
+        <button class="cba-lang-btn active" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+        <button class="cba-lang-btn" id="lang-ta" onclick="setLang('ta')">🇮🇳 தமிழ்</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="cba-section-label" id="chips-label">📌 Analyst Questions — Click to ask</div>
+      <div class="cba-chips-wrap">
+        <div class="cba-chips" id="cbaChips"></div>
+      </div>
+    </div>
+
+    <div class="cba-messages" id="cbaMessages">
+      <div class="msg msg-bot" id="cba-welcome">
+        👋 <strong>Welcome to CB Assist!</strong><br><br>
+        I'm your research analyst for <strong>Syrma SGS Technology — Q1 FY27</strong> results (quarter ended 30 June 2026).<br><br>
+        Ask me the <em>hard questions</em> — the margin dip, the Kaga JV, the QIP, the K-Solare exit, the new CEO, valuation. Click a question above or type below.
+      </div>
+    </div>
+
+    <div class="cba-input-wrap">
+      <input class="cba-input" id="cbaInput" type="text"
+             placeholder="Type your question here…"
+             onkeydown="if(event.key==='Enter')sendCBA()">
+      <button class="cba-send" onclick="sendCBA()">Ask →</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

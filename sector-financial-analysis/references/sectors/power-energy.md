@@ -106,6 +106,10 @@ and near-zero marginal cost, and is analysed like a market infrastructure compan
 - **Traded volume (MU)**, **market share**, **take rate / fee per unit**, and the operating leverage —
   incremental volume carries almost no incremental cost.
 
+- **RoNW (Return on Net Worth)** — net profit ÷ net worth. Quoted in IPO offer documents and
+  required in prospectus disclosure, so it appears whenever a company in this sector lists. Report
+  it alongside the sector's usual return measure rather than in place of it.
+
 ## 4. Benchmarks — what good looks like
 
 Indicative; verify against current conditions, which move more in this sector than most.

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laurus Labs — Q1 FY27 Investment Analysis Dashboard · CBF26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f4f8; --card: #ffffff; --card2: #f8fafc;
+    --border: #e2e8f0; --accent: #0369a1; --green: #16a34a;
+    --amber: #d97706; --red: #dc2626; --purple: #7c3aed;
+    --text: #0f172a; --muted: #64748b; --light: #e0f2fe;
+    --cdmo: #0891b2; --ncdmo: #7c3aed; --brand-orange:#FF6A00;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  .header{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 60%,#0891b2 100%);color:#fff;padding:28px 32px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+  .header h1{font-size:1.7rem;font-weight:700;letter-spacing:-.3px}
+  .header p{opacity:.85;margin-top:4px;font-size:.88rem}
+  .badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+  .b-q1{background:rgba(22,163,74,.3);color:#bbf7d0}
+  .b-q4{background:rgba(217,119,6,.3);color:#fde68a}
+  .b-est{background:rgba(99,102,241,.3);color:#c7d2fe}
+  nav{background:#fff;border-bottom:2px solid var(--border);display:flex;gap:0;overflow-x:auto;position:sticky;top:88px;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+  nav button{padding:13px 18px;border:none;background:none;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);background:#f0f9ff}
+  nav button:hover:not(.active){color:var(--text);background:var(--bg)}
+  .tab{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+  .tab.active{display:block}
+  .section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-bottom:28px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .2s,transform .15s}
+  .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+  .tag{padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700}
+  .tag-cdmo{background:#cffafe;color:#0e7490}
+  .tag-q1{background:#dcfce7;color:#166534}
+  .cbr{padding:2px 9px;border-radius:10px;font-size:.72rem;font-weight:800;white-space:nowrap;letter-spacing:.2px}
+  .cbr-a{background:#dcfce7;color:#166534}
+  .cbr-b{background:#cffafe;color:#0e7490}
+  .cbr-c{background:#fef9c3;color:#854d0e}
+  .cbr-d{background:#ffedd5;color:#9a3412}
+  .cbr-e{background:#fee2e2;color:#991b1b}
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .metric{background:var(--card2);border-radius:8px;padding:10px 10px;text-align:center}
+  .metric-val{font-size:1.05rem;font-weight:700;color:var(--accent)}
+  .metric-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+  .metric-green .metric-val{color:var(--green)}
+  .metric-amber .metric-val{color:var(--amber)}
+  .metric-red .metric-val{color:var(--red)}
+  .usp-row{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .usp-row strong{color:var(--text)}
+  .debt-bar-wrap{margin-top:8px}
+  .debt-label{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px}
+  .debt-bar{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+  .debt-fill{height:100%;border-radius:3px;transition:width .8s ease}
+  .debt-low{background:var(--green)}
+  .debt-mid{background:var(--amber)}
+  .debt-high{background:var(--red)}
+  .cdmo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+  @media(max-width:700px){.cdmo-grid{grid-template-columns:1fr}}
+  .cdmo-box{background:var(--card);border-radius:12px;border:2px solid;padding:18px}
+  .cdmo-box.cdmo-col{border-color:var(--cdmo)}
+  .cdmo-box.ncdmo-col{border-color:var(--ncdmo)}
+  .cdmo-head{font-size:1rem;font-weight:700;margin-bottom:4px}
+  .cdmo-head.cdmo-t{color:var(--cdmo)}
+  .cdmo-head.ncdmo-t{color:var(--ncdmo)}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:22px;margin-bottom:28px}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .chart-title{font-size:.9rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+  .chart-wrap{position:relative;height:280px}
+  .tbl-wrap{overflow-x:auto;margin-bottom:28px}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  thead tr{background:linear-gradient(135deg,#0c4a6e,#0369a1);color:#fff}
+  th{padding:11px 12px;text-align:left;font-size:.78rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+  th:hover{background:rgba(255,255,255,.15)}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#f8fafc}
+  tr:hover td{background:#f0f9ff}
+  .sort-icon{opacity:.6;font-size:.7rem;margin-left:4px}
+  .td-green{color:var(--green);font-weight:700}
+  .td-red{color:var(--red);font-weight:700}
+  .td-amber{color:var(--amber);font-weight:700}
+  .score-wrap{margin:8px 0}
+  .score-row{display:grid;grid-template-columns:150px 1fr 46px;gap:6px;align-items:center;margin-bottom:7px}
+  .score-lbl{font-size:.75rem;color:var(--muted);text-align:right}
+  .score-bg{background:#e2e8f0;border-radius:4px;height:9px;overflow:hidden}
+  .score-bar{height:100%;border-radius:4px;width:0;transition:width 1s ease}
+  .score-val{font-size:.75rem;font-weight:700;color:var(--text)}
+  .analyst-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .analyst-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .analyst-name{font-weight:700;font-size:.9rem;margin-bottom:6px}
+  .analyst-rec{padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;display:inline-block;margin-bottom:6px}
+  .rec-buy{background:#dcfce7;color:#166534}
+  .rec-hold{background:#fef9c3;color:#854d0e}
+  .rec-sell{background:#fee2e2;color:#991b1b}
+  .analyst-tp{font-size:.8rem;color:var(--muted)}
+  .analyst-note{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.5}
+  .info-box{background:var(--light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  .warn-box{background:#fffbeb;border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:18px;font-size:.83rem;line-height:1.6}
+  @media(max-width:600px){
+    .header h1{font-size:1.2rem}
+    .metrics{grid-template-columns:1fr 1fr}
+    .chart-grid{grid-template-columns:1fr}
+    nav button{padding:10px 12px;font-size:.78rem}
+    .tab{padding:16px 14px}
+  }
+  .val-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:28px}
+  .val-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .val-name{font-weight:700;font-size:.88rem;margin-bottom:8px;color:var(--text)}
+  .val-row{display:flex;justify-content:space-between;font-size:.78rem;padding:3px 0;border-bottom:1px solid #f1f5f9}
+  .val-row:last-child{border-bottom:none}
+  .val-lbl{color:var(--muted)}
+  .val-num{font-weight:700}
+  .swot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  @media(max-width:600px){.swot-wrap{grid-template-columns:1fr}}
+  .swot-box{border-radius:8px;padding:14px;font-size:.8rem;line-height:1.7}
+  .swot-s{background:#dcfce7;border-left:4px solid var(--green)}
+  .swot-w{background:#fee2e2;border-left:4px solid var(--red)}
+  .swot-o{background:#dbeafe;border-left:4px solid var(--accent)}
+  .swot-t{background:#fef9c3;border-left:4px solid var(--amber)}
+  .swot-head{font-weight:700;margin-bottom:6px;font-size:.85rem}
+  .swot-s .swot-head{color:var(--green)}
+  .swot-w .swot-head{color:var(--red)}
+  .swot-o .swot-head{color:var(--accent)}
+  .swot-t .swot-head{color:var(--amber)}
+  .qa-item{border:1px solid var(--border);border-radius:8px;margin-bottom:7px;overflow:hidden}
+  .qa-q{background:#f8fafc;padding:10px 14px;cursor:pointer;font-size:.81rem;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+  .qa-q:hover{background:#e0f2fe}
+  .qa-a{display:none;padding:10px 14px;font-size:.79rem;color:var(--muted);line-height:1.65;border-top:1px solid var(--border)}
+  .qa-a.open{display:block}
+  .qa-chat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:22px}
+  .qa-chat-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .qa-inp{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.8rem;outline:none}
+  .qa-inp:focus{border-color:var(--accent)}
+  .qa-btn{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700}
+  .qa-resp{padding:12px;background:#f8fafc;border-radius:8px;font-size:.79rem;line-height:1.7;display:none;margin-top:6px}
+  .cb-logo{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .cb-logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#fff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#0369a1;letter-spacing:-.5px;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+  .cb-logo-text{font-size:.78rem;line-height:1.35;color:rgba(255,255,255,.9)}
+  .cb-logo-text strong{font-size:.88rem;color:#fff;display:block;letter-spacing:.3px}
+  .cb-watermark{position:fixed;bottom:18px;right:18px;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:7px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.18);border-radius:30px;padding:5px 12px 5px 8px;backdrop-filter:blur(4px)}
+  .cb-watermark-icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0369a1,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+  .cb-watermark-text{font-size:.68rem;color:var(--muted);font-weight:600;white-space:nowrap}
+  .cb-watermark-text span{color:var(--accent)}
+  .lang-bar{background:#fff;border-bottom:1px solid var(--border);padding:6px 28px;display:flex;align-items:center;gap:10px;font-size:.79rem;color:var(--muted)}
+  .lbtn{padding:3px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;background:#fff;color:var(--muted)}
+  .lbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .en{display:block}.ta{display:none}
+  body.tm .en{display:none}body.tm .ta{display:block}
+  .champion{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #f59e0b;border-radius:14px;padding:22px;margin-bottom:28px}
+  .champion h2{font-size:1.15rem;font-weight:900;text-align:center;color:#92400e;margin:8px 0 14px}
+  .champion p{font-size:.85rem;line-height:1.85;color:var(--text)}
+  .proj-card{background:#fff;border:2px solid var(--cdmo);border-radius:12px;padding:18px;margin-bottom:16px}
+  .proj-head{font-weight:700;font-size:.95rem;color:var(--cdmo);margin-bottom:10px}
+  .proj-body{font-size:.81rem;color:var(--muted);line-height:1.75}
+  .proj-body strong{color:var(--text)}
+  .moat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:28px}
+  .moat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .moat-name{font-weight:700;margin-bottom:5px;font-size:.9rem}
+  .moat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;margin-bottom:6px;background:#dbeafe;color:#1e40af}
+  .moat-pts{font-size:.77rem;color:var(--muted);line-height:1.75}
+  .segbar-wrap{margin:14px 0}
+  .timeline{position:relative;margin:20px 0;padding-left:28px;border-left:3px solid var(--cdmo)}
+  .tl-item{position:relative;margin-bottom:22px;padding-left:16px}
+  .tl-item::before{content:'';position:absolute;left:-35px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--cdmo);border:3px solid #fff;box-shadow:0 0 0 2px var(--cdmo)}
+  .tl-year{font-weight:800;font-size:.95rem;color:var(--cdmo);margin-bottom:3px}
+  .tl-text{font-size:.83rem;color:var(--muted);line-height:1.7}
+  .tl-text strong{color:var(--text)}
+  .founder-card{background:linear-gradient(135deg,#fff,#f0f9ff);border:2px solid var(--cdmo);border-radius:14px;padding:20px;margin-bottom:24px}
+  .unique-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:28px}
+  .unique-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;border-top:3px solid var(--ncdmo)}
+  .unique-num{font-size:1.3rem;font-weight:900;color:var(--ncdmo);margin-bottom:4px}
+  .unique-name{font-weight:700;font-size:.88rem;margin-bottom:5px}
+  .unique-pts{font-size:.78rem;color:var(--muted);line-height:1.7}
+  .segbar{display:flex;height:34px;border-radius:8px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--border)}
+  .segbar-cs{background:var(--cdmo);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem}
+  .segbar-api{background:var(--ncdmo);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem}
+  .segbar-fdf{background:#f59e0b;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem}
+  .segbar-bio{background:#64748b;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.72rem}
+  .ratio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:28px}
+  .ratio-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+  .ratio-val{font-size:1.4rem;font-weight:900;color:var(--accent)}
+  .ratio-lbl{font-size:.72rem;color:var(--muted);margin-top:4px;line-height:1.4}
+  .ratio-note{font-size:.68rem;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💊 Laurus Labs — Q1 FY27 Investment Analysis Dashboard</h1>
+  <p>NSE: LAURUSLABS · BSE: 540222 · Integrated API + FDF + CDMO (Synthesis + Bio) · Quarter Ended 30 June 2026</p>
+  <div class="badge-row">
+    <span class="badge b-q1">✓ Q1 FY27 Actuals (Consolidated)</span>
+    <span class="badge b-q4">★ 5-Quarter Trend incl. FY26 Annual</span>
+    <span class="badge b-est">⭐ CBF26 Earnings Rating</span>
+    <span style="background:rgba(255,255,255,.15);color:#e0f2fe;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600">Results declared: 24 Jul 2026</span>
+  </div>
+  <div class="cb-logo">
+    <div class="cb-logo-mark">CB</div>
+    <div class="cb-logo-text"><strong>CB Research</strong>Q1 FY27 Company Deep-Dive · Cauvery Business Research</div>
+  </div>
+</div>
+
+<div class="cb-watermark">
+  <div class="cb-watermark-icon">CB</div>
+  <div class="cb-watermark-text"><span>CB Research</span> · Laurus Labs Q1 FY27 · CBF26</div>
+</div>
+
+<nav id="nav">
+  <button class="active" onclick="switchTab('overview',this)">📊 Overview</button>
+  <button onclick="switchTab('segments',this)">🔬 Segments</button>
+  <button onclick="switchTab('financials',this)">📄 Financials &amp; Ratios</button>
+  <button onclick="switchTab('valuations',this)">💰 Valuations</button>
+  <button onclick="switchTab('moats',this)">🏰 Moats &amp; USPs</button>
+  <button onclick="switchTab('history',this)">🕰️ History</button>
+  <button onclick="switchTab('projects',this)">🔭 Projects &amp; Capex</button>
+  <button onclick="switchTab('swot',this)">📋 SWOT</button>
+  <button onclick="switchTab('verdict',this)">🏆 Verdict</button>
+  <button onclick="switchTab('qa',this)">🤖 CB Assist</button>
+  <button onclick="switchTab('charts',this)">📈 Charts</button>
+  <button onclick="switchTab('table',this)">📋 Data Table</button>
+</nav>
+<div class="lang-bar">
+  🌐 Language / மொழி:
+  <button class="lbtn on" onclick="setLang('en',this)">English</button>
+  <button class="lbtn" onclick="setLang('ta',this)">தமிழ்</button>
+</div>
+
+<!-- ═══ OVERVIEW ═══ -->
+<div id="tab-overview" class="tab active">
+  <div class="info-box">
+    <span class="en"><strong>Vanakam — Q1 FY27 Snapshot:</strong> Laurus Labs delivered its highest-ever quarterly revenue for the quarter ended 30 June 2026. <strong>Consolidated revenue from operations</strong> rose 29.1% YoY to ₹2,026.31 Cr (total income ₹2,035.49 Cr, +28.83% YoY), up 11.85% QoQ from ₹1,811.57 Cr in Q4 FY26. <strong>EBITDA</strong> grew 67% YoY to ₹644 Cr at a <strong>31.8% margin</strong> (vs ~24.9% in Q1 FY26, up ~7pp QoQ), and <strong>consolidated PAT</strong> (attributable to equity holders) surged ~125.5% YoY to ₹367.6 Cr. Growth was overwhelmingly led by the <strong>CDMO segment</strong>, which jumped 67% YoY to ₹870 Cr and now makes up 43% of total revenue (up 10pp YoY), while the Affordable Medicines (Generics API+FDF) business grew a steadier 10% YoY. The same quarter saw management raise FY27 capex guidance to ₹2,000 Cr, sign an ADC in-licensing deal with Aarvik Therapeutics, and onboard a large new pharma client. The stock — already up 53% in Q1 FY27 itself ahead of results — extended its rally after the print, crossing a ₹1 lakh crore (₹1 trillion) market cap and a fresh all-time high of ₹1,854.90 on 6 Aug 2026.</span>
+    <span class="ta">வணக்கம் — Q1 FY27 சுருக்கம்: ஜூன் 30, 2026 முடிவடைந்த காலாண்டில் Laurus Labs அதன் அதிகபட்ச காலாண்டு வருவாயை பதிவு செய்துள்ளது. ஒருங்கிணைந்த வருவாய் ஆண்டுக்கு ஆண்டு 29.1% உயர்ந்து ₹2,026.31 கோடியாக உள்ளது; நிகர லாபம் 125% உயர்ந்து ₹367.6 கோடி; EBITDA விளிம்பு 31.8% ஆக உயர்ந்துள்ளது. CDMO பிரிவு 67% வளர்ச்சியுடன் முக்கிய இயக்கியாக உள்ளது. பங்கு விலை ஆகஸ்ட் 6 அன்று புதிய உச்சத்தை எட்டி ₹1 லட்சம் கோடி சந்தை மதிப்பை கடந்தது.</span>
+  </div>
+
+  <div class="section-title">📌 Q1 FY27 KPIs at a Glance</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:28px">
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹2,026.3 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Revenue (+29.1% YoY · +11.85% QoQ)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">31.8%</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">EBITDA Margin (vs ~24.9% Q1 FY26)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹367.6 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">PAT, attributable (+~125.5% YoY)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--accent)">₹481.4 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">PBT (+114.7% YoY)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--green)">₹6.80</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">EPS Q1 FY27 (vs ₹3.02 Q1 FY26)</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:1.6rem;font-weight:900;color:var(--purple)">~₹98,900 Cr</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Market Cap (6 Aug 2026, near ATH)</div>
+    </div>
+  </div>
+
+  <div class="section-title">⚠️ Key Themes &amp; Risks — Q1 FY27</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px">
+    <div class="card"><div style="font-weight:700;color:var(--green);margin-bottom:6px">✅ Tailwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• CDMO revenue up 67% YoY to ₹870 Cr, now 43% of total revenue (up 10pp YoY) — late-stage clinical + commercial API deliveries driving mix shift<br>• Gross margin 62.7% (+3.3pp YoY); EBITDA margin 31.8% (+~7pp QoQ) on operating leverage<br>• FDF revenue +22% YoY on new US launches; Affordable Medicines steady at +10% YoY<br>• Net debt/EBITDA improved to 1.28x from 2.3x at FY25-end — genuine deleveraging as scale builds<br>• Aarvik Therapeutics ADC in-licensing and a large new pharma client win expand the growth pipeline</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--red);margin-bottom:6px">⚠️ Headwinds</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Bio segment revenue fell 46% QoQ (though +21% YoY) — a reminder that CDMO/Bio project revenue is inherently lumpy<br>• Core ARV API revenue grew just 3% YoY — the legacy generics base faces pricing/competitive pressure<br>• FY27 capex guidance doubled to ₹2,000 Cr from ₹1,500 Cr — meaningful execution and funding risk if new capacity is slow to ramp<br>• Working capital remains stretched — inventory days 317 and cash conversion cycle 263 days at FY26-end<br>• Stock already up 120% in a year and trading near 90x trailing earnings — priced for continued CDMO delivery</div></div>
+    <div class="card"><div style="font-weight:700;color:var(--accent);margin-bottom:6px">🔭 Watch Factors</div><div style="font-size:.82rem;line-height:1.7;color:var(--muted)">• Commissioning of the ~400 KL Vizag fermentation facility, targeted for Q3 FY27<br>• Progress on the KRKA JV FDF site (Phase-1 blocks on track for mid-2027)<br>• NCLT hearing on the Laurus Synthesis/Sriam Labs Composite Scheme of Arrangement, set for 10 Sep 2026<br>• Management's stated goal of CDMO reaching ~50% of revenue by FY2030 — pace of that shift each quarter<br>• Sustainability of the current valuation multiple if any quarter shows CDMO-revenue lumpiness on the downside</div></div>
+  </div>
+  <div class="warn-box"><strong>House note:</strong> CB Research is not SEBI-registered and does not issue buy/sell/hold recommendations. This dashboard is for educational analysis only.</div>
+</div>
+
+<!-- ═══ SEGMENTS ═══ -->
+<div id="tab-segments" class="tab">
+  <div class="info-box">
+    <strong>Business mix:</strong> Laurus Labs runs an <strong>integrated pharma + biotech model</strong> across four reporting lines — <strong>Generic API</strong> (global leadership in Antiretroviral, Oncology, Cardiovascular and Gastro APIs, including High-Potent APIs), <strong>Generic FDF</strong> (finished dosage/oral solid formulations across ARV, anti-diabetic, cardiovascular and PPI categories), <strong>CDMO — Synthesis</strong> (Laurus Synthesis: contract development &amp; manufacturing for global innovator pharma, animal health, crop science and specialty-ingredient customers, spanning clinical-phase to commercial-scale), and <strong>Biotechnology</strong> (Laurus Bio: precision fermentation for nutraceuticals, cell-culture media, alternative proteins and biologics). The company operates 11+ facilities approved by USFDA, WHO-Geneva, Japan-PMDA, UK-MHRA, EMA and TGA, employs 6,500+ people including 1,050+ scientists, and holds ~8,200 KL of reactor capacity.
+  </div>
+
+  <div class="section-title">🔬 Q1 FY27 Revenue Mix (₹ Cr, Actual Disclosed Split)</div>
+  <div class="segbar-wrap">
+    <div class="segbar">
+      <div class="segbar-cs" style="width:41%">CDMO — Small Molecules ~41%</div>
+      <div class="segbar-fdf" style="width:25%">FDF+API blend</div>
+      <div class="segbar-api" style="width:32%">Generic API ~32%</div>
+      <div class="segbar-bio" style="width:2%">Bio 2%</div>
+    </div>
+  </div>
+  <div class="warn-box" style="margin-top:8px">Segment figures below are as disclosed in the Q1 FY27 investor presentation: CDMO ₹870 Cr (Small Molecules ₹835 Cr + Bio ₹35 Cr) and Affordable Medicines ₹1,156 Cr (API ₹654 Cr + FDF ₹502 Cr). CDMO's share of total revenue rose to 43% from 33% a year ago.</div>
+  <div class="cdmo-grid">
+    <div class="cdmo-box cdmo-col">
+      <div class="cdmo-head cdmo-t">CDMO — Laurus Synthesis (Small Molecules + Bio)</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Contract development &amp; manufacturing for global innovator pharma, animal health, crop-science and specialty-ingredient customers — clinical through commercial stage</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+        <strong style="color:var(--text)">Q1 FY27:</strong> ₹870 Cr, +67% YoY, +48% QoQ — Small Molecules ₹835 Cr (+69% YoY) driven by late-stage clinical and commercial API supplies; Bio ₹35 Cr (+21% YoY, -46% QoQ, reflecting project-timing lumpiness)<br>
+        <strong style="color:var(--text)">Pipeline:</strong> 70+ active CDMO projects including breakthrough-designated molecules, ~10 already commercial; 20+ active Animal Health &amp; Crop Protection projects expected to reach peak potential by FY27-28<br>
+        <strong style="color:var(--text)">Nature:</strong> Customer- and project-concentrated; management targets CDMO reaching ~50% of total revenue by FY2030, versus 43% today
+      </div>
+    </div>
+    <div class="cdmo-box ncdmo-col">
+      <div class="cdmo-head ncdmo-t">Affordable Medicines — Generic API + FDF</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Laurus's legacy own-account generics business — API and finished-dosage formulations sold to global generic pharma companies and health programmes</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+        <strong style="color:var(--text)">Q1 FY27:</strong> ₹1,156 Cr, +10% YoY, -5% QoQ — API ₹654 Cr (+3% YoY) and FDF ₹502 Cr (+22% YoY, on new US launches and volume growth)<br>
+        <strong style="color:var(--text)">ARV franchise:</strong> Combined API+FDF ARV revenue ₹669 Cr, +3.4% YoY — Laurus remains the world's leading third-party ARV API supplier, but this base is now growing far slower than CDMO<br>
+        <strong style="color:var(--text)">Regulatory:</strong> Cumulative DMF filings reached 92; 2 new developed-market FDF dossiers filed in Q1 FY27, taking cumulative filings to 96
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">💰 Financial Snapshot — Consolidated (₹ Cr)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Line Item</th><th>Q1 FY27</th><th>Q1 FY26</th><th>Q4 FY26</th><th>YoY Δ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Total Income</strong></td><td>2,035.5</td><td>1,580.0</td><td>1,823.4</td><td class="td-green">+28.8%</td></tr>
+        <tr><td>Revenue from Operations</td><td>2,026.3</td><td>1,569.6</td><td>1,811.6</td><td class="td-green">+29.1%</td></tr>
+        <tr><td>EBITDA</td><td>644</td><td>~386</td><td>~512</td><td class="td-green">+67.0%</td></tr>
+        <tr><td>EBITDA Margin</td><td class="td-green">31.8%</td><td>~24.9%</td><td>~28.3%</td><td class="td-green">+~700 bps</td></tr>
+        <tr><td>PBT</td><td>481.4</td><td>224.2</td><td>361</td><td class="td-green">+114.7%</td></tr>
+        <tr><td>PAT (Attributable to Equity)</td><td class="td-green">367.6</td><td>163.0</td><td>279.1</td><td class="td-green">+125.5%</td></tr>
+        <tr><td>Working Capital / Balance Sheet</td><td>Not disclosed intra-quarter</td><td>—</td><td>—</td><td>See FY26 annual figures below</td></tr>
+        <tr><td>Q1 FY27 Capex</td><td>394 (19% of sales)</td><td>—</td><td>—</td><td>FY27 guidance raised to ₹2,000 Cr</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn-box"><strong>Reading the QoQ picture:</strong> Total revenue actually rose QoQ (+11.85%), unlike some peers' lumpy CDMO prints, because Small Molecules CDMO growth (+48% QoQ) more than offset a QoQ dip in Bio (-46%) and Affordable Medicines (-5%). Even so, management flags that CDMO revenue recognition is inherently project-based and should be read over several quarters.</div>
+</div>
+
+<!-- ═══ FINANCIALS & RATIOS ═══ -->
+<div id="tab-financials" class="tab">
+  <div class="info-box" style="border-left-color:#2979FF;background:#eff6ff">
+    <span class="en"><strong>🔗 Linked to CB Finance26™ (CBF26):</strong> Laurus Labs carries a <strong>CBF26 Earnings Rating</strong> — the fundamentals layer of the CB Finance26 framework, scoring the quality of the latest quarter on four pillars: <strong>Revenue growth · EBITDA growth · Net-profit (PAT) growth · EBITDA margin</strong>, on the same 1-5 scale used across CB Research dashboards.</span>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;border-left:4px solid #FF6A00">
+    <div style="font-weight:700;color:#1F2937;margin-bottom:8px">⭐ CBF26 Earnings Rating — Laurus Labs, Q1 FY27</div>
+    <div style="font-size:.8rem;color:var(--muted);line-height:1.7">
+      Weighted 1-5 composite → Revenue growth <strong>25%</strong> · EBITDA growth <strong>25%</strong> · PAT growth <strong>30%</strong> · EBITDA margin <strong>20%</strong>.
+      <div class="score-wrap" style="margin-top:12px">
+        <div class="score-row"><div class="score-lbl">Revenue growth (+29.1%)</div><div class="score-bg"><div class="score-bar" style="width:80%;background:var(--green)"></div></div><div class="score-val">4.0</div></div>
+        <div class="score-row"><div class="score-lbl">EBITDA growth (+67.0%)</div><div class="score-bg"><div class="score-bar" style="width:90%;background:var(--green)"></div></div><div class="score-val">4.5</div></div>
+        <div class="score-row"><div class="score-lbl">PAT growth (+125.5%)</div><div class="score-bg"><div class="score-bar" style="width:94%;background:var(--green)"></div></div><div class="score-val">4.7</div></div>
+        <div class="score-row"><div class="score-lbl">EBITDA margin (31.8%)</div><div class="score-bg"><div class="score-bar" style="width:80%;background:var(--green)"></div></div><div class="score-val">4.0</div></div>
+      </div>
+      <div style="margin-top:10px"><strong>Composite: 4.34/5.0 → <span class="cbr cbr-b">CB-B · Very Good</span></strong></div>
+      <div style="margin-top:8px;font-size:.74rem">⚠️ Rating measures <strong>earnings quality/momentum only</strong> for this single quarter — not valuation, and not a buy/sell/hold call. Growth this quarter is real and broad-based (unlike a one-off base-effect beat), but is scored one notch below "Strong" because revenue growth (29%), while excellent, is more moderate than the EBITDA/PAT growth rates. CB Research house rule: no recommendations.</div>
+    </div>
+  </div>
+
+  <div class="section-title">📐 Key Ratios — Current Ratio, Asset Turnover, ROCE &amp; More</div>
+  <div class="ratio-grid">
+    <div class="ratio-card"><div class="ratio-val">~1.22x</div><div class="ratio-lbl">Current Ratio</div><div class="ratio-note">Latest available (short-term assets ~₹4,330 Cr vs short-term liabilities ~₹3,540 Cr); adequate but far tighter than a typical CDMO peer</div></div>
+    <div class="ratio-card"><div class="ratio-val">~0.64x</div><div class="ratio-lbl">Quick Ratio</div><div class="ratio-note">Excluding inventory, short-term assets barely exceed 60% of short-term liabilities — inventory-heavy working capital</div></div>
+    <div class="ratio-card"><div class="ratio-val">~0.65x</div><div class="ratio-lbl">Asset Turnover (FY26)</div><div class="ratio-note">Revenue ₹6,813 Cr / Total Assets ₹10,511 Cr; TTM (to Jun-26) improves to ~0.69x as revenue accelerates faster than the asset base</div></div>
+    <div class="ratio-card"><div class="ratio-val">17.8%</div><div class="ratio-lbl">ROCE (FY26)</div><div class="ratio-note">Sharp recovery from 9% (FY25) and a low of 7% (FY24), as the CDMO ramp starts converting invested capital into profit</div></div>
+    <div class="ratio-card"><div class="ratio-val">18.3%</div><div class="ratio-lbl">ROE (TTM)</div><div class="ratio-note">3-year average ROE only ~10.1% — the current print marks a genuine inflection versus recent history, not a steady-state level yet</div></div>
+    <div class="ratio-card"><div class="ratio-val">7% / -2%</div><div class="ratio-lbl">5-Yr Sales / Profit CAGR</div><div class="ratio-note">TTM sales growth 23%, TTM profit growth 115% — momentum has sharply accelerated versus a soft FY22-FY25 multi-year base</div></div>
+    <div class="ratio-card"><div class="ratio-val">317 days</div><div class="ratio-lbl">Inventory Days (FY26)</div><div class="ratio-note">Up from 285 (FY25) — elevated, typical of a capital- and inventory-intensive integrated API/CDMO manufacturer</div></div>
+    <div class="ratio-card"><div class="ratio-val">263 days</div><div class="ratio-lbl">Cash Conversion Cycle (FY26)</div><div class="ratio-note">Debtor days 115 + Inventory days 317 - Payable days 170; broadly stable vs 276 days in FY25</div></div>
+  </div>
+  <div class="warn-box">Current ratio and quick ratio above are estimated from the latest publicly available annual/TTM balance-sheet breakdown (aggregator data); Laurus's Q1 FY27 press release did not include a full current/non-current asset-liability split. Asset turnover and cash-cycle ratios use FY26 (year ended 31 March 2026) figures as reported. Sources: company results and investor presentation, screener.in, tipranks.com, simplywall.st.</div>
+
+  <div class="section-title">📄 5-Quarter Trend (₹ Cr, Consolidated)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Quarter</th><th>Revenue</th><th>QoQ</th><th>EBITDA Margin</th><th>PAT</th><th>QoQ PAT</th></tr></thead>
+      <tbody>
+        <tr><td>Q1 FY26 (Jun-25)</td><td>1,570</td><td>—</td><td>24.3%</td><td>162</td><td>—</td></tr>
+        <tr><td>Q2 FY26 (Sep-25)</td><td>1,653</td><td class="td-green">+5.3%</td><td>24.4%</td><td>194</td><td class="td-green">+19.8%</td></tr>
+        <tr><td>Q3 FY26 (Dec-25)</td><td>1,778</td><td class="td-green">+7.6%</td><td>27.0%</td><td>252</td><td class="td-green">+29.9%</td></tr>
+        <tr><td>Q4 FY26 (Mar-26)</td><td>1,812</td><td class="td-green">+1.9%</td><td>28.3%</td><td>282</td><td class="td-green">+11.9%</td></tr>
+        <tr><td><strong>Q1 FY27 (Jun-26)</strong></td><td class="td-green"><strong>2,026</strong></td><td class="td-green">+11.9%</td><td class="td-green"><strong>31.8%</strong></td><td class="td-green"><strong>362</strong></td><td class="td-green">+28.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn-box" style="margin-bottom:0">PAT row above uses consolidated net profit after tax and share of associates/JVs (screener basis: ₹362 Cr for Q1 FY27); PAT attributable to equity holders alone was ₹367.6 Cr, +125.5% YoY and +31.7% QoQ — the small gap reflects minority interests and JV shares.</div>
+
+  <div class="section-title" style="margin-top:24px">📅 FY26 Annual Actuals (Full Year, ₹ Cr)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>FY26</th><th>YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td>Revenue from Operations</td><td>6,813</td><td class="td-green">+22.7%</td></tr>
+        <tr><td>Gross Margin</td><td>60.4%</td><td class="td-green">+5.0 pp</td></tr>
+        <tr><td>EBITDA</td><td>1,826</td><td class="td-green">+64%</td></tr>
+        <tr><td>EBITDA Margin</td><td>26.8%</td><td class="td-green">from 20.1% FY25</td></tr>
+        <tr><td>Net Profit</td><td class="td-green">889</td><td class="td-green">+148.0%</td></tr>
+        <tr><td>Net Profit Margin</td><td>13.0%</td><td class="td-green">from 6.4% FY25</td></tr>
+        <tr><td>EPS (₹)</td><td>16.46</td><td>—</td></tr>
+        <tr><td>Operating Cash Flow</td><td>1,624</td><td class="td-green">+170%, from 602 (FY25)</td></tr>
+        <tr><td>Capex</td><td>1,070</td><td class="td-red">+62% (16% of sales)</td></tr>
+        <tr><td>Net Debt / EBITDA</td><td>1.3x</td><td class="td-green">from 2.3x (FY25)</td></tr>
+        <tr><td>CDMO Revenue (incl. Bio)</td><td>2,080</td><td class="td-green">+36% (Small molecules 1,896, +38%)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title" style="margin-top:24px">💰 Balance Sheet (FY26-end, 31 Mar 2026)</div>
+  <div class="card">
+    <div class="debt-bar-wrap">
+      <div class="debt-label"><span style="font-size:.8rem;color:var(--muted)">Borrowings vs Equity</span><span style="font-size:.8rem;color:var(--amber);font-weight:700">₹2,518 Cr borrowings vs ₹5,300 Cr equity — moderate leverage, improving ⚠️</span></div>
+      <div class="debt-bar"><div class="debt-fill debt-mid" style="width:47%"></div></div>
+    </div>
+    <div class="usp-row"><strong>Total assets ₹10,511 Cr</strong> (Fixed assets ₹4,371 Cr + CWIP ₹773 Cr + Investments ₹309 Cr + Other assets ₹5,058 Cr). Net debt stood at ₹2,656 Cr as of Q1 FY27 with a net debt/EBITDA of 1.28x — a marked improvement from 2.3x at FY25-end as EBITDA has scaled faster than borrowings. Unlike pure-play, near-debt-free CDMOs, Laurus carries structurally higher leverage because of its integrated API+FDF+CDMO+Bio capex programme, now accelerating further with FY27 capex guidance raised to ₹2,000 Cr.</div>
+  </div>
+</div>
+
+<!-- ═══ VALUATIONS ═══ -->
+<div id="tab-valuations" class="tab">
+  <div class="section-title">💰 Valuations</div>
+  <div class="val-grid">
+    <div class="val-card">
+      <div class="val-name">💊 Laurus Labs</div>
+      <div class="val-row"><span class="val-lbl">CMP (6 Aug 2026 close)</span><span class="val-num">₹1,830</span></div>
+      <div class="val-row"><span class="val-lbl">Fresh ATH (intraday, 6 Aug 2026)</span><span class="val-num td-green">₹1,854.90</span></div>
+      <div class="val-row"><span class="val-lbl">52-week range</span><span class="val-num">₹810.05 – ₹1,859 (ATH)</span></div>
+      <div class="val-row"><span class="val-lbl">Market Cap</span><span class="val-num td-green">~₹98,900 Cr (crossed ₹1 trillion intraday)</span></div>
+      <div class="val-row"><span class="val-lbl">Trailing P/E</span><span class="val-num td-red">~90x</span></div>
+      <div class="val-row"><span class="val-lbl">Price/Book</span><span class="val-num">~18.6x</span></div>
+      <div class="val-row"><span class="val-lbl">TTM Revenue / Profit growth</span><span class="val-num td-green">23% / 115%</span></div>
+      <div class="val-row"><span class="val-lbl">Post-Q1 brokerage TPs</span><span class="val-num">₹1,890 – ₹1,980</span></div>
+      <div class="val-row"><span class="val-lbl">Older (pre-rally) consensus avg TP</span><span class="val-num td-amber">~₹1,090–1,486 (stale)</span></div>
+      <div class="val-row"><span class="val-lbl">Promoter Holding</span><span class="val-num">~27.5%</span></div>
+    </div>
+  </div>
+  <div class="warn-box"><strong>Valuation flag:</strong> Laurus now trades at ~90x trailing earnings and ~18.6x book value — a steep premium built on the market re-rating it from a "generic ARV API company" to a "CDMO-led growth story." Post-Q1 upgraded targets from Motilal Oswal (₹1,980) and ICICI Securities (₹1,890) still sit at or below the current market price, meaning the stock has already run ahead of even the freshly-revised bullish targets. Older, pre-rally aggregator consensus figures (₹1,090–1,486 average) are now stale and understate the post-results re-rating — a reminder to always check the date of any target before relying on it.</div>
+
+  <div class="section-title">📊 Analyst Consensus Views (Post-Q1 FY27)</div>
+  <div class="analyst-grid">
+    <div class="analyst-card"><div class="analyst-name">Motilal Oswal Financial Services</div><span class="analyst-rec rec-buy">BUY</span><div class="analyst-tp">Target ₹1,980 · valued at 65x 12-month forward earnings</div><div class="analyst-note">Expects a 24% earnings CAGR over FY26-28, raised FY27E/FY28E earnings estimates by 21%/16% on a robust CDMO outlook (human health, animal health, crop science), new FDF launches, and improved operating leverage.</div></div>
+    <div class="analyst-card"><div class="analyst-name">ICICI Securities</div><span class="analyst-rec rec-buy">BUY</span><div class="analyst-tp">Target ₹1,890 · 38x FY28E EBITDA of ₹2,764 Cr</div><div class="analyst-note">Views the premium valuation as justified by the sustained capex drive and consistent delivery of strong numbers; flags phenomenal CDMO growth from late-stage clinical and commercial API supplies plus strong recurring business.</div></div>
+  </div>
+  <div class="warn-box" style="margin-bottom:0"><strong>⚠️ Disclaimer:</strong> Analyst targets and ratings sourced from public brokerage commentary as reported in financial media; they change frequently and are not verified directly with brokerages. Older aggregator-sourced consensus figures shown above pre-date the Q1 FY27 re-rating and should not be read as current. Not investment advice.</div>
+</div>
+
+<!-- ═══ MOATS ═══ -->
+<div id="tab-moats" class="tab">
+  <div class="section-title">🏰 Moats &amp; USPs</div>
+  <div class="moat-grid">
+    <div class="moat-card">
+      <div class="moat-name">World-Leading Third-Party ARV API Supplier</div>
+      <div class="moat-badge">Scale Moat</div>
+      <div class="moat-pts">Two decades of non-infringing, cost-effective process chemistry built specifically around antiretroviral (HIV), oncology and hepatitis-C APIs — a global leadership position few peers can match on scale or cost.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Vertically Integrated API + FDF + CDMO + Bio Model</div>
+      <div class="moat-badge">Structural Moat</div>
+      <div class="moat-pts">Few Indian pharma companies combine generic API, finished-dosage formulations, contract synthesis (CDMO) and precision-fermentation biotech (Laurus Bio) under one roof — giving Laurus both a stable generics base-load and multiple faster-growing, higher-margin growth vectors.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Deep Global Regulatory Track Record</div>
+      <div class="moat-badge">Compliance Moat</div>
+      <div class="moat-pts">11+ manufacturing facilities approved by USFDA, WHO-Geneva, Japan-PMDA, UK-MHRA, EMA and TGA, with 92+ cumulative DMF filings — a prerequisite for winning and retaining both generics and innovator CDMO business globally.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Sticky, Growing CDMO Relationships</div>
+      <div class="moat-badge">Wide Moat</div>
+      <div class="moat-pts">70+ active CDMO projects (including breakthrough-designated molecules) with ~10 already commercial, plus a newly onboarded large pharma client — exclusive development contracts create high switching costs once a customer is qualified into Laurus's process.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Founder-Led, Chemistry-First Culture</div>
+      <div class="moat-badge">Governance Moat</div>
+      <div class="moat-pts">Founder Dr. Satyanarayana Chava has led Laurus since 2005, bringing prior R&amp;D leadership from Matrix Laboratories and Ranbaxy — continuity of a research-driven strategy across two decades, from ARV APIs to today's biologics/ADC bets.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-name">Emerging New-Modality Optionality</div>
+      <div class="moat-badge">Optionality</div>
+      <div class="moat-pts">Laurus Bio's precision fermentation, a new gene-therapy/ADC process-development lab, the Aarvik Therapeutics ADC in-licensing deal, and peptide capability build-out give Laurus early exposure to next-generation biologics demand well beyond its traditional small-molecule API base.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HISTORY ═══ -->
+<div id="tab-history" class="tab">
+  <div class="section-title">🕰️ Company History — From a Hyderabad API Start-up to a ₹1-Trillion CDMO Story</div>
+
+  <div class="founder-card">
+    <div style="font-weight:800;font-size:1rem;color:var(--cdmo);margin-bottom:8px">👤 The Founder — Dr. Satyanarayana Chava</div>
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.8">
+      Holds a PhD in Chemistry from Andhra University and an Executive MBA from the Indian School of Business, with over three decades of pharmaceutical R&amp;D, process-development and manufacturing experience — including a decade in process R&amp;D at Dr. Reddy's Laboratories, and later senior roles at Ranbaxy Laboratories, Vera Laboratories and as COO/CTO of Matrix Laboratories.<br><br>
+      He founded <strong>Laurus Labs Private Limited</strong> in Hyderabad on 19 September 2005 — using his own start-up capital, after departing Matrix Laboratories (later sold to Mylan in 2006) over strategic differences — with an initial focus on developing non-infringing, cost-effective processes for antiretroviral (HIV) APIs.<br><br>
+      Dr. Chava continues to serve as <strong>Founder &amp; Chief Executive Officer</strong>, having steered the company from a private R&amp;D-led API start-up through its December 2016 IPO to today's integrated, multi-billion-rupee API/FDF/CDMO/biotech platform.
+    </div>
+  </div>
+
+  <div class="section-title">📜 Timeline</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-year">2005</div><div class="tl-text">Dr. Satyanarayana Chava incorporates <strong>Laurus Labs Private Limited</strong> in Hyderabad, focused on developing complex, non-infringing Active Pharmaceutical Ingredients (APIs) for the global HIV/antiretroviral treatment market.</div></div>
+    <div class="tl-item"><div class="tl-year">2006-2013</div><div class="tl-text">R&amp;D wing established (2006), fully operational by 2007; Laurus Synthesis (the CDMO arm) founded in 2006. Company crosses ₹1,000 Cr revenue by 2013; Unit-1 receives WHO approval the same year. Private equity investors including Warburg Pincus and Bluewater back the company.</div></div>
+    <div class="tl-item"><div class="tl-year">Dec 2016</div><div class="tl-text">Laurus Labs lists on NSE/BSE via an oversubscribed <strong>IPO at ₹428/share</strong>, raising ~₹1,330.5 Cr — marking its transition into a Tier-1 listed Indian pharma company.</div></div>
+    <div class="tl-item"><div class="tl-year">2018-2021</div><div class="tl-text">API portfolio diversifies into Oncology and Hepatitis C. FY21 revenue jumps ~70% YoY (COVID-era ARV and hydroxychloroquine demand), a peak year for margins and profitability.</div></div>
+    <div class="tl-item"><div class="tl-year">2022-2024</div><div class="tl-text">Strategic pivot toward CDMO for Animal Health and Crop Science; two GMP Animal Health plants commissioned (2024); construction begins on the $40 million Phase-1 Vizag fermentation facility; new R&amp;D facility inaugurated at IKP Knowledge Park, Telangana (Sep 2024); Laurus Bio raises ₹120 Cr from Eight Roads Ventures and F-Prime Capital (Dec 2024).</div></div>
+    <div class="tl-item"><div class="tl-year">2025</div><div class="tl-text">26% equity stake acquired in Kurnool Renewables for 26 MW captive solar+wind power (Apr 2025); Gene therapy/ADC process-development lab established in Hyderabad; Board approves a <strong>Composite Scheme of Arrangement</strong> (21 Aug 2025) to demerge Laurus Synthesis' Unit-1 into Sriam Labs and amalgamate the remainder into Laurus Labs.</div></div>
+    <div class="tl-item"><div class="tl-year">Q1 FY27 (Jun-26)</div><div class="tl-text">Best-ever quarterly print — revenue ₹2,026.3 Cr (+29.1% YoY), EBITDA margin 31.8%, PAT ₹367.6 Cr (+~125.5% YoY), led by 67% CDMO growth. Aarvik Therapeutics ADC in-licensing signed; FY27 capex guidance doubled to ₹2,000 Cr; NCLT approves the restructuring scheme's next hearing for 10 Sep 2026. Stock crosses a ₹1 trillion market cap and hits a fresh all-time high of ₹1,854.90 on 6 Aug 2026.</div></div>
+  </div>
+
+  <div class="section-title">✨ What Makes Laurus Genuinely Unique</div>
+  <div class="unique-grid">
+    <div class="unique-card"><div class="unique-num">01</div><div class="unique-name">Built Around a Public-Health Mission First</div><div class="unique-pts">Unlike many API players that started in general generics, Laurus was founded specifically to solve the cost and scale challenge of antiretroviral APIs for global HIV treatment programmes — a mission-led origin that still shapes its process-chemistry culture today.</div></div>
+    <div class="unique-card"><div class="unique-num">02</div><div class="unique-name">Four Businesses, One Balance Sheet</div><div class="unique-pts">Generic API, Generic FDF, CDMO Synthesis and Biotechnology (Laurus Bio) sit inside a single integrated group — a broader combination than most focused API-only or CDMO-only peers, giving Laurus multiple, independently-timed growth levers.</div></div>
+    <div class="unique-card"><div class="unique-num">03</div><div class="unique-name">Founder-Led for Two Decades, Still Operating</div><div class="unique-pts">Dr. Satyanarayana Chava has run Laurus continuously since founding it in 2005 — rare longevity and hands-on continuity for an Indian pharma company of this scale, spanning its ARV-API roots to today's ADC and gene-therapy bets.</div></div>
+    <div class="unique-card"><div class="unique-num">04</div><div class="unique-name">A Genuine Mix-Shift Story, Not Just a Cyclical Beat</div><div class="unique-pts">CDMO's share of revenue has moved from 33% to 43% in a single year — a structural change in business mix (not merely a favourable quarter) that is what the market is re-rating, alongside consistent multi-quarter delivery.</div></div>
+    <div class="unique-card"><div class="unique-num">05</div><div class="unique-name">Actively Restructuring for Focus</div><div class="unique-pts">The pending Composite Scheme of Arrangement — demerging Laurus Synthesis' Unit-1 into Sriam Labs and amalgamating the rest into the parent — shows management actively simplifying group structure as the CDMO business scales, rather than leaving legacy entities untouched.</div></div>
+    <div class="unique-card"><div class="unique-num">06</div><div class="unique-name">Early, Broad Bet on New Modalities</div><div class="unique-pts">Peptides, gene therapy, Antibody-Drug Conjugates (via the Aarvik deal) and precision fermentation biologics are all being built out simultaneously — a wider and earlier next-generation-modality bet than most similarly-sized Indian CDMO peers.</div></div>
+  </div>
+  <div class="warn-box" style="margin-bottom:0">Historical details compiled from public company disclosures, Laurus Labs' own "About" page, financial media, Wikipedia and investor presentations; some early-year figures and dates vary slightly across sources and should be treated as broadly accurate rather than exact.</div>
+</div>
+
+<!-- ═══ PROJECTS ═══ -->
+<div id="tab-projects" class="tab">
+  <div class="section-title">🔭 Key Strategic Projects</div>
+  <div class="proj-card">
+    <div class="proj-head">🏗️ FY27 Capex Guidance Doubled to ₹2,000 Cr</div>
+    <div class="proj-body">Raised from an earlier ₹1,500 Cr guide, funding expansion across <strong>small molecules, fermentation, peptides, gene therapy and Antibody-Drug Conjugate (ADC)</strong> capabilities. Q1 FY27 alone saw ₹394 Cr of capex, 19% of quarterly sales.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">🏭 Vizag Large-Scale Fermentation Facility</div>
+    <div class="proj-body">A ~400 KL microbial fermentation facility under construction in Vizag, expected to be <strong>commissioned by Q3 FY27</strong>. Backed in part by Laurus Bio's ₹120 Cr equity investment from Eight Roads Ventures and F-Prime Capital (plus a ₹40 Cr Laurus co-investment).</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">💊 Aarvik Therapeutics ADC In-Licensing</div>
+    <div class="proj-body">Development and commercialisation agreement signed for <strong>two Antibody-Drug Conjugate (ADC) assets</strong>, currently in the clinical stage, targeting the Indian market — Laurus's first announced move into in-licensed ADC assets rather than purely contract-manufactured ones.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">🤝 KRKA Joint Venture — FDF Site</div>
+    <div class="proj-body">Phase-1 production blocks for <strong>High-Potent and General Oral Solid Dosage (OSD)</strong> capability at the joint-venture FDF site remain on track, targeted to open in <strong>mid-2027</strong>.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">⚖️ Composite Scheme of Arrangement — Corporate Restructuring</div>
+    <div class="proj-body">Demerger of Laurus Synthesis Private Limited's (LSPL) Unit-1 into wholly-owned subsidiary <strong>Sriam Labs</strong>, and amalgamation of LSPL's remaining business into Laurus Labs itself. NCLT-approved (24 Feb 2026), creditor-approved (Apr 2026); next hearing on the petition set for <strong>10 September 2026</strong>. Designed to streamline the group's manufacturing-entity structure as CDMO scales.</div>
+  </div>
+  <div class="proj-card">
+    <div class="proj-head">🌱 Captive Renewable Power &amp; Land Parcel</div>
+    <div class="proj-body">26% equity stake in <strong>Kurnool Renewables</strong> (26 MW captive solar+wind, acquired Apr 2025) supports manufacturing sustainability. Final handover of a new land parcel was confirmed on the Q1 FY27 call, reinforcing the long-term capacity-expansion runway.</div>
+  </div>
+</div>
+
+<!-- ═══ SWOT ═══ -->
+<div id="tab-swot" class="tab">
+  <div class="section-title">📋 SWOT Analysis — Laurus Labs, Q1 FY27</div>
+  <div class="swot-wrap">
+    <div class="swot-box swot-s">
+      <div class="swot-head">💪 Strengths</div>
+      Record quarterly revenue, EBITDA and PAT — revenue +29.1% YoY, PAT +~125.5% YoY, EBITDA margin 31.8% · CDMO segment scaling fast (+67% YoY, now 43% of revenue) · ROCE and ROE both re-rated sharply higher (17.8%/18.3% from FY25 lows of ~9%/10%) · Deleveraging underway — net debt/EBITDA down to 1.28x from 2.3x · Deep, decades-long regulatory track record (92+ DMFs, 11+ globally-approved facilities) and vertically integrated API+FDF+CDMO+Bio model
+    </div>
+    <div class="swot-box swot-w">
+      <div class="swot-head">⚠️ Weaknesses</div>
+      Tighter liquidity than many peers — current ratio ~1.2x, quick ratio ~0.64x · Elevated working-capital cycle — inventory days 317, cash conversion cycle 263 days (FY26) · Legacy ARV API franchise growing only ~3% YoY, facing pricing/competitive pressure · Bio segment revenue fell 46% QoQ this quarter, underlining project-based lumpiness · 5-year sales CAGR of just 7% shows the current surge is a recent inflection, not a long, steady trend
+    </div>
+    <div class="swot-box swot-o">
+      <div class="swot-head">🌍 Opportunities</div>
+      Management targets CDMO reaching ~50% of revenue by FY2030, from 43% today · Vizag fermentation facility (~400 KL) commissioning by Q3 FY27 · Aarvik Therapeutics ADC in-licensing and gene-therapy/peptide capability build-out open new modalities · KRKA JV FDF site (mid-2027) and a newly onboarded large pharma client extend the growth runway · Animal Health/Crop Science CDMO projects expected to hit peak potential by FY27-28
+    </div>
+    <div class="swot-box swot-t">
+      <div class="swot-head">🔻 Threats</div>
+      Stock at an all-time high, trading near ~90x trailing earnings and ~18.6x book — priced for flawless continued execution · FY27 capex guidance doubled to ₹2,000 Cr, raising funding and execution risk if new capacity ramps slowly · CDMO/Bio project revenue is inherently lumpy — this quarter's Bio segment fell sharply QoQ despite YoY growth · Pending NCLT approval (hearing 10 Sep 2026) for the Composite Scheme of Arrangement adds near-term corporate-structure uncertainty · Legacy generic ARV API pricing pressure could weigh on the non-CDMO base over time
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VERDICT ═══ -->
+<div id="tab-verdict" class="tab">
+  <div class="section-title">🏆 Verdict — Q1 FY27 Read</div>
+  <div class="champion">
+    <div style="text-align:center;font-size:2rem">👑</div>
+    <h2>
+      <span class="en">Q1 FY27: A Genuine CDMO-Led Re-Rating — With Valuation Now Running Well Ahead of Even the Bulls</span>
+      <span class="ta">Q1 FY27: CDMO-மையமான வலுவான காலாண்டு — மதிப்பீடு ஏற்கனவே அதிக உயரத்தில்</span>
+    </h2>
+    <p>
+      <span class="en">
+        <strong>1. The headline numbers are genuinely strong, and broad-based.</strong> 29.1% revenue growth, 67.0% EBITDA growth and ~125.5% PAT growth YoY, with EBITDA margin expansion of roughly 700 bps QoQ to 31.8%, is a standout quarter for an integrated Indian API/CDMO/biotech company — and it followed a stock that had already rallied 53% during the quarter itself in anticipation.<br><br>
+        <strong>2. This is not a one-off base-effect beat — it is a genuine mix shift.</strong> CDMO's share of revenue moved from 33% to 43% in a single year, on the back of 70+ active projects and a newly onboarded large pharma client. That is a structural change in the earnings mix, not just a lucky quarter.<br><br>
+        <strong>3. The legacy generics engine is decelerating, and that matters.</strong> Core ARV API revenue grew only ~3% YoY, and the Bio segment fell 46% QoQ — a reminder that both the mature generics base and the newer CDMO/Bio lines can be lumpy or under pricing pressure even as the headline growth story impresses.<br><br>
+        <strong>4. Balance sheet and returns are genuinely improving, but liquidity stays tight.</strong> ROCE rose to 17.8% and ROE to 18.3%, and net debt/EBITDA improved to 1.28x from 2.3x — real progress — but the current ratio (~1.2x) and quick ratio (~0.64x) remain tighter than many listed CDMO peers, and the FY27 capex guide has just been doubled to ₹2,000 Cr.<br><br>
+        <strong>5. Valuation has run far ahead of even the freshly-upgraded brokerage targets.</strong> At ~90x trailing earnings and ~18.6x book, with the stock crossing a ₹1 trillion market cap and a fresh all-time high on 6 Aug 2026, the market price already sits above post-Q1 targets from Motilal Oswal (₹1,980) and ICICI Securities (₹1,890) is close by — the bar for the next few quarters is flawless CDMO/Bio execution, not just another headline beat.<br><br>
+        <strong>CBF26 Earnings Rating: CB-B · Very Good</strong> — reflecting strong, broad-based earnings quality and momentum this quarter, with the standard house caveat that this measures earnings quality only, not valuation, and is not a buy/sell/hold call.
+      </span>
+      <span class="ta">
+        தலைப்புச் செய்திகள் தெளிவாக வலுவானவை — வருவாய் 29.1%, PAT 125% வளர்ச்சி, CDMO பங்கு 43% ஆக உயர்ந்தது. ஆனால் legacy ARV API வணிகம் மெதுவாக வளர்கிறது, Bio பிரிவு காலாண்டுக்கு காலாண்டு குறைந்துள்ளது. மதிப்பீடு ஏற்கனவே மிக உயர்ந்த நிலையில் உள்ளது — பங்கு ₹1 லட்சம் கோடி சந்தை மதிப்பை கடந்து புதிய உச்சத்தை எட்டியுள்ளது.
+      </span>
+    </p>
+  </div>
+  <div class="warn-box" style="margin-bottom:0"><strong>⚠️ Disclaimer:</strong> This analysis is for educational and informational purposes only. It does not constitute financial advice. All data is compiled from public sources (exchange filings, company press releases and investor presentations, financial media) and may contain estimates or reporting variances across sources. Consult a SEBI-registered investment advisor before making investment decisions. CB Research is not SEBI-registered.</div>
+</div>
+
+<!-- ═══ Q&A ═══ -->
+<div id="tab-qa" class="tab">
+  <div class="section-title">🤖 CB Assist</div>
+  <div class="info-box">
+    <span class="en">Pre-loaded smart questions covering Laurus Labs' Q1 FY27 financials, segments, ratios, risks, and outlook — plus an interactive box where you can ask your own question using the data in this dashboard. No API key needed.</span>
+    <span class="ta">Laurus Labs Q1 FY27 குறித்த முன்னே ஏற்றப்பட்ட கேள்வி-பதில்கள், மேலும் உங்கள் சொந்த கேள்விகளையும் கேட்கலாம்.</span>
+  </div>
+  <div id="qaAcc">
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>Why did Laurus Labs' share price jump?</span><span>+</span></div><div class="qa-a">Two overlapping stories are driving the move. First, the stock rallied 53% during Q1 FY27 itself (Apr-Jun 2026), its sharpest quarterly rally in five years, as investors positioned ahead of results for the CDMO mix-shift story. Second, the actual Q1 FY27 results (declared 24 Jul 2026) beat expectations — record revenue, EBITDA and PAT, CDMO up 67% YoY to 43% of revenue, doubled FY27 capex guidance to ₹2,000 Cr, and a new Aarvik Therapeutics ADC deal — which triggered brokerage upgrades (Motilal Oswal ₹1,980, ICICI Securities ₹1,890) and a further rally. By 6 Aug 2026 the stock hit a fresh all-time high of ₹1,854.90, pushing the market cap past ₹1 trillion (₹1 lakh crore) for the first time — up 22% in the past month, 66% year-to-date in CY2026, and 120% over the past year.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is Laurus Labs' current ratio and what does it mean?</span><span>+</span></div><div class="qa-a">Laurus's current ratio is estimated at around 1.2x on the latest available balance sheet (short-term assets of roughly ₹4,330 Cr against short-term liabilities of roughly ₹3,540 Cr). A ratio just above 1x means short-term assets only modestly exceed short-term obligations — tighter than many CDMO peers, and worth watching given the company's elevated inventory levels and doubled FY27 capex plan.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is Laurus Labs' asset turnover and why is it relatively low?</span><span>+</span></div><div class="qa-a">Asset turnover (revenue ÷ total assets) was approximately 0.65x for FY26 (₹6,813 Cr revenue on ₹10,511 Cr total assets), improving to ~0.69x on a trailing-twelve-month basis through Jun-26. This is relatively low because Laurus is a capital-intensive, reactor- and fermentation-heavy integrated API/FDF/CDMO/Bio manufacturer, with a large and growing pool of capital work-in-progress not yet generating revenue.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is Laurus Labs' ROCE and how has it trended?</span><span>+</span></div><div class="qa-a">ROCE was 17.8% for FY26 (year ended 31 March 2026), up sharply from 9% in FY25 and a low of 7% in FY24 — a genuine turnaround as the CDMO ramp starts converting invested capital into profit. ROE followed a similar path, reaching 18.3% on a trailing basis versus a 3-year average of only ~10.1%, underlining that the current return profile marks a real inflection rather than a long-run steady state.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>How is Laurus Labs' CDMO business performing and what is CDMO commercialisation?</span><span>+</span></div><div class="qa-a">CDMO (via Laurus Synthesis and Laurus Bio) is Laurus's contract development &amp; manufacturing business for global innovator pharma, animal health, crop science and biotech customers, spanning clinical through commercial stages. "Commercialisation" means a molecule moving from development/clinical-stage revenue to large-volume commercial-stage manufacturing once a customer's product is approved and launched. Q1 FY27 CDMO revenue reached ₹870 Cr (+67% YoY), driven mainly by late-stage clinical and commercial API supplies within the ₹835 Cr Small Molecules line, alongside a ₹35 Cr Bio contribution. CDMO's share of total company revenue rose to 43% from 33% a year ago, and management's stated target is ~50% of revenue by FY2030.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>Is the ~125% PAT growth sustainable?</span><span>+</span></div><div class="qa-a">The 125.5% YoY PAT growth reflects both genuine operating leverage (EBITDA margin up ~700 bps QoQ to 31.8%) and a comparison base that was itself improving steadily (Q1 FY26 to Q4 FY26 PAT rose every quarter). Unlike a purely base-effect beat, revenue also grew sequentially (+11.9% QoQ), so this looks more durable than a one-off. That said, the Bio segment fell 46% QoQ and legacy ARV API grew just 3% YoY, so not every part of the business is compounding at this pace — multi-quarter tracking of the CDMO ramp matters more than any single print.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is the debt and capex position?</span><span>+</span></div><div class="qa-a">Net debt stood at ₹2,656 Cr as of Q1 FY27, with net debt/EBITDA improving to 1.28x from 2.3x at FY25-end — real deleveraging as EBITDA has scaled. Borrowings were ₹2,518 Cr against equity of ₹5,300 Cr at FY26-end. Capex in Q1 FY27 alone was ₹394 Cr (19% of sales), and management has raised full-year FY27 capex guidance to ₹2,000 Cr (from ₹1,500 Cr), funding small-molecule, fermentation, peptide, gene-therapy and ADC capacity.</div></div>
+    <div class="qa-item"><div class="qa-q" onclick="toggleQAItem(this)"><span>What is the CBF26 Earnings Rating and why CB-B?</span><span>+</span></div><div class="qa-a">The CBF26 Earnings Rating is a weighted 1-5 score across revenue growth (25%), EBITDA growth (25%), PAT growth (30%) and EBITDA margin (20%). Laurus scored strongly across all four — 4.0, 4.5, 4.7 and 4.0 respectively — for a composite of 4.34/5.0, landing in the CB-B "Very Good" band, just below the top CB-A tier because revenue growth (29%), while excellent, is more moderate than the EBITDA/PAT growth rates it produced. This measures earnings quality/momentum only for the quarter — not valuation, and not an investment recommendation.</div></div>
+  </div>
+  <div class="qa-chat">
+    <div style="font-weight:700;font-size:.93rem;color:var(--accent);margin-bottom:10px">💬 Ask Your Own Question — Dashboard Data (No API Key)</div>
+    <div class="qa-chat-row">
+      <input type="text" id="qaInp" class="qa-inp" placeholder="E.g. What was the QoQ revenue growth?" />
+      <button class="qa-btn" onclick="answerQ()">Ask ▶</button>
+    </div>
+    <div id="qaResp" class="qa-resp"></div>
+    <div style="font-size:.71rem;color:var(--muted);margin-top:6px">📌 Try: "revenue", "margin", "current ratio", "asset turnover", "roce", "debt", "analyst", "moat", "capex", "cdmo", "segment", "price jump". Press Enter or click Ask.</div>
+  </div>
+</div>
+
+<!-- ═══ CHARTS ═══ -->
+<div id="tab-charts" class="tab">
+  <div class="section-title">📈 Visual Analytics</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Revenue Trend — Quarterly (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="revChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA Margin % Trend</div>
+      <div class="chart-wrap"><canvas id="ebitdaChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">EBITDA — ₹ Cr Trend (Quarterly)</div>
+      <div class="chart-wrap"><canvas id="ebitdaAbsChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Net Profit (PAT) — ₹ Cr Trend</div>
+      <div class="chart-wrap"><canvas id="patChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q1 FY27 Revenue Mix — CDMO vs Affordable Medicines (₹ Cr)</div>
+      <div class="chart-wrap"><canvas id="segChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Key Ratios Trend — ROCE %</div>
+      <div class="chart-wrap"><canvas id="ratioChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">CBF26 Earnings Rating — Component Scores</div>
+      <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DATA TABLE ═══ -->
+<div id="tab-table" class="tab">
+  <div class="info-box">Click column headers to sort. All figures consolidated unless noted. Source: BSE/NSE filings, company press release &amp; investor presentation (24 Jul 2026), financial media, screener.in. No investment advice.</div>
+  <div class="tbl-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th onclick="sortT(0)">Quarter <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(1)">Revenue (Cr) <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(2)">EBITDA% <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(3)">PAT (Cr) <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(4)">PAT Margin% <span class="sort-icon">⇅</span></th>
+          <th onclick="sortT(5)">QoQ Revenue <span class="sort-icon">⇅</span></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td><strong>Q1 FY26</strong></td><td>1,570</td><td>24.3%</td><td>162</td><td>10.3%</td><td>—</td></tr>
+        <tr><td><strong>Q2 FY26</strong></td><td>1,653</td><td>24.4%</td><td class="td-green">194</td><td>11.7%</td><td class="td-green">+5.3%</td></tr>
+        <tr><td><strong>Q3 FY26</strong></td><td>1,778</td><td>27.0%</td><td class="td-green">252</td><td>14.2%</td><td class="td-green">+7.6%</td></tr>
+        <tr><td><strong>Q4 FY26</strong></td><td>1,812</td><td class="td-green">28.3%</td><td class="td-green">282</td><td>15.6%</td><td class="td-green">+1.9%</td></tr>
+        <tr><td><strong>Q1 FY27</strong></td><td class="td-green">2,026</td><td class="td-green">31.8%</td><td class="td-green">362</td><td>17.9%</td><td class="td-green">+11.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='charts') setTimeout(initCharts,80);
+}
+
+function setLang(lang,btn){
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  lang==='ta'?document.body.classList.add('tm'):document.body.classList.remove('tm');
+}
+
+let sortDir={};
+function sortT(col){
+  const tbody=document.getElementById('tableBody');
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const dir=(sortDir[col]=!sortDir[col]);
+  rows.sort((a,b)=>{
+    const av=a.cells[col].innerText.replace(/[₹,+★†✓~%#]/g,'').trim();
+    const bv=b.cells[col].innerText.replace(/[₹,+★†✓~%#]/g,'').trim();
+    const an=parseFloat(av),bn=parseFloat(bv);
+    if(!isNaN(an)&&!isNaN(bn))return dir?an-bn:bn-an;
+    return dir?av.localeCompare(bv):bv.localeCompare(av);
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+
+function toggleQAItem(el){
+  const a=el.nextElementSibling;
+  a.classList.toggle('open');
+  el.querySelector('span:last-child').textContent=a.classList.contains('open')?'−':'+';
+}
+
+const qaKB=[
+  {k:['jump','surge today','why did the stock','share price today','rally','all-time high','ath','trillion'],a:'Two overlapping stories: Laurus rallied 53% during Q1 FY27 itself (Apr-Jun 2026) in anticipation of the CDMO mix-shift story, then the actual Q1 FY27 results (24 Jul 2026) beat expectations — record revenue/EBITDA/PAT, CDMO up 67% YoY to 43% of revenue, doubled FY27 capex guidance to ₹2,000 Cr, and a new Aarvik Therapeutics ADC deal — triggering brokerage upgrades (Motilal Oswal ₹1,980, ICICI Securities ₹1,890) and a further rally to a fresh all-time high of ₹1,854.90 on 6 Aug 2026, taking the market cap past ₹1 trillion.'},
+  {k:['history','founder','chava','founded','when was','2005','origin'],a:'Laurus Labs was founded on 19 September 2005 in Hyderabad by Dr. Satyanarayana Chava, after leaving Matrix Laboratories, with an initial focus on non-infringing antiretroviral (HIV) APIs. The company listed via IPO in December 2016 (₹428/share, raising ~₹1,330.5 Cr) and has since grown into an integrated API, FDF, CDMO and biotechnology (Laurus Bio) platform. Dr. Chava remains Founder & CEO. See the History tab for the full timeline.'},
+  {k:['unique','different','moat','why special','competitive advantage'],a:'What sets Laurus apart: world-leading position in third-party ARV APIs, a rare four-business integrated model (API + FDF + CDMO + Bio), a deep global regulatory track record (92+ DMFs, 11+ approved facilities), sticky CDMO relationships (70+ active projects), continuous founder leadership since 2005, and an early, broad bet on new modalities (peptides, ADCs, gene therapy). See the Moats tab for the full breakdown.'},
+  {k:['revenue','sales','topline','top line'],a:'Q1 FY27 consolidated revenue from operations was ₹2,026.31 Cr, up 29.1% YoY from ₹1,569.57 Cr and up 11.85% QoQ from ₹1,811.57 Cr in Q4 FY26. Total income (incl. other income) was ₹2,035.49 Cr, up 28.83% YoY.'},
+  {k:['margin','ebitda'],a:'EBITDA margin expanded to 31.8% in Q1 FY27, up roughly 700 bps QoQ from ~28.3% in Q4 FY26 and up from ~24.9% in Q1 FY26. Gross margin was 62.7%, up 3.3pp YoY. EBITDA itself grew 67.0% YoY to ₹644 Cr.'},
+  {k:['pat','profit','net profit','earnings'],a:'Consolidated PAT attributable to equity holders was ₹367.6 Cr in Q1 FY27, up ~125.5% YoY from ₹163.02 Cr and up ~31.7% QoQ from ₹279.14 Cr in Q4 FY26. Total consolidated net profit (incl. minority/JV share) was ₹362.07 Cr. EPS was ₹6.80 versus ₹3.02 in Q1 FY26.'},
+  {k:['current ratio','liquidity','quick ratio'],a:'Laurus\'s current ratio is estimated at around 1.2x on the latest available balance sheet (short-term assets ~₹4,330 Cr vs short-term liabilities ~₹3,540 Cr). Quick ratio is roughly 0.64x, reflecting a large inventory position — tighter liquidity than many CDMO peers.'},
+  {k:['asset turnover','asset efficiency'],a:'Asset turnover (revenue ÷ total assets) was approximately 0.65x for FY26 (₹6,813 Cr revenue on ₹10,511 Cr total assets), improving to ~0.69x on a trailing-twelve-month basis — relatively low because Laurus is a capital-intensive integrated API/FDF/CDMO/Bio manufacturer with substantial capital work-in-progress.'},
+  {k:['roce','return on capital'],a:'ROCE was 17.8% for FY26, up sharply from 9% in FY25 and a low of 7% in FY24 — a genuine inflection as the CDMO ramp converts capital into profit. ROE reached 18.3% on a trailing basis versus a 3-year average of only ~10.1%.'},
+  {k:['debt','balance sheet','leverage'],a:'Net debt stood at ₹2,656 Cr as of Q1 FY27, with net debt/EBITDA improving to 1.28x from 2.3x at FY25-end. Borrowings were ₹2,518 Cr against equity of ₹5,300 Cr at FY26-end. FY27 capex guidance has been raised to ₹2,000 Cr, funding small-molecule, fermentation, peptide, gene-therapy and ADC capacity.'},
+  {k:['analyst','rating','target','tp'],a:'Post-Q1 FY27 brokerage views skew Buy: Motilal Oswal — BUY, target ₹1,980 (65x 12-month forward earnings); ICICI Securities — BUY, target ₹1,890 (38x FY28E EBITDA). Older, pre-rally aggregator consensus figures (avg ~₹1,090–1,486) are stale and understate the post-results re-rating.'},
+  {k:['capex','project','peptide','vizag','fermentation'],a:'Key projects: FY27 capex guidance doubled to ₹2,000 Cr (from ₹1,500 Cr); a ~400 KL Vizag fermentation facility targeted for Q3 FY27 commissioning; the KRKA JV FDF site (Phase-1 High-Potent + OSD blocks) on track for mid-2027; and continued peptide, gene-therapy and ADC capability build-out.'},
+  {k:['aarvik','adc','antibody'],a:'Laurus signed a development and commercialisation agreement with Aarvik Therapeutics for two Antibody-Drug Conjugate (ADC) assets, currently in the clinical stage, targeting the Indian market — its first announced in-licensed ADC deal, extending the group beyond pure contract manufacturing into owned/licensed biologics assets.'},
+  {k:['segment','cdmo','custom manufacturing','commercialisation','commercialization','api mix','fdf'],a:'Laurus reports four lines: Generic API, Generic FDF, CDMO-Synthesis, and Biotechnology (Laurus Bio). Q1 FY27 growth was led by CDMO (₹870 Cr, +67% YoY — Small Molecules ₹835 Cr +69%, Bio ₹35 Cr +21%), now 43% of total revenue versus 33% a year ago. Affordable Medicines (Generic API+FDF) grew a steadier 10% YoY to ₹1,156 Cr (API ₹654 Cr +3%, FDF ₹502 Cr +22%). "Commercialisation" means a molecule graduating from development/clinical-stage revenue to large-volume commercial manufacturing once a customer product is approved.'},
+  {k:['valuation','pe','price to earnings','expensive'],a:'Trailing P/E is around 90x and Price/Book around 18.6x as of 6 Aug 2026 (CMP ₹1,830, market cap ~₹98,900 Cr, intraday ATH ₹1,854.90 crossing ₹1 trillion market cap). This sits above even the freshly-upgraded post-Q1 brokerage targets (₹1,890-1,980) from Motilal Oswal and ICICI Securities.'},
+  {k:['guidance','outlook','fy27','fy2030'],a:'Management has raised FY27 capex guidance to ₹2,000 Cr and reiterated that CDMO revenue should reach roughly 50% of total company revenue by FY2030, up from 43% today. Animal Health and Crop Science CDMO projects are expected to hit peak potential by FY27-28, and the Vizag fermentation facility and KRKA JV FDF site are additional near-term growth levers.'},
+];
+function answerQ(){
+  const inp=document.getElementById('qaInp');
+  const resp=document.getElementById('qaResp');
+  const q=inp.value.toLowerCase().trim();
+  if(!q){return;}
+  let hit=null;
+  for(const item of qaKB){
+    if(item.k.some(kw=>q.includes(kw))){hit=item;break;}
+  }
+  resp.style.display='block';
+  resp.textContent=hit?hit.a:'No direct match found in this dashboard\'s data. Try keywords like "revenue", "margin", "current ratio", "asset turnover", "roce", "debt", "analyst", "moat", "capex", "cdmo", "segment", or "price jump".';
+  inp.value='';
+}
+document.getElementById('qaInp').addEventListener('keypress',e=>{if(e.key==='Enter')answerQ();});
+
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;
+  chartsInit=true;
+  const labels=['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'];
+  new Chart(document.getElementById('revChart'),{type:'bar',data:{labels,datasets:[{label:'Revenue (₹ Cr)',data:[1570,1653,1778,1812,2026],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('ebitdaChart'),{type:'line',data:{labels,datasets:[{label:'EBITDA Margin %',data:[24.3,24.4,27.0,28.3,31.8],borderColor:'#0369a1',backgroundColor:'rgba(3,105,161,.12)',fill:true,tension:.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('ebitdaAbsChart'),{type:'bar',data:{labels,datasets:[{label:'EBITDA (₹ Cr)',data:[382,403,480,512,644],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('patChart'),{type:'bar',data:{labels,datasets:[{label:'PAT (₹ Cr)',data:[162,194,252,282,362],backgroundColor:['#94a3b8','#94a3b8','#94a3b8','#94a3b8','#16a34a']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  new Chart(document.getElementById('segChart'),{type:'doughnut',data:{labels:['CDMO — Small Molecules','CDMO — Bio','Generic API','Generic FDF'],datasets:[{data:[835,35,654,502],backgroundColor:['#0891b2','#67e8f9','#7c3aed','#f59e0b']}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('ratioChart'),{type:'line',data:{labels:['FY22','FY23','FY24','FY25','FY26'],datasets:[{label:'ROCE %',data:[26,23,7,9,17.8],borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.1)',tension:.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Revenue Growth','EBITDA Growth','PAT Growth','EBITDA Margin'],datasets:[{label:'CBF26 Score (Q1 FY27)',data:[4.0,4.5,4.7,4.0],borderColor:'#0891b2',backgroundColor:'rgba(8,145,178,.15)',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5}}}});
+}
+</script>
+</body>
+</html>
