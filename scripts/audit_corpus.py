@@ -60,7 +60,10 @@ SECTOR_KEYWORDS = {
     "consumer": ["dmart", "fmcg", "alcobev", "sugar", "dairy", "textile", "nitinspinners",
                  "v2retail", "abfashion", "gold", "amusement", "hotel", "india-hotels",
                  "itc_hul", "balrampur", "jewellery"],
-    "infra-realty": ["realestate", "ports", "reit", "invit"],
+    # REIT/InvIT is an asset class, not an industry — matched before infra-realty,
+    # since dict order decides and an InvIT often holds transmission or roads.
+    "reit-invit": ["reit", "invit"],
+    "infra-realty": ["realestate", "ports", "realty", "developer"],
     "telecom": ["telecom", "airtel"],
     "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage"],
     "_cross-sector": ["multisector", "multico", "ranker", "cross_sector",

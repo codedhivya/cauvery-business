@@ -35,7 +35,7 @@ sector-financial-analysis/
     ├── source-hierarchy.md     sourcing tiers, attribution, compliance
     ├── output-conventions.md   the only file naming paths or tools
     ├── modes/                  HOW to build (15 files, no sector metrics)
-    └── sectors/                WHAT the metrics are (+ _template.md)
+    └── sectors/                WHAT the metrics are (17 files + _template.md)
 ```
 
 **15 modes** — dashboard, financials, charts, business-profile, segments, valuation, swot, moats,
@@ -43,9 +43,9 @@ risks-outlook, analyst-ratings, verdict, cb-rating, school, quarterly-report, ev
 
 **4 scopes** — single company, head-to-head pair, sector sweep, cross-sector (guardrailed).
 
-**Sectors** — all 16 built: banking, NBFC/housing finance, insurance, capital markets, IT services,
+**Sectors** — all 17 built: banking, NBFC/housing finance, insurance, capital markets, IT services,
 pharma/healthcare, auto, consumer, capital goods, power & energy, metals, cement, chemicals,
-infra/realty, telecom, new-age platforms. See [MAINTENANCE.md](MAINTENANCE.md) for the inventory and how
+infra/realty, **REITs/InvITs**, telecom, new-age platforms. See [MAINTENANCE.md](MAINTENANCE.md) for the inventory and how
 to add another.
 
 ### Why one skill

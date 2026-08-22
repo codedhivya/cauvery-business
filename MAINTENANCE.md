@@ -1,6 +1,6 @@
 # Maintenance Guide — `sector-financial-analysis`
 
-**The build is complete.** All 16 sector families in the corpus have a file, and none required a
+**The build is complete.** All 17 sector families in the corpus have a file, and none required a
 mode-file change. This document is what you need to *maintain* it: how to add a seventeenth sector, the
 judgment calls already settled so they aren't re-litigated, and how to keep the skill current as new
 reports arrive.
@@ -10,7 +10,7 @@ shaped this way, see [docs/adr/](docs/adr/README.md).
 
 | | |
 |---|---|
-| **Sectors** | 16 — every family in the 131-report corpus |
+| **Sectors** | 17 — every family in the 131-report corpus, plus REITs/InvITs as an asset class |
 | **Modes** | 15, unchanged across all four build phases |
 | **Coverage** | 123 of 131 reports; the rest are cross-sector scope, 2 news digests, a macro piece and the glossary |
 | **Built in** | 5 phases — insurance+banking, then by report count, then a corpus refresh that added `new-age` |
@@ -35,20 +35,21 @@ Derived by auditing all 131 reports. Report counts drive build order — biggest
 | **chemicals** | 5 | ✅ **Done** | specialty, PVC, paints, fertilizers, recycling |
 | **metals** | 4 | ✅ **Done** | steel, aluminium |
 | **insurance** | **3** | ✅ **Done** | life, health (SAHI), general, TPA |
-| **infra-realty** | 3 | ✅ **Done** | real estate, ports, **REITs/InvITs** |
+| **infra-realty** | 3 | ✅ **Done** | real estate developers, ports & logistics |
+| **reit-invit** | 3 | ✅ **Done** | office/retail REITs, transmission & road InvITs — **an asset class, not an industry** |
 | **cement** | 2 | ✅ **Done** | |
 | **telecom** | 1 | ✅ **Done** | |
 | **new-age** | 3 | ✅ **Done** | quick commerce, food delivery, marketplaces — **pre-profit platforms, not judged on PAT** |
 
 **Two sectors contain non-operating asset classes** needing explicit treatment, not exclusion:
 `capital-markets` covers mutual funds (AUM, NAV, active share, expense ratio — `edelweiss_ipo_fund_analysis`),
-and `infra-realty` covers REITs/InvITs (DPU, distribution yield, concession period — `india-reit-invit-dashboard`).
+and `reit-invit` covers the trusts (DPU, distribution yield, NDCF coverage, LTV — `india-reit-invit-dashboard`).
 Their sector files must say plainly that these are analysed as funds/trusts, not operating companies.
 
 
 ## What the checks cannot verify
 
-`scripts/verify_skill.py` confirms content and rules are present — 50 checks. It **cannot** confirm the
+`scripts/verify_skill.py` confirms content and rules are present — 62 checks. It **cannot** confirm the
 router triggers unprompted, because any session that authored the files has them in context whether the
 skill loads or not. That needs a fresh session.
 
@@ -108,7 +109,7 @@ Start from the closest precedent rather than the template alone — it will be s
 | A people or services business | `it-services.md` | Delivery Quality replaces PAT Quality — utilisation and attrition lead the P&L |
 | A consumer-facing brand or retailer | `consumer.md` | Like-for-like growth (SSSG/RevPAR) rather than headline revenue |
 | A regulated, licence-gated business | `pharma-health.md`, `telecom.md` | Regulatory standing substitutes into Forward Outlook, because a licence action can remove revenue |
-| A trust or fund, not an operating company | `capital-markets.md` (funds), `infra-realty.md` (REITs) | No P&L ranking, no CB Rating, never in a cross-sector table |
+| A trust or fund, not an operating company | `capital-markets.md` (funds), `reit-invit.md` (trusts) | No P&L ranking, substituted CB parameter set, never in a cross-sector operating table |
 
 ### Judgment calls from earlier phases, so they aren't re-litigated
 

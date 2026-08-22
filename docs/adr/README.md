@@ -19,6 +19,7 @@ counterintuitive and were made against specific evidence from the 98-report corp
 | [0009](0009-portability-isolation.md) | Confine paths and tool names to a single file | Accepted |
 | [0010](0010-inherit-structure-never-figures.md) | Inherit structure from prior reports; never inherit figures | Accepted |
 | [0011](0011-install-by-symlink.md) | Install the skill by symlink; `.skill` is a build artifact | Accepted |
+| [0012](0012-reit-invit-is-an-asset-class.md) | REITs/InvITs get their own file — an asset class, not an industry | Accepted |
 
 ## The four that matter most
 

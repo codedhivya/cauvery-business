@@ -18,6 +18,9 @@ exists. What it CANNOT check is whether the router triggers unprompted — that
 needs a session that didn't author the files. See the triggering test in
 MAINTENANCE.md.
 
+The check count grows with each sector added — it is derived, not fixed, so
+the totals quoted in the docs go stale. The script prints its own tally.
+
     python3 scripts/verify_skill.py            # run everything
     python3 scripts/verify_skill.py --quiet    # only failures
 
@@ -77,7 +80,8 @@ SECTOR_CONTENT = {
     "metals":          ["ebitda per tonne", "captive", "volume, not revenue"],
     "cement":          ["lead distance", "regional"],
     "chemicals":       ["never draw one ebitda-margin line", "specialty", "commodity"],
-    "infra-realty":    ["pre-sales", "should not appear in a cross-sector"],
+    "infra-realty":    ["pre-sales", "revenue is a lagging number"],
+    "reit-invit":      ["asset class, not an industry", "availability", "coverage"],
     "telecom":         ["agr", "spectrum"],
     "new-age":         ["contribution margin", "runway", "not p/e"],
 }
@@ -88,7 +92,8 @@ GUARDRAILS = [
     ("insurers have no EBITDA",           "sectors/insurance.md",      ["no meaningful ebitda"]),
     ("net debt meaningless for lenders",  "sectors/nbfc-hfc.md",       ["net debt is meaningless"]),
     ("a fund is not valued on a multiple","sectors/capital-markets.md",["not valued on a multiple"]),
-    ("REIT stays out of cross-sector",    "sectors/infra-realty.md",   ["should not appear in a cross-sector"]),
+    ("REIT stays out of cross-sector",    "sectors/reit-invit.md",     ["does not belong in a cross-sector"]),
+    ("a trust is not scored on PAT",      "sectors/reit-invit.md",     ["do not appear"]),
     ("no buy/sell/hold in own voice",     "source-hierarchy.md",       ["never issue a buy / sell / hold"]),
     ('"Not disclosed" must be earned',    "source-hierarchy.md",       ["targeted attempt", "one query per company"]),
     ("house disclaimer recorded",         "source-hierarchy.md",       ["earnings-quality analysis only"]),
@@ -168,7 +173,7 @@ def main():
     check("structure", f"SKILL.md under 500 lines ({skill_lines})", skill_lines < 500)
 
     check("structure", f"15 mode files present ({len(mode_files)})", len(mode_files) == 15)
-    check("structure", f"16 sector files present ({len(sector_files)})", len(sector_files) == 16)
+    check("structure", f"17 sector files present ({len(sector_files)})", len(sector_files) == 17)
 
     # ---- PER-SECTOR COMPLETENESS ----------------------------------------
     header("PER-SECTOR — template sections, delegation targets, CB weights")
@@ -231,7 +236,7 @@ def main():
         print("\nSee docs/adr/ for why each contract exists.")
         return 1
 
-    print("All checks pass.")
+    print(f"All {len([l for l in lines if l.strip().startswith(('PASS','FAIL'))])} checks pass.")
     print("\nNot covered here: whether the router triggers unprompted. That needs a")
     print("session that did not author the files — see the fresh-session questions")
     print("in MAINTENANCE.md.")

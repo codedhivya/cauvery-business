@@ -1,13 +1,16 @@
 # Sector: Infrastructure & Real Estate (India)
 
-Covers residential and commercial real-estate developers, ports and logistics infrastructure, and
-REITs/InvITs.
+Covers residential and commercial real-estate developers, and ports and logistics infrastructure.
 
-**Three unlike businesses share this file, and one of them is not an operating company at all.** A
-developer is judged on pre-sales and collections; a port on cargo volume and concession terms; a REIT or
-InvIT on distribution yield and DPU, because it is a trust that passes income through rather than a
-company that retains and reinvests it. **Classify first — applying developer metrics to a REIT, or
-operating-company valuation to a trust, produces nonsense.**
+**Two unlike businesses share this file.** A developer is judged on pre-sales and collections — reported
+revenue describes projects sold years ago; a port on cargo volume and concession tenure. **Classify
+first**: applying developer metrics to a port, or reading a developer's P&L as its current trading,
+produces nonsense.
+
+**REITs and InvITs are not in this file.** They are a distinct asset class — a trust that
+passes income through rather than a company that reinvests — and an InvIT's assets are often
+transmission lines or toll roads, nothing to do with real estate. See `reit-invit.md`.
+
 
 ## 1. Category taxonomy
 
@@ -16,7 +19,6 @@ operating-company valuation to a trust, produces nonsense.**
 | **Residential developer** | Builds and sells homes. Revenue recognition lags sales by years, so **pre-sales, not revenue, is the live metric** | DLF, Prestige Estates, Sobha, Oberoi Realty, Brigade, Anant Raj, Ganesh Housing |
 | **Commercial / lease developer** | Builds and leases offices and retail. Annuity income, occupancy-driven | the commercial arms of the above |
 | **Ports & logistics** | Cargo handling under long concessions | Adani Ports & SEZ, JSW Infrastructure, Gujarat Pipavav Port |
-| **REIT / InvIT** | **A trust, not an operating company.** Holds completed income-generating assets and distributes cash to unitholders | listed office REITs and infrastructure InvITs |
 
 ## 2. How companies in this sector make money
 
@@ -40,10 +42,9 @@ residential developer.
 tonne, and the concession defines tenure, tariff freedom and what happens at expiry. Cargo mix matters
 enormously — container handling earns far more per tonne than bulk coal.
 
-**REITs and InvITs** are pass-through vehicles. They own completed assets, collect rent or toll or
-transmission income, and are required to distribute the large majority of cash flow to unitholders.
-There is no growth-through-retention story: they grow by acquiring assets, funded by raising units or
-debt. **Judge them on yield, distribution stability and leverage, not on earnings growth.**
+A developer's **commercial arm** can look superficially like a REIT — contracted rent, occupancy, WALE —
+but it sits inside an operating company that retains and reinvests earnings. That is the line: analyse it
+here, and analyse the trust in `reit-invit.md`.
 
 ## 3. Metric definitions
 
@@ -77,16 +78,6 @@ debt. **Judge them on yield, distribution stability and leverage, not on earning
   with thirty
 - **Capacity and utilisation**
 
-### REITs / InvITs
-
-- **DPU (Distribution Per Unit)** — the headline. What a unitholder actually receives.
-- **Distribution yield (%)** = annualised DPU ÷ unit price. The comparison metric against bonds and peers.
-- **NAV per unit** and premium/discount to NAV
-- **AUM / gross asset value** — the portfolio's total asset base, and the denominator for LTV.
-- **NDCF (Net Distributable Cash Flow)** — the cash available for distribution
-- **Occupancy and WALE** for office REITs; **asset-level operating metrics** for InvITs
-- **Loan-to-value (LTV)** — regulatory caps apply; the leverage constraint
-- **Same-store NOI growth** — organic performance excluding acquisitions
 
 ## 4. Benchmarks — what good looks like
 
@@ -102,9 +93,6 @@ Indicative; verify against the company's own history and the category.
 | Commercial | WALE | >5 years |
 | Ports | EBITDA margin | 55–70% — genuinely high; concession assets with fixed cost bases |
 | Ports | Cargo growth | at or above national port-traffic growth |
-| REIT/InvIT | Distribution yield | 6–8% typical; compare against the 10-year G-sec |
-| REIT/InvIT | LTV | <30% comfortable; regulatory cap applies |
-| REIT/InvIT | DPU growth | steady and predictable matters more than fast |
 
 **What to watch, by category:**
 
@@ -115,22 +103,18 @@ Indicative; verify against the company's own history and the category.
   pipeline converting?
 - **Ports** — Is cargo growing above national traffic growth? Is the mix shifting toward containers? How
   much concession tenure remains, and what happens at expiry?
-- **REIT/InvIT** — Is DPU stable or growing? Is distribution covered by NDCF rather than by borrowing? Is
-  LTV within cap? Is same-store NOI growing, or is all growth acquisition-driven?
 
 ## 5. Regulatory quick reference
 
 | Area | Body / rule |
 |---|---|
 | Real estate projects | **RERA** — mandatory registration, escrow of collections, delivery timelines. Materially changed developer cash management |
-| REITs and InvITs | **SEBI** — REIT and InvIT Regulations: minimum 90% distribution of NDCF, LTV caps, asset-composition rules |
 | Ports | **Major Port Authorities Act**; TAMP historically for tariff; concession agreements with the port authority |
 | Land and approvals | state-level; approval timelines are a real constraint on launches |
-| Taxation | REIT/InvIT distributions have a specific tax treatment by component (interest, dividend, capital return) — state it |
 | Industry data | Ministry of Ports for cargo traffic; RERA portals for project data |
 
-**The 90% distribution requirement is the defining fact about a REIT or InvIT** — it is why they cannot
-compound through retention and must be judged on yield.
+**RERA is the defining regulatory fact for developers** — escrowed collections mean cash received is not
+freely deployable, which is why collections and net debt must be read together rather than separately.
 
 ## 6. Per-mode specifics
 
@@ -141,7 +125,6 @@ compound through retention and must be judged on yield.
 | Residential | **Pre-sales (₹cr, msf)**, collections, launches, realisation/sq ft, revenue, EBITDA margin, PAT, net debt |
 | Commercial | Leased area, occupancy, rental/sq ft, rental income, EBITDA margin, PAT |
 | Ports | Cargo volume (MMT), TEU, realisation/t, revenue, EBITDA margin, PAT, net debt |
-| REIT / InvIT | **DPU, distribution yield**, NDCF, occupancy/asset metrics, NAV per unit, LTV — **no P/E, no EBITDA margin ranking** |
 
 ### Table columns by category (`financials`)
 
@@ -150,8 +133,6 @@ compound through retention and must be judged on yield.
   putting revenue first would foreground the most lagging number in the sector.
 - **Commercial** — Period, Leased area, Occupancy, Rental income, EBITDA%, PAT, WALE
 - **Ports** — Period, Cargo (MMT), TEU, Realisation/t, Revenue, EBITDA, EBITDA%, PAT, concession note
-- **REIT/InvIT** — Period, NDCF, **DPU**, distribution yield, occupancy, NAV/unit, LTV. **Not a P&L
-  table.**
 
 Add an **inventory and land bank** table for residential: unsold inventory, overhang in quarters, land
 bank by city and tenure basis.
@@ -160,10 +141,8 @@ bank by city and tenure basis.
 
 | Metric | Line | Label |
 |---|---|---|
-| Occupancy (commercial/REIT) | 90% | "Healthy occupancy" |
+| Occupancy (commercial) | 90% | "Healthy occupancy" |
 | Net debt / operating cash flow (residential) | 2.0× | "Sector comfort" |
-| Distribution yield (REIT/InvIT) | 10-year G-sec yield for the period | "Risk-free benchmark" — label the period; this is the right comparison |
-| LTV (REIT/InvIT) | 30% | "Conservative leverage" |
 | Inventory overhang | 8 quarters | "Comfortable inventory" |
 
 **Chart pre-sales, not revenue, for residential developers**, and say so — a revenue chart shows what was
@@ -178,8 +157,6 @@ sold three years ago.
   development pipeline.
 - **Ports** — port locations and capacity, cargo mix, concession terms and remaining tenure, hinterland
   connectivity, customer concentration.
-- **REIT/InvIT** — asset portfolio, sponsor, manager, distribution history and policy, leverage, growth
-  pipeline and right-of-first-offer arrangements with the sponsor.
 
 ### Moat candidates by category (`moats`)
 
@@ -191,8 +168,6 @@ sold three years ago.
   and geographic monopoly for its tenure. **The strongest moat in this file**; state remaining tenure,
   since the moat has an expiry date.
 - **Commercial — irreplaceable locations** and anchor-tenant relationships.
-- **REIT/InvIT — asset quality and sponsor pipeline**, though a trust's "moat" is really its assets'
-  moat; assess the underlying properties rather than the vehicle.
 - **Be sceptical** of land bank size alone. A large land bank in a weak micro-market is trapped capital,
   not an asset — location and cost basis matter more than acreage.
 
@@ -205,9 +180,8 @@ secondary with that stated.
 
 **Commercial and ports** — **EV/EBITDA**, with ports also compared on EV per tonne of capacity.
 
-**REITs and InvITs** — **distribution yield against the 10-year G-sec** and price-to-NAV. **Never a P/E
-or EV/EBITDA ranking against operating companies**; a trust distributing 90% of cash flow is a different
-instrument, closer to a bond with growth than to an equity.
+If a listed trust holds the same kind of asset, it is **not** a valuation comparable for an operating
+company here — see `reit-invit.md`.
 
 ### CB Rating substitutions (`cb-rating`)
 
@@ -215,14 +189,14 @@ Capital-intensive with explicit Debt & Cash Flow, following the `power-energy` p
 
 | Component | Weight | Infra-realty substitution |
 |---|---|---|
-| Growth | 25% | **Pre-sales growth** (residential) / **cargo growth vs national traffic** (ports) / **same-store NOI growth** (REIT) — never reported revenue for developers |
+| Growth | 25% | **Pre-sales growth** (residential) / **cargo growth vs national traffic** (ports) — never reported revenue for developers |
 | Profitability | 25% | EBITDA margin against the **category** band (residential 20–28%, ports 55–70%) and direction |
 | PAT Quality | 15% | **Collections against bookings** for developers — bookings without collections are a receivable, not profit; PAT adjusted for one-offs elsewhere |
-| Debt & Cash Flow | 20% | Net debt / operating cash flow, LTV for trusts, funding of the pipeline |
+| Debt & Cash Flow | 20% | Net debt / operating cash flow, and whether the launch or capex pipeline is funded |
 | Asset Position & Outlook | 15% | Land bank quality and tenure basis, concession tenure remaining, launch or acquisition pipeline |
 
-Total 100%. **Do not apply this to a REIT or InvIT without substituting throughout** — and where the
-substitution stops making sense, skip the mode rather than forcing it.
+Total 100%. **This parameter set is for operating companies only.** A trust uses the REIT/InvIT set in
+`reit-invit.md`; where a substitution stops making sense, skip the mode rather than forcing it.
 
 ### Extra sections (`quarterly-report`)
 
@@ -231,22 +205,19 @@ substitution stops making sense, skip the mode rather than forcing it.
 - **Land Bank** — recurs in existing reports; acreage, city, tenure basis, development potential.
 - **Inventory & Overhang** — unsold stock and quarters of cover.
 - **Concession Profile** — ports: tenure remaining, tariff terms, expiry treatment.
-- **Distribution & NDCF** — REITs/InvITs: DPU history, coverage, LTV.
-- **Policy** — recurs in existing reports: RERA, SEBI trust regulations, port policy.
+- **Policy** — recurs in existing reports: RERA, port policy and concession terms.
 
 ### Event transmission map (`event-impact`, `risks-outlook`)
 
 | Event | Reaches results via | Exposure basis to cite |
 |---|---|---|
-| Interest-rate change | home-loan affordability, demand; REIT yield attractiveness vs G-sec | segment mix; for trusts, spread over G-sec |
+| Interest-rate change | home-loan affordability and housing demand | residential share of the mix; ticket-size band |
 | RERA enforcement change | escrow, launch timelines, working capital | projects under registration |
 | Stamp duty change (state) | near-term demand pull-forward or drop | that state's share of bookings |
 | Approval or clearance delay | launch pipeline | projects awaiting approval |
 | Commercial rent-cycle shift / return-to-office | occupancy, mark-to-market | leased area, expiry schedule |
 | Cargo policy or trade volume change | port volumes | cargo mix, trade-route exposure |
 | Concession renewal or expiry | revenue continuity | remaining tenure, renewal terms |
-| SEBI REIT/InvIT rule change (LTV, distribution) | leverage capacity, DPU | current LTV, distribution policy |
-| G-sec yield move | REIT/InvIT unit price and relative attractiveness | distribution yield spread |
 | Input cost (cement, steel) move | construction cost, developer margin | under-construction pipeline |
 
 ## 7. Where to look (sourcing)
@@ -254,11 +225,10 @@ substitution stops making sense, skip the mode rather than forcing it.
 **Tier 1** — quarterly investor presentations. Developers disclose pre-sales, collections, launches,
 realisation, unsold inventory and land bank there and typically **not in the press release**, which is
 why the presentation is essential rather than optional in this sector. Ports disclose cargo volume and
-mix monthly. REITs and InvITs publish distribution announcements, NDCF statements and detailed portfolio
-disclosures — the most transparent category in this file.
+mix monthly.
 
 **Tier 2 — sector authorities**: **RERA portals** (state-level) for project registration, timelines and
-sometimes sales data — an unusually good primary source; **SEBI** for REIT/InvIT regulations and filings;
+sometimes sales data — an unusually good primary source;
 **Ministry of Ports, Shipping and Waterways** for national cargo traffic, the right denominator for a
 port's growth claim; **Knight Frank / JLL / Anarock** for city-level absorption and price data, attributed
 to the firm.
@@ -281,16 +251,13 @@ market that grew 20% is losing share.
 | Adani Ports & SEZ | #be123c | #fff1f2 |
 | JSW Infrastructure | #334155 | #f1f5f9 |
 | Gujarat Pipavav Port | #0e7490 | #ecfeff |
-| Embassy Office Parks REIT | #4338ca | #eef2ff |
-| Mindspace REIT | #0d9488 | #f0fdfa |
-| IndiGrid InvIT | #b8911e | #fdf5e0 |
 
 ## 9. Sector-specific CSS
 
 ```css
 .cat-tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
 .cat-resi{background:#eff6ff;color:#1d4ed8;}.cat-commercial{background:#f0fdf4;color:#166534;}
-.cat-ports{background:#fff1f2;color:#be123c;}.cat-trust{background:#fdf5e0;color:#b8911e;}
+.cat-ports{background:#fff1f2;color:#be123c;}
 .cat-section-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;padding:10px 16px;border-radius:8px;margin:20px 0 14px;display:flex;align-items:center;gap:10px;}
 
 /* pre-sales vs collections — the developer's real scoreboard */
@@ -299,13 +266,6 @@ market that grew 20% is losing share.
 .ps-row:last-child{border-bottom:none;}
 .ps-gap{font-family:'IBM Plex Mono',monospace;font-weight:700;}
 .ps-good{color:var(--pos);}.ps-warn{color:var(--warn);}
-
-/* trust / REIT block — visually distinct, because it is not an operating company */
-.trust-card{background:var(--gold-soft);border:1px solid var(--gold);border-radius:var(--radius);padding:16px 18px;font-size:11.5px;}
-.trust-card h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:8px;}
-.trust-metric{display:grid;grid-template-columns:1fr auto;gap:10px;padding:5px 0;border-bottom:1px dashed var(--border);}
-.trust-metric:last-child{border-bottom:none;}
-.dpu-pill{font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:800;padding:3px 10px;border-radius:6px;background:#fff;color:var(--gold);}
 
 /* concession tenure bar — the moat with an expiry date */
 .conc-row{display:grid;grid-template-columns:112px 1fr 58px;align-items:center;gap:10px;font-size:11.5px;margin-bottom:6px;}
@@ -321,14 +281,10 @@ All 15 modes apply to the operating companies. Notes:
   Reported revenue describes projects sold years ago and will mislead anyone reading it as current
   performance.
 - **`valuation`** — **NAV-based for residential developers**, EV/EBITDA for commercial and ports,
-  **distribution yield vs G-sec for trusts**. A single P/E table across these categories is meaningless.
+  A single P/E table across these categories is meaningless.
 - **`cb-rating`** — five components; growth on pre-sales/cargo/same-store NOI, and collections-vs-bookings
   inside PAT Quality.
-- **REITs and InvITs** — `dashboard`, `charts`, `segments`, `risks-outlook` and `school` apply in adapted
-  form. **`cb-rating` and operating-company `valuation` do not** and should be skipped rather than forced,
-  as with funds in `capital-markets.md`.
-- **Cross-sector work** — operating companies here participate normally on Revenue, EBITDA%, PAT, Mkt
-  Cap, P/E, EV/EBITDA and Net Debt. **A REIT or InvIT should not appear in a cross-sector operating
-  comparison at all** — it is a distribution vehicle, and ranking it on EBITDA margin or P/E against
-  manufacturers misrepresents both. Pre-sales, DPU, cargo volume and concession tenure are
-  sector-specific and stay in their own section.
+- **Cross-sector work** — companies here participate normally on Revenue, EBITDA%, PAT, Mkt Cap, P/E,
+  EV/EBITDA and Net Debt, with one caveat: **for a residential developer, revenue is a lagging number**,
+  so a growth column sourced from it understates or overstates the business by years. Note it. Pre-sales,
+  collections, cargo volume and concession tenure are sector-specific and stay in their own section.
