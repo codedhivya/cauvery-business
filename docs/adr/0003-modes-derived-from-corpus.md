@@ -43,4 +43,4 @@ Final count: **fifteen modes**.
   instruction to add it "only if the user specifically wants" it); and ten CSS classes the skills
   referenced were never defined anywhere, so every run improvised them.
 - More modes means a longer skill description and more surface area to keep sector-free.
-- The audit is recorded in [ROADMAP.md](../../ROADMAP.md) so it need not be re-derived.
+- The audit is recorded in [MAINTENANCE.md](../../MAINTENANCE.md) so it need not be re-derived.

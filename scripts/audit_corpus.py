@@ -34,7 +34,7 @@ MODES_DIR = os.path.join(ROOT, "sector-financial-analysis", "references", "modes
 DESIGN = os.path.join(ROOT, "sector-financial-analysis", "references", "design-system.md")
 MANIFEST = os.path.join(ROOT, "docs", "corpus-manifest.json")
 
-# Sector keyword map — mirrors the taxonomy in ROADMAP.md. Extend when adding a sector.
+# Sector keyword map — mirrors the taxonomy in MAINTENANCE.md. Extend when adding a sector.
 SECTOR_KEYWORDS = {
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib"],
     # note: "rec" alone would match "Recycling"; use the paired filename form instead
@@ -263,7 +263,7 @@ def main():
         print("⚠ SECTOR NOT BUILT — these reports belong to a sector with no file")
         for sector, fs in sorted(unknown_sector.items()):
             print(f"   {sector}: {', '.join(fs[:4])}{' …' if len(fs) > 4 else ''}")
-        print("   → add references/sectors/<sector>.md (see ROADMAP.md)\n")
+        print("   → add references/sectors/<sector>.md (see MAINTENANCE.md)\n")
 
     if unseen_metrics:
         action = True

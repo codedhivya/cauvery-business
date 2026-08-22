@@ -15,8 +15,8 @@ different kinds of thing:
 
 Neither kind can be checked by reading the skill casually, which is why this
 exists. What it CANNOT check is whether the router triggers unprompted — that
-needs a session that didn't author the files. See the fresh-session questions in
-ROADMAP.md.
+needs a session that didn't author the files. See the triggering test in
+MAINTENANCE.md.
 
     python3 scripts/verify_skill.py            # run everything
     python3 scripts/verify_skill.py --quiet    # only failures
@@ -234,7 +234,7 @@ def main():
     print("All checks pass.")
     print("\nNot covered here: whether the router triggers unprompted. That needs a")
     print("session that did not author the files — see the fresh-session questions")
-    print("in ROADMAP.md.")
+    print("in MAINTENANCE.md.")
     return 0
 
 

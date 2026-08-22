@@ -43,8 +43,10 @@ risks-outlook, analyst-ratings, verdict, cb-rating, school, quarterly-report, ev
 
 **4 scopes** — single company, head-to-head pair, sector sweep, cross-sector (guardrailed).
 
-**Sectors** — insurance and banking are built; 13 remain. See [ROADMAP.md](ROADMAP.md) for the sector
-inventory, phase order, and how to add one.
+**Sectors** — all 16 built: banking, NBFC/housing finance, insurance, capital markets, IT services,
+pharma/healthcare, auto, consumer, capital goods, power & energy, metals, cement, chemicals,
+infra/realty, telecom, new-age platforms. See [MAINTENANCE.md](MAINTENANCE.md) for the inventory and how
+to add another.
 
 ### Why one skill
 

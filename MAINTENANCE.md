@@ -1,31 +1,21 @@
-# Roadmap — Sector Coverage
+# Maintenance Guide — `sector-financial-analysis`
 
-Status and remaining work for `sector-financial-analysis`. Read this before starting a new phase; it
-carries an audit of `reports/published/` that is expensive to re-derive.
+**The build is complete.** All 16 sector families in the corpus have a file, and none required a
+mode-file change. This document is what you need to *maintain* it: how to add a seventeenth sector, the
+judgment calls already settled so they aren't re-litigated, and how to keep the skill current as new
+reports arrive.
 
-**Goal**: every report type in the 126-report collection reproducible by the skill, so the analytical work
-in those reports isn't stranded in static HTML.
-
----
-
-## Status
+For the hard rules and the validation command, see [AGENTS.md](AGENTS.md). For why the architecture is
+shaped this way, see [docs/adr/](docs/adr/README.md).
 
 | | |
 |---|---|
-| **Architecture** | ✅ Complete — router, 15 modes, 3 shared references, template |
-| **Sectors built** | ✅ **16** — all 15 original families plus `new-age` (quick commerce, food delivery, marketplaces) |
-| **Sectors remaining** | **none** — the build is complete |
+| **Sectors** | 16 — every family in the 126-report corpus |
+| **Modes** | 15, unchanged across all four build phases |
+| **Coverage** | 118 of 126 reports; the rest are cross-sector scope, 2 news digests, a macro piece and the glossary |
+| **Built in** | 5 phases — insurance+banking, then by report count, then a corpus refresh that added `new-age` |
 
-**The 126 reports break down as:** 118 belong to the 16 sector families (**all covered**), and 5
-are cross-sector — handled by the cross-sector *scope* rather than a sector file. **2 of those 7 are the
-market-news digests** (`Market_breaking_news_*`), plus a macro/thematic piece and the site glossary —
-all deliberately excluded: a headline roundup or a currency-and-oil essay is journalism, not company
-evaluation. That leaves 5 genuine cross-sector reports (the rankers and multi-sector dashboards).
-
-Insurance and banking were built together deliberately: their metrics share nothing (VNB / Combined Ratio
-vs NIM / GNPA / CASA), so serving both on unmodified mode files proved the abstraction before it was
-replicated. Phase 2 confirmed it: four more sectors, spanning order-book manufacturers, hotels, refiners
-and hospitals, needed **zero mode-file changes**.
+---
 
 ## Sector inventory
 
@@ -55,39 +45,21 @@ Derived by auditing all 126 reports. Report counts drive build order — biggest
 and `infra-realty` covers REITs/InvITs (DPU, distribution yield, concession period — `india-reit-invit-dashboard`).
 Their sector files must say plainly that these are analysed as funds/trusts, not operating companies.
 
-## Phases
 
-- **Phase 1** ✅ — architecture + insurance + banking
-- **Phase 2** ✅ — consumer (13), capital-goods (10), power-energy (10), pharma-health (9) → 42 reports
-- **Phase 3** ✅ — auto (7), capital-markets (6), it-services (6), nbfc-hfc (5) → 24 reports
-- **Phase 4** ✅ — chemicals (5), metals (4), infra-realty (3), cement (2), telecom (1) → 15 reports
-- **Phase 5** ✅ — corpus refresh to 126 reports; `new-age` added as the 16th sector; RoNW and an IPO
-  block added to `event-impact`; 16 recurring CSS classes defined
+## What the checks cannot verify
 
-Each phase re-runs the full validation suite in [AGENTS.md](AGENTS.md).
+`scripts/verify_skill.py` confirms content and rules are present — 50 checks. It **cannot** confirm the
+router triggers unprompted, because any session that authored the files has them in context whether the
+skill loads or not. That needs a fresh session.
 
----
+This was tested and passed: a cold session correctly declined a macro question (citing the skill's own
+scope boundary), chose `sector-financial-analysis` over a competing stock-analysis skill on a
+single-company ask, routed to chat rather than a file, and used `metals.md`'s framing on a sector file
+that had never been run.
 
-## The one thing the checks cannot verify
-
-`scripts/verify_skill.py` confirms the skill's content and rules are present and correct — 50 checks.
-It cannot confirm the router **triggers unprompted**, because any session that authored the files has
-them in context whether the skill loads or not.
-
-That needs a fresh session. Ask these six, in order:
-
-| Ask | Correct behaviour |
-|---|---|
-| `what is CASA and why does it matter` | Answers **in chat**. Says CASA cannot be bought quickly; gives >40% / >45% |
-| `compare HDFC Bank and Tata Steel on EBITDA` | **Refuses** — banks have no meaningful EBITDA. The most dangerous silent failure |
-| `what's India's GDP growth this year` | **Stays quiet** — no skill invocation. Over-triggering is the likelier fault |
-| `how did Tata Steel do in Q1 FY27` | Chat answer citing EBITDA per tonne and captive ore |
-| `should I buy Syrma SGS` | Declines the recommendation, offers a fundamentals read |
-| `build me a full report on Polycab` | **Builds a file**, to `reports/staging/`, with the earnings-quality header |
-
-If only three: the first, second and third — they cover doesn't-trigger, triggers-but-breaks-a-guardrail,
-and triggers-when-it-shouldn't. If triggering is wrong the fix is the description (`skill-creator` has an
-optimisation loop for it); if content is wrong it is a sector-file edit.
+**If you change the description, re-test triggering.** Two questions suffice — one that should fire
+(`what is CASA and why does it matter`) and one that should not (`what's India's GDP growth this year`),
+asked without naming the skill, then ask which skill it used.
 
 ## Keeping the skill current with the corpus
 
@@ -232,9 +204,3 @@ the mixed-reporting-season convention.
 - **GitHub Release** for the packaged `.skill` — it is gitignored as a build artifact.
 - **A `PreToolUse` hook** blocking writes to `reports/published/`, making the staging rule mechanical
   rather than documented. Considered and declined for now.
-
-## Open items
-
-- The two staged reports in `reports/staging/` need figure verification before promotion. The private
-  banks report is missing slippage ratio and credit cost for all five banks, and the life insurance
-  verdict's P/EV multiples come from a single low-tier source.

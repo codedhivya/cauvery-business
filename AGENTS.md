@@ -14,10 +14,10 @@ docs/                        report URL lists
 
 Reports are published at <https://elangocauvery.github.io/CB-Finance/>.
 
-**Continuing the build?** See **[ROADMAP.md](ROADMAP.md)** — status, the sector inventory with report
-counts, phase order, and the step-by-step recipe for adding a sector. **All 16 sectors are built**; the
-build is complete. Don't re-derive the sector taxonomy by re-auditing the corpus — it's already recorded
-there.
+**Maintaining or extending it?** See **[MAINTENANCE.md](MAINTENANCE.md)** — the sector inventory, the
+recipe for adding a seventeenth sector, and the judgment calls already settled. **All 16 sectors are
+built**; the build is complete. Don't re-derive the sector taxonomy by re-auditing the corpus — it's
+already recorded there.
 
 **About to change something that looks arbitrary?** See **[docs/adr/](docs/adr/README.md)**. Several of
 these decisions are counterintuitive and were made against specific corpus evidence — why one skill
@@ -111,7 +111,7 @@ its defining insight, that every refusal survives, and that the router's depth-r
 are intact. Exit 1 on failure, so it works in CI or a pre-commit hook.
 
 **What it cannot check**: whether the router triggers unprompted. That needs a session that did not
-author the files — see the fresh-session questions in [ROADMAP.md](ROADMAP.md).
+author the files — see the triggering test in [MAINTENANCE.md](MAINTENANCE.md).
 
 The individual greps below are what the script automates, kept here for when you want to run one in
 isolation:
