@@ -127,6 +127,12 @@ word means different things in different industries.
 
 ## Step 4 — Answer or build
 
+**First, check whether a report already exists.** Before analysing any company or sector, look for prior
+coverage in the published collection — see `references/output-conventions.md`. An existing report may
+already answer the request, and because published reports are author-verified, one covering the same
+period is a cross-check on your figures that no external source provides.
+
+
 If Step 0 said **conversation**, answer in chat now. Read the sector file for the facts and, for teaching
 questions, `modes/school.md` for how to explain them — then stop. Don't write a file, and don't pad a
 two-sentence answer into an essay to justify having loaded a reference.

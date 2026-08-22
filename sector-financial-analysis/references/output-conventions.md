@@ -72,6 +72,37 @@ Keep the accompanying chat message short — one to four sentences of the headli
 carries the detail; restating it in chat duplicates work the reader has to do twice. Don't drop a file
 silently either: a sentence of framing tells them what they're about to look at.
 
+## Check for an existing report first
+
+**Before analysing any company or sector, look in `reports/published/` for a report that already covers
+it.** One command:
+
+```bash
+ls reports/published/ | grep -i <company or sector>
+```
+
+This is worth doing every time, for two reasons that are easy to miss:
+
+1. **It may already exist.** Building a second artifact on a company the author already published is
+   wasted work, and worse, it produces two documents that may not agree.
+2. **A published report is author-verified.** Every figure in `reports/published/` has been checked
+   against filings by a human before promotion. That makes it a **cross-check available nowhere else** —
+   if your sourced figure disagrees with the published one for the same period, that disagreement is
+   itself the finding, and worth surfacing rather than quietly resolving.
+
+**What to do with what you find:**
+
+- **Same period, same scope** — say so before building anything. Offer to summarise the existing report,
+  or to build only what it lacks, rather than duplicating it.
+- **Earlier period** — use it for continuity (see below), and treat its figures as a *prior-period*
+  reference, not as current data.
+- **Adjacent scope** — a sector report covering the company, or a peer report — read it for the author's
+  framing and section choices even if you build something different.
+
+**The cross-check is one-directional.** A published report is good evidence that a figure was verified;
+it is not a substitute for sourcing the current period yourself. Never copy a number from it into a new
+report — see below.
+
 ## Prior-report continuity
 
 When regenerating an existing report for a new period, read the previous file from
