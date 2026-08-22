@@ -61,6 +61,13 @@ that had never been run.
 (`what is CASA and why does it matter`) and one that should not (`what's India's GDP growth this year`),
 asked without naming the skill, then ask which skill it used.
 
+**Watch for collision with `indian-stock-fundamental-analyser`.** That skill also covers Indian listed
+stocks and competes for the same single-company asks. In testing, `sector-financial-analysis` won on
+`analyse Tata Steel` — but the two overlap, so any description change risks tipping it the other way. If
+a single-company ask starts routing to the other skill, none of the sector work gets used, and the
+symptom is subtle: you get a competent generic answer instead of one citing EBITDA per tonne and captive
+ore. Test `analyse <company>` after any description edit, not just the two questions above.
+
 ## Keeping the skill current with the corpus
 
 The corpus is not frozen — reports arrive that the skill didn't generate. `scripts/audit_corpus.py`
