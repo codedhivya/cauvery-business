@@ -13,14 +13,15 @@ metric set.
 | Category | What it is | Examples |
 |---|---|---|
 | **Retail & Apparel** | Store-based or omni-channel retail | DMart (Avenue Supermarts), V2 Retail, Aditya Birla Fashion, Page Industries, Raymond Lifestyle |
-| **FMCG & Foods** | Branded fast-moving goods, dairy | FMCG majors, dairy processors |
+| **FMCG & Foods** | Branded fast-moving goods | ITC, Hindustan Unilever, and the branded-foods majors |
+| **Dairy** | Procurement-led; margin set at the farm gate. **Not a typical FMCG business** | Hatsun Agro, Heritage Foods, Dodla Dairy, Parag Milk Foods, Milky Mist |
 | **Alcoholic Beverages** | Spirits, beer, wine — heavily regulated, state-by-state | United Spirits, Radico Khaitan, United Breweries, Tilaknagar, GM Breweries, Globus Spirits, Allied Blenders (ABD), Sula Vineyards |
-| **Sugar & Agri-processing** | Cane crushing, ethanol, distillery | integrated sugar mills |
+| **Sugar & Agri-processing** | Cane crushing, ethanol, distillery | Balrampur Chini, and the integrated sugar mills |
 | **Textiles** | Yarn, fabric, garments | KPR Mill, Nitin Spinners, Vardhman-type spinners |
 | **Hospitality** | Hotels | IHCL, EIH (Oberoi), Chalet, Lemon Tree, Juniper, SAMHI, ITC Hotels |
-| **Leisure** | Amusement parks, experience venues | park operators |
-| **Jewellery — retailer** | Organised gold and diamond retail to consumers | listed jewellery chains |
-| **Jewellery — B2B manufacturer** | Makes and supplies to other brands or overseas buyers. **Order-driven, no store network**, so footfall and SSSG do not apply | listed jewellery manufacturers |
+| **Leisure** | Amusement parks, experience venues | Wonderla Holidays, Imagicaaworld |
+| **Jewellery — retailer** | Organised gold and diamond retail to consumers | Titan, Kalyan Jewellers, Senco Gold, PN Gadgil, Thangamayil |
+| **Jewellery — B2B manufacturer** | Makes and supplies to other brands or overseas buyers. **Order-driven, no store network**, so footfall and SSSG do not apply | Sky Gold, and listed jewellery manufacturers |
 | **Jewellery — LGD exporter** | Lab-grown diamond production for export. **Priced and cycled unlike natural stones**, and exposed to destination tariffs | Goldiam International |
 
 Cross-category comparison within consumer is meaningful only on universal metrics (revenue growth,
