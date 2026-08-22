@@ -130,3 +130,37 @@ value versus by area**; tenant diversification; credit rating and sponsor type a
 attributes; SM REITs as a full category; sponsor holding-reduction as the flagged investor risk; and the
 "REIT vs InvIT" contrast as a recognised section type.
 
+## Second addendum — the taxonomy was built on the wrong axis (2026-08-22)
+
+The first version of `reit-invit.md` organised the class as a flat list of nine asset categories —
+office, retail, transmission, roads, pipelines, logistics, SM REIT, private placement. **That structure
+was invented here, not taken from the corpus.**
+
+The author's own structure is a **two-way split: REIT versus InvIT** — real estate on one side, all other
+infrastructure on the other. The report's masthead counts them separately ("5 Mainboard REITs · 7 Public
+InvITs"), they get separate tabs, and a dedicated **"REIT vs InvIT"** tab contrasts them across twelve
+dimensions: asset class, revenue driver, contract length, risk profile, yield band, SEBI distribution
+mandate, minimum investment, asset life, NAV basis, market size, credit ratings, SEBI classification.
+
+Restructuring on that axis surfaced **the single most important fact in the class, which the flat list
+had lost entirely**:
+
+> **A REIT's assets are perpetual. An InvIT's concession assets run off to zero.**
+
+That is why InvIT yields sit structurally above REIT yields — **part of an InvIT's distribution is return
+of capital, not income**, because the asset is being consumed over the concession term. A REIT at 7% and
+an InvIT at 11% are not offering the same thing. Ranking them on headline yield is the central error the
+file now exists to prevent, and the flat taxonomy could not express it because it had no REIT/InvIT axis
+to hang it on.
+
+Two related facts came with it: **NAV means different things** in each — an independent property
+valuation for a REIT, a **DCF of remaining concession cash flows** for an InvIT, so a discount to NAV may
+merely reflect run-off the DCF already assumes — and SEBI classifies REITs as **equity** and InvITs as a
+**hybrid** instrument, which affects index inclusion and institutional eligibility.
+
+**The general lesson, beyond this sector**: a sector file's taxonomy should be lifted from how the corpus
+*compares* its subjects, not from how the subjects could plausibly be sorted. The plausible sort here was
+by underlying asset, and it was analytically sterile. The author's sort was by vehicle, and it carried
+the insight. Asset-type categories remain in the file, but as sub-categories underneath the REIT/InvIT
+split rather than as the organising level.
+

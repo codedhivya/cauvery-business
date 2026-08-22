@@ -5,7 +5,9 @@ Covers listed Real Estate Investment Trusts and Infrastructure Investment Trusts
 **These are SEBI-regulated trusts, not operating companies** — a REIT under the SEBI (Real Estate
 Investment Trusts) Regulations, an InvIT under the SEBI (Infrastructure Investment Trusts) Regulations.
 They are grouped here because the *vehicle* is the same; what each holds is not. **This is an asset
-class, not an industry.** A REIT or InvIT is a **trust that passes income through to
+class, not an industry** — and within it, **REIT and InvIT are the primary split**: real estate on one
+side, all other infrastructure on the other, with different regulations, risk profiles, yield bands and
+— decisively — **perpetual versus finite asset life**. A REIT or InvIT is a **trust that passes income through to
 unitholders**, not a company that retains and reinvests earnings. What it owns — offices, malls,
 transmission lines, toll roads, pipelines, telecom towers — changes the operating drivers underneath,
 but never the frame you judge it in: distribution, yield, leverage and the durability of the cash that
@@ -27,25 +29,55 @@ durable? Everything below serves that.
 
 ## 1. Category taxonomy
 
-| Category | What it holds | How it earns | Examples |
-|---|---|---|---|
-| **Office REIT** | Completed Grade-A office parks | Contracted rent + escalations; occupancy risk | Embassy Office Parks, Mindspace Business Parks, Brookfield India |
-| **Retail REIT** | Malls and retail centres | Minimum guaranteed rent + turnover-linked rent | Nexus Select Trust |
-| **Transmission InvIT** | Power transmission lines, substations | **Availability-based** — paid for being available, not for volume carried | IndiGrid, PowerGrid InvIT |
-| **Roads / highway InvIT** | Toll and annuity road concessions | **Toll = traffic risk**; **annuity/HAM = fixed payment, sovereign counterparty** | IRB InvIT, Cube Highways Trust, Bharat Highways |
-| **Pipeline / energy InvIT** | Gas pipelines, energy assets | Contracted transportation or offtake tariffs | listed energy infrastructure trusts |
-| **Logistics / warehousing** | Warehouses and industrial parks | Lease rent, tenant-covenant driven | held within diversified REITs and InvITs |
-| **SM REIT** | Small & Medium REIT — assets **₹50–500 crore**, each **scheme separately listed**, ₹10 lakh minimum investment | Scheme-level rent from a specific property or group | Property Share Investment Trust (PropShare Platina), BSE, Dec 2024 — India's first |
-| **Private-placement InvIT** | Any of the above, unlisted units | Same economics, far thinner disclosure and no live price | — |
+**The primary split is REIT versus InvIT, and it is not cosmetic.** A REIT holds commercial real estate;
+an InvIT holds everything else — roads, transmission lines, pipelines, warehouses, towers. They are
+separate SEBI regulations, separate risk profiles, and separate yield bands, and the corpus compares them
+side by side rather than merging them into one list.
 
-**A single trust routinely spans several of these.** The corpus shows one REIT holding Grade-A offices,
-**hospitality** and **solar generation**; an InvIT holding transmission, **renewables** and **battery
-storage (BESS)**; another holding retail centres alongside **ticketed attractions**. Do not assume a
-trust is single-asset because its name suggests one — read the segment disclosure. Trusts are also
-**reclassified** as their mix shifts, so a prior period's category is not authoritative.
+| | **REIT** 🏢 | **InvIT** 🏗 |
+|---|---|---|
+| **Asset class** | Commercial real estate — offices, malls, hotels | Infrastructure — roads, power transmission, pipelines, warehousing, towers |
+| **Revenue driver** | Rental income from tenants | Toll fees, transmission tariffs, pipeline charges, warehouse rent |
+| **Contract length** | 5–10 year leases, renewable | 20–30 year government concessions, or regulated tariffs |
+| **Risk profile** | Moderate — vacancy and rental-market risk | Low to moderate — traffic/volume risk on toll; transmission close to zero volume risk |
+| **Typical yield band** | lower | higher — see the asset-life row for why |
+| **Asset life** | **Perpetual** — property persists and can appreciate | **Finite** — the concession runs off over its term and the asset reverts |
+| **NAV basis** | Independent valuation of the properties | **DCF of the remaining concession cash flows** |
+| **SEBI classification** | Equity | **Hybrid** — debt and equity characteristics |
+| **Distribution mandate** | Large majority of NDCF, quarterly | Large majority of NDCF, minimum half-yearly; most pay quarterly |
+| **Minimum investment** | One unit | One unit if listed; a high floor for private placement |
 
-**Classify before analysing.** The category determines whether the trust carries **volume risk at all** —
-the distinction that separates a near-bond from a cyclical.
+### The distinction that changes the arithmetic
+
+**A REIT's assets are perpetual. An InvIT's concession assets run off to zero.**
+
+This is the most important fact in the class, and it is why InvIT yields sit structurally above REIT
+yields. Part of an InvIT's distribution is **return of capital, not income** — the asset is being consumed
+over the concession term. A REIT distributing 7% and an InvIT distributing 11% are not offering the
+investor the same thing, and ranking them on headline yield alone is the central error this file exists
+to prevent.
+
+**Always state residual concession life beside an InvIT's yield**, and read the distribution's tax
+composition — a high capital-return share is this effect showing up in the payout.
+
+### Sub-categories within each
+
+| Vehicle | Sub-category | Note |
+|---|---|---|
+| **REIT** | Office | The dominant category; Grade-A parks let to corporate tenants |
+| **REIT** | Retail / consumption centres | Minimum guaranteed rent plus turnover-linked rent |
+| **REIT** | Hospitality | Held within diversified REITs; **far more cyclical** — occupancy, ADR, RevPAR |
+| **REIT** | **SM REIT** | Small & Medium REIT — a separate SEBI framework. Assets in a defined band, **each scheme separately listed**, high minimum investment. **Analyse per scheme; schemes do not cross-subsidise** |
+| **InvIT** | Power transmission | **Availability-based** — paid for being available, not for volume carried. The closest thing to a bond in the class |
+| **InvIT** | Roads | **Toll = traffic risk**; **annuity / HAM = fixed payment, sovereign counterparty**. State the mix |
+| **InvIT** | Pipelines / energy | Contracted transportation or offtake tariffs |
+| **InvIT** | Logistics & warehousing | Lease rent, tenant-covenant driven |
+| **InvIT** | Private placement | Same economics, far thinner disclosure, no live price, high entry floor |
+
+**A single trust routinely spans several sub-categories** — the corpus shows one REIT holding Grade-A
+offices, hospitality *and* solar generation; an InvIT holding transmission, renewables and battery
+storage. Read the segment disclosure rather than inferring from the name. Trusts are also **reclassified**
+as their mix shifts, so a prior period's label is not authoritative.
 
 ## 2. How these vehicles make money
 
@@ -191,7 +223,7 @@ Indicative. Verify against the trust's own history, its category, and the prevai
 | Leverage | LTV cap on consolidated borrowings, with a **lower threshold above which credit rating and unitholder approval are required**. Verify current thresholds |
 | Asset composition | Minimum share in completed, revenue-generating assets; caps on under-construction exposure |
 | Valuation | Independent valuer, at a mandated frequency; NAV is a valuer's number, not a market price |
-| **Sponsor obligations** | **Minimum sponsor unit holding, with a lock-in.** A sponsor reducing its stake is flagged in the corpus as a **key investor risk** — check current holding against the requirement and against its own history |
+| **Sponsor obligations** | **A minimum sponsor unitholding applies at all times**, set separately for REITs and for InvITs, with lock-in rules on top. Confirm the current percentage at source. A sponsor reducing its stake is flagged in the corpus as a **key investor risk** — check current holding against the requirement and against its own history |
 | **SM REITs** | A separate SEBI framework: assets **₹50–500 crore**, **each scheme separately listed**, ₹10 lakh minimum investment, sponsor holds a minimum share for a lock-in period. **Analyse per scheme, not per trust** — schemes do not cross-subsidise |
 | Related-party acquisitions | Unitholder approval and independent valuation requirements — the main governance pressure point, since sponsors commonly sell assets into their own trust |
 | Taxation | **Distribution is taxed by component** in the unitholder's hands — interest, dividend, rental, capital return. State the split; it materially changes post-tax yield |
@@ -261,6 +293,11 @@ pricing risk, not a strength.
 earnings a poor guide, and these are compared against income alternatives, not against operating
 companies.
 
+**NAV is not computed the same way for both.** A REIT's NAV is an independent valuation of the
+properties, which persist; an InvIT's is a **DCF of the remaining concession cash flows**, which decline
+to zero. A discount to NAV therefore means different things in each — for an InvIT it may simply reflect
+the run-off the DCF already assumes.
+
 Use, in order: **distribution yield and its spread over the 10-year G-sec** · **premium/discount to NAV**
 · **yield versus peer trusts of comparable residual life and risk** · **implied cap rate** (NOI ÷ GAV)
 for REITs.
@@ -268,6 +305,11 @@ for REITs.
 State residual contract or concession life alongside any yield. **Two trusts on an identical yield are
 not equivalently priced if one has eight years of contracted life and the other thirty** — this is the
 most common misreading in the category.
+
+**Never rank a REIT and an InvIT together on headline yield.** The InvIT's higher yield is compensation
+for a finite, depleting asset; the REIT's lower yield buys a perpetual one. Compare them on the author's
+dimensions — asset class, contract length, risk profile, asset life, NAV basis, SEBI classification —
+and keep yield inside its own vehicle type.
 
 ### CB Rating substitutions (`cb-rating`)
 

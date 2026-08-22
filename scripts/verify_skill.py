@@ -81,7 +81,7 @@ SECTOR_CONTENT = {
     "cement":          ["lead distance", "regional"],
     "chemicals":       ["never draw one ebitda-margin line", "specialty", "commodity"],
     "infra-realty":    ["pre-sales", "revenue is a lagging number"],
-    "reit-invit":      ["asset class, not an industry", "availability", "coverage"],
+    "reit-invit":      ["perpetual", "finite", "reit and invit are the primary split", "coverage"],
     "telecom":         ["agr", "spectrum"],
     "new-age":         ["contribution margin", "runway", "not p/e"],
 }
