@@ -204,6 +204,27 @@ the mixed-reporting-season convention.
 
 ---
 
+## CB Rating coverage — where the composite is corpus-backed, and where it is assumed
+
+Counting reports that carry a `CB Rating` / `CB Score` / `CBF26 Rating`:
+
+| Corpus-backed | Absent |
+|---|---|
+| banking 8/9 · it-services 5/6 · capital-goods 6/12 · power-energy 6/13 · capital-markets 5/9 · consumer 7/19 · pharma-health 5/14 · nbfc-hfc 3/7 · chemicals 3/6 · metals 1/5 · infra-realty 1/2 | **auto 0/8 · insurance 0/3 · cement 0/2 · new-age 0/2 · telecom 0/2 · reit-invit 0/3** |
+
+**Absence is not automatically a verdict.** With two or three reports it may mean the author simply
+hasn't scored that sector yet. But two of the six show a **positive alternative method** — a per-metric
+leaderboard naming the leader on each dimension rather than one blended number:
+
+- **reit-invit** — best yield, best P/NAV, highest NOI, fastest NOI growth, best occupancy, lowest LTV,
+  with **yield reported separately for REITs and InvITs**. Acted on: the sector file now defaults to the
+  leaderboard and treats the composite as opt-in.
+- **insurance** — "Best VNB margin", "Fastest GWP growth", "Best — well above benchmark". Not acted on.
+
+**Where a leaderboard is the corpus method, prefer it.** A composite collapses dimensions that a reader
+needs kept apart — for a trust, blending yield with coverage hides that a high yield may be capital
+return rather than income. `auto` (0/8) is the most notable remaining gap and worth a look.
+
 ## Regulatory depth by sector — uneven, and deliberately so
 
 Section 5 of each sector file is a regulatory quick reference, but how *concrete* it is varies:

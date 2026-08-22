@@ -408,7 +408,34 @@ and keep yield inside its own vehicle type.
 
 ### CB Rating substitutions (`cb-rating`)
 
-An income vehicle cannot be scored on the standard growth-and-margin frame. Substituted throughout:
+**Default to a per-metric leaderboard, not a composite.** The corpus ranks this class by naming the
+leader on each metric — best yield, best price-to-NAV, highest NOI, fastest NOI growth, best occupancy,
+lowest LTV — and **carries no composite score for any trust.** That is the right instinct: collapsing
+yield, coverage, leverage and governance into one number hides the very thing that matters here, which is
+that a high yield may be capital coming back rather than income.
+
+**The leaderboard, and how to build it:**
+
+| Metric | Superlative | Split |
+|---|---|---|
+| Distribution yield | best | **separately for REITs and for InvITs — never one combined list** |
+| Price / NAV | best (largest discount), stated with the NAV basis | by vehicle, since the bases differ |
+| NOI | highest, absolute | REITs |
+| NOI growth | fastest, same-store where disclosed | REITs |
+| Occupancy | best | REITs |
+| Availability | best | transmission InvITs |
+| LTV | lowest | all |
+| Credit rating | highest, with agency named | all |
+| Residual concession / asset life | longest | InvITs |
+| Distribution coverage | highest | all |
+
+**The yield split is not optional.** A single "best yield" list across both vehicles would always be won
+by an InvIT, for structural reasons that have nothing to do with quality — see section 1.
+
+**A composite score is available if explicitly asked for**, using the substituted parameter set below.
+State that it used the REIT/InvIT set, and state that the corpus does not conventionally score this
+class. An income vehicle cannot be scored on the standard growth-and-margin frame, so it is substituted
+throughout:
 
 | Component | Weight | REIT/InvIT substitution |
 |---|---|---|
@@ -418,7 +445,8 @@ An income vehicle cannot be scored on the standard growth-and-margin frame. Subs
 | Balance Sheet | 20% | LTV against cap, cost and maturity of debt, fixed/floating split, refinancing wall, acquisition headroom |
 | Governance & Sponsor | 10% | Related-party acquisition record and pricing, sponsor unit holding and alignment, disclosure quality, manager track record |
 
-Total 100%. **Revenue Growth, EBITDA margin and PAT Quality do not appear** — all three are misleading
+Total 100%. Never mix trusts of different vehicle types in one scored table without saying so.
+**Revenue Growth, EBITDA margin and PAT Quality do not appear** — all three are misleading
 for a pass-through trust, and Debt/Leverage is replaced by LTV because gross debt without asset value is
 meaningless here. Any rendered score must state that it used the REIT/InvIT parameter set.
 
@@ -509,7 +537,7 @@ Uses the shared design system. Two additions specific to this file:
 | `risks-outlook` | core | Rate sensitivity, refinancing, counterparty, residual life |
 | `analyst-ratings` | applies | Coverage is thinner than for large caps; omit rather than pad |
 | `verdict` | applies | Frame as suitability by income objective, **never as buy/sell/hold** |
-| `cb-rating` | core | Substituted parameter set above; state it on any rendered score |
+| `cb-rating` | **leaderboard by default** | Per-metric leaders, yield split by vehicle. Composite only on request, using the substituted set — and say the corpus does not conventionally score this class |
 | `school` | core | "REIT & InvIT School". **Section 2b carries the full explainer for each vehicle** — definition, structure, how money reaches the unitholder step by step, and the metrics that matter. Teach from it directly; this class needs more explaining than most |
 | `quarterly-report` | core | Distribution & Coverage section effectively mandatory |
 | `event-impact` | core | Rate and regulation moves transmit unusually directly |
