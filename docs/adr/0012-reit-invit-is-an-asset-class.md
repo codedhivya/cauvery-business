@@ -95,3 +95,38 @@ also puts a pass-through trust inside a file whose CB parameters assume retained
 **A generic `trusts-and-funds` file** covering REITs, InvITs and the IPO fund in `capital-markets.md`.
 Rejected as over-abstraction: a mutual fund's NAV, active share and expense ratio share almost nothing
 with a trust's DPU, availability and concession tenure beyond "not an operating company".
+
+## Addendum — after reading the corpus reports in full (2026-08-22)
+
+The decision was taken before reading the three REIT/InvIT reports closely. Doing so afterwards
+corrected two things and confirmed the rest.
+
+**Corrected.** An earlier argument here leaned on "the single most-covered entity is IndiGrid, a
+transmission InvIT". True, but selectively framed: **in aggregate, office and retail REITs are 54% of
+entity mentions.** The majority of the corpus content *is* real estate. The 46% that is not — transmission,
+roads, renewables, storage — still had no sensible home in a developer file, so the decision stands, but
+on a narrower margin than first stated.
+
+Separately, a claim that the reports "call the group *investment trust* 8 times" was wrong. Every one of
+those occurrences is an acronym expansion ("REIT (Real Estate Investment Trust)") or a SEBI regulation
+title. **The author uses no collective noun** — the masthead reads "5 Mainboard REITs · 7 Public InvITs"
+and a dedicated tab compares "REIT vs InvIT". The filename `reit-invit.md` therefore matches the house
+convention; `investment-trusts.md` would have invented a label the corpus does not use.
+
+**Confirmed, and strengthened.** The trusts' underlying assets are far wider than the original six
+categories: one REIT holds Grade-A offices, **hospitality** and **solar generation**; an InvIT holds
+transmission, renewables and **battery storage**; another holds retail alongside **ticketed
+attractions**. A vehicle spanning that range cannot sit inside any one industry file. Trusts are also
+reclassified as their mix shifts.
+
+**Self-sufficiency (author's decision).** The file duplicates property metrics — NOI, occupancy, WALE,
+mark-to-market — rather than deferring to `infra-realty.md`. The seam noted in the original Consequences
+is therefore closed at the cost of accepting duplication. The rationale is not only convenience: pulling
+in an operating-company file invites its *framing* along with its definitions, and a trust must be read
+through distribution and coverage. The accepted risk is definition drift between the two files.
+
+**Gaps the corpus exposed**, now folded in: NOI as the headline operating metric; occupancy stated **by
+value versus by area**; tenant diversification; credit rating and sponsor type as first-class displayed
+attributes; SM REITs as a full category; sponsor holding-reduction as the flagged investor risk; and the
+"REIT vs InvIT" contrast as a recognised section type.
+

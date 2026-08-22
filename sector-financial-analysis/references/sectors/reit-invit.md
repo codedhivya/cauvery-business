@@ -2,7 +2,10 @@
 
 Covers listed Real Estate Investment Trusts and Infrastructure Investment Trusts.
 
-**This is an asset class, not an industry.** A REIT or InvIT is a **trust that passes income through to
+**These are SEBI-regulated trusts, not operating companies** — a REIT under the SEBI (Real Estate
+Investment Trusts) Regulations, an InvIT under the SEBI (Infrastructure Investment Trusts) Regulations.
+They are grouped here because the *vehicle* is the same; what each holds is not. **This is an asset
+class, not an industry.** A REIT or InvIT is a **trust that passes income through to
 unitholders**, not a company that retains and reinvests earnings. What it owns — offices, malls,
 transmission lines, toll roads, pipelines, telecom towers — changes the operating drivers underneath,
 but never the frame you judge it in: distribution, yield, leverage and the durability of the cash that
@@ -10,9 +13,14 @@ funds them.
 
 That is why these do not belong inside the sector of their underlying asset. A transmission InvIT is not
 a power generator, and grading it on PLF, merchant tariff or fuel cost misreads it entirely; a road InvIT
-is not a construction company; an office REIT is not a residential developer with pre-sales. **Load this
-file for the vehicle. Where the underlying asset's operating drivers matter, also load that asset's
-sector file** — but read them through the metrics here, not the other way round.
+is not a construction company; an office REIT is not a residential developer with pre-sales.
+
+**This file is self-sufficient — it is the only one needed to analyse a trust.** Every metric a
+property, transmission or road portfolio requires is defined below, including the ones that also appear
+in operating-company files. That duplication is deliberate: a trust is read through distribution and
+coverage, and pulling in an operating file invites its framing along with its definitions. Reach for
+another sector file only for **broader market context** — the office leasing cycle, the transmission
+capex cycle — never for the metrics themselves.
 
 **The single question**: is the distribution covered by cash the assets actually generate, and is it
 durable? Everything below serves that.
@@ -26,7 +34,15 @@ durable? Everything below serves that.
 | **Transmission InvIT** | Power transmission lines, substations | **Availability-based** — paid for being available, not for volume carried | IndiGrid, PowerGrid InvIT |
 | **Roads / highway InvIT** | Toll and annuity road concessions | **Toll = traffic risk**; **annuity/HAM = fixed payment, sovereign counterparty** | IRB InvIT, Cube Highways Trust, Bharat Highways |
 | **Pipeline / energy InvIT** | Gas pipelines, energy assets | Contracted transportation or offtake tariffs | listed energy infrastructure trusts |
+| **Logistics / warehousing** | Warehouses and industrial parks | Lease rent, tenant-covenant driven | held within diversified REITs and InvITs |
+| **SM REIT** | Small & Medium REIT — assets **₹50–500 crore**, each **scheme separately listed**, ₹10 lakh minimum investment | Scheme-level rent from a specific property or group | Property Share Investment Trust (PropShare Platina), BSE, Dec 2024 — India's first |
 | **Private-placement InvIT** | Any of the above, unlisted units | Same economics, far thinner disclosure and no live price | — |
+
+**A single trust routinely spans several of these.** The corpus shows one REIT holding Grade-A offices,
+**hospitality** and **solar generation**; an InvIT holding transmission, **renewables** and **battery
+storage (BESS)**; another holding retail centres alongside **ticketed attractions**. Do not assume a
+trust is single-asset because its name suggests one — read the segment disclosure. Trusts are also
+**reclassified** as their mix shifts, so a prior period's category is not authoritative.
 
 **Classify before analysing.** The category determines whether the trust carries **volume risk at all** —
 the distinction that separates a near-bond from a cyclical.
@@ -82,10 +98,23 @@ mechanically, with nothing wrong at the asset level.
 - **Cost of debt**, **average maturity**, and the **fixed/floating split** — a floating-rate book
   transmits rate moves straight into NDCF and therefore into DPU.
 - **Weighted average cost of capital vs incremental asset yield** — the acquisition accretion test.
+- **Credit rating** (ICRA / CRISIL / CARE) and outlook — displayed as a headline item in the corpus, not
+  buried. It is the market's independent read on refinancing and coverage risk; state agency and date.
+- **Sponsor type and standing** — **sovereign or government-backed**, institutional, or private
+  developer. This materially changes perceived counterparty and support risk, and the corpus surfaces it
+  as a headline attribute. State it plainly; do not treat it as a guarantee.
+- **Weighted average asset life / average concession period** — the portfolio-level residual life.
 
-### Office and retail REITs
+### Office, retail and hospitality REITs
 
-- **Occupancy (%)**, committed versus in-place
+**Self-contained by design.** Everything needed to read a property portfolio is defined here, so a trust
+never requires the developer file to be loaded alongside it.
+
+- **NOI (Net Operating Income)** — property revenue less property operating expense. **The headline
+  operating metric**, and the input to NDCF. Track absolute NOI and its growth; the corpus leads with it.
+- **Occupancy (%)** — state the basis. **Occupancy by value and occupancy by area differ**, sometimes
+  materially, because premium space is priced higher; quoting one as though it were the other overstates
+  or understates lease-up. Report committed versus in-place, and like-for-like where disclosed.
 - **WALE (weighted average lease expiry)** — longer is more secure; read alongside the expiry schedule,
   since a long WALE with a cliff in one year is not secure
 - **Mark-to-market gap** — in-place rent versus current market rent on expiring leases; the organic
@@ -93,6 +122,14 @@ mechanically, with nothing wrong at the asset level.
 - **Re-leasing spread** and **releasing / retention rate**
 - **Same-store NOI growth** — the honest organic number, excluding acquisitions
 - **Turnover rent share** (retail) and **tenant sales per sq ft**
+- **Tenant diversification** — top-10 tenant share of rent, and sector concentration of the tenant base.
+  A high-occupancy portfolio resting on a few tenants in one industry is not as secure as its occupancy
+  suggests. **Read alongside WALE, never instead of it.**
+- **Total leasable area (msf)**, and the completed versus under-development split
+- **Rental rate per sq ft** and the **escalation clause** — typically a fixed step-up at a set interval;
+  state the mechanism, since it is the contracted portion of organic growth
+- **Hospitality assets within a trust** — occupancy, ADR and RevPAR apply to that segment only, and are
+  **far more cyclical** than office rent. Never blend them into a portfolio-wide occupancy figure.
 
 ### Transmission and pipeline InvITs
 
@@ -125,6 +162,8 @@ Indicative. Verify against the trust's own history, its category, and the prevai
 | Office REIT | Occupancy | >90%; committed occupancy above in-place signals lease-up ahead |
 | Office REIT | WALE | >5 years, with no single-year expiry cliff |
 | Office REIT | Mark-to-market gap | positive — in-place below market means embedded organic growth |
+| Office / retail REIT | Top-10 tenant share of rent | lower is safer; high concentration qualifies a strong occupancy number |
+| All | Credit rating | investment grade with a stable outlook; a change of outlook is an early signal |
 | Retail REIT | Tenant sales growth | above retail-sector growth; turnover rent following it |
 | Transmission InvIT | Availability | at or above the contractual threshold — consistently; **shortfall is a direct revenue penalty** |
 | Transmission InvIT | Contracted revenue share | high; merchant exposure is the exception and should be stated |
@@ -152,6 +191,8 @@ Indicative. Verify against the trust's own history, its category, and the prevai
 | Leverage | LTV cap on consolidated borrowings, with a **lower threshold above which credit rating and unitholder approval are required**. Verify current thresholds |
 | Asset composition | Minimum share in completed, revenue-generating assets; caps on under-construction exposure |
 | Valuation | Independent valuer, at a mandated frequency; NAV is a valuer's number, not a market price |
+| **Sponsor obligations** | **Minimum sponsor unit holding, with a lock-in.** A sponsor reducing its stake is flagged in the corpus as a **key investor risk** — check current holding against the requirement and against its own history |
+| **SM REITs** | A separate SEBI framework: assets **₹50–500 crore**, **each scheme separately listed**, ₹10 lakh minimum investment, sponsor holds a minimum share for a lock-in period. **Analyse per scheme, not per trust** — schemes do not cross-subsidise |
 | Related-party acquisitions | Unitholder approval and independent valuation requirements — the main governance pressure point, since sponsors commonly sell assets into their own trust |
 | Taxation | **Distribution is taxed by component** in the unitholder's hands — interest, dividend, rental, capital return. State the split; it materially changes post-tax yield |
 | Underlying assets | The asset's own regulator still applies — **CERC** for transmission, **NHAI** concession terms for roads, **RERA** where relevant to the underlying property |
@@ -253,6 +294,9 @@ meaningless here. Any rendered score must state that it used the REIT/InvIT para
 - **Acquisitions & Pipeline** — what was bought, at what yield, funded how, and **whether it was
   DPU-accretive**
 - **Unit Price & Yield vs G-sec** — the rate-sensitivity context
+- **REIT vs InvIT comparison** — where a report covers both, the corpus gives the contrast its own
+  section: what each holds, which regulations govern it, the risk profile, and the tax treatment. It is
+  the single most useful explainer for a reader new to the class.
 
 ### Event transmission map (`event-impact`, `risks-outlook`)
 
@@ -329,7 +373,7 @@ Uses the shared design system. Two additions specific to this file:
 | `analyst-ratings` | applies | Coverage is thinner than for large caps; omit rather than pad |
 | `verdict` | applies | Frame as suitability by income objective, **never as buy/sell/hold** |
 | `cb-rating` | core | Substituted parameter set above; state it on any rendered score |
-| `school` | core | "REIT & InvIT School" — the pass-through structure and the tax split reward teaching |
+| `school` | core | "REIT & InvIT School". The corpus carries full **"What is a REIT?"** and **"What is an InvIT?"** explainers — definition, SEBI regulation, how income reaches the unitholder, minimum investment, and the contrast between the two. Reproduce that depth; this class needs more explaining than most |
 | `quarterly-report` | core | Distribution & Coverage section effectively mandatory |
 | `event-impact` | core | Rate and regulation moves transmit unusually directly |
 
