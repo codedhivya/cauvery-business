@@ -13,7 +13,7 @@ sector is complete without them.
 | Category | What it is | Examples |
 |---|---|---|
 | **Integrated wireless operator** | Mobile services plus broadband, enterprise and digital; the main business | Bharti Airtel, Reliance Jio (unlisted separately), Vodafone Idea |
-| **Passive infrastructure** | Towers and fibre leased to operators; annuity economics, not consumer-facing | tower companies |
+| **Passive infrastructure** | Towers and fibre leased to operators; annuity economics, not consumer-facing | Indus Towers |
 | **Wireline / enterprise** | Fixed broadband, leased lines, data centres — usually a segment within an integrated operator | enterprise arms of the majors |
 
 Compare wireless operators with each other. A tower company is an infrastructure annuity business closer

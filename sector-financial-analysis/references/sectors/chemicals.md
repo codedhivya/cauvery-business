@@ -14,9 +14,9 @@ are not comparable on margin, growth or valuation.**
 |---|---|---|
 | **Specialty chemicals** | Custom or differentiated molecules sold into defined applications; qualification-gated, customer-embedded | Vinati Organics, Aarti Industries, Balaji Amines, Alkyl Amines, Galaxy Surfactants, SRF, Deepak Nitrite, Acutaas Chemicals |
 | **Commodity chemicals** | Standardised products priced off feedstock spreads; cyclical | bulk chemical producers, and the commodity portion of diversified players |
-| **Fertilisers** | Urea, NPK, complexes. **Realisation is administered, not market-set**; subsidy is a receivable, not revenue quality | urea and complex fertiliser producers |
+| **Fertilisers** | Urea, NPK, complexes. **Realisation is administered, not market-set**; subsidy is a receivable, not revenue quality | Coromandel International, Chambal Fertilisers, GSFC, GNFC, Paradeep Phosphates, FACT |
 | **Plastic pipes & fittings** | PVC/CPVC pipes for plumbing and agriculture; a building-materials business exposed to PVC resin cost | Finolex Industries, Supreme Industries, Astral |
-| **Recycling / circular materials** | Recovers plastic, aluminium, battery and metal scrap into saleable feedstock. **A spread business with a regulatory demand driver**, not a chemistry business | listed plastic and metal recyclers |
+| **Recycling / circular materials** | Recovers plastic, aluminium, battery and metal scrap into saleable feedstock. **A spread business with a regulatory demand driver**, not a chemistry business | Gravita India, Ganesha Ecosphere, Pondy Oxides |
 | **Decorative paints** | Branded consumer product with distribution moat; a consumer business in chemical clothing | Asian Paints, Berger |
 
 **Two categories are arguably not "chemicals" in behaviour.** Plastic pipes are a building-materials

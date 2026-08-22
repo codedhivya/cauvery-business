@@ -137,6 +137,48 @@ def strip_html(raw):
     return " ".join(t.split())
 
 
+
+# Categories that legitimately have no separate companies — they describe a plant
+# type or a division of a company named elsewhere, not a distinct listed entity.
+NAMELESS_OK = {
+    "Grinding-only / split unit", "Commercial / lease developer", "Wireline / enterprise",
+}
+
+
+def unnamed_categories():
+    """Sector-file categories whose example column names no company.
+
+    A category with a generic placeholder ("listed hospital chains") cannot be
+    routed to, cannot seed a peer set, and usually means that category's reports
+    were never mined. Advisory: some are legitimately generic — see NAMELESS_OK.
+    """
+    import glob
+    out = []
+    for fn in sorted(glob.glob(os.path.join(SECTORS_DIR, "*.md"))):
+        base = os.path.basename(fn)
+        if base == "_template.md":
+            continue
+        body = open(fn).read()
+        m = re.search(r"^## 1\..*?(?=^## 2\.)", body, re.S | re.M)
+        if not m:
+            continue
+        block = m.group(0)
+        # Some sector files open section 1 with a comparison table rather than the
+        # taxonomy (reit-invit contrasts REIT vs InvIT first). Where an explicit
+        # sub-category block exists, that is the taxonomy — read only that.
+        sub = re.search(r"^### Sub-categories.*", block, re.S | re.M)
+        if sub:
+            block = sub.group(0)
+        for row in re.findall(r"^\|\s*\*\*(.+?)\*\*\s*\|(.*?)\|(.*?)\|", block, re.M):
+            cat, _desc, ex = (x.strip() for x in row)
+            if cat in NAMELESS_OK:
+                continue
+            proper = [w for w in re.findall(r"\b[A-Z][A-Za-z&.\-]{2,}", ex)
+                      if w not in ("The", "And", "Not", "An")]
+            if not proper:
+                out.append((base, cat, ex[:52]))
+    return out
+
 def classify(filename):
     low = filename.lower()
     for sector, keys in SECTOR_KEYWORDS.items():
@@ -295,6 +337,19 @@ def main():
 
     if not action:
         print("Reports are new but introduce nothing the skill lacks.")
+
+    bare = unnamed_categories()
+
+    if bare:
+
+        print("\n\u26a0 CATEGORIES WITH NO NAMED COMPANY")
+
+        for base, cat, ex in bare:
+
+            print(f"   {base[:-3]:16} {cat:30} {ex}")
+
+        print("   \u2192 name real companies from a report, or confirm the category is\n         genuinely generic and add it to NAMELESS_OK")
+
 
     print("Findings are advisory. Review, fold in what belongs, then:")
     print("   python3 scripts/audit_corpus.py --accept")

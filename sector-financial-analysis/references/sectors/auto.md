@@ -19,7 +19,7 @@ cyclicality and different pricing power, and blending them hides the story.
 | **Passenger vehicle OEM** | Cars and UVs | Maruti Suzuki, Hyundai Motor India, Mahindra & Mahindra, Tata Motors, Kia |
 | **Commercial vehicle OEM** | Trucks and buses; the most cyclical category, tied to freight and infrastructure | Tata Motors, Ashok Leyland, VE Commercial Vehicles (Eicher) |
 | **Auto components** | Parts sold to OEMs and into the aftermarket | Uno Minda, Endurance Technologies, Craftsman Automation, Pricol, Lumax Auto, Belrise Industries |
-| **Tyres** | OEM fitment plus replacement demand | tyre manufacturers |
+| **Tyres** | OEM fitment plus replacement demand | MRF, Apollo Tyres, CEAT, JK Tyre, Balkrishna Industries (BKT) |
 | **Batteries** | Automotive and industrial batteries; increasingly EV-linked | Exide Industries, Amara Raja Energy |
 
 Compare within a category. A 2W maker's 18% EBITDA margin and a component supplier's 13% are not the same

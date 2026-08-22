@@ -14,9 +14,9 @@ occupancy and revenue per patient. They share almost no metrics, so classify bef
 | **Formulations — Domestic (IPM)** | Branded generics for India; brand and distribution-driven, no price erosion | Mankind, Torrent, Eris, Alkem (domestic arm) |
 | **API / Intermediates** | Active ingredients sold to formulators | Divi's, Laurus Labs, Neuland, Supriya Lifescience |
 | **CDMO / CRO** | Contract development and manufacturing for innovators | Divi's, Sai Life Sciences, Anthem Biosciences, Laurus (CDMO arm), Gland Pharma |
-| **Hospitals** | Multi-specialty and single-specialty care | listed hospital chains |
+| **Hospitals** | Multi-specialty and single-specialty care | Manipal Health, Fortis, Global Health (Medanta), KIMS, Rainbow Children's, Yatharth |
 | **Diagnostics** | Pathology and imaging chains | listed diagnostics chains |
-| **MedTech** | Devices and equipment | listed device makers |
+| **MedTech** | Devices and equipment | Poly Medicure, and listed device makers |
 
 **CDMO vs non-CDMO classification recurs as an explicit section** in existing reports, and for good
 reason: CDMO revenue is contracted, relationship-based and less exposed to price erosion, so it deserves
