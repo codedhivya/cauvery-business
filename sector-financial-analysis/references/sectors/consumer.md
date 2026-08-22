@@ -19,7 +19,9 @@ metric set.
 | **Textiles** | Yarn, fabric, garments | KPR Mill, Nitin Spinners, Vardhman-type spinners |
 | **Hospitality** | Hotels | IHCL, EIH (Oberoi), Chalet, Lemon Tree, Juniper, SAMHI, ITC Hotels |
 | **Leisure** | Amusement parks, experience venues | park operators |
-| **Jewellery** | Organised gold retail | listed jewellery chains |
+| **Jewellery — retailer** | Organised gold and diamond retail to consumers | listed jewellery chains |
+| **Jewellery — B2B manufacturer** | Makes and supplies to other brands or overseas buyers. **Order-driven, no store network**, so footfall and SSSG do not apply | listed jewellery manufacturers |
+| **Jewellery — LGD exporter** | Lab-grown diamond production for export. **Priced and cycled unlike natural stones**, and exposed to destination tariffs | Goldiam International |
 
 Cross-category comparison within consumer is meaningful only on universal metrics (revenue growth,
 EBITDA margin, PAT). Do not rank a hotel's occupancy against a mill's capacity utilisation.
@@ -63,6 +65,12 @@ All of them convert consumer demand into revenue, but the lever differs:
   especially, since inventory is gold.
 
 ### Jewellery — the mix metrics that decide margin
+
+**Classify first: retailer, B2B manufacturer, or LGD exporter.** The corpus splits its jewellery
+coverage three ways and the metrics do not transfer. A retailer is read on footfall, SSSG and studded
+ratio; a B2B manufacturer on order book, client concentration and export destination — **it has no
+stores, so retail metrics are meaningless for it**; an LGD exporter on LGD share, realisation per carat
+and tariff exposure.
 
 Revenue growth in jewellery is mostly gold price, not business performance. Two mix numbers separate
 them:
@@ -281,7 +289,8 @@ Total 100%.
 | Cane FRP/SAP revision | input cost, margin | crush volume, cane cost per tonne |
 | Ethanol blending target or price revision | diversion economics | distillery capacity, ethanol revenue share |
 | Cotton price move | input cost, spread | raw-material share of cost, inventory position |
-| Gold price move (jewellery) | inventory gains/losses, demand | inventory value, hedging policy |
+| Gold price move (jewellery) | inventory gains/losses, demand | inventory value, hedging policy, gold-on-lease share |
+| **BIS hallmarking / purity rules** | compliance cost, and a shift of share toward organised players | organised vs unorganised positioning |
 | Monsoon / rural demand shift | volume growth, mix | rural revenue share |
 | Tourism disruption or travel restriction | occupancy, ARR | leisure vs business mix, city concentration |
 | Import duty change on finished goods | competitive pressure, pricing | import share of the category |
