@@ -19,6 +19,7 @@ capacity and tariff.
 | **Oil & Gas — Upstream** | Exploration and production | ONGC, Oil India |
 | **Oil & Gas — Downstream / OMC** | Refining and fuel marketing | IOC, BPCL, HPCL |
 | **Integrated Energy & Petchem** | Refining, petrochemicals and adjacent businesses | Reliance Industries |
+| **Coal mining** | Extracts and sells coal. **A mining business, not a generation one** — it sits upstream of the thermal IPPs and is judged on production, offtake and realisation mix | Coal India |
 | **Power Exchange** | Trading platform for electricity; a *market operator*, not a generator | IEX |
 
 The categories are measured on genuinely different bases. A generator is judged on capacity, PLF and
@@ -109,6 +110,33 @@ and near-zero marginal cost, and is analysed like a market infrastructure compan
 - **RoNW (Return on Net Worth)** — net profit ÷ net worth. Quoted in IPO offer documents and
   required in prospectus disclosure, so it appears whenever a company in this sector lists. Report
   it alongside the sector's usual return measure rather than in place of it.
+
+### Coal mining
+
+**Upstream of everything else in this file, and priced under two regimes at once.** Do not read a miner
+on PLF or PPA metrics — it has neither.
+
+- **Production vs offtake (MT)** — coal mined versus coal actually despatched. **They diverge**, and the
+  gap is pithead stock: production without evacuation is inventory, not revenue.
+- **The two-price structure — the defining fact.** Most volume moves at **administered FSA (Fuel Supply
+  Agreement) prices** to power producers; a smaller share sells at **e-auction**, where the price is
+  market-set and typically far above FSA. **Realisation is therefore a mix outcome, not a price**: the
+  e-auction share drives earnings far more than total volume does. Always state the split.
+- **E-auction premium (%) over notified price** — the profit swing factor, and the number to track.
+- **Grade / GCV mix** — higher-grade coal earns more; a mix shift moves blended realisation with no
+  volume change at all.
+- **Evacuation and rake availability** — rail logistics is the recurring physical bottleneck between
+  production and offtake.
+- **Stripping ratio and overburden removal** — the cost driver in opencast mining, and a leading
+  indicator of future cost per tonne.
+- **Employee cost per tonne** — unusually large for a state-owned miner, and often the main cost lever.
+
+**What to watch**: is offtake keeping pace with production, or is pithead stock building? Which way is
+the **e-auction share** moving? Is the notified price revised? What is happening to rake availability?
+
+**Cross-read with the thermal IPPs in this same file** — the miner's realisation and the generator's fuel
+cost are two sides of one number, so a policy change that helps one hurts the other. Say so explicitly
+rather than analysing them in isolation.
 
 ## 4. Benchmarks — what good looks like
 

@@ -204,6 +204,49 @@ the mixed-reporting-season convention.
 
 ---
 
+## Taxonomy audit — how sector categories should be derived
+
+Prompted by the REIT/InvIT rebuild (ADR-0012), all 17 sector files were audited against the reports they
+were built from, asking one question: **does the file's category taxonomy match how the corpus actually
+compares its subjects?**
+
+**13 of 17 passed.** Insurance (Life / Health / General / TPA), banking (PSU / Private / SFB),
+capital-markets (Exchange / Depository / RTA / Broker / AMC / Fund) and others match the corpus exactly —
+in several cases the report *filenames* carry the taxonomy directly.
+
+**Cement passed on a point worth recording**: its taxonomy is plant type (integrated vs grinding), but
+its *organising* axis is regional, and the file already leads with that — "a regional business
+masquerading as a national one". A secondary taxonomy is fine as long as the primary axis is the one the
+corpus reasons in.
+
+**Four findings**, three of the same kind:
+
+| Sector | Finding | Evidence |
+|---|---|---|
+| `reit-invit` | Taxonomy built on the wrong axis — a flat list of asset types instead of the author's REIT-vs-InvIT split | ADR-0012 addendum 2 |
+| `nbfc-hfc` | **NBFC-MFI missing entirely** — zero mentions of microfinance, PAR or collection efficiency | a dedicated MFI sector report (182 KB) |
+| `chemicals` | **Recycling missing entirely** — zero mentions of EPR or scrap spread | a dedicated recycling sector report |
+| `power-energy` | **Coal mining missing entirely** — a miner is not a generator, and has no PLF or PPA | a Coal India report |
+
+The three "missing entirely" cases share a cause: the sector was built from the *majority* of its
+reports, and a single report covering a distinct business model was absorbed into the nearest category
+instead of getting one. **A sector with N reports needs each report's business model represented, not
+the modal one.**
+
+**The rule this establishes**: derive a sector's taxonomy from **how the corpus compares its subjects**,
+not from how the subjects could plausibly be sorted. The plausible sort for trusts was by underlying
+asset, and it was analytically sterile — it could not express that a REIT is perpetual and an InvIT runs
+off. The author's sort was by vehicle, and it carried the insight.
+
+**How to re-run this audit** after adding reports:
+
+```bash
+python3 scripts/audit_corpus.py     # flags unbuilt sectors and undefined metrics
+```
+
+Then, for any sector with a new report, check by hand that the report's business model appears in the
+sector file's section 1 — the script checks metrics, not taxonomy.
+
 ## Deferred
 
 - **Export bundles** (`scripts/build_exports.py`) for ChatGPT / Gemini — waits until the subscriber

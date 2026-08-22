@@ -19,6 +19,7 @@ low-cost-funding moat. That single difference drives most of what follows.
 | **Housing Finance (HFC)** | Home loans — prime, affordable, or self-employed segments | LIC Housing Finance, PNB Housing, Can Fin Homes, Bajaj Housing Finance |
 | **Affordable Housing Finance** | Smaller-ticket, higher-yield, often self-employed borrowers | Aavas, Aadhar Housing, Home First, Shelter |
 | **Infrastructure / Sectoral financier** | Lending to a defined sector, often government-linked | PFC, REC, IREDA |
+| **NBFC-MFI (microfinance)** | Small, unsecured, joint-liability group loans to low-income borrowers. **A separate RBI licence category**, not a small NBFC | CreditAccess Grameen, Spandana Sphoorty, Fusion |
 | **Financial services platform** | Emerging diversified financial platforms | Jio Financial Services |
 
 Compare within a category by default. An affordable HFC's 13% yield and a prime HFC's 9% are not the
@@ -70,6 +71,32 @@ The four axes:
   where **Stage 2 (significant increase in credit risk, not yet impaired) is the early-warning bucket** —
   more informative than GNPA, and frequently overlooked.
 - **Credit cost (%)** — provisions as % of average AUM. What asset quality actually costs earnings.
+
+### Microfinance (NBFC-MFI) — a different vocabulary
+
+**Do not read an MFI on GNPA alone.** Loans are small, unsecured and repaid weekly or fortnightly, so
+stress shows in the ageing buckets long before it reaches a 90-day NPA. The corpus uses:
+
+- **PAR 30 / PAR 60 / PAR 90 (Portfolio at Risk)** — share of portfolio overdue past each ageing bucket.
+  **The primary asset-quality metric**, and the early-warning one; PAR 30 turns first.
+- **Collection efficiency (%)** — current collections against dues. The weekly-cycle health check; a fall
+  here precedes a PAR rise by a quarter or less.
+- **GLP (Gross Loan Portfolio)** — the MFI's term for AUM.
+- **Credit cost** — structurally higher and **far lumpier** than in secured lending. Judge across a
+  cycle, never on one quarter.
+- **Borrower count, ticket size, loans per borrower** — rising loans per borrower is an over-indebtedness
+  signal, and the sector's repeated failure mode.
+- **District and state concentration** — MFI stress is geographic and correlated. A book concentrated in
+  a few districts is exposed to one flood, one crop failure, one local political intervention.
+- **Write-offs** — read with PAR. Aggressive write-off flatters PAR; state them together.
+
+**Regulatory frame**: RBI microfinance rules cap lending against assessed household income and total
+indebtedness, and set a qualifying-asset share. **MFIN** publishes industry portfolio and PAR data — a
+real Tier-2 source for the denominator. Confirm current thresholds at source.
+
+**The failure mode to name**: microfinance crises are not gradual. Collection efficiency drops, PAR 30
+spikes, credit cost follows a quarter later. State geographic concentration whenever asset quality looks
+benign.
 - **Borrowing mix** — bank borrowings vs NCDs vs commercial paper vs ECBs vs deposits (where a
   deposit-taking NBFC is permitted). **Heavy short-term CP reliance is a red flag** for refinancing risk.
 - **ALM position** — cumulative mismatch by maturity bucket. Disclosed in the annual report and worth

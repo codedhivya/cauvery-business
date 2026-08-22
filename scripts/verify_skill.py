@@ -130,8 +130,10 @@ def main():
 
     failures = []
     lines = []
+    ran = []
 
     def check(group, name, ok, detail=""):
+        ran.append(name)
         if not ok:
             failures.append(f"{group}: {name}{' — ' + detail if detail else ''}")
         if not args.quiet or not ok:
@@ -236,7 +238,7 @@ def main():
         print("\nSee docs/adr/ for why each contract exists.")
         return 1
 
-    print(f"All {len([l for l in lines if l.strip().startswith(('PASS','FAIL'))])} checks pass.")
+    print(f"All {len(ran)} checks pass.")
     print("\nNot covered here: whether the router triggers unprompted. That needs a")
     print("session that did not author the files — see the fresh-session questions")
     print("in MAINTENANCE.md.")

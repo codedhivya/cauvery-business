@@ -16,6 +16,7 @@ are not comparable on margin, growth or valuation.**
 | **Commodity chemicals** | Standardised products priced off feedstock spreads; cyclical | bulk chemical producers, and the commodity portion of diversified players |
 | **Fertilisers** | Urea, NPK, complexes. **Realisation is administered, not market-set**; subsidy is a receivable, not revenue quality | urea and complex fertiliser producers |
 | **Plastic pipes & fittings** | PVC/CPVC pipes for plumbing and agriculture; a building-materials business exposed to PVC resin cost | Finolex Industries, Supreme Industries, Astral |
+| **Recycling / circular materials** | Recovers plastic, aluminium, battery and metal scrap into saleable feedstock. **A spread business with a regulatory demand driver**, not a chemistry business | listed plastic and metal recyclers |
 | **Decorative paints** | Branded consumer product with distribution moat; a consumer business in chemical clothing | Asian Paints, Berger |
 
 **Two categories are arguably not "chemicals" in behaviour.** Plastic pipes are a building-materials
@@ -87,6 +88,28 @@ reach is the moat, and volume growth versus value growth is the key read, exactl
 - **Inventory gain/loss on resin** — separate it from operating margin, as with refiners.
 - **Dealer network size and reach**, **distribution expansion** — the paints moat.
 - **Value growth vs volume growth** — for paints, the FMCG-style decomposition.
+
+### Recycling / circular materials
+
+**This is a spread business whose demand is created by regulation.** It does not behave like the rest of
+this file, and the specialty-versus-commodity margin framing does not apply.
+
+- **Spread** = realisation on recycled output − scrap procurement cost. **The single metric**; volume
+  without spread is activity, not profit.
+- **Scrap procurement cost and availability** — a fragmented, informal supply chain, so **secured
+  collection is the real constraint** and the main barrier to entry.
+- **Recovery yield (%)** — output tonnes per tonne of scrap fed. Small yield differences move margin
+  sharply at these spreads.
+- **EPR (Extended Producer Responsibility) credits** — obligated producers must fund recycling of what
+  they put into the market, so **EPR creates contracted demand and a tradeable credit price**. State EPR
+  revenue separately: it is policy-derived income, and it moves with enforcement, not with the market.
+- **Installed vs operating capacity, and utilisation** — capacity is easy to announce and hard to feed.
+- **Stream mix** — plastic (PET, rigid), aluminium, lead-acid and lithium battery, and ferrous scrap
+  each have different spreads, regulation and cyclicality. **Never blend them into one margin.**
+
+**What to watch**: is the spread holding, or is scrap cost rising into a fixed output price? Is EPR
+enforcement tightening or loosening — the demand switch? Is announced capacity actually being fed? How
+much of revenue is EPR credits rather than material sales?
 
 ## 4. Benchmarks — what good looks like
 

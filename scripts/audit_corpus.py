@@ -36,14 +36,16 @@ MANIFEST = os.path.join(ROOT, "docs", "corpus-manifest.json")
 
 # Sector keyword map — mirrors the taxonomy in MAINTENANCE.md. Extend when adding a sector.
 SECTOR_KEYWORDS = {
+    # capital-markets before banking: "sbiamc" is an asset manager, and a bare
+    # "sbi" would otherwise claim it. First match wins, so order carries meaning.
+    "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss",
+                        "ipo_fund", "uti_nippon", "kfintech", "cams"],
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib"],
     # note: "rec" alone would match "Recycling"; use the paired filename form instead
     "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jiofinancial", "jio_financial", "mfi", "microfin"],
     "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici"],
     # note: bare "ipo" over-matches — a hospital IPO is pharma-health and a solar IPO is
     # power-energy. Only IPO *funds* and IPO-market reports belong here.
-    "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss",
-                        "ipo_fund", "uti_nippon", "kfintech", "cams"],
     "it-services": ["it_services", "tcs", "hcl", "infoedge", "fractal"],
     "pharma-health": ["pharma", "drreddys", "medtech", "hospital", "gland", "generic",
                       "laurus", "neuland", "divislabs", "lupin", "cipla", "torrent"],
