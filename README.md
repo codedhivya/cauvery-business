@@ -167,13 +167,21 @@ python -m scripts.package_skill /path/to/cauvery-business/sector-financial-analy
 
 The resulting `.skill` is a build artifact and is gitignored — distribute it via GitHub Releases.
 
-## Mirroring published reports
+## Syncing published reports
+
+`reports/published/` mirrors the Pages site. To bring it up to date after new reports are published —
+save the member portal page from your browser, then:
 
 ```bash
-python scripts/download_reports.py docs/report_dashboard_urls.txt
+python3 scripts/sync_reports.py ~/Downloads/"CB Research — Member Portal.html"
+python3 scripts/audit_corpus.py
 ```
 
-Downloads into `reports/published/`.
+The first downloads only what's missing. The second tells you whether the new reports introduce a sector,
+metric or section the skill doesn't yet cover — findings are advisory, a human decides what to fold in.
+Once folded in, `python3 scripts/audit_corpus.py --accept` baselines them as reviewed.
+
+`scripts/download_reports.py` remains for re-downloading from an explicit URL list.
 
 ---
 

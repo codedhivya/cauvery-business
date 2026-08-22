@@ -146,6 +146,34 @@ or the owning sector file, and each sector's CB Rating substitution table totals
 
 ---
 
+## Syncing new published reports
+
+The published collection is a local mirror of the Pages site. When reports are added there, the mirror
+falls behind — and since the sector files were built from that mirror, anything it hasn't seen is
+knowledge the skill doesn't have.
+
+```bash
+# 1. save the member portal page from the browser, then:
+python3 scripts/sync_reports.py ~/Downloads/"CB Research — Member Portal.html"
+
+# 2. find out whether the new reports introduce anything the skill lacks
+python3 scripts/audit_corpus.py
+
+# 3. fold in what belongs (a human decides — findings are advisory), then:
+python3 scripts/audit_corpus.py --accept
+
+# 4. if step 3 changed the skill:
+python3 scripts/verify_skill.py
+```
+
+Step 1 downloads only what's missing and rewrites `docs/report_dashboard_urls.txt`. A 404 there is a
+broken link on the portal itself — worth fixing at the source, since members hit it too.
+
+Step 2 is the one that matters. It flags **unbuilt sectors**, **metrics not defined** in the matching
+sector file, **sections no mode covers**, and **unknown CSS classes**. Not everything it flags needs
+acting on — a new metric may deserve a sector-file entry, or may be a one-off the author chose. Extend
+`SECTOR_KEYWORDS` in the script whenever a sector is added.
+
 ## When a report arrives that the skill didn't generate
 
 Reports written by hand — by a colleague, or before the skill existed — often carry knowledge the skill
