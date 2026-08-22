@@ -94,6 +94,29 @@ stress shows in the ageing buckets long before it reaches a 90-day NPA. The corp
 indebtedness, and set a qualifying-asset share. **MFIN** publishes industry portfolio and PAR data — a
 real Tier-2 source for the denominator. Confirm current thresholds at source.
 
+### Financial-services platforms — a holding company, not a lender
+
+A diversified platform is **a portfolio of businesses, several of them joint ventures**, not a loan book
+with a spread. Reading it as an NBFC produces nonsense: its consolidated NIM is meaningless, and its
+reported profit may be dominated by treasury income on undeployed capital rather than by operations.
+
+- **Break it out by business.** Lending, asset management, broking, insurance broking, payments — each
+  with its own revenue, its own economics and its own regulator. A single blended margin hides all of it.
+- **Ownership of each piece** — wholly owned, majority, or a JV. **State the stake**, because a 50% JV
+  contributes to value very differently from a consolidated subsidiary, and JV economics often sit below
+  the operating lines.
+- **Which businesses are actually operating** versus announced. Platforms are typically announced years
+  before they earn; treat a launched JV and a signed MoU as different things and say which is which.
+- **Treasury income share of profit** — a newly demerged or capital-rich platform can post most of its
+  profit from investing its own cash. **Strip it out to see the operating business.**
+- **Lending book metrics** apply only to the lending arm — AUM, spread, credit cost — and must be scoped
+  to it, never to the consolidated entity.
+
+**Valuation is sum-of-the-parts, not P/B.** Value each business on its own basis — the lending arm on
+book, the asset manager on AUM or earnings, the broking arm on its own multiple — then net holding-company
+discount. **A single P/B on the consolidated entity is not meaningful**, and a P/E is distorted by
+treasury income and by JV accounting.
+
 **The failure mode to name**: microfinance crises are not gradual. Collection efficiency drops, PAR 30
 spikes, credit cost follows a quarter later. State geographic concentration whenever asset quality looks
 benign.

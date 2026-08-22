@@ -62,6 +62,48 @@ All of them convert consumer demand into revenue, but the lever differs:
 - **Inventory days / working capital** — retail and jewellery are working-capital intensive; jewellery
   especially, since inventory is gold.
 
+### Jewellery — the mix metrics that decide margin
+
+Revenue growth in jewellery is mostly gold price, not business performance. Two mix numbers separate
+them:
+
+- **Studded ratio (%)** — studded (diamond-set) as a share of sales. **The margin metric.** Plain gold
+  carries thin, near-commodity margin; studded carries several times more. A quarter of strong revenue
+  growth with a falling studded ratio is weaker than it looks.
+- **Making charges** — the value-added fee on gold, and the pricing lever that does not depend on the
+  metal price.
+- **Lab-grown diamonds (LGD)** — a structural shift, not a product line. Prices behave nothing like
+  natural stones, so **state LGD share of revenue or exports separately**, never blended into a
+  "diamond" line. An exporter can be LGD-dominant while a domestic retailer is barely exposed.
+- **Carat volumes** alongside value, so price and quantity are separable.
+- **Store count and format** — own vs franchised, and **e-commerce share of revenue**, which carries a
+  different margin and working-capital profile from a store.
+- **Old-gold exchange share** — a large share flatters volumes without new metal demand.
+
+**For an exporter, add tariff and destination exposure**: share of revenue by destination market, and any
+tariff-mitigation structure. Where a period's other income contains a one-off — a tariff refund, for
+instance — **report the steady-state margin excluding it alongside the reported one**, as the corpus
+does. A margin expansion driven by a refund is not operating improvement.
+
+### Dairy
+
+Dairy is a **procurement-led** business. Its margin is set upstream, at the farm gate, before anything is
+sold.
+
+- **Milk procurement price and volume (LLPD)** — the dominant cost, largely uncontrollable, and the
+  driver of margin direction. Track the spread between procurement cost and realisation.
+- **Flush vs lean season** — procurement is seasonal. Milk is abundant and cheap in flush, scarce and
+  expensive in lean, so **quarters are not comparable year-on-year without naming the season**.
+- **VAP (value-added products) share** — curd, paneer, cheese, beverages, as a share of revenue. **The
+  single most important mix metric.** Liquid milk is close to a pass-through; VAP carries the margin, so
+  a rising VAP share is the whole equity story.
+- **Cold chain and chilling capacity** — the physical constraint on both procurement reach and VAP,
+  and where the capex goes.
+- **Shelf life by product** and distribution reach — fresh products need daily replenishment and a denser
+  network than ambient FMCG.
+- **Farmer network size** — the real barrier to entry; a procurement network takes years to build and
+  cannot be bought quickly.
+
 ### Hospitality and leisure
 
 - **Occupancy (%)** — rooms sold ÷ rooms available.
