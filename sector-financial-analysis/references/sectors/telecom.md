@@ -105,11 +105,19 @@ Among the most regulated sectors here, and regulation has repeatedly reshaped it
 |---|---|
 | Sector regulator | **TRAI** — tariff, quality of service, and the authoritative subscriber and ARPU data |
 | Licensing, spectrum, AGR | **DoT (Department of Telecommunications)** |
+| **Licence Fee (LF)** | **3% of AGR** — paid simply to hold the licence *(as at 2026; confirm at source)* |
+| **USO / Digital Bharat Nidhi** | **5% contribution**, a **separate line** from the licence fee — do not fold the two into one levy | 
 | Spectrum auctions | DoT — pricing, quantum, deferred payment terms |
 | AGR dues | Supreme Court rulings and DoT-set payment schedules; moratoria and conversion options have been extended before |
 | Right of way | state-level; affects fibre and tower rollout cost |
 | Data and privacy | DPDP Act; lawful-intercept obligations |
 | Industry data | **TRAI** monthly subscriber and quarterly performance reports — the sector's best public data source |
+
+
+**AGR is the number the levies sit on, which is why its definition was the whole fight.** The 2019
+Supreme Court ruling on what counts as adjusted gross revenue reshaped every balance sheet in the sector
+overnight, converting a definitional question into multi-year liabilities. When quoting a levy, state it
+as a **percentage of AGR** and say which revenue base is in scope — a levy rate is meaningless without it.
 
 **AGR and spectrum policy decisions move this sector more than operating performance does**, especially
 for the weaker operator. Track DoT and Supreme Court developments as first-order events.

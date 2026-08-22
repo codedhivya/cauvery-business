@@ -204,6 +204,28 @@ the mixed-reporting-season convention.
 
 ---
 
+## Regulatory depth by sector — uneven, and deliberately so
+
+Section 5 of each sector file is a regulatory quick reference, but how *concrete* it is varies:
+
+| Depth | Sectors | Why |
+|---|---|---|
+| **Hard thresholds** | banking (CRAR 11.5%, CET-1 8%, LCR ≥100%, PSL 40%), insurance (solvency 150%), reit-invit (sponsor 15%/25%, lock-in, SM REIT bands), telecom (LF 3% of AGR, USO 5%), power-energy (ALMM List I/II/III timeline) | the corpus established them |
+| **Rule and regulator only** | capital-markets, pharma-health, and others | the corpus names the rule but carries no threshold — TER slabs and DPCO ceilings appear as events, not values |
+
+**The gap is intentional.** A regulatory threshold invented from memory is among the most damaging errors
+the skill can make: it reads as authoritative, the reader cannot check it, and it can flip a conclusion
+about compliance. Where the corpus did not establish a number, the file names the rule and the regulator
+and leaves the number to be sourced.
+
+The discipline that makes this safe is universal, so it lives in `source-hierarchy.md` under **Answering
+a regulatory question** rather than being copied into 17 files: start from the sector file, confirm at
+source for the period, check the published collection, and **if you cannot confirm, say the rule and say
+it is unconfirmed**. Always state the as-at date.
+
+**To deepen a sector**: find the threshold in a published report first. Do not fill these in from
+general knowledge — that is the failure mode this structure exists to prevent.
+
 ## Never point at the corpus for content the skill lacks
 
 A sector file may *cite* the corpus as justification — "a Raw Materials table, which recurs in existing

@@ -272,21 +272,60 @@ Indicative. Verify against the trust's own history, its category, and the prevai
 
 ## 5. Regulatory quick reference
 
-| Area | Body / rule |
-|---|---|
-| The vehicles | **SEBI (REIT) Regulations** and **SEBI (InvIT) Regulations** — the governing framework |
-| Distribution | Mandatory distribution of the large majority of NDCF, at a minimum frequency. **Verify the current percentage and frequency at source** — both have been amended |
-| Leverage | LTV cap on consolidated borrowings, with a **lower threshold above which credit rating and unitholder approval are required**. Verify current thresholds |
-| Asset composition | Minimum share in completed, revenue-generating assets; caps on under-construction exposure |
-| Valuation | Independent valuer, at a mandated frequency; NAV is a valuer's number, not a market price |
-| **Sponsor obligations** | **A minimum sponsor unitholding applies at all times**, set separately for REITs and for InvITs, with lock-in rules on top. Confirm the current percentage at source. A sponsor reducing its stake is flagged in the corpus as a **key investor risk** — check current holding against the requirement and against its own history |
-| **SM REITs** | A separate SEBI framework: assets **₹50–500 crore**, **each scheme separately listed**, ₹10 lakh minimum investment, sponsor holds a minimum share for a lock-in period. **Analyse per scheme, not per trust** — schemes do not cross-subsidise |
-| Related-party acquisitions | Unitholder approval and independent valuation requirements — the main governance pressure point, since sponsors commonly sell assets into their own trust |
-| Taxation | **Distribution is taxed by component** in the unitholder's hands — interest, dividend, rental, capital return. State the split; it materially changes post-tax yield |
-| Underlying assets | The asset's own regulator still applies — **CERC** for transmission, **NHAI** concession terms for roads, **RERA** where relevant to the underlying property |
+Both vehicles are governed by SEBI: the **SEBI (Real Estate Investment Trusts) Regulations, 2014** and
+the **SEBI (Infrastructure Investment Trusts) Regulations, 2014**, amended repeatedly to align them with
+equity-market norms.
 
-Regulatory detail here changes more often than in most sectors. **Treat every threshold as requiring
-confirmation at source for the period being analysed** — see section 7.
+**Values below carry an as-at date. State it whenever you quote one, and confirm against the current
+Master Circular** — this is the fastest-moving regulatory area in the skill, and a stale threshold
+presented as current is worse than saying you did not check.
+
+### Sponsor obligations — the governance core
+
+The **sponsor** settles the trust and transfers assets into it — typically the developer or
+infrastructure company that built them, often alongside a financial partner. Because the sponsor both
+sells assets to the trust and holds units in it, sponsor rules are where the investor protection sits.
+
+| Rule | REIT | InvIT | As at |
+|---|---|---|---|
+| **Minimum sponsor unitholding** | **15%** of outstanding units, held by sponsor and group **at all times** — a perpetual requirement (**Reg. 11**) | **15%**, rising to **25%** if the project manager is **not** the sponsor or a sponsor associate (**Reg. 12**) | 2026 |
+| **Lock-in** | **15%** of units allotted to sponsor and sponsor group locked in for **3 years** from trading approval; the remainder for **1 year**. If the project manager is not sponsor/associate, **25% for 3 years** | same structure | amended 28 Mar 2025 |
+| **Inter-se transfer** | Locked-in units **may** be transferred within the sponsor group; lock-in continues with the transferee for the remaining period | same | introduced 2025 |
+
+**What changed and why it matters**: the lock-in was previously 25% of *total unit capital* for 3 years.
+It now applies to **units allotted to the sponsor**, which is a material easing — it frees sponsors to
+raise capital through new unit issuances. Read that alongside dilution: easier issuance is good for the
+trust's growth and potentially bad for per-unit distribution.
+
+**A sponsor reducing its holding toward the floor is flagged in the corpus as a key investor risk.**
+Check current holding against the minimum, and against its own history.
+
+### The rest of the framework
+
+| Area | Rule | As at |
+|---|---|---|
+| **Distribution** | Distribute at least **90% of NDCF**. REITs **quarterly**; InvITs at minimum half-yearly, though most pay quarterly | 2026 |
+| **Leverage** | LTV cap on consolidated borrowings, with a **lower threshold above which credit rating and unitholder approval are required**. Confirm both numbers at source | — |
+| **Asset composition** | Minimum share held in completed, revenue-generating assets; caps on under-construction exposure | — |
+| **Valuation** | Independent valuer at a mandated frequency. **NAV is a valuer's number, not a market price** | — |
+| **Related-party acquisitions** | Unitholder approval plus independent valuation. The main governance pressure point, since sponsors commonly sell assets into their own trust | — |
+| **SM REITs** | Separate framework: assets **₹50–500 crore**, **each scheme separately listed**, **₹10 lakh** minimum investment, sponsor holds a minimum share for a lock-in period. **Analyse per scheme** | 2026 |
+| **SEBI classification** | REITs classified as **equity**; InvITs as a **hybrid** instrument. Affects index inclusion and which institutions may hold them | 2026 |
+| **Taxation** | Distribution taxed **by component** in the unitholder's hands — interest, dividend, rental, capital return. State the split; it changes post-tax yield materially | — |
+| **Underlying assets** | The asset's own regulator still applies — **CERC** for transmission, **NHAI** concession terms for roads, **RERA** where relevant | — |
+
+**Recent amendment vehicles to check for changes**: the **April 2025 Amendment Regulations** and the
+**28 March 2025 Master Circular**, which between them covered sponsor lock-in, follow-on offers and
+unit-based employee benefit schemes. Anything later supersedes both.
+
+### How to answer a regulatory question
+
+1. **Start from this table** — it gives the rule, the regulation number and the as-at date.
+2. **Confirm against SEBI** for the period being analysed. Section 7 has the search phrasing.
+3. **If the published collection carries a report covering the framework, lead with it and link it** —
+   it is author-verified and will usually be more current than a remembered threshold.
+4. **If you cannot confirm, say the rule and say it is unconfirmed.** Never present an unverified
+   threshold as current.
 
 ## 6. Per-mode specifics
 

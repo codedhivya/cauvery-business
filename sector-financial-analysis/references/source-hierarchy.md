@@ -124,3 +124,28 @@ doesn't tell an investor anything.
 - Every artifact footer states that it is for research/educational purposes and is not investment advice.
 - These outputs may be published to readers who will not independently verify them. That raises the
   stakes on every rule above rather than relaxing any of them.
+
+## Answering a regulatory question
+
+Sector files carry a **regulatory quick reference** (section 5). How complete it is varies by sector —
+banking and insurance carry hard thresholds (capital ratios, solvency floors); others name the rule and
+the regulator without the numbers, because the corpus did not establish them.
+
+**Never close that gap from memory.** A regulatory threshold stated confidently and wrongly is among the
+most damaging errors possible here: it reads as authoritative, a reader cannot check it, and it can
+change a conclusion about whether a company is compliant.
+
+1. **Start from the sector file.** It gives the regulator, the rule, and — where known — the regulation
+   reference and an as-at date.
+2. **Confirm at source for the period being analysed.** The regulator's own circular or master direction
+   is Tier 1. A number carried in a sector file is a *starting point*, not a citation.
+3. **Check the published collection.** If a report covers the framework, it is author-verified and is
+   usually more current than a remembered threshold. Lead with it and link it.
+4. **If you cannot confirm it, say the rule and say it is unconfirmed.** "SEBI caps leverage for these
+   trusts; I have not verified the current threshold" is a good answer. A confidently wrong percentage
+   is not.
+5. **Always state the as-at date** alongside any threshold. Regulation moves; an undated rule silently
+   becomes wrong.
+
+**Where a sector file carries a dated value, treat the date as part of the fact.** If it is old relative
+to the period being analysed, re-source before using it.

@@ -182,6 +182,9 @@ Heavily regulated, and policy is frequently the largest single earnings driver.
 | Petroleum and gas regulation | **PNGRB** |
 | Fuel pricing | nominally deregulated; subject to informal restraint in practice |
 | Renewable purchase obligations | RPO targets on discoms and obligated entities |
+| **ALMM List-I** | Modules. In force 2021, **reinstated 2024** — only ALMM-listed modules may be used in government-linked projects *(as at 2026)* |
+| **ALMM List-II** | **Cells.** In force **1 June 2026**; effectively requires integrated manufacturing. **MNRE extended the List-II timeline on 18 July 2026** — check the current position before relying on it |
+| **ALMM List-III** | **Wafers and ingots, indicated by 2028.** The furthest-upstream requirement, and the main execution risk for manufacturers whose ingot capex is not yet committed |
 
 Levels and lists change frequently — check the current notification rather than carrying a figure forward.
 
