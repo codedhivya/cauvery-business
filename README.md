@@ -62,6 +62,72 @@ VNB/Combined Ratio.
 **Adding a sector means writing one file.** No mode file changes — insurance and banking sit at opposite
 ends of the metric spectrum and both run on the unmodified modes.
 
+## What you can ask
+
+Ask in plain language — you don't need to name the skill, a mode, or a sector. The router works out which
+sector file to load, which mode applies, and whether you want an answer or a document.
+
+### Just ask — you get an answer in chat
+
+The default. Concept questions, single figures, quick reads. No file is produced.
+
+| Ask | What you get |
+|---|---|
+| `what is CASA and why does it matter` | The metric explained, with benchmarks and why it's a moat |
+| `explain GNPA vs NNPA vs slippage` | Plain English, with which one actually matters |
+| `what was HDFC Life's VNB margin last quarter` | The figure, sourced |
+| `how did SBI do` | A short read on the quarter |
+| `why do insurers use VNB instead of profit` | The reasoning, with a worked example |
+| `is Dixon's 3% EBITDA margin bad` | No — with the EMS value-ladder explaining why |
+
+Twenty questions in a row produce twenty answers, not twenty files.
+
+### Ask it to build — you get an HTML report in `reports/staging/`
+
+Say "build", "report", "dashboard", or ask for a full comparison.
+
+| Mode | Ask like this |
+|---|---|
+| `dashboard` | `build me a dashboard for the top 3 private banks` |
+| `financials` | `detailed Q1 financials for Sun Pharma and Cipla` |
+| `charts` | `chart Tata Steel vs JSW Steel EBITDA per tonne` |
+| `business-profile` | `how does Bajaj Finance actually make money — full writeup` |
+| `segments` | `revenue by segment for Reliance` |
+| `valuation` | `valuation comparison across the top 4 IT companies` |
+| `swot` | `SWOT on Asian Paints` |
+| `moats` | `what's UltraTech's moat` |
+| `risks-outlook` | `risks and FY27 outlook for Vodafone Idea` |
+| `analyst-ratings` | `what are analysts saying about Lupin` |
+| `verdict` | `which is better — HDFC Bank or ICICI Bank` |
+| `cb-rating` | `rank the EMS companies on CB Score` |
+| `school` | `teach me how to read a bank's asset quality` |
+| `quarterly-report` | `full report on Polycab for Q1 FY27` |
+| `event-impact` | `how do the US generic tariffs hit Indian pharma` |
+
+### Scope — one company or many
+
+The same question works at four scopes, and the output adapts:
+
+- **One company** — `how did Tata Steel do this quarter`
+- **Head-to-head** — `compare Angel One and Groww`
+- **Sector sweep** — `Q1 FY27 across all listed cement companies`
+- **Cross-sector** — `rank Reliance, TCS and HDFC Bank` *(restricted to universal metrics — see below)*
+
+### What it will refuse
+
+Not gaps — deliberate limits, each for a reason:
+
+| Ask | Response |
+|---|---|
+| `should I buy Syrma SGS` | Declines the recommendation, gives the fundamentals read instead |
+| `compare HDFC Bank and Tata Steel on EBITDA` | Refuses — banks have no meaningful EBITDA; marks it "n/a — not comparable for this sector" |
+| `what's the P/E of the Edelweiss IPO fund` | A fund isn't valued on a multiple |
+| `what happened in the markets this week` | Not company evaluation — that's journalism |
+| `what's India's GDP growth` | Macro, not a company or sector — answers plainly without the skill |
+
+If no real brokerage view can be sourced, the Analyst Ratings section is **omitted** rather than invented.
+If a figure can't be found after a targeted search, it's marked **"Not disclosed"** rather than estimated.
+
 ## Workflow
 
 Generated output is a **draft**, never a publication:
