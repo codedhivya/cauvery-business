@@ -31,6 +31,16 @@ When genuinely ambiguous, **answer in chat first and offer the artifact**. That 
 sentence; the reverse — burying a one-line answer inside a generated HTML file they have to open — wastes
 their time and hides the answer.
 
+**A "full report" is the most expensive thing this skill does.** `quarterly-report` composes a dozen
+sections, each needing its own live sourcing, and takes many minutes. Before building one, **state the
+sections you are about to build and confirm** — one line, e.g. *"Full report = dashboard, financials,
+charts, business profile, segments, valuation, SWOT, moats, risks, analyst views, verdict, CB rating.
+Build all, or a subset?"* Skip the confirmation only if the person already named the sections.
+
+**Prefer the smallest artifact that answers the question.** A `dashboard` is a fraction of the cost of a
+full report and is usually what "how did X do" actually wants. Offer to add sections rather than
+building every section by default.
+
 **Either way — chat or artifact — check the published collection first.** If a published report already
 covers the company, sector or comparison being asked about, it is the author's own verified work and it
 outranks anything you would compose from the sector file alone. **Lead with what that report says, cite

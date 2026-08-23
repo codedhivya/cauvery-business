@@ -115,6 +115,7 @@ ROUTER_RULES = [
     ("event needs named companies",       ["named companies with a stated exposure basis"]),
     ("output is a draft until verified",  ["never into the published collection"]),
     ("chat path checks prior coverage",   ["either way — chat or artifact — check the published"]),
+    ("full report confirms scope first",  ["most expensive thing this skill does"]),
 ]
 
 
