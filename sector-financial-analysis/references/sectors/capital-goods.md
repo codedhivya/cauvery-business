@@ -276,7 +276,12 @@ record of order value and execution timeline.
 | MTAR Technologies | #6d28d9 | #f5f3ff |
 | INOX India | #15803d | #f0fdf4 |
 | Shakti Pumps | #ca8a04 | #fefce8 |
+| Shaily Engineering | #0e7490 | #ecfeff |
 | VA Tech Wabag | #0891b2 | #ecfeff |
+
+**Collision to watch**: Shaily Engineering and Syrma SGS both carry #0e7490, each established in a published
+report. They have never appeared together. If a single artifact ever covers both, re-roll one and record the
+new hue here rather than letting two companies share a hue in the same chart.
 
 ## 9. Sector-specific CSS
 

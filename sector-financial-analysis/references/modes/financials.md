@@ -52,3 +52,34 @@ sector" wherever a metric doesn't apply; sector-specific line items stay in thei
 
 Follow `output-conventions.md`. If someone only wants two or three figures conversationally, answer
 inline — this mode is for when they want the full table.
+
+## The table must tie
+
+**A financial table that does not reconcile is wrong — do not publish it and do not adjust the
+arithmetic to hide it.** Before the table ships, check every relationship it implies:
+
+- Revenue − operating expenses (+ other income, if the EBITDA definition includes it) = **EBITDA**
+- EBITDA − finance cost − depreciation = **profit before tax**
+- PBT × (1 − effective tax rate) = **PAT**
+- PAT ÷ diluted shares = **EPS**
+- Each margin = its numerator ÷ revenue
+- Each YoY and QoQ % = the two figures either side of it
+
+State the EBITDA definition being used, since "including other income" and "excluding" give different
+numbers and both appear in practice. Rounding may leave a trailing-decimal difference; **a whole-number
+gap is a sourcing error, not rounding.**
+
+### Never back-solve a line
+
+If a line item cannot be sourced, it is **"Not disclosed"**. Do not derive it from the lines around it so
+the column adds up.
+
+This is the most easily missed form of fabrication, because the output looks *more* correct than an
+honest one — the table ties, every cell is populated, nothing is flagged. A reader cannot tell a
+depreciation figure read from the filing from one reverse-engineered to make EBITDA reach PBT.
+
+**The tell is suspiciously round numbers.** Real filings give 13.87, not 14.0. A column of clean integers
+in a P&L is a signal to re-source, not a sign of a tidy business.
+
+Where a figure genuinely is derived — a margin, a growth rate, cash PAT — that is fine and expected.
+**Say which lines are as-reported and which are computed**, so the distinction survives into the output.

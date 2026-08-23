@@ -90,6 +90,30 @@ This is worth doing every time, for two reasons that are easy to miss:
    if your sourced figure disagrees with the published one for the same period, that disagreement is
    itself the finding, and worth surfacing rather than quietly resolving.
 
+### Record the check in the output
+
+**Every artifact states what prior coverage it found, in its `Source:` block:**
+
+```
+Prior CB Research coverage: <report name>, <period>   — or —   Prior CB Research coverage: none found
+```
+
+This is not decoration. The check is easy to skip and, when skipped, leaves no trace — the report looks
+complete either way. **Making the result visible is what makes the omission detectable**, by the author
+and by the reader.
+
+### Reconcile against the prior period
+
+Where a published report covers a period this artifact also shows — typically the year-ago or prior
+quarter comparison column — **its figures are the verified ones.** They were checked against the filing
+by a human before promotion; nothing you source independently carries that guarantee.
+
+- **They must agree.** If your sourced figure differs, **say so in the artifact** — state both, name the
+  published report, and flag it for the author. A quiet overwrite destroys the only human-verified
+  reference in the system.
+- **Do not copy figures forward** from the published report into the current period. The prior column is
+  a cross-check, not a data source — see **Prior-report continuity** below.
+
 ### Give the reader the link
 
 A published report is not just a cross-check for you — it is **the thing the reader most likely wants**.

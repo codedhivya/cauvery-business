@@ -100,6 +100,9 @@ GUARDRAILS = [
     ("universe sourced, not recalled",    "source-hierarchy.md",       ["are not the current universe"]),
     ("omit analysts if unsourceable",     "modes/analyst-ratings.md",  ["omit the section entirely"]),
     ("news digests excluded",             "modes/event-impact.md",     ["out of scope"]),
+    ("prior coverage stated in output",   "output-conventions.md",     ["prior cb research coverage"]),
+    ("P&L must tie, never back-solve",    "modes/financials.md",       ["never back-solve a line"]),
+    ("prior period reconciled",           "output-conventions.md",     ["they must agree"]),
     ("mixed reporting seasons handled",   "modes/quarterly-report.md", ["mixed reporting seasons"]),
 ]
 

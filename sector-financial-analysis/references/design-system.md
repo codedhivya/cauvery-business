@@ -264,3 +264,42 @@ more than a clean-looking table that quietly misleads.
 Every artifact ends with a compact footer carrying: the data as-of date, an explicit `Source:` line (see
 the source-hierarchy reference for the required format — source **plus date**), and the
 research/educational disclaimer stating this is not investment advice.
+
+## Table row emphasis and small components
+
+These recur across generated reports and were previously improvised per file, which is how two reports
+end up with the same class doing different things. `.hl` in particular was applied to the Revenue,
+EBITDA and PAT rows of a P&L and left undefined, so the rows meant to stand out rendered identically to
+every other row.
+
+```css
+/* highlight row — the subtotal lines of a financial table (Revenue, EBITDA, PAT) */
+.hl{background:var(--surface2);}
+.hl td{font-weight:700;}
+
+/* section sub-heading, below a tab title */
+.sub-hdr{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin:26px 0 12px;}
+.hdr-em{font-size:1.7rem;}
+
+/* the "what to take away" note under a table or chart */
+.take{font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px;padding-top:9px;
+      border-top:1px dashed var(--border);}
+
+/* callout boxes */
+.ok-box{background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid var(--pos);
+        border-radius:var(--radius);padding:14px 16px;font-size:12px;}
+.chip-warn{background:rgba(255,255,255,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.35);
+           border-radius:999px;padding:3px 10px;font-size:10px;font-weight:700;}
+
+/* horizontal score bar — CB Rating components and any 0-100 scale */
+.score-bar-wrap{background:var(--surface2);border-radius:4px;height:12px;overflow:hidden;}
+.score-bar{height:100%;border-radius:4px;background:var(--accent);}
+
+/* masthead strip above the report header */
+.topbar{background:#0b0a08;color:rgba(255,255,255,.5);font-size:10px;letter-spacing:.14em;
+        text-transform:uppercase;padding:6px 0;text-align:center;}
+```
+
+**`.score-bar` takes the sector's accent colour**, not a company colour — it measures a component score,
+not a company. Where a report compares companies on the same bar, colour by company from the sector
+palette instead.
