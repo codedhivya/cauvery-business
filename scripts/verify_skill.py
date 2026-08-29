@@ -81,6 +81,7 @@ SECTOR_CONTENT = {
     "cement":          ["lead distance", "regional"],
     "chemicals":       ["never draw one ebitda-margin line", "specialty", "commodity"],
     "infra-realty":    ["pre-sales", "revenue is a lagging number"],
+    "logistics":       ["asset-light", "density", "operating leverage"],
     "reit-invit":      ["perpetual", "finite", "reit and invit are the primary split", "coverage"],
     "telecom":         ["agr", "spectrum"],
     "new-age":         ["contribution margin", "runway", "not p/e"],
@@ -181,7 +182,7 @@ def main():
     check("structure", f"SKILL.md under 500 lines ({skill_lines})", skill_lines < 500)
 
     check("structure", f"15 mode files present ({len(mode_files)})", len(mode_files) == 15)
-    check("structure", f"17 sector files present ({len(sector_files)})", len(sector_files) == 17)
+    check("structure", f"18 sector files present ({len(sector_files)})", len(sector_files) == 18)
 
     # ---- PER-SECTOR COMPLETENESS ----------------------------------------
     header("PER-SECTOR — template sections, delegation targets, CB weights")

@@ -70,6 +70,8 @@ SECTOR_KEYWORDS = {
     # since dict order decides and an InvIT often holds transmission or roads.
     "reit-invit": ["reit", "invit"],
     "infra-realty": ["realestate", "ports", "realty", "developer"],
+    "logistics": ["shadowfax", "delhivery", "bluedart", "blue_dart", "vrl", "tci_express",
+                  "concor", "logistic", "courier", "3pl", "last_mile"],
     "telecom": ["telecom", "airtel"],
     "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage"],
     # Not company evaluation: news digests, macro/thematic pieces, and site furniture.
