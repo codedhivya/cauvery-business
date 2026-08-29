@@ -188,6 +188,12 @@ def main():
         check("structure", "docs/COVERAGE.md regenerated from the sector files", rc == 0,
               "run: python3 scripts/build_coverage.py" if rc else "")
 
+        rc2 = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "build_coverage.py"),
+                              "--strict"], capture_output=True)
+        check("structure", "every Examples column names companies, not descriptions",
+              rc2.returncode == 0,
+              rc2.stderr.decode().strip().splitlines()[-1] if rc2.returncode else "")
+
     skill_lines = sum(1 for _ in open(os.path.join(SKILL, "SKILL.md")))
     check("structure", f"SKILL.md under 500 lines ({skill_lines})", skill_lines < 500)
 

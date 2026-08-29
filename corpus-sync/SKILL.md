@@ -73,8 +73,11 @@ For each new report, read it and ask:
 5. **Does it teach something worth a `school` entry, or an explainer?**
 6. **Are its CSS classes defined?** Cross-sector ones belong in `design-system.md`.
 
-**Categories naming no real company** are flagged by `audit_corpus.py`. Fill them from a report —
-**never from general knowledge**, which is a lower bar than everything else in the file.
+**Categories naming no real company** are flagged by `audit_corpus.py` and fail `verify_skill.py`. Fill
+them from a report — **never from general knowledge**, which is a lower bar than everything else in the
+file. An Examples column must *name* companies: "listed hospital chains" names nobody. Where the
+collection genuinely has no report on a category, record it in `KNOWN_GAPS` in
+`scripts/build_coverage.py` rather than inventing a name.
 
 ## Step 4 — Apply
 

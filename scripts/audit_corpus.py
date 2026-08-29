@@ -150,38 +150,19 @@ NAMELESS_OK = {
 
 
 def unnamed_categories():
-    """Sector-file categories whose example column names no company.
+    """Sector-file categories whose Examples column names no company.
 
-    A category with a generic placeholder ("listed hospital chains") cannot be
-    routed to, cannot seed a peer set, and usually means that category's reports
-    were never mined. Advisory: some are legitimately generic — see NAMELESS_OK.
+    Delegates to build_coverage so there is ONE detector. Two copies drifted
+    apart once already: the weaker one passed cells like "Balrampur Chini, and
+    the integrated sugar mills" because it only looked for a capital letter.
     """
-    import glob
-    out = []
-    for fn in sorted(glob.glob(os.path.join(SECTORS_DIR, "*.md"))):
-        base = os.path.basename(fn)
-        if base == "_template.md":
-            continue
-        body = open(fn).read()
-        m = re.search(r"^## 1\..*?(?=^## 2\.)", body, re.S | re.M)
-        if not m:
-            continue
-        block = m.group(0)
-        # Some sector files open section 1 with a comparison table rather than the
-        # taxonomy (reit-invit contrasts REIT vs InvIT first). Where an explicit
-        # sub-category block exists, that is the taxonomy — read only that.
-        sub = re.search(r"^### Sub-categories.*", block, re.S | re.M)
-        if sub:
-            block = sub.group(0)
-        for row in re.findall(r"^\|\s*\*\*(.+?)\*\*\s*\|(.*?)\|(.*?)\|", block, re.M):
-            cat, _desc, ex = (x.strip() for x in row)
-            if cat in NAMELESS_OK:
-                continue
-            proper = [w for w in re.findall(r"\b[A-Z][A-Za-z&.\-]{2,}", ex)
-                      if w not in ("The", "And", "Not", "An")]
-            if not proper:
-                out.append((base, cat, ex[:52]))
-    return out
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "bc", os.path.join(os.path.dirname(os.path.abspath(__file__)), "build_coverage.py"))
+    bc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bc)
+    return [(sec + ".md", cat, "") for sec, cat in bc.unnamed()]
+
 
 def classify(filename):
     low = filename.lower()

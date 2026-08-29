@@ -12,6 +12,12 @@
 
 ## 1. Category taxonomy
 
+
+**The Examples column must name real companies, not describe them.** "listed hospital chains"
+names nobody — a reader cannot look it up and it cannot seed a peer set. Take the names from a
+report, never from general knowledge. If the collection genuinely has no report on a category,
+leave it and record it in `KNOWN_GAPS` in `scripts/build_coverage.py`; `verify_skill.py` fails on
+an unrecorded one.
 > The sub-types within this sector that are measured on genuinely different bases. Two or four is
 > typical. If every company here is measured identically, say so — a single category is a legitimate
 > answer and better than an invented split.

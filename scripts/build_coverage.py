@@ -45,6 +45,17 @@ _DESC = re.compile(
     r"the commodity portion|and the|and listed|of the above)\b")
 
 
+# Gaps that have been reviewed and accepted: the collection carries no report
+# on these, so there is no company to name without inventing one. Anything NOT
+# on this list failing the name test is a regression — see --strict.
+KNOWN_GAPS = {
+    ("chemicals", "Commodity chemicals"),
+    ("pharma-health", "Diagnostics"),
+    ("reit-invit", "InvIT — Pipelines / energy"),
+    ("reit-invit", "InvIT — Private placement"),
+}
+
+
 def named_companies(ex):
     """The fragments of an examples cell that actually name a company."""
     out = []
@@ -194,7 +205,41 @@ def render():
     return "\n".join(L) + "\n"
 
 
+def unnamed(gaps=None):
+    """(sector, category) pairs whose Examples column names no company."""
+    out = []
+    for f in sorted(os.listdir(SECTORS)):
+        if not f.endswith(".md") or f == "_template.md":
+            continue
+        for cat, ex in taxonomy(os.path.join(SECTORS, f)):
+            if cat in NAMELESS_OK:
+                continue
+            if not named_companies(ex):
+                out.append((f[:-3], cat))
+    return out
+
+
 def main():
+    if "--strict" in sys.argv:
+        new = [g for g in unnamed() if g not in KNOWN_GAPS]
+        if new:
+            print("Categories naming no company, not in KNOWN_GAPS:", file=sys.stderr)
+            for sec, cat in new:
+                print(f"  {sec} — {cat}", file=sys.stderr)
+            print("\nAn Examples column must name companies, not describe them.",
+                  file=sys.stderr)
+            print("Fill it from a report, or record it in KNOWN_GAPS with a reason.",
+                  file=sys.stderr)
+            return 1
+        stale = [g for g in KNOWN_GAPS if g not in unnamed()]
+        if stale:
+            print("KNOWN_GAPS entries that are now filled — remove them:", file=sys.stderr)
+            for sec, cat in stale:
+                print(f"  {sec} — {cat}", file=sys.stderr)
+            return 1
+        print(f"All Examples columns name companies ({len(KNOWN_GAPS)} accepted gaps).")
+        return 0
+
     text = render()
     check = "--check" in sys.argv
     if check:
