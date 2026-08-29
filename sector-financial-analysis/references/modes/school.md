@@ -20,30 +20,86 @@ consistent with how the same metric is described in every other artifact.
 
 ## Step 2 — Structure the full artifact
 
-1. **The sector's analogy table** — lead with it. The fastest way to make an unfamiliar metric
-   intuitive is to anchor it to something the reader already understands.
-2. **A "what to watch" quick-reference** by category, from the sector file.
-3. **Metric cards**, grouped by category, each self-contained:
-   - a short colour tag with the metric's short code
-   - full name, plus a one-line analogy subtitle
-   - "What it is" / "Formula" — 2–3 sentences of plain English, no unexplained jargon
-   - **a worked example box** using a named company's real disclosed figures, walking through the
-     calculation step by step and ending with what the result means *for that company*
-4. **Regulatory quick-reference** where the sector has rules a reader needs (capital minimums,
-   investment limits).
-5. **A closing "read a company in 60 seconds" checklist** — 5 yes/no questions per category, optionally
-   answered for a specific company.
+**Teach the sector, then supply the reference — in that order.** A metric card explains what a number
+means; it cannot explain why anyone measures that number rather than another. A reader who has only the
+cards can look things up but cannot reason, and will misread the first company that doesn't fit the
+template.
+
+So the artifact has two layers, and the narrative layer comes first.
+
+### Layer 1 — the understanding arc
+
+Six steps, each answering the question the previous one raises. **This is the sector file's own sections
+1 to 5 turned into a path**, so it needs no new research — only sequencing.
+
+1. **What does this sector actually sell, and to whom?** One or two paragraphs, no metrics yet. A reader
+   who cannot say what the business does has nothing to hang a ratio on.
+
+2. **Why is it split into these categories?** — *the highest-value step, and the one most often skipped.*
+   Every sector file opens by insisting on classification before analysis, because **the categories are
+   measured on different bases and a metric that is central to one is meaningless in another**. Make that
+   concrete with the sector's own example: a bank has no EBITDA, a trust is not scored on PAT, an
+   asset-light logistics platform and an integrator do not share a margin band. **A reader who takes only
+   one thing away should take this.**
+
+3. **How does each category make money?** The revenue chain, stated plainly — what is sold, what it
+   costs, where the margin sits, and which part is fixed versus variable. Every metric in step 4 should
+   be traceable to a link in this chain.
+
+4. **So which numbers matter, and why those?** Now introduce the metrics — **derived from step 3, not
+   listed**. "Why this sector uses X rather than profit" teaches more than a definition of X ever does.
+   Where the sector file carries an analogy table, this is where it earns its place.
+
+5. **What does good look like?** Benchmarks, always **by category**, with the reason behind the band. A
+   number is neither good nor bad in isolation, and a reader who learns a threshold without its reason
+   will apply it to the wrong category.
+
+6. **What goes wrong, and what is the tell?** The sector's failure modes and the early signal for each —
+   the receivable that lengthens, the collection efficiency that dips, the pledge that rises. **This is
+   what separates a reader who can use the numbers from one who can only recite them.**
+
+### Layer 2 — the reference
+
+Built to be jumped into, not read through, because that is how it is used after the first pass:
+
+- **Metric cards**, grouped by category and each self-contained: short code, full name, one-line analogy,
+  plain-English "what it is" and formula, and **a worked example using a named company's real disclosed
+  figures**, ending with what the result means *for that company*.
+- **A "what to watch" quick-reference** by category.
+- **Regulatory quick-reference** where the sector has rules a reader needs, with as-at dates.
+- **A "read a company in 60 seconds" checklist** — five yes/no questions per category.
+
+### Teaching a single category
+
+When the ask is one category rather than a whole sector — quick commerce, gold-loan NBFCs, transmission
+InvITs — run the same arc scoped to it, and **keep step 2**. Its value inverts but does not disappear:
+instead of why the sector splits, it becomes **why this category is not like its neighbours**, which is
+exactly what a reader focused on one category most needs and is least likely to be told.
 
 ## Step 3 — Pedagogy
 
+- **Never introduce a metric before the business that produces it.** This is the arc's whole point. Where
+  a sector books its costs today and earns its profit over decades, its headline metric only makes sense
+  once the reader knows that; met earlier, it is a definition to memorise rather than something to
+  understand.
 - **Define a term before using it elsewhere.** Don't explain metric B using metric A if A comes later.
 - Prefer one concrete worked example to an abstract formula.
 - Keep each metric card standalone — readers jump straight to the metric confusing them, and shouldn't
   need the preceding cards to make sense of it.
 - Teach interpretation, not conclusions. The goal is a reader who can judge the numbers themselves, not
   one who defers to this artifact.
+- **Say what the metric cannot tell you.** Every metric has a blind spot — occupancy says nothing about
+  tenant concentration, a headline yield says nothing about how much of it is capital returning. Naming
+  the limit is what stops a reader over-reading a single number, and it is the difference between
+  teaching a metric and teaching judgement.
 
 ## Step 4 — Optional self-check block
+
+Pitch questions at the arc, not at recall. "What is the formula for X" tests memory; **"this company's
+margin fell while volumes rose — what would you check first, and why?"** tests whether the reader can
+use the sector. The most useful question in any sector is a **classification** one: give a company and
+ask which category it belongs to and which metric therefore does *not* apply.
+
 
 Where someone is learning rather than referencing — and especially for a subscriber-facing artifact —
 add a self-check section. Keep it genuinely useful rather than decorative:

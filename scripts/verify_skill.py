@@ -108,6 +108,8 @@ GUARDRAILS = [
     ("optics separated from operations",  "modes/business-profile.md", ["separate the optics from the operations"]),
     ("school flags sector-file gaps",     "modes/school.md",           ["does not yet define it"]),
     ("question shapes, not questions",    "modes/school.md",           ["store the shape, never the question"]),
+    ("school teaches before referencing", "modes/school.md",           ["teach the sector, then supply the reference"]),
+    ("metric blind spots named",          "modes/school.md",           ["say what the metric cannot tell you"]),
     ("mixed reporting seasons handled",   "modes/quarterly-report.md", ["mixed reporting seasons"]),
 ]
 
