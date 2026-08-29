@@ -30,6 +30,10 @@ This is why a bank is analysed on four axes, and why profit alone tells you very
 A bank can report record profit while quietly accumulating stress. Asset quality is the axis that
 matters most and the one that lags.
 
+### The analogy
+
+A bank buys money wholesale and sells it retail. Deposits are the raw material, loans the product, and the spread between them is the gross margin — except that some of the product goes bad after it is sold, which is why provisioning sits where cost of goods would.
+
 ## 3. Metric definitions
 
 - **NII (Net Interest Income)** = interest earned − interest expended. The core revenue line.
@@ -78,6 +82,10 @@ matters most and the one that lags.
 - **PSU** — Is GNPA still improving or has it plateaued? Is NIM holding as deposits reprice? Is credit growth funded by deposits? Is CET-1 sufficient without government capital?
 - **Private** — Is deposit growth keeping pace with advances? Is CASA eroding as depositors chase term rates? Is fee income growing? Is unsecured lending share rising faster than provisions?
 - **SFB** — Is the microfinance book showing stress? Is slippage rising? Is the deposit franchise maturing away from bulk funding? Is credit cost within guidance?
+
+### What goes wrong, and the tell
+
+**Growth without the funding or the provisioning to support it.** The tells, in order of how early they appear: loan growth running well ahead of deposit growth (the funding is being bought, not gathered); a rising credit-deposit ratio; falling provision coverage while gross NPAs look stable; and restructured or Stage 2 assets climbing before anything reaches NPA. A bank that grows fastest in a boom is usually the one that provisions most in the bust.
 
 ## 5. RBI regulatory quick reference
 

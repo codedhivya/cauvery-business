@@ -46,6 +46,10 @@ Where a company has both, the mix shift matters more than the blended number.
 **Deal flow drives everything forward-looking.** TCV won this quarter becomes revenue over the next
 several years, which is why TCV is the leading indicator and quarterly revenue is the lagging one.
 
+### The analogy
+
+A consultancy that sells time. Revenue is roughly people × utilisation × rate, so growth means either more people, busier people, or better-paid people — and each has a different margin consequence.
+
 ## 3. Metric definitions
 
 ### IT services
@@ -111,6 +115,10 @@ Indicative; verify against the company's own history.
   or genuinely non-linear revenue?
 - **Internet / classifieds** — Are billings growing faster than revenue (a leading signal)? Is the core
   segment's margin funding new verticals, and are those approaching breakeven?
+
+### What goes wrong, and the tell
+
+**Growth bought with headcount rather than won on price.** The tells: revenue growing while revenue-per-employee stalls; utilisation climbing toward its ceiling with no pricing improvement, which means the next quarter needs hiring; rising attrition, which raises replacement cost and disrupts delivery; and deal wins skewed to renewals over net-new.
 
 ## 5. Regulatory quick reference
 

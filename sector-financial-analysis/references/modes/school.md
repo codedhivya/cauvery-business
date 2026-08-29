@@ -174,3 +174,23 @@ knowledge. If a question of that shape can't be answered from the sector file, t
 or under-deployed?", "moat eroding or resilient?", "a governance positive or a liquidity risk?" — and
 answers by weighing rather than asserting. Keep that framing; a question with a foregone answer teaches
 nothing.
+
+## Durable understanding here, point-in-time from the report
+
+**School teaches the sector and the business. It does not teach a quarter.**
+
+| | Source | Why |
+|---|---|---|
+| **Durable** — what the business does, why it splits into categories, why these metrics, what good looks like, how it fails | **the sector file** | True across companies and across periods. This is what makes a reader able to analyse the *next* quarter, not just read this one |
+| **Point-in-time** — this company's figures, this quarter's move, this event | **sourced live, or from a published report** | Changes every period. Baking it into a reference file is how a stale number outlives the quarter it described |
+
+**Use point-in-time material freely — as illustration, not as content.** A worked example on a real
+company's disclosed figures teaches faster than an abstract formula, and a published report analysing a
+specific quarter is the author's own verified work. Cite it and link it.
+
+**The test for what belongs where**: would this still be true next quarter, and for a different company
+in the same category? If yes it is sector knowledge and belongs in the sector file. If no, it is
+illustration — source it, date it, and attribute it.
+
+**Where a question is genuinely about one quarter** — why this margin moved, what drove this number —
+**the report is the right answer**, and school's job is to give the reader the framework to interpret it.

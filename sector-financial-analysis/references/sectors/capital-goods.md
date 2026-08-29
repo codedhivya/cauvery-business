@@ -46,6 +46,10 @@ The four axes:
 | **Execution** | Is booked work converting to revenue? | Execution rate, revenue growth vs order book growth |
 | **Cash** | Is recognised profit becoming cash? | Debtor days, working capital, receivables from government customers |
 
+### The analogy
+
+A business that sells a promise and delivers it years later. Revenue is yesterday's order book being executed, so today's order intake tells you about the future and today's revenue tells you about the past. Read both, and never one for the other.
+
 ## 3. Metric definitions
 
 - **Order book (or backlog)** — contracted work not yet executed. The forward revenue visibility.
@@ -108,6 +112,10 @@ Indicative — read against the company's own cycle and its category.
 - **Power T&D Equipment** — Is grid capex driving inflow? Is pricing discipline holding, or is the order
   book being bought with low bids?
 - **Industrial Equipment** — Is exports/replacement mix rising? Is the aftermarket (higher margin) growing?
+
+### What goes wrong, and the tell
+
+**An order book that does not convert.** Orders are announced; revenue is executed. The tells: book-to-bill strong while revenue growth lags, meaning execution or clearances are stuck; receivables lengthening, which for government-facing businesses is the normal failure; provisioning on old orders; and margin falling on fixed-price contracts as input costs move.
 
 ## 5. Regulatory and policy quick reference
 

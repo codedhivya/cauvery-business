@@ -39,6 +39,10 @@ is why regional price tracking matters more here than in most sectors.
 **EBITDA per tonne is the sector's currency.** Everyone — companies, analysts, this repo — compares on
 it, because it strips out differences in realisation and shows the actual unit economics.
 
+### The analogy
+
+A heavy, cheap product that cannot travel. Think of it as a regional business wearing a national brand: what matters is the price in the districts a plant can reach, not the national average, because beyond a certain distance freight eats the margin entirely.
+
 ## 3. Metric definitions
 
 - **Sales volume (million tonnes)** — the volume driver, disclosed quarterly and often monthly.
@@ -85,6 +89,10 @@ current period.
 - Is the **blended share** rising?
 - **Seasonality**: monsoon quarters are structurally weak for construction demand. A weak Q2 (Jul–Sep) is
   normal, not a deterioration — compare year-on-year, never sequentially, without saying so.
+
+### What goes wrong, and the tell
+
+**A price war in a core region, which no national average will show.** The tells: realisation per tonne falling while volumes rise, meaning share is being bought; new capacity announced in a region the company depends on; lead distance creeping up, which is freight cost disguised as growth; and fuel or pet coke cost moving with no price increase behind it.
 
 ## 5. Regulatory and policy quick reference
 

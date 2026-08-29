@@ -38,6 +38,13 @@ an unrecorded one.
 > An analogy table helps where the sector's metrics are unintuitive (insurance uses a manufacturing
 > analogy). Skip it where metrics are self-explanatory — a forced analogy teaches worse than none.
 
+### The analogy
+
+One paragraph anchoring this sector to something a reader already understands, and stating the
+consequence for how it is measured. **The single most useful teaching device in the file** — `school`
+leads with it. Avoid a generic simile; the analogy has to earn its place by explaining why the
+sector's headline metric is what it is.
+
 ## 3. Metric definitions
 
 > Every metric this sector's reports use, defined in plain English with its formula. Say what the metric
@@ -72,6 +79,12 @@ an unrecorded one.
 **What to watch, by category:**
 
 > Four or five yes/no questions per category. Feeds `verdict`, `swot` and `school`.
+
+### What goes wrong, and the tell
+
+The sector's characteristic failure mode, and the **early signals in order of when they appear**. A
+reader who knows the metrics but not the failure mode can recite the numbers without judging them.
+State the tell as something observable in a disclosure, not as a sentiment.
 
 ## 5. Regulatory quick reference
 

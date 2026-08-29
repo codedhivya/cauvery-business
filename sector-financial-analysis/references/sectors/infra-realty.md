@@ -46,6 +46,10 @@ A developer's **commercial arm** can look superficially like a REIT — contract
 but it sits inside an operating company that retains and reinvests earnings. That is the line: analyse it
 here, and analyse the trust in `reit-invit.md`.
 
+### The analogy
+
+A developer sells today and reports the revenue years later. The P&L describes projects sold two or three years ago; pre-sales describe the business now. Reading the P&L alone will consistently mis-time the story in both directions.
+
 ## 3. Metric definitions
 
 ### Residential developers
@@ -103,6 +107,10 @@ Indicative; verify against the company's own history and the category.
   pipeline converting?
 - **Ports** — Is cargo growing above national traffic growth? Is the mix shifting toward containers? How
   much concession tenure remains, and what happens at expiry?
+
+### What goes wrong, and the tell
+
+**Bookings that do not convert into collections.** A sale is a promise; cash is the reality, and RERA escrow means even collected cash is not freely available. The tells: pre-sales growing while collections lag; unsold inventory rising alongside new launches; net debt climbing against operating cash flow; and land acquired at the top of a cycle, which is how developers have historically failed.
 
 ## 5. Regulatory quick reference
 

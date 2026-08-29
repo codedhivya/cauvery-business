@@ -49,6 +49,10 @@ price hurts near-term margin on existing inventory even though it lowers future 
 **Decorative paints** are a distribution and brand business. Crude derivatives are the input, dealer
 reach is the moat, and volume growth versus value growth is the key read, exactly as in FMCG.
 
+### The analogy
+
+Two businesses that look alike on a P&L. A specialty maker sells a qualified recipe into a customer's own product — slow to win, hard to displace. A commodity maker sells a standard molecule on price. Never read one through the other's margin.
+
 ## 3. Metric definitions
 
 ### Common
@@ -144,6 +148,10 @@ much of revenue is EPR credits rather than material sales?
   Is agricultural or plumbing demand driving volume?
 - **Paints** — Is volume growth carrying value growth? Is dealer network expanding? What is crude doing
   to input costs, and is pricing keeping pace?
+
+### What goes wrong, and the tell
+
+**Import pressure that resets the price floor.** The tells: realisation falling with volumes intact, which means price not demand; a widening gap between specialty and commodity margins inside the same company; customer concentration in a qualified product; and for fertilisers, a subsidy receivable lengthening — that is working capital, not revenue at risk.
 
 ## 5. Regulatory and policy quick reference
 

@@ -47,6 +47,10 @@ All of them convert consumer demand into revenue, but the lever differs:
 - **Hospitality** earns on rooms sold × rate. Because costs are largely fixed, incremental occupancy
   falls almost straight to profit, which makes hotels highly operationally geared in both directions.
 
+### The analogy
+
+A brand plus a distribution system. The product is often replicable; what is not is shelf space, repeat purchase and the willingness to pay a premium for a name.
+
 ## 3. Metric definitions
 
 ### Retail, FMCG and jewellery
@@ -167,6 +171,10 @@ Indicative; verify against the company's own history and its peer set rather tha
 - **Textiles** — Is the cotton-yarn spread widening? Is utilisation above 85%? Is value-added share rising?
 - **Hospitality** — Is RevPAR growth rate-led? Is the management-contract pipeline growing (fee income
   without capital)? What is the demand mix — leisure, business, MICE?
+
+### What goes wrong, and the tell
+
+**Growth that comes from new stores rather than existing ones.** The tells: revenue rising while same-store growth stalls — the expansion is masking a weakening core; gross margin held up by price increases rather than volume; and rising inventory days, which in a working-capital-heavy retailer is the first sign that product is not moving.
 
 ## 5. Regulatory quick reference
 

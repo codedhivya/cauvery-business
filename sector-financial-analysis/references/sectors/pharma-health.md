@@ -54,6 +54,10 @@ drops through to profit sharply. Maturity matters enormously: a new hospital los
 years before breaking even, so a chain in expansion mode reports depressed blended margins that say
 nothing about the mature estate.
 
+### The analogy
+
+A pipeline business. Money goes out for years — research, trials, filings, plant approvals — before any of it comes back, and a single regulator's letter can close the tap on a product that was already paying.
+
 ## 3. Metric definitions
 
 ### Pharma / API / CDMO
@@ -115,6 +119,10 @@ Indicative; verify against the company's own disclosure.
   contracted pipeline growing? Is capacity utilisation improving?
 - **Hospitals** — Is occupancy above 65%? Is ARPOB growth mix-led? What is the mature-vs-new split, and
   is the new estate on its breakeven timeline? Is government-scheme exposure rising?
+
+### What goes wrong, and the tell
+
+**A regulatory action on a plant or product that was carrying the earnings.** The tells: an inspection observation before it becomes an import alert; a concentration of revenue in one facility or one molecule; price erosion in the base business masked by one good launch; and for hospitals, occupancy held up by discounting rather than demand.
 
 ## 5. Regulatory quick reference
 

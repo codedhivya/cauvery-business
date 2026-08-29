@@ -34,6 +34,10 @@ quality (Combined Ratio). Use this analogy table in any explanatory output:
 | Repeat business | Persistency | % of customers renewing |
 | Capital adequacy (CRAR) | Solvency Ratio | Buffer for unexpected claims |
 
+### The analogy
+
+A manufacturer that books its costs today and earns its profit over decades. Premium is not revenue in any ordinary sense — much of it is a liability for claims not yet made — which is why current profit says so little and the value of business written says so much.
+
 ## 3. Metric definitions
 
 ### Life
@@ -90,6 +94,10 @@ total premium flow rather than per-claim — a structurally higher-margin revenu
 - **Health** — GWP growing >15%? Combined/CISR below 100%? Loss ratio improving YoY? Solvency >200%? Market share growing?
 - **General** — GDPI above industry average? Combined Ratio trending to/below 103%? Investment yield >8%? Underwriting improving QoQ?
 - **TPA** — revenue growth >20%? EBITDA margin stable/improving? Reported vs adjusted PAT diverging? Market share widening?
+
+### What goes wrong, and the tell
+
+**Business written at a margin that does not survive contact with reality.** The tells: persistency falling in the later years, which means the profit assumed at sale is not being earned; a solvency ratio drifting toward the floor; and a mix shifting toward products that flatter headline premium but carry thin margin. For non-life, a combined ratio drifting above 100 while investment income covers the gap — underwriting losses funded by markets are a bet, not a business.
 
 ## 5. IRDAI regulatory quick reference
 

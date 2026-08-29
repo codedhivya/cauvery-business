@@ -63,6 +63,10 @@ A fund is a pool of investor money. Analyse it on portfolio and cost, never on r
 
 Never assign a fund a P/E, an EBITDA margin, or a CB Rating built for operating companies.
 
+### The analogy
+
+A tollbooth. It earns per transaction passing through, largely regardless of the value of what passes, so the business is volume and take rate — not the direction of the market.
+
 ## 3. Metric definitions
 
 ### Exchanges and depositories
@@ -128,6 +132,10 @@ Indicative; verify against the company's own history and current regulation.
   opex/QAAUM falling? **Is net equity sales positive** — that separates share gain from market lift.
 - **Broker** — Are active clients growing? What happened to derivative volumes after the last regulatory
   change? How material is float and MTF income?
+
+### What goes wrong, and the tell
+
+**Volume dependence, and a regulator that can reprice the toll.** The tells: turnover falling faster than the market, which means share loss rather than a soft market; a regulatory consultation on fees or lot sizes; over-concentration in one segment; and for asset managers, net outflows masked by a rising market lifting closing AUM.
 
 ## 5. Regulatory quick reference
 

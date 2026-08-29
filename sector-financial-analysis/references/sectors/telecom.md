@@ -45,6 +45,10 @@ Against that sits the capital burden:
 So the sector's investment question reduces to: is ARPU rising fast enough to service the spectrum and
 AGR burden while funding the next technology cycle?
 
+### The analogy
+
+A network with almost no marginal cost. Once the towers and spectrum are paid for, an extra subscriber costs very little — so the business is subscribers × ARPU against an enormous fixed base, and the fixed base has to be rebuilt every technology cycle.
+
 ## 3. Metric definitions
 
 - **ARPU (Average Revenue Per User, ₹/month)** — **the headline metric.** State whether it is blended,
@@ -96,6 +100,10 @@ Indicative; the sector is in an ARPU-repair cycle, so levels move.
   finite.
 - For the weakest operator: **is funding secured** — equity raise, government conversion, promoter
   infusion? This is a solvency question, not a performance one, and should be treated as such.
+
+### What goes wrong, and the tell
+
+**Capex and dues arriving faster than ARPU rises to meet them.** The tells: ARPU flat while capex intensity climbs; subscriber growth concentrated in low-value users; a spectrum auction or licence payment falling due; and rising churn, which costs acquisition spend twice.
 
 ## 5. Regulatory quick reference
 

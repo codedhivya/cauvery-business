@@ -53,6 +53,10 @@ recurring political risk.
 **A power exchange** earns a small fee on volume traded. It is a network business with operating leverage
 and near-zero marginal cost, and is analysed like a market infrastructure company.
 
+### The analogy
+
+Two different businesses wearing the same clothes. A contracted asset is a toll road — paid to be available, largely indifferent to demand. A merchant asset is a commodity trader, exposed to price every hour. Establish which one you are looking at before reading any margin.
+
 ## 3. Metric definitions
 
 ### Generation
@@ -167,6 +171,10 @@ Indicative; verify against current conditions, which move more in this sector th
   operations? Is marketing margin under political pressure?
 - **Exchange** — Is traded volume growing? Is market share holding against new entrants? Any regulatory
   change to market coupling?
+
+### What goes wrong, and the tell
+
+**Counterparty payment behaviour, which fails long before generation does.** The tells: receivable days from distribution companies lengthening; a rising share of merchant exposure taken on as contracted capacity rolls off; fuel cost that cannot be passed through; and for manufacturers, a policy timeline slipping in a business whose demand exists because of that policy.
 
 ## 5. Regulatory quick reference
 

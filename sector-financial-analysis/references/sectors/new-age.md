@@ -53,6 +53,10 @@ margin falls means the platform is buying orders. Second, **adjusted EBITDA doin
 companies typically exclude ESOP cost and other items, and the gap between reported and adjusted can be
 the difference between a profit and a loss.
 
+### The analogy
+
+A business buying customers now on the argument that they will be profitable later. The question is never current profit — it is whether each new customer costs less than they eventually bring in, and whether the cash lasts long enough to find out.
+
 ## 3. Metric definitions
 
 - **GOV (Gross Order Value)** — total value of orders placed, before discounts. The headline scale
@@ -109,6 +113,10 @@ rather than treating any figure as fixed.
   expensive and less durable?
 - **Is a competitor funding a price war?** In a two-player market, one player's capital raise is the
   other's margin problem.
+
+### What goes wrong, and the tell
+
+**Growth that stops paying for itself.** The tells: order growth slowing while discounting rises, meaning demand is being bought; contribution margin flat or negative at scale, which suggests the unit economics do not improve with volume; cash runway shortening against the burn rate; and a profitability milestone that keeps moving out by a quarter each quarter.
 
 ## 5. Regulatory quick reference
 

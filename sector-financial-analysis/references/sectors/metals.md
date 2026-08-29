@@ -49,6 +49,10 @@ top of a cycle. Net debt and the debt-to-EBITDA position at a cyclical peak is t
 signal — EBITDA is inflated at the peak, so leverage looks deceptively comfortable exactly when it is
 most dangerous.
 
+### The analogy
+
+A converter. It buys ore, coal and power, sells metal, and lives on the gap. Because the output price is set globally and much of the cost is fixed, a small move in the spread swings profit enormously — which is why per-tonne economics matter more than revenue.
+
 ## 3. Metric definitions
 
 - **Sales volume (tonnes)** — the volume driver, usually disclosed monthly or quarterly by segment.
@@ -93,6 +97,10 @@ and the company's own history rather than treating them as fixed.
   coverage intact? Is downstream (Novelis-type) value-add growing?
 - **Diversified resources** — Which segment is actually driving the result? Holding-company structures can
   mask a weak division with a strong one; insist on the segment split.
+
+### What goes wrong, and the tell
+
+**A cost base that cannot move as fast as the price.** The tells: realisation falling while cost per tonne holds, which compresses the spread from both ends; inventory built at high prices being sold into a falling market; captive raw-material share dropping; and expansion capex committed at the top of a cycle, which is how balance sheets in this sector historically break.
 
 ## 5. Regulatory and policy quick reference
 

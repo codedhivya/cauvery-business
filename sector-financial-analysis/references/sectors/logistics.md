@@ -56,6 +56,10 @@ quick-commerce platforms and D2C brands. This makes **client concentration** a f
 often understated: a single marketplace can be a large share of volume, contracts are re-tendered on
 price, and the customer frequently has the option to insource.
 
+### The analogy
+
+A network whose cost per parcel falls as more parcels use the same route, hub and rider-hour. Thin margins on every shipment, but the fixed layer is paid once — so once volume crosses the network's cost, profit rises far faster than revenue.
+
 ## 3. Metric definitions
 
 ### Core to every category
@@ -114,6 +118,10 @@ Indicative, and **category-dependent by design**. Verify against the company's o
 on **price**? Is incremental margin above the current margin — is leverage actually working? Are
 receivables lengthening? Is expansion adding **density** or only pincodes? How concentrated is the client
 book, and are any large accounts building in-house capability?
+
+### What goes wrong, and the tell
+
+**Volume growing while the economics do not.** The tells: revenue per shipment falling on price rather than mix; receivable days lengthening, which is the classic stress signal when enterprise customers pay on terms and delivery partners are paid immediately; expansion adding pincodes without density, so cost per shipment stays flat; and a large client building in-house capability, which removes volume that the fixed network was sized for.
 
 ## 5. Regulatory quick reference
 

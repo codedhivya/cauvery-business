@@ -110,6 +110,7 @@ GUARDRAILS = [
     ("question shapes, not questions",    "modes/school.md",           ["store the shape, never the question"]),
     ("school teaches before referencing", "modes/school.md",           ["teach the sector, then supply the reference"]),
     ("metric blind spots named",          "modes/school.md",           ["say what the metric cannot tell you"]),
+    ("durable vs point-in-time split",    "modes/school.md",           ["school teaches the sector and the business. it does not teach a quarter"]),
     ("mixed reporting seasons handled",   "modes/quarterly-report.md", ["mixed reporting seasons"]),
 ]
 
@@ -223,13 +224,21 @@ def main():
         except IndexError:
             weights, total = [], 0
 
-        ok = not missing_s and not missing_d and total == 100 and "cross-sector work" in flat
+        teach = []
+        if "### the analogy" not in flat:
+            teach.append("no analogy")
+        if "what goes wrong" not in flat:
+            teach.append("no failure mode")
+
+        ok = (not missing_s and not missing_d and total == 100
+              and "cross-sector work" in flat and not teach)
         detail = []
         if missing_s: detail.append(f"missing sections {missing_s}")
         if missing_d: detail.append(f"targets {missing_d}")
         if total != 100: detail.append(f"CB weights {weights}={total}%")
         if "cross-sector work" not in flat: detail.append("no cross-sector note")
-        check("sector", f"{name:16} 10 sections · 9 targets · CB {total}%", ok, "; ".join(detail))
+        if teach: detail.append("; ".join(teach))
+        check("sector", f"{name:16} 10 sections · 9 targets · CB {total}% · analogy · failure mode", ok, "; ".join(detail))
 
     # ---- CONTENT ---------------------------------------------------------
     header("CONTENT — does each sector carry its defining insight?")

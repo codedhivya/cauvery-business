@@ -52,6 +52,10 @@ The four axes:
 | **Asset quality** | How much goes bad? | GNPA, NNPA, credit cost, PCR, stage-wise provisioning |
 | **Funding & capital** | Can it keep funding itself? | Borrowing mix, CRAR, credit rating, ALM |
 
+### The analogy
+
+A bank without the cheap deposit franchise. It buys its money in the market and lends it on, so the whole business is the spread between two borrowing costs — and unlike a bank it cannot fall back on current-account money that costs nothing.
+
 ## 3. Metric definitions
 
 - **AUM (Assets Under Management)** — the headline size metric, and the sector's equivalent of a bank's
@@ -159,6 +163,10 @@ Indicative and category-dependent; verify against the company's own history.
 - **Affordable HFC** — Is the yield premium being preserved? Is GNPA stable in the self-employed book?
 - **Infra financier (PFC/REC/IREDA)** — What is exposure to state discoms and their payment record? Is
   the renewable book growing? These are government-linked and their asset quality is policy-sensitive.
+
+### What goes wrong, and the tell
+
+**Asset-liability mismatch, and funding that reprices faster than the book.** The tells: cost of funds rising while yield on advances is flat or contractually fixed; short-term borrowing funding long-tenor assets; reliance on a narrow set of lenders; and a rating outlook change, which in this sector is a leading indicator rather than a lagging one because funding access *is* the business.
 
 ## 5. Regulatory quick reference
 

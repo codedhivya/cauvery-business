@@ -162,6 +162,10 @@ traffic growth (toll) · **availability** (transmission) · LTV · cost of debt 
 concession ends and the asset reverts. That single difference explains the yield gap, the NAV
 methodology, and why an InvIT's distribution must be decomposed before it is compared to anything.
 
+### The analogy
+
+A trust is a pipe, not a factory. Rent or toll or tariff comes in at one end and is required to come out the other as distribution — so there is no retained-earnings compounding to analyse, and the only questions that matter are whether the cash covers the payout and how long the assets last.
+
 ## 3. Metric definitions
 
 ### Core to every category
@@ -269,6 +273,10 @@ Indicative. Verify against the trust's own history, its category, and the prevai
   life remains? Are receivables from counterparties ageing?
 - **Road InvIT** — Is traffic growing? What share is annuity versus toll? **When is the next major
   maintenance cycle**, and is it reserved for?
+
+### What goes wrong, and the tell
+
+**A distribution that stops being covered by the cash the assets generate.** The tells: NDCF coverage drifting toward or below 1.0×; a rising share of the payout classified as capital return rather than income; LTV climbing toward the regulatory threshold, which closes off acquisitions; a sponsor reducing its unitholding; and receivables ageing from a concentrated counterparty.
 
 ## 5. Regulatory quick reference
 

@@ -55,6 +55,10 @@ supplier of chassis, electronics or interiors is largely agnostic. **State a sup
 the share of revenue at risk versus EV-agnostic** — that distinction matters more than any headline
 growth rate.
 
+### The analogy
+
+A factory with a fixed cost base and a variable output. Volume is almost everything: the plant costs the same whether it runs at 60% or 90%, so each extra unit drops through to profit far harder than revenue growth alone suggests — and the reverse is just as sharp.
+
 ## 3. Metric definitions
 
 ### OEMs
@@ -116,6 +120,10 @@ Indicative; verify against the company's own history and the category.
   progressing?
 - **Batteries** — Is lead cost passed through? Is the industrial and EV-adjacent book growing beyond
   automotive replacement?
+
+### What goes wrong, and the tell
+
+**Channel inventory dressed as demand.** Wholesale dispatches are what the company books; retail registrations are what customers actually bought. The tells: dispatches running ahead of registrations quarter after quarter, which means stock is piling up at dealers and a correction is owed; rising discounts; and realisation improving only on mix while volumes stall.
 
 ## 5. Regulatory and policy quick reference
 
