@@ -88,3 +88,33 @@ When that happens:
 **Do not quietly fall back to general knowledge.** An explanation with no source behind it is
 indistinguishable, to the reader, from one grounded in the collection — and the sector-file gap goes
 unrecorded either way.
+
+## The questions a reader actually asks
+
+The published collection carries **over a thousand pre-written reader questions** across its reports.
+They are worth studying as a group, because they reveal what a reader wants to know — which is rarely
+"define this metric" alone.
+
+**Store the shape, never the question.** A question like *"what drove this company's 858 bps margin
+expansion?"* is specific to one company and one quarter; the figure and the name belong in the artifact,
+never in a reference file. **What is durable is the shape**, which instantiates against whatever company
+and period is being analysed. Six recur:
+
+| Shape | Instantiates as | What it needs |
+|---|---|---|
+| **Definitional** | "What is *&lt;metric or policy&gt;*?" | The sector file's definition and analogy. The most common single type |
+| **Event / why-it-moved** | "What drove *&lt;this move&gt;*?" | Decomposition — volume vs price vs mix vs one-off |
+| **Structural / mechanism** | "How does *&lt;X&gt;* actually help or hurt *&lt;this company&gt;*?" | The transmission from the thing to a P&L line |
+| **Judgment** | "Is *&lt;this figure&gt;* good or a risk?" | Both readings, then which the evidence supports — **never a buy/sell/hold** |
+| **Structural or cyclical** | "Is *&lt;this margin move&gt;* structural or cyclical?" | Recurs constantly. Answer it directly; it is the question behind most others |
+| **Company-specific exposure** | "Why does *&lt;X&gt;* matter for *&lt;this company&gt;* but not its peers?" | The exposure basis — a footprint, a mix, a contract others don't have |
+
+**The last shape is the most valuable and the most often missed.** It only works when the sector file
+defines the thing being asked about; otherwise the answer falls back to a report or, worse, to general
+knowledge. If a question of that shape can't be answered from the sector file, that is the gap to record
+— see *When the concept isn't in the sector file* above.
+
+**Judgment questions get both sides.** The corpus phrases them as genuine tensions — "efficient capital
+or under-deployed?", "moat eroding or resilient?", "a governance positive or a liquidity risk?" — and
+answers by weighing rather than asserting. Keep that framing; a question with a foregone answer teaches
+nothing.
