@@ -5,7 +5,8 @@ is no build, no test suite, no runtime. It contains a Claude skill (markdown) an
 it produces (static HTML).
 
 ```
-sector-financial-analysis/   the skill — source of truth
+sector-financial-analysis/   the analysis skill — source of truth
+corpus-sync/                 the skill that keeps the above in step with the collection
 reports/published/           131 verified reports; the author stands behind these
 reports/staging/             generated drafts awaiting human review
 scripts/sync_reports.py      mirrors published reports from the Pages site
@@ -151,6 +152,11 @@ or the owning sector file, and each sector's CB Rating substitution table totals
 The published collection is a local mirror of the Pages site. When reports are added there, the mirror
 falls behind — and since the sector files were built from that mirror, anything it hasn't seen is
 knowledge the skill doesn't have.
+
+**There is a skill for this.** Invoke **`corpus-sync`** and it runs the whole loop — pull, classify,
+mine each new report for what the skill lacks, apply what belongs, verify, baseline — asking only where
+the judgment is genuinely the author's. The steps below are what it automates, kept for reference and
+for running one in isolation.
 
 ```bash
 # 1. pull anything the site has that the mirror doesn't
