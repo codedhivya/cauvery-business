@@ -113,6 +113,22 @@ Indicative — read against the company's own cycle and its category.
   book being bought with low bids?
 - **Industrial Equipment** — Is exports/replacement mix rising? Is the aftermarket (higher margin) growing?
 
+### How an order was won decides what it is worth
+
+An order book is not one thing. For businesses serving government and public-sector customers, the
+**award mechanism** determines both the margin and the certainty of the work:
+
+- **Nomination / directly assigned orders** — allocated by the ministry or agency without a competitive
+  process, typically to a public-sector entity. **Lower margin, higher certainty**: the work is close to
+  guaranteed, and priced accordingly.
+- **Competitively bid orders** — won against other bidders. **Potentially higher margin, genuinely more
+  risk**, on execution and on the price that had to be bid to win.
+
+**Ask for the split.** Two companies with identical order books have different earnings quality if one is
+mostly nominated and the other mostly bid, and a shift in the mix changes forward margin without any
+change in order intake. A move away from nomination toward competitive bidding is a **structural margin
+event** and is usually announced long before it shows in results.
+
 ### What goes wrong, and the tell
 
 **An order book that does not convert.** Orders are announced; revenue is executed. The tells: book-to-bill strong while revenue growth lags, meaning execution or clearances are stuck; receivables lengthening, which for government-facing businesses is the normal failure; provisioning on old orders; and margin falling on fixed-price contracts as input costs move.

@@ -90,6 +90,22 @@ current period.
 - **Seasonality**: monsoon quarters are structurally weak for construction demand. A weak Q2 (Jul–Sep) is
   normal, not a deterioration — compare year-on-year, never sequentially, without saying so.
 
+### What scale actually buys in a fuel-cost shock
+
+Fuel is the swing cost in cement, and scale is the defence — but for two specific and durable reasons
+rather than a general "big is better":
+
+- **Fuel-sourcing flexibility.** A very large kiln-fuel buyer holds enough contract and spot optionality
+  to **rotate between coal and pet coke as their relative prices move**. A smaller producer, locked to one
+  fuel or one supplier, absorbs the move. This is why the largest players' costs rise more slowly in a
+  shock, and it is structural rather than a one-quarter effect.
+- **Fixed-cost absorption.** Higher volume spreads the same fixed base, so the cost per tonne rises less
+  for the same input move.
+
+**State the fuel mix and its flexibility**, not just the fuel price. Two producers facing an identical
+pet coke move report very different cost increases, and the reason is procurement optionality — which is
+not visible anywhere in the price of the fuel itself.
+
 ### What goes wrong, and the tell
 
 **A price war in a core region, which no national average will show.** The tells: realisation per tonne falling while volumes rise, meaning share is being bought; new capacity announced in a region the company depends on; lead distance creeping up, which is freight cost disguised as growth; and fuel or pet coke cost moving with no price increase behind it.
