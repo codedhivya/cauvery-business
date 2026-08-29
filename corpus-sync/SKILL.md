@@ -70,7 +70,11 @@ For each new report, read it and ask:
 3. **Are its metrics defined?** Ignore incidental mentions; add what the sector genuinely needs.
 4. **Does it use a section no mode covers?** If it appears across several sectors it is mode-level
    craft; if it is bespoke editorial, leave it to the author.
-5. **Does it teach something worth a `school` entry, or an explainer?**
+5. **Does it explain a concept the sector file doesn't define?** Metrics are easy to spot; **policy and
+   structural concepts are the ones that get missed** — a trade preference, a subsidy scheme, a
+   licensing regime, a tariff tier. They can drive economics more than any ratio and none of them look
+   like a metric. If a reader could ask "what is X and why does it matter here?" and only a report
+   could answer, the sector file has a gap.
 6. **Are its CSS classes defined?** Cross-sector ones belong in `design-system.md`.
 
 **Categories naming no real company** are flagged by `audit_corpus.py` and fail `verify_skill.py`. Fill

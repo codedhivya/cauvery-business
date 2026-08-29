@@ -68,3 +68,23 @@ differently is itself a valuable lesson; merging their metrics into one list is 
 ## Deliver
 
 Follow `output-conventions.md`. For a quick concept question, answer in chat — no file needed.
+
+## When the concept isn't in the sector file
+
+The sector file is the canonical source, but it will not always have the concept being asked about —
+particularly **policy and structural concepts** rather than metrics. A trade preference, a subsidy
+scheme, a licensing regime or a tariff tier can drive a company's economics more than any ratio, and
+none of them look like a metric, so they are the ones most likely to be missing.
+
+When that happens:
+
+1. **Check the published collection.** A report that analyses the concept in context is a better source
+   than general knowledge, and it is the author's own verified work.
+2. **Teach it from there**, citing the report and linking it.
+3. **Say that the sector file does not yet define it.** That is a real finding: it means every future
+   artifact in that sector will also miss the concept, and it should be folded in rather than
+   rediscovered each time.
+
+**Do not quietly fall back to general knowledge.** An explanation with no source behind it is
+indistinguishable, to the reader, from one grounded in the collection — and the sector-file gap goes
+unrecorded either way.

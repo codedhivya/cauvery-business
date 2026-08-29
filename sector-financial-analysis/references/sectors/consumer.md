@@ -184,6 +184,38 @@ Verify current levels against the relevant circular rather than carrying a figur
 
 ## 6. Per-mode specifics
 
+#### Trade access — often the biggest single driver for an apparel exporter
+
+**Where a garment is sewn decides what duty it pays entering its destination market, and that duty can
+matter more than the factory's efficiency.** Two exporters with identical operations earn very different
+margins if one ships from a duty-free origin and the other does not. This is why apparel exporters build
+capacity in countries they have no other reason to be in.
+
+- **AGOA (African Growth and Opportunity Act)** — grants duty-free access to the **US** market for
+  qualifying goods made in eligible **sub-Saharan African** countries. An Indian exporter with Kenyan or
+  Ethiopian factories ships to the US duty-free; the same garment made in India pays the tariff. It is a
+  **US statute that must be periodically renewed**, so the exposure is not just to the benefit but to the
+  *uncertainty*: the corpus shows one exporter's Africa revenue falling sharply through a period of
+  renewal doubt, then growing strongly once renewal came through, with no operational change either way.
+  **Always state renewal status and the share of revenue produced in AGOA countries.**
+- **Destination tariff tier** — the rate applied to India versus competing origins such as Bangladesh,
+  Vietnam and China. **A relative disadvantage of a few points moves orders**, because the buyer, not the
+  manufacturer, chooses where to place them.
+- **Free-trade agreements** — an FTA with a destination market opens duty-free access and can transform
+  the economics of serving it. Note which agreements are in force, which are pending, and whether the
+  company has capacity positioned to use them.
+- **Indian export incentives** — schemes rebating state and central levies on exported garments. **These
+  have expiry dates and are periodically extended or allowed to lapse**, so an expiry is a scheduled
+  margin event. Confirm the current scheme and its expiry at source.
+- **Manufacturing-geography diversification** — the number of countries an exporter can produce from. A
+  multi-country platform is **tariff insurance**: when one origin loses its advantage, volume shifts. A
+  single-origin exporter carries that risk undiversified.
+
+**What to state in any apparel-export analysis**: revenue split by manufacturing origin, the duty status
+of each, and the renewal or expiry date of every preference relied on. **A margin comparison between two
+exporters is meaningless without it.**
+
+
 ### Headline KPIs by category (`dashboard`)
 
 | Category | KPIs |
@@ -291,6 +323,8 @@ Total 100%.
 | Ethanol blending target or price revision | diversion economics | distillery capacity, ethanol revenue share |
 | Cotton price move | input cost, spread | raw-material share of cost, inventory position |
 | Gold price move (jewellery) | inventory gains/losses, demand | inventory value, hedging policy, gold-on-lease share |
+| **Trade-preference renewal or lapse (AGOA, FTA, export-incentive scheme)** | apparel export margin and order placement | revenue share by manufacturing origin; duty status of each; renewal/expiry date |
+| **Destination tariff change on a competing origin** | order share, not just margin | relative tariff tier vs Bangladesh, Vietnam, China |
 | **BIS hallmarking / purity rules** | compliance cost, and a shift of share toward organised players | organised vs unorganised positioning |
 | Monsoon / rural demand shift | volume growth, mix | rural revenue share |
 | Tourism disruption or travel restriction | occupancy, ARR | leisure vs business mix, city concentration |

@@ -106,6 +106,7 @@ GUARDRAILS = [
     ("prior period reconciled",           "output-conventions.md",     ["they must agree"]),
     ("pledge flagged as risk",            "modes/business-profile.md", ["leverage position on the company"]),
     ("optics separated from operations",  "modes/business-profile.md", ["separate the optics from the operations"]),
+    ("school flags sector-file gaps",     "modes/school.md",           ["does not yet define it"]),
     ("mixed reporting seasons handled",   "modes/quarterly-report.md", ["mixed reporting seasons"]),
 ]
 
