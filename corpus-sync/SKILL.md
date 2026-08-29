@@ -1,6 +1,6 @@
 ---
 name: corpus-sync
-description: Syncs the CB Research published collection and folds new knowledge into the sector-financial-analysis skill. Runs the whole loop — pull new reports from the live site or a saved portal page, classify them, mine each new report for sectors, metrics, sections and CSS the skill lacks, apply what belongs, and verify. Use whenever the user says reports have been published, asks to sync or refresh the corpus, mentions a new portal page or a moved site, asks whether the skill covers a newly published company, or asks to update the skill from the reports. Also use for a periodic check that the mirror and the skill are current.
+description: Syncs the CB Research published collection and folds new knowledge into the sector-financial-analysis skill. Runs the whole loop — pull new reports from the live site or a saved portal page, classify them, mine each new report for sectors, metrics, sections and CSS the skill lacks, apply what belongs, and verify. Trigger on a bare "sync", "sync the corpus", "sync the reports", or "refresh" in this repo — no further confirmation needed, just run the loop. Also use whenever the user says reports have been published, asks to sync or refresh the corpus, mentions a new portal page or a moved site, asks whether the skill covers a newly published company, or asks to update the skill from the reports. Also use for a periodic check that the mirror and the skill are current.
 ---
 
 # Corpus Sync
