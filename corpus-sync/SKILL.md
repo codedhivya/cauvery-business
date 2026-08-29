@@ -83,8 +83,15 @@ For each new report, read it and ask:
 python3 scripts/mine_school.py <sector> --durable
 ```
 
-Hundreds of written explanations sit in those panels: the author teaching a sector in their own words,
-in interactive markup rather than in the tables, which is why they get missed.
+Hundreds of written explanations sit in those panels, in interactive markup rather than in the tables,
+which is why they get missed. **Three different things are in there and they are not interchangeable** —
+the tool labels each:
+
+- **`school`** — the author teaching the sector. **Durable by intent, and the richest source.**
+- **`assist`** — answering about the companies in *this* report, this quarter. Point-in-time by intent.
+- **`quiz`** — self-check items, carrying options and an explanation on reveal.
+
+Read `school` first. `assist` dominates by volume, which is exactly why school content gets buried.
 
 **Take the mechanism, leave the instance.** A question naming a company, a period or a figure is
 point-in-time — the report answers it and it does not belong in a sector file. What belongs is the

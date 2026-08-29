@@ -102,13 +102,18 @@ ask which category it belongs to and which metric therefore does *not* apply.
 
 
 Where someone is learning rather than referencing — and especially for a subscriber-facing artifact —
-add a self-check section. Keep it genuinely useful rather than decorative:
+add a self-check section. **The published collection carries these**, so match its format rather than
+inventing one. Keep it genuinely useful rather than decorative:
 
 - **Interpretation questions**, not definition recall. "Company X's margin fell while volumes rose —
   which of these best explains it?" teaches; "what does this acronym stand for?" doesn't.
 - **Read-the-numbers exercises** — show a small real disclosed table and ask what it implies.
-- 4–6 questions, multiple choice, graded inline in the artifact with a one-line explanation on reveal —
-  the explanation is where the learning happens, so never reveal a bare right/wrong.
+- **The corpus has an established shape — follow it.** Each item carries the question, four options, the
+  index of the correct one, and an **explanation shown on reveal**. Four to six items, graded inline.
+- **The explanation is where the learning happens**, so never reveal a bare right/wrong — and write it to
+  teach the mechanism, not to justify the key. The corpus does this well: the explanation for a
+  profit-fall question names the prior-year one-off that created the base effect, which is the actual
+  lesson.
 - Draw on the same real figures used in the worked examples, so the quiz reinforces rather than
   introducing new material.
 

@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 """
-Extract the Q&A teaching content from published reports, grouped by sector.
+Extract the Q&A content from published reports, grouped by sector and by source.
+
+Three different things live in the interactive panels, and they are not
+interchangeable:
+
+  school  — teaching the sector. Durable by intent, and the richest source.
+  assist  — answering about the companies in THIS report, this quarter.
+            Point-in-time by intent; take the mechanism, never the instance.
+  quiz    — self-check items, with options and an explanation on reveal.
+
+Merging them buries the school content inside a much larger volume of
+report-specific Q&A, which is how it went unmined in the first place.
 
 The collection's School and Assist panels carry hundreds of written
 explanations — the author teaching a sector in their own words. That is the
@@ -32,8 +43,25 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUBLISHED = os.path.join(ROOT, "reports", "published")
 
-DOM = re.compile(r'class="[\w-]*?q"[^>]*>(.*?)</div>\s*<div class="[\w-]*?a"[^>]*>(.*?)</div>', re.S)
+# Three different things live in these panels and they are NOT interchangeable:
+#
+#   school  — teaching the sector. Durable by intent; the richest source.
+#   assist  — answering about the companies in THIS report, this quarter.
+#             Point-in-time by intent; mine the mechanism, never the instance.
+#   quiz    — self-check items, with options and an explanation.
+#
+# Merging them buries the school content inside a much larger volume of
+# report-specific Q&A, which is how it went unmined.
+SOURCES = [
+    ("school", re.compile(r'class="school-q"[^>]*>(.*?)</div>\s*<div class="school-a"[^>]*>(.*?)</div>', re.S)),
+    ("assist", re.compile(r'class="(?:cba2?-q|assist-q|qa-q)"[^>]*>(.*?)</div>\s*<div class="(?:cba2?-a|assist-a|qa-a)"[^>]*>(.*?)</div>', re.S)),
+]
 JS = re.compile(r'[{,]\s*q\s*:\s*([\'"`])(.*?)\1\s*,\s*a\s*:\s*([\'"`])(.*?)\3', re.S)
+# Quiz items carry options and an explanation rather than a free-text answer,
+# so they need their own pattern — a q/a matcher misses them entirely.
+QUIZ = re.compile(
+    r'\{\s*q\s*:\s*(["\'])(.*?)\1\s*,\s*opts\s*:\s*\[(.*?)\]\s*,'
+    r'\s*correct\s*:\s*(\d+)\s*,\s*explain\s*:\s*(["\'])(.*?)\5', re.S)
 POINT_IN_TIME = re.compile(r'₹|\d{2,}%|Q[1-4]\s?FY|\bFY\d\d')
 
 
@@ -59,11 +87,21 @@ def mine():
         if not sec or sec.startswith("_"):
             continue
         raw = open(os.path.join(PUBLISHED, f), encoding="utf-8", errors="ignore").read()
-        found = [(_clean(q), _clean(a)) for q, a in DOM.findall(raw)]
-        found += [(_clean(q), _clean(a)) for _, q, _, a in JS.findall(raw)]
-        for q, a in found:
+        found = []
+        for kind, pat in SOURCES:
+            found += [(kind, _clean(q), _clean(a)) for q, a in pat.findall(raw)]
+        found += [("assist", _clean(q), _clean(a)) for _, q, _, a in JS.findall(raw)]
+        for _, q, opts, correct, _, explain in QUIZ.findall(raw):
+            opts = [o.strip(" '\"") for o in re.split(r'["\']\s*,\s*["\']', opts.strip(" '\""))]
+            try:
+                answer = opts[int(correct)]
+            except (ValueError, IndexError):
+                answer = "?"
+            found.append(("quiz", _clean(q),
+                          f"ANSWER: {_clean(answer)} — {_clean(explain)}"))
+        for kind, q, a in found:
             if 12 < len(q) < 200 and len(a) > 80:
-                out[sec].append((q, a, f))
+                out[sec].append((q, a, f, kind))
     return out
 
 
@@ -76,8 +114,10 @@ def main():
         total = sum(len(v) for v in data.values())
         print(f"{total} Q&A pairs across {len(data)} sectors\n")
         for s, v in sorted(data.items(), key=lambda x: -len(x[1])):
-            dur = sum(1 for q, _, _ in v if not POINT_IN_TIME.search(q))
-            print(f"  {s:16} {len(v):4}   ({dur} without a figure or period)")
+            by = collections.Counter(k for *_, k in v)
+            dur = sum(1 for q, _, _, _ in v if not POINT_IN_TIME.search(q))
+            kinds = " ".join(f"{k}:{n}" for k, n in by.most_common())
+            print(f"  {s:16} {len(v):4}   ({dur} conceptual)   {kinds}")
         print("\nRun with a sector name to read its pairs.")
         return 0
 
@@ -85,10 +125,10 @@ def main():
     if sec not in data:
         print(f"No Q&A found for '{sec}'. Sectors: {', '.join(sorted(data))}", file=sys.stderr)
         return 1
-    for q, a, src in data[sec]:
+    for q, a, src, kind in data[sec]:
         if durable_only and POINT_IN_TIME.search(q):
             continue
-        print(f"\nQ: {q}\nA: {a[:900]}\n   [{src}]")
+        print(f"\n[{kind}] Q: {q}\nA: {a[:900]}\n   [{src}]")
     return 0
 
 
