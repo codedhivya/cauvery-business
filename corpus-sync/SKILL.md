@@ -93,6 +93,10 @@ the tool labels each:
 
 Read `school` first. `assist` dominates by volume, which is exactly why school content gets buried.
 
+**Much of the corpus is bilingual English/Tamil. Output is English-only by decision** — see
+*Settled: output is English-only* in `MAINTENANCE.md`. Mine the mechanism regardless of the language it
+was written in; do not raise the bilingual markup as a gap.
+
 **Take the mechanism, leave the instance.** A question naming a company, a period or a figure is
 point-in-time — the report answers it and it does not belong in a sector file. What belongs is the
 mechanism the *answer* explains: why a CDMO's revenue steps up at commercialisation, why a carbon border

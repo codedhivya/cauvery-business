@@ -225,6 +225,18 @@ leaderboard naming the leader on each dimension rather than one blended number:
 needs kept apart — for a trust, blending yield with coverage hides that a high yield may be capital
 return rather than income. `auto` (0/8) is the most notable remaining gap and worth a look.
 
+## Settled: output is English-only
+
+**107 of the 158 published reports carry substantial Tamil**, mostly as paired English/Tamil questions in
+the assist panels (`.pq-en` / `.pq-ta`, `q_ta` / `a_ta` in the data arrays). The skill generates
+**English only**, and that is a deliberate decision by the author rather than an oversight.
+
+Recorded here because anyone mining the corpus will find the bilingual markup and reasonably assume it is
+a gap. It is not. Do not add Tamil generation, and do not re-raise it.
+
+The corpus's Tamil content is still legitimate mining material — the *mechanism* an answer explains is
+worth taking whatever language it was written in.
+
 ## Regulatory depth by sector — uneven, and deliberately so
 
 Section 5 of each sector file is a regulatory quick reference, but how *concrete* it is varies:
