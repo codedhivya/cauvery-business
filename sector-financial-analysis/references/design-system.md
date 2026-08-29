@@ -251,6 +251,48 @@ prompt as "known facts" obeys exactly the same no-fabrication discipline as the 
 a figure isn't sourced, it doesn't go in. Do not wire up external API calls unless explicitly asked for
 a live interactive feature.
 
+### Two kinds of question arrive, and they are answered from different places
+
+A reader asks the panel two quite different things, and conflating them is the failure mode:
+
+| | Answer from | Example |
+|---|---|---|
+| **About this report** — why a number moved, what drove a quarter, how two companies here compare | **the artifact's own sourced figures.** This is what the panel is for | "Why did profit fall while revenue grew?" |
+| **About the sector** — what a metric or policy *is*, why it matters, how the business works | **sector knowledge**, the same material `school` teaches | "What is this trade preference, and why does it matter?" |
+
+**For a sector question: define generally, then illustrate specifically.** The general definition comes
+first and stands on its own; the report's company is the example, not the definition.
+
+The pattern the corpus uses, and the one to follow:
+
+1. **What the thing is**, stated so it would be true in any report — the mechanism, not the instance.
+2. **Why it matters for this company** — the exposure basis, with the sourced figure.
+3. **Why it does not matter for the others here**, where that is the interesting part. This is what turns
+   a definition into an insight, and it is the shape most often missed.
+
+**Never let the instance stand in for the concept.** An answer that explains a trade preference purely as
+"it is why this company's regional revenue grew" has taught the quarter and not the sector — and it will
+be wrong for the same reader next quarter.
+
+**If the sector file does not define the concept, say so** rather than improvising from the report. That
+is a gap worth recording, not papering over — see `school`'s *When the concept isn't in the sector file*.
+
+### Content spec
+
+Drawn from the published collection, where the panel appears in the large majority of full reports:
+
+- **Around a dozen questions** is the house norm, **grouped by company** where the report covers several,
+  so the reader picks a company and then a question.
+- **Answers run about 40–50 words**, and rarely past ~110. Long enough to give the mechanism and a
+  figure, short enough to read in the panel.
+- **Cover the question shapes** in `modes/school.md` — definitional, event, mechanism, judgment,
+  structural-or-cyclical, and company-specific exposure. A panel that is all definitional teaches
+  nothing about this quarter; one that is all event-driven teaches nothing transferable.
+- **Judgment questions state both readings** before landing, and never resolve into a buy/sell/hold.
+- **The panel states its own limits.** The corpus wording is a good model: answers are pre-written
+  analysis based on the disclosures reviewed for that report — **not live, not personalised, and not a
+  recommendation** — alongside the artifact's standard research/educational disclaimer.
+
 ## 8. Footnotes and caveats — do not skip these
 
 Whenever a figure carries a caveat the company itself flagged — a one-off tax credit, an MTM swing,

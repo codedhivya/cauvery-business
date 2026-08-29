@@ -112,6 +112,7 @@ GUARDRAILS = [
     ("metric blind spots named",          "modes/school.md",           ["say what the metric cannot tell you"]),
     ("durable vs point-in-time split",    "modes/school.md",           ["school teaches the sector and the business. it does not teach a quarter"]),
     ("answer, then name the mechanism",   "modes/school.md",           ["answer the specific question, then name the mechanism"]),
+    ("assist: define then illustrate",    "design-system.md",          ["define generally, then illustrate specifically"]),
     ("mixed reporting seasons handled",   "modes/quarterly-report.md", ["mixed reporting seasons"]),
 ]
 
