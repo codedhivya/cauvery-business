@@ -192,5 +192,16 @@ specific quarter is the author's own verified work. Cite it and link it.
 in the same category? If yes it is sector knowledge and belongs in the sector file. If no, it is
 illustration — source it, date it, and attribute it.
 
+**Most questions have both halves, and the split runs *inside* the question.** "Why did profit jump 83%
+when revenue grew 10%?" is answered from the report — but *why profit can move a multiple of revenue in
+that business* is sector knowledge, and a reader given only the first half learns nothing transferable.
+**Answer the specific question, then name the mechanism behind it.** The figures date; the mechanism does
+not.
+
+The same test separates a durable policy lesson from a point-in-time one. *That* a tariff changed three
+times in a year is illustration. *Why it can* — because it is set by executive action rather than
+legislation, on a political timetable rather than a commercial one — is structural, and it is what lets a
+reader anticipate the next change rather than be surprised by it.
+
 **Where a question is genuinely about one quarter** — why this margin moved, what drove this number —
 **the report is the right answer**, and school's job is to give the reader the framework to interpret it.

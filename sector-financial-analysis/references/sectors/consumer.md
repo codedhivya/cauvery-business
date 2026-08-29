@@ -139,6 +139,12 @@ sold.
 
 - **Spindle count / capacity utilisation (%)** — the asset base and how hard it is running.
 - **Cotton and yarn prices** — input and output; the spread is the business.
+- **Operating leverage** — a spinner's costs are largely fixed (spindles, power, labour) while the
+  spread moves with commodity prices. **So profit swings a multiple of revenue in both directions**: a
+  modest revenue increase alongside a widening spread can double profit, and the same mechanism halves it
+  when the spread compresses. When profit growth far outruns revenue growth here, **decompose it before
+  calling it a strong quarter** — check whether the spread widened, utilisation rose, or a one-off
+  landed. Revenue growth alone never explains a profit move in this category.
 - **Realisation per kg**, **value-added share** (garments vs commodity yarn — higher value-add means less
   cyclicality).
 
@@ -210,8 +216,20 @@ capacity in countries they have no other reason to be in.
   Vietnam and China. **A relative disadvantage of a few points moves orders**, because the buyer, not the
   manufacturer, chooses where to place them.
 - **Free-trade agreements** — an FTA with a destination market opens duty-free access and can transform
-  the economics of serving it. Note which agreements are in force, which are pending, and whether the
-  company has capacity positioned to use them.
+  the economics of serving it. Note which are in force, which are pending, and whether the company has
+  capacity positioned to use them.
+- **A pending agreement matters before it is in force.** Apparel buyers place orders two to four quarters
+  ahead, so sourcing decisions move on the *expectation* of duty-free access, not on the day it arrives.
+  **The order book shifts before the tariff does**, and an exporter with capacity already sited in the
+  beneficiary country captures that early. A signed-but-not-ratified agreement is therefore a live
+  commercial fact, not a future one — say where each company stands against it.
+- **Tariff volatility is itself a risk, separate from the tariff level.** Destination duties on textiles
+  are frequently set by **executive action rather than legislation**, so they can be imposed, amended or
+  suspended within a single year on a political timetable rather than a commercial one. **An exporter
+  cannot price long contracts against a rate that may move next quarter**, so the volatility raises
+  working capital, shortens order visibility and pushes buyers toward origins with more predictable
+  access — even ones with a nominally higher duty. Treat frequency of change as a metric in its own
+  right, not just the current rate.
 - **Indian export incentives** — schemes rebating state and central levies on exported garments. **These
   have expiry dates and are periodically extended or allowed to lapse**, so an expiry is a scheduled
   margin event. Confirm the current scheme and its expiry at source.
