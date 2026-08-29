@@ -19,7 +19,7 @@ and that mode files must never name a sector-specific metric. (`CLAUDE.md` symli
 | `reports/staging/` | Generated drafts awaiting review |
 | `reports/published/` | Published reports (local mirror of the Pages site) |
 | `scripts/` | `sync_reports.py`, `audit_corpus.py`, `verify_skill.py` |
-| `docs/` | [COVERAGE.md](docs/COVERAGE.md) — every sector, category and company · report URL lists · ADRs |
+| `docs/` | [COVERAGE.md](docs/COVERAGE.md) / [.html](docs/COVERAGE.html) — every sector, category and company · report URL lists · ADRs |
 | `archive/handoff/` | Historical: the 9 per-topic insurance skills this replaced |
 
 ## The skill

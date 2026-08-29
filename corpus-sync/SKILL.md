@@ -98,8 +98,8 @@ settles** — check first.
 python3 scripts/build_coverage.py
 ```
 
-`docs/COVERAGE.md` lists every sector, category and company the skill knows, derived from the sector
-files. **Regenerate it whenever a sector file changes** — it is the page people check before asking
+`docs/COVERAGE.md` and `docs/COVERAGE.html` list every sector, category and company the skill knows,
+derived from the sector files. One command writes both — the HTML is the shareable copy. **Regenerate it whenever a sector file changes** — it is the page people check before asking
 whether something is covered, so a stale one is worse than none.
 
 It also surfaces **categories naming no company**, which is usually a gap in the collection rather than

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Generate docs/COVERAGE.md — every sector, category and company the skill knows.
+Generate docs/COVERAGE.md and docs/COVERAGE.html — every sector, category and
+company the skill knows.
 
 Derived from the sector files, never hand-maintained. A hand-written coverage
 list drifts the moment a sector file changes, and a stale one is worse than
 none: it is the document people check before asking whether something is
 covered.
 
-    python3 scripts/build_coverage.py           # write docs/COVERAGE.md
+    python3 scripts/build_coverage.py           # write both files
     python3 scripts/build_coverage.py --check   # fail if it is out of date
 
 --check is for CI and for the sync workflow: exit 1 means a sector file moved
@@ -23,6 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECTORS = os.path.join(ROOT, "sector-financial-analysis", "references", "sectors")
 PUBLISHED = os.path.join(ROOT, "reports", "published")
 OUT = os.path.join(ROOT, "docs", "COVERAGE.md")
+OUT_HTML = os.path.join(ROOT, "docs", "COVERAGE.html")
 
 # Categories that legitimately name no company — a plant type or a division of
 # a company named elsewhere, not a distinct listed entity.
@@ -219,6 +221,138 @@ def unnamed(gaps=None):
     return out
 
 
+def to_html(md):
+    """Render the coverage markdown as a single self-contained page.
+
+    Deliberately minimal: this is a reference table people scan, so the job is
+    legibility — readable measure, tabular figures, and a table that scrolls in
+    its own container rather than pushing the page sideways on a phone.
+    """
+    import html as _h
+
+    def inline(s):
+        s = _h.escape(s)
+        s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
+        s = re.sub(r"(?<!\*)\*([^*]+?)\*(?!\*)", r"<em>\1</em>", s)
+        s = re.sub(r"`([^`]+?)`", r"<code>\1</code>", s)
+        s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', s)
+        return s
+
+    body, rows, in_code = [], [], False
+    def flush():
+        if not rows:
+            return
+        head, align, *data = rows
+        body.append('<div class="tw"><table>')
+        body.append("<thead><tr>" + "".join(f"<th>{inline(c)}</th>" for c in head) + "</tr></thead>")
+        body.append("<tbody>")
+        for r in data:
+            body.append("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>")
+        body.append("</tbody></table></div>")
+        rows.clear()
+
+    for line in md.splitlines():
+        if line.startswith("```"):
+            flush()
+            body.append("<pre><code>" if not in_code else "</code></pre>")
+            in_code = not in_code
+            continue
+        if in_code:
+            body.append(_h.escape(line))
+            continue
+        if line.startswith("|"):
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if not all(set(c) <= set("-: ") for c in cells):
+                rows.append(cells)
+            elif len(rows) == 1:
+                rows.append(cells)
+            continue
+        flush()
+        if m := re.match(r"^(#{1,3}) (.+)$", line):
+            lvl = len(m.group(1))
+            txt = m.group(2)
+            slug = re.sub(r"[^a-z0-9]+", "-", txt.lower()).strip("-")
+            body.append(f'<h{lvl} id="{slug}">{inline(txt)}</h{lvl}>')
+        elif line.startswith("- "):
+            body.append(f"<li>{inline(line[2:])}</li>")
+        elif line.strip() == "---":
+            body.append("<hr>")
+        elif line.strip():
+            body.append(f"<p>{inline(line)}</p>")
+    flush()
+
+    html_body = "\n".join(body)
+    html_body = re.sub(r"(?:<li>.*?</li>\n?)+", lambda m: "<ul>" + m.group(0) + "</ul>", html_body)
+
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coverage &mdash; CB Research</title>
+<style>
+  :root {{
+    --bg:#fbfaf8; --surface:#fff; --ink:#1c1a17; --muted:#6b6560;
+    --line:#e6e1da; --accent:#8a5a2b; --accent-soft:#f6efe6;
+  }}
+  @media (prefers-color-scheme: dark) {{
+    :root:not([data-theme="light"]) {{
+      --bg:#16150f; --surface:#1e1c16; --ink:#ece7dd; --muted:#9c948a;
+      --line:#332f27; --accent:#d9a066; --accent-soft:#241f18;
+    }}
+  }}
+  * {{ box-sizing:border-box; }}
+  body {{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 ui-serif, Georgia, "Times New Roman", serif;
+    padding:56px 24px 96px;
+  }}
+  main {{ max-width:60rem; margin:0 auto; }}
+  h1 {{ font-size:2.1rem; line-height:1.15; margin:0 0 .4em; letter-spacing:-.015em; text-wrap:balance; }}
+  h2 {{
+    font-size:1.28rem; margin:2.8em 0 .5em; padding-bottom:.28em;
+    border-bottom:1px solid var(--line); letter-spacing:-.01em;
+    font-family:ui-monospace, SFMono-Regular, Menlo, monospace; color:var(--accent);
+  }}
+  h3 {{ font-size:1.02rem; margin:2em 0 .4em; }}
+  p, li {{ color:var(--ink); max-width:65ch; }}
+  em {{ color:var(--muted); }}
+  ul {{ padding-left:1.15rem; }}
+  li {{ margin:.2em 0; }}
+  hr {{ border:0; border-top:1px solid var(--line); margin:3em 0; }}
+  code {{
+    font:0.86em/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background:var(--accent-soft); padding:.12em .38em; border-radius:3px;
+  }}
+  pre {{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:12px 14px; overflow-x:auto;
+  }}
+  pre code {{ background:none; padding:0; }}
+  .tw {{ overflow-x:auto; margin:1.1em 0; }}
+  table {{ border-collapse:collapse; width:100%; font-size:.92rem; font-variant-numeric:tabular-nums; }}
+  th, td {{ text-align:left; padding:.5em .7em; border-bottom:1px solid var(--line); vertical-align:top; }}
+  th {{
+    font:600 .72rem/1.3 ui-sans-serif, system-ui, sans-serif;
+    text-transform:uppercase; letter-spacing:.07em; color:var(--muted);
+    border-bottom:1px solid var(--line); white-space:nowrap;
+  }}
+  tbody tr:last-child td {{ border-bottom:none; }}
+  td:first-child {{ white-space:nowrap; }}
+  a {{ color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; }}
+  a:hover, a:focus-visible {{ border-bottom-color:var(--accent); }}
+  a:focus-visible {{ outline:2px solid var(--accent); outline-offset:3px; }}
+</style>
+</head>
+<body>
+<main>
+{html_body}
+</main>
+</body>
+</html>
+"""
+
+
 def main():
     if "--strict" in sys.argv:
         new = [g for g in unnamed() if g not in KNOWN_GAPS]
@@ -247,15 +381,21 @@ def main():
             print("docs/COVERAGE.md missing — run: python3 scripts/build_coverage.py",
                   file=sys.stderr)
             return 1
+        if not os.path.exists(OUT_HTML) or open(OUT_HTML).read() != to_html(text):
+            print("docs/COVERAGE.html is out of date — run: python3 scripts/build_coverage.py",
+                  file=sys.stderr)
+            return 1
         if open(OUT).read() != text:
             print("docs/COVERAGE.md is out of date — run: python3 scripts/build_coverage.py",
                   file=sys.stderr)
             return 1
-        print("docs/COVERAGE.md is current.")
+        print("docs/COVERAGE.md and docs/COVERAGE.html are current.")
         return 0
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w") as fh:
         fh.write(text)
+    with open(OUT_HTML, "w") as fh:
+        fh.write(to_html(text))
     n = text.count("\n| **")
     print(f"Wrote docs/COVERAGE.md — {n} categories across "
           f"{len([l for l in text.splitlines() if l.startswith('## ') and l != '## Categories with no company named'])} sectors.")
