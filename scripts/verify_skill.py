@@ -104,6 +104,8 @@ GUARDRAILS = [
     ("prior coverage stated in output",   "output-conventions.md",     ["prior cb research coverage"]),
     ("P&L must tie, never back-solve",    "modes/financials.md",       ["never back-solve a line"]),
     ("prior period reconciled",           "output-conventions.md",     ["they must agree"]),
+    ("pledge flagged as risk",            "modes/business-profile.md", ["leverage position on the company"]),
+    ("optics separated from operations",  "modes/business-profile.md", ["separate the optics from the operations"]),
     ("mixed reporting seasons handled",   "modes/quarterly-report.md", ["mixed reporting seasons"]),
 ]
 
