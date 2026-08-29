@@ -27,9 +27,33 @@ OUT = os.path.join(ROOT, "docs", "COVERAGE.md")
 # Categories that legitimately name no company — a plant type or a division of
 # a company named elsewhere, not a distinct listed entity.
 NAMELESS_OK = {
-    "Grinding-only / split unit", "Commercial / lease developer", "Wireline / enterprise",
+    "Grinding-only / split unit", "Commercial / lease developer",
     "Hyperlocal / last-mile", "Contract logistics & warehousing",
+    "REIT — Hospitality", "InvIT — Logistics & warehousing",
 }
+
+# Words that mark a fragment as a description of a company type rather than a
+# company. "listed hospital chains" and "the branded-foods majors" name nobody:
+# a reader cannot look them up, and they cannot seed a peer set.
+# Deliberately case-SENSITIVE. These words appear inside real company names
+# ("Nexus Select Trust", "Container Corporation"), so only the lowercase form
+# marks a description.
+_DESC = re.compile(
+    r"\b(majors?|players?|businesses|operators?|chains?|makers?|manufacturers?|"
+    r"producers?|entrants?|arms?|similar|firms?|mills?|spinners?|utilities|"
+    r"companies|providers?|platforms?|insurers?|trusts?|recyclers?|units?|"
+    r"the commodity portion|and the|and listed|of the above)\b")
+
+
+def named_companies(ex):
+    """The fragments of an examples cell that actually name a company."""
+    out = []
+    for frag in re.split(r"[;,]|\band\b", ex):
+        frag = frag.strip(" .")
+        if not frag or not frag[0].isupper() or _DESC.search(frag):
+            continue
+        out.append(frag)
+    return out
 
 
 def taxonomy(path):
@@ -48,16 +72,31 @@ def taxonomy(path):
     sub = re.search(r"^### Sub-categories.*", block, re.S | re.M)
     if sub:
         block = sub.group(0)
-    out = []
+    sub = bool(sub)
+    out, ex_col = [], None
     for line in block.splitlines():
         if not line.startswith("|") or "---" in line:
             continue
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) < 2 or not cells[0].startswith("**"):
+        # Locate the Examples column from the header. Not every taxonomy has one
+        # — reit-invit's sub-category table ends in a note, and rendering a note
+        # as a company list is worse than rendering nothing.
+        if ex_col is None and not cells[0].startswith("**"):
+            for i, c in enumerate(cells):
+                if c.lower().startswith("example"):
+                    ex_col = i
+            if ex_col is None:
+                ex_col = -1          # header seen, no Examples column
+            continue
+        if not cells[0].startswith("**"):
             continue
         cat = cells[0].strip("*").strip()
-        ex = cells[-1]
-        # strip markdown emphasis for readability
+        # Some taxonomies group first (reit-invit: Vehicle | Sub-category | ... ).
+        # Name the row for the sub-category, qualified by its group, or every
+        # row in the group renders under the same heading.
+        if sub and len(cells) > 2 and ex_col not in (1, None):
+            cat = f"{cat} — {cells[1].strip('*').strip()}"
+        ex = "" if ex_col in (None, -1) or ex_col >= len(cells) else cells[ex_col]
         ex = re.sub(r"\*\*(.*?)\*\*", r"\1", ex).strip()
         out.append((cat, ex))
     return out
@@ -123,12 +162,17 @@ def render():
         L.append("| Category | Companies |")
         L.append("|---|---|")
         for cat, ex in rows:
-            proper = [w for w in re.findall(r"\b[A-Z][A-Za-z&.\-]{2,}", ex)
-                      if w not in ("The", "And", "Not", "An")]
-            if not proper and cat not in NAMELESS_OK:
+            named = named_companies(ex)
+            if named:
+                # Show only the names. The descriptive remainder ("and the
+                # integrated sugar mills") reads as a company here and is not one.
+                cell = ", ".join(named)
+            elif cat in NAMELESS_OK:
+                cell = "*no separate listed company — see the sector file*"
+            else:
                 gaps.append((name, cat))
-                ex = f"{ex} — *no company named*"
-            L.append(f"| **{cat}** | {ex} |")
+                cell = "*none named — see below*"
+            L.append(f"| **{cat}** | {cell} |")
         L.append("")
 
     if gaps:

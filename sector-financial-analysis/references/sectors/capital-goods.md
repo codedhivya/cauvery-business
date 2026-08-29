@@ -12,8 +12,8 @@ how fast it turns into revenue, and at what margin. Nearly every metric here ser
 
 | Category | What it is | Examples |
 |---|---|---|
-| **Defence** | Platforms, systems and components for the armed forces; long cycles, single dominant customer | HAL-type platform makers, defence electronics, precision components |
-| **Railways** | Rolling stock, track, signalling, and railway financing | RVNL, IRFC, rolling-stock and component makers |
+| **Defence** | Platforms, systems and components for the armed forces; long cycles, single dominant customer | Bharat Electronics, HAL, Mazagon Dock, GRSE, Data Patterns, Paras Defence |
+| **Railways** | Rolling stock, track, signalling, and railway financing | RVNL, IRFC, IRCON |
 | **EMS — box-build** | High-volume consumer assembly. The customer owns the design; the manufacturer earns a conversion fee. Enormous revenue, thin margin, working-capital heavy | Dixon |
 | **EMS — design-led / ODM** | Contributes design and owns some IP. ODM work earns materially better margin than pure contract assembly | Syrma SGS, Amber |
 | **EMS — industrial / semiconductor** | Industrial, aerospace, medical and semiconductor packaging (OSAT). Longer qualification cycles, fewer competitors, better pricing — but heavy capex | Kaynes |

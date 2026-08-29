@@ -67,8 +67,8 @@ is out of scope.
 
 | Category | Companies |
 |---|---|
-| **Defence** | HAL-type platform makers, defence electronics, precision components |
-| **Railways** | RVNL, IRFC, rolling-stock and component makers |
+| **Defence** | Bharat Electronics, HAL, Mazagon Dock, GRSE, Data Patterns, Paras Defence |
+| **Railways** | RVNL, IRFC, IRCON |
 | **EMS — box-build** | Dixon |
 | **EMS — design-led / ODM** | Syrma SGS, Amber |
 | **EMS — industrial / semiconductor** | Kaynes |
@@ -96,7 +96,7 @@ is out of scope.
 | Category | Companies |
 |---|---|
 | **Integrated producer** | UltraTech, Ambuja, ACC, Shree Cement, Ramco |
-| **Grinding-only / split unit** | split grinding units of the majors; newer entrants |
+| **Grinding-only / split unit** | *no separate listed company — see the sector file* |
 
 ## chemicals
 
@@ -105,7 +105,7 @@ is out of scope.
 | Category | Companies |
 |---|---|
 | **Specialty chemicals** | Vinati Organics, Aarti Industries, Balaji Amines, Alkyl Amines, Galaxy Surfactants, SRF, Deepak Nitrite, Acutaas Chemicals |
-| **Commodity chemicals** | bulk chemical producers, and the commodity portion of diversified players — *no company named* |
+| **Commodity chemicals** | *none named — see below* |
 | **Fertilisers** | Coromandel International, Chambal Fertilisers, GSFC, GNFC, Paradeep Phosphates, FACT |
 | **Plastic pipes & fittings** | Finolex Industries, Supreme Industries, Astral |
 | **Recycling / circular materials** | Gravita India, Ganesha Ecosphere, Pondy Oxides |
@@ -118,15 +118,15 @@ is out of scope.
 | Category | Companies |
 |---|---|
 | **Retail & Apparel** | DMart (Avenue Supermarts), V2 Retail, Aditya Birla Fashion, Page Industries, Raymond Lifestyle |
-| **FMCG & Foods** | ITC, Hindustan Unilever, and the branded-foods majors |
+| **FMCG & Foods** | ITC, Hindustan Unilever |
 | **Dairy** | Hatsun Agro, Heritage Foods, Dodla Dairy, Parag Milk Foods, Milky Mist |
 | **Alcoholic Beverages** | United Spirits, Radico Khaitan, United Breweries, Tilaknagar, GM Breweries, Globus Spirits, Allied Blenders (ABD), Sula Vineyards |
-| **Sugar & Agri-processing** | Balrampur Chini, and the integrated sugar mills |
-| **Textiles** | KPR Mill, Nitin Spinners, Vardhman-type spinners |
+| **Sugar & Agri-processing** | Balrampur Chini |
+| **Textiles** | KPR Mill, Nitin Spinners, Gokaldas Exports, Vardhman |
 | **Hospitality** | IHCL, EIH (Oberoi), Chalet, Lemon Tree, Juniper, SAMHI, ITC Hotels |
 | **Leisure** | Wonderla Holidays, Imagicaaworld |
 | **Jewellery — retailer** | Titan, Kalyan Jewellers, Senco Gold, PN Gadgil, Thangamayil |
-| **Jewellery — B2B manufacturer** | Sky Gold, and listed jewellery manufacturers |
+| **Jewellery — B2B manufacturer** | Sky Gold |
 | **Jewellery — LGD exporter** | Goldiam International |
 
 ## infra-realty
@@ -136,7 +136,7 @@ is out of scope.
 | Category | Companies |
 |---|---|
 | **Residential developer** | DLF, Prestige Estates, Sobha, Oberoi Realty, Brigade, Anant Raj, Ganesh Housing |
-| **Commercial / lease developer** | the commercial arms of the above |
+| **Commercial / lease developer** | *no separate listed company — see the sector file* |
 | **Ports & logistics** | Adani Ports & SEZ, JSW Infrastructure, Gujarat Pipavav Port |
 
 ## insurance
@@ -147,7 +147,7 @@ is out of scope.
 |---|---|
 | **Life** | LIC, HDFC Life, ICICI Prudential Life, SBI Life, Axis Max Life |
 | **Health (SAHI)** | Star Health, Niva Bupa |
-| **General** | ICICI Lombard, and the multi-line non-life insurers |
+| **General** | ICICI Lombard |
 | **TPA** | Medi Assist |
 
 ## it-services
@@ -158,9 +158,9 @@ is out of scope.
 |---|---|
 | **Large-cap IT services** | TCS, Infosys, HCLTech, Wipro |
 | **Mid-cap IT services** | LTIMindtree, Persistent, Coforge, Mphasis |
-| **Products & platforms** | HCLSoftware, product-led businesses |
+| **Products & platforms** | HCLSoftware |
 | **AI / analytics / engineering** | Fractal Analytics |
-| **Internet & classifieds** | InfoEdge (Naukri, 99acres, Jeevansathi) |
+| **Internet & classifieds** | InfoEdge (Naukri, Jeevansathi) |
 
 ## logistics
 
@@ -170,9 +170,9 @@ is out of scope.
 |---|---|
 | **Express parcel — tech 3PL** | Shadowfax Technologies, Delhivery |
 | **Express — integrated** | Blue Dart |
-| **Hyperlocal / last-mile** | the hyperlocal arms of the above |
+| **Hyperlocal / last-mile** | *no separate listed company — see the sector file* |
 | **Surface freight (FTL / LTL)** | VRL Logistics, TCI Express |
-| **Contract logistics & warehousing** | contract logistics operators |
+| **Contract logistics & warehousing** | *no separate listed company — see the sector file* |
 | **Rail & multimodal** | Container Corporation |
 
 ## metals
@@ -182,7 +182,7 @@ is out of scope.
 | Category | Companies |
 |---|---|
 | **Integrated steel** | Tata Steel, SAIL, JSW Steel (partially integrated) |
-| **Secondary / EAF steel** | Shyam Metallics and similar |
+| **Secondary / EAF steel** | Shyam Metallics, Jindal Steel & Power |
 | **Aluminium — integrated** | NALCO, Hindalco (with Novelis downstream) |
 | **Diversified resources** | Vedanta |
 
@@ -220,12 +220,12 @@ is out of scope.
 | Category | Companies |
 |---|---|
 | **Formulations — US/Export generics** | Sun Pharma, Dr Reddy's, Lupin, Aurobindo, Zydus, Glenmark, Alkem, Alembic |
-| **Formulations — Domestic (IPM)** | Mankind, Torrent, Eris, Alkem (domestic arm) |
+| **Formulations — Domestic (IPM)** | Mankind, Torrent, Eris |
 | **API / Intermediates** | Divi's, Laurus Labs, Neuland, Supriya Lifescience |
-| **CDMO / CRO** | Divi's, Sai Life Sciences, Anthem Biosciences, Laurus (CDMO arm), Gland Pharma |
+| **CDMO / CRO** | Divi's, Sai Life Sciences, Anthem Biosciences, Gland Pharma |
 | **Hospitals** | Manipal Health, Fortis, Global Health (Medanta), KIMS, Rainbow Children's, Yatharth |
-| **Diagnostics** | listed diagnostics chains — *no company named* |
-| **MedTech** | Poly Medicure, and listed device makers |
+| **Diagnostics** | *none named — see below* |
+| **MedTech** | Poly Medicure |
 
 ## power-energy
 
@@ -233,9 +233,9 @@ is out of scope.
 
 | Category | Companies |
 |---|---|
-| **Thermal / Conventional IPP** | Adani Power, JSW Energy, NTPC-type utilities |
-| **Renewable IPP** | ACME Solar, renewable platforms |
-| **Solar Manufacturing** | Emmvee, integrated cell-to-module players |
+| **Thermal / Conventional IPP** | Adani Power, JSW Energy, NTPC |
+| **Renewable IPP** | ACME Solar, Adani Green, NTPC Green, Suzlon, KPI Green |
+| **Solar Manufacturing** | Emmvee, Waaree Energies, Premier Energies, Vikram Solar |
 | **Integrated Utility** | Tata Power |
 | **Oil & Gas — Upstream** | ONGC, Oil India |
 | **Oil & Gas — Downstream / OMC** | IOC, BPCL, HPCL |
@@ -249,15 +249,15 @@ is out of scope.
 
 | Category | Companies |
 |---|---|
-| **REIT** | The dominant category; Grade-A parks let to corporate tenants |
-| **REIT** | Minimum guaranteed rent plus turnover-linked rent |
-| **REIT** | Held within diversified REITs; far more cyclical — occupancy, ADR, RevPAR |
-| **REIT** | Small & Medium REIT — a separate SEBI framework. Assets in a defined band, each scheme separately listed, high minimum investment. Analyse per scheme; schemes do not cross-subsidise |
-| **InvIT** | Availability-based — paid for being available, not for volume carried. The closest thing to a bond in the class |
-| **InvIT** | Toll = traffic risk; annuity / HAM = fixed payment, sovereign counterparty. State the mix |
-| **InvIT** | Contracted transportation or offtake tariffs |
-| **InvIT** | Lease rent, tenant-covenant driven |
-| **InvIT** | Same economics, far thinner disclosure, no live price, high entry floor |
+| **REIT — Office** | Embassy Office Parks, Mindspace Business Parks, Brookfield India |
+| **REIT — Retail / consumption centres** | Nexus Select Trust |
+| **REIT — Hospitality** | *no separate listed company — see the sector file* |
+| **REIT — SM REIT** | Property Share Investment Trust (PropShare Platina) |
+| **InvIT — Power transmission** | IndiGrid, PowerGrid InvIT |
+| **InvIT — Roads** | IRB InvIT, Cube Highways Trust, NHIT |
+| **InvIT — Pipelines / energy** | *none named — see below* |
+| **InvIT — Logistics & warehousing** | *no separate listed company — see the sector file* |
+| **InvIT — Private placement** | *none named — see below* |
 
 ## telecom
 
@@ -267,7 +267,7 @@ is out of scope.
 |---|---|
 | **Integrated wireless operator** | Bharti Airtel, Reliance Jio (unlisted separately), Vodafone Idea |
 | **Passive infrastructure** | Indus Towers |
-| **Wireline / enterprise** | enterprise arms of the majors |
+| **Wireline / enterprise** | Tata Communications, Netweb Technologies |
 
 ---
 
@@ -279,6 +279,8 @@ skill. Fill one from a report, never from general knowledge.
 
 - **chemicals** — Commodity chemicals
 - **pharma-health** — Diagnostics
+- **reit-invit** — InvIT — Pipelines / energy
+- **reit-invit** — InvIT — Private placement
 
 ---
 

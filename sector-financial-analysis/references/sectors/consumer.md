@@ -17,7 +17,7 @@ metric set.
 | **Dairy** | Procurement-led; margin set at the farm gate. **Not a typical FMCG business** | Hatsun Agro, Heritage Foods, Dodla Dairy, Parag Milk Foods, Milky Mist |
 | **Alcoholic Beverages** | Spirits, beer, wine — heavily regulated, state-by-state | United Spirits, Radico Khaitan, United Breweries, Tilaknagar, GM Breweries, Globus Spirits, Allied Blenders (ABD), Sula Vineyards |
 | **Sugar & Agri-processing** | Cane crushing, ethanol, distillery | Balrampur Chini, and the integrated sugar mills |
-| **Textiles** | Yarn, fabric, garments | KPR Mill, Nitin Spinners, Vardhman-type spinners |
+| **Textiles** | Yarn, fabric, garments | KPR Mill, Nitin Spinners, Gokaldas Exports, Vardhman |
 | **Hospitality** | Hotels | IHCL, EIH (Oberoi), Chalet, Lemon Tree, Juniper, SAMHI, ITC Hotels |
 | **Leisure** | Amusement parks, experience venues | Wonderla Holidays, Imagicaaworld |
 | **Jewellery — retailer** | Organised gold and diamond retail to consumers | Titan, Kalyan Jewellers, Senco Gold, PN Gadgil, Thangamayil |

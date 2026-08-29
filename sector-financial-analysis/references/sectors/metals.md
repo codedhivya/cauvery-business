@@ -16,7 +16,7 @@ sense; the levers are cost, volume and mix.
 | Category | What it is | Examples |
 |---|---|---|
 | **Integrated steel** | Owns iron ore and/or coking coal, converts to finished steel. Best margin through the cycle | Tata Steel, SAIL, JSW Steel (partially integrated) |
-| **Secondary / EAF steel** | Buys scrap or sponge iron, melts and rolls. Lower capex, lower margin, more price-exposed | Shyam Metallics and similar |
+| **Secondary / EAF steel** | Buys scrap or sponge iron, melts and rolls. Lower capex, lower margin, more price-exposed | Shyam Metallics, Jindal Steel & Power |
 | **Aluminium — integrated** | Bauxite → alumina → aluminium, often with captive power | NALCO, Hindalco (with Novelis downstream) |
 | **Diversified resources** | Multiple metals and often oil & gas under one holding | Vedanta |
 

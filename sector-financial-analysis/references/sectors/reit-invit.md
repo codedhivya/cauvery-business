@@ -62,17 +62,17 @@ composition — a high capital-return share is this effect showing up in the pay
 
 ### Sub-categories within each
 
-| Vehicle | Sub-category | Note |
-|---|---|---|
-| **REIT** | Office | The dominant category; Grade-A parks let to corporate tenants |
-| **REIT** | Retail / consumption centres | Minimum guaranteed rent plus turnover-linked rent |
-| **REIT** | Hospitality | Held within diversified REITs; **far more cyclical** — occupancy, ADR, RevPAR |
-| **REIT** | **SM REIT** | Small & Medium REIT — a separate SEBI framework. Assets in a defined band, **each scheme separately listed**, high minimum investment. **Analyse per scheme; schemes do not cross-subsidise** |
-| **InvIT** | Power transmission | **Availability-based** — paid for being available, not for volume carried. The closest thing to a bond in the class |
-| **InvIT** | Roads | **Toll = traffic risk**; **annuity / HAM = fixed payment, sovereign counterparty**. State the mix |
-| **InvIT** | Pipelines / energy | Contracted transportation or offtake tariffs |
-| **InvIT** | Logistics & warehousing | Lease rent, tenant-covenant driven |
-| **InvIT** | Private placement | Same economics, far thinner disclosure, no live price, high entry floor |
+| Vehicle | Sub-category | Note | Examples |
+|---|---|---|---|
+| **REIT** | Office | The dominant category; Grade-A parks let to corporate tenants | Embassy Office Parks, Mindspace Business Parks, Brookfield India |
+| **REIT** | Retail / consumption centres | Minimum guaranteed rent plus turnover-linked rent | Nexus Select Trust |
+| **REIT** | Hospitality | Held within diversified REITs; **far more cyclical** — occupancy, ADR, RevPAR | held within diversified REITs |
+| **REIT** | **SM REIT** | Small & Medium REIT — a separate SEBI framework. Assets in a defined band, **each scheme separately listed**, high minimum investment. **Analyse per scheme; schemes do not cross-subsidise** | Property Share Investment Trust (PropShare Platina) |
+| **InvIT** | Power transmission | **Availability-based** — paid for being available, not for volume carried. The closest thing to a bond in the class | IndiGrid, PowerGrid InvIT |
+| **InvIT** | Roads | **Toll = traffic risk**; **annuity / HAM = fixed payment, sovereign counterparty**. State the mix | IRB InvIT, Cube Highways Trust, NHIT |
+| **InvIT** | Pipelines / energy | Contracted transportation or offtake tariffs | listed energy infrastructure trusts |
+| **InvIT** | Logistics & warehousing | Lease rent, tenant-covenant driven | held within diversified InvITs |
+| **InvIT** | Private placement | Same economics, far thinner disclosure, no live price, high entry floor | unlisted trusts |
 
 **A single trust routinely spans several sub-categories** — the corpus shows one REIT holding Grade-A
 offices, hospitality *and* solar generation; an InvIT holding transmission, renewables and battery

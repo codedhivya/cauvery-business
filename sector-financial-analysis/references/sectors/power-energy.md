@@ -12,9 +12,9 @@ capacity and tariff.
 
 | Category | What it is | Examples |
 |---|---|---|
-| **Thermal / Conventional IPP** | Coal and gas generation, sold under PPAs or merchant | Adani Power, JSW Energy, NTPC-type utilities |
-| **Renewable IPP** | Solar and wind generation assets | ACME Solar, renewable platforms |
-| **Solar Manufacturing** | Cell and module manufacturing — a *manufacturing* business, not a generation one | Emmvee, integrated cell-to-module players |
+| **Thermal / Conventional IPP** | Coal and gas generation, sold under PPAs or merchant | Adani Power, JSW Energy, NTPC |
+| **Renewable IPP** | Solar and wind generation assets | ACME Solar, Adani Green, NTPC Green, Suzlon, KPI Green |
+| **Solar Manufacturing** | Cell and module manufacturing — a *manufacturing* business, not a generation one | Emmvee, Waaree Energies, Premier Energies, Vikram Solar |
 | **Integrated Utility** | Generation plus transmission, distribution and retail supply | Tata Power |
 | **Oil & Gas — Upstream** | Exploration and production | ONGC, Oil India |
 | **Oil & Gas — Downstream / OMC** | Refining and fuel marketing | IOC, BPCL, HPCL |
