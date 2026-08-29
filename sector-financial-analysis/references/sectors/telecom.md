@@ -101,6 +101,38 @@ Indicative; the sector is in an ARPU-repair cycle, so levels move.
 - For the weakest operator: **is funding secured** — equity raise, government conversion, promoter
   infusion? This is a solvency question, not a performance one, and should be treated as such.
 
+### AGR, and what makes it a balance-sheet event rather than a tax
+
+**AGR (Adjusted Gross Revenue) is the base** on which an operator pays its licence fee and spectrum usage
+charges. The dispute that reshaped the sector was never about the *rate* — it was about the **base**:
+whether it covers telecom revenue only, or **all revenue** an operator earns, including non-telecom
+income.
+
+When the wider definition was upheld, the effect was **retrospective**. Years of past dues were
+recalculated on a larger base, converting a routine levy into liabilities large enough to threaten
+solvency. **Two things follow for any analysis:**
+
+- **Always say which revenue base a levy applies to.** A rate without its base is not a number.
+- **A definitional ruling can be a larger event than a rate change**, because it applies backwards. Treat
+  a pending definitional dispute as a balance-sheet risk, not a P&L one.
+
+### When the state becomes a shareholder
+
+Where statutory dues exceed what an operator can pay, the government may **convert those dues into
+equity** rather than enforce them — taking a large, sometimes near-controlling stake. Alongside
+moratoria on payments and waivers of bank guarantees, this is a distinctive feature of this sector and it
+changes the analysis:
+
+- **The dues do not disappear; they change form.** Interest and instalments become dilution. Per-share
+  metrics must be read against the post-conversion count, and further conversions are usually possible.
+- **The state now has an interest in the company surviving** — it holds equity that a collapse would
+  zero, and unpaid dues it could no longer collect. That materially changes the probability of further
+  relief, and it is a legitimate thing to state.
+- **Do not read relief as recovery.** A moratorium defers cash; it does not generate it. **The operating
+  question is unchanged: is ARPU rising fast enough to fund the network before the deferral ends?**
+- **State the government holding, the conversions to date, and when deferred payments resume.** A reader
+  cannot size the risk without that schedule.
+
 ### What goes wrong, and the tell
 
 **Capex and dues arriving faster than ARPU rises to meet them.** The tells: ARPU flat while capex intensity climbs; subscriber growth concentrated in low-value users; a spectrum auction or licence payment falling due; and rising churn, which costs acquisition spend twice.

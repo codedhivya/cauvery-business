@@ -215,6 +215,12 @@ capacity in countries they have no other reason to be in.
 - **Destination tariff tier** — the rate applied to India versus competing origins such as Bangladesh,
   Vietnam and China. **A relative disadvantage of a few points moves orders**, because the buyer, not the
   manufacturer, chooses where to place them.
+- **"Tariff parity" does not mean low tariffs.** Apparel's base duty into major markets is already high
+  before any surcharge. Parity means India's *total landed* rate is now similar to its nearest rivals
+  rather than carrying an India-specific penalty. **The absolute rate sets the price; the gap to rivals
+  decides where the order goes.** When a penalty is removed, orders diverted during it can return on cost
+  grounds alone — so parity is a volume story, not a margin one. Quote both numbers: the landed rate, and
+  the gap.
 - **Free-trade agreements** — an FTA with a destination market opens duty-free access and can transform
   the economics of serving it. Note which are in force, which are pending, and whether the company has
   capacity positioned to use them.

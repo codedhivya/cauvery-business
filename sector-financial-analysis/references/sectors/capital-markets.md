@@ -17,6 +17,7 @@ drops through to profit at a rate rarely seen elsewhere.
 | **RTA (Registrar & Transfer Agent)** | Recordkeeping for mutual funds and issuers; earns fees on AUM serviced | CAMS, KFintech |
 | **Broker** | Executes trades for clients; brokerage plus float and margin-funding income | Angel One, Groww |
 | **AMC (Asset Manager)** | Manages mutual fund assets; earns a management fee on AUM | HDFC AMC, ICICI Prudential AMC, SBI Funds Management, UTI AMC, Aditya Birla Sun Life AMC |
+| **Alternatives / private-capital manager** | Runs **closed-end** AIF or private-equity funds for a small number of institutional investors. **Not a mutual fund AMC** — see §2 | Gaja Capital |
 | **Fund / Scheme** | An investment vehicle, **not an operating company** — see §2 | Edelweiss Recently Listed IPO Fund |
 
 The first five are operating companies analysed on revenue and margin. **A fund is not** — it has no
@@ -132,6 +133,31 @@ Indicative; verify against the company's own history and current regulation.
   opex/QAAUM falling? **Is net equity sales positive** — that separates share gain from market lift.
 - **Broker** — Are active clients growing? What happened to derivative volumes after the last regulatory
   change? How material is float and MTF income?
+
+### An alternatives manager is not a mutual fund AMC
+
+Both "manage assets", and the resemblance ends there. The difference decides every metric:
+
+| | **Mutual fund AMC** | **Alternatives / private-capital manager** |
+|---|---|---|
+| Structure | Open-ended schemes, daily NAV | **Closed-end funds, no daily NAV** |
+| Investors | Mass retail, redeemable at will | A small number of institutional investors, **locked in for years** |
+| Fee | A management fee on **daily AUM**, capped by expense-ratio rules | A management fee on **committed capital**, plus **carry** — a share of gains above a hurdle |
+| Revenue behaviour | Moves with markets and with flows, continuously | **Steps** with each fund raised; carry is **lumpy and realisation-dependent** |
+| The risk | Net outflows, and fee compression | **Failure to raise the next fund**, and exits that do not happen |
+
+Three consequences for reading one:
+
+- **AUM is not comparable across the two.** Committed capital that has not been drawn earns differently
+  from daily AUM, and a closing-AUM comparison between them is meaningless.
+- **Carry is not recurring revenue.** It arrives when investments are exited, so a year with a large
+  realisation is not a run-rate. **Separate fee income from carry** before valuing the earnings.
+- **The fundraising cycle is the growth story**, not market direction. Ask when the current fund closed,
+  how much is deployed, and whether the next raise is in market.
+
+**Co-investment is a capital commitment, not a use of proceeds.** A manager putting its own money into
+its funds — "skin in the game" — is meeting an obligation investors require, so treat it as capital tied
+up rather than as growth spending.
 
 ### What goes wrong, and the tell
 

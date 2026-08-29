@@ -20,7 +20,7 @@ is out of scope.
 | [`auto`](#auto) | 6 | 10 |
 | [`banking`](#banking) | 3 | 12 |
 | [`capital-goods`](#capital-goods) | 8 | 15 |
-| [`capital-markets`](#capital-markets) | 6 | 10 |
+| [`capital-markets`](#capital-markets) | 7 | 10 |
 | [`cement`](#cement) | 2 | 2 |
 | [`chemicals`](#chemicals) | 6 | 7 |
 | [`consumer`](#consumer) | 11 | 22 |
@@ -87,6 +87,7 @@ is out of scope.
 | **RTA (Registrar & Transfer Agent)** | CAMS, KFintech |
 | **Broker** | Angel One, Groww |
 | **AMC (Asset Manager)** | HDFC AMC, ICICI Prudential AMC, SBI Funds Management, UTI AMC, Aditya Birla Sun Life AMC |
+| **Alternatives / private-capital manager** | Gaja Capital |
 | **Fund / Scheme** | Edelweiss Recently Listed IPO Fund |
 
 ## cement

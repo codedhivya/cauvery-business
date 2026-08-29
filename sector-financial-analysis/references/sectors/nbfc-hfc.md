@@ -164,6 +164,51 @@ Indicative and category-dependent; verify against the company's own history.
 - **Infra financier (PFC/REC/IREDA)** — What is exposure to state discoms and their payment record? Is
   the renewable book growing? These are government-linked and their asset quality is policy-sensitive.
 
+### Concentration is not one risk — name which kind
+
+"The book is concentrated in one product" says nothing on its own, because the risk that follows depends
+entirely on the product:
+
+- **Collateralised, liquid, short-tenor concentration** — a gold-loan book, for instance — carries little
+  *credit* risk: the collateral is easy to value and easy to realise, so defaults rarely translate into
+  losses. What it carries instead is **regulatory and collateral-value risk**. A change in permitted LTV
+  or in lending norms, or a fall in the collateral's price, hits the whole book at once. Strong asset
+  quality here is a **product characteristic, not a sign of superior underwriting** — do not read it as
+  one.
+- **Unsecured concentration** carries genuine credit risk. In a downturn these default sooner and recover
+  less, and the segment is the most exposed to over-leveraged borrowers.
+- **Sectoral concentration** — lending to one industry — carries that industry's cycle. Asset quality can
+  look immaculate for years and then fail together, because the exposures are correlated.
+
+**State which kind, then judge accordingly.** Two lenders each "51% concentrated" can face opposite
+risks, and a single concentration metric ranks them wrongly.
+
+### Structure: not every listed entity is the lender
+
+Some listed financial platforms are **holding companies rather than operating lenders** — registered with
+the RBI as a **Core Investment Company (CIC)**, whose business is holding stakes in subsidiaries that do
+the actual lending, payments or asset management.
+
+The consequence: **consolidated metrics describe a portfolio, not a lender.** A CIC's NIM, AUM growth and
+asset quality are aggregates across businesses with different economics and different regulators. **Name
+the operating subsidiary that carries each activity** and read its metrics there — see the
+financial-services-platform treatment above for how to value the whole.
+
+### Foreign borrowing, and the cost of hedging it
+
+An NBFC that funds part of its book abroad — through external commercial borrowings — takes on a cost
+that is invisible in the coupon: **the currency hedge**. Cross-currency swap spreads move with global
+risk sentiment, and when they spike, a planned raise stops being economical even though the underlying
+interest rate has not changed.
+
+- **A cancelled or downsized foreign raise is usually prudent treasury management, not distress** — a
+  lender declining to lock in an expensive hedge. Read it that way first.
+- **The structural question is different**: how much of the borrowing mix depends on that channel? A
+  lender habitually funding a meaningful share offshore has a concentration in a market that can close
+  for reasons unrelated to its own credit.
+- **State the hedged cost, not the headline rate.** An unhedged foreign borrowing is a currency position,
+  not cheap funding.
+
 ### What goes wrong, and the tell
 
 **Asset-liability mismatch, and funding that reprices faster than the book.** The tells: cost of funds rising while yield on advances is flat or contractually fixed; short-term borrowing funding long-tenor assets; reliance on a narrow set of lenders; and a rating outlook change, which in this sector is a leading indicator rather than a lagging one because funding access *is* the business.
