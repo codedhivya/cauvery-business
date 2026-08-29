@@ -9,7 +9,8 @@ Keeps two things in step: the local mirror of the published collection, and the 
 `sector-financial-analysis`. When reports are published and neither is updated, the skill silently lacks
 what the author already knows.
 
-**The loop is: pull → classify → mine → apply → verify → baseline.** Steps 1, 2 and 6 are mechanical.
+**The loop is: pull → classify → mine → apply → coverage → verify → baseline.** Steps 1, 2, 5, 6 and 7
+are mechanical.
 **Steps 3 and 4 are the work** — the scripts flag *that* something is new, never *what it means*.
 
 ---
@@ -88,7 +89,20 @@ Ask the user when the judgment is genuinely theirs: a new sector, a taxonomy tha
 existing one, or a metric that may be a deliberate one-off. **Do not ask about things the corpus already
 settles** — check first.
 
-## Step 5 — Verify
+## Step 5 — Regenerate the coverage page
+
+```bash
+python3 scripts/build_coverage.py
+```
+
+`docs/COVERAGE.md` lists every sector, category and company the skill knows, derived from the sector
+files. **Regenerate it whenever a sector file changes** — it is the page people check before asking
+whether something is covered, so a stale one is worse than none.
+
+It also surfaces **categories naming no company**, which is usually a gap in the collection rather than
+in the skill. Worth reporting to the user.
+
+## Step 6 — Verify
 
 ```bash
 python3 scripts/verify_skill.py
@@ -97,7 +111,7 @@ python3 scripts/verify_skill.py
 Must pass before baselining. It checks the structural contracts, per-sector completeness, that each
 sector still carries its defining insight, and that every refusal survives.
 
-## Step 6 — Baseline
+## Step 7 — Baseline
 
 ```bash
 python3 scripts/audit_corpus.py --accept
@@ -120,6 +134,7 @@ analyse — not merely a company they do not name.
 4. Add keywords to `SECTOR_KEYWORDS`
 5. Update the sector-count checks in `verify_skill.py` and add a content check for its defining insight
 6. Update the counts in `AGENTS.md`, `README.md` and `MAINTENANCE.md`
+7. Regenerate `docs/COVERAGE.md`
 
 **No mode file should change.** If a sector seems to need one edited, it needs a substitution declared in
 its own file instead.

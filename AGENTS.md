@@ -10,6 +10,7 @@ corpus-sync/                 the skill that keeps the above in step with the col
 reports/published/           131 verified reports; the author stands behind these
 reports/staging/             generated drafts awaiting human review
 scripts/sync_reports.py      mirrors published reports from the Pages site
+docs/COVERAGE.md             every sector, category and company — generated, never hand-edited
 docs/                        report URL lists
 ```
 

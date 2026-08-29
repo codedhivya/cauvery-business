@@ -180,6 +180,14 @@ def main():
     check("structure", f"all {len(used)} CSS classes used in modes resolve",
           not unresolved, f"unresolved {unresolved}" if unresolved else "")
 
+    cov = os.path.join(ROOT, "docs", "COVERAGE.md")
+    if os.path.exists(cov):
+        import subprocess
+        rc = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "build_coverage.py"),
+                             "--check"], capture_output=True).returncode
+        check("structure", "docs/COVERAGE.md regenerated from the sector files", rc == 0,
+              "run: python3 scripts/build_coverage.py" if rc else "")
+
     skill_lines = sum(1 for _ in open(os.path.join(SKILL, "SKILL.md")))
     check("structure", f"SKILL.md under 500 lines ({skill_lines})", skill_lines < 500)
 
