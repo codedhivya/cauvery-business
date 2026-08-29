@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T&amp;D / Power Equipment Sector — Intelligence Dashboard | Q1 FY27</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --gvtd:#0057b8;--gvtd-soft:#eaf2fb;
+  --apar:#178a41;--apar-soft:#e9f9ee;
+  --hitachi:#d9282f;--hitachi-soft:#fff0f0;
+  --abb:#1e6fa5;--abb-soft:#eff6ff;
+  --siemens:#009999;--siemens-soft:#e6f7f7;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.5rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-gvtd{background:var(--gvtd);color:#fff;}
+.chip-apar{background:var(--apar);color:#fff;}
+.chip-hitachi{background:var(--hitachi);color:#fff;}
+.chip-abb{background:var(--abb);color:#fff;}
+.chip-siemens{background:var(--siemens);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--gvtd);font-weight:700;}
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.gap-top{margin-top:22px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.gvtd::before{background:var(--gvtd);}
+.co-card.apar::before{background:var(--apar);}
+.co-card.hitachi::before{background:var(--hitachi);}
+.co-card.abb::before{background:var(--abb);}
+.co-card.siemens::before{background:var(--siemens);}
+.co-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}
+.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}
+.b-spec{background:#f3f4f6;color:#4b5563;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+.b-warn{background:#fff7ed;color:#c2410c;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.gvtd-a{border-left:4px solid var(--gvtd);}
+.kpi.apar-a{border-left:4px solid var(--apar);}
+.kpi.hitachi-a{border-left:4px solid var(--hitachi);}
+.kpi.abb-a{border-left:4px solid var(--abb);}
+.kpi.siemens-a{border-left:4px solid var(--siemens);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.05rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}
+.rp-hold{background:#fef9c3;color:#a16207;}
+.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+.mgmt-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+.mgmt-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.mgmt-role{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:6px;}
+.mgmt-note{font-size:11px;color:var(--muted);line-height:1.5;}
+.verdict-card{background:var(--surface);border:2px solid var(--gold);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow-md);margin-bottom:18px;}
+.verdict-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verdict-body{font-size:13px;line-height:1.7;color:var(--text);}
+.grp-hdr{margin-bottom:8px;padding:7px 14px;border-left:4px solid;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.cbassist-chat{background:var(--surface);border:1.5px solid var(--gvtd);border-radius:var(--radius);padding:20px 22px;}
+.cbassist-title{font-weight:800;font-size:12.5px;color:var(--gvtd);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cbassist-title span{width:8px;height:8px;background:var(--pos);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-msgs{min-height:120px;max-height:380px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{padding:10px 14px;border-radius:10px;font-size:12px;max-width:90%;line-height:1.55;}
+.chat-msg.user{background:#181511;color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.chat-msg.bot{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:10px 10px 10px 2px;}
+.chat-msg.bot strong{color:var(--gvtd);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--gvtd);}
+.chat-send{background:var(--gvtd);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;}
+.typing-ind{display:none;align-items:center;gap:5px;padding:8px 12px;}
+.typing-ind span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing-ind span:nth-child(2){animation-delay:.2s;}.typing-ind span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.preset-tab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;margin:2px 2px 6px 0;}
+.pt-gvtd.active{background:var(--gvtd);border-color:var(--gvtd);color:#fff;}
+.pt-apar.active{background:var(--apar);border-color:var(--apar);color:#fff;}
+.pt-sector.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.presets-panel{display:none;}.presets-panel.active{display:block;}
+.preset-qs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.preset-q{padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11.5px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:9px;line-height:1.45;}
+.preset-q:hover{border-color:var(--gvtd);background:var(--gvtd-soft);}
+.pq-en{font-weight:600;color:var(--text);}
+.cb-wm{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid var(--border);border-radius:30px;padding:7px 14px 7px 8px;box-shadow:0 4px 20px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:28px;height:28px;background:var(--gvtd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:11px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:14px 40px;border-top:1px solid var(--border);margin-top:28px;line-height:1.7;}
+@media(max-width:860px){.main{padding:14px 16px 40px;}.hdr{padding:0 16px;flex-wrap:wrap;}.tab-nav{padding:0 8px;}.g2,.g3,.kpi-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>T&amp;D / Power Equipment Sector — Intelligence Dashboard</h1>
+      <div class="sub">GE Vernova T&amp;D · Apar Industries · Siemens Energy · ABB India · Hitachi Energy · Q1 FY27 Actuals ✅ · CB Research</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-gvtd">GE Vernova T&amp;D</span>
+    <span class="chip chip-apar">Apar Industries</span>
+    <span class="chip chip-siemens">Siemens Energy</span>
+    <span class="chip chip-abb">ABB India</span>
+    <span class="chip chip-hitachi">Hitachi Energy</span>
+    <span class="chip chip-date">14 Aug 2026 · CB Research</span>
+  </div>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('business',this)">Business Profiles</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">Financials</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuations</button>
+  <button class="tab-btn" onclick="showTab('bizanalysis',this)">SWOT</button>
+  <button class="tab-btn" onclick="showTab('analyst',this)">Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('mgmt',this)">Management &amp; Board</button>
+  <button class="tab-btn" onclick="showTab('risks',this)">Risks</button>
+  <button class="tab-btn" onclick="showTab('school',this)" style="color:var(--siemens);font-weight:800;">🎓 School</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+  <button class="tab-btn" onclick="showTab('cbassist',this)" style="color:var(--gvtd);font-weight:800;">🤖 CB Assist</button>
+</nav>
+<div class="main">
+
+<!-- TAB 1 DASHBOARD -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">· 5 companies · Q1 FY27 (Apr-Jun 2026) Actuals ✅ · India Power T&amp;D / Grid Equipment</span></div>
+  <div class="kpi-row">
+    <div class="kpi gvtd-a"><div class="kl">GE Vernova T&amp;D Q1 Rev ✅</div><div class="kv">₹1,836 Cr</div><div class="kc pos">▲ 38.1% YoY</div></div>
+    <div class="kpi apar-a"><div class="kl">Apar Industries Q1 Rev ✅</div><div class="kv">₹6,591 Cr</div><div class="kc pos">▲ 29.1% YoY</div></div>
+    <div class="kpi siemens-a"><div class="kl">Siemens Energy Q3 Rev ✅</div><div class="kv">₹2,486 Cr</div><div class="kc pos">▲ 39.3% YoY</div></div>
+    <div class="kpi abb-a"><div class="kl">ABB India Q2 Rev ✅</div><div class="kv">₹3,559 Cr</div><div class="kc pos">▲ 21.0% YoY</div></div>
+    <div class="kpi hitachi-a"><div class="kl">Hitachi Energy Q1 Rev ✅</div><div class="kv">₹2,494 Cr</div><div class="kc pos">▲ 68.6% YoY</div></div>
+  </div>
+  <div class="g2" style="margin-bottom:22px;">
+    <div class="co-card gvtd">
+      <div class="co-name" style="color:var(--gvtd)">GE Vernova T&amp;D India</div>
+      <div class="co-seg">NSE: GVT&amp;D · BSE: 522275 · T&amp;D Equipment (AIS/GIS/Transformers) · Q1 FY27 ✅ Aug 5, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q1 PAT ✅</span><span class="m-val">₹363 Cr (+25.2%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q1 EBITDA / Margin</span><span class="m-val">₹460 Cr / 25.1%</span></div>
+      <div class="m-row"><span class="m-lbl">Order Backlog (Jun 26)</span><span class="m-val">₹20,930 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">Q1 Order Bookings</span><span class="m-val">₹1,137 Cr (−30% YoY)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Cash</span><span class="m-val">₹2,930 Cr · Debt-free</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (14 Aug 26)</span><span class="m-val">~₹4,600</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +25% Q1</span><span class="badge b-warn">Order Intake −30%</span><span class="badge b-warn">Margin −400bps</span></div>
+    </div>
+    <div class="co-card apar">
+      <div class="co-name" style="color:var(--apar)">Apar Industries</div>
+      <div class="co-seg">NSE: APARINDS · BSE: 532290 · Conductors / Transformer Oils / Cables · Q1 FY27 ✅ Jul 24, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q1 PAT ✅</span><span class="m-val">₹467.5 Cr (+77.8%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q1 EBITDA / Margin</span><span class="m-val">₹814 Cr / 12.4%</span></div>
+      <div class="m-row"><span class="m-lbl">Q1 Revenue (record)</span><span class="m-val">₹6,591 Cr (+29.1%)</span></div>
+      <div class="m-row"><span class="m-lbl">Conductors Segment</span><span class="m-val">₹3,338 Cr (+19.9%)</span></div>
+      <div class="m-row"><span class="m-lbl">QIP Fundraise</span><span class="m-val">₹2,500 Cr (opened 10 Aug)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (13 Aug 26)</span><span class="m-val">~₹17,900</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +78% Q1</span><span class="badge b-pos">Record Quarter</span><span class="badge b-spec">UK + Brazil Expansion</span></div>
+    </div>
+  </div>
+  <div class="g3" style="margin-bottom:22px;">
+    <div class="co-card siemens">
+      <div class="co-name" style="color:var(--siemens)">Siemens Energy India</div>
+      <div class="co-seg">NSE: SEINDIA · BSE: 544390 · Power T&amp;D + Generation · Oct-Sep FY · Q3 FY26 ✅ Aug 6, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q3 PAT ✅</span><span class="m-val">₹441 Cr (+67.8%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBIT Margin</span><span class="m-val">21.9% (+430bps)</span></div>
+      <div class="m-row"><span class="m-lbl">Order Backlog</span><span class="m-val">₹19,331 Cr (+16.4%)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (14 Aug 26)</span><span class="m-val">~₹3,520 (+12% on results)</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT +68%</span><span class="badge b-pos">Best-in-class Margin</span></div>
+    </div>
+    <div class="co-card abb">
+      <div class="co-name" style="color:var(--abb)">ABB India</div>
+      <div class="co-seg">NSE: ABB · BSE: 500002 · Electrification / Motion / Automation · Jan-Dec FY · Q2 CY26 ✅ Aug 2026</div>
+      <div class="m-row"><span class="m-lbl">Q2 PAT ✅</span><span class="m-val">₹370 Cr (+8%)</span></div>
+      <div class="m-row"><span class="m-lbl">Q2 Order Intake (record)</span><span class="m-val">₹4,363 Cr (+50%)</span></div>
+      <div class="m-row"><span class="m-lbl">Operational EBITA Margin</span><span class="m-val">13.0% (+20bps)</span></div>
+      <div class="m-row"><span class="m-lbl">Special Dividend</span><span class="m-val">₹90/share</span></div>
+      <div class="badge-row"><span class="badge b-pos">Record Orders</span><span class="badge b-warn">Input Cost Pressure</span></div>
+    </div>
+    <div class="co-card hitachi">
+      <div class="co-name" style="color:var(--hitachi)">Hitachi Energy India</div>
+      <div class="co-seg">NSE: POWERINDIA · BSE: 543187 · HVDC / Transformers / Grid Automation · Q1 FY27 ✅ Aug 7, 2026</div>
+      <div class="m-row"><span class="m-lbl">Q1 PAT ✅</span><span class="m-val">₹294 Cr (+123.5%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">16.0%</span></div>
+      <div class="m-row"><span class="m-lbl">Order Backlog (record)</span><span class="m-val">₹32,222 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">CMP (14 Aug 26)</span><span class="m-val">~₹35,770</span></div>
+      <div class="badge-row"><span class="badge b-pos">PAT more than 2x</span><span class="badge b-pos">Backlog Record</span></div>
+    </div>
+  </div>
+  <div class="card gap-top">
+    <div class="card-lbl">Sector Quick Metrics at a Glance — Latest Reported Quarter</div>
+    <table>
+      <thead><tr><th>Company</th><th>Quarter</th><th>Revenue</th><th>YoY%</th><th>EBITDA/EBIT</th><th>Margin%</th><th>PAT</th><th>PAT YoY%</th><th>Order Backlog</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--gvtd)"></span>GE Vernova T&amp;D</td><td class="num">Q1 FY27</td><td class="num">₹1,836 Cr</td><td class="tpos">+38.1%</td><td class="num">₹460 Cr</td><td class="tneg">25.1%</td><td class="tpos">₹363 Cr</td><td class="tpos">+25.2%</td><td class="num">₹20,930 Cr</td><td><span class="badge b-warn">Order Softness</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--apar)"></span>Apar Industries</td><td class="num">Q1 FY27</td><td class="num">₹6,591 Cr</td><td class="tpos">+29.1%</td><td class="num">₹814 Cr</td><td class="tpos">12.4%</td><td class="tpos">₹467.5 Cr</td><td class="tpos">+77.8%</td><td class="num">N/D†</td><td><span class="badge b-pos">Record Quarter</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy‡</td><td class="num">Q3 FY26</td><td class="num">₹2,486 Cr</td><td class="tpos">+39.3%</td><td class="num">₹545 Cr</td><td class="tpos">21.9%</td><td class="tpos">₹441 Cr</td><td class="tpos">+67.8%</td><td class="tpos">₹19,331 Cr</td><td><span class="badge b-pos">Best Margin</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India§</td><td class="num">Q2 CY26</td><td class="num">₹3,559 Cr</td><td class="tpos">+21.0%</td><td class="num">₹461 Cr</td><td class="num">13.0%</td><td class="num">₹370 Cr</td><td class="tpos">+8.0%</td><td class="num">N/D</td><td><span class="badge b-pos">Record Orders</span></td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td class="num">Q1 FY27</td><td class="num">₹2,494 Cr</td><td class="tpos">+68.6%</td><td class="num">₹400 Cr</td><td class="num">16.0%</td><td class="tpos">₹294 Cr</td><td class="tpos">+123.5%</td><td class="tpos">₹32,222 Cr</td><td><span class="badge b-pos">Star Performer</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">†Apar Industries does not disclose a consolidated order-backlog figure in the same format as T&amp;D-equipment peers; conductor/cable order visibility is typically 3-4 months. ‡Siemens Energy India follows an Oct-Sep FY; Apr-Jun 2026 = its Q3 FY26. §ABB India follows a Jan-Dec calendar year; Apr-Jun 2026 = its Q2 CY2026. Sources: BSE/NSE filings, company press releases, investor presentations.</p>
+  </div>
+</div>
+
+<!-- TAB 2 BUSINESS PROFILES -->
+<div class="panel" id="tab-business">
+  <div class="sec-hdr">Business Profiles <span class="sec-note">· Products · Markets · Strategy · Key Events</span></div>
+
+  <div class="grp-hdr" style="background:var(--gvtd-soft);border-color:var(--gvtd);color:var(--gvtd);margin-bottom:14px;">GE Vernova T&amp;D India — NSE: GVT&amp;D · Formerly ALSTOM T&amp;D / GE T&amp;D · MD &amp; CEO: Sandeep Zanzaria · Part of GE Vernova Grid Solutions</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>GE Vernova T&amp;D India</strong> is one of India's oldest transmission-equipment franchises (100+ years, formerly English Electric / ALSTOM T&amp;D), now the listed Indian arm of GE Vernova's Grid Solutions business. It supplies the full range of high-voltage transmission equipment up to 765 kV and beyond — air-insulated switchgear (AIS), gas-insulated switchgear (GIS), locally-manufactured power transformers, grid automation, and rail electrification/signalling equipment.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Q1 FY27 story:</strong> Revenue and PAT both grew strongly on execution of the record FY26 order book, but fresh order bookings fell 30% YoY to ₹1,137 Cr as the domestic TBCB (tariff-based competitive bidding) pipeline stayed soft through Jan-Mar before improving into June. Management retained its FY27 base-order guidance of ₹7,000-8,000 Cr (ex-HVDC).<br><br><strong>Backlog mix:</strong> 77% private developers, 21% central utilities/PSUs, 2% state utilities — a deliberate multi-year shift away from state-utility receivables risk. Export revenue was 30% of Q1 sales (down from 33% in FY26), with Indian factories being qualified to supply the US market.<br><br><strong>Balance sheet:</strong> Debt-free with ₹2,930 Cr cash generated/available in the quarter. FY26 (year ended Mar-26): revenue ₹6,206-6,712 Cr, PBT ₹1,650 Cr, final dividend ₹10/share (record date 21 Aug 2026); AGM scheduled 9 Sep 2026.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Q1 FY27 (Apr-Jun 2026)</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹1,836 Cr</td><td class="num">₹1,330 Cr</td><td class="tpos">+38.1%</td></tr>
+          <tr><td>Gross Margin</td><td class="tneg">41.3%</td><td class="num">48.4%</td><td class="tneg">−710 bps</td></tr>
+          <tr><td>EBITDA</td><td class="num">₹460 Cr</td><td class="num">₹388 Cr</td><td class="tpos">+19%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tneg">25.1%</td><td class="num">29.1%</td><td class="tneg">−400 bps</td></tr>
+          <tr><td>PBT</td><td class="num">₹487 Cr</td><td class="num">₹390 Cr</td><td class="tpos">+25%</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹363 Cr</td><td class="num">₹290 Cr</td><td class="tpos">+25.2%</td></tr>
+          <tr><td>EPS</td><td class="num">₹14.18</td><td class="num">₹11.37</td><td class="tpos">+24.7%</td></tr>
+          <tr><td>Order Bookings</td><td class="tneg">₹1,137 Cr</td><td class="num">₹1,620 Cr</td><td class="tneg">−30%</td></tr>
+          <tr><td>Order Backlog (Jun-26)</td><td class="num">₹20,930 Cr</td><td class="num">₹21,460 Cr</td><td class="tneg">−2.5% QoQ*</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">*QoQ vs Mar-26 backlog. CMP ~₹4,600 (14 Aug 26). 52-wk range ₹2,356-₹5,650. P/E ~87-90x — a steep premium to sector peers, pricing in a multi-year earnings CAGR.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--apar-soft);border-color:var(--apar);color:var(--apar);margin-bottom:14px;">Apar Industries — NSE: APARINDS · CMD: Kushal N. Desai · MD: Chaitanya Desai · Global No.3 in conductors</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;margin-bottom:10px;"><strong>Apar Industries</strong> operates three businesses: Conductors (aluminium/ACSR overhead transmission conductors — top-3 global producer), Transformer &amp; Specialty Oils (4th-largest global transformer-oil maker), and Power &amp; Telecom Cables (largest domestic renewable-sector cable maker). It is a leading exporter, supplying utilities and EPC contractors across 100+ countries.</p>
+      <p style="font-size:12px;line-height:1.7;color:var(--muted)"><strong>Q1 FY27 story:</strong> Record June-quarter across every metric — revenue, EBITDA and PAT all at all-time highs for the quarter, powered by the Transformer &amp; Specialty Oils division (+34.8% YoY) and Power &amp; Telecom Cables (+29.5% YoY), with the larger but lower-margin Conductors business growing a steadier 19.9% YoY despite metal-price volatility.<br><br><strong>International expansion:</strong> Board approved a wholly-owned UK subsidiary (Apar Industries UK) for conductor/OPGW/cable trading, and up to BRL 3 mn additional investment into its existing Brazil subsidiary (Apar Industries Latam Ltda).<br><br><strong>Capital raise:</strong> Shareholders approved a ₹2,500 Cr fundraise at an EGM on 30 Jul 2026; the QIP opened 10 Aug 2026 with a floor price of ₹14,801.25/share, aimed at funding the capex pipeline behind global transmission and data-centre-driven demand.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Q1 FY27 (Consolidated)</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from Operations</td><td class="num">₹6,591 Cr</td><td class="num">₹5,104 Cr</td><td class="tpos">+29.1%</td></tr>
+          <tr><td>EBITDA</td><td class="tpos">₹814 Cr</td><td class="num">₹500 Cr</td><td class="tpos">+62.7%</td></tr>
+          <tr><td>EBITDA Margin</td><td class="tpos">12.4%</td><td class="num">9.8%</td><td class="tpos">+260 bps</td></tr>
+          <tr><td>PBT</td><td class="num">₹622.6 Cr</td><td class="num">₹352.5 Cr</td><td class="tpos">+76.6%</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹467.5 Cr</td><td class="num">₹262.9 Cr</td><td class="tpos">+77.8%</td></tr>
+          <tr><td>EPS (Basic)</td><td class="num">₹116.37</td><td class="num">~₹65.4</td><td class="tpos">+78%</td></tr>
+          <tr><td>Conductors Segment Rev</td><td class="num">₹3,338 Cr</td><td class="num">₹2,785 Cr</td><td class="tpos">+19.9%</td></tr>
+          <tr><td>Transformer &amp; Oils Rev</td><td class="num">₹1,701 Cr</td><td class="num">₹1,262 Cr</td><td class="tpos">+34.8%</td></tr>
+          <tr><td>Power &amp; Telecom Cables Rev</td><td class="num">₹1,838 Cr</td><td class="num">₹1,420 Cr</td><td class="tpos">+29.5%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CMP ~₹17,900 (13 Aug 26), up sharply post-results; QIP floor price ₹14,801.25 sets a useful reference. 52-wk low ~₹6,801. Stock jumped ~9% intraday on results day.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--siemens-soft);border-color:var(--siemens);color:var(--siemens);margin-bottom:14px;">Siemens Energy India — NSE: SEINDIA · Demerged from Siemens Ltd, 2024 · MD &amp; CEO: Guilherme Mendonca · Oct-Sep FY (Peer Comparator)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;">Pure-play Power Transmission (~60% of revenue: transformers, GIS, HVDC converters) and Power Generation (~40%: turbines, generators, O&amp;M) company. Q3 FY26 (Apr-Jun 2026) revenue rose 39.3% YoY to ₹2,486 Cr with best-in-class 21.9% EBIT margin, driven by export mix and disciplined execution. Nine-month FY26 revenue ₹6,791 Cr (+31.1%), PAT ₹1,128 Cr (+52.2%). Signed an MoU with TCS (27 Apr 2026) to support power infrastructure for AI-ready data centres via TCS's HyperVault initiative.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Q3 FY26 (Apr-Jun 2026)</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q3 FY26</th><th style="text-align:right">Q3 FY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹2,486 Cr</td><td class="num">₹1,785 Cr</td><td class="tpos">+39.3%</td></tr>
+          <tr><td>EBIT / Margin</td><td class="tpos">₹545 Cr / 21.9%</td><td class="num">₹314 Cr / 17.6%</td><td class="tpos">+430 bps</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹441 Cr</td><td class="num">₹263 Cr</td><td class="tpos">+67.8%</td></tr>
+          <tr><td>Order Backlog</td><td class="tpos">₹19,331 Cr</td><td class="num">₹16,601 Cr</td><td class="tpos">+16.4%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CMP ~₹3,520 (14 Aug 26) after a ~12% one-day rally on the Q3 beat. MOFSL raised its target price, citing ~26% upside.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--abb-soft);border-color:var(--abb);color:var(--abb);margin-bottom:14px;">ABB India — NSE: ABB · Jan-Dec FY · MD: Sanjeev Sharma (to Dec-26) · ABB Switzerland parent (Peer Comparator)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;">Post the March-2026 Robotics slump-sale, ABB India now runs Electrification, Motion, Automation and Smart Infrastructure. Q2 CY2026 order intake hit a record ₹4,363 Cr (+50% YoY), on strong demand from data centres, electrification, renewables, metals and infrastructure. Revenue grew 21% YoY to ₹3,559 Cr; operational EBITA margin edged up 20 bps to 13.0% despite input-cost inflation (copper, silver, electrical steel, freight). Board declared a special dividend of ₹90/share funded by Robotics-sale proceeds and H1 operating profit.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Q2 CY2026 (Apr-Jun 2026)</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q2 CY26</th><th style="text-align:right">Q2 CY25</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Order Intake (record)</td><td class="tpos">₹4,363 Cr</td><td class="num">₹2,917 Cr</td><td class="tpos">+50%</td></tr>
+          <tr><td>Revenue</td><td class="num">₹3,559 Cr</td><td class="num">₹2,942 Cr</td><td class="tpos">+21%</td></tr>
+          <tr><td>Operational EBITA / Margin</td><td class="num">₹461 Cr / 13.0%</td><td class="num">₹375 Cr / 12.8%</td><td class="tpos">+20 bps</td></tr>
+          <tr><td>PBT</td><td class="num">₹499 Cr</td><td class="num">~₹460 Cr</td><td class="num">—</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹370 Cr</td><td class="num">₹343 Cr</td><td class="tpos">+8%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">Named India's Most Sustainable Company (Capital Goods) at Business Today's 2026 awards; CRISIL ESG score improved 64→67.</p>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--hitachi-soft);border-color:var(--hitachi);color:var(--hitachi);margin-bottom:14px;">Hitachi Energy India — NSE: POWERINDIA · MD &amp; CEO: N. Venu · Hitachi Energy Ltd parent (Peer Comparator)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Business Overview</div>
+      <p style="font-size:12.5px;line-height:1.7;">India's largest pure-play grid-technology company (HVDC, EHV transformers, GIS/AIS switchgear, grid automation). Q1 FY27 revenue surged 68.6% YoY to ₹2,493.7 Cr on strong order execution; PAT more than doubled to ₹294 Cr. Orders (ex-HVDC) grew 26.1% YoY to ₹5,096.5 Cr, taking the order backlog to a record ₹32,222 Cr — the largest in the peer set. Began construction of its 20th Indian manufacturing unit at Karjan, Vadodara (₹2,000 Cr, June 2026), taking cumulative committed capex (with the 2024 tranche) to ₹4,000 Cr.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Financial Snapshot — Q1 FY27 (Apr-Jun 2026)</div>
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="num">₹2,493.7 Cr</td><td class="num">₹1,478.9 Cr</td><td class="tpos">+68.6%</td></tr>
+          <tr><td>Operational EBITDA / Margin</td><td class="num">₹399.9 Cr / 16.0%</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr><td>PBT</td><td class="num">₹389.5 Cr</td><td class="num">₹176.9 Cr</td><td class="tpos">+120.2%</td></tr>
+          <tr><td>PAT</td><td class="tpos">₹294.2 Cr</td><td class="num">₹131.6 Cr</td><td class="tpos">+123.5%</td></tr>
+          <tr><td>Order Backlog (record)</td><td class="tpos">₹32,222 Cr</td><td class="num">—</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;">CMP ~₹35,770 (14 Aug 26); stock jumped 11%+ post-results. 52-wk range ₹16,111-₹38,785. Richest valuation in the peer set (P/E ~145-170x).</p>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 FINANCIALS -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Financials <span class="sec-note">· Consolidated / Standalone as reported · Latest quarter + trailing context</span></div>
+  <div class="card gap-top">
+    <div class="card-lbl">GE Vernova T&amp;D India — Quarterly Trend (₹ Cr, Standalone)</div>
+    <table>
+      <thead><tr><th>Quarter</th><th style="text-align:right">Revenue</th><th style="text-align:right">EBITDA</th><th style="text-align:right">EBITDA%</th><th style="text-align:right">PBT</th><th style="text-align:right">PAT</th><th style="text-align:right">Order Bookings</th></tr></thead>
+      <tbody>
+        <tr><td>Q1 FY26 (Jun-25)</td><td class="num">1,330</td><td class="num">388</td><td class="num">29.1%</td><td class="num">390</td><td class="num">290</td><td class="num">1,620</td></tr>
+        <tr><td>Q4 FY26 (Mar-26)</td><td class="num">N/A*</td><td class="num">N/A*</td><td class="num">~30%†</td><td class="num">N/A*</td><td class="num">N/A*</td><td class="num">N/A*</td></tr>
+        <tr><td class="tb">Q1 FY27 (Jun-26) ✅</td><td class="tpos">1,836</td><td class="tpos">460</td><td class="num">25.1%</td><td class="tpos">487</td><td class="tpos">363</td><td class="tneg">1,137</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">*Q4 FY26 absolute figures not independently verified in this update — flagged rather than estimated per house policy. †MOFSL commentary indicated Q4 FY26 margin near 30% adjusted for a one-off MTM loss. FY26 full-year (Apr25-Mar26): revenue ₹6,206-6,712 Cr, PBT ₹1,650 Cr.</p>
+  </div>
+  <div class="card gap-top">
+    <div class="card-lbl">Apar Industries — Quarterly Trend (₹ Cr, Consolidated)</div>
+    <table>
+      <thead><tr><th>Quarter</th><th style="text-align:right">Revenue</th><th style="text-align:right">EBITDA</th><th style="text-align:right">EBITDA%</th><th style="text-align:right">PBT</th><th style="text-align:right">PAT</th></tr></thead>
+      <tbody>
+        <tr><td>Q1 FY26 (Jun-25)</td><td class="num">5,104</td><td class="num">500</td><td class="num">9.8%</td><td class="num">352.5</td><td class="num">262.9</td></tr>
+        <tr><td>Q4 FY26 (Mar-26)</td><td class="num">6,603</td><td class="num">N/A*</td><td class="num">N/A*</td><td class="num">N/A*</td><td class="num">254.5</td></tr>
+        <tr><td class="tb">Q1 FY27 (Jun-26) ✅</td><td class="tpos">6,591</td><td class="tpos">814</td><td class="tpos">12.4%</td><td class="tpos">622.6</td><td class="tpos">467.5</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">*Q4 FY26 EBITDA/PBT not verified in this update. Q4 FY26 PAT of ₹254.5 Cr shown for QoQ reference — Q1 FY27 PAT of ₹467.5 Cr is up ~84% QoQ. Total consolidated expenses Q1 FY27: ₹6,002.4 Cr (materials ₹5,287.1 Cr, employee cost ₹126.2 Cr, finance cost ₹123.2 Cr).</p>
+  </div>
+  <div class="card gap-top">
+    <div class="card-lbl">Peer Comparator Quarterlies (₹ Cr)</div>
+    <table>
+      <thead><tr><th>Company</th><th>Quarter</th><th style="text-align:right">Revenue</th><th style="text-align:right">YoY%</th><th style="text-align:right">EBITDA/EBIT</th><th style="text-align:right">Margin%</th><th style="text-align:right">PAT</th><th style="text-align:right">PAT YoY%</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Siemens Energy</td><td class="num">Q3 FY26</td><td class="num">2,486</td><td class="tpos">+39.3%</td><td class="num">545</td><td class="tpos">21.9%</td><td class="tpos">441</td><td class="tpos">+67.8%</td></tr>
+        <tr><td class="tb">ABB India</td><td class="num">Q2 CY26</td><td class="num">3,559</td><td class="tpos">+21.0%</td><td class="num">461</td><td class="num">13.0%</td><td class="num">370</td><td class="tpos">+8.0%</td></tr>
+        <tr><td class="tb">Hitachi Energy</td><td class="num">Q1 FY27</td><td class="num">2,494</td><td class="tpos">+68.6%</td><td class="num">400</td><td class="num">16.0%</td><td class="tpos">294</td><td class="tpos">+123.5%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 4 CHARTS -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Charts <span class="sec-note">· Latest reported quarter, ₹ Cr unless noted</span></div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card"><h3>Revenue — Latest Quarter</h3><p class="sub">GE Vernova T&amp;D (Q1FY27) · Apar (Q1FY27) · Siemens Energy (Q3FY26) · ABB (Q2CY26) · Hitachi Energy (Q1FY27)</p><canvas id="revenueChart" height="230"></canvas></div>
+    <div class="chart-card"><h3>PAT YoY Growth %</h3><p class="sub">Latest reported quarter vs year-ago quarter</p><canvas id="patGrowthChart" height="230"></canvas></div>
+  </div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="chart-card"><h3>EBITDA / EBIT Margin %</h3><p class="sub">Operating profitability, latest quarter</p><canvas id="marginChart" height="230"></canvas></div>
+    <div class="chart-card"><h3>Order Backlog (₹ Cr)</h3><p class="sub">GE Vernova T&amp;D, Siemens Energy, Hitachi Energy — Apar and ABB do not disclose comparable backlog</p><canvas id="backlogChart" height="230"></canvas></div>
+  </div>
+  <div class="chart-card"><h3>GE Vernova T&amp;D vs Apar Industries — Revenue Growth Trajectory</h3><p class="sub">Q1 FY26 → Q1 FY27, YoY% growth</p><canvas id="growthTrendChart" height="220"></canvas></div>
+  <div class="g2" style="margin-top:18px;">
+    <div class="chart-card"><h3>EBITDA / EBIT Margin — Year-Ago Quarter vs Latest Quarter</h3><p class="sub">Shows who absorbed commodity/input inflation and who didn't. Siemens Energy reports EBIT (not EBITDA); ABB reports Operational EBITA; Hitachi Energy compares FY25 vs FY26 full-year margin (quarterly year-ago figure not disclosed in this dataset).</p><canvas id="ebitdaMarginTrendChart" height="230"></canvas></div>
+    <div class="chart-card"><h3>Valuation Premium (P/E) vs EBITDA/EBIT Margin</h3><p class="sub">P/E (bars, left axis) against operating margin (line, right axis) — see School tab for the read on why Hitachi Energy pairs the highest multiple with only a mid-pack margin.</p><canvas id="peEbitdaChart" height="230"></canvas></div>
+  </div>
+</div>
+
+<!-- TAB 5 VALUATIONS -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuations <span class="sec-note">· Market cap, P/E, key ratios as of mid-Aug 2026</span></div>
+  <div class="card gap-top">
+    <table>
+      <thead><tr><th>Company</th><th style="text-align:right">CMP</th><th style="text-align:right">52-wk Range</th><th style="text-align:right">Market Cap</th><th style="text-align:right">P/E (TTM)</th><th style="text-align:right">P/B</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--gvtd)"></span>GE Vernova T&amp;D</td><td class="num">~₹4,600</td><td class="num">₹2,356–5,650</td><td class="num">~₹1,15,000 Cr</td><td class="num">~87-90x</td><td class="num">~40x</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--apar)"></span>Apar Industries</td><td class="num">~₹17,900</td><td class="num">₹6,801–18,465</td><td class="num">~₹75,000 Cr</td><td class="num">~55-58x</td><td class="num">~12-13x</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy</td><td class="num">~₹3,520</td><td class="num">₹2,322–3,938†</td><td class="num">~₹1,27,000 Cr</td><td class="num">~75-80x</td><td class="num">~26x</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India</td><td class="num">~₹7,300</td><td class="num">₹5,200–8,400†</td><td class="num">~₹1,55,000 Cr</td><td class="num">~65-70x</td><td class="num">~14x</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td class="num">~₹35,770</td><td class="num">₹16,111–38,785</td><td class="num">~₹1,58,000 Cr</td><td class="num">~145-170x</td><td class="num">~28x</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:var(--muted);margin-top:8px;">†52-week ranges for Siemens Energy and ABB India reflect data captured at different points across the year and should be treated as indicative, not point-in-time exact. All figures approximate, sourced from exchange/broker data feeds as of 12-14 Aug 2026; intraday movement can be material for this sector. Not investment advice.</p>
+  </div>
+  <div class="card gap-top">
+    <div class="card-lbl">Reading the Valuation Gap — GE Vernova T&amp;D vs Apar Industries</div>
+    <p style="font-size:12.5px;line-height:1.75;">GE Vernova T&amp;D trades at close to double Apar's earnings multiple despite Apar posting faster PAT growth (+77.8% vs +25.2%) in the latest quarter. The market is pricing GE Vernova T&amp;D's pure-play, debt-free, HVDC/GIS-capable franchise and its scarcity value (limited number of listed pure T&amp;D-equipment names) at a premium, while Apar — a larger-revenue but lower-margin, more working-capital- and commodity-price-sensitive conductor/cable/oils business now raising fresh equity — trades at a relative discount despite the sharper earnings beat. Both multiples sit well above long-run averages for Indian capital goods, reflecting the broader T&amp;D/grid capex re-rating across the sector (Hitachi Energy and Siemens Energy trade even richer).</p>
+  </div>
+</div>
+
+<!-- TAB 6 SWOT -->
+<div class="panel" id="tab-bizanalysis">
+  <div class="sec-hdr">SWOT Analysis <span class="sec-note">· GE Vernova T&amp;D &amp; Apar Industries</span></div>
+  <div class="co-hdr-swot" style="color:var(--gvtd)">GE Vernova T&amp;D India</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Debt-free with strong free cash generation (₹2,930 Cr cash)</li><li>100+ year franchise, deep utility relationships, HVDC/GIS capability</li><li>Backlog skewed 77% to private developers — lower payment-delay risk</li><li>Part of global GE Vernova Grid Solutions — technology and export access</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Q1 FY27 gross margin fell ~710 bps YoY on input costs/mix</li><li>Order bookings down 30% YoY — a near-term revenue-visibility concern</li><li>Extremely rich valuation (~87-90x P/E) leaves little room for a miss</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>India grid capex pipeline ~₹9 lakh Cr through 2032</li><li>US factory qualification opens a large new export market</li><li>Data-centre and renewable-integration demand for grid equipment</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Domestic TBCB order-award timing volatility quarter to quarter</li><li>Competitive intensity from Hitachi Energy, Siemens Energy, CG Power</li><li>Any easing of import norms for Chinese equipment pressures sector margins</li></ul></div>
+  </div>
+  <div class="co-hdr-swot" style="color:var(--apar);margin-top:22px;">Apar Industries</div>
+  <div class="swot-grid">
+    <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul"><li>Global top-3 conductor maker; 4th-largest transformer-oil producer</li><li>Diversified across conductors, oils, and cables — three growth engines</li><li>Record Q1 FY27 across every headline metric; broad-based segment growth</li><li>Established export franchise across 100+ countries</li></ul></div>
+    <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul"><li>Lower EBITDA margin (12.4%) than pure equipment peers — commodity pass-through model</li><li>High sensitivity to aluminium/copper price swings and working capital cycles</li><li>Fresh ₹2,500 Cr equity raise dilutes existing shareholders near-term</li></ul></div>
+    <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul"><li>Global transmission capex upcycle + rising renewable infrastructure</li><li>New UK and expanded Brazil subsidiaries open fresh export corridors</li><li>Premiumisation in conductor mix and specialty-oil demand growth</li></ul></div>
+    <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul"><li>Chinese competition in conductors and cables on price</li><li>Raw-material volatility (aluminium, copper) can compress margins quickly</li><li>Stock has been highly volatile — 52-week range spans ~₹6,800 to ~₹18,500</li></ul></div>
+  </div>
+</div>
+
+<!-- TAB 7 ANALYST RATINGS -->
+<div class="panel" id="tab-analyst">
+  <div class="sec-hdr">Analyst Ratings <span class="sec-note">· Third-party broker views, attributed explicitly — CB Research does not issue its own Buy/Sell recommendations</span></div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name">GE Vernova T&amp;D India — MOFSL</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-tp">Target: ₹5,200</div>
+    <div class="ac-cmp">vs CMP ~₹4,600 · reiterated post Q4 FY26 (revised up from ₹4,750)</div>
+    <div class="ac-text">MOFSL raised FY27E/FY28E estimates 7-8% to bake in higher margins, expecting the company to sustain strong margins on healthy revenue mix, variable-pricing clauses and operating leverage, rolling valuation forward to June-2028 estimates.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name">GE Vernova T&amp;D India — Emkay Global</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-tp">Target: ₹4,750</div>
+    <div class="ac-cmp">vs CMP ~₹4,600 · revised up from ₹3,900</div>
+    <div class="ac-text">Emkay frames the stock as riding the global energy-transition wave, citing continued domestic and export demand despite a softer near-term ordering environment.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name">Apar Industries — Nomura</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-tp">Target: ₹15,400</div>
+    <div class="ac-cmp">vs CMP ~₹17,900 · raised post-Q1 FY27 beat (from ₹14,240)</div>
+    <div class="ac-text">Nomura cited robust earnings growth and margin expansion across segments; note the stock has since traded above this target — a common pattern after a sharp results-day rally, and a reminder that broker targets can lag fast-moving prices.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name">Apar Industries / GE Vernova T&amp;D / CG Power — Nomura (sector call)</div><span class="rat-pill rp-buy">BUY (all three)</span></div>
+    <div class="ac-cmp">Sector-level coverage initiation</div>
+    <div class="ac-text">Nomura initiated coverage on India's T&amp;D-equipment complex — CG Power, GE Vernova T&amp;D, and Apar Industries — with Buy ratings across all three, citing strong structural growth potential from India's grid-investment cycle.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name">Siemens Energy India — Motilal Oswal Financial Services</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-cmp">~26% implied upside cited post Q3 FY26 beat (raised target; prior target ₹3,800)</div>
+    <div class="ac-text">MOFSL called the Q3 FY26 print an "all-round beat" and raised its target price, maintaining a positive stance on the power-transmission segment's growth trajectory and margin trend.</div>
+  </div>
+  <div class="analyst-card">
+    <div class="ac-head"><div class="ac-name">ABB India — UBS</div><span class="rat-pill rp-buy">BUY</span></div>
+    <div class="ac-tp">Target: ₹8,030</div>
+    <div class="ac-cmp">Upgrade dated Mar 2026</div>
+    <div class="ac-text">UBS upgraded ABB India to Buy, pointing to the value-unlock from the Robotics divestment and the underlying electrification/automation growth story.</div>
+  </div>
+  <p style="font-size:10.5px;color:var(--muted);margin-top:6px;">All targets and ratings are third-party broker views reproduced for information only, not CB Research recommendations. Broker targets are point-in-time and can trail fast-moving share prices (as with Apar Industries above). Always consult a SEBI-registered investment adviser before acting on any of these views.</p>
+</div>
+
+<!-- TAB 8 MANAGEMENT & BOARD -->
+<div class="panel" id="tab-mgmt">
+  <div class="sec-hdr">Management &amp; Board <span class="sec-note">· Key managerial personnel as of Aug 2026</span></div>
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="mgmt-card"><div class="mgmt-name">Sandeep Zanzaria</div><div class="mgmt-role">MD &amp; CEO — GE Vernova T&amp;D India</div><div class="mgmt-note">In role since Apr 2023; term extended by 3 years from 17 Apr 2026. Chairman: Rathindra Nath Basu (Independent). CFO: Sushil Kumar (Whole-time Director).</div></div>
+    <div class="mgmt-card"><div class="mgmt-name">Kushal N. Desai</div><div class="mgmt-role">Chairman &amp; Managing Director — Apar Industries</div><div class="mgmt-note">Led Q1 FY27 earnings call alongside MD Chaitanya Desai and CFO Ramesh Iyer; family-promoter-led since 1958 founding by Late Shri Dharmsinh D. Desai.</div></div>
+    <div class="mgmt-card"><div class="mgmt-name">Guilherme Mendonca</div><div class="mgmt-role">MD &amp; CEO — Siemens Energy India</div><div class="mgmt-note">Steering the company through its post-2024 demerger phase; commented on India's H1 CY2026 renewable additions (30+ GW) as a demand driver.</div></div>
+    <div class="mgmt-card"><div class="mgmt-name">Sanjeev Sharma</div><div class="mgmt-role">MD &amp; CEO — ABB India (to 31 Dec 2026)</div><div class="mgmt-note">Succession approved: TK Sridhar (current CFO, with ABB Group since 1994) takes over as MD from 1 Jan 2027; Sharma transitions to Non-Executive Director.</div></div>
+    <div class="mgmt-card"><div class="mgmt-name">N. Venu</div><div class="mgmt-role">MD &amp; CEO — Hitachi Energy India</div><div class="mgmt-note">Attributed Q1 FY27's "excellent overall performance" to preemptive strategy across businesses to capture the energy-transition and grid-security opportunity. CFO: Ajay Singh.</div></div>
+    <div class="mgmt-card"><div class="mgmt-name">TK Sridhar</div><div class="mgmt-role">Incoming MD-designate — ABB India (from 1 Jan 2027)</div><div class="mgmt-note">Currently CFO; appointment approved by ABB India board on 8 May 2026 for a 5-year term, subject to (and since received) shareholder postal-ballot approval.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-lbl">Board &amp; Governance Notes</div>
+    <p style="font-size:12px;line-height:1.7;">GE Vernova T&amp;D India's board added Rashmi Joshi as an independent director (5-year term from 20 Mar 2026), broadening cross-sector finance experience. Apar Industries' EGM on 30 Jul 2026 approved the ₹2,500 Cr fundraise (equity shares/warrants), which subsequently opened as a QIP on 10 Aug 2026. ABB India's board-approved leadership transition (Sharma → Sridhar) takes effect 1 Jan 2027, alongside Sanjeev Sharma's move to a non-executive board seat — a structured, telegraphed succession rather than an abrupt change.</p>
+  </div>
+</div>
+
+<!-- TAB 9 RISKS -->
+<div class="panel" id="tab-risks">
+  <div class="sec-hdr">Risks <span class="sec-note">· Sector-wide and company-specific</span></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Sector-Wide Risks</div>
+      <ul class="swot-ul" style="font-size:12px;line-height:1.9;">
+        <li>Order-timing lumpiness — large TBCB/HVDC awards can swing quarters sharply, as seen in GE Vernova T&amp;D's 30% YoY order decline this quarter</li>
+        <li>Raw-material volatility (aluminium, copper, electrical/CRGO steel) compresses margins across conductor, transformer and cable makers</li>
+        <li>Policy shifts on import norms for Chinese equipment directly affect domestic pricing power</li>
+        <li>Valuations across the entire peer set are elevated (P/E 55x-170x) — sentiment-driven derating risk on any growth disappointment</li>
+        <li>Execution/labour and supply-chain constraints as multiple players expand capacity simultaneously (Hitachi, Siemens Energy, GE Vernova T&amp;D)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Company-Specific Watch Items</div>
+      <ul class="swot-ul" style="font-size:12px;line-height:1.9;">
+        <li><strong>GE Vernova T&amp;D:</strong> Order-booking trend needs to re-accelerate toward the ₹7,000-8,000 Cr FY27 guidance; margin compression trend to monitor</li>
+        <li><strong>Apar Industries:</strong> ₹2,500 Cr QIP dilution; conductor-segment volumes remain sensitive to metal-price swings; working-capital intensity</li>
+        <li><strong>Siemens Energy:</strong> Premium valuation (65x PE Mar-27E per Jefferies) demands flawless execution; HVDC opportunity concentrated in VSC-based projects</li>
+        <li><strong>ABB India:</strong> Capital-allocation decision on large post-Robotics cash pile remains a key open question for investors</li>
+        <li><strong>Hitachi Energy:</strong> Richest multiple in the peer set (~150x+ P/E) — most exposed to any growth-disappointment derating</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- TAB SCHOOL -->
+<div class="panel" id="tab-school">
+  <div class="sec-hdr">🎓 School <span class="sec-note">· Business models explained · How to tell the five companies apart</span></div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">The One-Line Test</div>
+    <p style="font-size:12.5px;line-height:1.75;">All five companies sell into the same India power-grid capex story, which is why their share prices often move together — but they earn their money in five genuinely different ways. The fastest way to tell them apart: ask <em>"what do they actually sell, and does revenue repeat or does it have to be re-won every quarter?"</em></p>
+  </div>
+
+  <div class="g3" style="margin-bottom:10px;">
+    <div class="mgmt-card" style="border-left:4px solid var(--gvtd);">
+      <div class="mgmt-name" style="color:var(--gvtd)">GE Vernova T&amp;D — The Contractor</div>
+      <div class="mgmt-role">Sells: transmission equipment + execution</div>
+      <div class="mgmt-note">Wins a project (order), builds/supplies transformers, switchgear and GIS/AIS, then commissions it. Revenue = backlog converted to delivery. One segment, no annuity layer — every rupee of next year's revenue has to be re-won as an order first.</div>
+    </div>
+    <div class="mgmt-card" style="border-left:4px solid var(--apar);">
+      <div class="mgmt-name" style="color:var(--apar)">Apar Industries — The Materials Supplier</div>
+      <div class="mgmt-role">Sells: conductors, transformer oil, cables (by the tonne/km)</div>
+      <div class="mgmt-note">Doesn't build substations or transformers itself — it supplies the raw conductor wire, insulating oil and cable that GE Vernova T&amp;D, Siemens Energy, Hitachi Energy and every utility/EPC contractor need. Revenue = volume × realization, heavily linked to aluminium/copper prices.</div>
+    </div>
+    <div class="mgmt-card" style="border-left:4px solid var(--siemens);">
+      <div class="mgmt-name" style="color:var(--siemens)">Siemens Energy — The Hybrid</div>
+      <div class="mgmt-role">Sells: grid equipment (60%) + power-plant O&amp;M (40%)</div>
+      <div class="mgmt-note">Power Transmission looks like GE Vernova T&amp;D — order-driven equipment. Power Generation is different: servicing turbines and generators at cement/steel/sugar plants is closer to an annuity — the customer keeps paying for maintenance long after the machine is sold.</div>
+    </div>
+    <div class="mgmt-card" style="border-left:4px solid var(--abb);">
+      <div class="mgmt-name" style="color:var(--abb)">ABB India — The Platform</div>
+      <div class="mgmt-role">Sells: electrification, motion, automation — across ALL industry, not just power</div>
+      <div class="mgmt-note">Power/grid is only a slice of ABB's business. It also sells motors, drives and automation into cement, metals, EV charging, data centres and buildings. This is why ABB's numbers move less in lockstep with pure T&amp;D names — it's a diversified industrial bet with power as one ingredient.</div>
+    </div>
+    <div class="mgmt-card" style="border-left:4px solid var(--hitachi);">
+      <div class="mgmt-name" style="color:var(--hitachi)">Hitachi Energy — The Full Stack</div>
+      <div class="mgmt-role">Sells: everything GE Vernova T&amp;D sells, PLUS HVDC, PLUS the software layer</div>
+      <div class="mgmt-note">The only one of the five with a genuine HVDC franchise (ultra-long-distance power transmission) and a real digital/grid-automation software business layered on top of the hardware. This "most complete stack" is the single biggest reason it commands the richest valuation in the group.</div>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:20px;">
+    <h3>Infographic 1 — Where Each Company Sits on the Grid Value Chain</h3>
+    <p class="sub">From raw materials on the left to digital services/O&amp;M on the right. Bar width = how much of the value chain each company actually plays in.</p>
+    <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+      <text x="450" y="24" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#6e6860" letter-spacing="1">RAW MATERIALS  →  COMPONENTS  →  EQUIPMENT &amp; SYSTEMS  →  PROJECT EXECUTION  →  DIGITAL / SERVICES &amp; O&amp;M</text>
+      <line x1="40" y1="40" x2="860" y2="40" stroke="#e2ddd5" stroke-width="2"/>
+      <!-- zone gridlines -->
+      <line x1="212" y1="40" x2="212" y2="300" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="384" y1="40" x2="384" y2="300" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="556" y1="40" x2="556" y2="300" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="728" y1="40" x2="728" y2="300" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- Apar: materials + components only -->
+      <rect x="40" y="66" width="344" height="26" rx="6" style="fill:var(--apar)" opacity="0.88"/>
+      <text x="46" y="83" font-family="Inter" font-size="12" font-weight="700" fill="#fff">Apar Industries — conductors, oils, cables</text>
+
+      <!-- GE Vernova T&D: equipment + project execution -->
+      <rect x="212" y="106" width="344" height="26" rx="6" style="fill:var(--gvtd)" opacity="0.9"/>
+      <text x="218" y="123" font-family="Inter" font-size="12" font-weight="700" fill="#fff">GE Vernova T&amp;D — equipment + project execution</text>
+
+      <!-- Siemens Energy: equipment + execution + O&M -->
+      <rect x="212" y="146" width="516" height="26" rx="6" style="fill:var(--siemens)" opacity="0.88"/>
+      <text x="218" y="163" font-family="Inter" font-size="12" font-weight="700" fill="#fff">Siemens Energy — equipment + execution + plant O&amp;M</text>
+
+      <!-- ABB: equipment + digital, but narrower execution presence, spans wide categories beyond power too -->
+      <rect x="212" y="186" width="516" height="26" rx="6" style="fill:var(--abb)" opacity="0.88"/>
+      <text x="218" y="203" font-family="Inter" font-size="12" font-weight="700" fill="#fff">ABB India — equipment + automation software (+ other industries)</text>
+
+      <!-- Hitachi Energy: full stack -->
+      <rect x="212" y="226" width="688" height="26" rx="6" style="fill:var(--hitachi)" opacity="0.9"/>
+      <text x="218" y="243" font-family="Inter" font-size="12" font-weight="700" fill="#fff">Hitachi Energy — equipment + HVDC + execution + grid-automation software</text>
+
+      <text x="40" y="285" font-family="Inter" font-size="10.5" fill="#6e6860">Longer bar = wider slice of the value chain owned in-house. Apar alone sits purely on the left (materials);</text>
+      <text x="40" y="300" font-family="Inter" font-size="10.5" fill="#6e6860">Hitachi Energy alone spans all the way to the digital-services zone on the right.</text>
+    </svg>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:20px;">
+    <h3>Infographic 2 — Business-Model Map</h3>
+    <p class="sub">Horizontal: how narrowly focused on power/grid (left) vs. how diversified into other industries (right). Vertical: hardware-heavy (bottom) vs. software/services-heavy (top).</p>
+    <svg viewBox="0 0 620 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:620px;height:auto;display:block;margin:0 auto;">
+      <!-- axes -->
+      <line x1="60" y1="360" x2="580" y2="360" stroke="#6e6860" stroke-width="1.5"/>
+      <line x1="60" y1="360" x2="60" y2="30" stroke="#6e6860" stroke-width="1.5"/>
+      <text x="320" y="395" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#181511">NARROW (pure power/grid) → DIVERSIFIED (multi-industry)</text>
+      <text x="30" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#181511" transform="rotate(-90 30 200)">HARDWARE-HEAVY → SOFTWARE/SERVICES-HEAVY</text>
+
+      <!-- quadrant guide lines -->
+      <line x1="320" y1="30" x2="320" y2="360" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="60" y1="195" x2="580" y2="195" stroke="#e2ddd5" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <!-- Apar -->
+      <circle cx="120" cy="330" r="15" style="fill:var(--apar)"/>
+      <text x="120" y="358" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="var(--apar)">Apar</text>
+
+      <!-- GE Vernova T&D -->
+      <circle cx="185" cy="290" r="15" style="fill:var(--gvtd)"/>
+      <text x="185" y="270" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="var(--gvtd)">GE Vernova T&amp;D</text>
+
+      <!-- Siemens Energy -->
+      <circle cx="245" cy="210" r="15" style="fill:var(--siemens)"/>
+      <text x="245" y="190" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="var(--siemens)">Siemens Energy</text>
+
+      <!-- Hitachi Energy -->
+      <circle cx="275" cy="130" r="15" style="fill:var(--hitachi)"/>
+      <text x="275" y="110" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="var(--hitachi)">Hitachi Energy</text>
+
+      <!-- ABB -->
+      <circle cx="470" cy="110" r="15" style="fill:var(--abb)"/>
+      <text x="470" y="90" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="var(--abb)">ABB India</text>
+
+      <text x="320" y="45" text-anchor="middle" font-family="Inter" font-size="10" font-style="italic" fill="#6e6860">software/services-heavy, diversified</text>
+      <text x="320" y="345" text-anchor="middle" font-family="Inter" font-size="10" font-style="italic" fill="#6e6860">hardware-heavy, narrow (pure power/grid)</text>
+    </svg>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:6px;text-align:center;">Positions are illustrative (qualitative), based on each company's disclosed segment mix and business description — not a precise quantitative score.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">30-Second Differentiation Cheat Sheet</div>
+    <table>
+      <thead><tr><th>Company</th><th>One-line identity</th><th>Best analogy</th><th>Revenue repeats or re-won?</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--gvtd)"></span>GE Vernova T&amp;D</td><td>Pure transmission-equipment execution engine</td><td>The contractor who builds and ships the grid hardware</td><td>Re-won every order (backlog-driven)</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--apar)"></span>Apar Industries</td><td>Materials &amp; components maker feeding everyone else</td><td>The wire, oil and cable supplier to the whole ecosystem</td><td>Re-won every order, volume × metal price</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy</td><td>Dual-engine: grid equipment + power-plant service annuity</td><td>Half equipment maker, half power-plant caretaker</td><td>Mixed — equipment re-won, O&amp;M partly recurring</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India</td><td>Broad industrial automation &amp; electrification platform</td><td>A diversified automation company that also plays in power</td><td>Mixed — multi-industry order book + service contracts</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td>Most complete/vertically deep grid-technology stack</td><td>The one company that does hardware AND the software that runs it</td><td>Mixed — largest backlog + growing digital/software layer</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;"><strong>Why this matters for reading results:</strong> a company with more recurring/annuity revenue (Siemens Energy's O&amp;M, Hitachi Energy's digital layer) should, in theory, see smoother quarter-to-quarter numbers than a pure order-execution business like GE Vernova T&amp;D — which is exactly why GE Vernova T&amp;D's 30% order-booking decline this quarter matters more than a similar swing would for Hitachi Energy sitting on a record ₹32,222 Cr backlog.</p>
+  </div>
+
+  <div class="sec-hdr gap-top" style="margin-top:28px;">How Commodity Prices Move Their Numbers</div>
+  <div class="card" style="margin-bottom:18px;">
+    <p style="font-size:12.5px;line-height:1.75;margin-bottom:14px;">All five companies buy the same basic inputs — aluminium, copper, CRGO (cold-rolled grain-oriented) electrical steel, mineral/transformer oil, silver (for contacts) — but how much that input bill can swing their margin in a single quarter depends on how "materials-heavy" vs "technology/software-heavy" their business is. Apar sits at one extreme (its product basically <em>is</em> the commodity, shaped); Hitachi Energy and ABB sit closer to the other (commodities are one input into a much more engineered, higher value-add product).</p>
+    <table>
+      <thead><tr><th>Company</th><th>Key inputs</th><th>Exposure mechanism</th><th>Recent evidence</th></tr></thead>
+      <tbody>
+        <tr><td class="tb"><span class="dot" style="background:var(--apar)"></span>Apar Industries</td><td>Aluminium, copper, base/crude-linked transformer oil</td><td>Highest — revenue is volume × metal price; conductor volumes explicitly slowed on "high metal prices" even as value grew</td><td>Conductors grew only +19.9% YoY vs +34.8%/+29.5% for oils/cables in Q1 FY27</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--gvtd)"></span>GE Vernova T&amp;D</td><td>Copper/aluminium windings, CRGO steel cores, insulation</td><td>High — gross margin compresses when input costs outpace revenue recognition on fixed-price legs of contracts</td><td>Gross margin fell 710 bps YoY to 41.3% in Q1 FY27 despite 38% revenue growth</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--siemens)"></span>Siemens Energy</td><td>Steel, copper (T&amp;D segment); largely labour/parts (Generation O&amp;M)</td><td>Moderate — Generation's service revenue is commodity-light, which cushions the blended margin</td><td>EBIT margin still expanded +430 bps YoY to 21.9% despite sector-wide input inflation</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--abb)"></span>ABB India</td><td>Copper, silver, electrical steel, freight/energy</td><td>Moderate — explicitly flagged by management, but a diversified multi-industry order book spreads the risk</td><td>Company cited copper, silver, electrical steel and freight/energy cost inflation as a Q2 CY26 margin headwind</td></tr>
+        <tr><td class="tb"><span class="dot" style="background:var(--hitachi)"></span>Hitachi Energy</td><td>Copper, CRGO steel, insulation materials</td><td>Moderate-high on paper, but scale + pricing power have let margin expand through the cycle</td><td>FY26 EBITDA margin rose 610 bps YoY to 15.4% even as the business scaled 28%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="chart-card" style="margin-bottom:20px;">
+    <h3>EBITDA / EBIT Margin — Year-Ago Quarter vs Latest Quarter</h3>
+    <p class="sub">See the Charts tab for the full-size version of this chart (year-ago margin vs latest-quarter margin, all five companies).</p>
+  </div>
+
+  <div class="sec-hdr gap-top" style="margin-top:28px;">Why Is Hitachi Energy Priced So High?</div>
+  <div class="card" style="margin-bottom:18px;">
+    <p style="font-size:12.5px;line-height:1.75;margin-bottom:14px;">At a P/E of roughly 145-170x, Hitachi Energy trades at close to double ABB and Siemens Energy's multiples, and far above Apar's ~55-58x — the richest valuation of any name in this comparison set, in a sector that is already expensive. The premium rests on a genuine combination of factors, not just sentiment:</p>
+    <ul class="swot-ul" style="font-size:12.5px;line-height:1.95;margin-bottom:14px;">
+      <li><strong>Only local, full-stack HVDC franchise:</strong> Hitachi Energy is among the very few companies — and the only one manufacturing at Indian scale — supplying HVDC (high-voltage direct current) systems, the technology used for bulk, ultra-long-distance power transfer (e.g. moving renewable power from remote generation sites to demand centres). It commissioned India's first HVDC city-centre infeed, in Mumbai.</li>
+      <li><strong>The deepest backlog cover in the peer set:</strong> a record ₹32,222 Cr order backlog is roughly 13x its FY26 annual revenue — far higher backlog-to-revenue cover than GE Vernova T&amp;D or Siemens Energy — giving the market unusually high confidence in multi-year revenue visibility.</li>
+      <li><strong>A genuine digital/software layer:</strong> grid-automation, asset-management and power-quality software sit on top of the hardware, adding a stickier, higher-margin revenue stream that pure equipment makers don't have.</li>
+      <li><strong>Demonstrated margin expansion, not just growth:</strong> FY26 EBITDA margin rose 610 bps YoY to 15.4% while revenue grew 28% — the market is rewarding proof of operating leverage, not just a growth story.</li>
+      <li><strong>Scarcity value:</strong> there are very few listed, pure-play ways in India to buy exposure to the HVDC/grid-technology theme with global (Hitachi Energy Ltd / formerly ABB) technology backing.</li>
+    </ul>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">See the Charts tab for the P/E-vs-margin chart backing this: Hitachi Energy combines the highest multiple with only a mid-pack margin — the market is paying largely for backlog visibility and technology scarcity, not today's margin alone.</p>
+    <div class="card" style="background:var(--gold-soft);border:1.5px solid var(--gold);">
+      <div class="card-lbl" style="color:var(--gold);">Is the product genuinely unique and outstanding, or is this a growth-extrapolation premium?</div>
+      <p style="font-size:12.5px;line-height:1.75;">Honestly, both — and it's worth separating the two. The <em>technology</em> is real and differentiated: HVDC manufactured locally, the broadest product-plus-software stack among the five, and a backlog that dwarfs peers on a revenue-cover basis. That is not hype; it shows up directly in the FY26 margin-expansion data. But "outstanding" and "worth 150-170x earnings" are different claims — Hitachi Energy's technology edge is shared, to varying degrees, by Siemens Energy and GE Vernova globally (both have HVDC capability elsewhere in their global groups, even if not manufactured at the same India scale), so the moat is deep but not exclusive. A valuation this rich is pricing in years of flawless backlog-to-revenue conversion at expanding margins; any slip — a large order deferral, a margin miss, or a sector-wide de-rating (as already happened once this year on eased Chinese-import norms, which hit Hitachi Energy alongside BHEL, Siemens Energy and Cummins India) — has more room to hurt the stock than it would a name priced at 55-70x. The fair read: differentiated business, yes; a valuation that already assumes it stays differentiated for a long time, also yes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 10 VERDICT -->
+<div class="panel" id="tab-verdict">
+  <div class="sec-hdr">🏆 Verdict <span class="sec-note">· Synthesis, not a recommendation</span></div>
+  <div class="verdict-card">
+    <div class="verdict-title">🏆 GE Vernova T&amp;D India</div>
+    <div class="verdict-body">A financially pristine, debt-free execution story that delivered another strong quarter on revenue and PAT growth, but the 30% YoY drop in fresh order bookings is the number to track — it will determine whether the extremely rich valuation (~87-90x P/E) is sustained or re-rated lower over the next 2-3 quarters. The private-sector-heavy backlog (77%) and emerging US export qualification are genuine structural positives; the near-term question is whether domestic order momentum, which management says improved into June after a soft Jan-Mar, actually shows up in Q2 FY27 bookings.</div>
+  </div>
+  <div class="verdict-card">
+    <div class="verdict-title">🏆 Apar Industries</div>
+    <div class="verdict-body">The standout quarter of this peer set on growth (+78% PAT) with the broadest-based improvement — all three segments (conductors, oils, cables) grew, and margins expanded meaningfully. The ₹2,500 Cr QIP is a rational move to fund the capex behind a genuinely large addressable opportunity (global transmission capex, data-centre power infrastructure), but near-term dilution and Apar's inherently thinner, commodity-linked margins keep its multiple below the pure-equipment names even after the results-day rally. Nomura's post-results target (₹15,400) sitting below the current market price is a useful reminder that a single quarter's re-rating can outrun broker models.</div>
+  </div>
+  <div class="verdict-card">
+    <div class="verdict-title">🏆 Peer Set Context</div>
+    <div class="verdict-body">Siemens Energy India posted the best margin profile in the group (21.9% EBIT) and the sharpest one-day re-rating on results (+12%); Hitachi Energy posted the fastest PAT growth (+123.5%) and carries the richest valuation and the largest order backlog (₹32,222 Cr); ABB India's record order intake (+50% YoY) came with only modest margin improvement, leaving its large post-Robotics cash pile as the key catalyst investors are watching. Across all five names, India's grid-investment supercycle (₹9 lakh Cr T&amp;D outlay guided through 2032, 500 GW renewable target by 2030, data-centre power demand) remains the shared structural driver — the differentiation between names is increasingly about margin durability and order-booking consistency rather than the demand story itself, which is common to all.</div>
+  </div>
+</div>
+
+<!-- TAB 11 CB ASSIST -->
+<div class="panel" id="tab-cbassist">
+  <div class="sec-hdr">🤖 CB Assist <span class="sec-note">· AI research assistant — ask about GE Vernova T&amp;D, Apar, Siemens Energy, ABB, or Hitachi Energy</span></div>
+  <div class="cbassist-chat">
+    <div class="cbassist-title"><span></span>CB Assist — Power T&amp;D Sector Analyst</div>
+    <div class="chat-msgs" id="powerChatMsgs">
+      <div class="chat-msg bot">Ask me anything about GE Vernova T&amp;D India, Apar Industries, Siemens Energy India, ABB India, or Hitachi Energy — Q1 FY27 results, order books, valuations, or management commentary. You can also ask in Tamil.</div>
+    </div>
+    <div class="typing-ind" id="powerTyping"><span></span><span></span><span></span></div>
+    <div class="preset-qs">
+      <div class="preset-q" onclick="askPreset('Compare GE Vernova T&amp;D and Apar Industries Q1 FY27 results')"><span class="pq-en">Compare GE Vernova T&amp;D and Apar Industries Q1 FY27 results</span></div>
+      <div class="preset-q" onclick="askPreset('Why did GE Vernova T&amp;D order bookings fall despite strong revenue growth?')"><span class="pq-en">Why did GE Vernova T&amp;D order bookings fall despite strong revenue growth?</span></div>
+      <div class="preset-q" onclick="askPreset('What is driving Apar Industries margin expansion?')"><span class="pq-en">What is driving Apar Industries margin expansion?</span></div>
+      <div class="preset-q" onclick="askPreset('Which of the five T&amp;D companies has the best risk-reward?')"><span class="pq-en">Which of the five T&amp;D companies has the best risk-reward?</span></div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <input type="password" id="apiKeyInput" class="chat-input" placeholder="🔑 Enter Anthropic API key (session only — not stored)" style="width:100%;"/>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="powerInput" class="chat-input" placeholder="Ask about GE Vernova T&amp;D, Apar, Siemens Energy, ABB, Hitachi Energy... or type in Tamil" onkeypress="if(event.key==='Enter')sendPowerChat()"/>
+      <button class="chat-send" id="powerSend" onclick="sendPowerChat()">Send ➤</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">CB Research</div><div class="cb-wm-sub">T&amp;D Sector · Q1 FY27</div></div>
+</div>
+<div class="footer">
+  CB Research — T&amp;D / Power Equipment Sector Intelligence Dashboard · Q1 FY27 · 14 Aug 2026<br>
+  GE Vernova T&amp;D India (NSE: GVT&amp;D) · Apar Industries (NSE: APARINDS) · Siemens Energy India (NSE: SEINDIA) · ABB India (NSE: ABB) · Hitachi Energy India (NSE: POWERINDIA)<br>
+  Sources: BSE/NSE filings, company press releases, investor presentations, broker research reports. For information only. Not investment advice. Consult a SEBI-registered advisor before investing.
+</div>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts')setTimeout(initCharts,100);
+  if(id==='school')setTimeout(initSchoolCharts,100);
+}
+let schoolChartsInit=false;
+function initSchoolCharts(){
+  if(schoolChartsInit)return; schoolChartsInit=true;
+  const cos=['GE Vernova T&D','Apar Industries','Siemens Energy','ABB India','Hitachi Energy'];
+  const bgs=['#0057b8','#178a41','#009999','#1e6fa5','#d9282f'];
+  new Chart(document.getElementById('ebitdaMarginTrendChart'),{
+    type:'bar',
+    data:{labels:cos,datasets:[
+      {label:'Year-ago margin %',data:[29.1,9.8,17.6,12.8,9.4],backgroundColor:'#c9c4b8',borderRadius:4},
+      {label:'Latest margin %',data:[25.1,12.4,21.9,13.0,15.4],backgroundColor:bgs,borderRadius:4}
+    ]},
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'#f0ede8'}},x:{grid:{display:false}}}}
+  });
+  new Chart(document.getElementById('peEbitdaChart'),{
+    data:{labels:cos,datasets:[
+      {type:'bar',label:'P/E (x)',data:[88,56,77,67,157],backgroundColor:bgs,borderRadius:5,yAxisID:'y'},
+      {type:'line',label:'EBITDA/EBIT Margin %',data:[25.1,12.4,21.9,13.0,15.4],borderColor:'#181511',backgroundColor:'#181511',tension:.3,yAxisID:'y1',pointRadius:5,pointBackgroundColor:'#b8911e'}
+    ]},
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{
+      y:{position:'left',title:{display:true,text:'P/E (x)',font:{size:10}},grid:{color:'#f0ede8'}},
+      y1:{position:'right',title:{display:true,text:'Margin %',font:{size:10}},grid:{display:false},ticks:{callback:v=>v+'%'}},
+      x:{grid:{display:false}}
+    }}
+  });
+}
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return; chartsInit=true;
+  const cos=['GE Vernova T&D','Apar Industries','Siemens Energy','ABB India','Hitachi Energy'];
+  const bgs=['#0057b8','#178a41','#009999','#1e6fa5','#d9282f'];
+  const base={responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'₹'+c.parsed.y.toLocaleString('en-IN')+' Cr'}}},scales:{y:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#f0ede8'}},x:{grid:{display:false}}}};
+  new Chart(document.getElementById('revenueChart'),{type:'bar',data:{labels:cos,datasets:[{label:'Revenue',data:[1836,6591,2486,3559,2494],backgroundColor:bgs,borderRadius:5}]},options:base});
+  new Chart(document.getElementById('patGrowthChart'),{type:'bar',data:{labels:cos,datasets:[{label:'PAT YoY %',data:[25.2,77.8,67.8,8.0,123.5],backgroundColor:bgs,borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'+'+c.parsed.y+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'#f0ede8'}},x:{grid:{display:false}}}}});
+  new Chart(document.getElementById('marginChart'),{type:'bar',data:{labels:cos,datasets:[{label:'Margin %',data:[25.1,12.4,21.9,13.0,16.0],backgroundColor:bgs,borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'#f0ede8'}},x:{grid:{display:false}}}}});
+  new Chart(document.getElementById('backlogChart'),{type:'bar',data:{labels:['GE Vernova T&D','Siemens Energy','Hitachi Energy'],datasets:[{label:'Order Backlog (₹ Cr)',data:[20930,19331,32222],backgroundColor:['#0057b8','#009999','#d9282f'],borderRadius:5}]},options:{...base,indexAxis:'y',scales:{x:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#f0ede8'}},y:{grid:{display:false}}}}});
+  new Chart(document.getElementById('growthTrendChart'),{type:'line',data:{labels:['Q1 FY26','Q1 FY27'],datasets:[{label:'GE Vernova T&D Revenue',data:[1330,1836],borderColor:'#0057b8',backgroundColor:'#0057b855',tension:.3,fill:true},{label:'Apar Industries Revenue',data:[5104,6591],borderColor:'#178a41',backgroundColor:'#178a4155',tension:.3,fill:true}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': ₹'+c.parsed.y.toLocaleString('en-IN')+' Cr'}}},scales:{y:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:'#f0ede8'}},x:{grid:{display:false}}}}});
+}
+function askPreset(q){document.getElementById('powerInput').value=q;sendPowerChat();}
+async function sendPowerChat(){
+  const input=document.getElementById('powerInput');
+  const msgs=document.getElementById('powerChatMsgs');
+  const btn=document.getElementById('powerSend');
+  const typing=document.getElementById('powerTyping');
+  const apiKey=document.getElementById('apiKeyInput').value.trim();
+  const q=input.value.trim();
+  if(!q)return;
+  if(!apiKey){const w=document.createElement('div');w.className='chat-msg bot';w.textContent='🔑 Please enter your Anthropic API key above to use CB Assist.';msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;return;}
+  const isTamil=/[\u0B80-\u0BFF]/.test(q);
+  const uMsg=document.createElement('div');uMsg.className='chat-msg user';uMsg.textContent=q;msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+  input.value='';btn.disabled=true;typing.style.display='flex';msgs.scrollTop=msgs.scrollHeight;
+  const langInst=isTamil?'Answer in Tamil ONLY. தமிழில் மட்டுமே பதில் தாருங்கள். Company names, numbers, financial/technical terms stay in English. Give a sharp 6-9 sentence analytical answer. Start with the key insight.':'Answer in English ONLY. Be analytical and concise — 6-9 sentences. Start with the most important insight. Use specific numbers. Do NOT add disclaimers.';
+  const sys=`You are CB Assist — expert T&D/power-equipment sector research analyst at Cauvery Business (CB Research). You cover India's power transmission, distribution and grid-equipment sector in depth.\n\n${langInst}\n\nRULES: Analytical depth required. Use specific data. Do NOT mention data sources. Research analysis only — not investment advice.\n\nCOMPANY DATA Q1 FY27 (Apr-Jun 2026):\n\nGE VERNOVA T&D INDIA (NSE: GVT&D): Q1 FY27 ✅ Aug 5, 2026. Revenue ₹1,836 Cr (+38.1% YoY from ₹1,330 Cr), Gross Margin 41.3% (−710bps), EBITDA ₹460 Cr (+19%), EBITDA Margin 25.1% (−400bps), PBT ₹487 Cr (+25%), PAT ₹363 Cr (+25.2% from ₹290 Cr), EPS ₹14.18. Order bookings ₹1,137 Cr (−30% YoY from ₹1,620 Cr). Order backlog ₹20,930 Cr as of Jun-26 (−2.5% QoQ). Backlog mix: Private 77%, Central utilities/PSU 21%, State utilities 2%. Export revenue 30% of Q1 sales. Cash ₹2,930 Cr, debt-free. FY26 full year: revenue ₹6,206-6,712 Cr, PBT ₹1,650 Cr, final dividend ₹10/share. MD & CEO: Sandeep Zanzaria. Chairman: Rathindra Nath Basu. CMP ~₹4,600, P/E ~87-90x. Analyst views: MOFSL Buy TP ₹5,200, Emkay Buy TP ₹4,750.\n\nAPAR INDUSTRIES (NSE: APARINDS): Q1 FY27 ✅ Jul 24, 2026. Consolidated Revenue ₹6,591 Cr (+29.1% YoY from ₹5,104 Cr, record June quarter), EBITDA ₹814 Cr (+62.7%), EBITDA Margin 12.4% (+260bps from 9.8%), PBT ₹622.6 Cr (+76.6%), PAT ₹467.5 Cr (+77.8% from ₹262.9 Cr), EPS ₹116.37. Segments: Conductors ₹3,338 Cr (+19.9%), Transformer & Specialty Oils ₹1,701 Cr (+34.8%), Power & Telecom Cables ₹1,838 Cr (+29.5%). QIP of ₹2,500 Cr opened 10 Aug 2026, floor price ₹14,801.25/share. New UK subsidiary and Brazil expansion approved. CMD: Kushal N Desai. MD: Chaitanya Desai. CFO: Ramesh Iyer. CMP ~₹17,900, P/E ~55-58x. Nomura Buy TP ₹15,400 (raised from ₹14,240).\n\nSIEMENS ENERGY INDIA (NSE: SEINDIA): Oct-Sep FY. Apr-Jun 2026 = Q3 FY26 ✅ Aug 6, 2026. Revenue ₹2,486 Cr (+39.3% YoY), EBIT ₹545 Cr (+73.6%), EBIT Margin 21.9% (+430bps from 17.6%), PAT ₹441 Cr (+67.8% from ₹263 Cr), EPS ₹12.38. Order backlog ₹19,331 Cr (+16.4% YoY). 9M FY26: revenue ₹6,791 Cr (+31.1%), PAT ₹1,128 Cr (+52.2%). TCS MoU signed for data-centre power infrastructure (HyperVault). MD & CEO: Guilherme Mendonca. CMP ~₹3,520, up ~12% on results day. MOFSL Buy, ~26% implied upside.\n\nABB INDIA (NSE: ABB): Jan-Dec CY. Q2 CY2026 ✅ Aug 2026. Order intake ₹4,363 Cr (+50% YoY, record), Revenue ₹3,559 Cr (+21%), Operational EBITA ₹461 Cr (+23%), Margin 13.0% (+20bps), PBT ₹499 Cr, PAT ₹370 Cr (+8%), EPS ₹17.46. H1 CY26: PAT ₹712 Cr, EBITA ₹865 Cr (−1%). Special dividend ₹90/share declared post-Robotics divestment. MD: Sanjeev Sharma (to Dec-26); TK Sridhar succeeds as MD from Jan-27. Named India's Most Sustainable Company (Capital Goods) 2026. UBS Buy TP ₹8,030.\n\nHITACHI ENERGY INDIA (NSE: POWERINDIA): Q1 FY27 ✅ Aug 7, 2026. Revenue ₹2,493.7 Cr (+68.6% YoY from ₹1,478.9 Cr), Operational EBITDA ₹399.9 Cr, Margin 16.0%, PBT ₹389.5 Cr (+120.2%), PAT ₹294.2 Cr (+123.5% from ₹131.6 Cr). Orders ex-HVDC +26.1% YoY to ₹5,096.5 Cr. Record order backlog ₹32,222 Cr. New 20th manufacturing unit at Karjan, Vadodara (₹2,000 Cr, total capex commitment ₹4,000 Cr). MD & CEO: N Venu. CMP ~₹35,770, up 11%+ on results, P/E ~145-170x, richest in peer set.\n\nSECTOR: India grid investment ~₹9 lakh Cr planned through 2032. 500 GW renewable capacity target by 2030. Data centres driving fastest-growing transformer/grid-equipment demand. CRGO steel, aluminium, copper are key volatile inputs across the sector. Nomura initiated Buy on CG Power, GE Vernova T&D and Apar Industries as a sector call.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:sys,messages:[{role:'user',content:q}]})});
+    const data=await res.json();
+    const text=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:'Unable to process. Check your API key.';
+    typing.style.display='none';
+    const bMsg=document.createElement('div');bMsg.className='chat-msg bot';
+    bMsg.innerHTML=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    msgs.appendChild(bMsg);msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    typing.style.display='none';
+    const eMsg=document.createElement('div');eMsg.className='chat-msg bot';eMsg.textContent='CB Assist unavailable. Check your API key and try again.';msgs.appendChild(eMsg);msgs.scrollTop=msgs.scrollHeight;
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

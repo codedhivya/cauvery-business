@@ -38,6 +38,10 @@ MANIFEST = os.path.join(ROOT, "docs", "corpus-manifest.json")
 SECTOR_KEYWORDS = {
     # capital-markets before banking: "sbiamc" is an asset manager, and a bare
     # "sbi" would otherwise claim it. First match wins, so order carries meaning.
+    # Multi-sector pieces first: otherwise a single company name in the filename
+    # ('azad', 'sbi') claims a dashboard that covers four unrelated sectors.
+    "_cross-sector": ["multisector", "multico", "ranker", "cross_sector", "sector_analysis", "tatacomm_netweb",
+                      "powerproxy", "india_pv"],
     "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss",
                         "ipo_fund", "uti_nippon", "kfintech", "cams"],
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib"],
@@ -48,28 +52,26 @@ SECTOR_KEYWORDS = {
     # power-energy. Only IPO *funds* and IPO-market reports belong here.
     "it-services": ["it_services", "tcs", "hcl", "infoedge", "fractal"],
     "pharma-health": ["pharma", "drreddys", "medtech", "hospital", "gland", "generic",
-                      "laurus", "neuland", "divislabs", "lupin", "cipla", "torrent"],
+                      "laurus", "neuland", "divislabs", "lupin", "cipla", "torrent", "cupid", "symbiotec"],
     "auto": ["2w", "tvsmotor", "bajajauto", "auto_spares", "tyre", "battery", "pv_sector",
-             "heromoto", "eichermotors", "maruti", "mahindra"],
+             "heromoto", "eichermotors", "maruti", "mahindra", "sansera"],
     "metals": ["steel", "aluminium", "vedanta", "nalco", "hindalco", "tatasteel"],
     "cement": ["cement", "ultratech"],
-    "chemicals": ["chemical", "himadri", "pvc", "paint", "fertilizer", "recycling"],
+    "chemicals": ["chemical", "himadri", "pvc", "paint", "fertilizer", "recycling", "cropchem", "sharda"],
     "power-energy": ["power", "solar", "acme", "emmvee", "oilgas", "omc", "ril", "adani_power",
                      "iex", "ongc", "coalindia", "ntpc", "waaree", "junipergreen"],
     "capital-goods": ["bhel", "defence", "railway", "mtar", "inox", "ems", "cables", "polycab",
                       "shaily", "shaktipumps", "pacedigitek", "syrma", "dixon", "kaynes",
-                      "_lt_", "larsen"],
+                      "_lt_", "larsen", "gevernova", "apar", "siemens", "abb", "hitachi", "rvnl"],
     "consumer": ["dmart", "fmcg", "alcobev", "sugar", "dairy", "textile", "nitinspinners",
                  "v2retail", "abfashion", "gold", "amusement", "hotel", "india-hotels",
-                 "itc_hul", "balrampur", "jewellery"],
+                 "itc_hul", "balrampur", "jewellery", "augmont"],
     # REIT/InvIT is an asset class, not an industry — matched before infra-realty,
     # since dict order decides and an InvIT often holds transmission or roads.
     "reit-invit": ["reit", "invit"],
     "infra-realty": ["realestate", "ports", "realty", "developer"],
     "telecom": ["telecom", "airtel"],
     "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage"],
-    "_cross-sector": ["multisector", "multico", "ranker", "cross_sector",
-                      "powerproxy", "india_pv"],
     # Not company evaluation: news digests, macro/thematic pieces, and site furniture.
     "_excluded": ["market_breaking", "carrytrade", "macro_analysis", "glossary"],
 }

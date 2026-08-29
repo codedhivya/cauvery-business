@@ -33,7 +33,9 @@ import urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUBLISHED = os.path.join(ROOT, "reports", "published")
 URL_LIST = os.path.join(ROOT, "docs", "report_dashboard_urls.txt")
-BASE = "https://elangocauvery.github.io/CB-Finance/"
+BASE = "https://share-analysis.cauverybusiness.in/"
+# The collection moved here from elangocauvery.github.io/CB-Finance in Aug 2026.
+# A saved page is authoritative about its own base — see detect_base().
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 # Template placeholders in the page's JS, not real reports.
@@ -46,11 +48,24 @@ def fetch(url):
         return r.read()
 
 
+def detect_base(html):
+    """The base URL a saved page actually points at.
+
+    The site has moved once already, and a saved page carries the truth about
+    where its reports live. Trusting the hardcoded BASE against a page from a
+    different host is what makes every download 404 at once.
+    """
+    hosts = re.findall(r'href="(https?://[^"/]+/)[^"]*\.html?"', html)
+    if hosts:
+        return max(set(hosts), key=hosts.count)
+    return BASE
+
+
 def report_names(html):
     """Report filenames, from JS `file:` entries and from plain hrefs."""
     names = set(re.findall(r'file:\s*["\']([^"\']+\.html)["\']', html))
     names |= {urllib.parse.unquote(u.split("/")[-1])
-              for u in re.findall(r'href="(' + re.escape(BASE) + r'[^"]+\.html)"', html)}
+              for u in re.findall(r'href="https?://[^"]+?/([^"/]+\.html)"', html)}
     return sorted(n for n in names if n not in NOT_REPORTS)
 
 
@@ -70,6 +85,9 @@ def main():
             print(f"error: could not fetch the index — {e}", file=sys.stderr)
             return 2
 
+    base = detect_base(html)
+    if base != BASE:
+        print(f"Base URL from the page: {base}")
     names = report_names(html)
     if not names:
         print("No report links found.", file=sys.stderr)
@@ -77,7 +95,7 @@ def main():
 
     os.makedirs(os.path.dirname(URL_LIST), exist_ok=True)
     with open(URL_LIST, "w") as fh:
-        fh.write("\n".join(BASE + urllib.parse.quote(n) for n in names) + "\n")
+        fh.write("\n".join(base + urllib.parse.quote(n) for n in names) + "\n")
 
     os.makedirs(PUBLISHED, exist_ok=True)
     have = {f for f in os.listdir(PUBLISHED) if f.endswith(".html")}
@@ -93,7 +111,7 @@ def main():
     ok, failed = [], []
     for i, name in enumerate(missing, 1):
         try:
-            data = fetch(BASE + urllib.parse.quote(name))
+            data = fetch(base + urllib.parse.quote(name))
             with open(os.path.join(PUBLISHED, name), "wb") as fh:
                 fh.write(data)
             ok.append(name)

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Federal Bank Ltd — Q1 FY27 Dashboard | CB Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --panel:#ffffff;
+    --panel-alt:#fbfaf8;
+    --ink:#161512;
+    --ink-soft:#4a463f;
+    --line:#e7e2d8;
+    --orange:#ff7a1a;
+    --orange-deep:#e35f00;
+    --orange-tint:#fff1e4;
+    --green:#1a7a4c;
+    --green-tint:#eaf7f0;
+    --red:#c62828;
+    --red-tint:#fdeceb;
+    --blue:#1f5fa8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:60px;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  h1,h2,h3,.serif{font-family:'Playfair Display',serif;}
+
+  /* ===== Header ===== */
+  header.top{
+    border-bottom:3px solid var(--ink);
+    padding:22px clamp(16px,4vw,48px) 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:14px;
+    background:linear-gradient(180deg,#fff 0%, #fffdfa 100%);
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:46px;height:46px;border-radius:10px;
+    background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Playfair Display',serif;font-weight:800;font-size:20px;
+  }
+  .brand-name{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;}
+  .brand-tag{font-size:11px;color:var(--orange-deep);font-weight:600;letter-spacing:.06em;}
+  .vanakam{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+  .title-block h1{font-size:clamp(26px,3.6vw,40px);margin:2px 0 4px;font-weight:800;line-height:1.05;}
+  .title-block .sub{color:var(--ink-soft);font-size:14px;font-weight:500;}
+  .price-strip{
+    display:flex;gap:22px;flex-wrap:wrap;align-items:center;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .price-cell{text-align:right;}
+  .price-cell .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);}
+  .price-cell .val{font-size:18px;font-weight:700;}
+  .val.pos{color:var(--green);}
+  .val.neg{color:var(--red);}
+
+  /* ===== Tabs ===== */
+  nav.tabs{
+    position:sticky;top:0;z-index:50;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    box-shadow:0 2px 10px rgba(0,0,0,.03);
+    display:flex;
+    overflow-x:auto;
+    padding:0 clamp(10px,3vw,40px);
+    scrollbar-width:thin;
+  }
+  nav.tabs::-webkit-scrollbar{height:4px;}
+  nav.tabs::-webkit-scrollbar-thumb{background:var(--line);}
+  .tab-btn{
+    flex:none;
+    padding:15px 18px;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.02em;
+    color:var(--ink-soft);
+    background:none;border:none;
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+    transition:.15s;
+  }
+  .tab-btn:hover{color:var(--ink);background:var(--orange-tint);}
+  .tab-btn.active{color:var(--orange-deep);border-bottom-color:var(--orange);}
+
+  main{padding:28px clamp(16px,4vw,48px) 10px;max-width:1280px;margin:0 auto;}
+  .panel{display:none;animation:fade .25s ease;}
+  .panel.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .section-title{
+    font-size:22px;font-weight:800;margin:0 0 4px;
+  }
+  .section-note{color:var(--ink-soft);font-size:13px;margin-bottom:18px;}
+
+  /* ===== Cards / grid ===== */
+  .grid{display:grid;gap:14px;}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  @media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr);}.grid-3{grid-template-columns:repeat(2,1fr);}.grid-2{grid-template-columns:1fr;}}
+  @media(max-width:560px){.grid-4{grid-template-columns:1fr 1fr;}}
+
+  .stat-card{
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:16px 16px;
+    background:var(--panel);
+    position:relative;
+    overflow:hidden;
+  }
+  .stat-card::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--orange);
+  }
+  .stat-card .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);font-weight:700;}
+  .stat-card .num{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;margin:6px 0 2px;}
+  .stat-card .delta{font-size:12px;font-weight:600;}
+  .stat-card .delta.pos{color:var(--green);}
+  .stat-card .delta.neg{color:var(--red);}
+  .stat-card .delta.flat{color:var(--ink-soft);}
+
+  .callout{
+    border:1.5px solid var(--orange);
+    background:var(--orange-tint);
+    border-radius:12px;
+    padding:16px 18px;
+    margin:18px 0;
+  }
+  .callout h3{margin:0 0 6px;font-size:16px;font-weight:800;color:var(--orange-deep);font-family:'Inter',sans-serif;}
+  .callout p{margin:0;font-size:13.5px;line-height:1.6;color:var(--ink);}
+
+  .flag{
+    display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    padding:3px 9px;border-radius:20px;margin-bottom:10px;
+  }
+  .flag.watch{background:#fff3cd;color:#7a5c00;}
+  .flag.unconfirmed{background:var(--red-tint);color:var(--red);}
+  .flag.result{background:var(--green-tint);color:var(--green);}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0 22px;}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);}
+  th{background:var(--panel-alt);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);}
+  td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+  th.num{text-align:right;}
+  tr:hover td{background:#fffaf3;}
+  .pos-text{color:var(--green);font-weight:700;}
+  .neg-text{color:var(--red);font-weight:700;}
+
+  .two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;}
+  @media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+  ul.clean{margin:0;padding-left:18px;}
+  ul.clean li{margin-bottom:8px;font-size:13.8px;line-height:1.55;}
+
+  .swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:700px){.swot-grid{grid-template-columns:1fr;}}
+  .swot-card{border-radius:12px;padding:16px 18px;border:1.5px solid var(--line);}
+  .swot-card h3{margin:0 0 10px;font-size:15px;font-weight:800;font-family:'Inter',sans-serif;}
+  .swot-s{background:var(--green-tint);border-color:#bfe3cf;}
+  .swot-w{background:var(--red-tint);border-color:#f0c6c1;}
+  .swot-o{background:var(--orange-tint);border-color:#ffd3a8;}
+  .swot-t{background:#eef1f7;border-color:#c9d3e6;}
+
+  .grp-label{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--orange-deep);margin:22px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--orange-tint);}
+  .grid.grid-4 + .grp-label, .grid.grid-3 + .grp-label{margin-top:24px;}
+  .tbl-wrap-outer{overflow-x:auto;}
+  .tbl-wrap-outer table{min-width:1100px;}
+
+  .badge-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+
+  /* Cauvery Assist */
+  .assist-box{border:1.5px solid var(--line);border-radius:14px;padding:18px;background:var(--panel-alt);}
+  .assist-input-row{display:flex;gap:8px;margin-bottom:14px;}
+  #assistInput{flex:1;padding:11px 14px;border-radius:8px;border:1.5px solid var(--line);font-family:'Inter',sans-serif;font-size:14px;}
+  #assistInput:focus{outline:2px solid var(--orange);border-color:var(--orange);}
+  #assistBtn{background:var(--ink);color:#fff;border:none;padding:0 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;}
+  #assistBtn:hover{background:var(--orange-deep);}
+  .assist-answer{background:#fff;border:1.5px solid var(--orange);border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.6;min-height:24px;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:20px;padding:6px 13px;font-size:12px;cursor:pointer;font-weight:600;}
+  .chip:hover{border-color:var(--orange);color:var(--orange-deep);}
+
+  /* Socrates quiz */
+  .quiz-box{border:1.5px solid var(--line);border-radius:14px;padding:20px;background:var(--panel-alt);max-width:640px;}
+  .quiz-progress{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:8px;}
+  .quiz-q{font-size:16px;font-weight:700;margin-bottom:14px;}
+  .quiz-opt{
+    display:block;width:100%;text-align:left;
+    padding:11px 14px;margin-bottom:8px;border-radius:8px;
+    border:1.5px solid var(--line);background:#fff;cursor:pointer;font-size:14px;font-weight:600;
+  }
+  .quiz-opt:hover{border-color:var(--orange);}
+  .quiz-opt.correct{background:var(--green-tint);border-color:var(--green);}
+  .quiz-opt.wrong{background:var(--red-tint);border-color:var(--red);}
+  .quiz-explain{font-size:13px;color:var(--ink-soft);margin-top:10px;padding:10px 12px;background:#fff;border-radius:8px;border-left:3px solid var(--orange);display:none;}
+  .quiz-nav{margin-top:14px;display:flex;justify-content:space-between;align-items:center;}
+  #quizNext{background:var(--ink);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;visibility:hidden;}
+  #quizScore{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+
+
+  /* CB disclaimer badge */
+  .cb-badge{
+    position:fixed;bottom:18px;right:18px;z-index:100;
+    width:46px;height:46px;border-radius:50%;
+    background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Playfair Display',serif;font-weight:800;font-size:15px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+    animation:blink 2.2s infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.45;}}
+  .cb-disclaimer{
+    position:fixed;bottom:70px;right:18px;z-index:100;
+    width:280px;background:#fff;border:1.5px solid var(--ink);border-radius:10px;
+    padding:14px 16px;font-size:11.5px;line-height:1.55;color:var(--ink-soft);
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+    display:none;
+  }
+  .cb-badge:hover + .cb-disclaimer, .cb-disclaimer:hover{display:block;}
+  .cb-disclaimer b{color:var(--ink);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="brand-mark">CB</div>
+    <div>
+      <div class="brand-name">Cauvery Business Research</div>
+      <div class="brand-tag vanakam">Vanakam · Independent Equity Research &amp; Education</div>
+    </div>
+  </div>
+  <div class="price-strip">
+    <div class="price-cell">
+      <div class="lbl">CMP (approx)</div>
+      <div class="val mono">₹347.05</div>
+    </div>
+    <div class="price-cell">
+      <div class="lbl">Post-Q1 Close (17 Jul)</div>
+      <div class="val pos">₹348.80 ▲6.68%</div>
+    </div>
+    <div class="price-cell">
+      <div class="lbl">On Jana SFB Reports (25 Aug)</div>
+      <div class="val neg">▼~4% intraday</div>
+    </div>
+    <div class="price-cell">
+      <div class="lbl">Mkt Cap (~)</div>
+      <div class="val mono">₹81,721 Cr</div>
+    </div>
+  </div>
+</header>
+
+<div class="title-block" style="padding:18px clamp(16px,4vw,48px) 0;">
+  <h1>Federal Bank Limited</h1>
+  <div class="sub">Q1 FY27 Results · Blackstone's ₹6,196.5 Cr PE Investment · Jana SFB Development · NSE: FEDERALBNK · BSE: 500469</div>
+</div>
+
+<nav class="tabs" id="tabNav">
+  <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+  <button class="tab-btn" data-tab="business">Business Model</button>
+  <button class="tab-btn" data-tab="segments">Segments</button>
+  <button class="tab-btn" data-tab="financials">Financials</button>
+  <button class="tab-btn" data-tab="ratios">Ratios</button>
+  <button class="tab-btn" data-tab="valuations">Valuations</button>
+  <button class="tab-btn" data-tab="reasons">Share Market Activity</button>
+  <button class="tab-btn" data-tab="swot">SWOT</button>
+  <button class="tab-btn" data-tab="assist">Cauvery Assist</button>
+  <button class="tab-btn" data-tab="socrates">Cauvery Socrates</button>
+  <button class="tab-btn" data-tab="janadebate">Jana SFB Comparison &amp; Debate</button>
+  <button class="tab-btn" data-tab="analyst">Analyst View</button>
+</nav>
+
+<main>
+
+<!-- ================= DASHBOARD ================= -->
+<section class="panel active" id="dashboard">
+  <div class="section-title">At a Glance — Q1 FY27</div>
+  <div class="section-note">Quarter ended 30 June 2026 · Reported 17 July 2026 · Figures YoY vs Q1 FY26 unless stated</div>
+
+  <div class="grid grid-4">
+    <div class="stat-card"><div class="lbl">Net Profit</div><div class="num">₹1,176.9 Cr</div><div class="delta pos">▲ 36.57% YoY · ▼6.53% QoQ</div></div>
+    <div class="stat-card"><div class="lbl">Net Interest Income</div><div class="num">₹2,945.9 Cr</div><div class="delta pos">▲ 26.06% YoY</div></div>
+    <div class="stat-card"><div class="lbl">Net Interest Margin</div><div class="num">3.33%</div><div class="delta pos">▲ 39 bps YoY · ▼41 bps QoQ</div></div>
+    <div class="stat-card"><div class="lbl">Net NPA</div><div class="num">0.18%</div><div class="delta pos">Decadal low</div></div>
+    <div class="stat-card"><div class="lbl">Gross NPA</div><div class="num">1.52%</div><div class="delta pos">▼ from 1.62% (Mar-26)</div></div>
+    <div class="stat-card"><div class="lbl">Provision Coverage Ratio</div><div class="num">87.37%</div><div class="delta flat">excl. tech write-off basis n/a</div></div>
+    <div class="stat-card"><div class="lbl">CRAR (Basel III)</div><div class="num">16.97%</div><div class="delta flat">Tier-I: 15.89%</div></div>
+    <div class="stat-card"><div class="lbl">ROA / ROE</div><div class="num">1.22% / 12.01%</div><div class="delta flat">Guidance: +3-4bps ROA/qtr</div></div>
+    <div class="stat-card"><div class="lbl">Total Business</div><div class="num">₹5.98 L Cr</div><div class="delta pos">Nearing ₹6 lakh Cr</div></div>
+    <div class="stat-card"><div class="lbl">Total Deposits</div><div class="num">₹3,20,118 Cr</div><div class="delta pos">▲ 11.37% YoY</div></div>
+    <div class="stat-card"><div class="lbl">CASA Ratio</div><div class="num">32.23%</div><div class="delta neg">▼ 71 bps QoQ</div></div>
+    <div class="stat-card"><div class="lbl">Cost-to-Income</div><div class="num">52.50%</div><div class="delta pos">▼ 239 bps YoY</div></div>
+  </div>
+
+  <div class="callout" style="border-color:var(--blue);background:#eef4fb;">
+    <span class="flag result" style="background:#dbe9fb;color:var(--blue);">Confirmed &amp; In Progress</span>
+    <h3 style="color:var(--blue);">Blackstone's ₹6,196.5 Cr Investment in Federal Bank</h3>
+    <p>Federal Bank's board approved a preferential warrant issue worth ₹6,196.51 Cr to Blackstone affiliate Asia II Topco XIII Pte Ltd on 24 Oct 2025 — up to 27.29 crore warrants at ₹227 each (₹2 face value + ₹225 premium), convertible into equity within 18 months. On full conversion, Blackstone would hold up to 9.99% of paid-up capital, making it Federal Bank's single largest shareholder, with the right to nominate one non-executive director once its stake is ≥5%. CCI cleared the deal in Dec 2025 and the RBI approved it on 5 Feb 2026 — this is the largest confirmed private equity investment into Federal Bank to date and a distinct development from the unconfirmed Jana SFB reports below. See Business Model, Valuations and Share Market Activity tabs for full detail.</p>
+  </div>
+
+  <div class="callout">
+    <span class="flag unconfirmed">Unconfirmed / Developing</span>
+    <h3>Jana Small Finance Bank — Acquisition Talk</h3>
+    <p>Media reports (25 Aug 2026) suggested Federal Bank is in advanced talks to acquire a controlling stake in Jana Small Finance Bank from promoter Jana Holdings Ltd (16.9% holding), which needs liquidity to service ~₹1,663 Cr of restructured debt to bondholders including TPG Asia by 31 Dec 2026. Federal Bank shares fell ~4% on the news; the bank subsequently filed an exchange clarification that it is <b>not considering</b> the acquisition as reported. See the "Share Market Activity" and "SWOT" tabs for full analysis. No transaction has been confirmed.</p>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="stat-card"><div class="lbl">Fresh Slippages</div><div class="num">₹409 Cr</div><div class="delta pos">▼37.79% YoY · ▼ from ₹474 Cr QoQ</div></div>
+    <div class="stat-card"><div class="lbl">Fee Income Growth</div><div class="num">+21.71%</div><div class="delta pos">YoY</div></div>
+    <div class="stat-card"><div class="lbl">Gross Advances Growth</div><div class="num">+14.94%</div><div class="delta pos">YoY</div></div>
+  </div>
+
+  <div class="section-note" style="margin-top:10px;">Other Q1 FY27 developments: new Chairman appointed · acquisition of Standard Chartered India's retail credit card receivables portfolio (deed executed 4 May 2026) · secured S&amp;P international investment-grade rating · board evaluating AT1/Tier-II/ESG bond issuance.</div>
+</section>
+
+<!-- ================= BUSINESS MODEL ================= -->
+<section class="panel" id="business">
+  <div class="section-title">Business Model</div>
+  <div class="section-note">How Federal Bank makes money and where it sits competitively</div>
+
+  <table>
+    <tr><th style="width:20%;">Aspect</th><th>Detail</th></tr>
+    <tr><td><b>Origin &amp; structure</b></td><td>Founded 1931, headquartered in Aluva (Kochi), Kerala. A professionally-managed, institutionally-held private sector bank with no promoter group — largest shareholders are FPIs, mutual funds, and development institutions like IFC.</td></tr>
+    <tr><td><b>Franchise strength</b></td><td>Deep-rooted Kerala/South India retail base with one of the largest Non-Resident Indian (NRI) deposit franchises among Indian banks, benefiting from Kerala's large expatriate population and steady remittance flows.</td></tr>
+    <tr><td><b>Full-service commercial bank</b></td><td>Operates across retail banking, corporate/wholesale banking, treasury, and other banking (para-banking) operations — the four RBI-mandated reporting segments (see Segments tab).</td></tr>
+    <tr><td><b>Digital-forward, branch-light strategy</b></td><td>Emphasis on digital transaction share, cost efficiency, and calibrated branch expansion rather than aggressive branch-led growth.</td></tr>
+    <tr><td><b>Subsidiaries &amp; associates</b></td><td>Fedbank Financial Services Ltd ("Fedfina") — NBFC arm for MSME/gold/affordable-housing loans, in which private equity investor True North holds a stake; Ageas Federal Life Insurance — bancassurance JV for life insurance distribution and underwriting economics; IDBI Federal Life Insurance stake (associate).</td></tr>
+    <tr><td><b>Recent product expansion</b></td><td>Entered/scaled the credit card business via acquisition of Standard Chartered India's retail credit card receivables portfolio (FY27), broadening the retail fee-income mix.</td></tr>
+    <tr><td><b>Capital strategy</b></td><td>History of periodic capital raises (QIP, preferential allotment to IFC and affiliates) to fund balance sheet growth while maintaining comfortable capital adequacy; currently well capitalised (CRAR 16.97%) with management guiding "no near-term capital requirement."</td></tr>
+    <tr><td><b>Marquee new PE shareholder — Blackstone</b></td><td>Board approved a ₹6,196.51 Cr preferential warrant issue to Blackstone affiliate Asia II Topco XIII Pte Ltd (24 Oct 2025), for up to 9.99% of paid-up capital on full conversion — CCI-cleared (Dec 2025) and RBI-approved (5 Feb 2026). This would make Blackstone the bank's single largest shareholder with a board nomination right, part of a broader wave of global PE/strategic capital into Indian private banks (e.g. Emirates NBD–RBL Bank, SMBC–Yes Bank) and distinct from the earlier IFC (2023) and True North–Fedfina (subsidiary-level) investments.</td></tr>
+    <tr><td><b>Inorganic ambition</b></td><td>The reported interest in Jana Small Finance Bank reflects a broader strategic theme of using bolt-on/controlling-stake acquisitions to add scale, granular retail assets (MSME, affordable housing, microfinance-adjacent), and potentially support a path toward greater universal-banking scale.</td></tr>
+    <tr><td><b>Gold loans</b></td><td>A growing secured-retail lever (₹41,476 Cr book, +33% YoY, ~14.8% of gross advances) — see the Segments tab for a full peer comparison of gold-loan exposure across mid &amp; small private banks.</td></tr>
+  </table>
+
+  <div class="grp-label" style="margin-top:24px;">Positioning Snapshot</div>
+  <table>
+    <tr><th>Attribute</th><th>Detail</th></tr>
+    <tr><td>Category</td><td>Private sector universal bank</td></tr>
+    <tr><td>Regional strength</td><td>Kerala &amp; South India, NRI corridor</td></tr>
+    <tr><td>Balance sheet size</td><td class="num">₹3.93 lakh Cr (Q1 FY27)</td></tr>
+    <tr><td>Retail : Wholesale mix</td><td class="num">~55:45 (historical trend)</td></tr>
+    <tr><td>Key NBFC subsidiary</td><td>Fedbank Financial Services (Fedfina)</td></tr>
+    <tr><td>Insurance JV</td><td>Ageas Federal Life Insurance</td></tr>
+    <tr><td>International rating</td><td>S&amp;P investment grade (new, FY27)</td></tr>
+    <tr><td>New in FY27</td><td>Credit card portfolio (ex-StanC India)</td></tr>
+  </table>
+</section>
+
+<!-- ================= SEGMENTS ================= -->
+<section class="panel" id="segments">
+  <div class="section-title">Segment Performance</div>
+  <div class="section-note">RBI-mandated reporting segments — qualitative Q1 FY27 read, since granular segment-wise P&amp;L was not itemised in the reviewed public disclosures for the quarter</div>
+
+  <table>
+    <tr><th>Segment</th><th>What it covers</th><th>Q1 FY27 colour</th></tr>
+    <tr><td><b>Treasury</b></td><td>Investment book, SLR/non-SLR portfolio, forex &amp; trading gains</td><td>Subdued — management flagged a volatile market period weighing on treasury income; other income fell 6% YoY / 8% QoQ partly on this account</td></tr>
+    <tr><td><b>Corporate / Wholesale Banking</b></td><td>Large corporate credit, working capital, trade finance</td><td>Contributed to overall advance growth (+14.94% YoY gross advances) alongside retail; historical wholesale book share ~45%</td></tr>
+    <tr><td><b>Retail Banking</b></td><td>Mortgages, personal loans, gold loans, business banking, commercial vehicle finance, and the new credit card book</td><td>Key growth driver; historical retail book share ~55%; new credit card portfolio (ex-Standard Chartered India) adds a fresh fee-income and interest-earning line from FY27</td></tr>
+    <tr><td><b>Other Banking Operations</b></td><td>Para-banking — insurance distribution, third-party products, other fee-based services</td><td>Supportive of the 21.71% YoY fee income growth alongside retail cross-sell</td></tr>
+  </table>
+
+  <div class="callout">
+    <h3>Why the Jana SFB angle matters here</h3>
+    <p>Jana Small Finance Bank's book skews toward micro-enterprise/MSME loans, affordable housing, and unsecured microfinance-adjacent lending — segments Federal Bank is comparatively light in relative to peers. A controlling stake, if it were to materialise, would be a segment-diversification move into higher-yield, higher-risk retail categories rather than a treasury or wholesale-banking play.</p>
+  </div>
+
+  <div class="grp-label" style="margin-top:28px;">Gold Loans — A Sector-Wide Growth Driver in Advances</div>
+  <div class="section-note">Gold loans have been one of the fastest-growing retail segments across Indian banks in FY27, helped by high gold prices, RBI's easier small-ticket gold-loan norms, and banks defending market share against NBFC gold lenders (Muthoot, Manappuram). Below is Federal Bank's own gold-loan exposure alongside the mid &amp; small private-bank peer set from the Ratios tab.</div>
+
+  <table>
+    <tr><th>Bank</th><th class="num">Gold Loan Book (₹ Cr)</th><th class="num">YoY Growth</th><th class="num">Est. % of Advances</th><th>Note</th></tr>
+    <tr style="background:#fffaf3;"><td><b>Federal Bank</b></td><td class="num pos-text"><b>41,476</b></td><td class="num pos-text"><b>+33%</b></td><td class="num"><b>~14.8%</b></td><td>Of ₹2.81 L Cr gross advances; among the fastest-growing lines this quarter alongside credit cards (+36%)</td></tr>
+    <tr><td>Karur Vysya Bank (KVB)</td><td class="num">~31,400 (est.)</td><td class="num">Jewel loans +12% QoQ</td><td class="num">~30%</td><td>Within board-approved cap of 32-35%; blended yield ~11-12% + ~1.25% PSL benefit</td></tr>
+    <tr><td>City Union Bank (CUB)</td><td class="num">~20,630 (est.)</td><td class="num">Part of +25% total advances</td><td class="num">~30-31%</td><td>MSME 55-60%, gold ~30-31%, secured retail ~10% of book</td></tr>
+    <tr><td>Tamilnad Mercantile (TMB)</td><td class="num">18,000+ (Mar-2025)</td><td class="num">Continued growth guided</td><td class="num">~40% (dated)</td><td>Gold-loan-heavy book is a key driver of TMB's sector-high NIM (4.18%); likely higher by Q1 FY27</td></tr>
+    <tr><td>South Indian Bank (SIB)</td><td class="num">Not disclosed (₹ Cr)</td><td class="num">+46%</td><td class="num">Not disclosed</td><td>Fast-growing but flagged as a gold-price concentration risk to watch</td></tr>
+    <tr><td>Karnataka Bank</td><td class="num">Not disclosed</td><td class="num">—</td><td class="num">—</td><td>Not a primary disclosed segment; MSME/agri-anchored instead</td></tr>
+    <tr><td>IDBI Bank</td><td class="num">Not disclosed</td><td class="num">—</td><td class="num">—</td><td>Retail-heavy (70:30) but gold loans not separately broken out</td></tr>
+    <tr><td>YES Bank</td><td class="num">Not disclosed</td><td class="num">—</td><td class="num">—</td><td>Not a core disclosed segment</td></tr>
+    <tr><td>RBL Bank</td><td class="num">Not disclosed</td><td class="num">—</td><td class="num">—</td><td>Credit cards &amp; MFI are the disclosed retail focus, not gold</td></tr>
+    <tr><td>IndusInd Bank</td><td class="num">Not disclosed</td><td class="num">—</td><td class="num">—</td><td>Vehicle finance/MFI-anchored; gold not a disclosed core line</td></tr>
+  </table>
+
+  <div class="callout">
+    <h3>Reading Federal Bank's gold loan exposure</h3>
+    <p>At ~14.8% of gross advances, Federal Bank's gold loan book (₹41,476 Cr, +33% YoY) is meaningful and among its fastest-growing lines, but proportionally smaller than the Tamil Nadu-anchored peers — KVB (~30%), CUB (~30-31%) and TMB (~40%, though on older disclosure) run gold-heavier books, which is part of why those three peers post higher NIMs and stronger asset-quality ratios (gold loans are fully secured and self-liquidating, keeping slippage low). For Federal Bank, gold loans are one growth lever among several — commercial banking (+23%), credit cards (+36%) and loans against property (+21%) all grew alongside it — rather than the single defining franchise it is for the smaller Tamil Nadu peer banks. This is a contributing but not dominant driver of Federal Bank's overall 14.94% YoY advance growth.</p>
+  </div>
+
+  <div class="grp-label" style="margin-top:28px;">Why the Whole Gold-Loan Category Is Surging</div>
+  <div class="section-note">Small private banks in this peer set concentrate heavily in gold loans partly by design: it is a low-risk, self-liquidating category that lets a smaller bank grow the book fast without taking on the underwriting risk of unsecured retail or large corporate exposure — which is also why their growth, while fast in gold, stays conservative overall rather than branching into riskier lines. Context below draws on RBI's June 2026 Financial Stability Report and recent reporting on the sector (Livemint).</div>
+
+  <table>
+    <tr><th style="width:24%;">Driver</th><th>What's happening</th></tr>
+    <tr><td><b>Sector-wide surge</b></td><td>Gold loans are now the largest segment within non-housing retail loans nationally, growing at a 42.4% compounded annual rate since March 2024 — nearly double the 23.0% growth of overall non-housing retail loans, per RBI's June 2026 Financial Stability Report</td></tr>
+    <tr><td><b>Existing borrowers, bigger loans</b></td><td>The increase is driven mainly by existing borrowers using higher gold prices to unlock larger loan amounts against the same collateral, and to roll over old debt</td></tr>
+    <tr><td><b>Most pronounced among sub-prime borrowers</b></td><td>The shift is sharpest among sub-prime debtors, whose outstanding personal-loan balances and account counts have actually been declining even as their gold borrowing rises — suggesting some substitution of costlier unsecured debt with cheaper secured gold credit</td></tr>
+    <tr><td><b>NBFC concentration</b></td><td>Gold loans now form 17.4% of NBFCs' retail portfolios, with both banks and NBFCs expanding gold books faster than other retail categories through FY26 even as overall system credit growth moderated</td></tr>
+    <tr><td><b>Lender-side "win-win"</b></td><td>Rising gold prices widen the loan-to-value cushion even as loan sizes grow, keeping asset-impairment risk contained for lenders — part of why gold-heavy books post low slippage and high provision coverage across this peer set</td></tr>
+  </table>
+
+  <div class="grp-label" style="margin-top:24px;">Lenders and Jewellers Are Both Chasing the Same Trend</div>
+  <table>
+    <tr><th style="width:24%;">Player</th><th>What they're doing</th></tr>
+    <tr><td><b>Banks &amp; NBFCs</b></td><td>Both have scaled gold-loan portfolios aggressively through FY26, outpacing growth in every other retail credit category</td></tr>
+    <tr><td><b>Large jewellery chains (Tanishq, Kalyan, etc.)</b></td><td>Have started offering customers cash for old gold — a reversal from their earlier policy of only allowing exchange for new jewellery, and a service that was traditionally the preserve of small family jewellers</td></tr>
+    <tr><td><b>Why corporate jewellers are moving in</b></td><td>Facing margin pressure from elevated global gold prices and higher import duties, large retail chains are entering a high-demand niche in step with the broader gold-loan boom at banks and NBFCs</td></tr>
+  </table>
+
+  <div class="grp-label" style="margin-top:24px;">Household Distress, or Productive Redeployment of Idle Gold?</div>
+  <table>
+    <tr><th style="width:24%;">Reading</th><th>The case for it</th></tr>
+    <tr><td><b>Traditional view — distress</b></td><td>A domestic gold-loan surge is usually read as a sign of household financial stress, a plausible reading given India's cultural reluctance to part with gold and its position as one of the world's largest gold importers</td></tr>
+    <tr><td><b>Alternative view — productive use</b></td><td>Harder to reconcile with an economy that has grown faster than 7% annually for over a year; gold loans aren't confined to lower-income borrowers, raising the possibility that households are finally deploying a traditionally idle asset productively rather than borrowing out of desperation</td></tr>
+  </table>
+
+  <div class="callout">
+    <h3>The bigger economic angle</h3>
+    <p>India's privately held gold stash is estimated at 25,000-35,000 tonnes, and past attempts to monetise it — including the government's 2015 Gold Monetisation Scheme — saw weak response and were abandoned in March 2025. If today's gold-loan and cash-for-gold boom is instead unlocking even a modest share of that idle stock, the effects could ripple beyond bank balance sheets: bullion imports already fell YoY in Q1 FY27, partly on domestic recycling, while cash unlocked from gold flows into either private investment or discretionary consumption. For gold-heavy lenders like KVB, CUB, TMB and SIB in this peer set, that structural tailwind is a meaningful part of why their books have stayed both fast-growing and low-risk this cycle — for Federal Bank, with a smaller ~14.8% gold-loan share, it's a real but secondary contributor to overall growth rather than the primary engine.</p>
+  </div>
+</section>
+
+
+<!-- ================= FINANCIALS ================= -->
+<section class="panel" id="financials">
+  <div class="section-title">Financials — Q1 FY27</div>
+  <div class="section-note">Standalone figures, quarter ended 30 June 2026, board-approved 17 July 2026</div>
+
+  <table>
+    <tr><th>Metric</th><th class="num">Q1 FY27</th><th class="num">Q1 FY26</th><th class="num">YoY</th><th class="num">QoQ</th></tr>
+    <tr><td>Net Interest Income</td><td class="num">₹2,945.9 Cr</td><td class="num">₹2,337 Cr</td><td class="num pos-text">+26.06%</td><td class="num neg-text">-7%</td></tr>
+    <tr><td>Other Income</td><td class="num">₹1,048 Cr</td><td class="num">~₹1,115 Cr</td><td class="num neg-text">-6%</td><td class="num neg-text">-8%</td></tr>
+    <tr><td>Net Profit (PAT)</td><td class="num">₹1,176.9 Cr</td><td class="num">₹862 Cr</td><td class="num pos-text">+36.57%</td><td class="num neg-text">-6.53%</td></tr>
+    <tr><td>Provisions &amp; Contingencies</td><td class="num">₹720 Cr</td><td class="num">~₹692 Cr</td><td class="num neg-text">+4%</td><td class="num pos-text">-29%</td></tr>
+    <tr><td>Fresh Slippages</td><td class="num">₹409 Cr</td><td class="num">₹658 Cr</td><td class="num pos-text">-37.79%</td><td class="num pos-text">-13.7% (vs ₹474 Cr)</td></tr>
+    <tr><td>Fee Income</td><td class="num">—</td><td class="num">—</td><td class="num pos-text">+21.71%</td><td class="num">—</td></tr>
+    <tr><td>Approx. EPS (quarterly)</td><td class="num">~₹5.0</td><td class="num">~₹3.7</td><td class="num pos-text">CB Research estimate</td><td class="num">—</td></tr>
+  </table>
+
+  <table>
+    <tr><th>Balance Sheet</th><th class="num">Q1 FY27</th><th class="num">YoY Growth</th></tr>
+    <tr><td>Total Business (Deposits + Advances)</td><td class="num">₹5,97,615.8 Cr</td><td class="num pos-text">Nearing ₹6 lakh Cr</td></tr>
+    <tr><td>Total Deposits</td><td class="num">₹3,20,117.7 Cr</td><td class="num pos-text">+11.37%</td></tr>
+    <tr><td>Gross Advances</td><td class="num">~₹2,77,498 Cr</td><td class="num pos-text">+14.94%</td></tr>
+    <tr><td>Balance Sheet Size</td><td class="num">₹3.93 Lakh Cr</td><td class="num pos-text">+11%</td></tr>
+    <tr><td>CASA Deposits Ratio</td><td class="num">32.23%</td><td class="num neg-text">-71 bps QoQ</td></tr>
+  </table>
+
+  <div class="section-note">Note: Q1 FY26 other income and provisions figures are approximated from reported YoY growth rates where the exact base-quarter absolute was not separately confirmed across sources; treat as indicative.</div>
+</section>
+
+<!-- ================= CASH FLOW & RATIOS ================= -->
+<section class="panel" id="ratios">
+  <div class="section-title">Key Ratios</div>
+  <div class="section-note">For a bank, a traditional operating cash-flow / working-capital-days view is not meaningful — deposits and advances ARE the working capital. Below are the bank-appropriate equivalents, grouped into profitability, efficiency, asset quality and capital/liquidity — plus a peer ranking against comparable mid &amp; small private banks.</div>
+
+  <div class="grp-label">Profitability &amp; Returns</div>
+  <div class="grid grid-4">
+    <div class="stat-card"><div class="lbl">Net Interest Margin</div><div class="num">3.33%</div><div class="delta pos">+39 bps YoY · -41 bps QoQ</div></div>
+    <div class="stat-card"><div class="lbl">Return on Assets</div><div class="num">1.22%</div><div class="delta pos">vs 1.00% Q1 FY26</div></div>
+    <div class="stat-card"><div class="lbl">Return on Equity</div><div class="num">12.01%</div><div class="delta pos">vs 10.30% Q1 FY26</div></div>
+    <div class="stat-card"><div class="lbl">Yield on Advances</div><div class="num">8.73%</div><div class="delta neg">vs 9.17% Q1 FY26</div></div>
+  </div>
+
+  <div class="grp-label">Efficiency</div>
+  <div class="grid grid-4">
+    <div class="stat-card"><div class="lbl">Cost-to-Income</div><div class="num">52.50%</div><div class="delta pos">-239 bps YoY</div></div>
+    <div class="stat-card"><div class="lbl">Cost of Deposits</div><div class="num">5.21%</div><div class="delta pos">-57 bps YoY</div></div>
+    <div class="stat-card"><div class="lbl">Credit Cost (guided)</div><div class="num">50-60 bps</div><div class="delta flat">FY26 actual: 73 bps</div></div>
+    <div class="stat-card"><div class="lbl">Credit-Deposit Ratio</div><div class="num">86.68%</div><div class="delta flat">vs 83.99% Q1 FY26</div></div>
+  </div>
+
+  <div class="grp-label">Asset Quality</div>
+  <div class="grid grid-4">
+    <div class="stat-card"><div class="lbl">Gross NPA</div><div class="num">1.52%</div><div class="delta pos">vs 1.62% Mar-26, 1.91% Q1 FY26</div></div>
+    <div class="stat-card"><div class="lbl">Net NPA</div><div class="num">0.18%</div><div class="delta pos">Decadal low; vs 0.45% Q1 FY26</div></div>
+    <div class="stat-card"><div class="lbl">Provision Coverage Ratio</div><div class="num">87.37%</div><div class="delta flat">—</div></div>
+    <div class="stat-card"><div class="lbl">Fresh Slippages</div><div class="num">₹409 Cr</div><div class="delta pos">-37.79% YoY</div></div>
+  </div>
+
+  <div class="grp-label">Capital &amp; Liquidity / Franchise</div>
+  <div class="grid grid-4">
+    <div class="stat-card"><div class="lbl">CRAR (Basel III)</div><div class="num">16.97%</div><div class="delta flat">vs 17.2% Mar-26</div></div>
+    <div class="stat-card"><div class="lbl">CET-1</div><div class="num">16.30%</div><div class="delta flat">—</div></div>
+    <div class="stat-card"><div class="lbl">CASA Ratio</div><div class="num">32.23%</div><div class="delta neg">-71 bps QoQ; +188 bps YoY</div></div>
+    <div class="stat-card"><div class="lbl">NRI Deposits</div><div class="num">₹1.05 L Cr</div><div class="delta pos">+14.24% YoY</div></div>
+  </div>
+
+  <div class="callout">
+    <h3>Reading the ratio set together</h3>
+    <p>NIM expanded YoY on falling cost of deposits, but compressed sequentially — consistent with the full-quarter impact of the Feb-2026 repo rate cut feeding through to asset yields faster than deposit repricing benefits. Asset quality is at multi-year bests (GNPA/NNPA/PCR), while capital adequacy (CRAR 16.97%, CET-1 16.30%) is comfortably above regulatory minimums — though, as the peer ranking below shows, it is the thinnest capital cushion among close private-bank peers, relevant context for gauging headroom to fund any inorganic move like the reported Jana SFB interest without an immediate capital raise.</p>
+  </div>
+
+  <div class="grp-label" style="margin-top:28px;">Peer Ranking — Mid &amp; Small Private Banks (Q1 FY27 / latest reported)</div>
+  <div class="section-note">Peer set: Federal Bank, KVB, TMB, IDBI Bank, City Union Bank (CUB), South Indian Bank (SIB), Karnataka Bank, YES Bank, RBL Bank, IndusInd Bank — the comparable mid/small private-bank cohort. Some peers' latest reported quarter is Q4 FY26 where Q1 FY27 was not yet disclosed at compile time. Composite score uses a CB Research weighting (ROA 20%, GNPA 20%, NIM 15%, ROE 15%, PCR 10%, CTI 10%, CASA 5%, CET-1 5%), each metric min-max normalised across this peer set — a relative, same-cohort read, not an absolute safety rating. Not a buy/sell/hold call.</div>
+
+  <div class="tbl-wrap-outer">
+  <table>
+    <tr>
+      <th>Bank</th><th class="num">ROA%</th><th class="num">ROE%</th><th class="num">NIM%</th><th class="num">GNPA%</th><th class="num">NNPA%</th><th class="num">PCR%</th><th class="num">CTI%</th><th class="num">CRAR%</th><th class="num">CET-1%</th><th class="num">CASA%</th><th class="num">P/BV</th><th class="num">Composite</th><th class="num">Rank</th>
+    </tr>
+    <tr><td>Karur Vysya Bank (KVB)</td><td class="num">2.11</td><td class="num">20.24</td><td class="num">4.23</td><td class="num pos-text">0.74</td><td class="num pos-text">0.19</td><td class="num">96.21</td><td class="num pos-text">41.24</td><td class="num">18.61</td><td class="num">17.98</td><td class="num">27.55</td><td class="num">2.28</td><td class="num pos-text">90.5</td><td class="num">1</td></tr>
+    <tr><td>Tamilnad Mercantile (TMB)</td><td class="num">2.05</td><td class="num">15.50</td><td class="num">4.18</td><td class="num pos-text">0.73</td><td class="num">0.18</td><td class="num">96.14</td><td class="num">44.80</td><td class="num pos-text">33.73</td><td class="num pos-text">32.27</td><td class="num">28.10</td><td class="num">1.07</td><td class="num pos-text">87.9</td><td class="num">2</td></tr>
+    <tr><td>IDBI Bank</td><td class="num">1.75</td><td class="num">14.35</td><td class="num">4.15</td><td class="num">2.32</td><td class="num pos-text">0.15</td><td class="num pos-text">99.39</td><td class="num">44.29</td><td class="num">26.65</td><td class="num">24.60</td><td class="num pos-text">44.59</td><td class="num">1.19</td><td class="num">74.9</td><td class="num">3</td></tr>
+    <tr><td>City Union Bank (CUB)</td><td class="num">1.57</td><td class="num">14.37</td><td class="num">3.78</td><td class="num">1.73</td><td class="num">0.61</td><td class="num">85.00</td><td class="num">45.42</td><td class="num">21.73</td><td class="num">20.97</td><td class="num">26.58</td><td class="num">1.38</td><td class="num">62.3</td><td class="num">4</td></tr>
+    <tr style="background:#fffaf3;"><td><b>Federal Bank</b></td><td class="num"><b>1.22</b></td><td class="num"><b>12.01</b></td><td class="num"><b>3.33</b></td><td class="num"><b>1.52</b></td><td class="num pos-text"><b>0.18</b></td><td class="num"><b>87.37</b></td><td class="num"><b>52.50</b></td><td class="num neg-text"><b>16.97</b></td><td class="num neg-text"><b>16.30</b></td><td class="num"><b>32.23</b></td><td class="num neg-text"><b>2.32</b></td><td class="num"><b>51.3</b></td><td class="num"><b>5</b></td></tr>
+    <tr><td>South Indian Bank (SIB)</td><td class="num">1.17</td><td class="num">12.62</td><td class="num">2.95</td><td class="num">1.43</td><td class="num">0.29</td><td class="num">94.10</td><td class="num">57.50</td><td class="num">19.66</td><td class="num">16.88</td><td class="num">32.12</td><td class="num">1.01</td><td class="num">48.6</td><td class="num">6</td></tr>
+    <tr><td>Karnataka Bank</td><td class="num">1.27</td><td class="num">12.69</td><td class="num">3.07</td><td class="num neg-text">2.78</td><td class="num">0.98</td><td class="num">83.54</td><td class="num">50.47</td><td class="num">20.07</td><td class="num">18.70</td><td class="num">33.61</td><td class="num neg-text">0.64</td><td class="num">41.1</td><td class="num">7</td></tr>
+    <tr><td>RBL Bank</td><td class="num neg-text">0.48</td><td class="num neg-text">2.40</td><td class="num">4.12</td><td class="num">1.30</td><td class="num">0.37</td><td class="num">72.00</td><td class="num neg-text">64.70</td><td class="num pos-text">33.30</td><td class="num pos-text">32.20</td><td class="num neg-text">25.20</td><td class="num">1.29</td><td class="num">35.8</td><td class="num">8</td></tr>
+    <tr><td>YES Bank</td><td class="num">0.90</td><td class="num">8.30</td><td class="num neg-text">2.70</td><td class="num">1.30</td><td class="num">0.20</td><td class="num">81.70</td><td class="num">62.80</td><td class="num">15.10</td><td class="num">14.00</td><td class="num">32.70</td><td class="num">1.06</td><td class="num">33.0</td><td class="num">9</td></tr>
+    <tr><td>IndusInd Bank</td><td class="num neg-text">0.40</td><td class="num">3.78</td><td class="num">3.39</td><td class="num neg-text">3.43</td><td class="num neg-text">1.00</td><td class="num neg-text">71.45</td><td class="num">62.30</td><td class="num">17.48</td><td class="num">15.20</td><td class="num">31.24</td><td class="num">1.77</td><td class="num neg-text">10.8</td><td class="num">10</td></tr>
+  </table>
+  </div>
+
+  <div class="callout">
+    <h3>Where Federal Bank ranks — and why</h3>
+    <p>Federal Bank places <b>5th of 10</b> in this peer set on the blended composite — squarely mid-pack. Its strongest relative showing is <b>asset quality</b>: NNPA of 0.18% ties for the 2nd-best in the group (behind only IDBI's 0.15%), and GNPA at 1.52% is roughly middle-of-pack. Its weakest showings are <b>capital cushion</b> (CRAR 16.97% and CET-1 16.30% are both the lowest of the ten — though still comfortably above regulatory minimums in absolute terms) and <b>cost efficiency</b> (CTI 52.50% trails the sharper mid-cap operators like KVB at 41.24% and TMB at 44.80%). On valuation, Federal Bank's P/BV of 2.32x is the second-richest in the peer set after KVB (2.28x) — the market is pricing in the Kerala/NRI franchise and asset-quality trajectory at a premium to most peers, which raises the bar for continued re-rating from here.</p>
+  </div>
+</section>
+
+<!-- ================= VALUATIONS ================= -->
+<section class="panel" id="valuations">
+  <div class="section-title">Valuations</div>
+  <div class="section-note">For banks, Price-to-Book (P/BV) is the primary valuation lens — book value reflects the balance sheet directly, and P/E can be distorted by provisioning/tax swings quarter to quarter. P/E is shown as secondary context. Market data as available around the Q1 FY27 result date and subsequent news flow (Jul-Aug 2026). Educational reference only — not a price target or rating.</div>
+
+  <div class="grid grid-4">
+    <div class="stat-card"><div class="lbl">Price / Book Value (P/BV)</div><div class="num">2.32x</div><div class="delta flat">Primary valuation metric for banks</div></div>
+    <div class="stat-card"><div class="lbl">Book Value / Share (BVPS)</div><div class="num">₹150.34</div><div class="delta pos">vs ₹145.60 Q4 FY26</div></div>
+    <div class="stat-card"><div class="lbl">P/E (TTM, secondary)</div><div class="num">19.82x</div><div class="delta flat">See note below</div></div>
+    <div class="stat-card"><div class="lbl">Dividend Yield</div><div class="num">0.34%</div></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="stat-card"><div class="lbl">Beta</div><div class="num">1.20</div></div>
+    <div class="stat-card"><div class="lbl">1-Year Return (pre Jana news)</div><div class="num">64.18%</div><div class="delta pos">Outperformed Sensex &amp; private bank peers</div></div>
+    <div class="stat-card"><div class="lbl">Peer P/BV Range (mid private banks)</div><div class="num">0.64x – 2.32x</div><div class="delta flat">Federal Bank at the top end</div></div>
+  </div>
+
+  <table>
+    <tr><th>Bank</th><th class="num">BVPS (₹)</th><th class="num">Price (₹)</th><th class="num">P/BV</th></tr>
+    <tr style="background:#fffaf3;"><td><b>Federal Bank</b></td><td class="num"><b>150.34</b></td><td class="num"><b>348.80</b></td><td class="num neg-text"><b>2.32x</b></td></tr>
+    <tr><td>KVB</td><td class="num">145.95</td><td class="num">333.00</td><td class="num">2.28x</td></tr>
+    <tr><td>City Union Bank (CUB)</td><td class="num">148.86</td><td class="num">206.00</td><td class="num">1.38x</td></tr>
+    <tr><td>IndusInd Bank</td><td class="num">479.00</td><td class="num">848.00</td><td class="num">1.77x</td></tr>
+    <tr><td>RBL Bank</td><td class="num">285.00</td><td class="num">368.00</td><td class="num">1.29x</td></tr>
+    <tr><td>IDBI Bank</td><td class="num">64.00</td><td class="num">76.00</td><td class="num">1.19x</td></tr>
+    <tr><td>Tamilnad Mercantile (TMB)</td><td class="num">638.00</td><td class="num">684.00</td><td class="num">1.07x</td></tr>
+    <tr><td>YES Bank</td><td class="num">21.88</td><td class="num">23.21</td><td class="num">1.06x</td></tr>
+    <tr><td>South Indian Bank (SIB)</td><td class="num">42.00</td><td class="num">42.50</td><td class="num">1.01x</td></tr>
+    <tr><td>Karnataka Bank</td><td class="num">350.00</td><td class="num">223.00</td><td class="num neg-text">0.64x</td></tr>
+  </table>
+
+  <div class="section-note">Note on P/E &amp; PEG: the reported P/E of 19.82x and an accompanying PEG of 19.44x imply a very low embedded near-term earnings growth assumption relative to the 36.57% YoY profit growth actually delivered this quarter — for banks, treat P/E and PEG as secondary/context ratios and lean on P/BV (above) alongside ROE as the primary valuation-cum-quality cross-check.</div>
+
+  <table>
+    <tr><th>Date</th><th>Price Context</th><th>Driver</th></tr>
+    <tr><td class="mono">24 Oct 2025</td><td class="num">—</td><td>Board approves ₹6,196.5 Cr Blackstone warrant issue (up to 9.99% stake)</td></tr>
+    <tr><td class="mono">Dec 2025</td><td class="num">—</td><td>CCI approves the Blackstone transaction</td></tr>
+    <tr><td class="mono">5 Feb 2026</td><td class="num">—</td><td>RBI approves Blackstone's stake acquisition — Blackstone set to become largest shareholder</td></tr>
+    <tr><td class="mono">17 Jul 2026</td><td class="num">₹348.80 (▲6.68%)</td><td>Q1 FY27 results — record core profit, decadal-low NNPA</td></tr>
+    <tr><td class="mono">25 Aug 2026</td><td class="num">₹342.05 intraday low (▼~4%)</td><td>Jana SFB acquisition-talk reports; worst performer on Nifty Bank</td></tr>
+    <tr><td class="mono">25 Aug 2026 (later)</td><td class="num">~₹347.05</td><td>Partial stabilisation after Federal Bank's clarification filing</td></tr>
+  </table>
+
+  <div class="callout" style="border-color:var(--blue);background:#eef4fb;margin-top:0;">
+    <span class="flag result" style="background:#dbe9fb;color:var(--blue);">Confirmed Capital Event</span>
+    <h3 style="color:var(--blue);">The Blackstone Deal — A Separate, Confirmed Storyline</h3>
+    <p>Unlike the Jana SFB reports, the Blackstone investment is a confirmed, regulator-cleared transaction that has moved through board approval, CCI clearance, and RBI approval over Oct 2025–Feb 2026. Markets generally read large, marquee global PE commitments into a bank's own capital as a vote of confidence and a funding cushion, distinct from headline risk around an unconfirmed acquisition target. Once warrants are called and converted (within 18 months of allotment), watch for the resulting share issuance and Blackstone's board nomination as the next concrete milestones.</p>
+  </div>
+
+  <div class="callout" style="border-color:var(--blue);background:#eef4fb;">
+    <h3 style="color:var(--blue);">Dilution context — Blackstone warrants</h3>
+    <p>Full conversion of the ₹6,196.51 Cr Blackstone warrant issue (RBI-approved 5 Feb 2026) would add up to 27.29 crore new shares, taking Blackstone to a 9.99% stake — a modest dilution to existing shareholders (BVPS impact depends on the ₹227 issue price vs. ₹150.34 current BVPS — issuance above book is mildly BVPS-accretive) and a meaningful capital cushion (~₹6,200 Cr) that reduces the odds of a near-term dilutive public raise. Separately relevant to headroom for funding any inorganic move such as the reported Jana SFB interest.</p>
+  </div>
+</section>
+
+
+<!-- ================= REASONS FOR SHARE MARKET ACTIVITY ================= -->
+<section class="panel" id="reasons">
+  <div class="section-title">Reasons for Share Market Activity</div>
+  <div class="section-note">Two distinct news events drove Federal Bank's stock in Jul-Aug 2026 — one fundamentals-led rally, one headline-led decline</div>
+
+  <div class="two-col">
+    <div class="callout" style="border-color:var(--green);background:var(--green-tint);">
+      <span class="flag result">Result-Driven Rally</span>
+      <h3 style="color:var(--green);">17 July 2026 — Q1 FY27 Results</h3>
+      <p>Stock rose as much as 6.68% intraday to close at ₹348.80. Drivers: record core (ex-one-off) quarterly profit of ₹1,176.9 Cr (+36.6% YoY), NII growth of 26% beating consensus, NNPA falling to a decadal low of 0.18%, GNPA improving to 1.52%, and a 239 bps YoY improvement in cost-to-income to 52.50%. Markets read this as a clean, high-quality beat despite a 6-7% sequential profit dip (largely due to margin compression and softer treasury/other income) and PAT coming in marginally below the Street's exact estimate.</p>
+    </div>
+    <div class="callout" style="border-color:var(--red);background:var(--red-tint);">
+      <span class="flag unconfirmed">Headline-Driven Decline</span>
+      <h3 style="color:var(--red);">25 August 2026 — Jana SFB Reports</h3>
+      <p>Stock fell as much as 4% intraday to ₹342.05, the worst performer on the Nifty Bank index, after a Moneycontrol-cited report said Federal Bank was in advanced talks to take a controlling stake in Jana Small Finance Bank. Jana SFB shares also fell ~2%. The market's negative reaction reflects concern over potential capital dilution, integration/asset-quality risk in a smaller lender's book, and general M&amp;A execution uncertainty — amplified by the fact Federal Bank's own exchange filing pushed back on the reports as currently not something it is "considering."</p>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Inter';font-size:16px;margin-top:6px;">Underlying driver on the Jana SFB side</h3>
+  <table>
+    <tr><th>Factor</th><th>Detail</th></tr>
+    <tr><td>Seller's exit intent</td><td>Jana Holdings Ltd (promoter, 16.9% stake) has reportedly been seeking an exit for some time, initially aiming to cut its holding below 10% by December 2026 to raise funds</td></tr>
+    <tr><td>Debt restructuring</td><td>Jana Holdings and parent Jana Capital Ltd received BSE approval in late June 2026 for a cumulative ₹1,663 Cr debt restructuring, extending the bondholder repayment deadline (originally due 30 June 2026, missed) to 31 December 2026 — bondholders include TPG Asia</td></tr>
+    <tr><td>Who benefits from a deal</td><td>A Federal Bank transaction, if it materialises, would help Jana Holdings meet those obligations — this is a seller-liquidity-driven situation more than a Federal Bank capital raise</td></tr>
+    <tr><td>Regulatory trigger</td><td>Any change-in-control transaction crossing SEBI takeover thresholds would trigger a mandatory open offer to Jana SFB's public shareholders</td></tr>
+  </table>
+</section>
+
+<!-- ================= SWOT ================= -->
+<section class="panel" id="swot">
+  <div class="section-title">SWOT Analysis</div>
+  <div class="section-note">Incorporating both the Q1 FY27 result and the unresolved Jana SFB situation</div>
+
+  <table>
+    <tr><th style="width:14%;">Category</th><th>Point</th></tr>
+    <tr><td><b style="color:var(--green);">Strength</b></td><td>Best-in-class asset quality — NNPA at a decadal low of 0.18%, GNPA 1.52%, PCR 87.37%</td></tr>
+    <tr><td><b style="color:var(--green);">Strength</b></td><td>Strong capital position — CRAR 16.97%, Tier-I 15.89%, comfortably above regulatory minimums with "no near-term capital requirement" per management</td></tr>
+    <tr><td><b style="color:var(--green);">Strength</b></td><td>Distinctive NRI/Kerala franchise providing a stable, low-cost-of-acquisition deposit base</td></tr>
+    <tr><td><b style="color:var(--green);">Strength</b></td><td>Improving operating efficiency — cost-to-income down 239 bps YoY to 52.50%</td></tr>
+    <tr><td><b style="color:var(--green);">Strength</b></td><td>Diversifying fee income — 21.71% YoY fee income growth, new credit card business</td></tr>
+    <tr><td><b style="color:var(--green);">Strength</b></td><td>New S&amp;P international investment-grade rating supports overseas funding access</td></tr>
+    <tr><td><b style="color:var(--green);">Strength</b></td><td>Marquee global PE validation — Blackstone's RBI-approved ₹6,196.5 Cr investment (up to 9.99% stake) signals institutional confidence and adds a meaningful capital cushion</td></tr>
+    <tr><td><b style="color:var(--red);">Weakness</b></td><td>ROE of 12.01% still trails larger private peers (HDFC ~13.4%, ICICI ~15.0%) and ranks 7th of 10 in the mid-private-bank peer set</td></tr>
+    <tr><td><b style="color:var(--red);">Weakness</b></td><td>NIM (3.33%) compressed 41 bps sequentially on repo-rate-cut pass-through</td></tr>
+    <tr><td><b style="color:var(--red);">Weakness</b></td><td>CASA ratio declining — down 71 bps sequentially to 32.23%, a structurally lower-cost-funding metric under pressure</td></tr>
+    <tr><td><b style="color:var(--red);">Weakness</b></td><td>Sequential PAT decline of ~6.5%, and other income fell both YoY and QoQ</td></tr>
+    <tr><td><b style="color:var(--red);">Weakness</b></td><td>FY26 credit cost of 73 bps ran above the bank's own 55 bps target, partly on a one-off floating provision</td></tr>
+    <tr><td><b style="color:var(--red);">Weakness</b></td><td>Thinnest capital cushion (CRAR/CET-1) and priciest cost-to-income among the mid-private-bank peer set — ranks 9th and 6th respectively of 10</td></tr>
+    <tr><td><b style="color:var(--orange-deep);">Opportunity</b></td><td>Inorganic scale-up via Jana SFB (or similar) — access to MSME, affordable-housing and microfinance-adjacent retail segments where Federal Bank is under-represented</td></tr>
+    <tr><td><b style="color:var(--orange-deep);">Opportunity</b></td><td>New credit card portfolio (ex-Standard Chartered India) to deepen retail fee income</td></tr>
+    <tr><td><b style="color:var(--orange-deep);">Opportunity</b></td><td>Green portfolio expansion and continued digital transformation initiatives flagged by management</td></tr>
+    <tr><td><b style="color:var(--orange-deep);">Opportunity</b></td><td>S&amp;P rating opens cheaper access to international debt/ESG funding</td></tr>
+    <tr><td><b style="color:var(--orange-deep);">Opportunity</b></td><td>Comfortable capital adequacy gives optionality to pursue M&amp;A without an immediate dilutive raise</td></tr>
+    <tr><td><b style="color:var(--orange-deep);">Opportunity</b></td><td>Blackstone capital (once converted) further strengthens the funding base for growth or bolt-on M&amp;A, and the board nomination right may bring added governance/strategic input</td></tr>
+    <tr><td><b style="color:var(--orange-deep);">Opportunity</b></td><td>Continued gold-loan momentum (+33% YoY, ~14.8% of advances) — room to grow further toward peer levels (KVB ~30%, CUB ~30-31%) without a new franchise buildout</td></tr>
+    <tr><td><b style="color:var(--blue);">Threat</b></td><td>Deal uncertainty on Jana SFB — Federal Bank has itself denied "considering" the reported acquisition, creating headline risk either way (deal falls through after speculation, or a walk-back reverses later)</td></tr>
+    <tr><td><b style="color:var(--blue);">Threat</b></td><td>If a Jana SFB-type deal does proceed: integration risk, potential asset-quality drag from a smaller/higher-risk lender's book, and possible capital dilution via a mandatory open offer</td></tr>
+    <tr><td><b style="color:var(--blue);">Threat</b></td><td>Regulatory approval risk under RBI's M&amp;A/licensing norms for banks acquiring SFBs</td></tr>
+    <tr><td><b style="color:var(--blue);">Threat</b></td><td>Competitive deposit market continuing to pressure CASA ratio and near-term NIM</td></tr>
+    <tr><td><b style="color:var(--blue);">Threat</b></td><td>Broader rate-cycle risk — further repo cuts could keep margin compression alive for a few more quarters as guided by management</td></tr>
+    <tr><td><b style="color:var(--blue);">Threat</b></td><td>Gold-price correction risk — a meaningful reversal in gold prices would compress the value of gold collateral across the ~14.8%-of-advances gold loan book, sector-wide risk also flagged for SIB and TMB</td></tr>
+  </table>
+</section>
+
+<!-- ================= CAUVERY ASSIST ================= -->
+<section class="panel" id="assist">
+  <div class="section-title">Cauvery Assist</div>
+  <div class="section-note">Offline Q&amp;A on this dashboard's data — type a question or tap a suggestion</div>
+
+  <div class="assist-box">
+    <div class="assist-input-row">
+      <input type="text" id="assistInput" placeholder="e.g. What is Federal Bank's net profit in Q1 FY27?">
+      <button id="assistBtn">Ask</button>
+    </div>
+    <div class="assist-answer" id="assistAnswer">Vanakam! Ask me about Federal Bank's Q1 FY27 numbers or the Jana SFB development — I'll answer from this dashboard's data.</div>
+    <div class="chip-row" id="assistChips"></div>
+  </div>
+</section>
+
+<!-- ================= CAUVERY SOCRATES ================= -->
+<section class="panel" id="socrates">
+  <div class="section-title">Cauvery Socrates</div>
+  <div class="section-note">Test your understanding of Federal Bank's Q1 FY27 quarter and the Jana SFB situation</div>
+
+  <div class="quiz-box">
+    <div class="quiz-progress" id="quizProgress">Question 1 of 6</div>
+    <div class="quiz-q" id="quizQ"></div>
+    <div id="quizOpts"></div>
+    <div class="quiz-explain" id="quizExplain"></div>
+    <div class="quiz-nav">
+      <span id="quizScore">Score: 0 / 6</span>
+      <button id="quizNext">Next →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANALYST VIEW ================= -->
+<section class="panel" id="janadebate">
+  <div class="section-title">Jana SFB vs Federal Bank — Comparison &amp; Debate</div>
+  <div class="section-note">Jana SFB is a Small Finance Bank; Federal Bank is a full private-sector universal bank — they aren't natural like-for-like peers, but the comparison matters given media reports (25 Aug 2026) of acquisition talks. Federal Bank has itself filed an exchange clarification that it is <b>not considering</b> the acquisition as reported — treat this as scenario analysis of an unconfirmed, developing situation, not a confirmed transaction. Figures are each bank's own standalone Q1 FY27 (quarter ended 30 Jun 2026). Educational only; CB Research does not issue buy/sell/hold calls.</div>
+
+  <div class="grp-label">Scale Gap</div>
+  <div class="grid grid-4">
+    <div class="stat-card"><div class="lbl">Deposits</div><div class="num">8.95x</div><div class="delta flat">Federal Bank ₹3,20,118 Cr vs Jana ₹35,756 Cr</div></div>
+    <div class="stat-card"><div class="lbl">Advances (GLP)</div><div class="num">7.47x</div><div class="delta flat">Federal Bank ₹2,81,000 Cr vs Jana ₹37,612 Cr</div></div>
+    <div class="stat-card"><div class="lbl">Net Profit (PAT)</div><div class="num">7.59x</div><div class="delta flat">Federal Bank ₹1,177 Cr vs Jana ₹155 Cr</div></div>
+    <div class="stat-card"><div class="lbl">Jana's NIM vs Federal Bank</div><div class="num">2.25x higher</div><div class="delta flat">7.50% vs 3.33% — the SFB high-yield model</div></div>
+  </div>
+
+  <div class="grp-label" style="margin-top:24px;">Full Metric-by-Metric Comparison — Q1 FY27</div>
+  <table>
+    <tr><th>Metric</th><th class="num">Jana SFB</th><th class="num">Federal Bank</th><th>Reads Better For</th></tr>
+    <tr><td>Deposits</td><td class="num">₹35,756 Cr</td><td class="num pos-text">₹3,20,118 Cr</td><td>Federal Bank</td></tr>
+    <tr><td>Advances (GLP)</td><td class="num">₹37,612 Cr</td><td class="num pos-text">₹2,81,000 Cr</td><td>Federal Bank</td></tr>
+    <tr><td>Credit/Deposit</td><td class="num">97.00%</td><td class="num">86.68%</td><td>Federal Bank (more deposit-funded, less wholesale-reliant)</td></tr>
+    <tr><td>NII</td><td class="num">₹782 Cr</td><td class="num pos-text">₹2,946 Cr</td><td>Federal Bank</td></tr>
+    <tr><td>NIM</td><td class="num pos-text">7.50%</td><td class="num">3.33%</td><td>Jana SFB (structurally normal for an SFB's higher-yield book)</td></tr>
+    <tr><td>Other Income</td><td class="num">Not disclosed Q1 FY27</td><td class="num">₹1,048 Cr</td><td>Federal Bank</td></tr>
+    <tr><td>Provisions</td><td class="num">₹180 Cr</td><td class="num">₹720 Cr</td><td>—</td></tr>
+    <tr><td>Net Profit (PAT)</td><td class="num">₹155 Cr</td><td class="num pos-text">₹1,177 Cr</td><td>Federal Bank</td></tr>
+    <tr><td>CASA</td><td class="num">19.2%</td><td class="num pos-text">32.23%</td><td>Federal Bank</td></tr>
+    <tr><td>Secured Book</td><td class="num">74.0%</td><td class="num">Not a comparable metric</td><td>Not directly comparable — Federal Bank is a diversified universal-bank book (retail/gold/SME ~50.1% + corporate/wholesale), not a "secured share" metric used for SFB→UB eligibility</td></tr>
+    <tr><td>GNPA</td><td class="num">2.24%</td><td class="num pos-text">1.52%</td><td>Federal Bank</td></tr>
+    <tr><td>NNPA</td><td class="num">0.85%</td><td class="num pos-text">0.18%</td><td>Federal Bank</td></tr>
+    <tr><td>PCR</td><td class="num">77.0%</td><td class="num pos-text">87.37%</td><td>Federal Bank</td></tr>
+    <tr><td>Cost-to-Income (CTI)</td><td class="num">65.0%</td><td class="num pos-text">52.50%</td><td>Federal Bank</td></tr>
+    <tr><td>CRAR</td><td class="num pos-text">19.00%</td><td class="num">16.97%</td><td>Jana SFB</td></tr>
+    <tr><td>ROE</td><td class="num pos-text">13.5%</td><td class="num">12.01%</td><td>Jana SFB</td></tr>
+    <tr><td>ROA</td><td class="num pos-text">1.35%</td><td class="num">1.22%</td><td>Jana SFB</td></tr>
+    <tr><td>Cost of Funds/Deposits</td><td class="num">7.30%</td><td class="num pos-text">5.21%</td><td>Federal Bank</td></tr>
+    <tr><td>Book Value / Share (BVPS)</td><td class="num">₹435.00</td><td class="num">₹150.34</td><td>—</td></tr>
+    <tr><td>Market Price</td><td class="num">₹456</td><td class="num">₹348.80</td><td>—</td></tr>
+    <tr><td>P/BV</td><td class="num">1.05x</td><td class="num">2.32x</td><td>Jana SFB trades near book (cheaper); Federal Bank commands a premium</td></tr>
+  </table>
+
+  <div class="callout">
+    <h3>Reading the comparison</h3>
+    <p>Jana SFB wins on <b>margin and return metrics</b> (NIM 7.50% vs 3.33%, ROE 13.5% vs 12.01%, ROA 1.35% vs 1.22%, CRAR 19.00% vs 16.97%) — structurally normal for an SFB built to lend at higher yields into segments universal banks find too costly to reach. Federal Bank wins decisively on <b>asset quality, provisioning, funding cost and scale</b> (GNPA 1.52% vs 2.24%, NNPA 0.18% vs 0.85%, cost of funds 5.21% vs 7.30%, and roughly 7-9x Jana's balance-sheet size). Jana also trades near book (P/BV 1.05x) versus Federal Bank's 2.32x — the market is pricing in Jana's unresolved Universal-Bank ambitions and comparatively higher risk profile. On paper, Federal Bank's lower-cost funding applied to Jana's higher-yield book is the core arbitrage case for an acquisition — but it would also mean absorbing a book with GNPA/NNPA running well above Federal Bank's own decadal-best levels, at least until integration and re-underwriting narrow the gap. RBI's October 2025 rejection of Jana's own Universal Bank application (for non-fulfilment of eligibility criteria) is a relevant caution: whatever franchise-quality concerns triggered that rejection would transfer to any acquirer, regardless of the acquirer's own balance-sheet strength.</p>
+  </div>
+
+  <div class="callout" style="border-color:var(--green);background:var(--green-tint);">
+    <span class="flag result">The Case FOR — Why It Could Be Good News</span>
+    <ul class="clean" style="margin-top:10px;">
+      <li><b>Scale at a potential discount:</b> Jana SFB reported FY25 AUM of ₹29,545 Cr and deposits of ₹29,120 Cr (+29% YoY) — a real, deposit-funded franchise Federal Bank could absorb, potentially on favourable terms given seller Jana Holdings' distressed bond-repayment timeline.</li>
+      <li><b>Fills a genuine segment gap:</b> ~70% of Jana SFB's book is secured (affordable housing, MSME, agri, gold) — categories Federal Bank is comparatively under-represented in versus Tamil Nadu peers like KVB and CUB.</li>
+      <li><b>Geographic &amp; customer diversification:</b> Jana SFB operates across 24 states with a pan-India, financial-inclusion-focused customer base — a genuine complement to Federal Bank's Kerala/NRI concentration rather than an overlapping book.</li>
+      <li><b>A backdoor route to universal-bank-scale ambitions:</b> Jana SFB's own bid to convert from SFB to universal bank was returned by RBI in October 2025 for not meeting eligibility criteria — folding it into an already-universal Federal Bank sidesteps that specific regulatory hurdle.</li>
+      <li><b>Immediate funding-cost arbitrage:</b> Federal Bank's cost of deposits (5.21%) is materially lower than a small SFB's typical funding cost — refinancing Jana's book under Federal Bank's balance sheet could lift the combined margin on that portfolio from day one.</li>
+      <li><b>Capital headroom already exists:</b> Blackstone's ₹6,196.5 Cr investment plus Federal Bank's comfortable CRAR (16.97%) mean real dry powder is available without necessarily needing an immediate dilutive follow-on raise.</li>
+      <li><b>Sector precedent has generally been rewarded:</b> Recent bank-buys-bank and PE-into-bank deals in India (Emirates NBD–RBL Bank, SMBC–Yes Bank, Fairfax–IDBI Bank) were initially met with caution but re-rated positively once deal terms firmed up — a template a clean, well-priced Jana SFB deal could follow.</li>
+    </ul>
+  </div>
+
+  <div class="callout" style="border-color:var(--red);background:var(--red-tint);">
+    <span class="flag unconfirmed">The Case AGAINST — Why It's Not Obviously Good News</span>
+    <ul class="clean" style="margin-top:10px;">
+      <li><b>Asset quality gap:</b> Jana SFB's GNPA has historically run materially higher than Federal Bank's — around 2.5-2.8% in recent quarters versus Federal Bank's own decadal-best 1.52% — a blended book would likely dilute Federal Bank's current asset-quality standing, at least initially.</li>
+      <li><b>Integration &amp; cultural risk:</b> Merging a Bengaluru-headquartered, financial-inclusion-focused SFB with a conservative, Kerala-NRI-anchored bank carries real execution risk — different core banking systems, credit culture, and customer segments to reconcile.</li>
+      <li><b>Capital dilution via mandatory open offer:</b> A change-in-control deal crossing SEBI takeover thresholds would trigger an open offer to Jana SFB's public shareholders — a cash/capital outlay layered on top of any negotiated stake purchase.</li>
+      <li><b>Federal Bank's capital cushion is already the thinnest among peers:</b> CRAR and CET-1 rank 9th and 8th of 10 in the mid-private-bank peer set on the Ratios tab — less margin for error funding a large acquisition than peers like KVB or TMB would have.</li>
+      <li><b>Management-bandwidth distraction:</b> Integration would compete for leadership attention at exactly the time management is guiding a gradual, quarter-by-quarter NIM/ROA recovery from this quarter's sequential compression.</li>
+      <li><b>The uncertainty itself is already a cost:</b> Federal Bank's own filing denies "considering" the acquisition — deal terms, price and structure are all unknown, and the stock still fell ~4% on the mere headline, suggesting the market is pricing execution risk rather than celebrating a clean win.</li>
+      <li><b>Regulatory precedent is a yellow flag:</b> RBI rejected Jana SFB's own bid to become a universal bank in October 2025 for not meeting eligibility criteria — a signal on underlying franchise quality that any acquirer inherits regardless of its own balance-sheet strength.</li>
+      <li><b>Distressed-seller dynamics:</b> The reported talks are driven by Jana Holdings' 31 December 2026 bond-repayment deadline, not a considered strategic sale process — distressed situations can compress due-diligence timelines and obscure hidden liabilities.</li>
+    </ul>
+  </div>
+
+  <div class="callout" style="border-color:var(--blue);background:#eef4fb;">
+    <h3 style="color:var(--blue);">Bottom line</h3>
+    <p>Whether this would ultimately be "good news" for Federal Bank hinges on facts not yet public — the price paid, deal structure, financing mix (cash vs. shares), and integration plan. The strategic logic (scale, segment and geographic diversification, a workaround to universal-banking ambitions) is real, but so are the risks (asset quality dilution, capital strain, integration execution). Until Federal Bank confirms terms — if it ever does — this stays a genuine two-sided debate rather than a clear-cut positive, and the ~4% stock reaction on 25 Aug 2026 suggests the market currently leans toward pricing the risks over the opportunity.</p>
+  </div>
+</section>
+
+<section class="panel" id="analyst">
+  <div class="section-title">Analyst View</div>
+  <div class="section-note">Educational commentary only. CB Research is not SEBI-registered and does not issue buy/sell/hold recommendations.</div>
+
+  <table>
+    <tr><th style="width:16%;">Theme</th><th>Reading</th></tr>
+    <tr><td><b>Quarter quality</b></td><td>On a standalone basis, Q1 FY27 was a clean, high-quality print: profit growth well ahead of NII growth, driven by a genuine cost-to-income improvement and a sharp fall in credit costs/slippages rather than one-offs (management explicitly called this the highest-ever quarterly profit excluding a March-quarter one-off gain).</td></tr>
+    <tr><td><b>Sequential dip</b></td><td>The sequential dip in profit and NIM is largely a rate-cycle story — full pass-through of the Feb-2026 repo cut into asset yields ahead of deposit repricing benefits — and management has guided this to normalise gradually (NIM +5-6 bps/quarter, ROA +3-4 bps/quarter).</td></tr>
+    <tr><td><b>Capital optionality</b></td><td>Balance sheet and capital metrics (CRAR 16.97%, CET-1 16.30%) leave the bank with genuine optionality — it does not need to raise capital simply to keep growing organically at its guided mid-teens-plus pace, though it is the thinnest cushion among close peers per the Ratios tab ranking.</td></tr>
+    <tr><td><b>Jana SFB status</b></td><td>This is currently an unconfirmed, denied report rather than an announced transaction — the honest position is "developing situation," not a base case to underwrite.</td></tr>
+    <tr><td><b>Jana SFB logic</b></td><td>The strategic logic (retail/MSME diversification, scale, a possible indirect route to greater universal-banking scale) is coherent <i>if</i> it happens, but the seller-side driver (Jana Holdings' bond repayment deadline) suggests time pressure is coming from Jana's side, which could affect deal terms more than Federal Bank's own capital planning.</td></tr>
+    <tr><td><b>What to watch</b></td><td>(a) any further exchange filings from either bank, (b) RBI/SEBI regulatory commentary, (c) whether Jana Holdings pursues alternative buyers, and (d) Federal Bank's own capital-raising plans (AT1/Tier-II/ESG bonds already under board consideration) as a tell on funding intentions.</td></tr>
+    <tr><td><b>Gold loans</b></td><td>Gold loan growth (+33% YoY, ~14.8% of advances) is a contributing but not dominant driver of this quarter's advance growth — a smaller proportional exposure than Tamil Nadu peers KVB/CUB/TMB, so Federal Bank is less levered to a gold-price correction than those peers, but also captures proportionally less of the NIM/asset-quality upside that a gold-heavy book provides.</td></tr>
+  </table>
+
+  <div class="assist-box" style="background:#fff;">
+    <h3 style="font-family:'Inter';font-size:15px;margin-top:0;">Quick reference — what to track next</h3>
+    <table style="margin:0;">
+      <tr><td>Next Federal Bank filing on Jana SFB</td><td class="num">Pending</td></tr>
+      <tr><td>Jana Holdings bond deadline</td><td class="num">31 Dec 2026</td></tr>
+      <tr><td>Q2 FY27 results</td><td class="num">~Oct 2026 (est.)</td></tr>
+      <tr><td>NIM trajectory guidance</td><td class="num">+5-6 bps/qtr</td></tr>
+      <tr><td>Credit cost guidance</td><td class="num">50-60 bps (lower end)</td></tr>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<div class="cb-badge" id="cbBadge">CB</div>
+<div class="cb-disclaimer" id="cbDisclaimer">
+  <b>Disclaimer:</b> CB Research (Cauvery Business Research) is an independent, non-SEBI-registered equity research &amp; education platform. Content here is educational only, not investment advice, and not a buy/sell/hold recommendation. Figures sourced from public disclosures and media reports; please verify against official filings.
+</div>
+
+<script>
+  // ===== Tabs =====
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      window.scrollTo({top:0,behavior:'instant'});
+    });
+  });
+
+  // ===== Cauvery Assist (offline keyword Q&A) =====
+  const qa = [
+    {k:["net profit","pat","profit q1"], a:"Federal Bank's Q1 FY27 net profit was ₹1,176.9 crore, up 36.57% YoY from ₹862 crore, though down 6.53% sequentially from Q4 FY26."},
+    {k:["nii","net interest income"], a:"Net Interest Income for Q1 FY27 was ₹2,945.9 crore, up 26.06% YoY, though down about 7% sequentially."},
+    {k:["nim","margin"], a:"Net Interest Margin was 3.33% in Q1 FY27 — up 39 bps year-on-year but down 41 bps sequentially due to rate-cut pass-through on assets ahead of deposit repricing benefits."},
+    {k:["gnpa","gross npa","bad loan","asset quality"], a:"Gross NPA improved to 1.52% in Q1 FY27 from 1.62% at March-end 2026 — a multi-quarter best."},
+    {k:["nnpa","net npa"], a:"Net NPA fell to 0.18% in Q1 FY27, a decadal low for Federal Bank, from a higher base a year earlier."},
+    {k:["crar","capital adequacy"], a:"Capital adequacy ratio (CRAR) under Basel III stood at 16.97%, with Tier-I capital at 15.89% — comfortably above regulatory minimums."},
+    {k:["casa"], a:"CASA ratio was 32.23% in Q1 FY27, down 71 bps sequentially, reflecting a competitive deposit environment."},
+    {k:["roa","return on assets"], a:"Return on Assets improved to 1.22% in Q1 FY27; management guides for a further 3-4 bps improvement per quarter."},
+    {k:["roe","return on equity"], a:"Return on Equity expanded to 12.01% in Q1 FY27, though it still trails larger private peers like HDFC Bank and ICICI Bank."},
+    {k:["cost to income","efficiency"], a:"Cost-to-Income ratio improved by 239 bps YoY to 52.50% in Q1 FY27."},
+    {k:["jana","sfb","small finance","controlling stake"], a:"Media reports (25 Aug 2026) said Federal Bank was in advanced talks to acquire a controlling stake in Jana Small Finance Bank from promoter Jana Holdings Ltd. Federal Bank shares fell ~4% on the news, and the bank subsequently filed an exchange clarification that it is not considering the acquisition as reported. No transaction is confirmed — this remains a developing situation. See the 'Jana SFB Comparison & Debate' tab for the full comparison and arguments on both sides."},
+    {k:["good news","for and against","pros and cons","should federal bank"], a:"It's genuinely two-sided. In favour: Jana SFB brings real scale (₹29,545 Cr AUM, FY25), fills gaps in secured MSME/affordable-housing/agri lending, adds pan-India diversification, and could be priced favourably given the seller's distressed timeline. Against: Jana SFB's asset quality (GNPA ~2.5-2.8%) trails Federal Bank's own 1.52%, integration/cultural risk is real, Federal Bank's capital cushion is already the thinnest among its peer set, and RBI previously rejected Jana SFB's own universal-bank bid — a flag on the underlying franchise. See the 'Jana SFB Comparison & Debate' tab for the full breakdown."},
+    {k:["compare jana federal","jana vs federal","head to head","how do they compare"], a:"On scale, Federal Bank dwarfs Jana SFB — about 9x on deposits, 7.5x on advances, 7.6x on PAT. On margins and returns, Jana actually leads: NIM 7.50% vs Federal Bank's 3.33%, ROE 13.5% vs 12.01%, ROA 1.35% vs 1.22% — normal for a higher-yield SFB book. But Federal Bank wins clearly on asset quality (GNPA 1.52% vs 2.24%, NNPA 0.18% vs 0.85%), funding cost (5.21% vs 7.30%) and provisioning (PCR 87.37% vs 77.0%). Jana trades near book (P/BV 1.05x) while Federal Bank commands a premium (2.32x). See the 'Jana SFB Comparison & Debate' tab for the full metric-by-metric table."},
+    {k:["blackstone","private equity","pe investment","warrant"], a:"Blackstone is investing ₹6,196.51 crore in Federal Bank via its affiliate Asia II Topco XIII Pte Ltd, through a preferential warrant issue approved by the board on 24 Oct 2025. Up to 27.29 crore warrants at ₹227 each convert into equity within 18 months, giving Blackstone up to a 9.99% stake and board nomination rights. CCI approved the deal in Dec 2025 and the RBI approved it on 5 Feb 2026 — making Blackstone set to become Federal Bank's single largest shareholder."},
+    {k:["largest shareholder"], a:"Once Blackstone's warrants are fully converted (up to 9.99% stake), Blackstone is set to become Federal Bank's single largest shareholder, per the RBI-approved deal announced in October 2025."},
+    {k:["jana holdings","tpg","bond","debt"], a:"Jana Holdings Ltd, the promoter of Jana SFB, needs liquidity to service ~₹1,663 crore of restructured debt to bondholders including TPG Asia, with a revised repayment deadline of 31 December 2026 after missing the original 30 June 2026 deadline."},
+    {k:["deposit","business","balance sheet"], a:"Total deposits were ₹3,20,117.7 crore (+11.37% YoY) and total business (deposits + advances) reached ₹5,97,615.8 crore, nearing the ₹6 lakh crore mark, in Q1 FY27."},
+    {k:["credit card","standard chartered","stanc"], a:"Federal Bank acquired Standard Chartered India's retail credit card receivables portfolio in FY27, with the deed of assignment executed on 4 May 2026, expanding its retail card business."},
+    {k:["rating","s&p"], a:"Federal Bank secured a new S&P international investment-grade rating during Q1 FY27, supporting cheaper access to overseas/ESG funding."},
+    {k:["pe","valuation","price"], a:"For banks, Price-to-Book (P/BV) is the primary valuation metric, not P/E. Federal Bank traded at a P/BV of ~2.32x on a BVPS of ₹150.34 (price ₹348.80) — the second-richest valuation among its mid-private-bank peer group after Karur Vysya Bank (2.28x). P/E (secondary, ~19.82x) and PEG are shown for context only."},
+    {k:["p/bv","price to book","book value","bvps"], a:"Federal Bank's Book Value Per Share (BVPS) was ₹150.34 in Q1 FY27 (up from ₹145.60 in Q4 FY26), and at a market price of ₹348.80, that's a Price-to-Book (P/BV) of ~2.32x — the second-highest P/BV among comparable mid &amp; small private banks in this dashboard's peer set."},
+    {k:["rank","ranking","peer","composite score"], a:"Against a 10-bank mid &amp; small private-bank peer set (KVB, TMB, IDBI, CUB, SIB, Karnataka Bank, YES Bank, RBL, IndusInd, Federal Bank), Federal Bank ranks 5th of 10 on a blended composite score (ROA, GNPA, NIM, ROE, PCR, CTI, CASA, CET-1 weighted). It's strongest on asset quality (NNPA 2nd-best) and weakest on capital cushion (CRAR/CET-1 lowest in the group) and cost efficiency. See the Ratios tab for the full comparison table."},
+    {k:["slippage"], a:"Fresh slippages moderated to ₹409 crore in Q1 FY27, down 37.79% YoY from ₹658 crore and down from ₹474 crore in the preceding quarter."},
+    {k:["gold loan","gold","jewel loan"], a:"Federal Bank's gold loan book stood at ₹41,476 crore in Q1 FY27, up 33% YoY — around 14.8% of gross advances. That's meaningful but proportionally smaller than Tamil Nadu peers: KVB carries ~30% of advances in gold loans, City Union Bank ~30-31%, and Tamilnad Mercantile Bank ~40% (on older disclosure) — those peers' gold-heavy books help explain their higher NIMs and stronger asset quality, since gold loans are fully secured and self-liquidating. See the Segments tab for the full peer comparison."},
+    {k:["why gold loan","gold price","cash for gold","borrowing more gold"], a:"Per RBI's June 2026 Financial Stability Report, gold loans are now the largest segment within non-housing retail loans, growing at a 42.4% CAGR since March 2024 — nearly double overall non-housing retail growth. Rising gold prices let existing borrowers unlock bigger loans against the same collateral and roll over old debt, a shift most visible among sub-prime borrowers. Large jewellery chains like Tanishq and Kalyan have also started offering cash for old gold, a reversal from exchange-only policies, as they face margin pressure from high gold prices and import duties. See the Segments tab for the full analysis."}
+  ];
+  const assistInput = document.getElementById('assistInput');
+  const assistAnswer = document.getElementById('assistAnswer');
+  function askAssist(q){
+    if(!q || !q.trim()){return;}
+    const qLower = q.toLowerCase();
+    let best = null, bestScore = 0;
+    qa.forEach(item=>{
+      let score = 0;
+      item.k.forEach(kw=>{ if(qLower.includes(kw)) score += kw.split(" ").length; });
+      if(score > bestScore){ bestScore = score; best = item; }
+    });
+    assistAnswer.textContent = best ? best.a : "I don't have that on this dashboard yet — try asking about net profit, NIM, GNPA/NNPA, CRAR, CASA, deposits, or the Jana SFB development.";
+  }
+  document.getElementById('assistBtn').addEventListener('click', ()=>askAssist(assistInput.value));
+  assistInput.addEventListener('keydown', e=>{ if(e.key==='Enter') askAssist(assistInput.value); });
+  const chipTopics = ["Net profit","NIM","GNPA/NNPA","Jana SFB deal","Blackstone investment","P/BV valuation","Peer ranking","Gold loan exposure","CRAR"];
+  const chipRow = document.getElementById('assistChips');
+  chipTopics.forEach(t=>{
+    const c = document.createElement('div');
+    c.className='chip'; c.textContent=t;
+    c.addEventListener('click', ()=>{ assistInput.value=t; askAssist(t); });
+    chipRow.appendChild(c);
+  });
+
+  // ===== Cauvery Socrates quiz =====
+  const quiz = [
+    {q:"What was Federal Bank's net profit in Q1 FY27?", opts:["₹862 Cr","₹1,176.9 Cr","₹955 Cr","₹1,500 Cr"], correct:1, ex:"Net profit was ₹1,176.9 crore, up 36.57% YoY."},
+    {q:"What Net NPA level did Federal Bank report in Q1 FY27?", opts:["0.18% (decadal low)","1.52%","0.48%","2.11%"], correct:0, ex:"NNPA fell to 0.18%, a decadal low for the bank."},
+    {q:"Who is reportedly looking to sell its stake in Jana Small Finance Bank?", opts:["IFC","True North","Jana Holdings Ltd","HarbourVest Partners"], correct:2, ex:"Jana Holdings Ltd, the promoter with a 16.9% stake, is reportedly seeking an exit to meet bond repayment obligations."},
+    {q:"What was Federal Bank's CRAR (Basel III) in Q1 FY27?", opts:["12.5%","14.37%","16.97%","19.0%"], correct:2, ex:"CRAR stood at 16.97%, with Tier-I capital at 15.89%."},
+    {q:"How did Federal Bank respond to the Jana SFB acquisition reports?", opts:["Confirmed the deal","Filed a clarification saying it is not considering the acquisition as reported","Announced a board meeting to approve it","Made no statement"], correct:1, ex:"Federal Bank issued an exchange filing clarifying it was not considering the acquisition as reported, even as the stock fell ~4% on the news."},
+    {q:"What was Federal Bank's Cost-to-Income ratio in Q1 FY27?", opts:["65.0%","58.9%","52.50%","47.1%"], correct:2, ex:"Cost-to-Income improved 239 bps YoY to 52.50%."},
+    {q:"Which global PE firm is investing ₹6,196.5 Cr in Federal Bank for up to a 9.99% stake?", opts:["True North","Blackstone","Warburg Pincus","IFC"], correct:1, ex:"Blackstone (via affiliate Asia II Topco XIII) received RBI approval on 5 Feb 2026 for the deal, set to make it Federal Bank's single largest shareholder."},
+    {q:"What is the primary valuation metric used for banks, and what was Federal Bank's value?", opts:["P/E, 19.82x","P/BV, 2.32x","Dividend Yield, 0.34%","PEG, 19.44x"], correct:1, ex:"For banks, Price-to-Book (P/BV) is the primary valuation lens since book value reflects the balance sheet directly. Federal Bank traded at ~2.32x P/BV (BVPS ₹150.34) — the second-richest among mid-private-bank peers."},
+    {q:"Where does Federal Bank rank among 10 comparable mid &amp; small private banks on CB Research's composite score?", opts:["1st", "5th", "8th", "10th"], correct:1, ex:"Federal Bank ranks 5th of 10 — strongest on asset quality (NNPA), weakest on capital cushion (CRAR/CET-1) and cost efficiency (CTI) relative to this peer set."},
+    {q:"What was Federal Bank's gold loan book size and its share of gross advances in Q1 FY27?", opts:["₹41,476 Cr, ~14.8%","₹18,000 Cr, ~40%","₹31,400 Cr, ~30%","₹20,630 Cr, ~30%"], correct:0, ex:"Federal Bank's gold loan book was ₹41,476 crore (+33% YoY), around 14.8% of gross advances — smaller proportionally than Tamil Nadu peers KVB (~30%), CUB (~30-31%) and TMB (~40%, dated), but still one of its fastest-growing lines."}
+  ];
+  let qIdx = 0, score = 0, answered = false;
+  const quizQ = document.getElementById('quizQ');
+  const quizOpts = document.getElementById('quizOpts');
+  const quizExplain = document.getElementById('quizExplain');
+  const quizProgress = document.getElementById('quizProgress');
+  const quizScore = document.getElementById('quizScore');
+  const quizNext = document.getElementById('quizNext');
+
+  function renderQuiz(){
+    answered = false;
+    quizExplain.style.display = 'none';
+    quizNext.style.visibility = 'hidden';
+    const item = quiz[qIdx];
+    quizProgress.textContent = `Question ${qIdx+1} of ${quiz.length}`;
+    quizQ.textContent = item.q;
+    quizOpts.innerHTML = '';
+    item.opts.forEach((opt,i)=>{
+      const b = document.createElement('button');
+      b.className='quiz-opt';
+      b.textContent = opt;
+      b.addEventListener('click', ()=>{
+        if(answered) return;
+        answered = true;
+        const allOpts = quizOpts.querySelectorAll('.quiz-opt');
+        allOpts[item.correct].classList.add('correct');
+        if(i !== item.correct){ b.classList.add('wrong'); } else { score++; }
+        quizExplain.textContent = item.ex;
+        quizExplain.style.display = 'block';
+        quizScore.textContent = `Score: ${score} / ${quiz.length}`;
+        quizNext.style.visibility = 'visible';
+        if(qIdx === quiz.length-1){ quizNext.textContent = 'Finish'; }
+      });
+      quizOpts.appendChild(b);
+    });
+  }
+  quizNext.addEventListener('click', ()=>{
+    if(qIdx < quiz.length-1){ qIdx++; renderQuiz(); }
+    else{
+      quizQ.textContent = `Quiz complete! Final score: ${score} / ${quiz.length}`;
+      quizOpts.innerHTML='';
+      quizExplain.style.display='none';
+      quizNext.style.visibility='hidden';
+      quizProgress.textContent='Done';
+    }
+  });
+  quizScore.textContent = `Score: 0 / ${quiz.length}`;
+  renderQuiz();
+</script>
+
+</body>
+</html>

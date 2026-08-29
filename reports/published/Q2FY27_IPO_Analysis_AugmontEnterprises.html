@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Augmont Enterprises Ltd — IPO Analysis | CB Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Serif+4:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg: #F6F3EC;
+  --bg-panel: #FFFFFF;
+  --ink: #201B12;
+  --ink-soft: #5B5340;
+  --rule: #DCD4BE;
+  --gold: #9C6B12;
+  --gold-deep: #6E4A0C;
+  --gold-bright: #C68A1F;
+  --green: #3B5240;
+  --oxblood: #6B2331;
+  --paper-shadow: 0 1px 0 rgba(32,27,18,.05);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Source Serif 4', Georgia, serif;
+  font-size:16px; line-height:1.6;
+}
+h1,h2,h3,h4{ font-family:'Fraunces', 'Source Serif 4', serif; font-weight:600; margin:0; color:var(--ink);}
+.mono{ font-family:'IBM Plex Mono', monospace; }
+a{color:var(--gold-deep);}
+
+/* ===== Ticker bar ===== */
+.ticker{
+  background:var(--ink); color:#F6EFDD; overflow:hidden; white-space:nowrap;
+  font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:.03em;
+  border-bottom:1px solid var(--gold-deep);
+}
+.ticker-track{ display:inline-block; padding-left:100%; animation: scrollTicker 32s linear infinite; }
+.ticker-track span{ margin-right:48px; }
+@keyframes scrollTicker{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
+
+/* ===== Nav ===== */
+nav{
+  position:sticky; top:0; z-index:50; background:rgba(246,243,236,.97);
+  backdrop-filter:blur(6px); border-bottom:1px solid var(--rule);
+}
+.navwrap{ max-width:1180px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:10px 24px; gap:16px; flex-wrap:wrap;}
+.brand{ display:flex; align-items:center; gap:10px; }
+.brand .mark{ width:30px; height:30px; flex:none; }
+.brand-text{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; letter-spacing:.01em;}
+.brand-text small{ display:block; font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:10px; letter-spacing:.14em; color:var(--gold-deep); text-transform:uppercase;}
+
+/* ===== Tab bar ===== */
+.tabbar-outer{ position:sticky; top:0; z-index:49; background:var(--bg); border-bottom:1px solid var(--rule); }
+.tabbar{
+  max-width:1180px; margin:0 auto; display:flex; gap:2px; overflow-x:auto;
+  padding:0 24px; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+}
+.tabbar::-webkit-scrollbar{ display:none; }
+.tabbtn{
+  flex:none; font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.07em;
+  color:var(--ink-soft); background:transparent; border:none; border-bottom:3px solid transparent;
+  padding:14px 14px 11px; cursor:pointer; white-space:nowrap; transition:.15s;
+}
+.tabbtn .n{ color:var(--gold); margin-right:6px; opacity:.7; }
+.tabbtn:hover{ color:var(--gold-deep); }
+.tabbtn.active{ color:var(--ink); border-bottom-color:var(--gold-deep); font-weight:600; }
+
+.tab-panel{ display:none; }
+.tab-panel.active{ display:block; }
+
+/* ===== Hero ===== */
+.hero{ max-width:1180px; margin:0 auto; padding:64px 24px 40px; display:grid; grid-template-columns:1.3fr 1fr; gap:48px; align-items:center;}
+.eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold-deep); margin-bottom:16px; display:flex; align-items:center; gap:10px;}
+.eyebrow::before{ content:""; width:26px; height:1px; background:var(--gold-deep); display:inline-block;}
+.hero h1{ font-size:clamp(34px,4.6vw,54px); line-height:1.04; letter-spacing:-.01em; }
+.hero h1 em{ font-style:italic; color:var(--gold-deep); }
+.hero p.lede{ margin-top:20px; font-size:17px; color:var(--ink-soft); max-width:52ch; }
+.hero-cta{ margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; }
+.pill{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; padding:8px 14px; border-radius:999px; border:1px solid var(--rule); color:var(--ink-soft); background:var(--bg-panel);}
+.pill.gold{ border-color:var(--gold); color:var(--gold-deep); background:#FBF2DD; }
+
+/* Ingot signature */
+.ingot-wrap{ display:flex; justify-content:center; align-items:center; }
+.ingot{ position:relative; width:100%; max-width:340px; }
+.ingot svg{ width:100%; height:auto; filter: drop-shadow(0 18px 30px rgba(110,74,12,.22)); }
+.ingot-stat{ position:absolute; font-family:'IBM Plex Mono',monospace; }
+
+/* ===== Section shell ===== */
+section{ max-width:1180px; margin:0 auto; padding:64px 24px; border-top:1px solid var(--rule); }
+.section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:20px; margin-bottom:36px; flex-wrap:wrap;}
+.section-head h2{ font-size:clamp(26px,3vw,36px); }
+.section-num{ font-family:'IBM Plex Mono',monospace; color:var(--gold-deep); font-size:13px; letter-spacing:.1em;}
+
+/* ===== Stat grid ===== */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule); border:1px solid var(--rule); margin-bottom:8px;}
+.stat{ background:var(--bg-panel); padding:22px 20px; }
+.stat .k{ font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); }
+.stat .v{ font-family:'Fraunces',serif; font-size:28px; font-weight:600; margin-top:8px; color:var(--gold-deep); }
+.stat .d{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; font-family:'IBM Plex Mono',monospace;}
+
+/* ===== Tables ===== */
+table{ width:100%; border-collapse:collapse; background:var(--bg-panel); font-size:14.5px;}
+caption{ text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); padding-bottom:10px;}
+th{ text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); font-weight:500; padding:10px 14px; border-bottom:2px solid var(--ink); background:#EFE7D2;}
+td{ padding:10px 14px; border-bottom:1px solid var(--rule); font-family:'IBM Plex Mono',monospace; font-size:13.5px;}
+td.label{ font-family:'Source Serif 4',serif; font-size:14.5px; }
+tr:hover td{ background:#FBF8EF; }
+.tbl-wrap{ overflow-x:auto; border:1px solid var(--rule); }
+.src-col{ color:var(--ink-soft); font-size:11px; }
+
+/* ===== Business model cards ===== */
+.verticals{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.vcard{ background:var(--bg-panel); border:1px solid var(--rule); padding:28px; position:relative;}
+.vcard .tag{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:#fff; background:var(--gold-deep); padding:3px 9px; display:inline-block; margin-bottom:14px;}
+.vcard.b2c .tag{ background:var(--green); }
+.vcard h3{ font-size:22px; margin-bottom:10px;}
+.vcard ul{ margin:14px 0 0; padding-left:18px; color:var(--ink-soft); font-size:14.5px;}
+.vcard li{ margin-bottom:6px; }
+.vcard .num{ font-family:'IBM Plex Mono',monospace; color:var(--gold-deep); font-weight:600;}
+
+.chain{ display:flex; align-items:center; gap:0; margin-top:40px; flex-wrap:wrap; }
+.chain-step{ background:var(--bg-panel); border:1px solid var(--rule); padding:14px 16px; font-family:'IBM Plex Mono',monospace; font-size:12px; text-align:center; flex:1; min-width:110px;}
+.chain-arrow{ color:var(--gold-deep); font-size:18px; padding:0 6px; }
+
+/* ===== Simple explainer panel ===== */
+.simple-panel{ background:#FBF6E9; border:1px solid var(--rule); border-left:3px solid var(--gold-deep); padding:32px; margin-top:40px; }
+.simple-tag{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:#fff; background:var(--gold-deep); padding:3px 10px; display:inline-block; margin-bottom:14px;}
+.simple-panel h3{ font-size:22px; margin-bottom:22px; }
+.simple-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:26px; }
+.simple-step{ background:var(--bg-panel); border:1px solid var(--rule); padding:18px 16px; }
+.simple-num{ font-family:'Fraunces',serif; font-size:24px; font-weight:700; color:var(--gold-deep); display:block; margin-bottom:8px;}
+.simple-step h5{ font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; color:var(--ink);}
+.simple-step p{ font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.55;}
+.simple-money{ background:var(--bg-panel); border:1px solid var(--rule); padding:20px 22px; margin-bottom:20px;}
+.simple-money h5{ font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; color:var(--gold-deep);}
+.simple-money p{ font-size:14px; color:var(--ink-soft); margin:0; line-height:1.6;}
+.simple-oneline{ font-size:14.5px; color:var(--ink); margin:0; line-height:1.6; }
+@media (max-width:860px){ .simple-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:560px){ .simple-grid{ grid-template-columns:1fr; } }
+
+/* ===== Chart card ===== */
+.chart-card{ background:var(--bg-panel); border:1px solid var(--rule); padding:24px; margin-bottom:24px;}
+.chart-toggle{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+.tbtn{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; padding:7px 14px; border:1px solid var(--rule); background:transparent; color:var(--ink-soft); cursor:pointer; transition:.15s;}
+.tbtn.active{ background:var(--gold-deep); color:#fff; border-color:var(--gold-deep); }
+canvas{ max-height:340px; }
+
+/* ===== SWOT ===== */
+.swot{ display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--ink); border:1px solid var(--ink);}
+.swot-card{ padding:28px; }
+.swot-card.s{ background:#EEF3ED; }
+.swot-card.w{ background:#F7EDEA; }
+.swot-card.o{ background:#EDF1F6; }
+.swot-card.t{ background:#F7F0E4; }
+.swot-card h4{ font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.swot-card h4 .letter{ font-family:'Fraunces',serif; font-size:26px; font-weight:700;}
+.s h4 .letter{color:var(--green);} .w h4 .letter{color:var(--oxblood);} .o h4 .letter{color:#2A4A73;} .t h4 .letter{color:var(--gold-deep);}
+.swot-card ul{ margin:0; padding-left:18px; font-size:14px; color:var(--ink);}
+.swot-card li{ margin-bottom:9px; }
+
+/* ===== Ratings ===== */
+.rating-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; margin-bottom:28px;}
+.rcard{ background:var(--bg-panel); border:1px solid var(--rule); padding:18px 20px; border-left:3px solid var(--gold-deep);}
+.rcard .desk{ font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft);}
+.rcard .verdict{ font-family:'Fraunces',serif; font-size:19px; font-weight:600; margin:6px 0; color:var(--gold-deep);}
+.rcard p{ font-size:13px; color:var(--ink-soft); margin:0; }
+
+/* ===== Verdict ===== */
+.verdict-panel{ background:var(--ink); color:#F3ECD8; padding:44px; display:grid; grid-template-columns:1fr auto; gap:32px; align-items:center;}
+.verdict-panel h3{ color:#fff; font-size:15px; text-transform:uppercase; letter-spacing:.14em; font-family:'IBM Plex Mono',monospace; margin-bottom:14px; color:#D8B36A;}
+.verdict-panel p{ font-size:16px; line-height:1.7; max-width:64ch; color:#EFE7D2;}
+.verdict-gauge{ text-align:center; }
+.verdict-gauge .big{ font-family:'Fraunces',serif; font-size:15px; letter-spacing:.02em; border:1px solid #D8B36A; color:#D8B36A; padding:14px 22px; display:inline-block;}
+
+/* ===== Accordion (risks) ===== */
+.acc-item{ border-bottom:1px solid var(--rule); }
+.acc-head{ padding:16px 4px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:13.5px; letter-spacing:.02em;}
+.acc-head .plus{ font-size:18px; color:var(--gold-deep); transition:.2s; }
+.acc-body{ max-height:0; overflow:hidden; transition:max-height .25s ease; font-size:14.5px; color:var(--ink-soft);}
+.acc-body p{ padding:0 4px 16px; margin:0;}
+.acc-item.open .acc-body{ max-height:220px; }
+.acc-item.open .plus{ transform:rotate(45deg); }
+
+/* ===== Footer / sources ===== */
+footer{ max-width:1180px; margin:0 auto; padding:48px 24px 80px; border-top:1px solid var(--rule); }
+.src-list{ columns:2; column-gap:40px; font-size:12.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+.src-list li{ margin-bottom:8px; break-inside:avoid;}
+.disclaimer{ font-size:12.5px; color:var(--ink-soft); background:#FBF2DD; border:1px solid var(--rule); padding:16px 20px; margin-top:28px; max-width:900px;}
+
+@media (max-width:860px){
+  .hero{ grid-template-columns:1fr; padding-top:40px; }
+  .stat-grid{ grid-template-columns:1fr 1fr; }
+  .verticals{ grid-template-columns:1fr; }
+  .swot{ grid-template-columns:1fr; }
+  .verdict-panel{ grid-template-columns:1fr; text-align:left; }
+  .src-list{ columns:1; }
+  .tabbtn{ padding:12px 11px 9px; font-size:10.5px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ticker"><div class="ticker-track">
+<span>AUGMONT ENTERPRISES LTD — IPO OPENS 21 AUG 2026, CLOSES 25 AUG 2026</span>
+<span>PRICE BAND ₹750 – ₹788 · LOT 19 SHARES · ISSUE SIZE ₹825 CR</span>
+<span>FY26 REVENUE ₹94,186.21 CR · PAT ₹348.30 CR · ROE 51.04%</span>
+<span>LISTING (TENTATIVE) 31 AUG 2026 ON BSE &amp; NSE</span>
+<span>AUGMONT ENTERPRISES LTD — IPO OPENS 21 AUG 2026, CLOSES 25 AUG 2026</span>
+<span>PRICE BAND ₹750 – ₹788 · LOT 19 SHARES · ISSUE SIZE ₹825 CR</span>
+<span>FY26 REVENUE ₹94,186.21 CR · PAT ₹348.30 CR · ROE 51.04%</span>
+<span>LISTING (TENTATIVE) 31 AUG 2026 ON BSE &amp; NSE</span>
+</div></div>
+
+<nav>
+  <div class="navwrap">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40"><rect x="4" y="14" width="32" height="18" fill="#C68A1F" stroke="#6E4A0C" stroke-width="1.5"/><rect x="8" y="18" width="24" height="10" fill="#E4B85C"/><text x="20" y="26" font-family="IBM Plex Mono" font-size="7" text-anchor="middle" fill="#6E4A0C">999.9</text></svg>
+      <div class="brand-text">Augmont Enterprises<small>IPO Research Note · CB Research</small></div>
+    </div>
+  </div>
+</nav>
+
+<div class="tabbar-outer">
+  <div class="tabbar" id="tabbar">
+    <button class="tabbtn active" data-tab="overview"><span class="n">00</span>Overview</button>
+    <button class="tabbtn" data-tab="ipo"><span class="n">01</span>IPO Details</button>
+    <button class="tabbtn" data-tab="business"><span class="n">02</span>Business Model</button>
+    <button class="tabbtn" data-tab="financials"><span class="n">03</span>Financials</button>
+    <button class="tabbtn" data-tab="swot"><span class="n">04</span>SWOT</button>
+    <button class="tabbtn" data-tab="ratings"><span class="n">05</span>Ratings</button>
+  </div>
+</div>
+
+<div class="tab-panel active" id="overview" data-panel="overview">
+<div class="hero">
+  <div>
+    <div class="eyebrow">Mainboard IPO · BSE &amp; NSE</div>
+    <h1>The bullion trade,<br><em>digitised and integrated.</em></h1>
+    <p class="lede">Augmont Enterprises Ltd runs India's largest integrated gold &amp; silver platform spanning procurement, in-house refining, electronic bullion trading and consumer digital gold — now raising ₹825 crore at the top of a ₹750–₹788 price band.</p>
+    <div class="hero-cta">
+      <span class="pill gold">Opens 21 Aug 2026</span>
+      <span class="pill">Closes 25 Aug 2026</span>
+      <span class="pill">Face Value ₹5</span>
+      <span class="pill">Fresh Issue ₹620 Cr + OFS ₹205 Cr</span>
+    </div>
+  </div>
+  <div class="ingot-wrap">
+    <div class="ingot">
+      <svg viewBox="0 0 340 260" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="40,190 60,90 280,90 300,190" fill="#E7C36B" stroke="#6E4A0C" stroke-width="2"/>
+        <polygon points="40,190 60,90 60,110 45,196" fill="#C68A1F" stroke="#6E4A0C" stroke-width="1"/>
+        <rect x="40" y="190" width="260" height="34" fill="#D6A63F" stroke="#6E4A0C" stroke-width="2"/>
+        <text x="170" y="145" font-family="IBM Plex Mono" font-size="13" fill="#5A3C09" text-anchor="middle" letter-spacing="1">AUGMONT · 999.9</text>
+        <text x="170" y="212" font-family="IBM Plex Mono" font-size="11" fill="#5A3C09" text-anchor="middle">FY26 REVENUE ₹94,186 CR</text>
+      </svg>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="tab-panel" id="ipo-panel" data-panel="ipo">
+<section style="border-top:none;">
+  <div class="section-head">
+    <h2>IPO Details</h2>
+    <span class="section-num">01 / Issue Structure &amp; Timeline</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="k">Issue Size</div><div class="v">₹825 Cr</div><div class="d">Fresh ₹620 Cr + OFS ₹205 Cr</div></div>
+    <div class="stat"><div class="k">Price Band</div><div class="v">₹750–₹788</div><div class="d">Face value ₹5 per share</div></div>
+    <div class="stat"><div class="k">Lot Size</div><div class="v">19 shares</div><div class="d">₹14,972 min retail investment</div></div>
+    <div class="stat"><div class="k">Listing</div><div class="v">31 Aug 2026</div><div class="d">BSE &amp; NSE (tentative)</div></div>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:32px;">
+    <table>
+      <caption>Key IPO Dates</caption>
+      <thead><tr><th>Event</th><th>Date</th><th class="src-col">Source</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Anchor investor bidding</td><td>20 Aug 2026</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">IPO opens</td><td>21 Aug 2026</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">IPO closes</td><td>25 Aug 2026</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Basis of allotment (tentative)</td><td>26–27 Aug 2026</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Refund initiation</td><td>27 Aug 2026</td><td class="src-col">Registrar</td></tr>
+        <tr><td class="label">Credit to demat account</td><td>28 Aug 2026</td><td class="src-col">Registrar</td></tr>
+        <tr><td class="label">Listing date (tentative)</td><td>31 Aug 2026</td><td class="src-col">RHP</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:24px;">
+    <table>
+      <caption>Issue Structure &amp; Reservation</caption>
+      <thead><tr><th>Particular</th><th>Detail</th><th class="src-col">Source</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Fresh issue</td><td>78,68,020 shares ≈ ₹620.00 Cr</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Offer for sale (OFS)</td><td>26,01,521 shares ≈ ₹205.00 Cr</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Total issue</td><td>1,04,69,541 shares ≈ ₹825.00 Cr</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">QIB reservation</td><td>50%</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">NII (HNI) reservation</td><td>15%</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Retail reservation</td><td>35%</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">sNII lot (min)</td><td>14 lots · 266 shares · ≈ ₹2,09,608</td><td class="src-col">Exchange</td></tr>
+        <tr><td class="label">bNII lot (min)</td><td>67 lots · 1,273 shares · ≈ ₹10,03,124</td><td class="src-col">Exchange</td></tr>
+        <tr><td class="label">Registrar</td><td>MUFG Intime India Pvt. Ltd.</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Book Running Lead Managers</td><td>Nuvama Wealth Mgmt · Intensive Fiscal Services · JM Financial · Motilal Oswal Investment Advisors</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Anchor book (20 Aug 2026)</td><td>₹246.3 Cr at ₹788/share to Nomura, HDFC MF, Nippon India MF, Tata MF, Societe Generale</td><td class="src-col">Exchange filing</td></tr>
+        <tr><td class="label">Promoter holding pre / post-issue</td><td>92.75% → 81.91%</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Objects of the issue</td><td>≈₹465 Cr — working capital, inventory procurement/scaling &amp; advance margin funding; balance for general corporate purposes</td><td class="src-col">RHP</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12.5px;color:var(--ink-soft);margin-top:14px;">Grey-market premium was quoted around ₹280–₹285 (≈35–36% over the upper band) on 20 Aug 2026 in unofficial channels. GMP is sentiment-driven, unregulated and not indicative of listing price. <span class="mono">[Unofficial market · not RHP-verified]</span></p>
+</section>
+</div>
+
+<div class="tab-panel" id="business-panel" data-panel="business">
+<section style="border-top:none;">
+  <div class="section-head">
+    <h2>Business Model</h2>
+    <span class="section-num">02 / Two Platforms, One Value Chain</span>
+  </div>
+  <p style="max-width:70ch;color:var(--ink-soft);margin-bottom:32px;">Incorporated in October 2012 and headquartered in Mumbai, Augmont operates a technology-led, asset-light omnichannel model across the entire precious-metals value chain — procurement, in-house refining, bullion trading, digital gold/silver, jewellery manufacturing, international sales and gold-backed fintech rails. As of 31 March 2026 it had a presence across 24 states, 296 permanent employees (plus 3 contractual), refining capacity of 284 tonnes/year (Rudrapur + Mumbai) and a jewellery unit at Sitapur SEZ, Jaipur.</p>
+
+  <div class="verticals">
+    <div class="vcard b2b">
+      <span class="tag">Enterprise · B2B</span>
+      <h3>Augmont SPOT</h3>
+      <p style="color:var(--ink-soft);font-size:14.5px;">A proprietary electronic OTC bullion-trading platform giving jewellers, bullion dealers and manufacturers real-time price discovery with assured physical delivery.</p>
+      <ul>
+        <li><span class="num">5,223+</span> registered enterprise/business members (as of 31 Mar 2026)</li>
+        <li><span class="num">20</span> spot delivery centres across 13 states (9 direct, 11 franchisee)</li>
+        <li>Enterprise + international sales contributed <span class="num">92.9%</span> of FY26 revenue from operations</li>
+        <li>Bars meet BIS, LBMA &amp; India Good Delivery purity standards</li>
+      </ul>
+    </div>
+    <div class="vcard b2c">
+      <span class="tag">Consumer · B2C</span>
+      <h3>Augmont Gold For All</h3>
+      <p style="color:var(--ink-soft);font-size:14.5px;">A consumer app for buying, selling and storing digital gold/silver, monthly SIP-style accumulation plans, coins, and physical redemption — including via partners.</p>
+      <ul>
+        <li><span class="num">49.6 million+</span> registered consumers (direct + partner-sourced)</li>
+        <li><span class="num">54,934,891</span> transactions processed on the platform in FY26</li>
+        <li>Redemption tie-ups with jewellers including Kalyan Jewellers and CaratLane</li>
+        <li>Built in-house by a ~40-person technology team</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chain">
+    <div class="chain-step">Procurement<br><span style="color:var(--ink-soft);">Banks · doré bars · scrap</span></div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">In-house Refining<br><span style="color:var(--ink-soft);">284 t/yr · Rudrapur + Mumbai</span></div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">Bullion Trading<br><span style="color:var(--ink-soft);">Augmont SPOT (B2B)</span></div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">Digital Gold<br><span style="color:var(--ink-soft);">Gold For All (B2C)</span></div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">Jewellery + Exports<br><span style="color:var(--ink-soft);">Sitapur SEZ · int'l sales</span></div>
+  </div>
+
+  <div class="simple-panel">
+    <div class="simple-tag">In Simple Terms</div>
+    <h3>A gold factory + a gold shop, combined</h3>
+    <div class="simple-grid">
+      <div class="simple-step">
+        <span class="simple-num">1</span>
+        <h5>Buy the raw metal</h5>
+        <p>Augmont buys gold and silver from banks, imports semi-refined bars, and buys back old/scrap gold — like a flour mill buying wheat.</p>
+      </div>
+      <div class="simple-step">
+        <span class="simple-num">2</span>
+        <h5>Refine it themselves</h5>
+        <p>Instead of outsourcing, they run their own refineries to purify it into standard-quality bars — so they control quality and skip a middleman's cut.</p>
+      </div>
+      <div class="simple-step">
+        <span class="simple-num">3</span>
+        <h5>Sell wholesale (~93% of business)</h5>
+        <p>Jewellers and bullion dealers buy gold bars online for their own shops — an online marketplace where Augmont is essentially India's largest gold wholesaler.</p>
+      </div>
+      <div class="simple-step">
+        <span class="simple-num">4</span>
+        <h5>Sell retail, in tiny pieces</h5>
+        <p>Ordinary people buy gold worth as little as ₹1 on the app, set up monthly gold savings, buy coins, or take a loan against gold.</p>
+      </div>
+    </div>
+    <div class="simple-money">
+      <h5>Why revenue looks huge but profit looks tiny</h5>
+      <p>Imagine buying gold for ₹100 and selling it for ₹100.30 — you made 30 paise, but the full ₹100 counts as "revenue." Do that at massive scale and you get exactly Augmont's numbers: ₹94,186 Cr of revenue but only ₹348 Cr of profit. It's not a red flag — it's how a high-volume, thin-margin bullion wholesaler works, not a jewellery brand marking up prices.</p>
+    </div>
+    <p class="simple-oneline"><strong>One line:</strong> Augmont buys raw gold, refines it in-house, sells it in bulk to jewellers online (the big money-mover), and separately lets ordinary people buy tiny bits of gold through an app (the growth story).</p>
+  </div>
+
+  <div style="margin-top:36px;">
+    <h4 style="font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:14px;">Key Risk Factors — expand each</h4>
+    <div class="acc" id="riskAcc">
+      <div class="acc-item">
+        <div class="acc-head"><span>01 · Wafer-thin operating margins</span><span class="plus">+</span></div>
+        <div class="acc-body"><p>FY26 PAT margin was only 0.37% and EBITDA margin 0.41% — inherent to high-volume, low-margin bullion trading. Profitability is highly sensitive to inventory management and cost control.</p></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head"><span>02 · Customer &amp; supplier concentration</span><span class="plus">+</span></div>
+        <div class="acc-body"><p>Top 10 customers contributed 52.09% of FY26 revenue (vs ~36% in FY25/FY24); top 10 suppliers accounted for 74.18% of FY26 procurement. No long-term agreements exist with either customers or suppliers.</p></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head"><span>03 · Revenue skew to enterprise/international sales</span><span class="plus">+</span></div>
+        <div class="acc-body"><p>Enterprise and international sales made up 92.90% of FY26 revenue from operations (95.72% in FY25, 95.88% in FY24), leaving the business exposed to swings in institutional/export demand.</p></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head"><span>04 · Gold/silver price volatility</span><span class="plus">+</span></div>
+        <div class="acc-body"><p>Bullion price swings affect both demand for Augmont's products and the mark-to-market valuation of its inventory, flowing directly through revenue and margins.</p></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head"><span>05 · Platform &amp; cybersecurity dependence</span><span class="plus">+</span></div>
+        <div class="acc-body"><p>Nearly all revenue routes through the proprietary Augmont SPOT and Gold For All platforms; any outage, disruption or data-security breach could materially affect operations and reputation.</p></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head"><span>06 · No directly comparable listed peer</span><span class="plus">+</span></div>
+        <div class="acc-body"><p>Per the RHP, Augmont has no directly comparable listed peer in India or globally, which makes valuation benchmarking difficult and reduces the reliability of any single "fair value" estimate.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="financials-panel" data-panel="financials">
+<section style="border-top:none;">
+  <div class="section-head">
+    <h2>Financial Analysis</h2>
+    <span class="section-num">03 / FY24 – FY26, Consolidated Restated</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="k">Revenue CAGR (FY24–26)</div><div class="v">64.2%</div><div class="d">₹34,921 Cr → ₹94,186 Cr</div></div>
+    <div class="stat"><div class="k">PAT (FY26)</div><div class="v">₹348.30 Cr</div><div class="d">+53.3% YoY</div></div>
+    <div class="stat"><div class="k">ROE / ROCE (FY26)</div><div class="v">51.0% / 40.3%</div><div class="d">RoNW 49.52%</div></div>
+    <div class="stat"><div class="k">Debt / Equity</div><div class="v">0.01x</div><div class="d">Borrowings down to ₹12.67 Cr</div></div>
+  </div>
+
+  <div class="chart-card" style="margin-top:28px;">
+    <div class="chart-toggle">
+      <button class="tbtn active" data-metric="scale">Revenue / Income Scale (₹ Cr)</button>
+      <button class="tbtn" data-metric="profit">PAT &amp; EBITDA (₹ Cr)</button>
+      <button class="tbtn" data-metric="margin">Margins (%)</button>
+      <button class="tbtn" data-metric="returns">Return Ratios (%)</button>
+    </div>
+    <canvas id="finChart"></canvas>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Consolidated Financial Snapshot</caption>
+      <thead><tr><th>Particular (₹ Cr unless stated)</th><th>FY24</th><th>FY25</th><th>FY26</th><th class="src-col">Source</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Revenue from operations</td><td>34,921.49</td><td>66,230.78</td><td>94,186.21</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Total income</td><td>34,948.90</td><td>66,252.05</td><td>94,282.47</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">EBITDA</td><td>103.92</td><td>304.09</td><td>385.95</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Profit after tax (PAT)</td><td>75.97</td><td>227.19</td><td>348.30</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">EBITDA margin (%)</td><td>0.30</td><td>0.46</td><td>0.41</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">PAT margin (%)</td><td>0.22</td><td>0.34</td><td>0.37</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Net worth</td><td>204.87</td><td>422.94</td><td>926.87</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Reserves &amp; surplus</td><td>180.39</td><td>398.46</td><td>865.14</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Total assets</td><td>760.29</td><td>1,857.31</td><td>1,256.98</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Total borrowings</td><td>54.86</td><td>21.54</td><td>12.67</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">EPS — basic &amp; diluted (₹)</td><td>9.08</td><td>26.89</td><td>40.45</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">ROE (%)</td><td>43.98*</td><td>69.47*</td><td>51.04</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">ROCE (%)</td><td>49.27</td><td>70.10</td><td>40.27</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">RoNW (%)</td><td>43.98</td><td>69.47</td><td>49.52</td><td class="src-col">RHP</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px;">*FY24/FY25 ROE approximated at reported RoNW where the RHP does not separately disclose ROE for those years. NAV per share stood at ₹111 as of 31 Mar 2026. Outstanding borrowings of ₹19.66 Cr were reported as of 30 Jun 2026, a modest uptick from the FY26 year-end figure. <span class="mono">[RHP]</span></p>
+
+  <div class="tbl-wrap" style="margin-top:24px;">
+    <table>
+      <caption>IPO Valuation Snapshot (at upper price band ₹788)</caption>
+      <thead><tr><th>Metric</th><th>Value</th><th class="src-col">Source</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Post-issue P/E (FY26 earnings)</td><td>≈20.7x</td><td class="src-col">Chittorgarh IPO review</td></tr>
+        <tr><td class="label">P/E on FY25 earnings</td><td>≈31.7x</td><td class="src-col">Chittorgarh IPO review</td></tr>
+        <tr><td class="label">Price / Book Value</td><td>≈7.1x</td><td class="src-col">IPO research desks</td></tr>
+        <tr><td class="label">NAV per share (FY26)</td><td>₹111</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Comparable listed peers</td><td>None disclosed in RHP</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Reference: branded jewellery retail P/E</td><td>~60–90x</td><td class="src-col">Sushil Finance IPO note</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="swot-panel" data-panel="swot">
+<section style="border-top:none;">
+  <div class="section-head">
+    <h2>SWOT Analysis</h2>
+    <span class="section-num">04 / Strategic Position</span>
+  </div>
+  <div class="swot">
+    <div class="swot-card s">
+      <h4><span class="letter">S</span>Strengths</h4>
+      <ul>
+        <li>Fully integrated value chain — procurement, in-house refining (284 t/yr), trading, digital gold and jewellery manufacturing under one roof</li>
+        <li>Recognised "Number 1 Gold Platform of the Year 2024–25" (India Gold Conference); Best Bullion Dealer and Leading Gold Refiner awards</li>
+        <li>Near debt-free balance sheet — D/E of 0.01x, borrowings down from ₹54.86 Cr (FY24) to ₹12.67 Cr (FY26)</li>
+        <li>Strong return ratios — FY26 ROE 51.0%, ROCE 40.3%, aided by fast bullion-trade settlement cycles</li>
+        <li>Large digital footprint — 49.6M+ consumers and 20 physical delivery centres across 13 states</li>
+        <li>Experienced promoter-led management with 13+ years of operating history since 2012</li>
+      </ul>
+    </div>
+    <div class="swot-card w">
+      <h4><span class="letter">W</span>Weaknesses</h4>
+      <ul>
+        <li>Extremely thin margins — FY26 PAT margin of just 0.37%, typical of commodity bullion trading</li>
+        <li>High customer concentration — top 10 customers were 52.09% of FY26 revenue</li>
+        <li>High supplier concentration — top 10 suppliers were 74.18% of FY26 procurement, with no long-term contracts</li>
+        <li>No directly comparable listed peer, making independent valuation benchmarking difficult</li>
+        <li>₹205 Cr of the ₹825 Cr issue is an OFS — this portion does not add fresh capital to the company</li>
+        <li>Total assets were non-linear — rose to ₹1,857 Cr in FY25 then fell to ₹1,257 Cr in FY26</li>
+      </ul>
+    </div>
+    <div class="swot-card o">
+      <h4><span class="letter">O</span>Opportunities</h4>
+      <ul>
+        <li>India remains among the world's largest gold consumers, with rising formalisation of the bullion trade</li>
+        <li>Fresh-issue proceeds earmarked for inventory scaling into under-penetrated Tier 3/4 markets</li>
+        <li>Growth headroom in gold-backed financial services and lending-adjacent technology</li>
+        <li>Digital gold SIP-style plans can widen retail participation as financial literacy improves</li>
+        <li>Export/international bullion sales offer diversification beyond the domestic enterprise channel</li>
+      </ul>
+    </div>
+    <div class="swot-card t">
+      <h4><span class="letter">T</span>Threats</h4>
+      <ul>
+        <li>Gold/silver price volatility from global rates, currency and geopolitical shifts can swing both revenue and inventory valuation</li>
+        <li>Regulatory changes to bullion import duty, taxation or trading norms could raise compliance costs</li>
+        <li>Cybersecurity or platform-availability incidents on Augmont SPOT/Gold For All would hit a digital-first model directly</li>
+        <li>Thin margins leave little cushion to absorb price shocks or a slowdown in institutional demand</li>
+        <li>Competing bullion platforms, banks and fintech-gold entrants could pressure trading spreads</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="ratings-panel" data-panel="ratings">
+<section style="border-top:none;">
+  <div class="section-head">
+    <h2>Analysts' &amp; Research Desk Views</h2>
+    <span class="section-num">05 / Street Commentary</span>
+  </div>
+  <p style="max-width:70ch;color:var(--ink-soft);margin-bottom:28px;">Augmont has no listed peer and no post-listing brokerage coverage yet, so formal target prices don't exist pre-listing. Below is a summary of published subscribe/apply verdicts from IPO research desks, shown as a rating table rather than individual price targets.</p>
+  <div class="rating-grid">
+    <div class="rcard"><div class="desk">Chittorgarh IPO Review</div><div class="verdict">Fully Priced</div><p>Growth intact but issue judged fully priced against recent average performance; long-term hold framing.</p></div>
+    <div class="rcard"><div class="desk">IPO Ji</div><div class="verdict">Neutral / Informational</div><p>Highlights strong growth but flags customer, supplier and channel concentration as key questions to probe.</p></div>
+    <div class="rcard"><div class="desk">Chanakya Nipothi</div><div class="verdict">Apply — Long Term</div><p>Calls valuation "reasonable" given growth, high return ratios and an almost debt-free balance sheet.</p></div>
+    <div class="rcard"><div class="desk">IPO Gyani</div><div class="verdict">Positive</div><p>Cites the integrated bullion model, rapid growth, near-zero debt and large digital consumer base as compelling.</p></div>
+    <div class="rcard"><div class="desk">Sushil Finance</div><div class="verdict">Subscribe — Note Margin Profile</div><p>Frames the ~20x P/E as cheap versus branded jewellery retailers (60–90x), reflecting its true commodity-trading character.</p></div>
+    <div class="rcard"><div class="desk">Tradebrains</div><div class="verdict">Growth Story, Thin Margin</div><p>Emphasises consistent revenue/profit growth and low leverage alongside persistently low PAT margins.</p></div>
+  </div>
+
+  <h4 style="font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:14px;">Promoters &amp; Management</h4>
+  <div class="tbl-wrap">
+    <table>
+      <caption>Promoter &amp; Promoter Group</caption>
+      <thead><tr><th>Name</th><th>Role</th><th class="src-col">Source</th></tr></thead>
+      <tbody>
+        <tr><td class="label">Ketan Bhawarlal Kothari</td><td>Promoter</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Vivek Prithviraj Kothari</td><td>Promoter · OFS seller</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Namita Ketan Kothari</td><td>Promoter · OFS seller</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Dimple Mukesh Kothari</td><td>Promoter · OFS seller</td><td class="src-col">RHP</td></tr>
+        <tr><td class="label">Mohinidevi Bhawarlal Kothari, Kalawati Prithviraj Kothari, Devkumari Manekchand Kothari, Manakchand Saremal Kothari, Dimpal Vivek Kothari</td><td>Promoter group</td><td class="src-col">RHP</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12.5px;color:var(--ink-soft);margin-top:12px;">Workforce: 296 permanent + 3 contractual employees as of 31 Mar 2026. Promoter/promoter group holding steps down from 92.75% pre-issue to 81.91% post-issue. <span class="mono">[RHP]</span></p>
+</section>
+</div>
+
+<script>
+// Tab switching
+const tabBtns = document.querySelectorAll('.tabbtn');
+const panels = document.querySelectorAll('.tab-panel');
+tabBtns.forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const target = btn.dataset.tab;
+    tabBtns.forEach(function(b){ b.classList.remove('active'); });
+    panels.forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelector('.tab-panel[data-panel="'+target+'"]').classList.add('active');
+    btn.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+    window.scrollTo({top:0, behavior:'smooth'});
+    if(target === 'financials' && chart){ setTimeout(function(){ chart.resize(); }, 60); }
+  });
+});
+
+// Accordion
+document.querySelectorAll('.acc-head').forEach(function(h){
+  h.addEventListener('click', function(){
+    h.parentElement.classList.toggle('open');
+  });
+});
+
+// Chart
+const ctx = document.getElementById('finChart').getContext('2d');
+const years = ['FY24','FY25','FY26'];
+const datasets = {
+  scale: {
+    type:'bar',
+    label:'',
+    data: [
+      {label:'Revenue from Operations', values:[34921.49,66230.78,94186.21], color:'#C68A1F'},
+      {label:'Total Income', values:[34948.90,66252.05,94282.47], color:'#3B5240'}
+    ],
+    yLabel:'₹ Crore'
+  },
+  profit: {
+    data: [
+      {label:'EBITDA', values:[103.92,304.09,385.95], color:'#2A4A73'},
+      {label:'PAT', values:[75.97,227.19,348.30], color:'#6B2331'}
+    ],
+    yLabel:'₹ Crore'
+  },
+  margin: {
+    data: [
+      {label:'EBITDA Margin %', values:[0.30,0.46,0.41], color:'#2A4A73'},
+      {label:'PAT Margin %', values:[0.22,0.34,0.37], color:'#6B2331'}
+    ],
+    yLabel:'%'
+  },
+  returns: {
+    data: [
+      {label:'ROCE %', values:[49.27,70.10,40.27], color:'#C68A1F'},
+      {label:'RoNW %', values:[43.98,69.47,49.52], color:'#3B5240'}
+    ],
+    yLabel:'%'
+  }
+};
+
+let chart;
+function renderChart(metric){
+  const cfg = datasets[metric];
+  const chartData = {
+    labels: years,
+    datasets: cfg.data.map(function(d){
+      return {
+        label:d.label, data:d.values, backgroundColor:d.color, borderRadius:2,
+        borderSkipped:false
+      };
+    })
+  };
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'bar',
+    data: chartData,
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{ position:'top', labels:{ font:{family:"'IBM Plex Mono'",size:11}, color:'#5B5340', boxWidth:12 } },
+        tooltip:{ callbacks:{ label:function(c){ return c.dataset.label+': '+c.formattedValue+(cfg.yLabel==='%'?'%':' Cr'); } } }
+      },
+      scales:{
+        x:{ grid:{display:false}, ticks:{ font:{family:"'IBM Plex Mono'",size:11}, color:'#5B5340' } },
+        y:{ title:{display:true,text:cfg.yLabel, color:'#5B5340', font:{family:"'IBM Plex Mono'",size:11}}, grid:{color:'#DCD4BE'}, ticks:{ font:{family:"'IBM Plex Mono'",size:11}, color:'#5B5340' } }
+      }
+    }
+  });
+}
+renderChart('scale');
+document.querySelectorAll('.tbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tbtn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    renderChart(btn.dataset.metric);
+  });
+});
+</script>
+
+</body>
+</html>

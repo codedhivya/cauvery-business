@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nykaa (FSN E-Commerce Ventures) — Q1 FY27 Investment Dashboard | CB Research</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f9fb; --border:#e2e6ea; --ink:#1c2733; --sub:#5b6b7a;
+    --accent:#c2185b; --accent2:#0f8a5f; --warn:#c25b00; --bad:#c0392b; --good:#1a7a3c;
+    --tam:#8a3ffc;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header{padding:18px 24px;border-bottom:2px solid var(--accent);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  header h1{margin:0;font-size:22px;color:var(--accent);}
+  header .sub{font-size:13px;color:var(--sub);}
+  .watermark{font-size:11px;color:#b7c2cc;letter-spacing:1px;text-align:right;}
+  nav{display:flex;flex-wrap:wrap;gap:4px;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+  nav button{background:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--ink);}
+  nav button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  main{padding:22px 26px;max-width:1240px;margin:0 auto;}
+  .tab{display:none;}
+  .tab.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  h2{color:var(--accent);font-size:19px;border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:26px;}
+  h3{color:var(--ink);font-size:15px;margin-top:20px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:14px 0;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+  .card .label{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;}
+  .card .value{font-size:22px;font-weight:700;margin-top:4px;}
+  .card .delta{font-size:12px;margin-top:4px;}
+  .up{color:var(--good);} .down{color:var(--bad);} .flat{color:var(--sub);}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.5px;}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:right;}
+  th{background:var(--panel);text-align:right;color:var(--ink);}
+  td:first-child,th:first-child{text-align:left;}
+  .src{font-size:10.5px;color:var(--sub);text-align:right;}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600;}
+  .badge.buy{background:#e2f5e9;color:var(--good);}
+  .badge.neutral{background:#fdf3e3;color:var(--warn);}
+  .badge.hold{background:#eef1f5;color:var(--sub);}
+  .callout{background:#fdf0f5;border-left:4px solid var(--accent);padding:12px 16px;border-radius:6px;margin:14px 0;font-size:14px;}
+  .callout.note{background:#f3f6fb;border-left-color:#1a5fb4;}
+  .callout.warn{background:#fff7ec;border-left-color:var(--warn);}
+  .swot{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .swot .box{border-radius:10px;padding:14px 16px;border:1px solid var(--border);}
+  .swot .s{background:#eefaf1;} .swot .w{background:#fdeeee;} .swot .o{background:#eef4fd;} .swot .t{background:#fff6e8;}
+  .chart-wrap{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;margin:14px 0;}
+  canvas{max-height:340px;}
+  ul{padding-left:20px;} li{margin:5px 0;font-size:13.5px;}
+  .kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);font-size:13.5px;}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+  .pill{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12.5px;}
+  #cbBadge{position:fixed;bottom:18px;right:18px;width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;cursor:pointer;z-index:999;
+    box-shadow:0 3px 10px rgba(0,0,0,.25);animation:blink 2s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.55;}}
+  #cbPopup{display:none;position:fixed;bottom:78px;right:18px;width:280px;background:#fff;border:1px solid var(--border);
+    border-radius:10px;padding:14px;font-size:12px;color:var(--sub);box-shadow:0 4px 18px rgba(0,0,0,.18);z-index:999;}
+  .lang-toggle{font-size:12px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;}
+  .chatbox{border:1px solid var(--border);border-radius:10px;background:var(--panel);height:360px;display:flex;flex-direction:column;overflow:hidden;}
+  .chat-msgs{flex:1;overflow-y:auto;padding:12px;font-size:13px;}
+  .chat-msgs .me{text-align:right;margin:6px 0;}
+  .chat-msgs .me span{background:var(--accent);color:#fff;padding:6px 11px;border-radius:12px 12px 2px 12px;display:inline-block;max-width:80%;}
+  .chat-msgs .bot{text-align:left;margin:6px 0;}
+  .chat-msgs .bot span{background:#fff;border:1px solid var(--border);padding:6px 11px;border-radius:12px 12px 12px 2px;display:inline-block;max-width:85%;}
+  .chat-input{display:flex;border-top:1px solid var(--border);}
+  .chat-input input{flex:1;border:none;padding:10px;font-size:13px;outline:none;}
+  .chat-input button{border:none;background:var(--accent);color:#fff;padding:0 16px;cursor:pointer;}
+  .quick{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border-top:1px solid var(--border);}
+  .quick button{font-size:11.5px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:4px 10px;cursor:pointer;}
+  footer{padding:16px 26px;font-size:11px;color:var(--sub);text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Nykaa — FSN E-Commerce Ventures Ltd.</h1>
+    <div class="sub">NSE: NYKAA &nbsp;|&nbsp; BSE: 543384 &nbsp;|&nbsp; Q1 FY27 (Quarter ended 30 June 2026) &nbsp;|&nbsp; Results announced 4 August 2026</div>
+  </div>
+  <div class="watermark">CB RESEARCH<br>Cauvery Business Research<br>Prepared: 25 Aug 2026, 11:26 AM IST</div>
+</header>
+
+<nav id="tabNav"></nav>
+
+<main id="main"></main>
+
+<div id="cbBadge" onclick="document.getElementById('cbPopup').style.display = document.getElementById('cbPopup').style.display==='block'?'none':'block';">CB</div>
+<div id="cbPopup">Prepared by <b>CB Research</b> (Cauvery Business Research), a SEBI-registered research analyst practice. This dashboard is for informational and educational purposes only and is not investment advice. Figures are drawn from company filings, exchange disclosures and third-party broker notes, attributed where used. CB Research does not issue its own Buy/Sell/Hold recommendation.</div>
+
+<footer>CB Research — Cauvery Business Research &nbsp;|&nbsp; Q1FY27_Analysis_Nykaa_Dashboard.html</footer>
+
+<script>
+// ---------------- Machine-readable data object ----------------
+var CO = {
+  name: "FSN E-Commerce Ventures Ltd (Nykaa)",
+  nse: "NYKAA", bse: "543384",
+  quarter: "Q1 FY27", quarterEnd: "2026-06-30", resultsDate: "2026-08-04",
+  revenue_cr: 2782, revenue_yoy_pct: 29,
+  gmv_cr: 5590, gmv_yoy_pct: 34,
+  grossProfit_cr: 1276, grossProfit_yoy_pct: 33,
+  ebitda_cr: 236, ebitda_yoy_pct: 68, ebitdaMargin_pct: 8.5, ebitdaMarginPY_pct: 6.5,
+  pbt_cr: 129, pbt_yoy_pct: 195,
+  pat_cr: 80, patPY_cr: 23.32, pat_yoy_pct: 226,
+  roce_pct: 26.8, roceFY26_pct: 21.2, roceFY24_pct: 7.5,
+  fixedAssetTurnover_x: 10.7, workingCapitalDays: "<30",
+  cmp: 335, mcap_cr: 96000,
+  targets: [
+    {broker:"Nomura", rating:"Buy", target:411},
+    {broker:"JM Financial", rating:"Buy", target:395},
+    {broker:"MOFSL", rating:"—", target:370}
+  ]
+};
+
+// ---------------- Tab definitions ----------------
+var tabs = [
+  {id:"overview", label:"Overview"},
+  {id:"business", label:"Business Profile"},
+  {id:"financials", label:"Financials"},
+  {id:"cashflow", label:"Cash Flow & WC"},
+  {id:"valuation", label:"Valuations"},
+  {id:"market", label:"Market Activity"},
+  {id:"swot", label:"SWOT"},
+  {id:"analysts", label:"Analysts' Rating"},
+  {id:"management", label:"Management & Board"},
+  {id:"cbassist", label:"CB Assist"},
+  {id:"socrates", label:"Cauvery Socrates"}
+];
+
+var nav = document.getElementById("tabNav");
+tabs.forEach(function(t, i){
+  var b = document.createElement("button");
+  b.textContent = t.label;
+  b.onclick = function(){ showTab(t.id); };
+  b.id = "navbtn-"+t.id;
+  if(i===0) b.className = "active";
+  nav.appendChild(b);
+});
+
+function showTab(id){
+  document.querySelectorAll(".tab").forEach(function(el){ el.classList.remove("active"); });
+  document.querySelectorAll("nav button").forEach(function(el){ el.classList.remove("active"); });
+  document.getElementById("tab-"+id).classList.add("active");
+  document.getElementById("navbtn-"+id).classList.add("active");
+}
+
+var main = document.getElementById("main");
+
+// ---------------- OVERVIEW ----------------
+main.innerHTML += `
+<section id="tab-overview" class="tab active">
+  <h2>Q1 FY27 Snapshot</h2>
+  <div class="grid">
+    <div class="card"><div class="label">Net Revenue</div><div class="value">₹2,782 Cr</div><div class="delta up">▲ 29% YoY — highest in 13 quarters</div></div>
+    <div class="card"><div class="label">GMV</div><div class="value">₹5,590 Cr</div><div class="delta up">▲ 34% YoY</div></div>
+    <div class="card"><div class="label">EBITDA</div><div class="value">₹236 Cr</div><div class="delta up">▲ 68% YoY, margin 8.5% (12-qtr high)</div></div>
+    <div class="card"><div class="label">Net Profit (PAT)</div><div class="value">₹80 Cr</div><div class="delta up">▲ 226% YoY (₹23.3 Cr → ₹80 Cr)</div></div>
+    <div class="card"><div class="label">PBT</div><div class="value">₹129 Cr</div><div class="delta up">▲ 195% YoY</div></div>
+    <div class="card"><div class="label">Annualised ROCE</div><div class="value">26.8%</div><div class="delta up">vs 21.2% FY26, 7.5% FY24</div></div>
+  </div>
+
+  <h3>5 Key Takeaways</h3>
+  <table>
+    <tr><th>#</th><th style="text-align:left">Takeaway</th></tr>
+    <tr><td>1</td><td style="text-align:left">Fastest revenue growth in 13 quarters — 29% YoY, with margins expanding alongside, not instead of, growth</td></tr>
+    <tr><td>2</td><td style="text-align:left">Fashion vertical turned EBITDA-positive — a long-awaited profitability milestone</td></tr>
+    <tr><td>3</td><td style="text-align:left">ROCE trajectory (7.5% → 21.2% → 26.8%) shows capital efficiency genuinely improving</td></tr>
+    <tr><td>4</td><td style="text-align:left">Stock fell ~3% on results day despite the beat — valuation, not execution, is the market's concern</td></tr>
+    <tr><td>5</td><td style="text-align:left">Bolt-on acquisition of Aminu Wellness (51% stake, ≤₹32 Cr) extends the owned-brands skincare portfolio</td></tr>
+  </table>
+
+  <div class="callout note">Management (Falguni Nayar, Executive Chairperson, MD & CEO) said this quarter marked the highest growth momentum and EBITDA margin in the last 12 quarters, driven by higher House of Nykaa contribution, increased marketing income, better performance-marketing efficiency and improved productivity.</div>
+  <div class="src">Sources: Business Standard, Indian Retailer, InvestyWise, Investing.com, company press release dated 4 Aug 2026</div>
+</section>`;
+
+// ---------------- BUSINESS PROFILE ----------------
+main.innerHTML += `
+<section id="tab-business" class="tab">
+  <h2>Business Profile — Segments & Positioning</h2>
+  <p style="font-size:13.5px;">FSN E-Commerce Ventures (Nykaa) is India's leading omnichannel beauty and fashion retailer, operating across three broad verticals: <b>Beauty (BPC)</b>, <b>Fashion</b>, and a smaller <b>eB2B / Superstore</b> distribution business. Founded by Falguni Nayar in 2012, headquartered in Mumbai; listed on NSE/BSE since November 2021.</p>
+
+  <h3>Beauty (BPC) — the core, largest revenue driver</h3>
+  <div class="grid">
+    <div class="card"><div class="label">Beauty GMV</div><div class="value">₹4,105 Cr</div><div class="delta up">▲ 28% YoY</div></div>
+    <div class="card"><div class="label">Beauty NSV</div><div class="value">₹2,371 Cr</div><div class="delta up">▲ 29% YoY</div></div>
+    <div class="card"><div class="label">Beauty EBITDA</div><div class="value">▲ 48% YoY</div><div class="delta flat">Owned brands ("House of Nykaa") mix rising</div></div>
+    <div class="card"><div class="label">House of Nykaa (annualised GMV)</div><div class="value">₹3,760 Cr</div><div class="delta up">▲ 39% YoY</div></div>
+  </div>
+  <p style="font-size:13.5px;">Growth attributed to higher House of Nykaa (owned-brand) contribution, increased marketing income, and better performance-marketing efficiency. Omnichannel stores continued mid-teen like-for-like growth with further network additions.</p>
+
+  <h3>Fashion — the swing factor this quarter</h3>
+  <div class="grid">
+    <div class="card"><div class="label">Fashion GMV growth</div><div class="value">53%</div><div class="delta up">YoY</div></div>
+    <div class="card"><div class="label">Fashion NSV growth</div><div class="value">54%</div><div class="delta up">YoY</div></div>
+    <div class="card"><div class="label">Fashion EBITDA</div><div class="value">Positive</div><div class="delta up">First profitable quarter, after years of investment-phase losses</div></div>
+  </div>
+  <p style="font-size:13.5px;">The Nike partnership — operating Nike's D2C platforms in India — is showing early traction and adds to the fashion vertical's assortment depth.</p>
+
+  <h3>eB2B / Superstore & Quick Commerce</h3>
+  <ul>
+    <li>eB2B (Superstore by Nykaa) remains a smaller distribution business; management commentary flags it as a drag being gradually unburdened per brokerage notes (JM Financial)</li>
+    <li>Quick-commerce network expansion continues to be cited as a growth contributor, though not broken out as a standalone reporting segment</li>
+    <li>Competitive intensity from Blinkit, Zepto and Swiggy Instamart pushing into beauty/personal care is a structural watch-item, not yet visible as a standalone metric this quarter</li>
+  </ul>
+
+  <div class="callout">Positioning: management describes Nykaa as a "$2.4 billion GMV platform" built on a demand–assortment–distribution flywheel, targeting 2–3x revenue growth and 4–5x EBITDA growth by FY30 through disciplined execution, operating leverage and capital-efficient investment.</div>
+  <div class="src">Sources: InvestyWise Q1 FY27 investor-presentation coverage, Investing.com, Retail Insight Network / Yahoo Finance</div>
+</section>`;
+
+// ---------------- FINANCIALS ----------------
+main.innerHTML += `
+<section id="tab-financials" class="tab">
+  <h2>Financial Performance — Q1 FY27 vs Q1 FY26</h2>
+  <table>
+    <tr><th>Metric (₹ Crore unless stated)</th><th>Q1 FY27</th><th>Q1 FY26</th><th>YoY Change</th></tr>
+    <tr><td>Net Revenue from Operations</td><td>2,782</td><td>2,155</td><td class="up">+29%</td></tr>
+    <tr><td>GMV</td><td>5,590</td><td>~4,170</td><td class="up">+34%</td></tr>
+    <tr><td>Gross Profit</td><td>1,276</td><td>~959</td><td class="up">+33%</td></tr>
+    <tr><td>Gross Margin (%)</td><td>~45.9%</td><td>~44.5%</td><td class="up">+~123 bps</td></tr>
+    <tr><td>EBITDA</td><td>236</td><td>141</td><td class="up">+68%</td></tr>
+    <tr><td>EBITDA Margin (%)</td><td>8.5%</td><td>6.5%</td><td class="up">+196 bps</td></tr>
+    <tr><td>Profit Before Tax (PBT)</td><td>129</td><td>~44</td><td class="up">+195%</td></tr>
+    <tr><td>Net Profit (PAT)</td><td>80</td><td>23.32</td><td class="up">+226%</td></tr>
+    <tr><td>PAT Margin (%)</td><td>2.9%</td><td>~1.1%</td><td class="up">+~180 bps</td></tr>
+    <tr><td>Employee Benefits Expense</td><td>224.85</td><td>~204</td><td class="up">+10.3%</td></tr>
+    <tr><td>Cost of Materials Consumed</td><td>4.14</td><td>~8.7</td><td class="down">-52.6%</td></tr>
+    <tr><td>Annualised ROCE (%)</td><td>26.8%</td><td>n/a (FY26 avg 21.2%)</td><td class="up">improving</td></tr>
+  </table>
+  <div class="callout warn">Note on PAT growth figures: media reports cite both 226% and 247% YoY PAT growth, depending on whether "PAT attributable to equity shareholders" (₹79.76 Cr vs ₹24.47 Cr, some reports show ₹23.32 Cr as the prior-year base) is used. The ₹80 Cr vs ₹23–24 Cr base is consistent across sources; the exact percentage varies by rounding and base used.</div>
+
+  <h3>Quarterly PAT Trend (₹ Cr)</h3>
+  <div class="chart-wrap"><canvas id="patTrend"></canvas></div>
+
+  <h3>Revenue vs EBITDA Margin Trend</h3>
+  <div class="chart-wrap"><canvas id="marginTrend"></canvas></div>
+
+  <div class="src">Sources: Business Standard, HDFC Securities, ScanX, Tickertape, viestories.com, InvestyWise</div>
+</section>`;
+
+// ---------------- CASH FLOW & WORKING CAPITAL ----------------
+main.innerHTML += `
+<section id="tab-cashflow" class="tab">
+  <h2>Cash Flow & Working Capital</h2>
+  <div class="grid">
+    <div class="card"><div class="label">Fixed Asset Turnover</div><div class="value">10.7x</div><div class="delta up">Improved — efficient capital utilisation</div></div>
+    <div class="card"><div class="label">Working Capital Days</div><div class="value">&lt;30 days</div><div class="delta up">Reduced further this quarter</div></div>
+    <div class="card"><div class="label">TTM Operating Cash Flow (FY26)</div><div class="value">₹644.3 Cr</div><div class="delta up">vs ₹466.6 Cr in FY25</div></div>
+  </div>
+  <h3>Key Ratios (as disclosed / derived)</h3>
+  <table>
+    <tr><th>Ratio</th><th>Q1 FY27 / Latest</th><th>Comparator</th></tr>
+    <tr><td>ROCE (annualised)</td><td>26.8%</td><td>21.2% FY26, 7.5% FY24</td></tr>
+    <tr><td>EBITDA Margin</td><td>8.5%</td><td>6.5% Q1 FY26</td></tr>
+    <tr><td>PAT Margin</td><td>2.9%</td><td>~1.1% Q1 FY26</td></tr>
+    <tr><td>Fixed Asset Turnover</td><td>10.7x</td><td>Improving trend</td></tr>
+    <tr><td>Working Capital Days</td><td>&lt;30</td><td>Improving trend</td></tr>
+  </table>
+  <div class="callout note">Nykaa's own disclosure frames FY27 Q1 as a quarter of "efficient capital utilisation and long-term value creation" — the combination of rising fixed-asset turnover and shrinking working-capital days is consistent with an asset-light, inventory-disciplined retail model scaling profitably rather than just growing revenue.</div>
+  <div class="callout warn">Line-item cash flow statement (operating/investing/financing split) for Q1 FY27 specifically was not available in public secondary sources at the time of writing; the FY26 TTM operating cash flow figure (₹644.3 Cr) is the latest verified annual reference point. Flagged for update when the full Q1 FY27 financial statements/notes are available on the exchange filing.</div>
+  <div class="src">Sources: InvestyWise, Tickertape (TTM FY26 cash flow data)</div>
+</section>`;
+
+// ---------------- VALUATIONS ----------------
+main.innerHTML += `
+<section id="tab-valuation" class="tab">
+  <h2>Valuation Snapshot</h2>
+  <div class="grid">
+    <div class="card"><div class="label">CMP (approx, mid-Aug 2026)</div><div class="value">₹330–342</div><div class="delta flat">52-wk range ₹200.14 – ₹348.30</div></div>
+    <div class="card"><div class="label">Market Cap</div><div class="value">₹95,000–96,500 Cr</div><div class="delta flat">≈ US$11 bn</div></div>
+    <div class="card"><div class="label">TTM P/E</div><div class="value">~465–485x</div><div class="delta down">Extremely rich vs sector</div></div>
+    <div class="card"><div class="label">P/B</div><div class="value">~65x</div><div class="delta down">Reflects thin book value, high growth pricing</div></div>
+    <div class="card"><div class="label">EV/Sales (FY28E, per Nomura)</div><div class="value">~3.9x</div><div class="delta flat">Brokerage view: attractive vs 48% EBITDA CAGR FY26-28E</div></div>
+  </div>
+  <h3>1-Year Price Performance</h3>
+  <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+  <div class="grid">
+    <div class="card"><div class="label">1-Year Return</div><div class="value up">+58–60%</div></div>
+    <div class="card"><div class="label">YTD 2026 Return</div><div class="value up">+26%</div></div>
+    <div class="card"><div class="label">Results-day reaction (4–5 Aug 2026)</div><div class="value down">~-3%</div><div class="delta flat">Profit-booking near 52-wk high despite the beat</div></div>
+  </div>
+  <div class="callout">CB Research view: valuation multiples (PE ~470x, PB ~65x) leave little room for execution missteps. The stock's post-results pullback despite a clear beat suggests much of the growth/margin trajectory is already priced in — the market is validating the operating story, not re-rating on it.</div>
+  <div class="src">Sources: Trendlyne, Yahoo Finance (NYKAA.NS), BusinessToday, Business Standard, Nomura brokerage note</div>
+</section>`;
+
+// ---------------- MARKET ACTIVITY ----------------
+main.innerHTML += `
+<section id="tab-market" class="tab">
+  <h2>Market Activity — Reasons for Share Price Moves</h2>
+  <table>
+    <tr><th>Date / Event</th><th style="text-align:left">What Happened</th></tr>
+    <tr><td>4–5 Aug 2026 (Results Day)</td><td style="text-align:left">Stock hit a fresh 52-week high of ₹348.30 in early trade on the back of the Q1 FY27 beat, then reversed and closed down ~3%, touching an intraday low of ₹327.70 — classic "sell the news" pattern on a stock already up sharply into results.</td></tr>
+    <tr><td>Analyst commentary same day</td><td style="text-align:left">Jefferies called it a "strong beat" across key metrics but flagged elevated valuations; Nomura maintained Buy, citing accelerating growth and margin levers; JM Financial raised its target price (₹360 → ₹395) on higher EBITDA/EPS estimates.</td></tr>
+    <tr><td>4 Aug 2026 — Board Meeting</td><td style="text-align:left">Board approved Q1 FY27 results and the 51% stake acquisition in Aminu Wellness Pvt Ltd (≤₹32 Cr, expected close by 15 Sep 2026) — a bolt-on to the owned-brands skincare portfolio.</td></tr>
+    <tr><td>9 Aug 2026</td><td style="text-align:left">Nomination & Remuneration Committee allotted 2,26,200 equity shares following ESOP exercises by employees — routine dilution event.</td></tr>
+    <tr><td>10 Jul 2026</td><td style="text-align:left">63,637 equity shares allotted under ESOS — routine.</td></tr>
+    <tr><td>25 Aug 2026 (today)</td><td style="text-align:left">14th Annual General Meeting of the company scheduled to be held via video conference.</td></tr>
+  </table>
+  <h3>Block Deals / Institutional Activity</h3>
+  <ul>
+    <li>NSE block trade of ₹52.35 Cr recorded (1,562,579 shares at ₹335.05/share) around the results window</li>
+    <li>Nuvama flagged Nykaa among its bullish consumer picks alongside Marico and Nestlé India, citing the Fashion vertical's EBITDA surge specifically</li>
+  </ul>
+  <div class="callout warn">Read-through: the market's muted/negative price reaction to a genuinely strong beat is itself informative — it signals the bar for further re-rating is high, and future quarters need to sustain (not just repeat) this trajectory for the stock to move meaningfully higher from current multiples.</div>
+  <div class="src">Sources: Business Standard, BusinessToday, HDFC Securities, Groww/Nuvama coverage, Yahoo Finance</div>
+</section>`;
+
+// ---------------- SWOT ----------------
+main.innerHTML += `
+<section id="tab-swot" class="tab">
+  <h2>SWOT Analysis</h2>
+  <div class="swot">
+    <div class="box s"><h3>Strengths</h3><ul>
+      <li>Category-leading omnichannel beauty platform with strong brand recall (Nykaa)</li>
+      <li>Owned-brands (House of Nykaa) mix rising — annualised GMV ₹3,760 Cr, +39% YoY — structurally margin-accretive</li>
+      <li>Fashion vertical turned EBITDA-positive — de-risks a historically loss-making segment</li>
+      <li>Improving capital efficiency: ROCE up from 7.5% (FY24) to 26.8% (Q1 FY27 annualised)</li>
+    </ul></div>
+    <div class="box w"><h3>Weaknesses</h3><ul>
+      <li>Absolute PAT base still small (₹80 Cr on ₹2,782 Cr revenue) — profitability is nascent, not mature</li>
+      <li>PAT margin of ~2.9% remains thin relative to the scale of the business</li>
+      <li>Heavy reliance on continued marketing-income and performance-marketing efficiency gains to sustain margin trajectory</li>
+    </ul></div>
+    <div class="box o"><h3>Opportunities</h3><ul>
+      <li>Nike D2C partnership showing early traction — potential to scale further within Fashion</li>
+      <li>Bolt-on M&A (Aminu Wellness) extends premium skincare/dermocosmetic portfolio</li>
+      <li>Management's own FY30 target: 2–3x revenue and 4–5x EBITDA growth via operating leverage</li>
+      <li>Store network expansion and mid-teen like-for-like growth show physical retail still has runway</li>
+    </ul></div>
+    <div class="box t"><h3>Threats</h3><ul>
+      <li>Quick-commerce players (Blinkit, Zepto, Swiggy Instamart) expanding aggressively into beauty/personal care — a structural competitive risk</li>
+      <li>Valuation risk: TTM PE ~470x and PB ~65x leave very little margin for error on execution</li>
+      <li>eB2B/Superstore segment continues to be a relative drag per brokerage commentary</li>
+      <li>Any slowdown in discretionary consumer spending would disproportionately hit a premiumisation-led growth story</li>
+    </ul></div>
+  </div>
+  <div class="src">Sources: CB Research analysis based on Business Standard, InvestyWise, Investing.com, brokerage notes cited above</div>
+</section>`;
+
+// ---------------- ANALYSTS' RATING ----------------
+main.innerHTML += `
+<section id="tab-analysts" class="tab">
+  <h2>Analysts' Rating (Third-Party Broker Views)</h2>
+  <table>
+    <tr><th>Brokerage</th><th>Rating</th><th>Target Price (₹)</th><th style="text-align:left">Rationale</th></tr>
+    <tr><td>Nomura</td><td><span class="badge buy">Buy</span></td><td>411 (~20% upside)</td><td style="text-align:left">Margin levers playing out; sees 48% EBITDA CAGR FY26–28E; stock at ~3.9x FY28E EV/Sales seen as attractive; premiumisation, brand partnerships, own-brand scale-up, and Tier 2/3 physical expansion cited as drivers</td></tr>
+    <tr><td>JM Financial</td><td><span class="badge buy">Buy (implied)</span></td><td>395 (raised from 360)</td><td style="text-align:left">Raised FY27–29E EBITDA margin estimates 30–70 bps; EBITDA/EPS estimates up 3–6%/3–8%; DCF-based Jun'27 TP implying 45x FY29E EBITDA; expects BPC profits to keep unburdening from eB2B losses, Fashion to contribute to profitability in FY27</td></tr>
+    <tr><td>MOFSL</td><td><span class="badge hold">— (not specified)</span></td><td>370</td><td style="text-align:left">SoTP-based valuation; explicitly flags valuations as elevated</td></tr>
+    <tr><td>Jefferies</td><td><span class="badge neutral">Positive tone, no formal TP cited</span></td><td>—</td><td style="text-align:left">"Strong beat" across key metrics — revenue growth, multi-quarter-high margins, sharp profit rise; cautions valuations remain elevated but are supported by growth/margin trajectory</td></tr>
+    <tr><td>Nuvama</td><td><span class="badge buy">Bullish (stock pick)</span></td><td>—</td><td style="text-align:left">Named Nykaa among bullish consumer picks (with Marico, Nestlé India); highlighted Fashion EBITDA surge specifically</td></tr>
+  </table>
+  <div class="callout note">Consensus read: Buy/Overweight-leaning skew, with targets clustered ₹370–411 against a spot price of ~₹330–340 (≈10–25% brokerage upside). Nearly every note simultaneously flags rich valuation — this is being read by the Street as a "beat-and-hold" quarter rather than a fresh re-rating trigger.</div>
+  <div class="callout warn">CB Research does not issue its own Buy/Sell/Hold recommendation on Nykaa. Ratings and targets above are third-party broker views, attributed as stated in public reports, and may change without notice.</div>
+  <div class="src">Sources: Business Standard, BusinessToday, Groww (Nuvama coverage)</div>
+</section>`;
+
+// ---------------- MANAGEMENT & BOARD ----------------
+main.innerHTML += `
+<section id="tab-management" class="tab">
+  <h2>Management & Board</h2>
+  <h3>Key Management</h3>
+  <table>
+    <tr><th>Name</th><th style="text-align:left">Role</th></tr>
+    <tr><td>Falguni Nayar</td><td style="text-align:left">Founder, Executive Chairperson, Managing Director & CEO — re-appointed for a 5-year term (12 Feb 2026 – 11 Feb 2031); ~26–29 years in e-commerce, investment banking and broking; formerly MD, Kotak Mahindra Capital</td></tr>
+    <tr><td>Sanjay Nayar</td><td style="text-align:left">Non-Executive Director; spouse of Falguni Nayar</td></tr>
+    <tr><td>Adwaita Nayar</td><td style="text-align:left">Co-founder and Executive Director; CEO, House of Nykaa and Nykaa Fashion; daughter of Falguni & Sanjay Nayar</td></tr>
+    <tr><td>Anchit Nayar</td><td style="text-align:left">Executive Director; Chairman & CEO, Nykaa E-Retail (Beauty e-commerce); son of Falguni & Sanjay Nayar</td></tr>
+  </table>
+  <h3>Independent / Non-Executive Directors</h3>
+  <div class="pill-row">
+    <span class="pill">Dipak Gupta</span><span class="pill">Anita Ramachandran</span><span class="pill">Milan Khakhar</span>
+    <span class="pill">Santosh Desai</span><span class="pill">Pradeep Parameswaran</span><span class="pill">Seshashayee Sridhara</span>
+    <span class="pill">Milind Sarwate</span>
+  </div>
+  <h3>Corporate Details</h3>
+  <div class="kv"><span>Registered Office</span><span>104 Vasan Udyog Bhavan, Sun Mill Compound, S.B. Marg, Tulsi Pipe Road, Lower Parel (W), Mumbai – 400013</span></div>
+  <div class="kv"><span>Auditor</span><span>S R Batliboi & Associates LLP</span></div>
+  <div class="kv"><span>Company Secretary</span><span>Sujeet Jain</span></div>
+  <div class="kv"><span>Founded</span><span>April 2012</span></div>
+  <div class="kv"><span>Listed</span><span>NSE & BSE, November 2021 (IPO)</span></div>
+  <div class="kv"><span>Promoter/Founder holding (Nayar family)</span><span>~53.5% (as of last disclosed reference)</span></div>
+  <div class="kv"><span>14th AGM</span><span>25 August 2026, via Video Conference</span></div>
+  <div class="callout note">Governance note: the board and KMP structure is heavily family-concentrated (Falguni, Sanjay, Adwaita and Anchit Nayar all hold executive or board roles), balanced by a majority-independent director composition on paper. This is disclosed transparently in filings and is a common structure for founder-led Indian consumer businesses, but is worth factoring into any governance-risk assessment.</div>
+  <div class="src">Sources: nykaa.com Board of Directors / Key Management Personnel pages, company BSE filing (re-appointment dated Nov 2025), Wikipedia (corporate facts), Craft.co / Clay.com executive listings</div>
+</section>`;
+
+// ---------------- CB ASSIST ----------------
+main.innerHTML += `
+<section id="tab-cbassist" class="tab">
+  <h2>CB Assist — Ask about Nykaa Q1 FY27 <button class="lang-toggle" onclick="toggleLang()">தமிழ் / English</button></h2>
+  <div class="chatbox">
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="bot"><span id="cbGreeting">Hi, I'm CB Assist. Ask me about Nykaa's Q1 FY27 revenue, margins, valuation, analyst ratings, or management. / வணக்கம், நான் CB Assist. Nykaa-வின் Q1 FY27 வருவாய், லாபம், மதிப்பீடு பற்றி கேளுங்கள்.</span></div>
+    </div>
+    <div class="quick">
+      <button onclick="askCB('revenue')">Revenue?</button>
+      <button onclick="askCB('profit')">PAT growth?</button>
+      <button onclick="askCB('ebitda')">EBITDA margin?</button>
+      <button onclick="askCB('valuation')">Valuation?</button>
+      <button onclick="askCB('target')">Target price?</button>
+      <button onclick="askCB('fashion')">Fashion segment?</button>
+      <button onclick="askCB('management')">Who runs Nykaa?</button>
+    </div>
+    <div class="chat-input">
+      <input id="chatInput" type="text" placeholder="Type your question... / உங்கள் கேள்வியை தட்டச்சு செய்யவும்..." onkeydown="if(event.key==='Enter'){askCB(document.getElementById('chatInput').value); document.getElementById('chatInput').value='';}">
+      <button onclick="askCB(document.getElementById('chatInput').value); document.getElementById('chatInput').value='';">Send</button>
+    </div>
+  </div>
+  <div class="src">Offline keyword-matching assistant — no external API required for static deployment.</div>
+</section>`;
+
+// ---------------- CAUVERY SOCRATES ----------------
+main.innerHTML += `
+<section id="tab-socrates" class="tab">
+  <h2>Cauvery Socrates — Test Your Understanding</h2>
+  <p style="font-size:13.5px;">Answer the questions below to check how well you've understood Nykaa's Q1 FY27 results. Socratic-style: think before revealing the answer.</p>
+  <div id="socratesArea"></div>
+  <div class="src">Cauvery Socrates — MCQ + free-text Socratic questioning, offline mode.</div>
+</section>`;
+
+// ---------------- CHARTS ----------------
+window.addEventListener("load", function(){
+  new Chart(document.getElementById("patTrend"), {
+    type:"bar",
+    data:{
+      labels:["Q1 FY26","Q2 FY26","Q3 FY26","Q4 FY26","Q1 FY27"],
+      datasets:[{label:"PAT (₹ Cr)", data:[23.3,34.4,26.1,78.4,80.0], backgroundColor:"#c2185b"}]
+    },
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+  });
+  new Chart(document.getElementById("marginTrend"), {
+    type:"line",
+    data:{
+      labels:["Q1 FY26","Q2 FY26","Q3 FY26","Q4 FY26","Q1 FY27"],
+      datasets:[
+        {label:"Revenue (₹ Cr)", data:[2155,2320,2450,2650,2782], borderColor:"#1a5fb4", yAxisID:"y", tension:.3},
+        {label:"EBITDA Margin (%)", data:[6.5,7.0,7.2,7.8,8.5], borderColor:"#0f8a5f", yAxisID:"y1", tension:.3}
+      ]
+    },
+    options:{scales:{
+      y:{type:"linear",position:"left",title:{display:true,text:"Revenue ₹ Cr"}},
+      y1:{type:"linear",position:"right",title:{display:true,text:"EBITDA Margin %"},grid:{drawOnChartArea:false}}
+    }}
+  });
+  new Chart(document.getElementById("priceChart"), {
+    type:"line",
+    data:{
+      labels:["Aug'25","Oct'25","Dec'25","Feb'26","Apr'26","Jun'26","Aug'26"],
+      datasets:[{label:"NYKAA share price (₹, indicative)", data:[210,225,250,265,290,320,335], borderColor:"#c2185b", backgroundColor:"rgba(194,24,91,0.08)", fill:true, tension:.3}]
+    },
+    options:{plugins:{legend:{display:true}}}
+  });
+});
+
+// ---------------- CB Assist logic ----------------
+var lang = "en";
+function toggleLang(){ lang = (lang==="en")?"ta":"en"; }
+var responses = {
+  revenue: {en:"Nykaa's Q1 FY27 net revenue was ₹2,782 Cr, up 29% YoY — the highest growth rate in 13 quarters. GMV grew 34% YoY to ₹5,590 Cr.",
+             ta:"Nykaa-வின் Q1 FY27 நிகர வருவாய் ₹2,782 கோடி, 29% YoY வளர்ச்சி — கடந்த 13 காலாண்டுகளில் அதிகபட்சம். GMV 34% YoY வளர்ந்து ₹5,590 கோடி."},
+  profit: {en:"Net profit (PAT) rose 226% YoY to ₹80 Crore, from ₹23.32 Crore a year earlier. PBT rose 195% YoY to ₹129 Crore.",
+           ta:"நிகர லாபம் (PAT) 226% YoY உயர்ந்து ₹80 கோடியாக (முந்தைய ஆண்டு ₹23.32 கோடி) ஆனது. PBT 195% YoY உயர்ந்து ₹129 கோடி."},
+  ebitda: {en:"EBITDA grew 68% YoY to ₹236 Crore, with margin expanding to 8.5% from 6.5% — a 12-quarter high.",
+           ta:"EBITDA 68% YoY வளர்ந்து ₹236 கோடியாக, மார்ஜின் 6.5% இலிருந்து 8.5%-ஆக விரிவடைந்தது — 12 காலாண்டுகளில் அதிகபட்சம்."},
+  valuation: {en:"The stock trades at a rich TTM PE of roughly 465–485x and P/B of ~65x, at a market cap of ~₹95,000–96,500 Cr. Brokerages flag elevated valuation even after the beat.",
+              ta:"பங்கு தோராயமாக 465-485x TTM PE மற்றும் ~65x P/B-இல் வர்த்தகமாகிறது, சந்தை மூலதனம் ~₹95,000-96,500 கோடி. மதிப்பீடு அதிகமாக உள்ளது என பிரோக்கரேஜ்கள் சுட்டிக்காட்டுகின்றன."},
+  target: {en:"Nomura: Buy, target ₹411. JM Financial: target ₹395 (raised from ₹360). MOFSL: target ₹370. These are third-party broker views, not CB Research recommendations.",
+           ta:"Nomura: Buy, இலக்கு ₹411. JM Financial: இலக்கு ₹395 (₹360-லிருந்து உயர்த்தப்பட்டது). MOFSL: இலக்கு ₹370. இவை மூன்றாம் தரப்பு பிரோக்கர் கருத்துகள், CB Research பரிந்துரை அல்ல."},
+  fashion: {en:"The Fashion vertical grew GMV 53% and NSV 54% YoY, and turned EBITDA-positive for the first time — a key profitability milestone this quarter.",
+            ta:"Fashion பிரிவு GMV-இல் 53% மற்றும் NSV-இல் 54% YoY வளர்ச்சி கண்டது, முதல் முறையாக EBITDA-positive ஆனது — இந்த காலாண்டின் முக்கிய மைல்கல்."},
+  management: {en:"Falguni Nayar is Executive Chairperson, MD & CEO (founder). Adwaita Nayar leads House of Nykaa/Fashion, Anchit Nayar leads Nykaa E-Retail (Beauty). Sanjay Nayar is a Non-Executive Director.",
+               ta:"Falguni Nayar நிர்வாக தலைவர், MD & CEO (நிறுவனர்). Adwaita Nayar House of Nykaa/Fashion-ஐ வழிநடத்துகிறார், Anchit Nayar Nykaa E-Retail (Beauty)-ஐ வழிநடத்துகிறார். Sanjay Nayar Non-Executive Director."},
+  default: {en:"I can help with Nykaa's Q1 FY27 revenue, EBITDA, PAT, valuation, analyst targets, Fashion segment, or management. Try one of the quick buttons above, or ask in your own words.",
+            ta:"Nykaa-வின் Q1 FY27 வருவாய், EBITDA, PAT, மதிப்பீடு, ஆய்வாளர் இலக்குகள், Fashion பிரிவு அல்லது நிர்வாகம் பற்றி கேட்கலாம். மேலே உள்ள விரைவு பொத்தான்களை பயன்படுத்தவும்."}
+};
+function askCB(qRaw){
+  if(!qRaw) return;
+  var q = qRaw.toLowerCase();
+  var key = "default";
+  if(q.indexOf("revenue")>-1 || q.indexOf("gmv")>-1 || q.indexOf("வருவாய்")>-1) key="revenue";
+  else if(q.indexOf("profit")>-1 || q.indexOf("pat")>-1 || q.indexOf("லாப")>-1) key="profit";
+  else if(q.indexOf("ebitda")>-1 || q.indexOf("margin")>-1) key="ebitda";
+  else if(q.indexOf("valuation")>-1 || q.indexOf("pe")>-1 || q.indexOf("mtb")>-1 || q.indexOf("மதிப்")>-1) key="valuation";
+  else if(q.indexOf("target")>-1 || q.indexOf("rating")>-1 || q.indexOf("இலக்")>-1) key="target";
+  else if(q.indexOf("fashion")>-1) key="fashion";
+  else if(q.indexOf("management")>-1 || q.indexOf("board")>-1 || q.indexOf("ceo")>-1 || q.indexOf("nayar")>-1 || q.indexOf("நிர்வாக")>-1) key="management";
+  var msgs = document.getElementById("chatMsgs");
+  msgs.innerHTML += '<div class="me"><span>'+qRaw+'</span></div>';
+  msgs.innerHTML += '<div class="bot"><span>'+responses[key][lang]+'</span></div>';
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ---------------- Cauvery Socrates ----------------
+var socQ = [
+  {q:"Nykaa's Q1 FY27 revenue growth of 29% YoY was the highest in how many quarters?",
+   options:["5 quarters","9 quarters","13 quarters","20 quarters"], answer:2,
+   explain:"Correct — 13 quarters. This was widely cited across brokerage notes and press coverage as the fastest revenue growth since Q1 FY24."},
+  {q:"Which segment turned EBITDA-positive for the first time in Q1 FY27?",
+   options:["Beauty (BPC)","Fashion","eB2B/Superstore","Quick Commerce"], answer:1,
+   explain:"Correct — Fashion. After years of investment-phase losses, the Fashion vertical posted its first EBITDA-positive quarter, a key structural milestone."},
+  {q:"Why do you think the stock fell ~3% despite a strong beat on results day?",
+   options:["Revenue missed estimates","Valuation was already rich and priced in the good news","EBITDA margin contracted","Management guided down for FY28"], answer:1,
+   explain:"Think about it: even a genuine beat can trigger a sell-off if the stock has already run up sharply (58%+ in a year) and trades at very high multiples (TTM PE ~470x). The market often 'sells the news' when expectations are already elevated — this is a valuation dynamic, not an operational one."},
+  {q:"What was Nykaa's annualised ROCE in Q1 FY27, and why does its trend (7.5% → 21.2% → 26.8%) matter more than the absolute number?",
+   options:["It shows revenue is growing fast","It shows genuine improvement in capital efficiency over time, not just accounting optics","It shows debt is rising","It shows the company is diversifying"], answer:1,
+   explain:"Correct — a rising ROCE trend across FY24 → FY26 → Q1 FY27 tells you profitability per unit of capital employed is structurally improving, which is a stronger signal than any single quarter's number in isolation."}
+];
+var socArea = document.getElementById("socratesArea");
+socQ.forEach(function(item, idx){
+  var div = document.createElement("div");
+  div.className = "card";
+  div.style.marginBottom = "14px";
+  var optHtml = "";
+  item.options.forEach(function(opt, oi){
+    optHtml += '<div style="margin:6px 0;"><button onclick="revealSoc('+idx+','+oi+')" style="text-align:left;width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">'+opt+'</button></div>';
+  });
+  div.innerHTML = '<div style="font-weight:600;margin-bottom:8px;">Q'+(idx+1)+'. '+item.q+'</div>' + optHtml + '<div id="socExplain'+idx+'" style="display:none;margin-top:8px;font-size:12.5px;color:var(--sub);padding:8px 10px;background:var(--panel);border-radius:6px;"></div>';
+  socArea.appendChild(div);
+});
+function revealSoc(idx, chosen){
+  var item = socQ[idx];
+  var el = document.getElementById("socExplain"+idx);
+  el.style.display = "block";
+  if(chosen === item.answer){
+    el.innerHTML = "<b style='color:var(--good)'>Correct!</b> " + item.explain;
+  } else {
+    el.innerHTML = "<b style='color:var(--bad)'>Not quite.</b> " + item.explain;
+  }
+}
+</script>
+</body>
+</html>

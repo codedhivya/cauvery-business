@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>USA Macro Stress Dashboard — Debt, Dollar, War, Inflation | CB Research</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#ffffff;
+  --panel:#f7f8fa;
+  --ink:#10151c;
+  --sub:#5b6472;
+  --line:#e3e6ea;
+  --navy:#0d2b4e;
+  --navy2:#173f6e;
+  --red:#b5342a;
+  --amber:#c07a1e;
+  --green:#1f7a4d;
+  --gold:#9c7a1f;
+  --chip:#eef1f5;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Georgia','Iowan Old Style',serif;
+  -webkit-font-smoothing:antialiased;
+}
+.utility{font-family:'Consolas','SF Mono',monospace;}
+
+header{
+  border-bottom:3px solid var(--navy);
+  padding:22px 28px 16px 28px;
+  background:linear-gradient(180deg,#ffffff 0%,#f9fafb 100%);
+}
+.eyebrow{
+  font-family:'Consolas','SF Mono',monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--navy2);
+  margin-bottom:6px;
+}
+h1{
+  margin:0 0 6px 0;
+  font-size:30px;
+  font-weight:700;
+  color:var(--navy);
+  letter-spacing:-0.01em;
+}
+.subtitle{
+  color:var(--sub);
+  font-size:14.5px;
+  max-width:900px;
+  line-height:1.5;
+}
+.meta-row{
+  display:flex;
+  gap:22px;
+  flex-wrap:wrap;
+  margin-top:14px;
+  font-family:'Consolas','SF Mono',monospace;
+  font-size:12px;
+  color:var(--sub);
+}
+.meta-row b{color:var(--ink);}
+
+.gauge-strip{
+  display:flex;
+  gap:0;
+  border-bottom:1px solid var(--line);
+  overflow-x:auto;
+}
+.gauge{
+  flex:1;
+  min-width:180px;
+  padding:14px 18px;
+  border-right:1px solid var(--line);
+}
+.gauge:last-child{border-right:none;}
+.gauge-label{font-family:'Consolas','SF Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);}
+.gauge-value{font-size:22px;font-weight:700;color:var(--navy);margin-top:2px;}
+.gauge-note{font-size:11.5px;color:var(--sub);margin-top:2px;font-family:'Consolas','SF Mono',monospace;}
+.flag-red{color:var(--red);}
+.flag-amber{color:var(--amber);}
+.flag-green{color:var(--green);}
+
+nav.tabs{
+  display:flex;
+  flex-wrap:wrap;
+  background:var(--navy);
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+nav.tabs button{
+  font-family:'Consolas','SF Mono',monospace;
+  font-size:12px;
+  letter-spacing:.03em;
+  color:#c9d6e6;
+  background:transparent;
+  border:none;
+  padding:13px 16px;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  white-space:nowrap;
+  transition:.15s;
+}
+nav.tabs button:hover{background:rgba(255,255,255,.06);color:#fff;}
+nav.tabs button.active{
+  color:#fff;
+  border-bottom:3px solid var(--gold);
+  background:rgba(255,255,255,.05);
+}
+
+main{padding:26px 28px 60px 28px; max-width:1180px; margin:0 auto;}
+.tabpanel{display:none;}
+.tabpanel.active{display:block; animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+h2{
+  font-size:21px;
+  color:var(--navy);
+  border-bottom:2px solid var(--navy);
+  padding-bottom:8px;
+  margin:0 0 16px 0;
+}
+h3{font-size:16px;color:var(--navy2);margin:26px 0 10px 0;}
+p{line-height:1.65;font-size:14.5px;color:#232a33;}
+.sans{font-family:'Helvetica Neue',Arial,sans-serif;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+@media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:16px 18px;
+}
+.card h4{margin:0 0 8px 0;font-size:13.5px;color:var(--navy);font-family:'Helvetica Neue',Arial,sans-serif;letter-spacing:.01em;}
+
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin:14px 0;}
+.chart-box canvas{max-height:320px;}
+.chart-caption{font-size:11.5px;color:var(--sub);margin-top:6px;font-family:'Consolas','SF Mono',monospace;}
+
+table{width:100%;border-collapse:collapse;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;margin:12px 0;}
+th{
+  background:var(--navy);
+  color:#fff;
+  text-align:left;
+  padding:9px 12px;
+  font-weight:600;
+  font-size:12px;
+  letter-spacing:.02em;
+}
+td{padding:8px 12px;border-bottom:1px solid var(--line);}
+tr:nth-child(even) td{background:#fafbfc;}
+.num{text-align:right;font-family:'Consolas','SF Mono',monospace;}
+
+.pill{
+  display:inline-block;
+  padding:2px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-family:'Consolas','SF Mono',monospace;
+  font-weight:600;
+}
+.pill-pro{background:#e5f3ea;color:var(--green);}
+.pill-con{background:#fbe9e6;color:var(--red);}
+
+.prosconswrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0;}
+@media(max-width:820px){.prosconswrap{grid-template-columns:1fr;}}
+.pc-col{border-radius:6px;padding:16px 18px;}
+.pc-pro{background:#f2f9f4;border:1px solid #cfe8d7;}
+.pc-con{background:#fbf1ef;border:1px solid #f1cec7;}
+.pc-col h4{margin-top:0;font-family:'Helvetica Neue',Arial,sans-serif;}
+.pc-col ul{margin:8px 0 0 0;padding-left:18px;}
+.pc-col li{margin-bottom:9px;font-size:13.5px;line-height:1.5;}
+
+.callout{
+  border-left:4px solid var(--gold);
+  background:#fbf7ec;
+  padding:12px 16px;
+  font-size:13.5px;
+  margin:16px 0;
+  line-height:1.6;
+}
+.callout.red{border-left-color:var(--red);background:#fdf1ef;}
+.callout.navy{border-left-color:var(--navy2);background:#f0f4f9;}
+
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px 0;}
+.tag{
+  font-family:'Consolas','SF Mono',monospace;
+  font-size:10.5px;
+  background:var(--chip);
+  border:1px solid var(--line);
+  padding:3px 9px;
+  border-radius:4px;
+  color:var(--sub);
+}
+
+.verdict-box{
+  border:2px solid var(--navy);
+  border-radius:8px;
+  padding:20px 24px;
+  background:linear-gradient(180deg,#f9fafb 0%,#ffffff 100%);
+  margin:18px 0;
+}
+.verdict-box h3{margin-top:0;}
+
+.sources-block{
+  margin-top:34px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+  font-family:'Consolas','SF Mono',monospace;
+  font-size:11px;
+  color:var(--sub);
+  line-height:1.8;
+}
+
+footer{
+  border-top:2px solid var(--navy);
+  padding:16px 28px;
+  font-family:'Consolas','SF Mono',monospace;
+  font-size:11px;
+  color:var(--sub);
+  text-align:center;
+}
+.watermark{color:var(--navy2);font-weight:600;}
+</style>
+</head>
+<body>
+<header>
+<div class="eyebrow">CB Research · Cauvery Business · Global Macro Desk</div>
+<h1>The Four-Way Squeeze: US Debt, Dollar, War &amp; Inflation</h1>
+<div class="subtitle">An interactive read on four simultaneous US macro pressures as of August 2026 — the national debt crossing $40 trillion, the Dollar Index (DXY) sliding off its 52-week high, the unresolved US–Iran war, and inflation still running above target at 3.4–3.5%. Each is examined on its own tab, followed by how they interact and what it means for India.</div>
+<div class="meta-row">
+<span><b>As of:</b> 21 August 2026 (IST)</span>
+<span><b>US Debt:</b> $40.05 trillion (crossed 19 Aug 2026)</span>
+<span><b>DXY:</b> 98.75 as of 21 Aug 2026, 14:30 IST (down from 52-wk high 101.80)</span>
+<span><b>US–Iran:</b> Ceasefire/MOU lapsed 17 Aug 2026, war ongoing</span>
+<span><b>CPI (US):</b> 3.4% YoY, Jul 2026 (3.5% in Jun)</span>
+</div>
+</header>
+<div class="gauge-strip sans">
+<div class="gauge">
+<div class="gauge-label">National Debt</div>
+<div class="gauge-value flag-red">$40.05T</div>
+<div class="gauge-note">↑ $3.83T since Jan 2025</div>
+</div>
+<div class="gauge">
+<div class="gauge-label">Debt-to-GDP</div>
+<div class="gauge-value flag-amber">~122%</div>
+<div class="gauge-note">interest &gt; defence budget</div>
+</div>
+<div class="gauge">
+<div class="gauge-label">Dollar Index</div>
+<div class="gauge-value flag-amber">98.75</div>
+<div class="gauge-note">as of 21 Aug, 14:30 IST</div>
+</div>
+<div class="gauge">
+<div class="gauge-label">US–Iran War</div>
+<div class="gauge-value flag-red">Day ~175</div>
+<div class="gauge-note">MOU/ceasefire lapsed 17 Aug</div>
+</div>
+<div class="gauge">
+<div class="gauge-label">Brent Crude</div>
+<div class="gauge-value flag-amber">~$91-92/bbl</div>
+<div class="gauge-note">up from $71 wartime low</div>
+</div>
+<div class="gauge">
+<div class="gauge-label">US CPI (YoY)</div>
+<div class="gauge-value flag-amber">3.4%</div>
+<div class="gauge-note">vs Fed target 2.0%</div>
+</div>
+<div class="gauge">
+<div class="gauge-label">Gold Spot</div>
+<div class="gauge-value flag-green">~$4,522/oz</div>
+<div class="gauge-note">+10%+ in past month</div>
+</div>
+</div>
+<nav class="tabs" id="tabNav"></nav>
+<main id="tabContent"></main>
+<footer>
+<span class="watermark">CB Research</span> · Cauvery Business Research (SEBI RA) — Educational macro analysis, not investment advice. Figures as of 21 Aug 2026, 14:30 IST; subject to revision. Build: MACRO-20260821
+</footer>
+<script>
+/* ---------------- TAB DATA ---------------- */
+const tabs = [
+  {id:'overview', label:'Overview'},
+  {id:'debt', label:'US Debt $40T'},
+  {id:'dollar', label:'Dollar Index'},
+  {id:'iran', label:'US–Iran War'},
+  {id:'inflation', label:'Inflation'},
+  {id:'gold', label:'Gold Rally'},
+  {id:'links', label:'How They Connect'},
+  {id:'india', label:'India Impact'},
+  {id:'verdict', label:'Outlook & Verdict'}
+];
+
+const nav = document.getElementById('tabNav');
+const content = document.getElementById('tabContent');
+
+tabs.forEach((t,i)=>{
+  const b = document.createElement('button');
+  b.textContent = t.label;
+  b.dataset.tab = t.id;
+  if(i===0) b.classList.add('active');
+  b.onclick = ()=>selectTab(t.id);
+  nav.appendChild(b);
+});
+
+function selectTab(id){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
+  document.querySelectorAll('.tabpanel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+id));
+  // lazy render charts on first activation
+  if(id==='debt' && !window._debtChart) renderDebtChart();
+  if(id==='dollar' && !window._dxyChart) renderDxyChart();
+  if(id==='iran' && !window._oilChart) renderOilChart();
+  if(id==='inflation' && !window._cpiChart) renderCpiChart();
+  if(id==='gold' && !window._goldChart) renderGoldChart();
+  if(id==='links' && !window._radarChart) renderRadarChart();
+}
+
+/* ---------------- BUILD PANELS ---------------- */
+
+const panels = {};
+
+panels.overview = `
+<h2>Overview — Four Pressures, One Economy</h2>
+<p>US debt, the dollar, the Iran war, and inflation are all moving together right now — each one makes the others worse.</p>
+
+<table>
+  <tr><th>Indicator</th><th>Level</th><th>Direction</th></tr>
+  <tr><td>US National Debt (gross)</td><td class="num">$40.05 trillion</td><td>↑ Record</td></tr>
+  <tr><td>Annual interest cost</td><td class="num">&gt; $1.1 trillion</td><td>↑ exceeds defence</td></tr>
+  <tr><td>US Dollar Index (DXY)</td><td class="num">98.75</td><td>↓ 3-month low</td></tr>
+  <tr><td>US CPI YoY</td><td class="num">3.4%</td><td>↓ mild easing</td></tr>
+  <tr><td>Brent crude</td><td class="num">$91–92/bbl</td><td>↑ from $71 low</td></tr>
+  <tr><td>Gold spot</td><td class="num">~$4,522/oz</td><td>↑ record territory</td></tr>
+  <tr><td>US–Iran war</td><td class="num">~175 days</td><td>Ceasefire lapsed 17 Aug</td></tr>
+</table>
+
+<div class="callout">Debt is a slow-moving story (years). War and oil can move markets in a day. Watch the Strait of Hormuz first.</div>
+`;
+
+panels.debt = `
+<h2>US National Debt Crosses $40 Trillion</h2>
+<p>Confirmed <b>$40.05 trillion</b> on 19 Aug 2026 — ~$117,000 per person. Doubled from $19.95T since Jan 2017.</p>
+
+<div class="chart-box">
+  <canvas id="debtChart"></canvas>
+  <div class="chart-caption">US gross federal debt, $ trillion</div>
+</div>
+
+<div class="prosconswrap">
+  <div class="pc-col pc-pro">
+    <h4><span class="pill pill-pro">PRO</span></h4>
+    <ul>
+      <li>US still borrows in its own currency — auctions remain well-bid.</li>
+      <li>~1/3 of the rise was one-off COVID spending, not structural.</li>
+      <li>Inflation and growth erode the real value of fixed-rate debt over time.</li>
+    </ul>
+  </div>
+  <div class="pc-col pc-con">
+    <h4><span class="pill pill-con">CON</span></h4>
+    <ul>
+      <li>Interest bill (&gt;$1.1T/yr) now exceeds the entire defence budget.</li>
+      <li>Doubled in under 10 years — CBO sees $150T by 2055 if unchanged.</li>
+      <li>Rising yields are already pushing up mortgage and auto loan rates.</li>
+      <li>FY26 deficit already tops all of FY25, with 2 months still to go.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout red"><b>Bottom line:</b> Not a default risk today — but shrinking fiscal room for the next real emergency.</div>
+`;
+
+panels.dollar = `
+<h2>Dollar Index (DXY) — Sliding Off Its Highs</h2>
+<p>DXY at <b>98.75</b> (21 Aug 2026), down from its 52-week high of 101.80 (24 Jun). Trigger: US Treasury doubled its bond buyback programme, signalling active intervention to cap yields.</p>
+
+<div class="chart-box">
+  <canvas id="dxyChart"></canvas>
+  <div class="chart-caption">DXY: 101.80 (24 Jun) → 98.75 (21 Aug)</div>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h4>Pushing it down</h4>
+    <p style="font-size:13px;margin:0;">Softer US data, fading rate-hike bets, Treasury's own market intervention.</p>
+  </div>
+  <div class="card">
+    <h4>Still supporting it</h4>
+    <p style="font-size:13px;margin:0;">Fed rate still 3.50–3.75%, 30-yr yield at a 19-yr high, safe-haven demand from the Iran war.</p>
+  </div>
+</div>
+
+<div class="prosconswrap">
+  <div class="pc-col pc-pro">
+    <h4><span class="pill pill-pro">PRO</span></h4>
+    <ul>
+      <li>Cheaper US exports, more competitive manufacturing.</li>
+      <li>Supportive for gold and emerging-market currencies, incl. INR.</li>
+    </ul>
+  </div>
+  <div class="pc-col pc-con">
+    <h4><span class="pill pill-con">CON</span></h4>
+    <ul>
+      <li>Costlier imports for US consumers — adds to inflation.</li>
+      <li>Signals fading confidence in US fiscal management.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout navy">Forecast range: 92–101 through end-2026. A Hormuz escalation is the biggest upside risk for the dollar.</div>
+`;
+
+panels.iran = `
+<h2>US–Iran War — Status</h2>
+<p>War began 28 Feb 2026. The 60-day ceasefire MOU <b>lapsed 17 Aug 2026</b> with no deal — Iran rejects a ceasefire, wants a full end to the war. Trump says he's in "no hurry."</p>
+
+<div class="chart-box">
+  <canvas id="oilChart"></canvas>
+  <div class="chart-caption">Brent crude: $71/bbl low → $91–92/bbl now</div>
+</div>
+
+<table>
+  <tr><th>Side</th><th>Reported casualties</th></tr>
+  <tr><td>United States</td><td>15 killed, 543 wounded</td></tr>
+  <tr><td>Israel</td><td>27+1 killed, 28 civilians killed</td></tr>
+  <tr><td>Iran</td><td>3,400–3,600+ killed, 26,500+ injured</td></tr>
+</table>
+
+<div class="prosconswrap">
+  <div class="pc-col pc-pro">
+    <h4><span class="pill pill-pro">Case for continuing</span></h4>
+    <ul>
+      <li>Aims to keep the Strait of Hormuz open for oil flow.</li>
+      <li>Naval blockade estimated to cost Iran $500M/day.</li>
+    </ul>
+  </div>
+  <div class="pc-col pc-con">
+    <h4><span class="pill pill-con">Cost side</span></h4>
+    <ul>
+      <li>Nearly 6 months in, no exit in sight.</li>
+      <li>US Strategic Petroleum Reserve below 300M barrels — lowest since the 1980s.</li>
+      <li>Regional spillover: Syria, Lebanon, Red Sea shipping attacks.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout red">Key swing factor: Oman–Iran talks on Hormuz access. Trump has threatened to bomb Oman if it "interferes."</div>
+`;
+
+panels.inflation = `
+<h2>Inflation — Still Above Target</h2>
+<p>US CPI: <b>3.4%</b> YoY in July (3.5% in June). Core CPI: <b>2.5%</b>. Still well above the Fed's 2% target.</p>
+
+<div class="chart-box">
+  <canvas id="cpiChart"></canvas>
+  <div class="chart-caption">Headline vs Core CPI, YoY %</div>
+</div>
+
+<table>
+  <tr><th>Component</th><th>Move</th></tr>
+  <tr><td>Gasoline</td><td class="num">-2.9% m/m, still +24.6% YoY</td></tr>
+  <tr><td>Shelter</td><td class="num">+0.1% m/m, ~2/3 of headline rise</td></tr>
+  <tr><td>Wage growth</td><td class="num">3.2% YoY — below CPI</td></tr>
+</table>
+
+<div class="prosconswrap">
+  <div class="pc-col pc-pro">
+    <h4><span class="pill pill-pro">PRO</span></h4>
+    <ul>
+      <li>Second straight month of easing.</li>
+      <li>Core inflation back to pre-war pace.</li>
+    </ul>
+  </div>
+  <div class="pc-col pc-con">
+    <h4><span class="pill pill-con">CON</span></h4>
+    <ul>
+      <li>Real wages falling for 4 straight months.</li>
+      <li>Services inflation (medical, airfares) still brisk.</li>
+      <li>Any Hormuz escalation could reverse the easing fast.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout">Next CPI: 11 Sep 2026. Fed's Jackson Hole remarks: 28 Aug 2026.</div>
+`;
+
+panels.gold = `
+<h2>Gold Rally — Dollar Down, Gold Up</h2>
+<p>Gold spot: <b>~$4,522/oz</b> (21 Aug), up 10%+ in a month, ~35% YoY. Jumped 4%+ this week after the Treasury's buyback announcement pulled yields and the dollar down.</p>
+
+<div class="chart-box">
+  <canvas id="goldChart"></canvas>
+  <div class="chart-caption">Gold spot, $/oz</div>
+</div>
+
+<table>
+  <tr><th>Driver</th><th>Link</th></tr>
+  <tr><td>Weak dollar</td><td>Lowers opportunity cost of holding gold</td></tr>
+  <tr><td>Rising debt</td><td>Currency-debasement hedge demand</td></tr>
+  <tr><td>Iran war</td><td>Safe-haven demand</td></tr>
+  <tr><td>Central banks</td><td>China accumulating reserves</td></tr>
+</table>
+
+<h3>India</h3>
+<p>24K gold near <b>₹1,59,000/10g</b> — a fresh high, up ~3% for the week.</p>
+
+<div class="prosconswrap">
+  <div class="pc-col pc-pro">
+    <h4><span class="pill pill-pro">PRO</span></h4>
+    <ul>
+      <li>Wealth effect for existing gold holders, incl. RBI reserves.</li>
+      <li>Confirms gold's role as inflation/currency hedge.</li>
+    </ul>
+  </div>
+  <div class="pc-col pc-con">
+    <h4><span class="pill pill-con">CON</span></h4>
+    <ul>
+      <li>Costlier for buyers ahead of festive/wedding season.</li>
+      <li>Widens India's import bill.</li>
+      <li>Sharp rallies reverse fast — gold fell ~16% in Q2 2026.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout navy">Some forecasts see $6,000/oz by end-2026 — conditional on the war and Fed path.</div>
+`;
+
+panels.links = `
+<h2>How the Pressures Connect</h2>
+<p>None of these move alone. Each one feeds the others.</p>
+
+<div class="chart-box">
+  <canvas id="radarChart"></canvas>
+  <div class="chart-caption">Illustrative stress index (0–10)</div>
+</div>
+
+<table>
+  <tr><th>Link</th><th>Mechanism</th></tr>
+  <tr><td>War → Inflation</td><td>Hormuz risk → oil up → gasoline/energy CPI up</td></tr>
+  <tr><td>War → Debt</td><td>Defence spending + lost tariff revenue widen the deficit</td></tr>
+  <tr><td>Debt → Dollar</td><td>Record issuance + Treasury intervention hurts confidence</td></tr>
+  <tr><td>Dollar → Inflation</td><td>Weak dollar raises import costs</td></tr>
+  <tr><td>Inflation → Debt</td><td>Keeps yields high → bigger interest bill</td></tr>
+  <tr><td>Dollar+Debt+War → Gold</td><td>All three push gold up at once</td></tr>
+</table>
+
+<div class="callout red">War pushes oil/spending up → debt/inflation up → dollar down/yields up → war and debt get costlier to sustain. Break the loop: resolve Hormuz first.</div>
+`;
+
+panels.india = `
+<h2>What This Means for India</h2>
+<p>Transmits mainly via oil, INR/USD, and FII flows.</p>
+
+<div class="grid3">
+  <div class="card">
+    <h4>Oil import bill</h4>
+    <p style="font-size:13px;margin:0;">India imports ~85% of crude. $91–92/bbl vs $71 low widens the import bill and CAD.</p>
+  </div>
+  <div class="card">
+    <h4>INR/USD</h4>
+    <p style="font-size:13px;margin:0;">Weak DXY is a mild INR tailwind, but war risk can offset it. RBI reserves: $707 billion.</p>
+  </div>
+  <div class="card">
+    <h4>FII flows</h4>
+    <p style="font-size:13px;margin:0;">High US yields (19-yr high on 30-yr) pull FII money toward US debt, away from India.</p>
+  </div>
+</div>
+
+<table>
+  <tr><th>Exposure</th><th>Watch item</th></tr>
+  <tr><td>Gas-based power</td><td>Global gas pricing tied to Hormuz risk</td></tr>
+  <tr><td>Solar/EPC</td><td>Dollar-priced component costs</td></tr>
+  <tr><td>Power trading</td><td>Fuel-linked spot price volatility</td></tr>
+  <tr><td>Rupee debt</td><td>RBI rate stance if oil-driven inflation rises</td></tr>
+</table>
+
+<div class="callout navy">The one variable to track: Strait of Hormuz status.</div>
+`;
+
+panels.verdict = `
+<h2>Outlook &amp; Verdict</h2>
+
+<div class="verdict-box">
+<table>
+<tr><th>Scenario</th><th>Trigger</th><th>Effect</th></tr>
+<tr><td><b>De-escalation</b></td><td>Oman–Iran deal succeeds</td><td>Oil to $75–80, CPI toward 3%, dollar stabilises</td></tr>
+<tr><td><b>Status quo</b></td><td>Talks continue, no breakthrough</td><td>Oil $88–95, CPI ~3.2–3.6%, debt keeps climbing</td></tr>
+<tr><td><b>Escalation</b></td><td>Oman/Hormuz incident</td><td>Oil spikes, dollar jumps as haven, CPI re-accelerates</td></tr>
+</table>
+</div>
+
+<div class="prosconswrap">
+  <div class="pc-col pc-pro">
+    <h4><span class="pill pill-pro">Net positives</span></h4>
+    <ul>
+      <li>Inflation decelerating, not accelerating.</li>
+      <li>Treasury demand still intact despite the debt milestone.</li>
+      <li>Diplomatic channels (Oman, Qatar) remain open.</li>
+    </ul>
+  </div>
+  <div class="pc-col pc-con">
+    <h4><span class="pill pill-con">Net negatives</span></h4>
+    <ul>
+      <li>All four indicators reinforce each other — that's the real risk.</li>
+      <li>Interest costs now exceed the defence budget.</li>
+      <li>War has no negotiated end in sight.</li>
+      <li>Real wages falling for a 4th straight month.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout red"><b>CB Research view:</b> Track the Strait of Hormuz first — it's the fastest channel into oil, inflation, the Fed, the dollar, and gold. The $40T debt is a slow, years-long story; the war is what can move markets in a day.</div>
+
+<p style="font-size:12px;color:#5b6472;margin-top:22px;">Educational analysis only — not investment advice.</p>
+`;
+
+/* Render all panels into DOM */
+tabs.forEach((t,i)=>{
+  const div = document.createElement('div');
+  div.className = 'tabpanel' + (i===0 ? ' active' : '');
+  div.id = 'panel-' + t.id;
+  div.innerHTML = panels[t.id];
+  content.appendChild(div);
+});
+
+/* ---------------- CHARTS ---------------- */
+Chart.defaults.font.family = "'Helvetica Neue', Arial, sans-serif";
+Chart.defaults.color = '#5b6472';
+
+function renderDebtChart(){
+  const ctx = document.getElementById('debtChart');
+  window._debtChart = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['2017 (Jan)','2020','2022','2024 (Jul)','2025 (Aug)','2026 (Feb)','2026 (Aug)'],
+      datasets:[{
+        label:'US Gross Federal Debt ($ Trillion)',
+        data:[19.95, 27.7, 31.4, 35.0, 37.0, 38.56, 40.05],
+        backgroundColor:'#173f6e',
+        borderRadius:3
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>'$'+c.parsed.y+' trillion'}}},
+      scales:{y:{title:{display:true,text:'$ Trillion'}, beginAtZero:true}}
+    }
+  });
+}
+
+function renderDxyChart(){
+  const ctx = document.getElementById('dxyChart');
+  window._dxyChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['24 Jun','8 Jul','22 Jul','1 Aug','13 Aug','18 Aug','21 Aug'],
+      datasets:[{
+        label:'DXY',
+        data:[101.80, 100.9, 100.1, 99.9, 100.76, 99.44, 98.75],
+        borderColor:'#b5342a',
+        backgroundColor:'rgba(181,52,42,0.08)',
+        fill:true,
+        tension:0.3,
+        pointRadius:4
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{y:{title:{display:true,text:'DXY Index'}}}
+    }
+  });
+}
+
+function renderOilChart(){
+  const ctx = document.getElementById('oilChart');
+  window._oilChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['Late Jun (ceasefire low)','Early Jul','Late Jul','7 Aug','17 Aug (MOU lapse)','18 Aug'],
+      datasets:[{
+        label:'Brent Crude ($/bbl)',
+        data:[71, 78, 85, 89, 91.3, 92],
+        borderColor:'#c07a1e',
+        backgroundColor:'rgba(192,122,30,0.10)',
+        fill:true,
+        tension:0.3,
+        pointRadius:4
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{y:{title:{display:true,text:'$ / barrel'}}}
+    }
+  });
+}
+
+function renderCpiChart(){
+  const ctx = document.getElementById('cpiChart');
+  window._cpiChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['Feb','Mar','Apr','May','Jun','Jul'],
+      datasets:[
+        {label:'Headline CPI YoY', data:[3.0, 3.4, 3.9, 4.2, 3.5, 3.4], borderColor:'#173f6e', backgroundColor:'rgba(23,63,110,0.08)', fill:true, tension:0.3, pointRadius:4},
+        {label:'Core CPI YoY', data:[2.5, 2.7, 2.9, 2.9, 2.6, 2.5], borderColor:'#9c7a1f', backgroundColor:'rgba(156,122,31,0.06)', fill:true, tension:0.3, pointRadius:4}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{position:'bottom'}},
+      scales:{y:{title:{display:true,text:'% YoY'}}}
+    }
+  });
+}
+
+function renderGoldChart(){
+  const ctx = document.getElementById('goldChart');
+  window._goldChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['28 Jan (record)','Q2 low (~Jun)','Early Aug','13 Aug','19 Aug','21 Aug'],
+      datasets:[{
+        label:'Gold Spot ($/oz)',
+        data:[5602, 4170, 4300, 4509, 4557, 4522],
+        borderColor:'#9c7a1f',
+        backgroundColor:'rgba(156,122,31,0.12)',
+        fill:true,
+        tension:0.3,
+        pointRadius:4
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{y:{title:{display:true,text:'$ / troy ounce'}}}
+    }
+  });
+}
+
+function renderRadarChart(){
+  const ctx = document.getElementById('radarChart');
+  window._radarChart = new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:['Debt Stress','Dollar Weakness','War Escalation Risk','Inflation Pressure','Oil Price Risk','Fiscal Flexibility Lost','Gold Rally Intensity'],
+      datasets:[{
+        label:'Current Stress Level (0–10)',
+        data:[8, 6, 7, 6, 7, 8, 9],
+        borderColor:'#b5342a',
+        backgroundColor:'rgba(181,52,42,0.15)',
+        pointBackgroundColor:'#b5342a'
+      }]
+    },
+    options:{
+      responsive:true,
+      scales:{r:{beginAtZero:true, max:10, ticks:{stepSize:2}}}
+    }
+  });
+}
+
+// Ensure first chart renders since overview tab has none, but debt tab will lazy render on click.
+</script>
+</body>
+</html>

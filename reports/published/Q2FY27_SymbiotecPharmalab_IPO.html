@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symbiotec Pharmalab IPO — CB Research Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0b2447; --navy2:#13315c; --teal:#0f766e; --teal2:#0d9488;
+  --gold:#b8860b; --ink:#1f2937; --sub:#5b6472; --line:#e3e7ee;
+  --bg:#ffffff; --panel:#f7f9fc; --good:#0f7a3e; --bad:#b3261e; --warn:#b5760a;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#ffffff;color:var(--ink);font-family:"Segoe UI",Tahoma,Arial,sans-serif;}
+.wrap{max-width:1280px;margin:0 auto;padding:14px 16px 60px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+  background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;margin-bottom:10px;font-size:13px;}
+.topbar b{color:#ffd77a;}
+.header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 55%,var(--teal) 130%);
+  color:#fff;border-radius:14px;padding:22px 26px;margin-bottom:14px;position:relative;overflow:hidden;}
+.header h1{margin:0 0 4px;font-size:26px;}
+.header .sub{opacity:.92;font-size:14px;margin-bottom:10px;}
+.badgebar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);padding:5px 11px;
+  border-radius:20px;font-size:12.5px;}
+.badge.open{background:#ffd77a;color:#3a2a00;font-weight:700;border-color:#ffd77a;}
+.langtoggle{position:absolute;top:18px;right:22px;}
+.langtoggle button{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.5);
+  padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;}
+.langtoggle button.active{background:#fff;color:var(--navy);font-weight:700;}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 16px;border-bottom:2px solid var(--line);padding-bottom:10px;}
+.tab-btn{background:var(--panel);border:1px solid var(--line);color:var(--navy2);padding:8px 14px;
+  border-radius:8px 8px 0 0;font-size:13px;cursor:pointer;font-weight:600;}
+.tab-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.tabcontent{display:none;animation:fade .25s ease;}
+.tabcontent.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.grid{display:grid;gap:12px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 1px 3px rgba(16,24,40,.04);}
+.card h3{margin:0 0 10px;font-size:15.5px;color:var(--navy);border-left:4px solid var(--teal);padding-left:8px;}
+.card h4{margin:14px 0 8px;font-size:14px;color:var(--navy2);}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-align:center;}
+.kpi .lbl{font-size:11.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;}
+.kpi .val{font-size:20px;font-weight:800;color:var(--navy);margin-top:4px;}
+.kpi .val.g{color:var(--good);} .kpi .val.b{color:var(--bad);} .kpi .val.w{color:var(--warn);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;}
+th{background:var(--panel);color:var(--navy2);text-align:right;font-size:12px;}
+th:first-child,td:first-child{text-align:left;}
+tr:hover td{background:#fafcff;}
+.tag{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700;}
+.tag.g{background:#e3f6ea;color:var(--good);} .tag.b{background:#fde8e6;color:var(--bad);}
+.tag.w{background:#fff3dc;color:var(--warn);} .tag.n{background:#e8edf5;color:var(--navy2);}
+.chartbox{position:relative;height:300px;margin-top:8px;}
+.chartbox.sm{height:230px;}
+ul.clean{margin:6px 0 0;padding-left:18px;}
+ul.clean li{margin-bottom:6px;font-size:13.5px;line-height:1.5;}
+.note{font-size:12px;color:var(--sub);margin-top:8px;font-style:italic;}
+.src{font-size:11px;color:#8a93a3;margin-top:4px;}
+.divider{height:1px;background:var(--line);margin:16px 0;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.progress{background:var(--line);border-radius:8px;height:10px;overflow:hidden;margin-top:6px;}
+.progress > div{height:100%;background:linear-gradient(90deg,var(--teal),var(--navy));}
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+.footer-strip{margin-top:24px;padding:14px 18px;background:var(--panel);border-radius:10px;
+  font-size:11.5px;color:var(--sub);text-align:center;border:1px solid var(--line);}
+.cba-wrap{display:flex;gap:14px;}
+@media(max-width:900px){.cba-wrap{flex-direction:column;}}
+.cba-side{flex:0 0 240px;}
+.cba-main{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  display:flex;flex-direction:column;height:460px;}
+.cba-log{flex:1;overflow-y:auto;padding:14px;}
+.cba-msg{margin-bottom:12px;max-width:82%;padding:9px 13px;border-radius:12px;font-size:13.5px;line-height:1.5;}
+.cba-msg.bot{background:#fff;border:1px solid var(--line);}
+.cba-msg.user{background:var(--navy);color:#fff;margin-left:auto;}
+.cba-inputrow{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);}
+.cba-inputrow input{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;}
+.cba-inputrow button{background:var(--teal);color:#fff;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:700;}
+.cba-quick{display:flex;flex-direction:column;gap:6px;}
+.cba-quick button{background:#fff;border:1px solid var(--line);text-align:left;padding:8px 10px;
+  border-radius:8px;font-size:12.5px;cursor:pointer;color:var(--navy2);}
+.cba-quick button:hover{background:var(--panel);}
+.watermark{position:fixed;bottom:10px;right:14px;font-size:10px;color:#c4cbd6;opacity:.7;pointer-events:none;}
+.verdict-box{border:2px solid var(--teal);border-radius:12px;padding:16px 20px;background:#f0fbfa;}
+.gauge-wrap{display:flex;align-items:center;gap:16px;}
+.tl{position:relative;padding-left:26px;margin-top:10px;}
+.tl:before{content:"";position:absolute;left:8px;top:4px;bottom:4px;width:2px;background:var(--line);}
+.tl-item{position:relative;margin-bottom:14px;}
+.tl-item:before{content:"";position:absolute;left:-22px;top:3px;width:11px;height:11px;border-radius:50%;
+  background:var(--teal);border:2px solid #fff;box-shadow:0 0 0 2px var(--teal);}
+.tl-date{font-weight:700;color:var(--navy);font-size:13px;}
+.tl-desc{font-size:12.5px;color:var(--sub);}
+[lang-ta]{display:none;}
+.ta-on [lang-en]{display:none;} .ta-on [lang-ta]{display:inline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="topbar">
+  <div>📅 <b id="istClock">--</b> IST &nbsp;|&nbsp; CB Research · Cauvery Business</div>
+  <div>Elango — CB Research Desk</div>
+</div>
+
+<div class="header">
+  <div class="langtoggle">
+    <button id="btnEn" class="active" onclick="setLang('en')">EN</button>
+    <button id="btnTa" onclick="setLang('ta')">தமிழ்</button>
+  </div>
+  <h1><span lang-en>Symbiotec Pharmalab Limited — IPO Analysis</span><span lang-ta>சிம்பியோடெக் பார்மாலாப் லிமிடெட் — IPO பகுப்பாய்வு</span></h1>
+  <div class="sub"><span lang-en>Corticosteroid &amp; Steroidal-Hormone API Specialist · Indore, Madhya Pradesh · BSE &amp; NSE Mainboard Listing</span>
+  <span lang-ta>கார்டிகோஸ்டீராய்டு மற்றும் ஸ்டீராய்டல்-ஹார்மோன் API நிபுணர் · இந்தூர், மத்தியப் பிரதேசம்</span></div>
+  <div class="badgebar">
+    <div class="badge open">🟢 OPENS 24 AUG 2026 — TOMORROW</div>
+    <div class="badge">Price Band ₹938–₹988</div>
+    <div class="badge">Issue Size ₹1,757 Cr</div>
+    <div class="badge">Lot: 15 shares (₹14,820)</div>
+    <div class="badge">Listing: 1 Sep 2026 (BSE, NSE)</div>
+    <div class="badge">GMP: ₹370 (+37%)</div>
+  </div>
+</div>
+
+<div class="tabs" id="tabbar"></div>
+<div id="tabhost"></div>
+
+</div>
+<div class="watermark">CB Research · Cauvery Business — Educational analysis, not investment advice</div>
+<script>
+function pad(n){return n.toString().padStart(2,'0');}
+function tick(){
+  var now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
+  var d=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][now.getDay()];
+  var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()];
+  document.getElementById('istClock').textContent = d+', '+now.getDate()+' '+mo+' '+now.getFullYear()+' '+pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds())+' IST';
+}
+setInterval(tick,1000); tick();
+function setLang(l){
+  document.body.classList.toggle('ta-on', l==='ta');
+  document.getElementById('btnEn').classList.toggle('active', l==='en');
+  document.getElementById('btnTa').classList.toggle('active', l==='ta');
+}
+
+/* ============ MACHINE-READABLE DATA OBJECT (CO) ============ */
+var CO = {
+  company: "Symbiotec Pharmalab Limited",
+  sector: "Pharmaceuticals - API / CDMO / Complex Injectables",
+  hq: "Rau, Indore, Madhya Pradesh",
+  founded: 1995,
+  ipo: {
+    openDate: "2026-08-24", closeDate: "2026-08-27", anchorDate: "2026-08-21",
+    allotmentDate: "2026-08-28", refundDate: "2026-08-31", listingDate: "2026-09-01",
+    priceBandLow: 938, priceBandHigh: 988, faceValue: 2, lotSize: 15,
+    minInvestmentRetail: 14820,
+    issueSizeCr: 1757, freshIssueCr: 150, ofsCr: 1607,
+    freshIssueShares: 1521261, ofsShares: 16265181,
+    postIssueMcapCr: 6244.43,
+    registrar: "MUFG Intime India Pvt Ltd (formerly Link Intime)",
+    leadManagers: ["JM Financial","Avendus Capital","Motilal Oswal Investment Advisors","Nomura Financial Advisory and Securities (India)"],
+    exchanges: "BSE, NSE",
+    reservation: {QIB:50, NII:15, Retail:35},
+    objectsCr: {debtRepayment:112.5, generalCorporate:37.5},
+    gmp: 370, gmpAsOf: "2026-08-23 12:30 IST", impliedListingPrice: 1358, impliedListingGainPct: 37.4
+  },
+  financials: {
+    unit: "INR Crore, Restated Consolidated (per RHP)",
+    years: ["FY24","FY25","FY26"],
+    revenue: [716.25, 751.55, 869.15],
+    totalIncome: [723.33, 755.98, 872.26],
+    ebitda: [177.04, 206.11, 231.97],
+    ebitdaMargin: [24.72, 27.26, 26.59],
+    pat: [100.06, 96.79, 109.90],
+    patMargin: [13.83, 12.80, 12.60],
+    netWorth: [720.68, 821.15, 1158.64],
+    totalAssets: [1294.79, 1579.65, 1780.79],
+    totalBorrowings: [247.21, 540.92, 387.91],
+    reserves: [709.54, 810.03, 1145.95],
+    currentRatio: [1.45, 1.04, 0.92],
+    eps: 19.10, ronw: 9.48, roce: 11.56, roe: 11.19, nav: 184.69,
+    revenueCAGR2426: 10.16, ebitdaCAGR2426: 14.47, patCAGR2426: 4.81
+  },
+  valuation: {
+    peLow: 49.11, peHigh: 51.73, postIssuePE: 56.81, pb: 5.35
+  },
+  peers: [
+    {name:"Symbiotec Pharmalab (IPO)", pe:56.81, ronw:9.48, revenueCr:869.2, mcapCr:6244.4, note:"IPO price"},
+    {name:"Divi's Laboratories", pe:77.7, ronw:16.8, revenueCr:9800, mcapCr:179000, note:"Sector leader"},
+    {name:"Laurus Labs", pe:95.4, ronw:8.5, revenueCr:5800, mcapCr:48570, note:"CDMO/API diversified"},
+    {name:"Concord Biotech", pe:52.0, ronw:14.0, revenueCr:1150, mcapCr:19800, note:"Fermentation-based API"},
+    {name:"Cohance Lifesciences", pe:95.0, ronw:11.5, revenueCr:1450, mcapCr:16200, note:"CDMO peer"}
+  ],
+  swot: {
+    strengths: [
+      "Global #1 in corticosteroid APIs (38.2% volume share) and #2 in steroidal-hormone APIs (23.8% share) — only company present across top-10 such APIs globally",
+      "Backward-integrated 'farm/microbe-to-pharmacy' model; over 80% of portfolio by revenue supported by in-house KSM sourcing and biotransformation",
+      "Three decades of manufacturing track record (since 1995) with US FDA, EU-GMP, WHO-GMP and Korea MFDS approvals",
+      "High customer stickiness — ~70% of FY26 revenue from customers associated 7+ years; added 101 new customers in FY26",
+      "700 KL fermentation capacity, 584.67 MT chemical synthesis capacity across 4 facilities (2 newly commissioned in FY26)",
+      "Newly commissioned complex injectables facility (20 million double-chamber vials/year) diversifies beyond API"
+    ],
+    weaknesses: [
+      "Extremely high revenue concentration in APIs — 96.07% of FY26 revenue from APIs alone; top-5 APIs are 62.27% of revenue",
+      "Current ratio deteriorated from 1.45 (FY24) to 0.92 (FY26); cash balance only ₹10.04 Cr against ₹527.57 Cr current liabilities",
+      "Modest PAT CAGR of just 4.81% over FY24–26 versus stronger EBITDA growth — margin/earnings volatility",
+      "RoNW (9.48%) and RoCE (11.56%) are moderate and below several listed peers",
+      "₹150.79 Cr in outstanding direct tax litigation; auditor qualification on a leasehold land parcel (₹37.52 Cr) with pending title registration"
+    ],
+    opportunities: [
+      "US revenue grew 277%+ in FY26 (₹30.2 Cr to ₹114 Cr) — early signs of regulated-market penetration",
+      "Complex injectables and CDMO verticals are nascent (3.80% and 0.13% of FY26 revenue respectively) — large runway if scaled",
+      "Global generics/specialty pharma outsourcing to India-based API/CDMO players continues to grow structurally",
+      "Debt reduction from fresh-issue proceeds (₹112.5 Cr) should lower finance costs and improve free cash flow"
+    ],
+    threats: [
+      "67.04% of FY26 revenue is international — exposed to potential US tariff action; US alone is 13.12% of revenue",
+      "23.88% of FY26 total expenses tied to Chinese raw material imports — geopolitical/supply-chain risk",
+      "Top-10 customers are 57.59% of product sales — concentration risk on order loss/renegotiation",
+      "91.5% of the IPO is an Offer for Sale by promoters/investors — minimal primary capital actually enters the business",
+      "Regulatory-inspection risk inherent to API manufacturing (US FDA/EU-GMP audits) could disrupt supply if a facility is flagged"
+    ]
+  },
+  analystRatings: [
+    {broker:"Swastika Investmart", rating:"Subscribe", note:"Long-term play on specialised API leadership; valuation fully priced"},
+    {broker:"Chanakya Nipothi", rating:"Avoid aggressive application", note:"Large OFS, moderate RoE/RoCE, demanding P/E vs earnings quality"},
+    {broker:"IPO Watch", rating:"Neutral / fully priced", note:"9M-FY26 profit spike flagged as possibly non-recurring"},
+    {broker:"Flattrade Kosh", rating:"Positive on fundamentals", note:"High EBITDA margin (26.59%) and debt paydown seen as constructive"}
+  ],
+  management: [
+    {name:"Anil Satwani", role:"Promoter / Chairman & Managing Director"},
+    {name:"Kashish Satwani", role:"Promoter / Whole-time Director"},
+    {name:"Sushil Satwani", role:"Promoter / Director"},
+    {name:"Satwani Holdings LLP", role:"Promoter entity — selling ₹144 Cr in OFS"}
+  ],
+  investors: ["Rosewood Investments", "India Business Excellence Fund-III", "Motilal Oswal (Pre-IPO/PE)"],
+  anchor: {
+    dateFinalized: "2026-08-21", amountCr: 526.20, priceRs: 988, sharesAllotted: 5325909,
+    keyInvestors: ["ICICI Prudential MF (11.40%)","HDFC Mutual Fund (8.55%)","Mirae Asset MF","Tata Mutual Fund","Motilal Oswal India Excellence Fund"]
+  }
+};
+
+/* ============ TAB DEFINITIONS ============ */
+var TABS = [
+  {id:"overview", en:"Dashboard", ta:"டாஷ்போர்டு"},
+  {id:"ipo", en:"IPO Details", ta:"IPO விவரங்கள்"},
+  {id:"business", en:"Business Model", ta:"வணிக மாதிரி"},
+  {id:"financials", en:"Financials", ta:"நிதி நிலவரம்"},
+  {id:"peers", en:"Peer Comparison", ta:"போட்டியாளர் ஒப்பீடு"},
+  {id:"swot", en:"SWOT", ta:"SWOT"},
+  {id:"analysts", en:"Analysts' View", ta:"ஆய்வாளர் கருத்து"},
+  {id:"mgmt", en:"Management & Board", ta:"நிர்வாகம்"},
+  {id:"verdict", en:"Verdict", ta:"முடிவு"},
+  {id:"cba", en:"CB Assist", ta:"CB உதவி"},
+  {id:"school", en:"🎓 School", ta:"🎓 பள்ளி"}
+];
+
+var tabbar = document.getElementById('tabbar');
+var host = document.getElementById('tabhost');
+TABS.forEach(function(t,i){
+  var b=document.createElement('button');
+  b.className='tab-btn'+(i===0?' active':'');
+  b.id='btn-'+t.id;
+  b.innerHTML='<span lang-en>'+t.en+'</span><span lang-ta>'+t.ta+'</span>';
+  b.onclick=function(){showTab(t.id);};
+  tabbar.appendChild(b);
+  var d=document.createElement('div');
+  d.className='tabcontent'+(i===0?' active':'');
+  d.id='tab-'+t.id;
+  host.appendChild(d);
+});
+function showTab(id){
+  TABS.forEach(function(t){
+    document.getElementById('btn-'+t.id).classList.toggle('active', t.id===id);
+    document.getElementById('tab-'+t.id).classList.toggle('active', t.id===id);
+  });
+  if(id==='financials' && !window._finRendered) renderFinCharts();
+  if(id==='peers' && !window._peerRendered) renderPeerCharts();
+  if(id==='overview' && !window._ovRendered) renderOverviewChart();
+}
+
+/* ============ OVERVIEW / DASHBOARD TAB ============ */
+document.getElementById('tab-overview').innerHTML = `
+<div class="grid g4">
+  <div class="kpi"><div class="lbl">Issue Size</div><div class="val">₹1,757 Cr</div></div>
+  <div class="kpi"><div class="lbl">Price Band</div><div class="val">₹938–988</div></div>
+  <div class="kpi"><div class="lbl">Post-Issue P/E</div><div class="val w">56.81x</div></div>
+  <div class="kpi"><div class="lbl">GMP (23 Aug)</div><div class="val g">₹370 (+37%)</div></div>
+</div>
+<div class="grid g4" style="margin-top:10px;">
+  <div class="kpi"><div class="lbl">FY26 Revenue</div><div class="val">₹869.15 Cr</div></div>
+  <div class="kpi"><div class="lbl">FY26 EBITDA Margin</div><div class="val g">26.59%</div></div>
+  <div class="kpi"><div class="lbl">FY26 PAT</div><div class="val">₹109.90 Cr</div></div>
+  <div class="kpi"><div class="lbl">RoNW / RoCE</div><div class="val w">9.48% / 11.56%</div></div>
+</div>
+
+<div class="two-col" style="margin-top:14px;">
+  <div class="card">
+    <h3>Revenue, EBITDA & PAT Trend (FY24–FY26)</h3>
+    <div class="chartbox"><canvas id="ovChart"></canvas></div>
+    <div class="src">Source: RHP restated consolidated financials (₹ Crore)</div>
+  </div>
+  <div class="card">
+    <h3>Snapshot</h3>
+    <table>
+      <tr><td>Company</td><td>Symbiotec Pharmalab Limited</td></tr>
+      <tr><td>Sector</td><td>Pharma — API / CDMO / Injectables</td></tr>
+      <tr><td>Headquarters</td><td>Rau, Indore, MP</td></tr>
+      <tr><td>Track record</td><td>Since 1995 (30+ yrs)</td></tr>
+      <tr><td>Global rank — Corticosteroid API</td><td>#1 (38.2% volume share)</td></tr>
+      <tr><td>Global rank — Steroidal-hormone API</td><td>#2 (23.8% volume share)</td></tr>
+      <tr><td>Facilities</td><td>4 (Rau, Pithampur, Ujjain, Mhow)</td></tr>
+      <tr><td>Approvals</td><td>US FDA, EU-GMP, WHO-GMP, Korea MFDS</td></tr>
+      <tr><td>Listing</td><td>BSE, NSE — 1 Sep 2026</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-top:14px;">
+  <h3>Why This IPO Matters</h3>
+  <ul class="clean">
+    <li>Symbiotec is a rare <b>global volume leader</b> in a narrow, technically difficult API niche (corticosteroids/steroidal hormones) — a segment with high regulatory and technical entry barriers.</li>
+    <li>Financials show <b>steady top-line growth</b> (10.16% revenue CAGR FY24–26) with healthy 26–27% EBITDA margins, but <b>PAT growth has lagged</b> (4.81% CAGR) — worth scrutinising before subscribing.</li>
+    <li>The issue is heavily skewed towards an <b>Offer for Sale</b> (₹1,607 Cr of ₹1,757 Cr, ~91.5%) — only ₹150 Cr is fresh capital, of which ₹112.5 Cr goes to debt repayment. Minimal growth capital actually enters the company.</li>
+    <li>Grey market premium of ~37% ahead of opening signals strong retail/HNI interest, but GMP is unregulated and not a reliable indicator of listing-day or long-term performance.</li>
+  </ul>
+</div>
+`;
+/* ============ IPO DETAILS TAB ============ */
+document.getElementById('tab-ipo').innerHTML = `
+<div class="grid g2">
+  <div class="card">
+    <h3>IPO Key Details</h3>
+    <table>
+      <tr><td>IPO Opens</td><td><b>24 August 2026 (Monday)</b></td></tr>
+      <tr><td>IPO Closes</td><td>27 August 2026 (Thursday)</td></tr>
+      <tr><td>Anchor Investor Bidding</td><td>21 August 2026</td></tr>
+      <tr><td>Basis of Allotment</td><td>28 August 2026</td></tr>
+      <tr><td>Refund Initiation</td><td>31 August 2026</td></tr>
+      <tr><td>Credit to Demat</td><td>31 August 2026</td></tr>
+      <tr><td>Listing Date</td><td><b>1 September 2026 (BSE, NSE)</b></td></tr>
+      <tr><td>Price Band</td><td>₹938 – ₹988 per share</td></tr>
+      <tr><td>Face Value</td><td>₹2 per share</td></tr>
+      <tr><td>Lot Size</td><td>15 shares</td></tr>
+      <tr><td>Minimum Retail Investment</td><td>₹14,820 (1 lot @ ₹988)</td></tr>
+      <tr><td>Total Issue Size</td><td>₹1,757 Crore</td></tr>
+      <tr><td>Fresh Issue</td><td>₹150 Cr (15,21,261 shares)</td></tr>
+      <tr><td>Offer for Sale (OFS)</td><td>₹1,607 Cr (1,62,65,181 shares)</td></tr>
+      <tr><td>Post-Issue Market Cap</td><td>₹6,244.43 Cr (at upper band)</td></tr>
+      <tr><td>Registrar</td><td>MUFG Intime India Pvt Ltd</td></tr>
+      <tr><td>Lead Managers</td><td>JM Financial, Avendus Capital, Motilal Oswal IA, Nomura</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Reservation & Objects of Issue</h3>
+    <div class="chartbox sm"><canvas id="resChart"></canvas></div>
+    <h4>Use of Fresh Issue Proceeds (₹150 Cr)</h4>
+    <table>
+      <tr><td>Debt Repayment / Prepayment</td><td>₹112.50 Cr</td></tr>
+      <tr><td>General Corporate Purposes</td><td>~₹37.50 Cr</td></tr>
+    </table>
+    <div class="note">Total outstanding borrowings were ₹387.91 Cr as of 31 Mar 2026 (down from ₹540.92 Cr in FY25).</div>
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>Anchor Investor Allocation</h3>
+    <table>
+      <tr><td>Amount Raised</td><td>₹526.20 Cr</td></tr>
+      <tr><td>Price</td><td>₹988/share (upper band)</td></tr>
+      <tr><td>Shares Allotted</td><td>53,25,909</td></tr>
+      <tr><td>Finalised</td><td>21 August 2026</td></tr>
+    </table>
+    <h4>Key Anchor Investors</h4>
+    <ul class="clean">
+      <li>ICICI Prudential Mutual Fund — 11.40%</li>
+      <li>HDFC Mutual Fund — 8.55% (2 schemes)</li>
+      <li>Mirae Asset Mutual Fund</li>
+      <li>Tata Mutual Fund</li>
+      <li>Motilal Oswal India Excellence Fund — Mid to Mega Series III</li>
+    </ul>
+    <div class="note">60% of anchor allocation (31,98,480 shares, 19 schemes) went to 11 domestic mutual fund houses — a signal of institutional conviction in the sector story.</div>
+  </div>
+  <div class="card">
+    <h3>Timeline</h3>
+    <div class="tl">
+      <div class="tl-item"><div class="tl-date">21 Aug 2026</div><div class="tl-desc">Anchor investor bidding — ₹526.20 Cr raised</div></div>
+      <div class="tl-item"><div class="tl-date">24 Aug 2026</div><div class="tl-desc">IPO opens for public subscription</div></div>
+      <div class="tl-item"><div class="tl-date">27 Aug 2026</div><div class="tl-desc">IPO closes</div></div>
+      <div class="tl-item"><div class="tl-date">28 Aug 2026</div><div class="tl-desc">Basis of allotment finalised</div></div>
+      <div class="tl-item"><div class="tl-date">31 Aug 2026</div><div class="tl-desc">Refunds initiated; shares credited to demat</div></div>
+      <div class="tl-item"><div class="tl-date">1 Sep 2026</div><div class="tl-desc"><b>Listing on BSE and NSE</b></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <h3>Grey Market Premium (GMP) — Informal Indicator</h3>
+  <div class="grid g4">
+    <div class="kpi"><div class="lbl">Latest GMP</div><div class="val g">₹370</div></div>
+    <div class="kpi"><div class="lbl">Implied Listing Price</div><div class="val">₹1,358</div></div>
+    <div class="kpi"><div class="lbl">Implied Listing Gain</div><div class="val g">~37.4%</div></div>
+    <div class="kpi"><div class="lbl">GMP Range (31 obs.)</div><div class="val">₹55 – ₹370</div></div>
+  </div>
+  <div class="note">GMP is an unofficial, unregulated indicator not acknowledged by SEBI/BSE/NSE and can swing sharply before listing. As of 23 Aug 2026, 12:30 PM IST. Do not treat as investment advice.</div>
+</div>
+`;
+function renderIPOChart(){
+  new Chart(document.getElementById('resChart'), {
+    type:'doughnut',
+    data:{labels:['QIB (50%)','NII (15%)','Retail (35%)'], datasets:[{data:[50,15,35], backgroundColor:['#0b2447','#b8860b','#0d9488']}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+  });
+}
+setTimeout(renderIPOChart, 50);
+
+/* ============ BUSINESS MODEL TAB ============ */
+document.getElementById('tab-business').innerHTML = `
+<div class="card">
+  <h3>What Symbiotec Does</h3>
+  <p style="font-size:13.5px;line-height:1.65;">Symbiotec Pharmalab is a research-driven pharmaceutical and biotechnology manufacturer specialising in
+  <b>corticosteroid and steroidal-hormone Active Pharmaceutical Ingredients (APIs)</b>, produced through complex multi-step organic chemistry and
+  fermentation/biotransformation processes. Founded in 1995 as a lab-scale steroid API maker, it has grown into an industrial-scale,
+  <b>backward-integrated "farm/microbe-to-pharmacy" platform</b> — sourcing and manufacturing its own Key Starting Materials (KSM) for over 80% of its
+  portfolio by revenue, which reduces dependence on external suppliers and protects margins.</p>
+  <p style="font-size:13.5px;line-height:1.65;">The company holds a <b>global volume leadership position</b> — 38.2% share in corticosteroid APIs and 23.8% in
+  steroidal-hormone APIs in FY26 — and is the only company (Indian or global) present across the top-10 such APIs. Its portfolio spans 60+ APIs
+  serving gastrointestinal, cardiovascular, pain-management, paediatric, anti-infective and dermatology therapeutic areas.</p>
+</div>
+
+<div class="grid g3" style="margin-top:12px;">
+  <div class="card">
+    <h3>Business Verticals</h3>
+    <table>
+      <tr><th>Vertical</th><th>FY26 Revenue Share</th></tr>
+      <tr><td>APIs</td><td>96.07%</td></tr>
+      <tr><td>Complex Injectables</td><td>3.80%</td></tr>
+      <tr><td>CDMO Services</td><td>0.13%</td></tr>
+    </table>
+    <div class="note">Injectables and CDMO are new, low-base verticals — the growth optionality, but also the risk, sits here.</div>
+  </div>
+  <div class="card">
+    <h3>Geographic Mix (FY26)</h3>
+    <table>
+      <tr><th>Market</th><th>Share</th></tr>
+      <tr><td>International</td><td>67.04%</td></tr>
+      <tr><td>— of which Europe</td><td>29.11%</td></tr>
+      <tr><td>— of which US</td><td>13.12%</td></tr>
+      <tr><td>Domestic (incl. indirect exports)</td><td>32.96%</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Manufacturing Footprint</h3>
+    <table>
+      <tr><td>Rau Facility</td><td>92 MT synthesis; US FDA/EU-GMP/WHO-GMP</td></tr>
+      <tr><td>Pithampur Facility</td><td>492.67 MT synthesis, 300 KL fermentation</td></tr>
+      <tr><td>Ujjain (new)</td><td>400 KL biomanufacturing/fermentation</td></tr>
+      <tr><td>Mhow (new)</td><td>20 million double-chamber vials/yr</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>Business Model / USP</h3>
+    <ul class="clean">
+      <li><b>Backward integration:</b> in-house KSM sourcing + biotransformation for 80%+ of portfolio by revenue lowers input-cost volatility versus peers dependent on external API/intermediate sourcing.</li>
+      <li><b>Regulatory moat:</b> US FDA, EU-GMP, WHO-GMP and Korea MFDS approvals are expensive and time-consuming to obtain — a real barrier against new entrants.</li>
+      <li><b>Customer stickiness:</b> ~70% of FY26 revenue from relationships older than 7 years; qualification cycles for API suppliers to global pharma majors are long, creating switching costs.</li>
+      <li><b>Forward integration play:</b> the new complex injectables facility (double-chamber drug-device combinations) is a bet on moving up the value chain from bulk API into higher-margin finished/semi-finished formulations.</li>
+      <li><b>Customer additions:</b> 101 new distinct customers added in FY26 (vs 96 in FY25, 89 in FY24) — a steady, not explosive, expansion pace.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Revenue Concentration Risk</h3>
+    <div class="chartbox sm"><canvas id="bizConcChart"></canvas></div>
+    <div class="note">Top-5 APIs = 62.27% of FY26 revenue. Top-10 customers = 57.59% of product sales. High concentration is the flip side of the specialised-niche strategy.</div>
+  </div>
+</div>
+`;
+setTimeout(function(){
+  new Chart(document.getElementById('bizConcChart'), {
+    type:'bar',
+    data:{labels:['Top-5 APIs share of revenue','Top-10 customers share of sales','International revenue share'],
+      datasets:[{data:[62.27,57.59,67.04], backgroundColor:['#b8860b','#b3261e','#0d9488']}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}}, scales:{x:{max:100,ticks:{callback:v=>v+'%'}}}}
+  });
+}, 60);
+
+/* ============ FINANCIALS TAB ============ */
+document.getElementById('tab-financials').innerHTML = `
+<div class="card">
+  <h3>Restated Consolidated Financials (₹ Crore)</h3>
+  <table>
+    <tr><th>Particulars</th><th>FY24</th><th>FY25</th><th>FY26</th><th>CAGR (FY24–26)</th></tr>
+    <tr><td>Revenue from Operations</td><td>716.25</td><td>751.55</td><td>869.15</td><td>10.16%</td></tr>
+    <tr><td>Total Income</td><td>723.33</td><td>755.98</td><td>872.26</td><td>9.79%</td></tr>
+    <tr><td>EBITDA</td><td>177.04</td><td>206.11</td><td>231.97</td><td>14.47%</td></tr>
+    <tr><td>EBITDA Margin</td><td>24.72%</td><td>27.26%</td><td>26.59%</td><td>—</td></tr>
+    <tr><td>Profit After Tax (PAT)</td><td>100.06</td><td>96.79</td><td>109.90</td><td>4.81%</td></tr>
+    <tr><td>PAT Margin</td><td>13.83%</td><td>12.80%</td><td>12.60%</td><td>—</td></tr>
+    <tr><td>Net Worth</td><td>720.68</td><td>821.15</td><td>1,158.64</td><td>26.87%</td></tr>
+    <tr><td>Reserves & Surplus</td><td>709.54</td><td>810.03</td><td>1,145.95</td><td>27.06%</td></tr>
+    <tr><td>Total Assets</td><td>1,294.79</td><td>1,579.65</td><td>1,780.79</td><td>17.29%</td></tr>
+    <tr><td>Total Borrowings</td><td>247.21</td><td>540.92</td><td>387.91</td><td>25.24%</td></tr>
+    <tr><td>Current Ratio</td><td>1.45</td><td>1.04</td><td>0.92</td><td>—</td></tr>
+  </table>
+  <div class="src">Source: RHP restated consolidated financial statements. All figures as disclosed; no estimates.</div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>Revenue & EBITDA Trend</h3>
+    <div class="chartbox"><canvas id="finChart1"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Margin Trend</h3>
+    <div class="chartbox"><canvas id="finChart2"></canvas></div>
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>Balance Sheet Strength</h3>
+    <div class="chartbox"><canvas id="finChart3"></canvas></div>
+    <div class="note">Net worth nearly doubled from FY24 to FY26; borrowings fell in FY26 after a FY25 spike, aided by internal accruals ahead of the IPO.</div>
+  </div>
+  <div class="card">
+    <h3>Key Ratios (FY26)</h3>
+    <div class="grid g2">
+      <div class="kpi"><div class="lbl">EPS</div><div class="val">₹19.10</div></div>
+      <div class="kpi"><div class="lbl">RoNW</div><div class="val w">9.48%</div></div>
+      <div class="kpi"><div class="lbl">RoCE</div><div class="val w">11.56%</div></div>
+      <div class="kpi"><div class="lbl">RoE</div><div class="val w">11.19%</div></div>
+      <div class="kpi"><div class="lbl">NAV / Share</div><div class="val">₹184.69</div></div>
+      <div class="kpi"><div class="lbl">Current Ratio (FY26)</div><div class="val b">0.92</div></div>
+    </div>
+    <div class="note" style="margin-top:10px;">Liquidity is the key watch item: current ratio below 1.0 with cash of just ₹10.04 Cr against ₹527.57 Cr current liabilities (of which ₹319.50 Cr is current borrowings) as of FY26.</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <h3>Contingent Liabilities & Litigation</h3>
+  <ul class="clean">
+    <li>Outstanding direct tax litigation of <b>₹150.79 crore</b>, including reassessment notices (March 2026) on Section 115BAA application and alleged tax short-levies across multiple assessment years (₹50.79 Cr of the disputes).</li>
+    <li>Auditor qualification on a <b>leasehold land parcel worth ₹37.52 Cr</b> — title deed registration remains pending as of FY26.</li>
+  </ul>
+</div>
+`;
+function renderFinCharts(){
+  window._finRendered = true;
+  new Chart(document.getElementById('finChart1'), {
+    type:'bar',
+    data:{labels:CO.financials.years, datasets:[
+      {label:'Revenue', data:CO.financials.revenue, backgroundColor:'#0b2447'},
+      {label:'EBITDA', data:CO.financials.ebitda, backgroundColor:'#0d9488'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+  });
+  new Chart(document.getElementById('finChart2'), {
+    type:'line',
+    data:{labels:CO.financials.years, datasets:[
+      {label:'EBITDA Margin %', data:CO.financials.ebitdaMargin, borderColor:'#0d9488', backgroundColor:'#0d9488', tension:.3},
+      {label:'PAT Margin %', data:CO.financials.patMargin, borderColor:'#b8860b', backgroundColor:'#b8860b', tension:.3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},
+      scales:{y:{ticks:{callback:v=>v+'%'}}}}
+  });
+  new Chart(document.getElementById('finChart3'), {
+    type:'bar',
+    data:{labels:CO.financials.years, datasets:[
+      {label:'Net Worth', data:CO.financials.netWorth, backgroundColor:'#0b2447'},
+      {label:'Total Borrowings', data:CO.financials.totalBorrowings, backgroundColor:'#b3261e'},
+      {label:'Total Assets', type:'line', data:CO.financials.totalAssets, borderColor:'#b8860b', backgroundColor:'#b8860b', tension:.3, borderWidth:3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+/* ============ PEER COMPARISON TAB ============ */
+document.getElementById('tab-peers').innerHTML = `
+<div class="card">
+  <h3>Listed Peer Set (per RHP disclosure)</h3>
+  <table>
+    <tr><th>Company</th><th>P/E (x)</th><th>RoNW / RoE (%)</th><th>Revenue (₹ Cr, approx.)</th><th>Market Cap (₹ Cr, approx.)</th><th>Notes</th></tr>
+    ${CO.peers.map(function(p){
+      var hl = p.name.indexOf('Symbiotec')>-1 ? ' style="background:#fff8e6;font-weight:700;"' : '';
+      return '<tr'+hl+'><td>'+p.name+'</td><td>'+p.pe+'</td><td>'+p.ronw+'</td><td>'+p.revenueCr.toLocaleString('en-IN')+'</td><td>'+p.mcapCr.toLocaleString('en-IN')+'</td><td>'+p.note+'</td></tr>';
+    }).join('')}
+  </table>
+  <div class="src">Source: RHP peer disclosure (Concord Biotech, Divi's Laboratories, Cohance Lifesciences, Laurus Labs) + market data as of Aug 2026. Peer P/E and RoNW are trailing/approximate market figures and will move with daily prices — treat as indicative, not live.</div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>P/E Comparison</h3>
+    <div class="chartbox"><canvas id="peerChart1"></canvas></div>
+    <div class="note">Symbiotec's post-issue P/E of 54.85x–57.78x is at a discount to Laurus Labs (~95x) and Cohance Lifesciences (~95x), broadly in line with Concord Biotech, and well below Divi's Labs' premium multiple.</div>
+  </div>
+  <div class="card">
+    <h3>Return on Net Worth Comparison</h3>
+    <div class="chartbox"><canvas id="peerChart2"></canvas></div>
+    <div class="note">Symbiotec's 9.48% RoNW trails Concord Biotech and Divi's Laboratories (14–16.8%) — the valuation discount is at least partly explained by lower capital efficiency versus best-in-class peers.</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <h3>How to Read This</h3>
+  <ul class="clean">
+    <li>Symbiotec is priced at a <b>lower P/E than peers</b>, which can be read either as (a) a valuation opportunity for a global-leadership niche player, or (b) the market correctly discounting weaker RoNW/RoCE and a large OFS structure.</li>
+    <li>Divi's Laboratories remains the scale benchmark for the sector (~₹9,800 Cr+ revenue) — Symbiotec, at ~₹870 Cr revenue, is roughly one-eleventh Divi's size, so a full re-rating to Divi's multiple is not a reasonable base case.</li>
+    <li>Concord Biotech is the closest structural comparison (fermentation-based, specialised API portfolio) — its ~14% RoNW at a similar P/E band is the most relevant benchmark for Symbiotec's medium-term re-rating potential.</li>
+  </ul>
+</div>
+`;
+function renderPeerCharts(){
+  window._peerRendered = true;
+  new Chart(document.getElementById('peerChart1'), {
+    type:'bar',
+    data:{labels:CO.peers.map(p=>p.name.replace(' (IPO)','')),
+      datasets:[{data:CO.peers.map(p=>p.pe), backgroundColor:CO.peers.map(p=>p.name.indexOf('Symbiotec')>-1?'#b8860b':'#0b2447')}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+  });
+  new Chart(document.getElementById('peerChart2'), {
+    type:'bar',
+    data:{labels:CO.peers.map(p=>p.name.replace(' (IPO)','')),
+      datasets:[{data:CO.peers.map(p=>p.ronw), backgroundColor:CO.peers.map(p=>p.name.indexOf('Symbiotec')>-1?'#b8860b':'#0d9488')}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{callback:v=>v+'%'}}}}
+  });
+}
+
+/* ============ SWOT TAB ============ */
+document.getElementById('tab-swot').innerHTML = `
+<div class="grid g2">
+  <div class="card" style="border-left:5px solid var(--good);">
+    <h3 style="border-color:var(--good);">💪 Strengths</h3>
+    <ul class="clean">${CO.swot.strengths.map(s=>'<li>'+s+'</li>').join('')}</ul>
+  </div>
+  <div class="card" style="border-left:5px solid var(--bad);">
+    <h3 style="border-color:var(--bad);">⚠️ Weaknesses</h3>
+    <ul class="clean">${CO.swot.weaknesses.map(s=>'<li>'+s+'</li>').join('')}</ul>
+  </div>
+  <div class="card" style="border-left:5px solid var(--teal);">
+    <h3 style="border-color:var(--teal);">🚀 Opportunities</h3>
+    <ul class="clean">${CO.swot.opportunities.map(s=>'<li>'+s+'</li>').join('')}</ul>
+  </div>
+  <div class="card" style="border-left:5px solid var(--warn);">
+    <h3 style="border-color:var(--warn);">🌩️ Threats</h3>
+    <ul class="clean">${CO.swot.threats.map(s=>'<li>'+s+'</li>').join('')}</ul>
+  </div>
+</div>
+`;
+
+/* ============ ANALYSTS' VIEW TAB ============ */
+document.getElementById('tab-analysts').innerHTML = `
+<div class="card">
+  <h3>Analysts' Ratings — Third-Party Broker Views</h3>
+  <table>
+    <tr><th>Broker / Source</th><th>Rating</th><th>Rationale</th></tr>
+    ${CO.analystRatings.map(a=>'<tr><td>'+a.broker+'</td><td><span class="tag '+(a.rating.toLowerCase().indexOf('subscribe')>-1||a.rating.toLowerCase().indexOf('positive')>-1?'g':a.rating.toLowerCase().indexOf('avoid')>-1?'b':'n')+'">'+a.rating+'</span></td><td>'+a.note+'</td></tr>').join('')}
+  </table>
+  <div class="note">These are third-party broker/analyst views as publicly reported ahead of listing, not a recommendation from CB Research. Ratings can change once subscription and QIB demand data are visible during the bidding window (24–27 Aug 2026).</div>
+  <div class="src">Sources: Swastika Investmart, Chanakya Nipothi, IPO Watch, Flattrade Kosh (all Aug 2026)</div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <h3>Valuation Context</h3>
+  <div class="grid g4">
+    <div class="kpi"><div class="lbl">P/E (upper band, FY26)</div><div class="val">56.81x</div></div>
+    <div class="kpi"><div class="lbl">P/B</div><div class="val">5.35x</div></div>
+    <div class="kpi"><div class="lbl">EPS (FY26)</div><div class="val">₹19.10</div></div>
+    <div class="kpi"><div class="lbl">Implied Listing Gain (GMP)</div><div class="val g">~37%</div></div>
+  </div>
+  <div class="note">At a P/E of ~57x against 3-year PAT CAGR of just 4.81%, the issue is priced for continued margin expansion and a re-rating toward specialised-API peers — not for the historical earnings trajectory alone.</div>
+</div>
+`;
+
+/* ============ MANAGEMENT & BOARD TAB ============ */
+document.getElementById('tab-mgmt').innerHTML = `
+<div class="grid g2">
+  <div class="card">
+    <h3>Promoters & Key Management</h3>
+    <table>
+      <tr><th>Name</th><th>Role</th></tr>
+      ${CO.management.map(m=>'<tr><td>'+m.name+'</td><td>'+m.role+'</td></tr>').join('')}
+    </table>
+    <div class="note">Promoter group (Anil, Kashish, Sushil Satwani and Satwani Holdings LLP) is selling ~₹144 Cr of shares as part of the OFS.</div>
+  </div>
+  <div class="card">
+    <h3>Key Investors (Pre-IPO)</h3>
+    <ul class="clean">${CO.investors.map(i=>'<li>'+i+'</li>').join('')}</ul>
+    <h4>Notable Pre-IPO Transaction</h4>
+    <p style="font-size:13px;">On 17 August 2026, promoters and Satwani Holdings LLP transferred a combined 5,05,000 shares to Motilal Oswal India Excellence Fund – Mid to Mega Series III at ₹988/share — matching the IPO's upper price band, a signal that informed pre-IPO investors valued the business at the top of the announced range.</div>
+  </div>
+</div>
+<div class="card" style="margin-top:12px;">
+  <h3>Anchor Book Composition</h3>
+  <ul class="clean">${CO.anchor.keyInvestors.map(k=>'<li>'+k+'</li>').join('')}</ul>
+  <div class="note">₹526.20 Cr raised from 34 anchor investors on 21 Aug 2026; 60% of the anchor book went to domestic mutual funds across 19 schemes from 11 fund houses.</div>
+</div>
+`;
+
+/* ============ VERDICT TAB ============ */
+document.getElementById('tab-verdict').innerHTML = `
+<div class="verdict-box">
+  <h3 style="border:none;padding:0;margin-top:0;">Summary Assessment</h3>
+  <p style="font-size:14px;line-height:1.7;">Symbiotec Pharmalab combines a genuinely differentiated, hard-to-replicate global leadership position in
+  corticosteroid and steroidal-hormone APIs with steady (not spectacular) financial performance. Revenue and EBITDA have grown at healthy double-digit
+  CAGRs, and EBITDA margins near 27% are respectable for the API industry. However, <b>PAT growth has lagged</b> (4.81% CAGR vs 14.47% for EBITDA),
+  <b>RoNW/RoCE are moderate</b> (~9–12%) relative to best-in-class peers, and <b>liquidity has tightened</b> (current ratio 0.92, cash of just ₹10 Cr).
+  The IPO structure itself — <b>91.5% Offer for Sale</b> — means the business receives minimal fresh growth capital; the ₹150 Cr fresh issue is used
+  mostly (₹112.5 Cr) for debt repayment rather than expansion.</p>
+</div>
+
+<div class="grid g2" style="margin-top:14px;">
+  <div class="card">
+    <h3>Points in Favour</h3>
+    <ul class="clean">
+      <li>Rare, globally-leading niche position with high regulatory/technical barriers to entry</li>
+      <li>Backward integration and long customer relationships support margin stability</li>
+      <li>P/E discount to CDMO/API peers such as Laurus Labs and Cohance Lifesciences</li>
+      <li>Strong anchor book with quality domestic mutual fund participation</li>
+      <li>Debt reduction from fresh issue proceeds should improve interest coverage going forward</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Points of Caution</h3>
+    <ul class="clean">
+      <li>Heavy OFS structure — little of the raise benefits the company directly</li>
+      <li>Modest historical PAT growth against a rich (56.81x) post-issue P/E</li>
+      <li>Liquidity position has weakened materially over FY24–FY26</li>
+      <li>Revenue and customer concentration remain elevated (single-digit product/customer count driving majority of sales)</li>
+      <li>Outstanding tax litigation (₹150.79 Cr) and a land-title auditor qualification add legal/compliance overhang</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card" style="margin-top:14px;">
+  <h3>What To Watch During the Bidding Window (24–27 Aug 2026)</h3>
+  <ul class="clean">
+    <li><b>QIB subscription levels</b> — institutional demand (beyond the anchor book) is typically the strongest signal of underlying conviction.</li>
+    <li><b>GMP movement</b> — track whether the current ~37% premium holds, rises, or fades as the book builds through the week.</li>
+    <li><b>Retail/NII subscription on Day 2–3</b> — heavy oversubscription can affect allotment odds for small-lot retail applicants.</li>
+  </ul>
+  <div class="note" style="margin-top:10px;">This is an educational summary of publicly available IPO information, not investment advice or a buy/sell/hold recommendation from CB Research. Please read the RHP in full and consult a SEBI-registered investment adviser before applying.</div>
+</div>
+`;
+
+/* ============ CB ASSIST TAB (offline keyword-matching) ============ */
+document.getElementById('tab-cba').innerHTML = `
+<div class="card">
+  <h3>CB Assist — Ask About Symbiotec Pharmalab IPO</h3>
+  <div class="cba-wrap">
+    <div class="cba-side">
+      <div class="cba-quick" id="cbaQuick"></div>
+    </div>
+    <div class="cba-main">
+      <div class="cba-log" id="cbaLog">
+        <div class="cba-msg bot">Hi, I'm CB Assist. Ask me about the Symbiotec Pharmalab IPO — price band, financials, peers, risks, or dates. Try a quick question on the left, or type your own.</div>
+      </div>
+      <div class="cba-inputrow">
+        <input id="cbaInput" type="text" placeholder="Type your question…" onkeydown="if(event.key==='Enter')cbaAsk();">
+        <button onclick="cbaAsk()">Ask</button>
+      </div>
+    </div>
+  </div>
+  <div class="note">CB Assist uses offline keyword-matching over this dashboard's data — no external API required. For anything beyond this dataset, please refer to the RHP or a SEBI-registered adviser.</div>
+</div>
+`;
+var CBA_QUICK = [
+  "What is the price band?",
+  "When does the IPO open and close?",
+  "What is the issue size?",
+  "How is revenue growing?",
+  "What are the key risks?",
+  "How does it compare to peers?",
+  "What is the GMP?",
+  "What is the RoNW?"
+];
+var qhost = document.getElementById('cbaQuick');
+CBA_QUICK.forEach(function(q){
+  var b=document.createElement('button');
+  b.textContent=q;
+  b.onclick=function(){ document.getElementById('cbaInput').value=q; cbaAsk(); };
+  qhost.appendChild(b);
+});
+function cbaAppend(role, text){
+  var log=document.getElementById('cbaLog');
+  var d=document.createElement('div');
+  d.className='cba-msg '+role;
+  d.textContent=text;
+  log.appendChild(d);
+  log.scrollTop=log.scrollHeight;
+}
+function cbaAsk(){
+  var inp=document.getElementById('cbaInput');
+  var q=inp.value.trim();
+  if(!q) return;
+  cbaAppend('user', q);
+  inp.value='';
+  setTimeout(function(){ cbaAppend('bot', cbaAnswer(q)); }, 250);
+}
+function cbaAnswer(qRaw){
+  var q = qRaw.toLowerCase();
+  function has(){ for(var i=0;i<arguments.length;i++){ if(q.indexOf(arguments[i])>-1) return true; } return false; }
+
+  if(has('price band','price range','band'))
+    return "The Symbiotec Pharmalab IPO price band is ₹938 to ₹988 per equity share (face value ₹2). Minimum lot is 15 shares, so retail minimum investment is ₹14,820 at the upper band.";
+
+  if(has('open','close','date','when'))
+    return "The IPO opens on 24 August 2026 and closes on 27 August 2026. Anchor bidding was 21 Aug, allotment is expected 28 Aug, and listing on BSE & NSE is tentatively 1 September 2026.";
+
+  if(has('issue size','how much raise','how much money','raising'))
+    return "Total issue size is ₹1,757 crore — comprising a ₹150 crore fresh issue and a ₹1,607 crore Offer for Sale (OFS) by promoters and existing investors. Only the fresh issue portion (~8.5% of the total) brings new capital into the company.";
+
+  if(has('revenue','growth','sales','top line'))
+    return "Revenue from operations grew from ₹716.25 Cr (FY24) to ₹751.55 Cr (FY25) to ₹869.15 Cr (FY26) — a 10.16% CAGR. FY26 growth was 15.6% year-on-year, driven partly by a 277%+ jump in US revenue.";
+
+  if(has('ebitda'))
+    return "EBITDA rose from ₹177.04 Cr (FY24) to ₹206.11 Cr (FY25) to ₹231.97 Cr (FY26) — a 14.47% CAGR. EBITDA margin was 26.59% in FY26, slightly down from 27.26% in FY25.";
+
+  if(has('pat','profit','net profit','earnings'))
+    return "PAT was ₹100.06 Cr (FY24), dipped to ₹96.79 Cr (FY25), then rose to ₹109.90 Cr (FY26) — only a 4.81% CAGR over the period, notably slower than EBITDA growth. This gap between EBITDA and PAT growth is a key thing to scrutinise.";
+
+  if(has('risk','concern','weakness','red flag'))
+    return "Key risks: (1) 91.5% of the issue is OFS, so little fresh capital enters the company; (2) current ratio fell to 0.92 in FY26 with cash of just ₹10 Cr; (3) 96% of revenue is API-only with high customer/product concentration; (4) ₹150.79 Cr in tax litigation and a land-title auditor qualification; (5) 67% international revenue exposes the company to US tariff and China raw-material risk.";
+
+  if(has('peer','compare','competitor','divi','laurus','concord','cohance'))
+    return "Listed peers per the RHP are Concord Biotech, Divi's Laboratories, Cohance Lifesciences and Laurus Labs. Symbiotec's post-issue P/E (~56.8x) is below Laurus Labs (~95x) and Cohance (~95x), roughly near Concord Biotech, and well below Divi's Labs' premium multiple — but Symbiotec's 9.48% RoNW also trails Concord and Divi's (14–16.8%).";
+
+  if(has('gmp','grey market','listing gain'))
+    return "As of 23 Aug 2026, GMP was ₹370, implying a listing price of ~₹1,358 (upper band ₹988 + GMP) — a potential listing gain of ~37%. GMP is unofficial and unregulated (not endorsed by SEBI/BSE/NSE) and can change quickly, so treat it as a sentiment gauge, not a forecast.";
+
+  if(has('ronw','roce','roe','return on'))
+    return "FY26 RoNW was 9.48%, RoCE 11.56%, and RoE 11.19%. These are moderate versus peers like Divi's Laboratories and Concord Biotech (14–16.8% RoNW), which is one reason Symbiotec is priced at a valuation discount.";
+
+  if(has('lot size','minimum investment','how many shares'))
+    return "Lot size is 15 shares. Minimum retail investment is ₹14,820 (15 × ₹988 at the upper price band).";
+
+  if(has('registrar'))
+    return "The registrar is MUFG Intime India Pvt Ltd (formerly Link Intime India Pvt Ltd).";
+
+  if(has('lead manager','book running','brlm','banker'))
+    return "The book-running lead managers are JM Financial, Avendus Capital, Motilal Oswal Investment Advisors, and Nomura Financial Advisory and Securities (India).";
+
+  if(has('business','what does','what is symbiotec','company profile','about'))
+    return "Symbiotec Pharmalab is a global leader in corticosteroid (38.2% volume share) and steroidal-hormone (23.8% share) APIs, backward-integrated from KSM sourcing to finished API, operating since 1995 from Indore, MP, with US FDA/EU-GMP approvals. It also has nascent complex-injectables and CDMO verticals.";
+
+  if(has('anchor'))
+    return "Symbiotec raised ₹526.20 Cr from 34 anchor investors on 21 Aug 2026 at ₹988/share. Key anchors include ICICI Prudential MF (11.40%), HDFC Mutual Fund (8.55%), Mirae Asset MF, Tata Mutual Fund, and Motilal Oswal India Excellence Fund.";
+
+  if(has('debt','borrowing','leverage'))
+    return "Total borrowings were ₹247.21 Cr (FY24), spiked to ₹540.92 Cr (FY25), then fell to ₹387.91 Cr (FY26). ₹112.5 Cr of the fresh issue proceeds is earmarked for further debt prepayment/repayment.";
+
+  if(has('subscribe','apply','should i','recommend','buy','worth it'))
+    return "CB Research does not issue buy/sell/hold recommendations. Third-party brokers are mixed: some rate it 'Subscribe' for long-term exposure to a specialised API leader, others flag the large OFS and moderate RoNW/RoCE as reasons for caution. Please review the Verdict tab and consult a SEBI-registered adviser before deciding.";
+
+  return "I don't have a specific answer for that in this dashboard's dataset. Try asking about the price band, dates, financials, peers, risks, GMP, or business model — or check the relevant tab above for full detail.";
+}
+
+/* ============ SCHOOL TAB — CONCEPT EXPLAINER ============ */
+document.getElementById('tab-school').innerHTML = `
+<div class="card">
+  <h3>🎓 CB School — Understanding Symbiotec's Business, From First Principles</h3>
+  <p style="font-size:13.5px;line-height:1.65;">Symbiotec's story sits at the intersection of <b>organic chemistry, biotechnology/fermentation, and complex-injectable manufacturing</b>.
+  This tab explains each concept in plain language, then connects it back to what Symbiotec actually does — so the Business Model and Financials
+  tabs make deeper sense.</p>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>1. What is an API (Active Pharmaceutical Ingredient)?</h3>
+    <p style="font-size:13.5px;line-height:1.6;">An API is the <b>biologically active molecule</b> inside a medicine — the part that actually produces
+    the therapeutic effect. A paracetamol tablet, for example, is mostly inactive filler and binder; the API (paracetamol itself) is often just a
+    small fraction of the tablet's weight but is the entire reason the drug works.</p>
+    <p style="font-size:13.5px;line-height:1.6;">Pharma companies split into two broad groups: <b>formulators</b> (who make the finished tablet/capsule/injection
+    for patients) and <b>API manufacturers</b> (who make the raw active molecule and sell it in bulk to formulators). Symbiotec is primarily an
+    <b>API manufacturer</b> — it sells bulk corticosteroid and steroidal-hormone powders/intermediates to pharma companies worldwide, who then
+    turn them into the tablets, creams, and injections patients actually use.</p>
+    <div class="note">Why this matters for the IPO: API businesses have different economics than formulation businesses — lower brand/marketing spend, but higher dependence on regulatory approvals (US FDA, EU-GMP) and technical process know-how.</div>
+  </div>
+  <div class="card">
+    <h3>2. What Are Corticosteroids & Steroidal-Hormone APIs?</h3>
+    <p style="font-size:13.5px;line-height:1.6;"><b>Corticosteroids</b> are a class of steroid hormones (e.g., hydrocortisone, prednisolone,
+    dexamethasone) used to treat inflammation, allergies, asthma, autoimmune conditions, and skin disorders. <b>Steroidal-hormone APIs</b>
+    is the broader category — includes corticosteroids plus sex hormones (used in contraceptives, HRT) and other steroid-based actives.</p>
+    <p style="font-size:13.5px;line-height:1.6;">These molecules are chemically complex — they require many sequential reaction steps
+    (multi-step organic synthesis), precise control of molecular structure (stereochemistry), and often a fermentation step to build the core
+    steroid "skeleton" before further chemical modification. That complexity is exactly why Symbiotec's 38.2% global volume share in this
+    niche is meaningful — very few companies can execute this reliably at industrial scale with FDA-grade quality.</p>
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>3. What is Biotechnology in Pharma Manufacturing?</h3>
+    <p style="font-size:13.5px;line-height:1.6;">In this context, "biotechnology" doesn't mean gene therapy or vaccines — it means using
+    <b>living microorganisms (fungi, bacteria, or engineered microbes) to carry out a chemical transformation</b> that would be very difficult,
+    expensive, or impossible to do with conventional chemistry alone. This is called <b>biotransformation</b>.</p>
+    <p style="font-size:13.5px;line-height:1.6;">Steroid molecules have a specific 3D shape that is hard to build precisely using only
+    lab chemistry. Microorganisms have enzymes that can add or modify parts of the steroid molecule with high precision — essentially
+    "borrowing" biology's molecular machinery to do chemistry that human chemists find hard to replicate cheaply and cleanly.</p>
+    <div class="note">Symbiotec link: this is the "microbe" half of Symbiotec's own description of itself as a "farm/microbe-to-pharmacy" backward-integrated platform (see Business Model tab).</div>
+  </div>
+  <div class="card">
+    <h3>4. What is Fermentation (in this industrial sense)?</h3>
+    <p style="font-size:13.5px;line-height:1.6;"><b>Fermentation</b> is the controlled growth of microorganisms in large steel tanks
+    (bioreactors) under precise temperature, pH, oxygen and nutrient conditions, so that the microbes produce or transform a target
+    molecule. Think of it as industrial-scale brewing — but instead of producing beer or yogurt, the "product" is a pharmaceutical
+    intermediate or API precursor.</p>
+    <p style="font-size:13.5px;line-height:1.6;">Symbiotec operates <b>700 KL (kilolitres) of fermentation capacity</b> — the Pithampur
+    facility alone has 300 KL, and the newly commissioned Ujjain facility adds another 400 KL. After fermentation, the microbial broth
+    is filtered, purified, and chemically finished into the final API — this is the "biotransformation" step referenced in the
+    Business Model tab.</p>
+    <div class="note">Why it's a moat: building and validating fermentation capacity (right microbial strains, contamination-free large tanks, consistent yield) takes years and significant capital — a real barrier against new entrants trying to compete on price alone.</div>
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>5. What is Backward Integration & "KSM Sourcing"?</h3>
+    <p style="font-size:13.5px;line-height:1.6;"><b>KSM</b> stands for <b>Key Starting Material</b> — the base chemical building block
+    from which an API is eventually synthesised, often over many steps. Most Indian API companies buy KSMs from external suppliers
+    (frequently from China), which exposes them to price swings, supply disruptions, and quality-control risk they don't fully control.</p>
+    <p style="font-size:13.5px;line-height:1.6;"><b>Backward integration</b> means manufacturing your own KSMs in-house instead of
+    buying them externally. Symbiotec does this for over 80% of its portfolio by revenue — it grows/ferments/synthesises its own
+    starting materials rather than depending on outside vendors for the earliest, most foundational step of the chemistry.</p>
+    <div class="note">Trade-off: backward integration protects margins and supply security, but it's capital-intensive and doesn't fully eliminate risk — Symbiotec still sources 23.88% of its total expenses from China for materials it hasn't backward-integrated (see SWOT — Threats).</div>
+  </div>
+  <div class="card">
+    <h3>6. What Are Complex Injectables?</h3>
+    <p style="font-size:13.5px;line-height:1.6;">A "simple" injectable is just a drug dissolved in a sterile liquid inside a vial. A
+    <b>complex injectable</b> involves a harder-to-manufacture delivery format — for example, a
+    <b>double-chamber vial</b>, where the drug (often unstable if mixed too early) is kept in one chamber and a diluent/second drug
+    in another, mixed only at the point of use. This requires precision engineering, specialised sterile manufacturing, and often
+    carries less generic competition than simple injectables — which usually means better pricing power.</p>
+    <p style="font-size:13.5px;line-height:1.6;">Symbiotec's new Mhow facility can produce <b>up to 20 million double-chamber vials
+    per year</b>. This is the company's attempt to move up the value chain — from selling bulk API powder (lower margin, commoditised)
+    toward selling finished, ready-to-use injectable products (potentially higher margin, more differentiated).</p>
+    <div class="note">Currently just 3.80% of FY26 revenue (see Business Model tab) — early-stage, unproven at scale, but the strategic direction to watch over the next few years.</div>
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:12px;">
+  <div class="card">
+    <h3>7. What is CDMO?</h3>
+    <p style="font-size:13.5px;line-height:1.6;"><b>CDMO</b> stands for <b>Contract Development and Manufacturing Organisation</b>.
+    Instead of selling its own branded API products, a CDMO manufactures a customer's proprietary molecule under contract —
+    the pharma company owns the IP and formula; Symbiotec provides the chemistry, fermentation, and manufacturing expertise as a service.</p>
+    <p style="font-size:13.5px;line-height:1.6;">CDMO revenue is typically <b>stickier</b> (multi-year contracts, high switching costs
+    once a process is validated with a regulator) but takes years to scale, because each new customer relationship requires lengthy
+    technology-transfer and regulatory-qualification cycles.</p>
+    <div class="note">Currently just 0.13% of FY26 revenue for Symbiotec — this is the most nascent, longest-payback vertical of the three (API / Injectables / CDMO).</div>
+  </div>
+  <div class="card">
+    <h3>8. Why Do US FDA / EU-GMP Approvals Matter So Much?</h3>
+    <p style="font-size:13.5px;line-height:1.6;"><b>US FDA</b> and <b>EU-GMP (Good Manufacturing Practice)</b> are regulatory
+    certifications confirming a facility meets the quality, documentation, and process-control standards required to sell into the
+    US and European pharmaceutical markets — the two largest, most lucrative, and most demanding regulated markets in the world.</p>
+    <p style="font-size:13.5px;line-height:1.6;">Getting and keeping these approvals requires passing periodic, unannounced regulatory
+    inspections. A single adverse inspection finding (a "483 observation" from the US FDA, for example) can temporarily block a
+    facility from supplying regulated markets — which is why "regulatory-inspection risk" appears as a threat in the SWOT tab.</p>
+    <div class="note">Symbiotec's Rau facility carries US FDA, EU-GMP and WHO-GMP approval — this certification bundle is what allows the 67% international / 13% US revenue mix seen in the Business Model tab.</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <h3>Putting It All Together — Symbiotec's Value Chain in One Picture</h3>
+  <div class="chartbox sm"><canvas id="schoolChain"></canvas></div>
+  <div class="note">Reading the chain left to right: Symbiotec starts by growing/synthesising its own Key Starting Materials (backward integration), ferments them using microbial biotechnology into steroid precursors, finishes them via multi-step organic chemistry into the final API, and is now extending forward into complex injectables and CDMO — moving from a pure "ingredient supplier" toward a more integrated pharma manufacturing partner.</div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <h3>Quick Glossary</h3>
+  <table>
+    <tr><th>Term</th><th>Plain-English Meaning</th></tr>
+    <tr><td>API</td><td>The active drug molecule inside a medicine</td></tr>
+    <tr><td>KSM</td><td>Key Starting Material — the base chemical an API is built from</td></tr>
+    <tr><td>Fermentation</td><td>Growing microbes in large tanks to produce/transform a molecule</td></tr>
+    <tr><td>Biotransformation</td><td>Using microbial enzymes to modify a molecule's structure precisely</td></tr>
+    <tr><td>Backward integration</td><td>Making your own inputs in-house instead of buying them externally</td></tr>
+    <tr><td>Complex injectable</td><td>A harder-to-manufacture injectable format (e.g., double-chamber vials)</td></tr>
+    <tr><td>CDMO</td><td>Manufacturing a customer's proprietary drug under contract, on their behalf</td></tr>
+    <tr><td>US FDA / EU-GMP</td><td>Regulatory quality certifications required to sell into US / European markets</td></tr>
+    <tr><td>Chemical synthesis capacity (MT)</td><td>How many metric tonnes of API/intermediate a facility can chemically produce per year</td></tr>
+    <tr><td>Fermentation capacity (KL)</td><td>The total volume (in kilolitres) of a facility's bioreactor/fermentation tanks</td></tr>
+  </table>
+</div>
+`;
+setTimeout(function(){
+  var el = document.getElementById('schoolChain');
+  if(!el) return;
+  new Chart(el, {
+    type:'bar',
+    data:{
+      labels:['KSM Sourcing\\n(Backward Integration)','Fermentation\\n(Biotechnology)','Chemical Synthesis\\n(Organic Chemistry)','API\\n(96% of FY26 rev.)','Complex Injectables\\n(3.8% of FY26 rev.)','CDMO\\n(0.1% of FY26 rev.)'],
+      datasets:[{label:'Value chain stage', data:[1,1,1,1,1,1], backgroundColor:['#0b2447','#13315c','#0f766e','#0d9488','#b8860b','#b3261e']}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{enabled:false}},
+      scales:{y:{display:false}, x:{ticks:{font:{size:10.5}}}}
+    }
+  });
+}, 80);
+
+function renderOverviewChart(){
+  window._ovRendered = true;
+  new Chart(document.getElementById('ovChart'), {
+    type:'bar',
+    data:{
+      labels: CO.financials.years,
+      datasets:[
+        {label:'Revenue', data:CO.financials.revenue, backgroundColor:'#0b2447', order:2},
+        {label:'EBITDA', data:CO.financials.ebitda, backgroundColor:'#0d9488', order:2},
+        {label:'PAT', type:'line', data:CO.financials.pat, borderColor:'#b8860b', backgroundColor:'#b8860b', tension:.3, yAxisID:'y', order:1, borderWidth:3, pointRadius:5}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom'}},
+      scales:{y:{ticks:{callback:function(v){return '₹'+v.toLocaleString('en-IN');}}}}
+    }
+  });
+}
+</script>
+</body>
+</html>

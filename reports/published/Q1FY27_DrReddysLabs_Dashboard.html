@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 FY27 Analysis — Dr. Reddy's Laboratories</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --panel:#fbfaf8;
+    --ink:#1a1d23;
+    --sub:#5b6470;
+    --line:#e4e1da;
+    --accent:#0b6e4f;      /* pharma-green */
+    --accent2:#b4552f;     /* rust — DRL brand-adjacent warm */
+    --red:#b23b3b;
+    --amber:#a3760a;
+    --blue:#2a5a8c;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Georgia','Iowan Old Style',serif;
+    line-height:1.5;
+  }
+  .mono{font-family:'JetBrains Mono','SF Mono',Consolas,monospace;}
+  header.masthead{
+    border-bottom:3px solid var(--ink);
+    padding:28px 5vw 18px;
+    display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;
+  }
+  .masthead .brand{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--sub);}
+  .masthead h1{margin:4px 0 4px; font-size:2.1rem; font-weight:700;}
+  .masthead .tick{font-family:'JetBrains Mono',monospace; font-size:.95rem; color:var(--sub);}
+  .masthead .price-block{text-align:right;}
+  .price-block .px{font-size:2.3rem; font-weight:700; font-family:'JetBrains Mono',monospace;}
+  .price-block .chg{font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700;}
+  .down{color:var(--red);}
+  .up{color:var(--accent);}
+  .timestamp-bar{
+    background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace;
+    font-size:.78rem; padding:6px 5vw; letter-spacing:.03em;
+  }
+  nav.toc{
+    display:flex; gap:0; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; background:rgba(255,255,255,.97); backdrop-filter:blur(4px); z-index:50;
+    scrollbar-width:thin;
+  }
+  nav.toc::-webkit-scrollbar{height:4px;}
+  nav.toc::-webkit-scrollbar-thumb{background:var(--line);}
+  nav.toc button.tab-btn{
+    font-family:'JetBrains Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--sub); text-decoration:none; padding:14px 16px; border-right:1px solid var(--line);
+    white-space:nowrap; background:none; border-top:none; border-left:none; border-bottom:3px solid transparent;
+    cursor:pointer; flex:0 0 auto;
+  }
+  nav.toc button.tab-btn:hover{color:var(--accent2); background:var(--panel);}
+  nav.toc button.tab-btn.active{color:var(--ink); font-weight:700; border-bottom:3px solid var(--accent2); background:var(--panel);}
+  main{max-width:1180px; margin:0 auto; padding:0 5vw 80px;}
+  .tab-panel{display:none; padding:44px 0;}
+  .tab-panel.active{display:block; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+  @media(max-width:640px){
+    nav.toc button.tab-btn{padding:12px 13px; font-size:.68rem;}
+    .tab-panel{padding:28px 0;}
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.14em;
+    color:var(--accent2); margin-bottom:8px; font-weight:700;
+  }
+  h2{font-size:1.6rem; margin:0 0 6px; font-weight:700;}
+  h3{font-size:1.1rem; margin:26px 0 10px; font-weight:700; color:var(--ink);}
+  p.lede{color:var(--sub); font-size:1.02rem; max-width:820px; margin:0 0 24px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:18px 0;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0;}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0;}
+  @media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:1fr 1fr;} .grid-2{grid-template-columns:1fr;}}
+  .stat-card{
+    border:1px solid var(--line); background:var(--panel); padding:16px 18px; border-radius:2px;
+    border-left:3px solid var(--accent2);
+  }
+  .stat-card .label{font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--sub);}
+  .stat-card .val{font-family:'JetBrains Mono',monospace; font-size:1.5rem; font-weight:700; margin-top:4px;}
+  .stat-card .note{font-size:.82rem; color:var(--sub); margin-top:4px;}
+  .stat-card.neg{border-left-color:var(--red);}
+  .stat-card.pos{border-left-color:var(--accent);}
+  .stat-card.warn{border-left-color:var(--amber);}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0 6px; font-size:.92rem;}
+  th,td{padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:.85rem;}
+  th:first-child,td:first-child{text-align:left; font-family:Georgia,serif; font-size:.92rem;}
+  thead th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; border-bottom:none;}
+  tbody tr:nth-child(even){background:var(--panel);}
+  tbody tr:hover{background:#f0ede4;}
+  td.negv{color:var(--red); font-weight:700;}
+  td.posv{color:var(--accent); font-weight:700;}
+  .sources-col{color:var(--sub); font-size:.72rem;}
+
+  .problem-card{
+    border:1px solid var(--line); border-left:4px solid var(--red);
+    background:var(--panel); padding:16px 20px; margin:14px 0; border-radius:2px;
+  }
+  .problem-card h4{margin:0 0 6px; font-size:1.02rem; display:flex; align-items:center; gap:10px;}
+  .problem-card h4 .n{
+    font-family:'JetBrains Mono',monospace; font-size:.8rem; background:var(--red); color:#fff;
+    padding:2px 8px; border-radius:2px;
+  }
+  .problem-card p{margin:6px 0; color:#3a3f47; font-size:.94rem;}
+  .sev{font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; padding:2px 8px; border-radius:10px; margin-left:8px;}
+  .sev.high{background:#fbe4e0; color:var(--red);}
+  .sev.med{background:#fbf0d9; color:var(--amber);}
+  .sev.mon{background:#e2eef7; color:var(--blue);}
+
+  .chart-wrap{border:1px solid var(--line); background:var(--panel); padding:18px; border-radius:2px; margin:16px 0;}
+  canvas{max-width:100%;}
+
+  .rating-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line);}
+  .rating-row:last-child{border-bottom:none;}
+  .rating-pill{font-family:'JetBrains Mono',monospace; font-size:.72rem; text-transform:uppercase; padding:3px 10px; border-radius:10px; font-weight:700;}
+  .pill-buy{background:#dcefe4; color:var(--accent);}
+  .pill-hold{background:#fbf0d9; color:var(--amber);}
+  .pill-sell{background:#fbe4e0; color:var(--red);}
+  .pill-accum{background:#e2eef7; color:var(--blue);}
+
+  .verdict-box{
+    background:var(--ink); color:#f5f3ec; padding:26px 28px; border-radius:2px; margin-top:18px;
+  }
+  .verdict-box .eyebrow{color:#e0c9a6;}
+  .verdict-box p{color:#d8d5cc; font-size:.98rem;}
+  .verdict-box h3{color:#fff;}
+
+  .mgmt-card{border:1px solid var(--line); padding:14px 16px; background:var(--panel); margin-bottom:10px;}
+  .mgmt-card .role{font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; color:var(--accent2); letter-spacing:.05em;}
+  .mgmt-card .name{font-weight:700; font-size:1rem;}
+
+  /* CB Research floating badge — persistent across all tabs */
+  .cb-badge{
+    position:fixed; bottom:20px; right:20px; z-index:200;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cb-circle{
+    width:46px; height:46px; border-radius:50%;
+    background:var(--ink); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.85rem; letter-spacing:.02em;
+    box-shadow:0 2px 10px rgba(0,0,0,.25);
+    cursor:pointer; border:2px solid var(--accent2);
+    animation:cbBlink 1.8s ease-in-out infinite;
+  }
+  @keyframes cbBlink{
+    0%,100%{opacity:1; box-shadow:0 2px 10px rgba(0,0,0,.25);}
+    50%{opacity:.55; box-shadow:0 2px 16px rgba(180,85,47,.55);}
+  }
+  .cb-tooltip{
+    position:absolute; bottom:56px; right:0; width:220px;
+    background:var(--ink); color:#f5f3ec; padding:12px 14px; border-radius:4px;
+    box-shadow:0 4px 18px rgba(0,0,0,.28);
+    opacity:0; visibility:hidden; transform:translateY(6px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s;
+    pointer-events:none;
+  }
+  .cb-badge:hover .cb-tooltip{opacity:1; visibility:visible; transform:translateY(0);}
+  .cb-tooltip-title{font-family:'JetBrains Mono',monospace; font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:#e0c9a6; font-weight:700; margin-bottom:5px;}
+  .cb-tooltip-desc{font-size:.76rem; line-height:1.4; color:#d8d5cc; font-family:Georgia,serif;}
+  @media(max-width:640px){
+    .cb-badge{bottom:14px; right:14px;}
+    .cb-circle{width:40px; height:40px; font-size:.75rem;}
+    .cb-tooltip{width:180px; bottom:48px;}
+  }
+
+</style>
+</head>
+<body>
+
+<div class="timestamp-bar">GENERATED 27-AUG-2026 · 09:08 IST &nbsp;|&nbsp; COVERAGE: DR. REDDY'S LABORATORIES LTD (BSE: 500124 / NSE: DRREDDY) &nbsp;|&nbsp; PERIOD UNDER REVIEW: Q1 FY27 (QTR ENDED 30-JUN-2026)</div>
+
+<header class="masthead">
+  <div>
+    <div class="brand">Cauvery Business Research · Pharma Coverage</div>
+    <h1>Dr. Reddy's Laboratories — Q1 FY27 Post-Result Diagnostic</h1>
+    <div class="tick">Why the stock has fallen, what's structurally broken, and what Q1 FY27 numbers actually say</div>
+  </div>
+  <div class="price-block">
+    <div class="px">₹1,166</div>
+    <div class="chg down">▼ ~18% off 52-wk high (₹1,415)</div>
+    <div class="tick">52-wk range ₹1,101 – ₹1,415 · Mkt cap ≈ ₹97,300 Cr</div>
+  </div>
+</header>
+
+<nav class="toc" id="tabNav">
+  <button class="tab-btn active" data-tab="snapshot">Snapshot</button>
+  <button class="tab-btn" data-tab="problems">Core Problems</button>
+  <button class="tab-btn" data-tab="pricefall">Why Price Fell</button>
+  <button class="tab-btn" data-tab="results">Q1 FY27 Results</button>
+  <button class="tab-btn" data-tab="segments">Segment Analysis</button>
+  <button class="tab-btn" data-tab="semaglutide">Semaglutide Deep-Dive</button>
+  <button class="tab-btn" data-tab="management">Management &amp; Board</button>
+  <button class="tab-btn" data-tab="ratings">Analyst Ratings</button>
+  <button class="tab-btn" data-tab="verdict">Investment Verdict</button>
+</nav>
+
+<main>
+
+<!-- SNAPSHOT -->
+<section class="tab-panel active" id="snapshot">
+  <div class="eyebrow">01 / Snapshot</div>
+  <h2>The stock is down ~18% from its 52-week high — this is a business-transition problem, not a one-quarter miss</h2>
+  <p class="lede">Dr. Reddy's is losing its highest-margin product (lenalidomide/Revlimid) at the same time its next growth driver (semaglutide/GLP-1) has hit a quality-control wall. The two were meant to overlap smoothly; instead there is a profitability air-pocket in between, and Q1 FY27 is the quarter where that air-pocket showed up in the P&L.</p>
+  <div class="grid-4">
+    <div class="stat-card neg">
+      <div class="label">Q1 FY27 PAT (YoY)</div>
+      <div class="val">₹436 Cr</div>
+      <div class="note">▼ 69.1% YoY (₹1,410 Cr → ₹436 Cr)</div>
+    </div>
+    <div class="stat-card neg">
+      <div class="label">Q1 FY27 Revenue (YoY)</div>
+      <div class="val">₹8,071 Cr</div>
+      <div class="note">▼ 5.6% YoY, but ▲ 7.4% QoQ</div>
+    </div>
+    <div class="stat-card neg">
+      <div class="label">EBITDA Margin</div>
+      <div class="val">12.5%</div>
+      <div class="note">vs 26.7% Q1 FY26 — down ~1,470 bps</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="label">North America Revenue</div>
+      <div class="val">▼ 35–41%</div>
+      <div class="note">Lenalidomide erosion; base business ex-Revlimid grew double-digit</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMS -->
+<section class="tab-panel" id="problems">
+  <div class="eyebrow">02 / What's Actually Wrong</div>
+  <h2>Six concrete problems, ranked by how much they're weighing on the stock right now</h2>
+  <p class="lede">These aren't abstract "sector headwinds" — each is a specific, named, dated event or structural shift.</p>
+
+  <div class="problem-card">
+    <h4><span class="n">01</span>Lenalidomide (Revlimid generic) cliff — North America <span class="sev high">HIGH — ACTIVE</span></h4>
+    <p><b>What happened:</b> Lenalidomide was DRL's single most profitable product for the past 2 years — a limited-competition generic of Revlimid with outsized margins. The volume-cap agreement structure that governed its release is now unwinding as more competitors enter and the capped-volume glide path runs down.</p>
+    <p><b>Impact:</b> North America Generics revenue fell 35–41% YoY in Q1 FY27. This one product swing explains most of the EBITDA margin collapse from ~27% to ~12.5%, because lenalidomide carried gross margins far above the company average.</p>
+    <p><b>Trajectory:</b> Structural and largely irreversible — this is a known patent-cliff style decline, not a one-off. Management itself frames FY27 base-business margin target ("neighbourhood of 20%") explicitly <i>excluding</i> any lenalidomide or semaglutide upside, i.e., they've written it off as a swing factor.</p>
+  </div>
+
+  <div class="problem-card">
+    <h4><span class="n">02</span>Semaglutide API quality failure — GLP-1 franchise paused <span class="sev high">HIGH — ACTIVE</span></h4>
+    <p><b>What happened:</b> DRL was one of the first movers into semaglutide (GLP-1 weight-loss/diabetes) generics post India-patent-expiry, launching in India, Canada and select markets. After selling only ~180,000 pens, batches were found "out of specification" tied to the API source. Commercial supply was halted.</p>
+    <p><b>Impact:</b> ₹240 Cr provision booked in Q1 FY27 for API inventory and related costs — the single biggest driver of the quarter's reported profit collapse. Excluding it, EBITDA margin would have been 15.4% instead of 12.5% — still well below last year, but the headline number overstates the one-off component.</p>
+    <p><b>Trajectory:</b> Management targets API re-validation by third week of September 2026 and commercial resupply from November 2026, guiding to 6–7 million pens between Nov'26–Mar'27 — but flagged only an 80–90% probability of success on the revalidation, not certainty. A backup API source exists but needs ~1 year for regulatory approval, so it cannot bridge the near-term gap.</p>
+  </div>
+
+  <div class="problem-card">
+    <h4><span class="n">03</span>Structural US generics price erosion <span class="sev med">MEDIUM — ONGOING</span></h4>
+    <p><b>What happened:</b> Independent of lenalidomide, DRL's broader US generics book faces the industry-standard 6–8% annual price erosion from channel consolidation (three large PBM/wholesaler buying groups) and continuous new-entrant competition on off-patent molecules.</p>
+    <p><b>Impact:</b> This is the reason North America "base business" (ex-lenalidomide) still only delivers double-digit growth off a shrinking high-margin base rather than expanding margins — new launches are diluting, not just adding to, blended US pricing.</p>
+    <p><b>Trajectory:</b> Permanent feature of the generics industry; DRL's answer is to shift mix toward complex generics, biosimilars and branded/OTC consumer health, which is a multi-year re-rating story, not a quarter-to-quarter fix.</p>
+  </div>
+
+  <div class="problem-card">
+    <h4><span class="n">04</span>₹2,395.81 Cr Income-Tax reassessment notice (DRHL merger) <span class="sev mon">MONITOR — UNRESOLVED</span></h4>
+    <p><b>What happened:</b> In April 2025 the Assistant Commissioner of Income Tax, Hyderabad issued a Section 148A show-cause notice alleging income "escaped assessment" for AY2020-21, tied to the 2019 merger of Dr. Reddy's Holdings Ltd (DRHL) into DRL (NCLT-approved April 2022, retro-effective April 2019). By end-May 2025 this had progressed to a formal Section 148A(3) reassessment order.</p>
+    <p><b>Impact:</b> Triggered an 7.5%+ single-day share price fall on disclosure. Company maintains "no material impact" and cites promoter indemnity clauses in the merger scheme, but the matter remains open and unresolved as of the latest filings available — no settlement or tribunal outcome has been reported.</p>
+    <p><b>Trajectory:</b> Contingent liability overhang; low near-term cash-flow risk given indemnity protection, but litigation risk and headline risk persist until resolved.</p>
+  </div>
+
+  <div class="problem-card">
+    <h4><span class="n">05</span>Regulatory setbacks outside the US <span class="sev med">MEDIUM — EPISODIC</span></h4>
+    <p><b>What happened:</b> Brazil's health regulator ANVISA rejected DRL's semaglutide generic application, adding to the GLP-1 franchise's troubles outside the API issue itself. Separately, cost inflation from elevated solvent and freight expenses tied to Middle East shipping disruption added further margin pressure in Q1 FY27.</p>
+    <p><b>Impact:</b> Compounds the semaglutide narrative — this isn't purely a manufacturing hiccup, market-access execution has also stumbled in at least one large LatAm market.</p>
+    <p><b>Trajectory:</b> Company can refile in Brazil, but it pushes out the international GLP-1 revenue ramp further.</p>
+  </div>
+
+  <div class="problem-card">
+    <h4><span class="n">06</span>US tariff overhang on Indian pharma exports <span class="sev mon">MONITOR — MACRO</span></h4>
+    <p><b>What happened:</b> The US administration's broader tariff actions on Indian goods (26% tariff announced, with a pharma carve-out under review/expected given US healthcare dependence on Indian generics) created sector-wide uncertainty in April 2026, compressing PE multiples across Indian pharma names including DRL.</p>
+    <p><b>Impact:</b> If a pharma exemption is not granted, gross margins on the US book could compress a further 5–8 percentage points — layering onto an already-weak margin base.</p>
+    <p><b>Trajectory:</b> Binary policy risk, outside company control; base case among analysts remains an eventual pharma carve-out, but timing is uncertain.</p>
+  </div>
+</section>
+
+<!-- WHY PRICE FELL TIMELINE -->
+<section class="tab-panel" id="pricefall">
+  <div class="eyebrow">03 / Timeline</div>
+  <h2>Why the share price has fallen — a sequence, not a single event</h2>
+  <p class="lede">The ~18% drawdown from the 52-week high is the sum of four distinct shocks over roughly five months, not one bad print.</p>
+  <table>
+    <thead><tr><th>Date</th><th style="text-align:left">Event</th><th>Stock Reaction</th><th class="sources-col">Source</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Apr 2026</td><td style="text-align:left">US tariff announcement on Indian goods — sector-wide pharma selloff</td><td class="negv">Sector ▼ 3–6%</td><td class="sources-col">Univest</td></tr>
+      <tr><td class="mono">~15 Apr 2026</td><td style="text-align:left">Brazil ANVISA rejects semaglutide generic; brokerage SELL call (Citi, target ₹1,070); OPM 27%→22%</td><td class="negv">▼ ~3%</td><td class="sources-col">Tradebrains</td></tr>
+      <tr><td class="mono">9 Jul 2026</td><td style="text-align:left">Company discloses semaglutide batches "out of specification" — API-linked quality issue</td><td class="negv">▼ 6.49%, fresh 52-wk low ₹1,261</td><td class="sources-col">Business Today</td></tr>
+      <tr><td class="mono">22 Jul 2026</td><td style="text-align:left">Q1 FY27 results: PAT ▼69%, EBITDA margin 12.5% vs 26.7%, ₹240 Cr semaglutide provision</td><td class="negv">Intraday ▼7%, closed ▼1.9–2.8%</td><td class="sources-col">IndMoney / Univest</td></tr>
+      <tr><td class="mono">14 Aug 2026</td><td style="text-align:left">USFDA closes Mirfield API facility inspection — classified VAI (Voluntary Action Indicated)</td><td class="mono">Neutral-to-mildly positive (no OAI/warning letter)</td><td class="sources-col">Screener.in</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- RESULTS -->
+<section class="tab-panel" id="results">
+  <div class="eyebrow">04 / Q1 FY27 Results</div>
+  <h2>Headline P&amp;L — reported vs. ex-semaglutide-provision</h2>
+  <p class="lede">Quarter ended 30 June 2026. Figures per company press release / SEC 6-K filing.</p>
+  <table>
+    <thead><tr><th style="text-align:left">Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>YoY</th><th>Q4 FY26</th><th>QoQ</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue from Operations</td><td>₹8,071 Cr</td><td>₹8,455 Cr</td><td class="negv">▼ 5.6%</td><td>₹7,514 Cr</td><td class="posv">▲ 7.4%</td></tr>
+      <tr><td>Gross Margin</td><td>46.5%</td><td>56.9%</td><td class="negv">▼ 1,039 bps</td><td>—</td><td>—</td></tr>
+      <tr><td>EBITDA</td><td>₹1,009 Cr</td><td>₹2,262 Cr*</td><td class="negv">▼ ~55%</td><td>₹381 Cr*</td><td class="posv">▲ ~165%</td></tr>
+      <tr><td>EBITDA Margin</td><td>12.5%</td><td>26.7%</td><td class="negv">▼ ~1,470 bps</td><td>5.1%</td><td class="posv">▲ 555 bps</td></tr>
+      <tr><td>EBITDA Margin (ex-semaglutide provision)</td><td>15.4%</td><td>26.7%</td><td class="negv">▼ ~1,130 bps</td><td>—</td><td>—</td></tr>
+      <tr><td>PAT (attrib. to equity holders)</td><td>₹436 Cr</td><td>₹1,410 Cr</td><td class="negv">▼ 69.1%</td><td>₹221 Cr</td><td class="posv">▲ 96.8%</td></tr>
+      <tr><td>PAT Margin</td><td>5.4%</td><td>16.5%</td><td class="negv">▼ 1,110 bps</td><td>2.9%</td><td class="posv">▲ 245 bps</td></tr>
+      <tr><td>EPS (diluted)</td><td>₹5.32</td><td>₹17.04</td><td class="negv">▼ 68.8%</td><td>₹2.65</td><td class="posv">▲ 100.8%</td></tr>
+      <tr><td>Semaglutide API Provision</td><td>₹240 Cr</td><td>—</td><td class="mono">one-off</td><td>—</td><td class="mono">—</td></tr>
+      <tr><td>Effective Tax Rate</td><td>21.3%</td><td>~25%</td><td class="mono">below normal</td><td>—</td><td class="mono">FY27 guide 24–25%</td></tr>
+      <tr><td>Net Cash Surplus (30 Jun 2026)</td><td>₹3,060 Cr</td><td>—</td><td class="mono">—</td><td>—</td><td class="mono">Net D/E (0.08)</td></tr>
+      <tr><td>Annualised RoCE</td><td>5.3%</td><td>—</td><td class="mono">—</td><td>—</td><td class="mono">8% ex-semaglutide</td></tr>
+      <tr><td>Operating Cash Flow (pre-acquisition)</td><td>▼₹216 Cr</td><td>positive</td><td class="negv">turned negative</td><td>—</td><td class="mono">—</td></tr>
+      <tr><td>Capex</td><td>₹310 Cr</td><td>—</td><td class="mono">—</td><td>—</td><td class="mono">FY27 guide ≈₹1,800 Cr</td></tr>
+    </tbody>
+  </table>
+  <p class="note" style="color:var(--sub); font-size:.82rem;">*Q1 FY26 and Q4 FY26 EBITDA figures reconciled from reported margin % × revenue; minor rounding vs company-reported absolute EBITDA line possible across sources.</p>
+
+  <div class="chart-wrap">
+    <h3 style="margin-top:0;">EBITDA Margin Trend — the air-pocket, visually</h3>
+    <canvas id="marginChart" height="90"></canvas>
+  </div>
+</section>
+
+<!-- SEGMENTS -->
+<section class="tab-panel" id="segments">
+  <div class="eyebrow">05 / Segment Analysis</div>
+  <h2>Where the growth is — and where the pain is concentrated</h2>
+  <p class="lede">North America is the sole drag. India, Emerging Markets and Europe are all delivering healthy double-digit growth — this is a single-segment, single-product problem, not a company-wide one.</p>
+
+  <table>
+    <thead><tr><th style="text-align:left">Segment</th><th>Q1 FY27 Revenue</th><th>YoY Growth</th><th style="text-align:left">Commentary</th></tr></thead>
+    <tbody>
+      <tr><td>North America Generics</td><td>₹2,205–3,120 Cr (US$236 Mn)</td><td class="negv">▼ 35–41%</td><td style="text-align:left; font-family:Georgia,serif; font-size:.9rem;">Lenalidomide erosion dominates; base business ex-Revlimid grew double-digit sequentially (+19% QoQ)</td></tr>
+      <tr><td>India (Branded/Consumer)</td><td>₹1,718–1,777 Cr</td><td class="posv">▲ 17%</td><td style="text-align:left; font-family:Georgia,serif; font-size:.9rem;">Consumer health JV expansion, new brand launches driving resilience</td></tr>
+      <tr><td>Emerging Markets</td><td>₹1,833 Cr</td><td class="posv">▲ 31%</td><td style="text-align:left; font-family:Georgia,serif; font-size:.9rem;">Russia alone +28% YoY on price hikes and new launches; broad-based EM strength</td></tr>
+      <tr><td>Europe</td><td>€131 Mn</td><td class="mono">~Flat</td><td style="text-align:left; font-family:Georgia,serif; font-size:.9rem;">Steady but not a growth engine currently</td></tr>
+      <tr><td>PSAI (APIs/CDMO)</td><td>₹810 Cr</td><td class="mono">n/a</td><td style="text-align:left; font-family:Georgia,serif; font-size:.9rem;">Pharmaceutical Services &amp; Active Ingredients — steady contributor</td></tr>
+    </tbody>
+  </table>
+
+  <div class="chart-wrap">
+    <h3 style="margin-top:0;">Q1 FY27 Revenue by Segment (₹ Crore)</h3>
+    <canvas id="segChart" height="100"></canvas>
+  </div>
+</section>
+
+<!-- SEMAGLUTIDE DEEP DIVE -->
+<section class="tab-panel" id="semaglutide">
+  <div class="eyebrow">06 / Deep-Dive</div>
+  <h2>Semaglutide: the growth driver that was supposed to replace lenalidomide</h2>
+  <div class="grid-3">
+    <div class="stat-card">
+      <div class="label">Pens sold before halt</div>
+      <div class="val">180,000</div>
+      <div class="note">Across India, Canada, partner markets — then paused</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="label">API revalidation target</div>
+      <div class="val">Sept 2026</div>
+      <div class="note">3rd week — management flags 80–90% success probability, not certainty</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Resupply guide (Nov'26–Mar'27)</div>
+      <div class="val">6–7 Mn pens</div>
+      <div class="note">Alternate API source needs ~1 yr for regulatory approval — can't bridge near-term gap</div>
+    </div>
+  </div>
+  <p style="max-width:820px; color:#3a3f47;">This is the crux of the investment debate. Bulls argue the ₹240 Cr provision is a one-off manufacturing issue on a still-valuable first-mover GLP-1 franchise. Bears argue that (a) a second regulatory setback (Brazil ANVISA rejection) shows this isn't purely a manufacturing problem, and (b) even the 80–90% "probability of success" language from management on API revalidation signals genuine uncertainty rather than routine process delay — a fully de-risked timeline would not need a probability caveat.</p>
+</section>
+
+<!-- MANAGEMENT & BOARD -->
+<section class="tab-panel" id="management">
+  <div class="eyebrow">07 / Management &amp; Board</div>
+  <h2>Leadership context</h2>
+  <div class="grid-2">
+    <div class="mgmt-card">
+      <div class="role">Chairman</div>
+      <div class="name">K. Satish Reddy</div>
+    </div>
+    <div class="mgmt-card">
+      <div class="role">Recent Filing (14 Aug 2026)</div>
+      <div class="name">Change in Management disclosed under Reg. 30 (LODR)</div>
+    </div>
+    <div class="mgmt-card">
+      <div class="role">Facility Inspection (14 Aug 2026)</div>
+      <div class="name">USFDA closed Mirfield (UK) API facility inspection — classified VAI</div>
+    </div>
+    <div class="mgmt-card">
+      <div class="role">Management Guidance (Q1 FY27 call)</div>
+      <div class="name">Base-business EBITDA margin target: "neighbourhood of 20%" (ex-semaglutide); R&amp;D 7–8% of revenue; FY27 tax rate 24–25%; FY27 capex ≈ ₹1,800 Cr</div>
+    </div>
+  </div>
+  <p style="color:var(--sub); font-size:.85rem;">Note: the "Change in Management" LODR filing on 14 Aug 2026 was disclosed by the company but specific personnel details were not captured in sources reviewed — recommend pulling the exchange filing directly for detail before citing externally.</p>
+</section>
+
+<!-- RATINGS -->
+<section class="tab-panel" id="ratings">
+  <div class="eyebrow">08 / Analysts' Rating</div>
+  <h2>Street view — split, with average target implying modest upside</h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="margin-top:0;">India Coverage (NSE/BSE, ₹ target)</h3>
+      <div class="rating-row"><span>Axis Direct</span><span class="rating-pill pill-sell">Sell — TP ₹1,070</span></div>
+      <div class="rating-row"><span>Citi</span><span class="rating-pill pill-sell">Sell — TP ₹1,070 (~13% downside)</span></div>
+      <div class="rating-row"><span>Broker consensus (9 brokers, Trendlyne)</span><span class="rating-pill pill-accum">Accumulate — Avg TP ₹1,306</span></div>
+      <div class="rating-row"><span>6-month trailing consensus</span><span class="rating-pill pill-hold">Hold</span></div>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">US ADR Coverage (NYSE: RDY, $ target)</h3>
+      <div class="rating-row"><span>HSBC</span><span class="rating-pill pill-buy">Strong Buy — TP $16.90</span></div>
+      <div class="rating-row"><span>Zacks Research</span><span class="rating-pill pill-hold">Hold (upgraded from Strong Sell)</span></div>
+      <div class="rating-row"><span>Weiss Ratings</span><span class="rating-pill pill-buy">Buy (B-)</span></div>
+      <div class="rating-row"><span>6-analyst consensus (MarketBeat)</span><span class="rating-pill pill-buy">Moderate Buy — Avg TP $13.79–$16.95</span></div>
+    </div>
+  </div>
+  <p style="color:var(--sub); font-size:.85rem; margin-top:16px;">Note the split: brokerages closest to the immediate results (Axis, Citi — issued around/after the semaglutide and Q1 print) are most cautious (Sell); broader multi-analyst consensus, which blends older and newer calls, still nets to Accumulate/Hold/Moderate Buy. This divergence itself is informative — near-term sentiment is weaker than trailing consensus suggests.</p>
+</section>
+
+<!-- VERDICT -->
+<section class="tab-panel" id="verdict">
+  <div class="eyebrow">09 / Investment Verdict</div>
+  <h2>Business and Investment Take</h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="margin-top:0; color:var(--accent);">The case for patience / accumulation</h3>
+      <ul class="plain">
+        <li>Ex-lenalidomide, ex-semaglutide "base business" is genuinely growing double-digit across India, Emerging Markets and sequentially in North America — the core franchise is not broken.</li>
+        <li>Balance sheet is clean: net cash surplus of ₹3,060 Cr, Net D/E of (0.08) — the company can self-fund the semaglutide fix and biosimilar/complex-generic pipeline without dilution or leverage stress.</li>
+        <li>The ₹240 Cr provision is a known, quantified, one-off; excluding it, margins (15.4%) are weak but not alarming for a transition quarter.</li>
+        <li>USFDA's VAI classification (not OAI/warning letter) at Mirfield removes one tail-risk overhang.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-top:0; color:var(--red);">The case for caution</h3>
+      <ul class="plain">
+        <li>Lenalidomide decline is structural and largely done — it will not reverse; the high-margin cushion that funded years of re-investment is gone.</li>
+        <li>Semaglutide resupply has multiple ways to slip further: API revalidation is only 80–90% probability, Brazil regulatory rejection shows non-manufacturing risk too, and the backup API source is a year away.</li>
+        <li>RoCE has fallen to 5.3% (8% ex-semaglutide) — well below what the stock's ~30x trailing P/E implies is normal; the multiple has not yet fully re-rated for the new margin reality.</li>
+        <li>₹2,395.81 Cr tax reassessment remains open and unresolved — a genuine, if lower-probability, contingent liability.</li>
+        <li>US tariff policy on Indian pharma exports remains an unresolved macro overhang outside company control.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="verdict-box">
+    <div class="eyebrow">Bottom line</div>
+    <h3>A transition quarter, not (yet) a broken business — but the market is right to demand proof before re-rating</h3>
+    <p>Dr. Reddy's core franchise — India, Emerging Markets, PSAI, and the ex-Revlimid US base — remains healthy and growing double-digit. The share price fall is a rational re-pricing of two overlapping, dated, quantifiable events: the lenalidomide cliff (structural, largely priced in now) and the semaglutide API failure (uncertain, not yet fully priced in given the 80–90% probability language). The stock's ~30x trailing P/E versus an 8% ex-item RoCE is the tension to watch — a re-rating higher likely needs either (a) confirmed semaglutide resupply from November 2026 without further slippage, or (b) base-business EBITDA margin visibly tracking toward management's ~20% target over the next 2–3 quarters. Until one of those is demonstrated, the stock is likely to stay range-bound near current levels, with the ₹1,070 (bear) to ₹1,306 (consensus) band capturing the realistic near-term range. This is not investment advice — consult a SEBI-registered advisor before acting.</p>
+  </div>
+</section>
+
+</main>
+
+<div class="cb-badge" id="cbBadge">
+  <div class="cb-circle">CB</div>
+  <div class="cb-tooltip">
+    <div class="cb-tooltip-title">CB Research</div>
+    <div class="cb-tooltip-desc">Educational analysis only — not investment advice. Verify figures independently &amp; consult a SEBI-registered advisor before investing.</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ---- Tab switching ----
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabPanels = document.querySelectorAll('.tab-panel');
+function activateTab(name){
+  tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  tabPanels.forEach(p => p.classList.toggle('active', p.id === name));
+  window.scrollTo({top: 0, behavior:'instant' in window ? 'instant' : 'auto'});
+  if(name === 'results') initMarginChart();
+  if(name === 'segments') initSegChart();
+}
+tabBtns.forEach(btn => btn.addEventListener('click', () => {
+  activateTab(btn.dataset.tab);
+  const active = document.querySelector('.tab-btn.active');
+  if(active) active.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}));
+
+// ---- Charts (lazy init on first tab visit) ----
+let marginChartInit = false, segChartInit = false;
+function initMarginChart(){
+  if(marginChartInit) return;
+  marginChartInit = true;
+  const marginCtx = document.getElementById('marginChart').getContext('2d');
+  new Chart(marginCtx, {
+  type: 'line',
+  data: {
+    labels: ['Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26','Q1 FY27'],
+    datasets: [
+      {
+        label: 'EBITDA Margin % (reported)',
+        data: [26.7, 22.0, null, 5.1, 12.5],
+        borderColor: '#b23b3b',
+        backgroundColor: 'rgba(178,59,59,0.08)',
+        borderWidth: 2.5,
+        tension: 0.25,
+        pointRadius: 5,
+        pointBackgroundColor: '#b23b3b',
+        spanGaps: true
+      },
+      {
+        label: 'EBITDA Margin % (ex-semaglutide provision, Q1 FY27 only)',
+        data: [null, null, null, null, 15.4],
+        borderColor: '#0b6e4f',
+        backgroundColor: '#0b6e4f',
+        borderWidth: 0,
+        pointRadius: 6,
+        pointStyle: 'triangle',
+        showLine: false
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { family: 'JetBrains Mono', size: 11 }, color: '#5b6470' } },
+      tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+    },
+    scales: {
+      y: { title: { display: true, text: 'EBITDA Margin %', font: { family: 'JetBrains Mono', size: 11 } }, grid: { color: '#e4e1da' }, ticks: { color: '#5b6470' } },
+      x: { grid: { display: false }, ticks: { color: '#5b6470', font: { family: 'JetBrains Mono', size: 11 } } }
+    }
+  }
+  });
+}
+
+function initSegChart(){
+  if(segChartInit) return;
+  segChartInit = true;
+  const segCtx = document.getElementById('segChart').getContext('2d');
+  new Chart(segCtx, {
+  type: 'bar',
+  data: {
+    labels: ['North America', 'India', 'Emerging Markets', 'PSAI (API/CDMO)', 'Europe (€ Mn→₹ approx)'],
+    datasets: [{
+      label: 'Q1 FY27 Revenue (₹ Crore)',
+      data: [2205, 1718, 1833, 810, 1210],
+      backgroundColor: ['#b23b3b','#0b6e4f','#0b6e4f','#2a5a8c','#a3760a'],
+      borderRadius: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: (ctx) => '₹' + ctx.parsed.y.toLocaleString('en-IN') + ' Cr' } }
+    },
+    scales: {
+      y: { title: { display: true, text: '₹ Crore', font: { family: 'JetBrains Mono', size: 11 } }, grid: { color: '#e4e1da' }, ticks: { color: '#5b6470', callback: (v)=>v.toLocaleString('en-IN') } },
+      x: { grid: { display: false }, ticks: { color: '#5b6470', font: { family: 'JetBrains Mono', size: 10 } } }
+    }
+  }
+  });
+}
+
+// Since Snapshot is the default active tab and has no chart, nothing to init on load.
+</script>
+
+</body>
+</html>

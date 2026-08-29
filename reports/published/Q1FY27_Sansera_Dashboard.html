@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sansera Engineering — Q1 FY27 Investment Dashboard | CB Research</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f9fb; --border:#e2e6ea; --ink:#1c2733; --sub:#5b6b7a;
+    --accent:#1a5fb4; --accent2:#0f8a5f; --warn:#c25b00; --bad:#c0392b; --good:#1a7a3c;
+    --tam:#8a3ffc;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header{padding:18px 24px;border-bottom:2px solid var(--accent);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  header h1{margin:0;font-size:22px;color:var(--accent);}
+  header .sub{font-size:13px;color:var(--sub);}
+  .watermark{font-size:11px;color:#b7c2cc;letter-spacing:1px;text-align:right;}
+  #cb-badge{position:fixed;bottom:20px;right:18px;z-index:999;width:46px;height:46px;border-radius:50%;
+    background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;letter-spacing:0.5px;cursor:pointer;box-shadow:0 2px 8px rgba(26,95,180,0.4);
+    animation:cbBlink 1.6s ease-in-out infinite;border:2px solid #fff;}
+  @keyframes cbBlink{0%,100%{opacity:1; box-shadow:0 2px 8px rgba(26,95,180,0.4);} 50%{opacity:0.55; box-shadow:0 2px 14px rgba(26,95,180,0.75);}}
+  #cb-popup{position:fixed;bottom:72px;right:18px;z-index:1000;max-width:300px;background:#fff;
+    border:1px solid var(--border);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.15);
+    padding:12px 14px;font-size:12px;color:var(--sub);display:none;line-height:1.5;}
+  #cb-popup.show{display:block;}
+  #cb-popup b{color:var(--accent);display:block;margin-bottom:4px;font-size:12.5px;}
+  nav{display:flex;flex-wrap:wrap;gap:4px;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+  nav button{background:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--ink);}
+  nav button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  main{padding:22px 26px;max-width:1240px;margin:0 auto;}
+  .tab{display:none;}
+  .tab.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  h2{color:var(--accent);border-bottom:2px solid var(--panel);padding-bottom:6px;}
+  h3{color:var(--accent2);margin-top:24px;}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.5px;}
+  th,td{border:1px solid var(--border);padding:7px 10px;text-align:right;}
+  th{background:var(--panel);text-align:right;}
+  td:first-child,th:first-child{text-align:left;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0;}
+  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+  .kpi .lbl{font-size:12px;color:var(--sub);}
+  .kpi .val{font-size:20px;font-weight:700;color:var(--ink);}
+  .kpi .chg{font-size:12px;}
+  .up{color:var(--good);} .down{color:var(--bad);}
+  .chart-box{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;margin:16px 0;height:340px;}
+  .note{font-size:12px;color:var(--sub);background:#fbfbfb;border-left:3px solid var(--accent);padding:8px 12px;margin:10px 0;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .swot{padding:14px;border-radius:8px;border:1px solid var(--border);}
+  .s{background:#eef8f0;} .w{background:#fdeeee;} .o{background:#eef3fb;} .t{background:#fdf6e3;}
+  .swot h4{margin-top:0;}
+  .badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700;}
+  .buy{background:#e2f5e8;color:var(--good);} .hold{background:#fdf2d6;color:var(--warn);} .sell{background:#fbe4e2;color:var(--bad);}
+  .cbf-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:12px 0;}
+  .cbf{text-align:center;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 4px;}
+  .cbf .n{font-size:22px;font-weight:800;color:var(--accent);}
+  .cbf .k{font-size:11px;color:var(--sub);}
+  .taglang{display:flex;gap:8px;margin-bottom:10px;}
+  .taglang button{padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:12px;}
+  .taglang button.on{background:var(--tam);color:#fff;border-color:var(--tam);}
+  #cbassist-log{border:1px solid var(--border);border-radius:8px;padding:12px;height:260px;overflow-y:auto;background:#fafcfe;margin-bottom:8px;font-size:13.5px;}
+  #cbassist-log .q{color:var(--accent);font-weight:600;margin:6px 0 2px;}
+  #cbassist-log .a{color:var(--ink);margin-bottom:8px;}
+  .row{display:flex;gap:8px;}
+  .row input{flex:1;padding:9px;border:1px solid var(--border);border-radius:6px;}
+  .row button{padding:9px 16px;border:none;background:var(--accent);color:#fff;border-radius:6px;cursor:pointer;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:5px 12px;font-size:12px;cursor:pointer;}
+  .soc-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;margin:10px 0;}
+  .soc-opt{display:block;width:100%;text-align:left;padding:8px 10px;margin:5px 0;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;}
+  .soc-opt.correct{background:#e2f5e8;border-color:var(--good);}
+  .soc-opt.wrong{background:#fbe4e2;border-color:var(--bad);}
+  footer{padding:16px 26px;text-align:center;font-size:11px;color:var(--sub);border-top:1px solid var(--border);}
+  .disclaim{font-size:11.5px;color:var(--sub);font-style:italic;margin-top:6px;}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Sansera Engineering Ltd — Q1 FY27 Investment Dashboard</h1>
+    <div class="sub">NSE: SANSERA &nbsp;|&nbsp; BSE: 543358 &nbsp;|&nbsp; Auto Ancillary / Precision Engineering — ADS (Aerospace, Defence &amp; Security) &nbsp;|&nbsp; Quarter ended 30 June 2026</div>
+  </div>
+  <div class="watermark">CB RESEARCH<br>Cauvery Business — SEBI Registered RA</div>
+</header>
+
+<div id="cb-badge" onclick="toggleCbPopup()" onmouseenter="showCbPopup()" onmouseleave="hideCbPopupDelayed()">CB</div>
+<div id="cb-popup" onmouseenter="cancelHideCbPopup()" onmouseleave="hideCbPopupDelayed()">
+  <b>CB Research (Cauvery Business), Chennai</b>
+  Generated: 25 August 2026, 10:01 AM IST.<br><br>
+  No buy/sell/hold recommendation is made by CB Research itself; third-party broker/analyst views shown are attributed to their respective sources. For educational purposes only, not investment advice.
+</div>
+
+<nav id="tabnav"></nav>
+<main id="tabhost"></main>
+
+<script>
+// ---------------- Machine-readable company object ----------------
+var CO = {
+  name: "Sansera Engineering Limited",
+  nse: "SANSERA", bse: "543358",
+  quarter: "Q1 FY27 (Apr-Jun 2026)",
+  price: 3877, mcap_cr: 24193, pe_ttm: 74.6, pb: 7.9,
+  w52h: 4040.4, w52l: 1241.3,
+  revenue_cr: 1021.3, ebitda_cr: 196.1, ebitda_margin: 19.2, pat_cr: 87.4, pat_margin: 8.6,
+  yoy_revenue: 33.3, yoy_ebitda: 48, yoy_pat: 39,
+  eps: 13.89, eps_py: 10.01,
+  adsBacklog_cr: 4436.8, nonAdsOrderBook_cr: 1849.3,
+  promoter: 29.2, fii: 21.5, dii: 31.1, public: 18.2,
+  consensusTarget: 3836, targetLow: 2500, targetHigh: 4500,
+  rating: "Buy (consensus, 7-8 Buy / 1-2 Hold / 1 Sell across trackers)"
+};
+
+// ---------------- CB Badge popup ----------------
+let cbHideTimer = null;
+function showCbPopup(){
+  clearTimeout(cbHideTimer);
+  document.getElementById('cb-popup').classList.add('show');
+}
+function hideCbPopupDelayed(){
+  cbHideTimer = setTimeout(()=>{ document.getElementById('cb-popup').classList.remove('show'); }, 250);
+}
+function cancelHideCbPopup(){ clearTimeout(cbHideTimer); }
+function toggleCbPopup(){
+  document.getElementById('cb-popup').classList.toggle('show');
+}
+document.addEventListener('click', function(e){
+  const badge = document.getElementById('cb-badge');
+  const popup = document.getElementById('cb-popup');
+  if(!badge.contains(e.target) && !popup.contains(e.target)){
+    popup.classList.remove('show');
+  }
+});
+
+// ---------------- Tabs ----------------
+const tabs = [
+ {id:"overview", label:"Overview"},
+ {id:"profile", label:"Business Profile"},
+ {id:"financials", label:"Financials"},
+ {id:"cashflow", label:"Cash Flow & W.Cap"},
+ {id:"valuations", label:"Valuations"},
+ {id:"activity", label:"Market Activity"},
+ {id:"swot", label:"SWOT"},
+ {id:"analysts", label:"Analysts' Rating"},
+ {id:"mgmt", label:"Management & Board"},
+ {id:"cbassist", label:"CB Assist"},
+ {id:"socrates", label:"Cauvery Socrates"}
+];
+const nav = document.getElementById("tabnav");
+const host = document.getElementById("tabhost");
+tabs.forEach((t,i)=>{
+  const b=document.createElement("button");
+  b.textContent=t.label; b.onclick=()=>showTab(t.id);
+  b.id="nb-"+t.id;
+  nav.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll(".tab").forEach(e=>e.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(e=>e.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById("nb-"+id).classList.add("active");
+}
+
+// ---------------- Content ----------------
+host.innerHTML = `
+
+<section class="tab" id="overview">
+  <h2>Overview — Q1 FY27</h2>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lbl">Revenue (Consolidated)</div><div class="val">₹1,021.3 Cr</div><div class="chg up">▲ 33.3% YoY</div></div>
+    <div class="kpi"><div class="lbl">EBITDA</div><div class="val">₹196.1 Cr</div><div class="chg up">▲ 48% YoY, margin 19.2%</div></div>
+    <div class="kpi"><div class="lbl">PAT (Reported)</div><div class="val">₹87.4 Cr</div><div class="chg up">▲ 39% YoY</div></div>
+    <div class="kpi"><div class="lbl">Adjusted PAT</div><div class="val">₹100.0 Cr</div><div class="chg">ex-exceptional items</div></div>
+    <div class="kpi"><div class="lbl">EPS (Basic, Consol.)</div><div class="val">₹13.89</div><div class="chg up">vs ₹10.01 Q1FY26</div></div>
+    <div class="kpi"><div class="lbl">CMP (21 Aug 2026)</div><div class="val">₹3,877</div><div class="chg down">-2.4% on results day, near 52w high</div></div>
+  </div>
+
+  <h3>Business snapshot</h3>
+  <p>Sansera Engineering is a Bengaluru-headquartered, engineering-led precision component manufacturer serving the automotive (2W, PV, CV) and non-automotive sectors (aerospace, defence, semiconductor equipment, off-road, agriculture). Q1 FY27 was the company's highest-ever quarterly revenue, led by a structural mix shift away from Auto-ICE toward Non-Auto / ADS (Aerospace, Defence &amp; Security) and Auto Tech-agnostic/xEV segments. See the <b>Business Profile</b> tab for the full segment, product and geography breakdown.</p>
+
+  <h3>Key Q1 FY27 highlights</h3>
+  <table>
+    <tr><th>Segment</th><th>Revenue (₹ Cr)</th><th>YoY Growth</th><th>Share of Q1FY27 sales</th></tr>
+    <tr><td>Non-Auto (of which ADS)</td><td>199.8 (145.4)</td><td>+129.9% (ADS &gt;3x)</td><td>20.8%</td></tr>
+    <tr><td>Auto Tech-agnostic &amp; xEV</td><td>131.6</td><td>+22.2%</td><td>~13%</td></tr>
+    <tr><td>Auto-ICE</td><td>627.5</td><td>+20.8%</td><td>65.4%</td></tr>
+    <tr><td>International business</td><td>—</td><td>+71.4%</td><td>—</td></tr>
+  </table>
+  <div class="note">Order book (excl. ADS) as of 30 Jun 2026: ₹1,849.3 Cr. Unexecuted ADS order backlog: ₹4,436.8 Cr (management cited a broader ADS backlog figure of ~₹5,750 Cr in commentary, including orders won post quarter-end). Management reiterated FY27 revenue growth guidance of high-teens to 20%, with ADS segment revenue guidance of ₹550–600 Cr for FY27. Semiconductor-equipment order revenue is expected to start flowing from CY2027 and peak in CY2029 — near-term ADS growth still comes off a small base.</div>
+</section>
+
+<section class="tab" id="profile">
+  <h2>Business Profile, Segments &amp; Geography</h2>
+
+  <h3>Company overview</h3>
+  <p>Sansera Engineering Limited, incorporated in 1981 and headquartered in Bengaluru, is an engineering-led integrated manufacturer of complex, critical precision-engineered components — primarily forged and machined iron and aluminium parts. Its four-decade legacy spans both the automotive and non-automotive sectors, with a portfolio described by the company as "80+ product families." Sansera listed on the NSE/BSE in September 2021.</p>
+
+  <h3>Product portfolio</h3>
+  <table>
+    <tr><th>Vertical</th><th>Representative products / applications</th></tr>
+    <tr><td>Automotive — Engine &amp; Transmission</td><td>Connecting rods, rocker arms, crankshafts, gear shifter forks, aluminium forged parts, generator shafts</td></tr>
+    <tr><td>Automotive — Chassis &amp; Systems</td><td>Suspension, braking, and other systems components for 2W, PV and CV vehicles</td></tr>
+    <tr><td>Non-Automotive — Aerospace, Defence &amp; Security (ADS)</td><td>Precision aero-structure and aero-engine components, defence and security hardware, semiconductor manufacturing equipment components</td></tr>
+    <tr><td>Non-Automotive — Off-road &amp; Agriculture</td><td>Precision components for off-highway and agricultural equipment OEMs</td></tr>
+  </table>
+
+  <h3>Segment revenue mix — Q1 FY27</h3>
+  <div class="chart-box"><canvas id="mixChart"></canvas></div>
+
+  <h3>Sales-mix structural shift (Auto-ICE share of total revenue)</h3>
+  <div class="chart-box"><canvas id="trendChart"></canvas></div>
+  <div class="note">Auto-ICE contribution has declined from 83.4% in FY21 to 65.4% in Q1 FY27, as Non-Auto (ADS) and Auto Tech-agnostic/xEV segments scale. Within Auto-ICE, two-wheelers remain the largest sub-segment at 29.7% of total sales (down from 39.5% in FY21), followed by PV (17.5%), CV (12.1%) and scooters (5.7%).</div>
+
+  <h3>Auto-ICE vehicle-category split (Q1 FY27, % of total revenue)</h3>
+  <table>
+    <tr><th>Category</th><th>Share of total revenue</th></tr>
+    <tr><td>Two-wheelers (motorcycles)</td><td>29.7%</td></tr>
+    <tr><td>Passenger vehicles (PV)</td><td>17.5%</td></tr>
+    <tr><td>Commercial vehicles (CV)</td><td>12.1%</td></tr>
+    <tr><td>Scooters</td><td>5.7%</td></tr>
+  </table>
+
+  <h3>Geographical footprint — Q1 FY27</h3>
+  <div class="chart-box"><canvas id="geoChart"></canvas></div>
+  <table>
+    <tr><th>Geography</th><th>Q1 FY27</th><th>Q1 FY26</th><th>FY26</th></tr>
+    <tr><td>India</td><td>60.1%</td><td>68.7%</td><td>65.2%</td></tr>
+    <tr><td>Europe (incl. Sweden)</td><td>19.6%</td><td>19.9%</td><td>18.8%</td></tr>
+    <tr><td>USA</td><td>12.7%</td><td>8.4%</td><td>9.3%</td></tr>
+    <tr><td>Other Foreign Countries</td><td>7.6%</td><td>3.0%</td><td>6.7%</td></tr>
+    <tr><td>International (total)</td><td>39.9%</td><td>31.3%</td><td>34.8%</td></tr>
+    <tr><td>— of which Exports from India</td><td>32.5%</td><td>22.4%</td><td>26.6%</td></tr>
+    <tr><td>— of which Sweden operations</td><td>7.4%</td><td>8.9%</td><td>8.2%</td></tr>
+  </table>
+  <div class="note">Source: Sansera Q1FY27 Investor Presentation (13 Aug 2026). International revenue mix jumped to 39.9% of sales in Q1 FY27 from 31.3% a year ago, as the export-led ADS/semiconductor business scaled. Within this: India business grew a healthy 17.4% YoY even as its overall share fell (International grew faster, +71.4% YoY); exports to the USA nearly doubled YoY on Aerospace and PV strength; Europe exports grew 32.1% YoY (48.8% YoY excluding the Sweden subsidiary, which itself grew 11.6% YoY); and exports to other foreign countries (ex-Europe/US) more than tripled YoY, led by the semiconductor business. The order book (excl. ADS) carries a 45% domestic / 55% global split as of Jun-26.</div>
+
+  <h3>Manufacturing footprint &amp; capacity additions</h3>
+  <p>Sansera operates multiple manufacturing plants (forging, machining, aluminium die-casting) across India, with its largest facility commissioned in 2017. Q1 FY27 capacity additions include a new surface-treatment plant and an ~80,000 sq ft hangar dedicated to aerospace and semiconductor-equipment manufacturing, supporting the ADS scale-up.</p>
+
+  <h3>Customer base</h3>
+  <p>The automotive business serves leading domestic and global 2W, PV and CV OEMs; the non-automotive/ADS business serves aerospace, defence and semiconductor-equipment customers globally. Specific customer names are not disclosed in the sources reviewed for this dashboard.</p>
+
+  <h3>Long-term revenue ambition</h3>
+  <div class="note">Management has indicated confidence in reaching ₹8,000–9,000 Cr of revenue by FY31 (vs ~₹3,557 Cr in FY26), backed by the ADS order pipeline and organic auto-segment growth — implying a multi-year compounding runway well beyond the FY27 guidance window.</div>
+</section>
+
+<section class="tab" id="financials">
+  <h2>Financials</h2>
+  <h3>Quarterly trend (₹ Cr)</h3>
+  <table>
+    <tr><th>Metric</th><th>Q1 FY26</th><th>Q4 FY26</th><th>Q1 FY27</th><th>YoY %</th></tr>
+    <tr><td>Revenue</td><td>766.3</td><td>998.7</td><td>1,021.3</td><td class="up">+33.3%</td></tr>
+    <tr><td>EBITDA</td><td>132.1</td><td>—</td><td>196.1</td><td class="up">+48.0%</td></tr>
+    <tr><td>EBITDA Margin %</td><td>17.2%</td><td>—</td><td>19.2%</td><td class="up">+200 bps</td></tr>
+    <tr><td>PAT (Reported)</td><td>63.0</td><td>123.1</td><td>87.4</td><td class="up">+38.7%</td></tr>
+    <tr><td>Adjusted PAT</td><td>—</td><td>—</td><td>100.0</td><td>—</td></tr>
+    <tr><td>PAT Margin %</td><td>8.2%</td><td>12.3%</td><td>8.6%</td><td>—</td></tr>
+    <tr><td>EPS (₹, basic)</td><td>10.01</td><td>—</td><td>13.89</td><td class="up">+38.8%</td></tr>
+    <tr><td>Capex (Quarter)</td><td>—</td><td>—</td><td>134.2</td><td>—</td></tr>
+  </table>
+  <div class="note">Q1 FY27 PAT was impacted by a one-off exceptional charge of ₹16.9 Cr (US litigation settlement) and a ₹12.6 Cr provision for US import-duty tariffs; adjusted PAT of ₹100 Cr strips out the post-tax impact of the exceptional item. Q4 FY26 figures shown for sequential reference; EBITDA not separately disclosed in the source used for that quarter.</div>
+
+  <div class="chart-box"><canvas id="finChart"></canvas></div>
+
+  <h3>Capex &amp; capital efficiency</h3>
+  <p>Q1 FY27 capex of ₹134.2 Cr was weighted toward Auto PV/CV plant &amp; machinery (45%), Non-Auto (13%) and Auto Tech-agnostic/xEV (12%), reflecting continued front-loaded investment ahead of demand — including a new surface-treatment plant and a hangar for aerospace/semiconductor equipment. Management guided incremental asset turns of 1.25–1.3x for automotive segments versus a higher 2.0–2.2x for ADS, implying better capital efficiency from the defence/aerospace scale-up once assets are productive.</div>
+
+  <h3>Shareholding pattern (as of Jun 2026)</h3>
+  <div class="chart-box"><canvas id="holdChart"></canvas></div>
+  <div class="note">Promoter holding of 29.2% declined ~0.89 percentage points quarter-on-quarter — worth monitoring, though this can reflect routine block deals/pledges data lags as much as a change in promoter conviction; no specific promoter-sale disclosure was found in the sources reviewed.</div>
+</section>
+
+<section class="tab" id="cashflow">
+  <h2>Cash Flow &amp; Working Capital Analysis</h2>
+  <div class="note">Figures below are consolidated, audited, sourced from Screener.in (data provider: C-MOTS Internet Technologies) for FY19–FY26. Q1 FY27 standalone quarterly cash flow is not separately disclosed by the company; this section reflects full-year trends through FY26 (year ended 31 Mar 2026).</div>
+
+  <h3>Cash flow statement trend (₹ Cr)</h3>
+  <table>
+    <tr><th>Year</th><th>FY22</th><th>FY23</th><th>FY24</th><th>FY25</th><th>FY26</th></tr>
+    <tr><td>Cash from Operating Activity</td><td>213</td><td>256</td><td>374</td><td>377</td><td>387</td></tr>
+    <tr><td>Cash from Investing Activity</td><td>-258</td><td>-239</td><td>-367</td><td>-957</td><td>-441</td></tr>
+    <tr><td>Cash from Financing Activity</td><td>47</td><td>-6</td><td>-8</td><td>583</td><td>104</td></tr>
+    <tr><td>Net Cash Flow</td><td>2</td><td>11</td><td>-1</td><td>3</td><td>50</td></tr>
+    <tr><td>Free Cash Flow</td><td>-54</td><td>14</td><td>36</td><td>-219</td><td>-123</td></tr>
+    <tr><td>CFO / Operating Profit %</td><td>76%</td><td>82%</td><td>91%</td><td>85%</td><td>77%</td></tr>
+  </table>
+  <div class="chart-box"><canvas id="cfChart"></canvas></div>
+  <div class="note">Operating cash flow has grown steadily (₹213 Cr in FY22 to ₹387 Cr in FY26) and broadly tracks operating profit, but the CFO/Operating-Profit conversion ratio has slipped from a peak of 91% (FY24) to 77% (FY26) — a sign that rising working capital (mainly inventory build, see below) is now absorbing more of the operating cash generated. Investing outflow spiked sharply to ₹957 Cr in FY25 (large capex plus strategic investments such as MMRFIC and the Nichidai JV commitment) before moderating to ₹441 Cr in FY26 — still elevated versus FY22-24 levels, consistent with the company's stated capacity build-ahead-of-demand strategy for ADS/aerospace. Financing cash flow swung sharply positive in FY25 (+₹583 Cr), reflecting the QIP/equity placement completed around that period, which funded the capex surge without proportionately increasing debt; FY26 financing inflow of ₹104 Cr reflects incremental borrowings. Free cash flow has been negative for two straight years (FY25: -₹219 Cr, FY26: -₹123 Cr) — the business is currently consuming more cash than it generates from operations, by design, while it builds ADS/semiconductor capacity; this is a key metric to watch as capex phases down and ADS revenue conversion ramps up.</div>
+
+  <h3>Key financial ratios</h3>
+  <table>
+    <tr><th>Metric</th><th>FY22</th><th>FY23</th><th>FY24</th><th>FY25</th><th>FY26</th></tr>
+    <tr><td>ROCE %</td><td>14%</td><td>14%</td><td>16%</td><td>13%</td><td>14%</td></tr>
+    <tr><td>ROE (TTM basis, latest)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>~11.5%</td></tr>
+    <tr><td>Debtor Days</td><td>75</td><td>68</td><td>60</td><td>55</td><td>65</td></tr>
+    <tr><td>Inventory Days</td><td>117</td><td>133</td><td>126</td><td>147</td><td>169</td></tr>
+    <tr><td>Days Payable</td><td>112</td><td>105</td><td>107</td><td>107</td><td>136</td></tr>
+    <tr><td>Cash Conversion Cycle (days)</td><td>80</td><td>96</td><td>79</td><td>96</td><td>98</td></tr>
+    <tr><td>Working Capital Days</td><td>1</td><td>6</td><td>-5</td><td>56</td><td>39</td></tr>
+  </table>
+  <div class="chart-box"><canvas id="wcChart"></canvas></div>
+  <div class="note">Working capital days (what the balance sheet actually funds, net of payables) swung from a favourable -5 days in FY24 to +56 days in FY25 and +39 days in FY26 — a material deterioration in capital efficiency over just two years. The main driver is inventory: Inventory Days rose from 126 (FY24) to a stretched 169 (FY26), the highest in the eight-year history shown, reflecting raw-material and WIP stocking ahead of new ADS/aerospace/semiconductor lines and the general capacity build-out. Debtor Days have stayed reasonably controlled (55-75 day range, 65 in FY26). Days Payable jumped to 136 in FY26 from a stable ~107 in FY24-25, meaning the company is partly funding the inventory build with supplier credit rather than its own working capital — a sensible offset, but the Cash Conversion Cycle (Debtor + Inventory − Payable days) has still crept up to 98 days in FY26 from 79 in FY24, confirming operations are tying up more cash per rupee of sales than two years ago. ROCE dipped to 13% in FY25 (large equity raise and capex diluted capital efficiency before new assets turned productive) and recovered only partially to 14% in FY26 — still below the FY24 peak of 16%. Screener's own flags note Sansera's ROE has averaged a comparatively modest 11.8% over the last 3 years, alongside the stock trading at a rich 7.76x book value.</div>
+
+  <h3>Balance sheet snapshot (₹ Cr, consolidated)</h3>
+  <table>
+    <tr><th>Metric</th><th>FY24</th><th>FY25</th><th>FY26</th></tr>
+    <tr><td>Equity Capital</td><td>11</td><td>12</td><td>12</td></tr>
+    <tr><td>Reserves</td><td>1,337</td><td>2,738</td><td>3,075</td></tr>
+    <tr><td>Borrowings</td><td>891</td><td>407</td><td>591</td></tr>
+    <tr><td>Total Liabilities/Assets</td><td>2,793</td><td>3,736</td><td>4,495</td></tr>
+    <tr><td>Fixed Assets + CWIP</td><td>1,668</td><td>2,133</td><td>2,482</td></tr>
+  </table>
+  <div class="note">Reserves more than doubled from ₹1,337 Cr (FY24) to ₹2,738 Cr (FY25), consistent with the FY25 equity placement (QIP) that also explains the financing-cash-flow spike above. Borrowings dropped sharply post-QIP (₹891 Cr → ₹407 Cr) before rising again to ₹591 Cr in FY26 to help fund continued capex — net debt remains modest relative to the ₹3,075 Cr reserve base, so leverage is not a near-term concern, but the trend of rising borrowings alongside a stretched working-capital cycle is worth monitoring if capex intensity stays elevated through FY27-28.</div>
+
+  <h3>Bottom line</h3>
+  <div class="note"><b>Read-through for investors:</b> Sansera's cash flow profile currently reflects a company in an aggressive, self-funded investment phase rather than one in cash-flow stress — operating cash generation is healthy and growing (₹387 Cr in FY26), but negative free cash flow for two consecutive years and a lengthening working-capital cycle (mainly inventory) mean the ADS/aerospace bet is, for now, consuming cash rather than returning it. The equity-funded FY25 capex round has kept leverage low, which is a genuine positive. The metric to track over the next few quarters is whether inventory days start coming down as the new ADS/semiconductor capacity moves from build-out to production, and whether CFO/Operating-Profit conversion recovers back toward the 85-91% range seen in FY24-25.</div>
+</section>
+
+<section class="tab" id="valuations">
+  <h2>Valuations</h2>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lbl">Market Cap</div><div class="val">₹24,193 Cr</div></div>
+    <div class="kpi"><div class="lbl">P/E (TTM)</div><div class="val">~74.6x</div></div>
+    <div class="kpi"><div class="lbl">P/B</div><div class="val">~7.9x</div></div>
+    <div class="kpi"><div class="lbl">52-week range</div><div class="val">₹1,241 – ₹4,040</div></div>
+    <div class="kpi"><div class="lbl">1-year return</div><div class="val up">~+193–199%</div></div>
+  </div>
+
+  <h3>Peer P/E comparison (auto ancillary / precision engineering)</h3>
+  <table>
+    <tr><th>Company</th><th>Fwd P/E</th><th>Est. Growth</th></tr>
+    <tr><td>Sansera Engineering</td><td>~41–75x (range across TTM/fwd data points)</td><td>~20.7%</td></tr>
+    <tr><td>Shriram Pistons &amp; Rings</td><td>~23.1x</td><td>~15.9%</td></tr>
+    <tr><td>Varroc Engineering</td><td>~70.1x</td><td>~43.2%</td></tr>
+    <tr><td>Banco Products (India)</td><td>~24.7x</td><td>n/a</td></tr>
+    <tr><td>SKF India</td><td>~17.3x</td><td>-21.8%</td></tr>
+    <tr><td>ASK Automotive</td><td>~34.1x</td><td>~19.2%</td></tr>
+  </table>
+  <div class="note">Peer P/E figures are drawn from a mid-2026 data snapshot and were captured before Sansera's most recent price rally fully played out across all names; treat the peer average (roughly 30–38x historically) as directional, not point-in-time precise. On a like-for-like basis, Sansera continues to trade at a premium to most listed auto-ancillary peers, reflecting the market's re-rating of its ADS/aerospace-defence diversification story rather than its legacy auto-component economics alone.</div>
+
+  <h3>Forward estimates (FY27E, post-Q1 upgrade)</h3>
+  <table>
+    <tr><th>Metric</th><th>Pre-Q1 estimate</th><th>Post-Q1 estimate</th></tr>
+    <tr><td>Revenue</td><td>₹4,220 Cr</td><td>₹4,290 Cr (+14% YoY)</td></tr>
+    <tr><td>EPS</td><td>₹69.16</td><td>₹72.60 (+30% YoY)</td></tr>
+    <tr><td>Consensus target price</td><td>—</td><td>₹3,836 (+23% revision)</td></tr>
+  </table>
+  <div class="note">Twelve-analyst consensus (Simply Wall St aggregation, post-results). Target range spans a wide ₹2,500 (bearish) to ₹4,500 (bullish), reflecting genuine dispersion of views on how much of the ADS/aerospace opportunity is already priced in. A separate, staler DCF-based fair-value estimate (~₹613, from a pre-rally snapshot) implied the stock was significantly overvalued on intrinsic cash-flow grounds at that time; that estimate has not been refreshed for the FY27 upgrade cycle and should be treated as outdated context rather than a current fair-value call.</div>
+  <div class="disclaim">Valuation multiples and price/target figures are sourced from third-party financial data platforms at varying dates in August 2026 and can diverge meaningfully between providers. Cross-check against a live terminal/broker feed before acting.</div>
+</section>
+
+<section class="tab" id="activity">
+  <h2>Reasons for Share Market Activity</h2>
+  <h3>Result-day reaction (13 August 2026)</h3>
+  <p>Despite a record quarter — 33% revenue growth, 48% EBITDA growth and 200bps margin expansion — the stock fell ~2.4% on results day, closing around ₹3,786 versus a prior close near ₹3,878, just below its then 52-week high of ₹3,938. This reads as a classic "sell-the-news" / profit-booking reaction: the stock had already rallied strongly into the print (roughly 190%+ over the trailing year) on anticipation of exactly this kind of ADS-led beat, so headline numbers in line with elevated expectations triggered short-term profit-taking rather than fresh buying.</p>
+
+  <h3>Subsequent recovery (mid-to-late August 2026)</h3>
+  <p>Over the following two weeks the stock recovered toward and briefly touched a fresh 52-week high of ₹4,040.4, before settling around ₹3,860–3,930 by 21–22 August 2026, as sell-side analysts caught up with the results and raised consensus price targets by roughly 23% to ~₹3,836. This is a common pattern where the initial reaction reflects positioning/profit-booking, while the follow-through reflects analysts formally revising FY27 revenue and EPS estimates upward (EPS estimate raised ~5% to ₹72.60; revenue estimate raised to ₹4,290 Cr) after digesting the ADS order-backlog commentary.</p>
+
+  <h3>Underlying narrative drivers of the one-year re-rating</h3>
+  <ul>
+    <li><b>ADS/defence-aerospace diversification:</b> Non-auto revenue more than doubling and ADS revenue more than tripling YoY validates the multi-year pivot story management has been selling since the aerospace/semiconductor capex build-out began.</li>
+    <li><b>Order-backlog visibility:</b> An unexecuted ADS backlog in the ₹4,400–5,750 Cr range gives the market multi-year revenue visibility uncommon in the traditional auto-ancillary space, supporting a structurally higher multiple.</li>
+    <li><b>Margin expansion:</b> EBITDA margin at 19.2% (vs 17.2% a year ago) suggests the higher-value ADS/semiconductor mix is starting to show through in profitability, not just top-line optics.</li>
+    <li><b>India defence/semiconductor policy tailwinds:</b> Broader market enthusiasm for domestic defence manufacturing and semiconductor-equipment supply-chain plays has lifted sentiment across the sector, of which Sansera is a prominent small/mid-cap proxy.</li>
+    <li><b>One-off charges flagged as non-recurring:</b> The US litigation settlement (₹16.9 Cr) and import-duty tariff provision (₹12.6 Cr) were treated by the market as one-time items rather than a change in the earnings trajectory, limiting the negative read-through.</li>
+  </ul>
+  <div class="note">Caution: with the stock up ~190–200% over the trailing year and trading at ~75x trailing earnings, near-term price action is likely to stay sensitive to (a) the pace of ADS backlog-to-revenue conversion, (b) further US tariff/trade developments, and (c) any signs of automotive-cycle softness given Auto-ICE and Auto Tech-agnostic/xEV still make up ~79% of revenue.</div>
+</section>
+
+<section class="tab" id="swot">
+  <h2>SWOT Analysis</h2>
+  <div class="grid2">
+    <div class="swot s"><h4>Strengths</h4>
+      <ul>
+        <li>Diversified precision-engineering franchise spanning Auto-ICE, Auto Tech-agnostic/xEV and Non-Auto (aerospace, defence, semiconductor)</li>
+        <li>Record Q1 FY27 revenue (+33% YoY) with EBITDA margin expansion to 19.2%</li>
+        <li>Strong export/international growth (+71.4% YoY), reducing India-cycle dependency</li>
+        <li>Multi-year revenue visibility from a large unexecuted ADS order backlog</li>
+        <li>Four-decade manufacturing legacy; promoter-founder (S Sekhar Vasan) and Joint MD (F R Singhvi) with deep domain experience; dedicated Group CEO now driving execution</li>
+      </ul>
+    </div>
+    <div class="swot w"><h4>Weaknesses</h4>
+      <ul>
+        <li>Rich valuation — ~75x trailing P/E and ~7.9x P/B, well above most listed auto-ancillary peers</li>
+        <li>Heavy, front-loaded capex (₹134 Cr in Q1 alone) with payback dependent on future order conversion</li>
+        <li>Reported PAT diluted by one-off items (litigation settlement, US tariff provision) — adjusted PAT still the cleaner read</li>
+        <li>Semiconductor-related ADS revenue meaningfully delayed (CY2027 start, CY2029 peak) — near-term ADS growth off a small base</li>
+        <li>Slight QoQ decline in promoter holding</li>
+      </ul>
+    </div>
+    <div class="swot o"><h4>Opportunities</h4>
+      <ul>
+        <li>India defence indigenisation / Atmanirbhar Bharat and Make-in-India aerospace push</li>
+        <li>Global semiconductor-equipment supply-chain diversification (China+1) favouring new component orders</li>
+        <li>Rising Non-Auto/ADS mix (20.8% and climbing) structurally improving margin profile and cyclicality profile</li>
+        <li>EV/xEV and tech-agnostic component transition within the core auto business</li>
+        <li>New capacity (surface-treatment plant, aerospace/semiconductor hangar) positions the company for the next up-cycle</li>
+      </ul>
+    </div>
+    <div class="swot t"><h4>Threats</h4>
+      <ul>
+        <li>Execution risk on large capex programme — asset-turn targets (1.25–1.3x auto, 2.0–2.2x ADS) must be delivered</li>
+        <li>US trade-policy/tariff risk, already evidenced by a quarterly provision</li>
+        <li>Raw-material/input cost inflation (aluminium, consumables)</li>
+        <li>Cyclicality in core 2W/PV/CV auto demand, which still drives ~79% of revenue</li>
+        <li>Rich multiple leaves limited room for error — any growth disappointment or broader risk-off could trigger sharp de-rating</li>
+        <li>Rising competitive intensity in ADS from established defence/aerospace contractors as the segment scales</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="analysts">
+  <h2>Analysts' Rating</h2>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lbl">Consensus rating</div><div class="val"><span class="badge buy">BUY</span></div></div>
+    <div class="kpi"><div class="lbl">Consensus target (post-Q1)</div><div class="val">₹3,836</div><div class="chg up">+23% revision</div></div>
+    <div class="kpi"><div class="lbl">Target range</div><div class="val">₹2,500 – ₹4,500</div></div>
+    <div class="kpi"><div class="lbl">Buy / Hold / Sell split</div><div class="val">~7-8 / 1-2 / 1</div></div>
+  </div>
+  <table>
+    <tr><th>Source (as attributed)</th><th>Rating</th><th>Target Price</th><th>Notes</th></tr>
+    <tr><td>Simply Wall St analyst aggregation (12 analysts, post-Q1 FY27)</td><td class="badge buy">Buy-leaning consensus</td><td>₹3,836</td><td>Target raised 23% after results; FY27E revenue ₹4,290 Cr, EPS ₹72.60</td></tr>
+    <tr><td>Investing.com consensus (8 analysts, early Aug 2026)</td><td class="badge buy">Buy</td><td>₹3,119 (avg); high ₹4,130 / low ₹2,480</td><td>8 Buy, 1 Sell at time of snapshot</td></tr>
+    <tr><td>Investing.com consensus (10 analysts, later snapshot)</td><td class="badge buy">Buy</td><td>₹2,893.50 (avg); high ₹3,250 / low ₹2,480</td><td>7 Buy, 2 Hold, 1 Sell — pre-dates the post-Q1 rally/target upgrade</td></tr>
+    <tr><td>Domestic broker (Trendlyne-aggregated, ~3 brokers, Q3 FY26 vintage)</td><td class="badge buy">Buy</td><td>₹2,387.50 (avg)</td><td>Older estimate; retained "BUY" through prior quarters on strategic-shift thesis</td></tr>
+  </table>
+  <div class="note">Target-price figures diverge sharply across providers and update dates because Sansera's price has moved so fast (from ~₹1,700 in Jan 2026 to ~₹3,900 by Aug 2026); several trackers had not yet refreshed targets for the post-Q1 FY27 re-rating. The most recent, results-adjusted consensus (₹3,836, +23% revision) is the most relevant read as of this dashboard's publication date. CB Research does not issue its own buy/sell/hold call; all ratings above are attributed to the named third-party source.</div>
+
+  <h3>Management guidance vs consensus</h3>
+  <table>
+    <tr><th></th><th>Management guidance (FY27)</th><th>Consensus estimate (FY27)</th></tr>
+    <tr><td>Revenue growth</td><td>High-teens to 20% YoY</td><td>~14% YoY to ₹4,290 Cr (some upside seen as understated by mgmt commentary)</td></tr>
+    <tr><td>ADS segment revenue</td><td>₹550–600 Cr</td><td>Not separately disclosed</td></tr>
+    <tr><td>EPS</td><td>Not explicitly guided</td><td>₹72.60 (+30% YoY)</td></tr>
+  </table>
+</section>
+
+<section class="tab" id="mgmt">
+  <h2>Management &amp; Board</h2>
+  <table>
+    <tr><th>Name</th><th>Position</th><th>Background</th></tr>
+    <tr><td>S Sekhar Vasan</td><td>Chairman &amp; Managing Director</td><td>Director since incorporation; B.Tech, IIT Madras; PGDM, IIM Bangalore; 43+ years of professional experience</td></tr>
+    <tr><td>F R Singhvi</td><td>Joint Managing Director</td><td>Co-promoter; All-India rank-holder Chartered Accountant; 35+ years of professional and industry leadership experience</td></tr>
+    <tr><td>Bindiganavile Raghunath Preetham</td><td>Group CEO &amp; Executive Director</td><td>Leads day-to-day operations and strategic implementation; primary spokesperson on the Q1 FY27 earnings call, articulating the ADS/semiconductor scale-up plan and FY27 growth guidance</td></tr>
+    <tr><td>Revathy Ashok</td><td>Independent Non-Executive Director</td><td>Board oversight and governance role</td></tr>
+    <tr><td>M Lakshminarayan</td><td>Independent Non-Executive Director</td><td>Board oversight and governance role</td></tr>
+    <tr><td>Rajesh Kumar Modi</td><td>Company Secretary &amp; Compliance Officer</td><td>Signs regulatory disclosures to NSE/BSE under SEBI LODR Regulation 30</td></tr>
+  </table>
+  <div class="note">Board composition sourced from the company's official investor-relations material and recent regulatory filings; verify against the latest annual report/AGM disclosures for any subsequent changes, as board rosters are periodically refreshed (e.g., nominee/independent director additions were made through 2025).</div>
+</section>
+
+<section class="tab" id="cbassist">
+  <h2>CB Assist</h2>
+  <div class="taglang">
+    <button class="on" id="lang-en" onclick="setLang('en')">English</button>
+    <button id="lang-ta" onclick="setLang('ta')">தமிழ்</button>
+  </div>
+  <div class="chips" id="cbchips"></div>
+  <div id="cbassist-log"></div>
+  <div class="row">
+    <input id="cbinput" placeholder="Ask about Sansera's Q1 FY27 results..." onkeydown="if(event.key==='Enter')cbAsk()">
+    <button onclick="cbAsk()">Ask</button>
+  </div>
+  <div class="disclaim">CB Assist is an offline keyword-matching helper covering only the data shown in this dashboard. It does not give buy/sell/hold advice.</div>
+</section>
+
+<section class="tab" id="socrates">
+  <h2>Cauvery Socrates — Socratic Tutor</h2>
+  <p>Test your understanding of Sansera's Q1 FY27 results with guided questions. Pick an option, then reason through the free-text follow-up.</p>
+  <div id="soc-host"></div>
+</section>
+`;
+
+// ---------------- Charts ----------------
+Chart.defaults.color = "#1c2733";
+new Chart(document.getElementById('mixChart'), {
+  type:'doughnut',
+  data:{labels:['Auto-ICE (65.4%)','Auto Tech-agnostic/xEV (~13%)','Non-Auto/ADS (20.8%)'],
+    datasets:[{data:[65.4,13.8,20.8], backgroundColor:['#1a5fb4','#0f8a5f','#c25b00']}]},
+  options:{responsive:true,maintainAspectRatio:false}
+});
+new Chart(document.getElementById('trendChart'), {
+  type:'line',
+  data:{labels:['FY21','FY24','FY26','Q1 FY27'],
+    datasets:[{label:'Auto-ICE % of revenue', data:[83.4,74,68,65.4], borderColor:'#1a5fb4', backgroundColor:'rgba(26,95,180,0.1)', fill:true, tension:0.3}]},
+  options:{responsive:true,maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+new Chart(document.getElementById('cfChart'), {
+  type:'bar',
+  data:{labels:['FY22','FY23','FY24','FY25','FY26'],
+    datasets:[
+      {label:'CFO', data:[213,256,374,377,387], backgroundColor:'#0f8a5f'},
+      {label:'CFI', data:[-258,-239,-367,-957,-441], backgroundColor:'#c0392b'},
+      {label:'CFF', data:[47,-6,-8,583,104], backgroundColor:'#1a5fb4'},
+      {label:'Free Cash Flow', data:[-54,14,36,-219,-123], type:'line', borderColor:'#c25b00', backgroundColor:'#c25b00', tension:0.3, yAxisID:'y'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': ₹'+c.raw.toLocaleString('en-IN')+' Cr'}}},
+    scales:{y:{ticks:{callback:v=>'₹'+v}}}}
+});
+new Chart(document.getElementById('wcChart'), {
+  type:'line',
+  data:{labels:['FY22','FY23','FY24','FY25','FY26'],
+    datasets:[
+      {label:'Debtor Days', data:[75,68,60,55,65], borderColor:'#1a5fb4', tension:0.3},
+      {label:'Inventory Days', data:[117,133,126,147,169], borderColor:'#c25b00', tension:0.3},
+      {label:'Days Payable', data:[112,105,107,107,136], borderColor:'#0f8a5f', tension:0.3},
+      {label:'Cash Conversion Cycle', data:[80,96,79,96,98], borderColor:'#8a3ffc', tension:0.3, borderWidth:3},
+      {label:'Working Capital Days', data:[1,6,-5,56,39], borderColor:'#c0392b', borderDash:[6,4], tension:0.3}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+' days'}}},
+    scales:{y:{ticks:{callback:v=>v+'d'}}}}
+});
+new Chart(document.getElementById('geoChart'), {
+  type:'bar',
+  data:{labels:['India','Europe','USA','Other Foreign'],
+    datasets:[
+      {label:'Q1 FY26', data:[68.7,19.9,8.4,3.0], backgroundColor:'#c9d6e3'},
+      {label:'Q1 FY27', data:[60.1,19.6,12.7,7.6], backgroundColor:'#1a5fb4'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+new Chart(document.getElementById('finChart'), {
+  type:'bar',
+  data:{labels:['Q1 FY26','Q1 FY27'],
+    datasets:[
+      {label:'Revenue (₹ Cr)', data:[766.3,1021.3], backgroundColor:'#1a5fb4'},
+      {label:'EBITDA (₹ Cr)', data:[132.1,196.1], backgroundColor:'#0f8a5f'},
+      {label:'PAT (₹ Cr)', data:[63.0,87.4], backgroundColor:'#c25b00'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': ₹'+c.raw.toLocaleString('en-IN')+' Cr'}}}}
+});
+new Chart(document.getElementById('holdChart'), {
+  type:'pie',
+  data:{labels:['Promoter 29.2%','DII 31.1%','FII 21.5%','Public 18.2%'],
+    datasets:[{data:[29.2,31.1,21.5,18.2], backgroundColor:['#1a5fb4','#0f8a5f','#c25b00','#8a3ffc']}]},
+  options:{responsive:true,maintainAspectRatio:false}
+});
+
+// ---------------- CB Assist (offline keyword-matching) ----------------
+const kb = {
+  en: {
+    revenue: "Q1 FY27 consolidated revenue was ₹1,021.3 Cr, up 33.3% YoY — the company's highest-ever quarterly revenue.",
+    ebitda: "EBITDA was ₹196.1 Cr, up 48% YoY, with margin expanding ~200 bps to 19.2% from 17.2% in Q1 FY26.",
+    pat: "Reported PAT was ₹87.4 Cr (+39% YoY); adjusted PAT (ex-exceptional items) was ₹100 Cr.",
+    ads: "The ADS (Aerospace, Defence & Security) business grew more than 3x YoY to ₹145.4 Cr and is the primary driver of the Non-Auto segment, which rose 129.9% YoY to ₹199.8 Cr (20.8% of total revenue).",
+    price: "As of 21-22 Aug 2026 the stock traded around ₹3,860-3,930, near its 52-week high of ₹4,040.4, after a ~2.4% dip on results day (13 Aug 2026) on profit-booking.",
+    target: "Post-Q1 consensus target price is ₹3,836, an upward revision of 23%, with a wide range of ₹2,500-4,500 across analysts.",
+    valuation: "Sansera trades at roughly 75x trailing P/E and ~7.9x P/B, a premium to most listed auto-ancillary peers, reflecting its ADS/aerospace-defence diversification story.",
+    backlog: "The unexecuted ADS order backlog stood at ₹4,436.8 Cr as of 30 Jun 2026 (management also referenced a broader ~₹5,750 Cr figure), with the non-ADS order book at ₹1,849.3 Cr.",
+    guidance: "Management guided FY27 revenue growth of high-teens to 20% YoY, with ADS segment revenue guidance of ₹550-600 Cr.",
+    rating: "Consensus rating across trackers is 'Buy' (roughly 7-8 Buy, 1-2 Hold, 1 Sell), per third-party analysts — this is not a CB Research recommendation.",
+    default: "I can help with: revenue, EBITDA, PAT, the ADS segment, share price activity, consensus target price, valuation multiples, order backlog, FY27 guidance, and analyst ratings. Try asking about one of these."
+  },
+  ta: {
+    revenue: "Q1 FY27 ஒருங்கிணைந்த வருவாய் ₹1,021.3 கோடி, ஆண்டுக்கு ஆண்டு 33.3% வளர்ச்சி — நிறுவனத்தின் இதுவரையிலான அதிகபட்ச காலாண்டு வருவாய்.",
+    ebitda: "EBITDA ₹196.1 கோடி, ஆண்டுக்கு ஆண்டு 48% வளர்ச்சி; மார்ஜின் 17.2% லிருந்து 19.2% ஆக ~200 bps உயர்ந்துள்ளது.",
+    pat: "அறிவிக்கப்பட்ட PAT ₹87.4 கோடி (+39% YoY); விதிவிலக்கு உருப்படிகளை நீக்கிய Adjusted PAT ₹100 கோடி.",
+    ads: "ADS (விமானப்படை, பாதுகாப்பு & பாதுகாப்பு) வணிகம் ஆண்டுக்கு ஆண்டு 3 மடங்குக்கும் மேலாக வளர்ந்து ₹145.4 கோடியை எட்டியது; Non-Auto பிரிவு 129.9% வளர்ந்து ₹199.8 கோடி (மொத்த வருவாயில் 20.8%).",
+    price: "21-22 ஆகஸ்ட் 2026 நிலவரப்படி பங்கு விலை ₹3,860-3,930 வரம்பில், 52-வார உயர்வான ₹4,040.4 அருகில் வர்த்தகமானது; முடிவு நாளில் (13 ஆகஸ்ட்) இலாப சேகரிப்பால் ~2.4% சரிவு இருந்தது.",
+    target: "Q1 முடிவுகளுக்குப் பின் ஒருமித்த இலக்கு விலை ₹3,836, 23% உயர்வு; ஆய்வாளர்களிடையே ₹2,500-4,500 எனும் பரந்த வரம்பு.",
+    valuation: "Sansera தோராயமாக 75x P/E மற்றும் ~7.9x P/B இல் வர்த்தகமாகிறது — பெரும்பாலான ஆட்டோ துணை பங்குகளை விட அதிகம், இது ADS/விமானப்படை-பாதுகாப்பு பல்வகைப்படுத்தல் கதையை பிரதிபலிக்கிறது.",
+    backlog: "30 ஜூன் 2026 நிலவரப்படி நிறைவேற்றப்படாத ADS ஆர்டர் இருப்பு ₹4,436.8 கோடி (மேலாண்மை ~₹5,750 கோடி என்றும் குறிப்பிட்டது); non-ADS ஆர்டர் புத்தகம் ₹1,849.3 கோடி.",
+    guidance: "மேலாண்மை FY27 வருவாய் வளர்ச்சியை high-teens முதல் 20% வரை வழிகாட்டியுள்ளது; ADS பிரிவு வருவாய் வழிகாட்டுதல் ₹550-600 கோடி.",
+    rating: "மூன்றாம் தரப்பு ஆய்வாளர்களின் ஒருமித்த மதிப்பீடு 'Buy' (சுமார் 7-8 Buy, 1-2 Hold, 1 Sell) — இது CB Research இன் சொந்த பரிந்துரை அல்ல.",
+    default: "நான் இவற்றில் உதவலாம்: வருவாய், EBITDA, PAT, ADS பிரிவு, பங்கு சந்தை நடவடிக்கை, ஒருமித்த இலக்கு விலை, மதிப்பீட்டு விகிதங்கள், ஆர்டர் இருப்பு, FY27 வழிகாட்டுதல், ஆய்வாளர் மதிப்பீடுகள். இவற்றில் ஒன்றைப் பற்றி கேளுங்கள்."
+  }
+};
+let curLang = 'en';
+function setLang(l){
+  curLang = l;
+  document.getElementById('lang-en').classList.toggle('on', l==='en');
+  document.getElementById('lang-ta').classList.toggle('on', l==='ta');
+  renderChips();
+}
+function renderChips(){
+  const chipLabels = curLang==='en'
+    ? ["Revenue","EBITDA","PAT","ADS segment","Share price","Target price","Valuation","Order backlog","Guidance","Rating"]
+    : ["வருவாய்","EBITDA","PAT","ADS பிரிவு","பங்கு விலை","இலக்கு விலை","மதிப்பீடு","ஆர்டர் இருப்பு","வழிகாட்டுதல்","மதிப்பீடு (Rating)"];
+  const keys = ["revenue","ebitda","pat","ads","price","target","valuation","backlog","guidance","rating"];
+  const box = document.getElementById('cbchips');
+  box.innerHTML = "";
+  keys.forEach((k,i)=>{
+    const c=document.createElement('div'); c.className='chip'; c.textContent=chipLabels[i];
+    c.onclick=()=>cbRespond(k, chipLabels[i]);
+    box.appendChild(c);
+  });
+}
+renderChips();
+function cbAsk(){
+  const input = document.getElementById('cbinput');
+  const q = input.value.trim();
+  if(!q) return;
+  const map = [["revenue",["revenue","sales","turnover","வருவாய்"]],["ebitda",["ebitda"]],
+    ["pat",["pat","profit","net profit","இலாப"]],["ads",["ads","aerospace","defence","defense","semiconductor"]],
+    ["price",["price","share price","stock","closing","பங்கு"]],["target",["target","consensus"]],
+    ["valuation",["valuation","pe","p/e","p/b","multiple"]],["backlog",["backlog","order book","order"]],
+    ["guidance",["guidance","fy27 outlook","forecast"]],["rating",["rating","buy","sell","hold","recommend"]]];
+  let key = "default";
+  const ql = q.toLowerCase();
+  for(const [k, words] of map){ if(words.some(w=>ql.includes(w))){ key = k; break; } }
+  cbRespond(key, q);
+  input.value = "";
+}
+function cbRespond(key, displayQ){
+  const log = document.getElementById('cbassist-log');
+  const qd = document.createElement('div'); qd.className='q'; qd.textContent = "You: " + displayQ;
+  const ad = document.createElement('div'); ad.className='a'; ad.textContent = "CB Assist: " + (kb[curLang][key] || kb[curLang]["default"]);
+  log.appendChild(qd); log.appendChild(ad);
+  log.scrollTop = log.scrollHeight;
+}
+
+// ---------------- Cauvery Socrates ----------------
+const socQs = [
+ {q:"Sansera's Q1 FY27 EBITDA margin expanded to 19.2% from 17.2% a year ago. What is the most likely primary driver?",
+  opts:["Cost-cutting in the Auto-ICE segment","Mix-shift toward higher-value Non-Auto/ADS revenue","One-time tax credit","Currency depreciation benefit"],
+  correct:1,
+  follow:"Why would a rising share of ADS/aerospace revenue (still only ~21% of sales) be enough to move the blended margin by 200bps? Think about relative segment profitability, not just segment size."},
+ {q:"The stock fell ~2.4% on results day despite record revenue and profit growth. What best explains this?",
+  opts:["The results missed consensus estimates","Profit-booking after a large pre-results rally to 52-week highs","A dividend cut was announced","Auditors flagged going-concern issues"],
+  correct:1,
+  follow:"If a stock has already priced in a strong quarter (it was up ~190%+ over the year), what tends to happen on the day even a genuinely good result is announced?"},
+ {q:"Sansera trades at roughly 75x trailing P/E versus a peer average closer to 30-38x. What is the most balanced way to interpret this?",
+  opts:["The stock is simply mispriced and will inevitably fall","The premium reflects the market pricing in the ADS/defence-aerospace growth optionality, which carries execution risk","P/E is irrelevant for auto-ancillary companies","The premium means the company has no debt"],
+  correct:1,
+  follow:"A high multiple isn't inherently 'wrong' — but what specific things would need to keep happening for that premium to be justified over the next 2-3 years?"},
+ {q:"Management guided FY27 ADS segment revenue of ₹550-600 Cr while the unexecuted ADS backlog stands at ~₹4,437 Cr. What does this gap suggest?",
+  opts:["The backlog figure is unreliable","ADS orders will be executed over several years, not converted to revenue in a single year","The company is not confident in ADS growth","FY27 guidance is overly conservative and wrong"],
+  correct:1,
+  follow:"Given semiconductor-related revenue is only expected to start in CY2027 and peak in CY2029, how should an investor think about the multi-year revenue conversion curve here?"}
+];
+const socHost = document.getElementById('soc-host');
+socQs.forEach((item,idx)=>{
+  const card = document.createElement('div'); card.className='soc-card';
+  const qEl = document.createElement('div'); qEl.innerHTML = "<b>Q"+(idx+1)+".</b> " + item.q;
+  card.appendChild(qEl);
+  item.opts.forEach((opt,oi)=>{
+    const b = document.createElement('button'); b.className='soc-opt'; b.textContent = opt;
+    b.onclick = ()=>{
+      [...card.querySelectorAll('.soc-opt')].forEach(x=>x.disabled=true);
+      if(oi===item.correct){ b.classList.add('correct'); }
+      else { b.classList.add('wrong'); card.querySelectorAll('.soc-opt')[item.correct].classList.add('correct'); }
+      const fu = document.createElement('div'); fu.className='note'; fu.style.marginTop='10px';
+      fu.innerHTML = "<b>Socratic follow-up:</b> " + item.follow;
+      card.appendChild(fu);
+    };
+    card.appendChild(b);
+  });
+  socHost.appendChild(card);
+});
+
+// init
+showTab('overview');
+</script>
+</body>
+</html>

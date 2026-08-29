@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passenger Vehicles Sector — Intelligence Dashboard | Q1 FY27</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#fff;--surface2:#f2f0eb;--border:#e2ddd5;
+  --text:#181511;--muted:#6e6860;
+  --tata:#1d3f91;--tata-soft:#eef1fb;
+  --maruti:#c1272d;--maruti-soft:#fdeeee;
+  --hyundai:#0891b2;--hyundai-soft:#ecf8fb;
+  --jlr:#4b2e83;--jlr-soft:#f3effa;
+  --pos:#166534;--neg:#dc2626;--warn:#ea580c;
+  --gold:#b8911e;--gold-soft:#fdf5e0;
+  --shadow:0 1px 8px rgba(24,21,17,.07);--shadow-md:0 4px 20px rgba(24,21,17,.10);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;}
+.hdr{background:#181511;color:#fff;padding:0 40px;display:flex;align-items:stretch;justify-content:space-between;min-height:72px;flex-wrap:wrap;}
+.hdr-left{display:flex;align-items:center;padding:16px 0;}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.55rem;letter-spacing:-.01em;color:#fff;line-height:1.15;}
+.hdr-left .sub{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0;}
+.chip{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip-tata{background:var(--tata);color:#fff;}
+.chip-maruti{background:var(--maruti);color:#fff;}
+.chip-hyundai{background:var(--hyundai);color:#fff;}
+.chip-date{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);}
+.tab-nav{background:var(--surface);border-bottom:2px solid var(--border);display:flex;align-items:center;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(24,21,17,.06);}
+.tab-nav::-webkit-scrollbar{height:0;}
+.tab-btn{padding:14px 15px 12px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:.02em;transition:color .18s,border-color .18s;margin-bottom:-2px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--maruti);font-weight:700;}
+.main{padding:26px 40px 48px;max-width:1460px;margin:0 auto;}
+.panel{display:none;animation:fadeIn .2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.sec-hdr{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.sec-note{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gap-top{margin-top:22px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;}
+.co-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.co-card.tata::before{background:var(--tata);}
+.co-card.maruti::before{background:var(--maruti);}
+.co-card.hyundai::before{background:var(--hyundai);}
+.co-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:2px;}
+.co-seg{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:10px;}
+.m-row{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center;}
+.m-lbl{font-size:11.5px;color:var(--muted);}
+.m-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.badge-row{margin-top:12px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.b-buy{background:#dcfce7;color:#15803d;}
+.b-hold{background:#fef9c3;color:#a16207;}
+.b-sell{background:#fee2e2;color:#b91c1c;}
+.b-spec{background:#f3f4f6;color:#4b5563;}
+.b-watch{background:#fff7ed;color:#c2410c;}
+.b-pos{background:#dcfce7;color:#15803d;}
+.b-neg{background:#fee2e2;color:#b91c1c;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.kpi.tata-a{border-left:4px solid var(--tata);}
+.kpi.maruti-a{border-left:4px solid var(--maruti);}
+.kpi.hyundai-a{border-left:4px solid var(--hyundai);}
+.kpi.jlr-a{border-left:4px solid var(--jlr);}
+.kpi .kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;}
+.kpi .kv{font-size:1.12rem;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;}
+.kpi .kc{font-size:10px;font-weight:700;margin-top:2px;}
+.pos{color:var(--pos);}.neg{color:var(--neg);}.warn{color:var(--warn);}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th{background:#181511;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;padding:11px 13px;text-align:left;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#fafaf8;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tpos{color:var(--pos);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tneg{color:var(--neg);font-weight:700;font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.tb{font-weight:700;}
+td.src{color:var(--muted);font-size:10.5px;white-space:normal;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle;}
+.val-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.val-co{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.val-row:last-child{border-bottom:none;}
+.val-lbl{font-size:11.5px;color:var(--muted);}
+.val-num{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.swot-cell{padding:13px 15px;}
+.swot-s{background:#e8f5ee;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.swot-w{background:#fbeee8;border-bottom:1px solid var(--border);}
+.swot-o{background:#f0edf8;border-right:1px solid var(--border);}
+.swot-t{background:var(--gold-soft);}
+.swot-lbl{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px;}
+.sl{color:#166534;}.wl{color:#dc2626;}.ol{color:#7c3aed;}.tl{color:var(--gold);}
+.swot-ul{list-style:none;font-size:11px;line-height:1.65;}
+.swot-ul li::before{content:"• ";color:var(--muted);}
+.co-hdr-swot{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;}
+.seg-bar-wrap{background:var(--surface2);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px;}
+.seg-bar{height:10px;border-radius:20px;}
+.seg-row{margin-bottom:14px;}
+.seg-lbl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+.analyst-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.ac-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;}
+.rat-pill{padding:4px 13px;border-radius:20px;font-size:11px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.rp-buy{background:#dcfce7;color:#15803d;}
+.rp-hold{background:#fef9c3;color:#a16207;}
+.rp-sell{background:#fee2e2;color:#b91c1c;}
+.ac-tp{font-size:1.2rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--text);margin-bottom:3px;}
+.ac-cmp{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ac-text{font-size:12px;color:var(--text);line-height:1.6;}
+.ac-text strong{color:var(--text);}
+.grp-hdr{margin-bottom:8px;padding:7px 14px;border-left:4px solid;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.fin-subtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);}
+.fin-tab-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:8px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:all .15s;}
+.fin-tab-btn:hover:not(.active){border-color:var(--muted);color:var(--text);}
+.fin-tab-btn.active{color:#fff;}
+.fin-tab-btn.ft-all.active{background:#181511;border-color:#181511;}
+.fin-tab-btn.ft-tata.active{background:var(--tata);border-color:var(--tata);}
+.fin-tab-btn.ft-maruti.active{background:var(--maruti);border-color:var(--maruti);}
+.fin-tab-btn.ft-hyundai.active{background:var(--hyundai);border-color:var(--hyundai);}
+.fin-sub{display:none;animation:fadeIn .2s ease;}
+.fin-sub.active{display:block;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;}
+.chart-card p.sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.callout{border-left:4px solid var(--warn);background:#fff7ed;padding:12px 16px;border-radius:0 8px 8px 0;font-size:12px;line-height:1.6;margin-bottom:16px;}
+.callout.red{border-left-color:var(--neg);background:#fef2f2;}
+.callout.blue{border-left-color:var(--tata);background:var(--tata-soft);}
+.cb-wm{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid var(--border);border-radius:30px;padding:7px 14px 7px 8px;box-shadow:0 4px 20px rgba(24,21,17,.12);backdrop-filter:blur(8px);}
+.cb-wm-logo{width:28px;height:28px;background:var(--maruti);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:900;color:#fff;}
+.cb-wm-name{font-size:11px;font-weight:700;color:var(--text);}
+.cb-wm-sub{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.footer{text-align:center;font-size:10px;color:var(--muted);padding:14px 40px;border-top:1px solid var(--border);margin-top:28px;line-height:1.7;}
+@media(max-width:860px){
+  .main{padding:14px 16px 40px;}.hdr{padding:0 16px;flex-wrap:wrap;}
+  .tab-nav{padding:0 8px;}
+  .g2,.g3,.g4,.kpi-row,.swot-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div>
+      <h1>Passenger Vehicles Sector — Intelligence Dashboard</h1>
+      <div class="sub">Tata Motors PV (India + JLR) · Maruti Suzuki · Hyundai Motor India · Q1 FY27 Actuals ✅ · EIL Research</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip chip-tata">Tata Motors PV</span>
+    <span class="chip chip-maruti">Maruti Suzuki</span>
+    <span class="chip chip-hyundai">Hyundai Motor India</span>
+    <span class="chip chip-date">14 Aug 2026 · Cauvery Business Research</span>
+  </div>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('financials',this)">Financials</button>
+  <button class="tab-btn" onclick="showTab('tatadeep',this)" style="color:var(--tata);font-weight:800;">🔍 Tata Motors Deep-Dive</button>
+  <button class="tab-btn" onclick="showTab('segments',this)">Business Segments</button>
+  <button class="tab-btn" onclick="showTab('charts',this)">Charts</button>
+  <button class="tab-btn" onclick="showTab('valuation',this)">Valuation &amp; Analyst Ratings</button>
+  <button class="tab-btn" onclick="showTab('mgmt',this)">Management &amp; Board</button>
+  <button class="tab-btn" onclick="showTab('volumes',this)">Volume &amp; Market Share</button>
+  <button class="tab-btn" onclick="showTab('verdict',this)" style="color:#b8911e;font-weight:800;">🏆 Verdict</button>
+</nav>
+
+<div class="main">
+
+<!-- ══ TAB 1 · DASHBOARD ══ -->
+<div class="panel active" id="tab-dashboard">
+  <div class="sec-hdr">Dashboard Overview <span class="sec-note">· Q1 FY27 (Apr–Jun 2026) actuals · All 3 companies declared ✅</span></div>
+
+  <div class="kpi-row">
+    <div class="kpi tata-a"><div class="kl">Tata Motors PV Consol Revenue ✅</div><div class="kv">₹95,799 Cr</div><div class="kc pos">▲ 9.3% YoY</div></div>
+    <div class="kpi tata-a"><div class="kl">Tata Motors PV Consol PAT ✅</div><div class="kv neg">₹775 Cr</div><div class="kc" style="color:var(--neg)">▼ 80.3% YoY</div></div>
+    <div class="kpi maruti-a"><div class="kl">Maruti Suzuki Revenue ✅</div><div class="kv">₹52,456 Cr</div><div class="kc pos">▲ 36.6% YoY</div></div>
+    <div class="kpi hyundai-a"><div class="kl">Hyundai India Revenue ✅</div><div class="kv">₹16,335 Cr</div><div class="kc" style="color:var(--neg)">▼ 0.5% YoY</div></div>
+  </div>
+
+  <div class="g3" style="margin-bottom:22px;">
+    <div class="co-card tata">
+      <div class="co-name" style="color:var(--tata)">Tata Motors PV</div>
+      <div class="co-seg">India PV + EV · JLR (UK) · Q1 FY27 ✅ Declared 13 Aug</div>
+      <div class="m-row"><span class="m-lbl">Consol PAT ✅</span><span class="m-val" style="color:var(--neg)">₹775 Cr (-80%)</span></div>
+      <div class="m-row"><span class="m-lbl">Consol EBIT Margin</span><span class="m-val">2.4% (-90bps)</span></div>
+      <div class="m-row"><span class="m-lbl">India PV Volumes ✅</span><span class="m-val" style="color:var(--pos)">1,82,574 (+46%)</span></div>
+      <div class="m-row"><span class="m-lbl">JLR Revenue</span><span class="m-val">£6.0 bn (-9.6%)</span></div>
+      <div class="m-row"><span class="m-lbl">Net Debt (Consol)</span><span class="m-val warn">₹42,200 Cr</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹330 / ~₹1.25L Cr</span></div>
+      <div class="badge-row"><span class="badge b-neg">PAT -80%</span><span class="badge b-pos">India PV +46%</span><span class="badge b-watch">JLR Fragile</span></div>
+    </div>
+    <div class="co-card maruti">
+      <div class="co-name" style="color:var(--maruti)">Maruti Suzuki</div>
+      <div class="co-seg">Small Cars · SUVs · Exports · Q1 FY27 ✅ Declared</div>
+      <div class="m-row"><span class="m-lbl">Net Profit ✅</span><span class="m-val" style="color:var(--neg)">₹3,352 Cr (-11%)</span></div>
+      <div class="m-row"><span class="m-lbl">EBITDA Margin</span><span class="m-val">8.2% (-218bps)</span></div>
+      <div class="m-row"><span class="m-lbl">Volumes ✅</span><span class="m-val" style="color:var(--pos)">6,82,724 (+29.3%)</span></div>
+      <div class="m-row"><span class="m-lbl">Domestic Mkt Share</span><span class="m-val" style="color:var(--pos)">41.2% (+2.3pp)</span></div>
+      <div class="m-row"><span class="m-lbl">New Capacity</span><span class="m-val">+5L units → 2.9M total</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹14,100 / ~₹4.42L Cr</span></div>
+      <div class="badge-row"><span class="badge b-buy">MARKET LEADER</span><span class="badge b-pos">Share Gain</span><span class="badge b-watch">Margin Pressure</span></div>
+    </div>
+    <div class="co-card hyundai">
+      <div class="co-name" style="color:var(--hyundai)">Hyundai Motor India</div>
+      <div class="co-seg">SUVs · CNG · Exports · Q1 FY27 ✅ Declared 30 Jul</div>
+      <div class="m-row"><span class="m-lbl">Consol PAT ✅</span><span class="m-val" style="color:var(--neg)">₹889 Cr (-34%)</span></div>
+      <div class="m-row"><span class="m-lbl">Revenue ✅</span><span class="m-val">₹16,335 Cr (-0.5%)</span></div>
+      <div class="m-row"><span class="m-lbl">Domestic Sales</span><span class="m-val" style="color:var(--pos)">1,39,374 (+5.4%)</span></div>
+      <div class="m-row"><span class="m-lbl">Exports</span><span class="m-val" style="color:var(--neg)">38,708 (-19.6%)</span></div>
+      <div class="m-row"><span class="m-lbl">Rural Penetration</span><span class="m-val" style="color:var(--pos)">26% (All-time high)</span></div>
+      <div class="m-row"><span class="m-lbl">CMP / Mkt Cap</span><span class="m-val">₹2,237 / ~₹1.82L Cr</span></div>
+      <div class="badge-row"><span class="badge b-watch">Weak Quarter</span><span class="badge b-pos">Stock +9% on Guidance</span><span class="badge b-hold">Supply Disruption</span></div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Sector Quick Snapshot <span class="sec-note">· SIAM/industry data · Q1 FY27</span></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Industry Context — Indian PV Sector Q1 FY27</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Context</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Total PV Wholesales Q1 FY27</td><td class="num">~12.7 L units</td><td>Record quarter, +25.9% YoY</td></tr>
+          <tr><td class="tb">Retail Registrations Q1 FY27</td><td class="num">~12.8 L units</td><td>All top-6 OEMs grew YoY</td></tr>
+          <tr><td class="tb">Highest YoY growth (Top 6)</td><td class="num tpos">Tata Motors</td><td>Compact SUV + EV led</td></tr>
+          <tr><td class="tb">Slowest growth (Top 6)</td><td class="num warn">Hyundai (+9.3%)</td><td>Export/supply hit</td></tr>
+          <tr><td class="tb">Market leader</td><td class="num">Maruti Suzuki ~41%</td><td>Share gain of 2.3pp</td></tr>
+          <tr><td class="tb">GST rate cut impact</td><td class="num tpos">Sep 2025 GST 2.0</td><td>Demand growth 4%→21% (H1→H2 FY26)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Result Status — Q1 FY27</div>
+      <table>
+        <thead><tr><th>Company</th><th>Status</th><th>Revenue (₹ Cr)</th><th>PAT (₹ Cr)</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--tata)">Tata Motors PV</td><td><span class="badge b-buy">Declared ✅ 13 Aug</span></td><td class="num">95,799</td><td class="num tneg">775</td></tr>
+          <tr><td class="tb" style="color:var(--maruti)">Maruti Suzuki</td><td><span class="badge b-buy">Declared ✅ 31 Jul</span></td><td class="num">52,456</td><td class="num tneg">3,352</td></tr>
+          <tr><td class="tb" style="color:var(--hyundai)">Hyundai Motor India</td><td><span class="badge b-buy">Declared ✅ 30 Jul</span></td><td class="num">16,335</td><td class="num tneg">889</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">★ All three PV majors posted double-digit PAT declines YoY in Q1 FY27, despite Maruti and Tata both showing strong volume/revenue growth — margin compression is the sector-wide story this quarter.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 2 · FINANCIALS ══ -->
+<div class="panel" id="tab-financials">
+  <div class="sec-hdr">Financial Results <span class="sec-note">· Q1 FY27 (Apr–Jun 2026) · Consolidated unless noted</span></div>
+
+  <div class="fin-subtabs">
+    <button class="fin-tab-btn ft-all active" onclick="showFinSub('all',this)">All Companies</button>
+    <button class="fin-tab-btn ft-tata" onclick="showFinSub('tata',this)">Tata Motors PV</button>
+    <button class="fin-tab-btn ft-maruti" onclick="showFinSub('maruti',this)">Maruti Suzuki</button>
+    <button class="fin-tab-btn ft-hyundai" onclick="showFinSub('hyundai',this)">Hyundai Motor India</button>
+  </div>
+
+  <!-- ── ALL COMPANIES ── -->
+  <div class="fin-sub active" id="finsub-all">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-lbl">Quarterly Financials — All Companies (₹ Crore)</div>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Company</th><th>Period</th><th style="text-align:right">Revenue</th><th style="text-align:right">YoY</th><th style="text-align:right">EBITDA/EBIT</th><th style="text-align:right">Margin %</th><th style="text-align:right">PAT (₹Cr)</th><th style="text-align:right">PAT YoY</th><th style="text-align:right">Volume (units)</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="tb"><span class="dot" style="background:var(--tata)"></span>Tata Motors PV (Consol)</td><td>Q1 FY27 ✅</td><td class="num">95,799</td><td class="tpos">+9.3%</td><td class="num">EBIT ~2,300</td><td class="num">2.4% (EBIT)</td><td class="num tneg">775</td><td class="tneg">-80.3%</td><td class="num">1,82,574 (India)</td><td><span class="badge b-buy">Declared ✅ 13 Aug</span></td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--maruti)"></span>Maruti Suzuki (Consol)</td><td>Q1 FY27 ✅</td><td class="num">52,456</td><td class="tpos">+36.6%</td><td class="num">4,312</td><td class="num">8.2%</td><td class="num tneg">3,352</td><td class="tneg">-11.0%</td><td class="num">6,82,724</td><td><span class="badge b-buy">Declared ✅ 31 Jul</span></td></tr>
+          <tr><td class="tb"><span class="dot" style="background:var(--hyundai)"></span>Hyundai Motor India (Consol)</td><td>Q1 FY27 ✅</td><td class="num">16,335</td><td class="tneg">-0.5%</td><td class="num">PBT 1,183</td><td class="num">~7.2% (PBT)</td><td class="num tneg">889</td><td class="tneg">-34.0%</td><td class="num">1,78,082</td><td><span class="badge b-buy">Declared ✅ 30 Jul</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Sources: company exchange filings / investor presentations, Business Standard, Upstox, EquityBulls, AutoGuideIndia — collated as of 14 Aug 2026.</div>
+    </div>
+
+    <div class="sec-hdr" style="margin-top:24px;">Balance Sheet &amp; Cash Flow Snapshot</div>
+    <div class="card">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Company</th><th style="text-align:right">Net Debt/(Cash)</th><th style="text-align:right">Q1 FCF</th><th style="text-align:right">Capex Direction</th><th>Balance Sheet Read</th><th class="src">Sources</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--tata)">Tata Motors PV</td><td class="num warn">₹42,200 Cr (Net Debt)</td><td class="num tneg">-₹11,800 Cr</td><td class="num">JLR EV launches (RR Electric, RRS Electric)</td><td>Seasonal WC drag; JLR investment-heavy phase</td><td class="src">Tribune, ANI</td></tr>
+          <tr><td class="tb" style="color:var(--maruti)">Maruti Suzuki</td><td class="num tpos">Near debt-free</td><td class="num">Positive (est.)</td><td class="num">₹561 Cr CBG plants + Kharkhoda P2</td><td>Strongest balance sheet in the peer set</td><td class="src">Company filing</td></tr>
+          <tr><td class="tb" style="color:var(--hyundai)">Hyundai Motor India</td><td class="num tpos">Net cash</td><td class="num">Positive (est.)</td><td class="num">Talegaon plant ramp-up</td><td>Conservative, dividend-paying (₹21/sh final FY26)</td><td class="src">Company filing</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TATA MOTORS PV ── -->
+  <div class="fin-sub" id="finsub-tata">
+    <div class="grp-hdr" style="background:var(--tata-soft);border-color:var(--tata);color:var(--tata);">Tata Motors PV — Consolidated P&amp;L (₹ Crore) · Q1 FY27 vs Q1 FY26</div>
+    <div class="card" style="margin:14px 0 20px;">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Particulars</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th><th>Remarks</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue from Operations</td><td class="num">95,799</td><td class="num">87,677</td><td class="tpos">+9.3%</td><td>India PV +65%, JLR -9.6% (GBP)</td></tr>
+          <tr><td class="tb">EBIT (derived, 2.4% margin)</td><td class="num">~2,300</td><td class="num">~2,850 (est., 3.3%)</td><td class="tneg">~-19%</td><td>Margin down 90bps YoY</td></tr>
+          <tr><td class="tb">PBT before Exceptional Items</td><td class="num">1,606</td><td class="num">3,950</td><td class="tneg">-59.3%</td><td>JLR + India PV margin compression</td></tr>
+          <tr><td class="tb">Exceptional Items</td><td class="num">32</td><td class="num">—</td><td class="num">—</td><td>Employee separation costs</td></tr>
+          <tr><td class="tb tb">Profit After Tax (Consol)</td><td class="num tneg">775</td><td class="num">3,924</td><td class="tneg">-80.3%</td><td>Headline PAT — steepest decline of the 3 majors</td></tr>
+          <tr><td class="tb">Consolidated Free Cash Flow</td><td class="num tneg">(11,800)</td><td class="num">—</td><td class="num">—</td><td>Seasonal working-capital drag</td></tr>
+          <tr><td class="tb">Net Debt (Consol, as of 30 Jun 2026)</td><td class="num warn">42,200</td><td class="num">—</td><td class="num">—</td><td>Rose on negative FCF quarter</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Q1 FY26 EBIT is an estimate derived from reported margin commentary; all other Q1 FY26 figures are as reported by the company. Sources: Business Standard, Tribune, ANI, FreePressJournal, TripuraStarNews (13-14 Aug 2026).</div>
+    </div>
+
+    <div class="grp-hdr" style="background:var(--tata-soft);border-color:var(--tata);color:var(--tata);">India PV/EV vs JLR — Segment Split (Q1 FY27)</div>
+    <div class="card" style="margin:14px 0 20px;">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Segment</th><th style="text-align:right">Revenue</th><th style="text-align:right">YoY</th><th style="text-align:right">EBITDA/EBIT Margin</th><th style="text-align:right">Volume</th><th style="text-align:right">Volume YoY</th><th>Commentary</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">India PV + EV</td><td class="num">~₹18,290 Cr (est.)</td><td class="tpos">+65%</td><td class="num tpos">EBITDA ~6% (+ve swing)</td><td class="num">1,82,574 units</td><td class="tpos">+46%</td><td>Broad-based recovery; EV volumes +112% YoY</td></tr>
+          <tr><td class="tb">JLR (Jaguar Land Rover, UK)</td><td class="num">£6.0 bn (~₹63,600 Cr est.)</td><td class="tneg">-9.6%</td><td class="num warn">Adj. EBIT 2.8%</td><td class="num">79,300 units (ex-China JV)</td><td class="tneg">-9.2%</td><td>Supplier fire + Middle East disruption + Jaguar wind-down</td></tr>
+          <tr><td class="tb tb">Consolidated (TMPV)</td><td class="num">95,799</td><td class="tpos">+9.3%</td><td class="num">EBIT 2.4%</td><td class="num">—</td><td class="num">—</td><td>JLR still ~2/3 of consol revenue by value</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="grp-hdr" style="background:var(--tata-soft);border-color:var(--tata);color:var(--tata);">JLR Operating KPIs — Q1 FY27</div>
+    <div class="card">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY / QoQ</th><th>Remarks</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue (£ bn)</td><td class="num">~6.0</td><td class="num">~6.6</td><td class="tneg">-9.6%</td><td>—</td></tr>
+          <tr><td class="tb">Wholesale Volumes (ex-CJLR China JV)</td><td class="num">79,300</td><td class="num">~87,340</td><td class="tneg">-9.2% YoY / -16.8% QoQ</td><td>Supplier fire, Middle East, Jaguar wind-down</td></tr>
+          <tr><td class="tb">Adjusted EBIT Margin</td><td class="num">2.8%</td><td class="num">~4.0%</td><td class="tneg">Contracted</td><td>Elevated variable marketing expense</td></tr>
+          <tr><td class="tb">Quarterly Profit (£ mn)</td><td class="num">109</td><td class="num">—</td><td class="num">—</td><td>Remained profitable despite headwinds</td></tr>
+          <tr><td class="tb">RR/RRS/Defender Mix</td><td class="num">80.8%</td><td class="num">77.2%</td><td class="tpos">+360bps</td><td>Structural premiumisation continues</td></tr>
+          <tr><td class="tb">China Wholesales</td><td class="num tneg">-26.2%</td><td class="num">—</td><td class="num">—</td><td>Weakest geography this quarter</td></tr>
+          <tr><td class="tb">MENA Wholesales</td><td class="num tpos">+4.5%</td><td class="num">—</td><td class="num">—</td><td>Only major region growing YoY</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MARUTI SUZUKI ── -->
+  <div class="fin-sub" id="finsub-maruti">
+    <div class="grp-hdr" style="background:var(--maruti-soft);border-color:var(--maruti);color:var(--maruti);">Maruti Suzuki — Standalone P&amp;L (₹ Crore) · Q1 FY27 vs Q1 FY26</div>
+    <div class="card" style="margin:14px 0 20px;">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Particulars</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th><th>Remarks</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue from Operations</td><td class="num">52,456</td><td class="num">38,593</td><td class="tpos">+36.6%</td><td>Volume + SUV/small-car mix led</td></tr>
+          <tr><td class="tb">Operating EBITDA</td><td class="num">4,312</td><td class="num">4,621 (pre-restatement)</td><td class="num warn">±7% (see note)</td><td>SMG amalgamation restated the comparative base</td></tr>
+          <tr><td class="tb">EBITDA Margin</td><td class="num">8.22%</td><td class="num">10.4%–12.6%</td><td class="tneg">-218 to -440bps</td><td>Raw material cost pressure</td></tr>
+          <tr><td class="tb">EBIT (Operating Profit) Margin</td><td class="num">5.1%</td><td class="num">8.8% (seq. Q4 FY26)</td><td class="tneg">Contracted QoQ</td><td>—</td></tr>
+          <tr><td class="tb tb">Net Profit (Standalone)</td><td class="num tneg">3,352</td><td class="num">3,769</td><td class="tneg">-11.0%</td><td>Higher input costs + promo spend</td></tr>
+          <tr><td class="tb">Net Profit (Consolidated)</td><td class="num">3,447 (~₹34,469 mn)</td><td class="num">—</td><td class="num">—</td><td>Consol vs standalone gap is routine (JVs, associates)</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Amalgamation of Suzuki Motor Gujarat Pvt Ltd became effective 1 Dec 2025 with restated comparatives — this explains the divergent EBITDA growth figures reported across sources for the Q1 FY26 base. Sources: Upstox, Sahi.com, Whalesbook, Quartr (31 Jul–14 Aug 2026).</div>
+    </div>
+
+    <div class="grp-hdr" style="background:var(--maruti-soft);border-color:var(--maruti);color:var(--maruti);">Volumes &amp; Market Position — Q1 FY27</div>
+    <div class="card">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">YoY</th><th>Remarks</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Total Sales Volume</td><td class="num">6,82,724 units</td><td class="tpos">+29.3%</td><td>Small car +34%, SUV +44.6%</td></tr>
+          <tr><td class="tb">Domestic Market Share</td><td class="num">41.2%</td><td class="tpos">+2.3pp</td><td>Highest gain among the 3 majors</td></tr>
+          <tr><td class="tb">Export Volumes</td><td class="num">Grew strongly</td><td class="tpos">+28.6%</td><td>&gt;55% share of India's total PV exports</td></tr>
+          <tr><td class="tb">New Capacity Added</td><td class="num">+5,00,000 units/yr</td><td class="num">—</td><td>Total capacity now 2.9 million units/yr</td></tr>
+          <tr><td class="tb">Capex Approved (Q1)</td><td class="num">₹561 Cr</td><td class="num">—</td><td>4 Compressed Biogas (CBG) plants, Phase 1</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HYUNDAI MOTOR INDIA ── -->
+  <div class="fin-sub" id="finsub-hyundai">
+    <div class="grp-hdr" style="background:var(--hyundai-soft);border-color:var(--hyundai);color:var(--hyundai);">Hyundai Motor India — Consolidated &amp; Standalone P&amp;L (₹ Crore) · Q1 FY27 vs Q1 FY26</div>
+    <div class="card" style="margin:14px 0 20px;">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Particulars</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th><th>Remarks</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Revenue from Operations (Consol)</td><td class="num">16,334.63</td><td class="num">16,412.88</td><td class="tneg">-0.48%</td><td>Broadly flat — production/export hit offset by domestic gain</td></tr>
+          <tr><td class="tb">Revenue from Operations (Standalone)</td><td class="num">15,865.38</td><td class="num">16,025.0</td><td class="tneg">-1.0%</td><td>—</td></tr>
+          <tr><td class="tb">Profit Before Tax (Consol)</td><td class="num">1,182.68</td><td class="num">1,799.87</td><td class="tneg">-34.3%</td><td>—</td></tr>
+          <tr><td class="tb tb">Profit After Tax (Consol)</td><td class="num tneg">888.62</td><td class="num">1,369.23</td><td class="tneg">-35.1%</td><td>Steepest PAT decline % among the 3 majors ex-Tata</td></tr>
+          <tr><td class="tb">Profit After Tax (Standalone)</td><td class="num tneg">883</td><td class="num">1,335.75</td><td class="tneg">-33.9%</td><td>—</td></tr>
+          <tr><td class="tb">EPS (Standalone, ₹)</td><td class="num">10.87</td><td class="num">—</td><td class="num">—</td><td>—</td></tr>
+          <tr><td class="tb">Total Assets (Consol, ₹ mn)</td><td class="num">3,49,277</td><td class="num">3,19,577</td><td class="tpos">+9.3%</td><td>As of 30 Jun 2026 vs 30 Jun 2025</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Sources: EquityBulls, FreePressJournal, Upstox, AutoGuideIndia, TheMachineMaker (30 Jul–13 Aug 2026).</div>
+    </div>
+
+    <div class="grp-hdr" style="background:var(--hyundai-soft);border-color:var(--hyundai);color:var(--hyundai);">Volumes &amp; Operational KPIs — Q1 FY27</div>
+    <div class="card">
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Metric</th><th style="text-align:right">Q1 FY27</th><th style="text-align:right">Q1 FY26</th><th style="text-align:right">YoY</th><th>Remarks</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Total Sales Volume</td><td class="num">1,78,082</td><td class="num">1,80,399</td><td class="tneg">-1.3%</td><td>—</td></tr>
+          <tr><td class="tb">Domestic Sales</td><td class="num">1,39,374</td><td class="num">1,32,259</td><td class="tpos">+5.4%</td><td>Record Venue sales; CNG demand strong</td></tr>
+          <tr><td class="tb">Export Sales</td><td class="num">38,708</td><td class="num">48,140</td><td class="tneg">-19.6%</td><td>West Asia conflict impact continued</td></tr>
+          <tr><td class="tb">Production Loss (June, supplier fire)</td><td class="num warn">~13,900 units</td><td class="num">—</td><td class="num">—</td><td>Production normalised by 22 June; recovery expected in Q2</td></tr>
+          <tr><td class="tb">Rural Market Penetration</td><td class="num tpos">26%</td><td class="num">—</td><td class="num">All-time high</td><td>Key resilience factor cited by management</td></tr>
+          <tr><td class="tb">Final Dividend (FY26, per share)</td><td class="num">₹21</td><td class="num">—</td><td class="num">—</td><td>Record date 5 Aug 2026</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 3 · TATA MOTORS DEEP-DIVE ══ -->
+<div class="panel" id="tab-tatadeep">
+  <div class="sec-hdr" style="border-color:var(--tata)">Tata Motors PV — Critical Analysis <span class="sec-note">· India Passenger Vehicles &amp; EV vs Jaguar Land Rover (Foreign Ops) · Q1 FY27</span></div>
+
+  <div class="callout blue">
+    <strong>Structural note:</strong> Since the October 2025 demerger, the erstwhile "Tata Motors" has split into two separately listed entities — <strong>TML Commercial Vehicles Ltd (TMCV)</strong>, the CV business under Girish Wagh, and <strong>Tata Motors Passenger Vehicles Ltd (TMPV)</strong>, which houses India PV/EV <em>and</em> JLR under Shailesh Chandra. All analysis in this dashboard for "Tata Motors" passenger cars refers to TMPV, since JLR and India PV now sit together as one listed entity — not TMCV.
+  </div>
+
+  <div class="callout red">
+    <strong>Headline risk:</strong> TMPV's consolidated PAT collapsed 80% YoY to ₹775 Cr in Q1 FY27 even as revenue grew 9.3% — a textbook case of top-line strength masking bottom-line fragility. The stock fell ~5-6% on results day (13 Aug 2026) as three brokerages (HSBC, Motilal Oswal, Jefferies) either held or sold the stock post-results.
+  </div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div>
+      <div class="co-hdr-swot" style="color:var(--pos)">India PV + EV — The Bright Spot</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+          <li>Volumes +46% YoY to 1,82,574 units — fastest growth among top-6 India OEMs</li>
+          <li>EV volumes +112% YoY; Punch (ICE+CNG+EV) sold 60,321 units, +67% YoY</li>
+          <li>Compact SUV segment leadership at ~29% share, ahead of Maruti</li>
+          <li>Sierra relaunch getting a strong market response; domestic PV share ~15% in Q1 (up from 5% in FY16)</li>
+        </ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+          <li>India PV EBITDA still thin (~6%) versus Maruti's 8.2%</li>
+          <li>Higher discounting and adverse mix pressuring realisations despite volume beat</li>
+          <li>EV penetration gains are partly promotion/GST-cut driven — durability untested</li>
+        </ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+          <li>Industry-beating growth guided for FY27 on a strong order book (management commentary)</li>
+          <li>Exports guided to grow 70–100% in FY27 (South Africa ramp-up)</li>
+          <li>Sierra.ev and further EV launches to lift monthly EV run-rate beyond ~9,000 units</li>
+        </ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+          <li>Mahindra and Maruti both attacking the SUV/EV space Tata built its lead on</li>
+          <li>Commodity cost inflation squeezing margins even as volumes scale</li>
+          <li>High base effect: FY27 industry growth seen moderating to high-single-digits in H2</li>
+        </ul></div>
+      </div>
+    </div>
+    <div>
+      <div class="co-hdr-swot" style="color:var(--jlr)">JLR (Jaguar Land Rover) — The Drag</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><div class="swot-lbl sl">Strengths</div><ul class="swot-ul">
+          <li>Remained profitable despite the headwinds: £109 mn profit, 2.8% adj. EBIT margin</li>
+          <li>Range Rover / Range Rover Sport / Defender mix improved to 80.8% of wholesales (from 77.2%)</li>
+          <li>Strong MENA growth (+4.5% YoY) even amid regional conflict</li>
+          <li>GBP 1.7 bn two-year cost-savings programme underway</li>
+        </ul></div>
+        <div class="swot-cell swot-w"><div class="swot-lbl wl">Weaknesses</div><ul class="swot-ul">
+          <li>Wholesales down 9.2% YoY (-16.8% QoQ) to 79,300 units</li>
+          <li>Revenue down 9.6% YoY to ~£6.0 bn — second consecutive weak quarter after the Sep 2025 cyber-incident hit</li>
+          <li>Elevated variable marketing expenses (discounts) compressing margins further</li>
+          <li>China wholesales down 26.2% YoY — the one large market still deteriorating</li>
+        </ul></div>
+        <div class="swot-cell swot-o"><div class="swot-lbl ol">Opportunities</div><ul class="swot-ul">
+          <li>Four major launches ahead: Range Rover Electric, Range Rover Sport Electric, Range Rover GT, Jaguar Type 01</li>
+          <li>New CEO PB Balaji (ex-Tata Motors Group CFO) driving a fresh cost/procurement discipline push</li>
+          <li>Structural mix-shift toward RR/RRS/Defender continues to support realisations</li>
+        </ul></div>
+        <div class="swot-cell swot-t"><div class="swot-lbl tl">Threats</div><ul class="swot-ul">
+          <li>Supplier-fire disruption at start of Q1 — a reminder of JLR's single-point supply-chain fragility (echoes the FY26 cyber-incident)</li>
+          <li>Middle East conflict continuing to disrupt a key export corridor</li>
+          <li>Outgoing Jaguar model wind-down ahead of Type 01 launch = a volume air-pocket by design</li>
+          <li>US/EU tariff regime remains a structural overhang on realisations</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-hdr" style="margin-top:24px;">Bear Case vs Bull Case — Street View Post Q1 FY27</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl" style="color:var(--neg)">Why brokerages are cautious (Sell/Underperform camp)</div>
+      <ul class="swot-ul" style="font-size:12px;line-height:1.9;">
+        <li><strong>Motilal Oswal (Sell, TP ₹310):</strong> "Given the significant challenges at JLR and continued geopolitical uncertainty... margins remain under pressure given adverse mix and rising input costs."</li>
+        <li><strong>Jefferies (Underperform, TP ₹300):</strong> Flags rising JLR competition, high discounts, warranty cost, elevated capitalised product-development spend, and ageing key models.</li>
+        <li><strong>HSBC (Hold, TP ₹360):</strong> "Domestic demand momentum was eclipsed by margin hit from commodity headwinds in 1Q; will likely continue in Q2."</li>
+        <li>Consolidated FCF was sharply negative (-₹11,800 Cr) and net debt rose to ₹42,200 Cr — a balance sheet swing analysts are watching closely.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--pos)">Why some brokerages stay constructive</div>
+      <ul class="swot-ul" style="font-size:12px;line-height:1.9;">
+        <li><strong>Nuvama:</strong> JLR EBITDA beat expectations in Q1, even as India PV EBITDA missed slightly on higher staff/other costs.</li>
+        <li>India PV revenue of ~₹18,290 Cr came in above estimates on higher realisations — the growth engine is intact.</li>
+        <li>Stock has already de-rated sharply: down ~52-56% from its 52-week/all-time high, with Trendlyne's consensus target (~₹425, from 6 sources) implying meaningful upside from the post-result CMP of ~₹330.</li>
+        <li>Structural India PV market-share gains (5% in FY16 → 15% in Q1 FY27) remain a multi-year re-rating story independent of JLR's cycle.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>CB Research house view:</strong> Tata Motors PV is best understood as two very different businesses bolted together by one balance sheet. India PV/EV is firing on all cylinders — volume-led, SUV/EV-mix-led, and gaining share against both Maruti and Hyundai. JLR is the opposite: a mature, tariff-exposed, discount-heavy luxury franchise navigating a genuinely difficult transition year (new EVs, ageing ICE range, one-off supply shocks) with margins that are barely above breakeven. Until JLR's EBIT margin recovers meaningfully toward its own 5-7% medium-term guidance band, TMPV's consolidated PAT will stay volatile and headline-scary even in quarters where the India business does everything right. This is a stock-picker's split-story name, not a simple "buy the India EV theme" trade.
+  </div>
+</div>
+
+<!-- ══ TAB 4 · BUSINESS SEGMENTS ══ -->
+<div class="panel" id="tab-segments">
+  <div class="sec-hdr">Business Segment Mix &amp; Key Products <span class="sec-note">· Q1 FY27 / FY26 est. revenue mix</span></div>
+
+  <div class="grp-hdr" style="background:var(--tata-soft);border-color:var(--tata);color:var(--tata);margin-bottom:14px;">Tata Motors PV — India PV/EV · JLR (UK)</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Revenue Segment Mix (Q1 FY27, consol. basis, est.)</div>
+      <div class="seg-row"><div class="seg-lbl"><span>JLR (UK — Jaguar, Land Rover)</span><span style="font-weight:700">~66%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:66%;background:var(--jlr)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>India PV (ICE + CNG)</span><span style="font-weight:700">~26%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:26%;background:var(--tata)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>India EV</span><span style="font-weight:700">~8%</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:8%;background:var(--pos)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th style="text-align:right">ASP Range</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>Punch (ICE/CNG/EV)</td><td>Compact SUV</td><td class="num">₹6–11 L</td><td>52% of Tata's compact SUV sales, +67% YoY</td></tr>
+          <tr><td>Nexon (ICE/EV)</td><td>Compact SUV</td><td class="num">₹8–17 L</td><td>Core volume + EV driver</td></tr>
+          <tr><td>Sierra</td><td>Mid SUV (relaunch)</td><td class="num">₹11–20 L</td><td>Strong initial response, halo model</td></tr>
+          <tr><td>Curvv (ICE/EV)</td><td>SUV coupe</td><td class="num">₹10–19 L</td><td>Design-led premiumisation</td></tr>
+          <tr><td>Range Rover / Sport / Defender</td><td>Ultra-luxury SUV</td><td class="num">£90K–£240K+</td><td>80.8% of JLR wholesale mix</td></tr>
+          <tr><td>Jaguar Type 01 (upcoming)</td><td>Luxury EV</td><td class="num">TBD</td><td>Reboot of Jaguar brand as EV-only</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--maruti-soft);border-color:var(--maruti);color:var(--maruti);margin-bottom:14px;">Maruti Suzuki — Small Cars · SUVs · Exports</div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">Volume Mix — Q1 FY27</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Small Cars (hatchbacks, compacts)</span><span style="font-weight:700">2,69,786 units</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:55%;background:var(--maruti)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>SUVs (Brezza, Grand Vitara, Victoris, Fronx)</span><span style="font-weight:700">2,18,885 units</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:45%;background:var(--maruti);opacity:.75"></div></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;">Small-car sales +34% YoY, SUV sales +44.6% YoY — both segments outgrew total volume growth of 29.3%.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>WagonR (incl. flex-fuel)</td><td>Hatchback</td><td>India's first flex-fuel car launched Q1 FY27</td></tr>
+          <tr><td>Brezza (facelift)</td><td>Compact SUV</td><td>Bookings opened ahead of 24 Jul launch</td></tr>
+          <tr><td>Victoris / Grand Vitara</td><td>Mid SUV</td><td>SUV portfolio expansion</td></tr>
+          <tr><td>e Vitara</td><td>Electric SUV</td><td>Multi-powertrain strategy anchor</td></tr>
+          <tr><td>Export portfolio</td><td>100+ countries</td><td>55%+ share of India's PV exports; +28.6% YoY</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grp-hdr" style="background:var(--hyundai-soft);border-color:var(--hyundai);color:var(--hyundai);margin-bottom:14px;">Hyundai Motor India — SUVs · CNG · Exports</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Volume Mix — Q1 FY27</div>
+      <div class="seg-row"><div class="seg-lbl"><span>Domestic</span><span style="font-weight:700">1,39,374 units (+5.4%)</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:78%;background:var(--hyundai)"></div></div></div>
+      <div class="seg-row"><div class="seg-lbl"><span>Exports</span><span style="font-weight:700">38,708 units (-19.6%)</span></div><div class="seg-bar-wrap"><div class="seg-bar" style="width:22%;background:var(--hyundai);opacity:.7"></div></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;">Exports hit by West Asia conflict + a June production shortfall of ~13,900 units from a supplier fire.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key Products &amp; Positioning</div>
+      <table>
+        <thead><tr><th>Product</th><th>Segment</th><th>Market Role</th></tr></thead>
+        <tbody>
+          <tr><td>All-new Venue</td><td>Compact SUV</td><td>Highest-ever quarterly domestic sales</td></tr>
+          <tr><td>Creta</td><td>Mid SUV</td><td>Core volume driver, CNG variant strong</td></tr>
+          <tr><td>CNG portfolio</td><td>Multi-model</td><td>Growing adoption cited as a resilience factor</td></tr>
+          <tr><td>Rural network</td><td>Distribution</td><td>Record 26% rural penetration in Q1 FY27</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 5 · CHARTS ══ -->
+<div class="panel" id="tab-charts">
+  <div class="sec-hdr">Interactive Charts <span class="sec-note">· Q1 FY27 actuals</span></div>
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="chart-card">
+      <h3>Revenue (₹ Cr) — Q1 FY27</h3>
+      <p class="sub">Tata Motors PV dwarfs peers on revenue, driven by JLR's GBP-denominated scale</p>
+      <canvas id="revChart" style="max-height:260px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>PAT YoY Change % — Q1 FY27</h3>
+      <p class="sub">All three posted double-digit PAT declines; Tata's drop is the steepest</p>
+      <canvas id="patChart" style="max-height:260px;"></canvas>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="chart-card">
+      <h3>Volume Growth YoY % — Q1 FY27</h3>
+      <p class="sub">Maruti and Tata (India) both delivered strong double-digit volume growth</p>
+      <canvas id="volChart" style="max-height:260px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>EBITDA/Operating Margin % — Q1 FY27</h3>
+      <p class="sub">Maruti retains the highest operating margin despite YoY contraction</p>
+      <canvas id="marginChart" style="max-height:260px;"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 6 · VALUATION & ANALYST RATINGS ══ -->
+<div class="panel" id="tab-valuation">
+  <div class="sec-hdr">Valuation Matrix <span class="sec-note">· Current market estimates as of 13–14 Aug 2026 · Research only · Not investment advice</span></div>
+  <div class="g3" style="margin-bottom:26px;">
+    <div class="val-card">
+      <div class="val-co" style="color:var(--tata)">Tata Motors PV</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">~330</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">~1,25,000–1,28,000</span></div>
+      <div class="val-row"><span class="val-lbl">52W H/L</span><span class="val-num">447.79 / 294.30</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (TTM)</span><span class="val-num">~1.5x (distorted by demerger)</span></div>
+      <div class="val-row"><span class="val-lbl">Net Debt</span><span class="val-num" style="color:var(--warn)">₹42,200 Cr</span></div>
+      <div class="val-row"><span class="val-lbl">Consensus TP</span><span class="val-num">~₹425 (Trendlyne, 6 src)</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend</span><span class="val-num">₹3/sh (FY26)</span></div>
+      <div style="margin-top:12px"><span class="badge b-hold">MIXED — HOLD</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--maruti)">Maruti Suzuki</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">~14,100</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">~4,42,000</span></div>
+      <div class="val-row"><span class="val-lbl">52W H/L</span><span class="val-num">17,370 / 12,201</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (TTM)</span><span class="val-num">~31x</span></div>
+      <div class="val-row"><span class="val-lbl">Balance Sheet</span><span class="val-num" style="color:var(--pos)">Near debt-free</span></div>
+      <div class="val-row"><span class="val-lbl">Consensus TP</span><span class="val-num">~₹16,983 (Trendlyne, 11 src)</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend</span><span class="val-num">₹140/sh (FY26)</span></div>
+      <div style="margin-top:12px"><span class="badge b-buy">BUY</span></div>
+    </div>
+    <div class="val-card">
+      <div class="val-co" style="color:var(--hyundai)">Hyundai Motor India</div>
+      <div class="val-row"><span class="val-lbl">CMP (₹)</span><span class="val-num">~2,237</span></div>
+      <div class="val-row"><span class="val-lbl">Mkt Cap (₹ Cr)</span><span class="val-num">~1,81,800</span></div>
+      <div class="val-row"><span class="val-lbl">52W H/L</span><span class="val-num">2,890 / 1,658</span></div>
+      <div class="val-row"><span class="val-lbl">P/E (TTM)</span><span class="val-num">~34–37x</span></div>
+      <div class="val-row"><span class="val-lbl">Balance Sheet</span><span class="val-num" style="color:var(--pos)">Net cash</span></div>
+      <div class="val-row"><span class="val-lbl">Consensus TP</span><span class="val-num">₹2,300–2,498 (Nomura/CLSA)</span></div>
+      <div class="val-row"><span class="val-lbl">Dividend</span><span class="val-num">₹21/sh final (FY26)</span></div>
+      <div style="margin-top:12px"><span class="badge b-buy">BUY</span></div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Tata Motors PV — Sum-of-the-Parts (SOTP) Valuation <span class="sec-note">· Brokerage SOTP framework, FY28E basis</span></div>
+  <div class="card" style="margin-bottom:26px;">
+    <div class="card-lbl">SOTP Build-Up — Per Share Value (₹)</div>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Entity</th><th>Basis of Valuation</th><th style="text-align:right">Multiple</th><th style="text-align:right">EBITDA (FY28e)</th><th style="text-align:right">Enterprise Value</th><th style="text-align:right">Value per Share (₹)</th></tr></thead>
+      <tbody>
+        <tr><td class="tb">Tata Motors PVCo</td><td>EBITDA (FY28e)</td><td class="num">12.0x</td><td class="num">4,468.2</td><td class="num">53,617.8</td><td class="num tb">145.5</td></tr>
+        <tr><td class="tb">Tata Motors EVCo (85% holding)</td><td>TPG Rise deal</td><td class="num">—</td><td class="num">—</td><td class="num">58,012.5</td><td class="num tb">157.4</td></tr>
+        <tr><td class="tb">JLR business</td><td>EBITDA (FY28e)</td><td class="num">2.0x</td><td class="num">21,417</td><td class="num">42,834.6</td><td class="num tb">116.2</td></tr>
+        <tr><td class="tb">Add: TataTech @ ₹35,261 Cr Mcap</td><td>20% discount, 53.39% stake</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num tb">40.9</td></tr>
+        <tr><td class="tb">Less: Net Automotive debt per share</td><td>—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num tneg">114.5</td></tr>
+        <tr style="background:#faf6e8"><td class="tb">Per Share Price (Fully Diluted)</td><td>—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num tb" style="font-size:13.5px;">345.6</td></tr>
+        <tr><td class="tb">Current Market Price</td><td>—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num tb">349.6</td></tr>
+        <tr><td class="tb">Upside / (Downside)</td><td>—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num tneg">-1.1%</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">Brokerage SOTP framework — PVCo and JLR valued on FY28e EBITDA multiples, EVCo marked to the TPG Rise transaction value (85% holding), plus a discounted TataTech stake, less net automotive debt per share. Illustrates why the stock trades broadly in line with fair value on this framework despite the sharp Q1 FY27 PAT decline — the market is already pricing JLR conservatively at a 2.0x EBITDA multiple versus PVCo's 12.0x.</div>
+  </div>
+
+  <div class="sec-hdr">Analysts' Ratings — Post Q1 FY27 <span class="sec-note">· Brokerage-by-brokerage view</span></div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><span class="ac-name" style="color:var(--tata)">Tata Motors PV — Brokerage Split</span><span class="rat-pill rp-hold">CONSENSUS: HOLD / MIXED</span></div>
+    <div class="ac-tp">TP range: ₹300 (Jefferies) – ₹596 (CLSA on sister TMCV, not comparable) · TMPV avg ₹425</div>
+    <div class="ac-cmp">CMP ~₹330 · Stock down ~5-6% on results day, ~52-56% off its all-time high</div>
+    <div class="ac-text">
+      <strong>HSBC — Hold, TP ₹360:</strong> Domestic momentum eclipsed by commodity-led margin hit; expects the pressure to persist into Q2.<br>
+      <strong>Motilal Oswal — Sell, TP ₹310:</strong> Reiterates Sell on JLR headwinds and geopolitical uncertainty; raised FY27 EPS by 12% post-JLR beat but held FY28 estimates.<br>
+      <strong>Jefferies — Underperform, TP ₹300:</strong> Flags rising JLR competition, discounting, warranty costs and an ageing model range as structural drags.<br>
+      <strong>Nuvama:</strong> Neutral-to-positive read — JLR Q1 EBITDA beat estimates; India PV EBITDA a modest miss on higher staff costs, but revenue beat on realisations.
+    </div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><span class="ac-name" style="color:var(--maruti)">Maruti Suzuki — Brokerage Split</span><span class="rat-pill rp-buy">CONSENSUS: BUY</span></div>
+    <div class="ac-tp">TP range: ₹16,750 (ICICI Sec) – ₹18,400 (Mirae Sharekhan) · Avg ₹16,983</div>
+    <div class="ac-cmp">CMP ~₹14,100 · Implied upside ~20% to consensus target</div>
+    <div class="ac-text">
+      <strong>ICICI Securities — Buy, TP ₹16,750:</strong> Capacity build-out (Kharkhoda Ph.2, +5L units to 2.9M total), 7 new SUVs by FY30, revenue/EBITDA/EPS CAGR of 17%/10%/20% FY26–28E.<br>
+      <strong>Motilal Oswal — Buy, TP ₹17,059:</strong> Post-GST-cut small-car revival plus SUV outperformance; expects 16% FY27 domestic volume growth; market-share recovery as the key re-rating trigger.<br>
+      <strong>Mirae Asset Sharekhan — Buy, TP ₹18,400:</strong> Broad small-car dominance plus SUV/EV additions (Victoris, e Vitara); 15% earnings CAGR FY25-28E expected.
+    </div>
+  </div>
+
+  <div class="analyst-card">
+    <div class="ac-head"><span class="ac-name" style="color:var(--hyundai)">Hyundai Motor India — Brokerage Split</span><span class="rat-pill rp-buy">CONSENSUS: BUY</span></div>
+    <div class="ac-tp">TP range: ₹2,300 (CLSA) – ₹2,498 (Nomura)</div>
+    <div class="ac-cmp">CMP ~₹2,237 · Stock rallied ~7-9% post-results despite the profit miss, on FY27 guidance</div>
+    <div class="ac-text">
+      <strong>Nomura — Buy, TP ₹2,498:</strong> Cites Q1 margin resilience given the one-off disruptions, valuation comfort, and the FY27 growth outlook.<br>
+      <strong>CLSA — Outperform, TP ₹2,300:</strong> Sees 8-10% domestic volume growth into FY27 on capacity expansion.<br>
+      <strong>ICICI Securities — TP ₹2,475:</strong> Positions Hyundai's hybrid/EV "whitespace" push and two new H2 FY27 launches as the re-rating trigger, as peers like Tata and Mahindra have chipped into its SUV share.
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 7 · MANAGEMENT & BOARD ══ -->
+<div class="panel" id="tab-mgmt">
+  <div class="sec-hdr">Management &amp; Board <span class="sec-note">· Leadership as of Q1 FY27</span></div>
+
+  <div class="g3" style="margin-bottom:22px;">
+    <div class="card">
+      <div class="card-lbl" style="color:var(--tata)">Tata Motors PV</div>
+      <table>
+        <thead><tr><th>Role</th><th>Name</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Non-Exec Chairman</td><td>N. Chandrasekaran</td></tr>
+          <tr><td class="tb">MD &amp; CEO (TMPV)</td><td>Shailesh Chandra</td></tr>
+          <tr><td class="tb">CFO (TMPV)</td><td>Dhiman Gupta</td></tr>
+          <tr><td class="tb">CEO, JLR</td><td>PB Balaji (ex-Group CFO, took charge post-demerger)</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Board avg tenure ~2.9 yrs — a largely refreshed board post the Oct 2025 demerger; independent directors include Bharat Puri, Usha Sangwan, Om Bhatt, Vedika Bhandarkar.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--maruti)">Maruti Suzuki</div>
+      <table>
+        <thead><tr><th>Role</th><th>Name</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Chairman</td><td>R.C. Bhargava</td></tr>
+          <tr><td class="tb">MD &amp; CEO</td><td>Hisashi Takeuchi</td></tr>
+          <tr><td class="tb">Parent</td><td>Suzuki Motor Corporation (Japan) — ~56% stake</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Most stable, longest-tenured leadership team among the three; capital allocation discipline is a repeated brokerage callout.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--hyundai)">Hyundai Motor India</div>
+      <table>
+        <thead><tr><th>Role</th><th>Name</th></tr></thead>
+        <tbody>
+          <tr><td class="tb">Chairman</td><td>Unsoo Kim (moved from MD to non-exec Chairman)</td></tr>
+          <tr><td class="tb">MD &amp; CEO</td><td>Tarun Garg (from 1 Jan 2026 — first Indian to head HMIL)</td></tr>
+          <tr><td class="tb">Parent</td><td>Hyundai Motor Company (South Korea)</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">Garg, a 25+ year Maruti Suzuki veteran before joining Hyundai, is the first Indian national to lead HMIL since its 1996 India entry — a notable localisation signal.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">Recent Leadership &amp; Governance Events</div>
+    <table>
+      <thead><tr><th>Company</th><th>Event</th><th>Effective</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--tata)">Tata Motors</td><td>CV/PV demerger completed; TMPV (incl. JLR) and TMCV separately listed</td><td class="num">1 Oct 2025</td></tr>
+        <tr><td class="tb" style="color:var(--tata)">Tata Motors PV</td><td>PB Balaji (ex-Group CFO) takes over as JLR CEO</td><td class="num">17 Nov 2025</td></tr>
+        <tr><td class="tb" style="color:var(--hyundai)">Hyundai India</td><td>Tarun Garg succeeds Unsoo Kim as MD &amp; CEO</td><td class="num">1 Jan 2026</td></tr>
+        <tr><td class="tb" style="color:var(--hyundai)">Hyundai India</td><td>Mukundan MS appointed Whole-time Director &amp; Chief Manufacturing Officer</td><td class="num">1 Sep 2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ TAB 8 · VOLUME & MARKET SHARE ══ -->
+<div class="panel" id="tab-volumes">
+  <div class="sec-hdr">Volume &amp; Market Share <span class="sec-note">· SIAM / retail registration data · Q1 FY27</span></div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">Retail Registrations — Top Players, Q1 FY27</div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Company</th><th style="text-align:right">Q1 FY27 Retail Units</th><th style="text-align:right">YoY Growth</th><th style="text-align:right">Rank</th><th>Commentary</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--maruti)">Maruti Suzuki</td><td class="num">4,98,632</td><td class="tpos">+27.3%</td><td class="num">#1</td><td>Nearing 5 lakh mark; small car + SUV both strong</td></tr>
+        <tr><td class="tb">Mahindra &amp; Mahindra</td><td class="num">1,65,402</td><td class="tpos">+14.2%</td><td class="num">#3</td><td>Scorpio, Thar, XUV range + EVs</td></tr>
+        <tr><td class="tb" style="color:var(--hyundai)">Hyundai Motor India</td><td class="num">1,40,552</td><td class="tpos">+9.3%</td><td class="num">#4</td><td>Slowest growth among top 6; supply-hit exports</td></tr>
+        <tr><td class="tb" style="color:var(--tata)">Tata Motors</td><td class="num">~1,82,574 (wholesale)</td><td class="tpos">+46%</td><td class="num">#2 (by growth)</td><td>Highest YoY growth among top-6 carmakers</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">Note: Tata Motors figure is wholesale (company-reported); other rows are SIAM/Autocar-tracked retail registrations — the two series are not perfectly comparable but both confirm Tata's outsized growth.</div>
+  </div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="chart-card">
+      <h3>Compact SUV Segment — Q1 FY27</h3>
+      <p class="sub">Tata commands ~29% share of a record 3,97,609-unit compact SUV market</p>
+      <canvas id="suvChart" style="max-height:240px;"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Compact SUV Leaders — Q1 FY27 ('000 units)</div>
+      <table>
+        <thead><tr><th>Company</th><th style="text-align:right">Units</th><th style="text-align:right">Share</th></tr></thead>
+        <tbody>
+          <tr><td class="tb" style="color:var(--tata)">Tata Motors</td><td class="num">1,15,882</td><td class="num tpos">~29%</td></tr>
+          <tr><td class="tb" style="color:var(--maruti)">Maruti Suzuki</td><td class="num">91,701</td><td class="num">~23%</td></tr>
+          <tr><td class="tb">Mahindra</td><td class="num">62,737</td><td class="num">~16%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Export Snapshot <span class="sec-note">· Q1 FY27</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Company</th><th style="text-align:right">Export Volume</th><th style="text-align:right">YoY</th><th>Key Geography / Driver</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--maruti)">Maruti Suzuki</td><td class="num tpos">Up strongly</td><td class="tpos">+28.6%</td><td>100+ countries; &gt;55% share of India PV exports</td></tr>
+        <tr><td class="tb" style="color:var(--hyundai)">Hyundai India</td><td class="num">38,708 units</td><td class="tneg">-19.6%</td><td>West Asia conflict + June production shortfall</td></tr>
+        <tr><td class="tb" style="color:var(--tata)">Tata Motors PV (India)</td><td class="num">Small base, scaling</td><td class="tpos">Guided +70–100% FY27</td><td>South Africa ramp-up</td></tr>
+        <tr><td class="tb jlr-a" style="color:var(--jlr)">JLR (as "exports" from UK)</td><td class="num">79,300 wholesale units</td><td class="tneg">-9.2%</td><td>MENA +4.5%, China -26.2%, UK -5.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ TAB 9 · VERDICT ══ -->
+<div class="panel" id="tab-verdict">
+  <div class="sec-hdr" style="border-color:#b8911e">🏆 CB Research Verdict <span class="sec-note">· Q1 FY27 · Business &amp; operating performance summary</span></div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">Q1 FY27 Scorecard — Passenger Vehicle Majors</div>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Company</th><th>Q1 FY27 Read</th><th>Strengths</th><th>Key Risk / Watch-Item</th></tr></thead>
+      <tbody>
+        <tr><td class="tb" style="color:var(--maruti)">Maruti Suzuki</td><td>Strongest all-round quarter: volume, revenue and share all up</td><td>Market-share gains, debt-free balance sheet, capacity headroom, broad SUV+small-car+export mix</td><td>EBITDA margin still contracting on commodity costs</td></tr>
+        <tr><td class="tb" style="color:var(--hyundai)">Hyundai Motor India</td><td>Weak headline numbers offset by a confident FY27 outlook</td><td>New Indian leadership, record rural traction, strong H2 FY27 launch pipeline, net-cash balance sheet</td><td>Export volatility (West Asia), slowest domestic growth of top-6</td></tr>
+        <tr><td class="tb" style="color:var(--tata)">Tata Motors PV</td><td>Split quarter — India PV/EV excelled, JLR dragged consolidated earnings down sharply</td><td>India PV/EV franchise is best-in-class on growth; JLR remained profitable despite multiple shocks</td><td>JLR margin recovery pace; consolidated net debt at ₹42,200 Cr; earnings volatility from JLR's transition year</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-lbl" style="color:var(--maruti)">Maruti Suzuki — One-Line Thesis</div>
+      <div style="font-size:12.5px;line-height:1.7;">India's most defensive PV compounder: lowest financial risk, broadest portfolio, and the only one of the three still <em>gaining</em> volume market share (+2.3pp) while growing revenue 36.6% YoY.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--hyundai)">Hyundai India — One-Line Thesis</div>
+      <div style="font-size:12.5px;line-height:1.7;">A weak print the market largely looked through — the stock's positive reaction to a -34% PAT quarter suggests attention has shifted to the new MD's H2 FY27 product cycle rather than Q1's numbers.</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl" style="color:var(--tata)">Tata Motors PV — One-Line Thesis</div>
+      <div style="font-size:12.5px;line-height:1.7;">A tale of two companies in one stock: India PV/EV is the sector's fastest grower, JLR is its most fragile large franchise — the consolidated numbers this quarter reflect JLR's transition year more than India's momentum.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  Cauvery Business Research (CB Research) · Passenger Vehicles Sector Intelligence Dashboard · Q1 FY27<br>
+  Data compiled from company exchange filings, investor presentations, and public news sources (Business Standard, Upstox, EquityBulls, Autocar India, Tribune, ANI, AdGully, TripuraStarNews, AutoGuideIndia, Trendlyne, ValueResearch, Groww, ICICIDirect, Kotak Neo) as of 14 Aug 2026. For research and informational purposes only — not investment advice. Figures marked "est." are analyst/brokerage estimates, not company-reported.
+</div>
+
+<div class="cb-wm">
+  <div class="cb-wm-logo">CB</div>
+  <div><div class="cb-wm-name">Cauvery Business Research</div><div class="cb-wm-sub">EIL Research</div></div>
+</div>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='charts') initCharts();
+  if(id==='volumes') initSuvChart();
+}
+
+function showFinSub(id,btn){
+  document.querySelectorAll('.fin-sub').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.fin-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('finsub-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const C={tata:'#1d3f91',maruti:'#c1272d',hyundai:'#0891b2'};
+let chartsInit=false, suvInit=false;
+
+function initCharts(){
+  if(chartsInit) return; chartsInit=true;
+  const labels=['Tata Motors PV','Maruti Suzuki','Hyundai India'];
+  const colors=[C.tata,C.maruti,C.hyundai];
+
+  new Chart(document.getElementById('revChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:labels,datasets:[{label:'Revenue (₹ Cr)',data:[95799,52456,16335],backgroundColor:colors,borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{font:{family:'IBM Plex Mono',size:10}}}}}
+  });
+  new Chart(document.getElementById('patChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:labels,datasets:[{label:'PAT YoY %',data:[-80.3,-11.0,-34.0],backgroundColor:colors,borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%',font:{family:'IBM Plex Mono',size:10}}}}}
+  });
+  new Chart(document.getElementById('volChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:labels,datasets:[{label:'Volume YoY %',data:[46,29.3,-1.3],backgroundColor:colors,borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%',font:{family:'IBM Plex Mono',size:10}}}}}
+  });
+  new Chart(document.getElementById('marginChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:['Tata PV (EBIT)','Maruti (EBITDA)','Hyundai (PBT)','JLR (Adj. EBIT)'],datasets:[{label:'Margin %',data:[2.4,8.2,7.2,2.8],backgroundColor:[C.tata,C.maruti,C.hyundai,'#4b2e83'],borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%',font:{family:'IBM Plex Mono',size:10}}}}}
+  });
+}
+function initSuvChart(){
+  if(suvInit) return; suvInit=true;
+  new Chart(document.getElementById('suvChart').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:['Tata Motors ~29%','Maruti Suzuki ~23%','Mahindra ~16%','Others ~32%'],
+      datasets:[{data:[29,23,16,32],backgroundColor:[C.tata,C.maruti,'#64748b','#d1d5db']}]},
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:12}}},cutout:'60%'}
+  });
+}
+</script>
+</body>
+</html>

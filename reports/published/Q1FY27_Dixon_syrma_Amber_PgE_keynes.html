@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India EMS Sector — Q1 FY27 Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white:#ffffff; --off-white:#f9f7f4; --cream:#f2ede6; --border:#e8e2da;
+    --dixon-main:#1a4f8c; --dixon-light:#d6e4f5; --dixon-accent:#f0a500;
+    --kaynes-main:#1a6b4a; --kaynes-light:#d4f0e3; --kaynes-accent:#e05c2a;
+    --syrma-main:#7b2d8b; --syrma-light:#f0d8f7; --syrma-accent:#e8a020;
+    --amber-main:#c05c00; --amber-light:#fdebd0; --amber-accent:#2e86c1;
+    --pgel-main:#1a7a7a; --pgel-light:#d3f0ee; --pgel-accent:#c0392b;
+    --text-dark:#1a1a2e; --text-mid:#444; --text-light:#777;
+    --positive:#1a7a4a; --negative:#c0392b; --neutral:#e67e22;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--white); color:var(--text-dark); font-size:15px; line-height:1.6; }
+
+  .hero { background:linear-gradient(135deg,#0d1b3e 0%,#1a3468 50%,#0d2c5e 100%); color:#fff; padding:56px 44px 40px; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; top:-80px; right:-80px; width:360px; height:360px; border-radius:50%; background:rgba(255,255,255,.04); }
+  .hero-tag { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:#7fb3e8; margin-bottom:14px; }
+  .hero h1 { font-family:'Playfair Display',serif; font-size:46px; font-weight:900; line-height:1.12; margin-bottom:16px; }
+  .hero h1 span { color:#f0a500; }
+  .hero-sub { font-size:15.5px; color:#a8c4e0; max-width:680px; margin-bottom:28px; }
+  .hero-meta { display:flex; gap:30px; flex-wrap:wrap; }
+  .hero-meta-item { text-align:center; }
+  .hero-meta-val { font-family:'Playfair Display',serif; font-size:25px; font-weight:700; color:#f0a500; }
+  .hero-meta-label { font-size:10.5px; color:#7fb3e8; letter-spacing:.8px; }
+
+  .nav-bar { background:#fff; border-bottom:2px solid var(--border); position:sticky; top:0; z-index:100; display:flex; gap:0; padding:0 44px; overflow-x:auto; }
+  .nav-tab { padding:15px 18px; font-size:13px; font-weight:600; letter-spacing:.3px; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; color:var(--text-light); transition:.15s; user-select:none; }
+  .nav-tab:hover { color:var(--text-dark); }
+  .nav-tab.active { color:#1a4f8c; border-bottom-color:#1a4f8c; }
+
+  .section { display:none; padding:44px; max-width:1220px; margin:0 auto; }
+  .section.active { display:block; }
+  .section-title { font-family:'Playfair Display',serif; font-size:30px; font-weight:700; margin-bottom:8px; }
+  .section-sub { color:var(--text-light); font-size:13.5px; margin-bottom:32px; }
+
+  .company-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:32px; }
+  @media(max-width:1200px){ .company-grid{ grid-template-columns:repeat(3,1fr);} }
+  @media(max-width:760px){ .company-grid{ grid-template-columns:1fr;} }
+  .company-card { border-radius:14px; overflow:hidden; border:1px solid var(--border); background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.05); }
+  .company-card-header { padding:16px 18px 12px; color:#fff; position:relative; }
+  .company-card-header.dixon { background:linear-gradient(135deg,#1a4f8c,#2563b0); }
+  .company-card-header.kaynes { background:linear-gradient(135deg,#1a6b4a,#22855d); }
+  .company-card-header.syrma { background:linear-gradient(135deg,#7b2d8b,#9b3dab); }
+  .company-card-header.amber { background:linear-gradient(135deg,#c05c00,#e07820); }
+  .company-card-header.pgel { background:linear-gradient(135deg,#1a7a7a,#219090); }
+  .company-name { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; }
+  .company-ticker { font-family:'DM Mono',monospace; font-size:10px; opacity:.78; margin-top:2px; }
+  .company-mkt-cap { margin-top:8px; font-size:11.5px; opacity:.9; }
+  .company-card-body { padding:15px 16px; }
+  .kpi-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+  .kpi { background:var(--off-white); border-radius:8px; padding:8px 9px; }
+  .kpi-label { font-size:9px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--text-light); }
+  .kpi-value { font-family:'DM Mono',monospace; font-size:14.5px; font-weight:500; margin-top:2px; }
+  .kpi-change { font-size:10.5px; margin-top:1px; }
+  .up{color:var(--positive);} .dn{color:var(--negative);} .neu{color:var(--neutral);}
+
+  h2.qh { font-family:'Playfair Display',serif; font-size:25px; margin:0 0 4px; }
+  .qtag { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:20px; }
+  .card { background:var(--off-white); border:1px solid var(--border); border-radius:12px; padding:20px 22px; margin-bottom:20px; }
+  .card h3 { font-size:15px; margin-bottom:10px; }
+  table { width:100%; border-collapse:collapse; margin:10px 0 6px; font-size:13.3px; }
+  th { background:var(--cream); text-align:left; padding:8px 10px; font-size:11px; letter-spacing:.4px; text-transform:uppercase; color:var(--text-mid); }
+  td { padding:8px 10px; border-bottom:1px solid var(--border); font-family:'DM Mono',monospace; font-size:12.8px; }
+  td.lbl { font-family:'DM Sans',sans-serif; font-size:13.3px; }
+
+  .analyst-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px; margin-bottom:8px; }
+  .analyst-card { border:1px solid var(--border); border-radius:12px; padding:15px; background:#fff; }
+  .analyst-broker { font-size:10.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-light); }
+  .analyst-rating { display:inline-block; margin:6px 0; padding:3px 10px; border-radius:99px; font-size:10.5px; font-weight:700; letter-spacing:.6px; }
+  .rating-buy{background:#d4f0e3;color:#1a6b4a;} .rating-add{background:#d6e4f5;color:#1a4f8c;}
+  .rating-hold{background:#fef3cd;color:#855e00;} .rating-reduce{background:#fde8e8;color:#c0392b;}
+  .rating-neutral{background:#eef0f5;color:#555;}
+  .analyst-tp { font-family:'DM Mono',monospace; font-size:19px; font-weight:500; }
+  .analyst-note { font-size:11.5px; color:var(--text-light); margin-top:6px; line-height:1.4; }
+
+  .risk-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; margin-bottom:8px; }
+  .risk-card { border-radius:12px; padding:15px 18px; border-left:4px solid; }
+  .risk-high{background:#fef5f5;border-color:#e53935;} .risk-med{background:#fff8f0;border-color:#fb8c00;} .risk-low{background:#f0faf4;border-color:#43a047;}
+  .risk-title { font-weight:700; font-size:13px; margin-bottom:4px; }
+  .risk-desc { font-size:12px; color:var(--text-mid); line-height:1.5; }
+  .risk-badge { font-size:9.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; opacity:.7; }
+
+  .jv-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; margin-bottom:8px; }
+  .jv-card { border:1px solid var(--border); border-radius:12px; padding:15px; background:var(--off-white); }
+  .jv-co { font-weight:700; font-size:13.5px; }
+  .jv-partner { font-size:11.5px; color:var(--text-light); margin:2px 0 8px; }
+  .jv-desc { font-size:12.5px; color:var(--text-mid); line-height:1.5; }
+  .jv-status { display:inline-block; margin-top:8px; padding:3px 10px; border-radius:99px; font-size:9.5px; font-weight:700; letter-spacing:.7px; text-transform:uppercase; }
+  .status-active{background:#d4f0e3;color:#1a6b4a;} .status-pending{background:#fef3cd;color:#855e00;} .status-pipeline{background:#d6e4f5;color:#1a4f8c;}
+
+  .gov-card { border-radius:12px; padding:16px 20px; margin-bottom:14px; display:flex; gap:14px; background:var(--off-white); border:1px solid var(--border); }
+  .gov-flag { font-size:22px; flex-shrink:0; }
+  .gov-title { font-weight:700; font-size:13.5px; margin-bottom:4px; }
+  .gov-desc { font-size:12.5px; color:var(--text-mid); line-height:1.5; }
+
+  .verdict-box { border-radius:14px; padding:20px 22px; margin-top:6px; margin-bottom:16px; }
+  .verdict-box.dixon{background:var(--dixon-light);border:1px solid #b7cdea;}
+  .verdict-box.kaynes{background:var(--kaynes-light);border:1px solid #b8dfc9;}
+  .verdict-box.syrma{background:var(--syrma-light);border:1px solid #ddb8ea;}
+  .verdict-box.amber{background:var(--amber-light);border:1px solid #f0cf9a;}
+  .verdict-box.pgel{background:var(--pgel-light);border:1px solid #a9dcd8;}
+  .flag { font-size:13px; margin:4px 0; }
+  .src { font-size:11px; color:var(--text-light); margin-top:14px; font-style:italic; }
+  .assum { background:#fff8ea; border:1px solid #f0dca0; border-radius:8px; padding:10px 14px; font-size:12.3px; color:#7a5a00; margin-bottom:16px; }
+  .footer { text-align:center; padding:32px 20px; color:var(--text-light); font-size:11.5px; border-top:1px solid var(--border); margin-top:20px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">CB Research · Sector Intelligence · August 2026</div>
+  <h1>India <span>EMS</span> Sector<br>Q1 FY27 Deep Dive</h1>
+  <p class="hero-sub">Dixon Technologies, Kaynes Technology, Syrma SGS, Amber Enterprises &amp; PG Electroplast — Q1 FY27 (June 2026 quarter) results, cash-flow health, seasonal demand, JV strategy and capacity build-out.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">₹2.6L Cr</div><div class="hero-meta-label">Combined Q1 FY27 Revenue*</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">+30%</div><div class="hero-meta-label">Avg Revenue Growth YoY</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-label">Companies Tracked</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">Aug 2026</div><div class="hero-meta-label">Results Window</div></div>
+  </div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-tab active" onclick="showSection('overview')">📊 Overview</div>
+  <div class="nav-tab" onclick="showSection('dixon')">🔵 Dixon</div>
+  <div class="nav-tab" onclick="showSection('kaynes')">🟢 Kaynes</div>
+  <div class="nav-tab" onclick="showSection('syrma')">🟣 Syrma SGS</div>
+  <div class="nav-tab" onclick="showSection('amber')">🟠 Amber</div>
+  <div class="nav-tab" onclick="showSection('pgel')">🔷 PG Electroplast</div>
+  <div class="nav-tab" onclick="showSection('analysts')">🎯 Analyst Views</div>
+  <div class="nav-tab" onclick="showSection('jvs')">🤝 JVs &amp; Expansion</div>
+  <div class="nav-tab" onclick="showSection('risks')">⚠️ Risks</div>
+  <div class="nav-tab" onclick="showSection('mgmt')">🏛️ Management &amp; Board</div>
+  <div class="nav-tab" onclick="showSection('verdict')">✅ Verdict</div>
+</div>
+
+<!-- ═══════════ OVERVIEW ═══════════ -->
+<div id="overview" class="section active">
+  <div class="section-title">Sector Snapshot — Q1 FY27</div>
+  <p class="section-sub">Consolidated, quarter ended 30 June 2026. Results announced 31 July – 14 August 2026.</p>
+
+  <div class="company-grid">
+    <div class="company-card">
+      <div class="company-card-header dixon">
+        <div class="company-name">Dixon Technologies</div>
+        <div class="company-ticker">NSE: DIXON | BSE: 540699</div>
+        <div class="company-mkt-cap">India's #1 EMS · Noida</div>
+      </div>
+      <div class="company-card-body">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-value">₹15,548 Cr</div><div class="kpi-change up">▲ 21% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">PAT (reported)</div><div class="kpi-value">₹718 Cr</div><div class="kpi-change up">▲ 156%*</div></div>
+          <div class="kpi"><div class="kpi-label">PAT (adj.)</div><div class="kpi-value">₹218 Cr</div><div class="kpi-change neu">ex-FV gain</div></div>
+          <div class="kpi"><div class="kpi-label">EBITDA Margin</div><div class="kpi-value">2.97%</div><div class="kpi-change dn">▼ 78bps</div></div>
+        </div>
+        <div style="font-size:10.5px;color:var(--text-light);">*Reported PAT boosted by fair-value gain on Aditya Infotech stake; adjusted PAT is the cleaner run-rate figure.</div>
+      </div>
+    </div>
+
+    <div class="company-card">
+      <div class="company-card-header kaynes">
+        <div class="company-name">Kaynes Technology</div>
+        <div class="company-ticker">NSE: KAYNES | BSE: 543664</div>
+        <div class="company-mkt-cap">Premium ESDM/OSAT · Mysore</div>
+      </div>
+      <div class="company-card-body">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-value">₹946 Cr</div><div class="kpi-change up">▲ 40% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">PAT</div><div class="kpi-value">₹56.4 Cr</div><div class="kpi-change dn">▼ 24% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">EBITDA Margin</div><div class="kpi-value">15.6%</div><div class="kpi-change dn">▼ 120bps</div></div>
+          <div class="kpi"><div class="kpi-label">Op. Cash Flow</div><div class="kpi-value">-₹250 Cr</div><div class="kpi-change dn">Still negative</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="company-card">
+      <div class="company-card-header syrma">
+        <div class="company-name">Syrma SGS</div>
+        <div class="company-ticker">NSE: SYRMA | BSE: 543573</div>
+        <div class="company-mkt-cap">#3 by mkt cap · Chennai</div>
+      </div>
+      <div class="company-card-body">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-value">₹1,604 Cr</div><div class="kpi-change up">▲ 67% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">PAT</div><div class="kpi-value">₹105.7 Cr</div><div class="kpi-change up">▲ 112% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">EBITDA Margin</div><div class="kpi-value">11.0%</div><div class="kpi-change up">▲ 31bps</div></div>
+          <div class="kpi"><div class="kpi-label">NWC Days</div><div class="kpi-value">71 days</div><div class="kpi-change dn">▲ from 63</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="company-card">
+      <div class="company-card-header amber">
+        <div class="company-name">Amber Enterprises</div>
+        <div class="company-ticker">NSE: AMBER | BSE: 540902</div>
+        <div class="company-mkt-cap">AC/EMS/Railway · Gurgaon</div>
+      </div>
+      <div class="company-card-body">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-value">₹3,888 Cr</div><div class="kpi-change up">▲ 13% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">Adj. PAT</div><div class="kpi-value">₹126 Cr</div><div class="kpi-change up">▲ 19% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">CD (AC) Div.</div><div class="kpi-value">+8% YoY</div><div class="kpi-change neu">Modest</div></div>
+          <div class="kpi"><div class="kpi-label">Electronics Div.</div><div class="kpi-value">+29% YoY</div><div class="kpi-change up">Standout</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="company-card">
+      <div class="company-card-header pgel">
+        <div class="company-name">PG Electroplast</div>
+        <div class="company-ticker">NSE: PGEL | BSE: 533581</div>
+        <div class="company-mkt-cap">RAC/WM EMS · Greater Noida</div>
+      </div>
+      <div class="company-card-body">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-value">₹2,034 Cr</div><div class="kpi-change up">▲ 35% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">Net Profit</div><div class="kpi-value">₹75.3 Cr</div><div class="kpi-change up">▲ 13% YoY</div></div>
+          <div class="kpi"><div class="kpi-label">EBITDA Margin</div><div class="kpi-value">7.7%</div><div class="kpi-change dn">▼ 159bps</div></div>
+          <div class="kpi"><div class="kpi-label">Net Cash</div><div class="kpi-value">₹73.9 Cr</div><div class="kpi-change up">Net-cash</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Sector read-through</h3>
+    <p style="font-size:13.5px;">Every one of the five posted double-digit revenue growth — the sector's structural China+1 / PLI-and-ECMS tailwind is intact. But the quarter split the group into two camps: <b>Dixon, Syrma and PG Electroplast</b> converted growth into clean profit and cash generation; <b>Kaynes</b> beat on revenue and margin but bled cash on working capital; <b>Amber</b> met estimates on profit but missed on revenue, with its core AC business growing far slower than its new Electronics arm. Commodity inflation (memory chips, copper, aluminium) and rupee depreciation (~₹85→₹96/USD over 12 months) pressured margins sector-wide.</p>
+  </div>
+</div>
+
+<!-- ═══════════ DIXON ═══════════ -->
+<div id="dixon" class="section">
+  <h2 class="qh">Dixon Technologies — Volume machine, margins still under PLI-expiry pressure</h2>
+  <div class="qtag">Q1 FY27 (June 2026 quarter)</div>
+
+  <div class="card">
+    <h3>Headline numbers</h3>
+    <table>
+      <tr><th>Metric</th><th>Q1 FY26</th><th>Q1 FY27</th><th>Change</th></tr>
+      <tr><td class="lbl">Revenue (reported, incl. other income)</td><td>₹12,836 Cr</td><td>₹16,076 Cr</td><td class="lbl up">+25%</td></tr>
+      <tr><td class="lbl">Revenue (core ops)</td><td>₹12,836 Cr</td><td>₹15,548 Cr</td><td class="lbl up">+21.1%</td></tr>
+      <tr><td class="lbl">EBITDA (adj., ex-FV gain)</td><td>₹484 Cr</td><td>₹472 Cr</td><td class="lbl dn">-2.5%</td></tr>
+      <tr><td class="lbl">EBITDA margin (adj.)</td><td>3.75%</td><td>2.97%</td><td class="lbl dn">-78 bps</td></tr>
+      <tr><td class="lbl">PAT (reported)</td><td>₹280 Cr</td><td>₹718 Cr</td><td class="lbl up">+156% (incl. FV gain)</td></tr>
+      <tr><td class="lbl">PAT (adj., ex-FV gain, post minority)</td><td>~₹225 Cr</td><td>₹218 Cr</td><td class="lbl neu">Roughly flat</td></tr>
+      <tr><td class="lbl">Working capital absorbed</td><td>—</td><td>~₹800 Cr</td><td class="lbl dn">Inventory build + delayed creditor payments</td></tr>
+      <tr><td class="lbl">ROCE</td><td>—</td><td>34.1%</td><td class="lbl up">Still high</td></tr>
+    </table>
+    <p style="margin-top:10px;font-size:13.5px;">Segment mix: Mobile &amp; Other EMS ₹14,179 Cr, Telecom &amp; Networking ₹2,100 Cr, IT Hardware ₹1,350 Cr (roughly matching all of FY26's IT Hardware revenue in one quarter). Smartphone production volume was 7.5 million units, +25% QoQ.</p>
+  </div>
+
+  <div class="card">
+    <h3>Why the adjusted margin fell despite strong volumes</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li>The <b>Mobile PLI 1.0 scheme expired in March 2026</b> — FY26 had booked ₹1,110 Cr of PLI incentives that simply do not recur in FY27, a direct drag on reported EBITDA/PAT with no operational cause.</li>
+      <li>Sharp memory-chip price inflation (DRAM/storage up 30–40% QoQ at points in FY26) raised input costs; Dixon's cost-plus/passthrough contracts protect volume but not margin timing.</li>
+      <li>Working capital absorbed ~₹800 Cr from inventory build and delayed creditor payments — a much milder version of the same commodity-and-supply-chain story affecting Kaynes and Syrma, but Dixon's balance sheet (net cash, negative working-capital cycle historically) can absorb it far more comfortably.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>What's ahead: PLI 2.0, HKC display JV, Vivo JV</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li><b>Vivo JV:</b> received PN3 government approval in July 2026 — a major de-risking event after earlier delay concerns tied to China's new outbound-investment regime. Brokerages (Nuvama) have now started factoring in Vivo JV revenue contribution 6 months earlier than previously modelled.</li>
+      <li><b>HKC Corporation JV (74:26, Dixon:HKC Overseas):</b> for liquid-crystal/TFT-LCD display modules and assembly of smartphones, TVs, monitors, auto displays. Commissioning of the display facility is targeted for <b>H2 FY27</b> and is explicitly flagged by Motilal Oswal as a 2026-27 catalyst for margin improvement.</li>
+      <li>Management guides margin recovery from FY28, aided by backward integration (camera modules, enclosures, precision components under the ECMS scheme) and PLI 2.0 incentives for mobile exports.</li>
+      <li>FY27 smartphone volume target: 60–65 million units (+43–53% YoY).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ KAYNES ═══════════ -->
+<div id="kaynes" class="section">
+  <h2 class="qh">Kaynes Technology — Growth beat, but cash-flow problem NOT sorted out</h2>
+  <div class="qtag">Q1 FY27 (June 2026 quarter) — first revenue/EBITDA beat in five quarters, first negative-OCF quarter of this severity</div>
+
+  <div class="card">
+    <h3>Headline numbers</h3>
+    <table>
+      <tr><th>Metric</th><th>Q1 FY26</th><th>Q1 FY27</th><th>Change</th></tr>
+      <tr><td class="lbl">Revenue</td><td>₹673.5 Cr</td><td>₹946.0 Cr</td><td class="lbl up">+40.5%</td></tr>
+      <tr><td class="lbl">EBITDA margin</td><td>16.8%</td><td>15.6%</td><td class="lbl dn">-120 bps</td></tr>
+      <tr><td class="lbl">Net Profit</td><td>₹74.6 Cr</td><td>₹56.4 Cr</td><td class="lbl dn">-24.4% (miss vs ₹69 Cr est.)</td></tr>
+      <tr><td class="lbl">Net working capital days</td><td>132 (Q1 FY26)</td><td>higher than 125-day FY26 exit</td><td class="lbl dn">Worsened further</td></tr>
+      <tr><td class="lbl">Operating cash flow</td><td>negative</td><td><b>-₹250 Cr</b></td><td class="lbl dn">Still deeply negative</td></tr>
+      <tr><td class="lbl">Order book</td><td>₹7,401 Cr</td><td>₹8,900 Cr</td><td class="lbl up">+20%</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>The cash-flow question — answered plainly: NOT sorted out</h3>
+    <p style="font-size:13.5px;">Revenue and EBITDA both beat estimates — the core EMS business collected well (₹847 Cr against ₹854 Cr of EMS sales, i.e. near-full collection). The problem is concentrated entirely in the <b>smart-metering business</b>, where state-utility payment cycles remain long, plus a deliberate inventory buffer built against supply-chain disruption. Rupee depreciation (~₹85→₹96/USD) and 9.68% wholesale inflation added further working-capital cost. CLSA flagged the balance-sheet deterioration and the resulting decline in reported ROCE explicitly; JPMorgan called the print the best beat in five quarters but stayed Neutral specifically because of working capital; Nomura kept flagging elevated NWC days as the key monitorable.</p>
+    <p style="font-size:13.5px;margin-top:8px;">Management's own fix — positive operating cash flow "by end of FY27" — is a forward promise. Some receivables securitisation is already in use (~₹40 Cr discounted) as a stop-gap. OSAT (Sanand) and PCB (Kaynes Circuit, Chennai) are targeted to start commercial billing in Q3 FY27, contributing ₹450–500 Cr to FY27 revenue and eventually helping margin mix — but they add ₹850 Cr of FY27 capex in the near term, which itself pressures cash flow before it helps.</p>
+  </div>
+</div>
+
+<!-- ═══════════ SYRMA ═══════════ -->
+<div id="syrma" class="section">
+  <h2 class="qh">Syrma SGS — Cleanest print of the sector; Kaga JV opens the Japanese OEM door</h2>
+  <div class="qtag">Q1 FY27 (June 2026 quarter)</div>
+
+  <div class="card">
+    <h3>Headline numbers</h3>
+    <table>
+      <tr><th>Metric</th><th>Q1 FY26</th><th>Q1 FY27</th><th>Change</th></tr>
+      <tr><td class="lbl">Revenue</td><td>₹960 Cr</td><td>₹1,604 Cr</td><td class="lbl up">+67.1%</td></tr>
+      <tr><td class="lbl">EBITDA</td><td>₹102.7 Cr</td><td>₹176.6 Cr</td><td class="lbl up">+72%</td></tr>
+      <tr><td class="lbl">EBITDA margin</td><td>10.7%</td><td>11.0%</td><td class="lbl up">+31 bps</td></tr>
+      <tr><td class="lbl">Net Profit</td><td>₹49.9 Cr</td><td>₹105.7 Cr</td><td class="lbl up">+112%</td></tr>
+      <tr><td class="lbl">PAT margin</td><td>5.2%</td><td>6.6%</td><td class="lbl up">+140 bps</td></tr>
+      <tr><td class="lbl">Export revenue</td><td>—</td><td>₹381.3 Cr (24% of sales)</td><td class="lbl up">+67% YoY</td></tr>
+      <tr><td class="lbl">Order book</td><td>—</td><td>₹6,770 Cr</td><td class="lbl up">~10-mo execution visibility</td></tr>
+      <tr><td class="lbl">Net working capital days</td><td>63</td><td>71</td><td class="lbl dn">Rose on inventory buffer</td></tr>
+    </table>
+    <p style="margin-top:10px;font-size:13.5px;">This is the strongest all-round print among the five — revenue, EBITDA and PAT all grew over 100% at points in the reported figures, margins expanded rather than contracted (unlike Dixon/Kaynes/Amber/PGEL), and the company still holds a net-cash balance sheet even after a ~₹340 Cr rise in short-term borrowings used for inventory buffering. Management explicitly said the beat reflected "normal business execution," not one-time booking.</p>
+  </div>
+
+  <div class="card">
+    <h3>Strategic moves this quarter</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li><b>JV with KAGA Electronics (Japan)</b> — targeting a 60% Syrma stake, aimed squarely at winning Japanese OEM contract-manufacturing work, a segment where Indian EMS players have historically lagged Chinese/Southeast Asian rivals. This is Syrma's answer to the same "diversify beyond the core" playbook Amber is running with Oppo/HDI-PCB.</li>
+      <li><b>New CEO — Jaidit Singh Brar</b> (ex-McKinsey Senior Partner, 25+ years), effective 26 June 2026 — signals a push toward higher-end compute and defence electronics.</li>
+      <li><b>Credit rating upgraded</b> to IND AA/Stable from IND AA-/Stable by India Ratings, citing improved business risk profile and strong liquidity.</li>
+      <li><b>₹1,000 Cr QIP approved</b> to fund greenfield component and PCB capacity (Andhra Pradesh PCB plant: trial production targeted Dec 2026, commercial from March 2027, ₹1,595 Cr investment).</li>
+      <li>Healthcare/MedTech order book near ₹500 Cr, with subsidiary Syrma Johari Medtech expected to grow ~50% this year; defence/maritime push continues via the Elcome Integrated Systems and Navicom acquisitions from FY26.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ AMBER ═══════════ -->
+<div id="amber" class="section">
+  <h2 class="qh">Amber Enterprises — Summer helped modestly; JV/diversification strategy real but early-stage</h2>
+  <div class="qtag">Q1 FY27 (June 2026 quarter) — missed revenue estimates, met profit estimates</div>
+
+  <div class="card">
+    <h3>Headline numbers</h3>
+    <table>
+      <tr><th>Division</th><th>Q1 FY26</th><th>Q1 FY27</th><th>Growth</th></tr>
+      <tr><td class="lbl">Consumer Durables (RAC + components)</td><td>base</td><td>+8% YoY</td><td class="lbl neu">Modest</td></tr>
+      <tr><td class="lbl">Electronics (EMS)</td><td>₹766 Cr</td><td>₹985 Cr</td><td class="lbl up">+29% YoY</td></tr>
+      <tr><td class="lbl">Railway &amp; Defence</td><td>base</td><td>+18% revenue / -26% EBITDA</td><td class="lbl dn">Margin drag from mix &amp; commodity cost</td></tr>
+      <tr><td class="lbl">Total consolidated revenue</td><td>₹3,449 Cr</td><td>₹3,888 Cr</td><td class="lbl neu">+13% (missed ₹4,288 Cr est.)</td></tr>
+      <tr><td class="lbl">Operating EBITDA</td><td>—</td><td>₹337 Cr</td><td class="lbl up">+28% YoY</td></tr>
+      <tr><td class="lbl">Adjusted PAT</td><td>—</td><td>₹126 Cr</td><td class="lbl up">+19% YoY</td></tr>
+      <tr><td class="lbl">Exceptional loss (one-off)</td><td>—</td><td>₹123 Cr</td><td class="lbl dn">Below-the-line item</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Did the extended 2026 summer help sell more ACs? Partially.</h3>
+    <p style="font-size:13.5px;">2026 brought an unusually hot April–May with widespread heatwaves and record power demand (270 GW on 21 May 2026) — industry-wide AC volumes were reportedly up ~25% and value ~30% in that window. But Amber's Consumer Durables division still grew only +8% YoY, blunted by:</p>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li><b>High base effect</b> — the division had already grown 33–46% in equivalent FY26 quarters.</li>
+      <li><b>Front-loaded pre-stocking</b> — management explicitly cited "pre-stocking and a favourable product mix," not pure volume, as the growth driver.</li>
+      <li><b>Early monsoon</b> cooled demand from June, compressing the "extended summer" into a shorter window than the framing suggests; the RAC industry itself is still recovering from a rain-disrupted, weak FY26 (ICRA flagged a 10–15% FY26 volume decline), so part of FY27 growth is base-effect recovery, not a structurally hotter season.</li>
+    </ul>
+    <p style="font-size:13.5px;">The real Q1 FY27 growth story was <b>Electronics (+29%)</b>, not air conditioners.</p>
+  </div>
+
+  <div class="card">
+    <h3>Will the JV/diversification strategy work? Directionally sound, still pre-revenue</h3>
+    <table>
+      <tr><th>Partner</th><th>Structure</th><th>Purpose</th><th>Status</th></tr>
+      <tr><td class="lbl">Korea Circuit (South Korea)</td><td>IL JIN 70% / Korea Circuit 30%</td><td>HDI, Flex &amp; semiconductor-substrate PCBs</td><td class="lbl">Ground-breaking done; construction underway</td></tr>
+      <tr><td class="lbl">Singularity Des Electronics</td><td>IL JIN 60% / Singularity 40%</td><td>Medical, defence &amp; aerospace electronics (ILJIN Technologies Pvt Ltd)</td><td class="lbl">Incorporated 4 Jun 2026 — pre-revenue</td></tr>
+      <tr><td class="lbl">OPPO Mobiles India</td><td>Manufacturing collaboration</td><td>Oppo/OnePlus/Realme smartphone manufacturing</td><td class="lbl">Trial Q4 FY27; commercial Q1 FY28; 15–16m units/yr by yr 2</td></tr>
+    </table>
+    <p style="font-size:13.5px;margin-top:10px;">This is a genuine strategic pivot from a pure RAC OEM toward a diversified, de-seasonalised EMS platform, and management reiterated 40%+ Electronics growth guidance. But almost all of it is pre-revenue or early-ramp — the "will it work" question is not answerable from financials until FY28.</p>
+    <div class="assum">⚠️ No Amber JV named "HTC" exists in the record. The closest sector match is <b>Dixon's JV with China's HKC Corporation</b> (display modules) — a different company. See the Dixon tab for that story.</div>
+  </div>
+</div>
+
+<!-- ═══════════ PG ELECTROPLAST ═══════════ -->
+<div id="pgel" class="section">
+  <h2 class="qh">PG Electroplast — Past the FY26 crisis; compressor plant on track, not yet commissioned</h2>
+  <div class="qtag">Q1 FY27 (June 2026 quarter) — record ₹2,000+ Cr revenue quarter</div>
+
+  <div class="card">
+    <h3>Headline numbers</h3>
+    <table>
+      <tr><th>Metric</th><th>Q1 FY26</th><th>Q1 FY27</th><th>Change</th></tr>
+      <tr><td class="lbl">Consolidated revenue</td><td>₹1,504 Cr</td><td>₹2,034 Cr</td><td class="lbl up">+35.2%</td></tr>
+      <tr><td class="lbl">Room AC segment</td><td>base</td><td>₹1,401.4 Cr</td><td class="lbl up">+38.1%</td></tr>
+      <tr><td class="lbl">Washing Machine segment</td><td>base</td><td>₹210.8 Cr</td><td class="lbl up">+67.2%</td></tr>
+      <tr><td class="lbl">EBITDA</td><td>₹139.4 Cr</td><td>₹156.2 Cr</td><td class="lbl up">+12.1%</td></tr>
+      <tr><td class="lbl">EBITDA margin</td><td>9.3%</td><td>7.7%</td><td class="lbl dn">-159 bps</td></tr>
+      <tr><td class="lbl">Gross contribution margin</td><td>15.9%</td><td>14.5%</td><td class="lbl dn">-140 bps</td></tr>
+      <tr><td class="lbl">Net Profit</td><td>₹66.7 Cr</td><td>₹75.3 Cr</td><td class="lbl up">+12.9%</td></tr>
+      <tr><td class="lbl">Net cash position</td><td>—</td><td>₹491.3 Cr cash vs ₹417.4 Cr debt</td><td class="lbl up">Net cash ₹73.9 Cr</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>FY26 problems — clearly behind it</h3>
+    <p style="font-size:13.5px;">FY26 net profit had fallen 33.5% YoY to ₹193.6 Cr, driven by a severe March-2026 peak-season disruption — a <b>commercial LPG supply shortage combined with a diesel/truck-availability crisis</b> that hurt production and dispatch right at seasonal peak. Q1 FY27 shows clean operational recovery: revenue crossed ₹2,000 Cr for the first time, AC and washing-machine segments both hit record quarterly sales, and the balance sheet stayed net-cash through the capex ramp. The margin dip (15.9%→14.5% gross contribution) reflects commodity cost inflation not yet fully passed through — raw material rose to 85.5% of sales from 84.1% — a timing issue management expects to correct with festive-season price hikes, not a structural problem.</p>
+    <p style="font-size:13.5px;margin-top:8px;">A May 2026 SEBI warning on insider trading remains a governance overhang worth monitoring, though it has not been linked to any restatement of financials.</p>
+  </div>
+
+  <div class="card">
+    <h3>The compressor plant — status, not yet a result</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li><b>Location:</b> Supa plant, Maharashtra. <b>Initial capacity:</b> 2 million rotary compressors/year.</li>
+      <li><b>Target commissioning:</b> Q4 FY27 (Jan–Mar 2027), reiterated on the Q1 FY27 call.</li>
+      <li><b>Rationale:</b> compressors are the single largest imported/outsourced component in an AC's BOM — backward integration here underpins PGEL's 8% full-year EBITDA margin target (ex-PLI).</li>
+      <li><b>Risk flagged by Anand Rathi Research:</b> "delay in commissioning of compressor plant" is an explicit named risk to the FY27/28 thesis, alongside "weaker-than-expected summer."</li>
+      <li>Parallel projects: the flagship Greater Noida washing-machine facility (1.8m units/yr) is now operational (Aug 2026); the Sri City refrigerator campus remains on track for commercial production by Q4 FY27, with FY28 the first meaningful revenue year — three capacity projects running in parallel is real execution risk, but nothing in Q1 FY27 disclosures suggests slippage on any of them.</li>
+    </ul>
+    <p style="font-size:13.5px;"><b>Bottom line:</b> "succeeded" is premature — the plant isn't online yet. What can fairly be said: the FY26 crisis is resolved, the balance sheet can fund the capex without stress, and the Q4 FY27 commissioning timeline hasn't slipped so far.</p>
+  </div>
+</div>
+
+<!-- ═══════════ ANALYST VIEWS ═══════════ -->
+<div id="analysts" class="section">
+  <div class="section-title">Analyst Views — Post Q1 FY27</div>
+  <p class="section-sub">Third-party broker ratings only. CB Research does not issue its own Buy/Sell/Hold recommendation.</p>
+
+  <h3 style="margin-bottom:10px;">Dixon Technologies (~₹13,500 post-result)</h3>
+  <div class="analyst-grid">
+    <div class="analyst-card"><div class="analyst-broker">Motilal Oswal</div><div class="analyst-rating rating-buy">BUY</div><div class="analyst-tp">₹16,100</div><div class="analyst-note">DCF-based, rolled to Sep 2028; factors in 6.5% Aditya Infotech stake</div></div>
+    <div class="analyst-card"><div class="analyst-broker">Nuvama</div><div class="analyst-rating rating-hold">HOLD</div><div class="analyst-tp">₹13,000</div><div class="analyst-note">Upgraded target post Vivo JV PN3 approval; now factors 7 months of Vivo contribution</div></div>
+    <div class="analyst-card"><div class="analyst-broker">HDFC Securities</div><div class="analyst-rating rating-reduce">REDUCE</div><div class="analyst-tp">—</div><div class="analyst-note">Cautious on valuation despite Vivo JV progress</div></div>
+    <div class="analyst-card"><div class="analyst-broker">Bloomberg Consensus (29 analysts)</div><div class="analyst-rating rating-neutral">MIXED</div><div class="analyst-tp">~₹11,947</div><div class="analyst-note">Wide dispersion (₹9,600–₹18,471 across sources)</div></div>
+  </div>
+
+  <h3 style="margin:22px 0 10px;">Kaynes Technology (₹3,850.10 post-result)</h3>
+  <div class="analyst-grid">
+    <div class="analyst-card"><div class="analyst-broker">MOFSL</div><div class="analyst-rating rating-neutral">—</div><div class="analyst-tp">₹5,000</div><div class="analyst-note">Highest target on the Street</div></div>
+    <div class="analyst-card"><div class="analyst-broker">Nuvama</div><div class="analyst-rating rating-reduce">REDUCE</div><div class="analyst-tp">₹3,450</div><div class="analyst-note">Cut FY27/28 EPS to factor Q1 miss and outlook</div></div>
+    <div class="analyst-card"><div class="analyst-broker">JPMorgan</div><div class="analyst-rating rating-neutral">NEUTRAL</div><div class="analyst-tp">₹3,600</div><div class="analyst-note">Cut estimates 7-9% on higher tax rate; WC still a concern</div></div>
+    <div class="analyst-card"><div class="analyst-broker">Investec</div><div class="analyst-rating rating-neutral">—</div><div class="analyst-tp">₹2,790</div><div class="analyst-note">Lowest target on the Street</div></div>
+    <div class="analyst-card"><div class="analyst-broker">Bloomberg Consensus</div><div class="analyst-rating rating-neutral">MOSTLY NEUTRAL/REDUCE</div><div class="analyst-tp">₹3,659</div><div class="analyst-note">~5% implied downside from post-result price</div></div>
+  </div>
+
+  <h3 style="margin:22px 0 10px;">Syrma SGS</h3>
+  <p style="font-size:13px;color:var(--text-mid);">No formal post-Q1 FY27 target table found in searched sources; stock rose 5.2% on the result and closed near its 52-week high of ₹1,517.70, reflecting a strongly positive market reaction to the clean beat-across-the-board print and Kaga JV news.</p>
+
+  <h3 style="margin:22px 0 10px;">Amber Enterprises</h3>
+  <p style="font-size:13px;color:var(--text-mid);">Post-Q1 commentary emphasised the Electronics-division beat and Oppo/PCB strategic moves as long-term positives, balanced by integration risk across the fast-growing subsidiary structure and valuation caution. No formal consensus target found for this specific print; stock traded roughly flat (+0.4%) on results — a "meets, doesn't excite" reaction.</p>
+
+  <h3 style="margin:22px 0 10px;">PG Electroplast</h3>
+  <div class="analyst-grid">
+    <div class="analyst-card"><div class="analyst-broker">Anand Rathi Research</div><div class="analyst-rating rating-buy">BUY</div><div class="analyst-tp">₹675</div><div class="analyst-note">28 May 2026 note; pre-Q1, thesis intact per Q1 delivery</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ JVs & EXPANSION ═══════════ -->
+<div id="jvs" class="section">
+  <div class="section-title">JVs &amp; Capacity Expansion — Sector-Wide</div>
+  <p class="section-sub">Every company in this cohort is running at least one strategic JV or major capacity build-out.</p>
+
+  <div class="jv-grid">
+    <div class="jv-card">
+      <div class="jv-co">Dixon × Vivo Mobile India</div>
+      <div class="jv-partner">JV — smartphone OEM manufacturing</div>
+      <div class="jv-desc">Received PN3 government approval July 2026 after earlier delay concerns from China's outbound-investment regime. Nuvama now factoring 7 months of FY27 contribution.</div>
+      <div class="jv-status status-active">Approved — ramping</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Dixon × HKC Corporation</div>
+      <div class="jv-partner">JV 74:26 (Dixon:HKC Overseas)</div>
+      <div class="jv-desc">Liquid-crystal / TFT-LCD display module manufacturing and assembly. Commissioning targeted H2 FY27 — flagged as a margin-improvement catalyst.</div>
+      <div class="jv-status status-pending">Building — H2 FY27</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Kaynes — OSAT (Sanand) &amp; PCB (Chennai)</div>
+      <div class="jv-partner">Wholly-owned facilities</div>
+      <div class="jv-desc">Semiconductor assembly/test and PCB capacity. Commercial billing targeted Q3 FY27; ₹450–500 Cr FY27 revenue guided.</div>
+      <div class="jv-status status-pending">Pre-revenue — Q3 FY27</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Syrma SGS × KAGA Electronics</div>
+      <div class="jv-partner">JV — Syrma targeting 60% stake</div>
+      <div class="jv-desc">Strengthens capability to win Japanese OEM contract-manufacturing work — a segment India has historically ceded to China/SE Asia.</div>
+      <div class="jv-status status-pipeline">Just announced (Q1 FY27)</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Syrma — Andhra Pradesh PCB plant</div>
+      <div class="jv-partner">Wholly-owned, ₹1,595 Cr investment</div>
+      <div class="jv-desc">Trial production targeted Dec 2026, commercial from March 2027; 2,000+ skilled jobs planned.</div>
+      <div class="jv-status status-pending">Under construction</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Amber × Korea Circuit</div>
+      <div class="jv-partner">IL JIN 70% / Korea Circuit 30%</div>
+      <div class="jv-desc">HDI, Flex and semiconductor-substrate PCBs. Ground-breaking done; facility under construction.</div>
+      <div class="jv-status status-pending">Building</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Amber × Singularity Des Electronics</div>
+      <div class="jv-partner">IL JIN 60% / Singularity 40%</div>
+      <div class="jv-desc">Medical, defence &amp; aerospace electronics via new entity ILJIN Technologies Pvt Ltd, incorporated 4 Jun 2026.</div>
+      <div class="jv-status status-pipeline">Incorporated — pre-revenue</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">Amber × Oppo Mobiles India</div>
+      <div class="jv-partner">Manufacturing collaboration</div>
+      <div class="jv-desc">Oppo/OnePlus/Realme smartphone manufacturing; scale to 15-16m units/yr in year 2.</div>
+      <div class="jv-status status-pipeline">Trial Q4 FY27 → commercial Q1 FY28</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">PG Electroplast — Compressor plant (Supa)</div>
+      <div class="jv-partner">Wholly-owned, 2m units/yr initial capacity</div>
+      <div class="jv-desc">Backward integration into the largest imported AC-BOM component. Targeted commissioning Q4 FY27.</div>
+      <div class="jv-status status-pending">Under construction</div>
+    </div>
+    <div class="jv-card">
+      <div class="jv-co">PG Electroplast — Sri City refrigerator campus</div>
+      <div class="jv-partner">Wholly-owned</div>
+      <div class="jv-desc">New product category entry; commercial production targeted Q4 FY27, first meaningful revenue year FY28.</div>
+      <div class="jv-status status-pending">Under construction</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ RISKS ═══════════ -->
+<div id="risks" class="section">
+  <div class="section-title">Key Risks — By Company</div>
+
+  <div class="risk-grid">
+    <div class="risk-card risk-med"><div class="risk-badge">DIXON</div><div class="risk-title">PLI 1.0 expiry drag</div><div class="risk-desc">₹1,110 Cr FY26 PLI incentive does not recur in FY27; margin recovery depends on PLI 2.0 and backward integration timing.</div></div>
+    <div class="risk-card risk-low"><div class="risk-badge">DIXON</div><div class="risk-title">Vivo/HKC JV execution</div><div class="risk-desc">Regulatory approvals secured, but commissioning and ramp timelines (H2 FY27) still need to be delivered.</div></div>
+    <div class="risk-card risk-high"><div class="risk-badge">KAYNES</div><div class="risk-title">Working capital / cash conversion</div><div class="risk-desc">Negative ₹250 Cr OCF in Q1 FY27, elevated NWC days for multiple quarters running; smart-meter receivables the specific pressure point.</div></div>
+    <div class="risk-card risk-med"><div class="risk-badge">KAYNES</div><div class="risk-title">OSAT/PCB capex ahead of revenue</div><div class="risk-desc">₹850 Cr FY27 capex plan adds depreciation/finance cost before Q3 FY27 commercial billing starts.</div></div>
+    <div class="risk-card risk-med"><div class="risk-badge">SYRMA</div><div class="risk-title">Rising NWC days</div><div class="risk-desc">71 days vs 63 a year ago, plus ~₹340 Cr rise in short-term borrowings for inventory buffering — worth watching even though balance sheet remains net-cash.</div></div>
+    <div class="risk-card risk-low"><div class="risk-badge">SYRMA</div><div class="risk-title">New CEO transition</div><div class="risk-desc">Leadership handover to Jaidit Singh Brar (June 2026) alongside Executive Chairman Sandeep Tandon's re-appointment — governance continuity to monitor.</div></div>
+    <div class="risk-card risk-med"><div class="risk-badge">AMBER</div><div class="risk-title">Revenue miss vs estimates</div><div class="risk-desc">₹3,888 Cr vs ₹4,288 Cr consensus — CD division growth slower than the market had priced in.</div></div>
+    <div class="risk-card risk-med"><div class="risk-badge">AMBER</div><div class="risk-title">JV integration complexity</div><div class="risk-desc">Multiple new JVs (Korea Circuit, ILJIN-Singularity, Oppo) layered onto an already-complex subsidiary structure; execution risk before any of them contributes revenue.</div></div>
+    <div class="risk-card risk-low"><div class="risk-badge">PGEL</div><div class="risk-title">Compressor/refrigerator commissioning delay</div><div class="risk-desc">Explicitly flagged by Anand Rathi as a key risk to the FY27/28 margin thesis; no slippage reported yet.</div></div>
+    <div class="risk-card risk-low"><div class="risk-badge">PGEL</div><div class="risk-title">SEBI insider-trading warning</div><div class="risk-desc">May 2026 warning remains a governance overhang; not linked to any financial restatement so far.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ MANAGEMENT & BOARD ═══════════ -->
+<div id="mgmt" class="section">
+  <div class="section-title">Management &amp; Board — Q1 FY27 Updates</div>
+
+  <div class="card">
+    <h3>Dixon Technologies</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li>Board re-appointed <b>Sunil Vachani</b> (Whole Time Director) and <b>Atul B. Lall</b> (Vice Chairman &amp; MD) for a further five-year term, subject to shareholder approval.</li>
+      <li>4,000 stock options granted to employees under the Dixon ESOP 2023 plan.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Kaynes Technology</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li>Postal ballot concluded 7 Aug 2026 to induct <b>Dr. Mylswamy Annadurai</b> (former ISRO scientist) and <b>Rajesh Mittal</b> as Non-Executive Independent Directors — deepening space/defence-sector credibility.</li>
+      <li>New statutory auditors appointed for a five-year term.</li>
+      <li>Extensive analyst-roadshow calendar (12 Aug–17 Sep 2026: Mumbai, Mysore, Ahmedabad, Paris) — active effort to rebuild institutional confidence after the working-capital concerns.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Syrma SGS</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li><b>Jaidit Singh Brar</b> appointed CEO effective 26 Jun 2026 — 25+ years in industry/consulting, including Senior Partner at McKinsey &amp; Company.</li>
+      <li><b>Sandeep Tandon</b> recommended for re-appointment as Executive Chairman for a further five years.</li>
+      <li>Board approved fundraising of up to ₹1,000 Cr via QIP for greenfield component and PCB expansion.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Amber Enterprises</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li><b>Sudhir Goyal</b> appointed CFO of material subsidiary IL JIN Electronics (India) Pvt Ltd, effective 13 Aug 2026, in addition to his role as Amber's parent-company CFO.</li>
+      <li><b>Sabina Moti Bhavnani</b> and <b>Prakash Iyer</b> re-appointed as Independent Directors for a second five-year term from 19 Sep 2026.</li>
+      <li>36th AGM scheduled 16 Sep 2026. IL JIN allotted 30,49,12,000 bonus shares to Amber on 17 Aug 2026 (internal restructuring; Amber's holding stays at 89.71%, no dilution to Amber shareholders).</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>PG Electroplast</h3>
+    <ul style="padding-left:20px;font-size:13.5px;line-height:1.9;">
+      <li><b>Vishal Gupta</b> (MD – Finance) and <b>Vikas Gupta</b> (MD – Operations) jointly led the Q1 FY27 earnings call (7 Aug 2026, Axis Capital-managed).</li>
+      <li>Board approved Q1 results, new-unit commencements (Greater Noida washing-machine facility) and a Greater Noida asset relocation/sale on 6 Aug 2026.</li>
+      <li>CRISIL monitoring report (Aug 2026) on QIP proceeds shows ₹1,445.35 Cr utilised against ₹32.21 Cr unutilised as of 30 June 2026 — funds largely deployed as planned toward capacity build-out.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ VERDICT ═══════════ -->
+<div id="verdict" class="section">
+  <div class="section-title">Verdict — Where Each Company Stands</div>
+
+  <div class="verdict-box dixon">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:8px;">Dixon Technologies — Scale intact, margin still transitional</h3>
+    <div class="flag">🟢 21% revenue growth, ROCE 34.1%, Vivo JV now government-approved.</div>
+    <div class="flag">🟡 Adjusted EBITDA margin fell (3.75%→2.97%) purely on PLI-1.0 expiry, not demand weakness — recovery hinges on H2 FY27 HKC display commissioning and PLI 2.0.</div>
+  </div>
+
+  <div class="verdict-box kaynes">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:8px;">Kaynes Technology — Growth intact, cash-flow problem NOT sorted</h3>
+    <div class="flag">🟢 Revenue/EBITDA beat estimates for the first time in five quarters; ₹8,900 Cr order book gives multi-year visibility.</div>
+    <div class="flag">🔴 Operating cash flow was -₹250 Cr in Q1 FY27; working capital days rose further from an already-elevated 125-day FY26 exit level, now across multiple quarters.</div>
+    <div class="flag">🟡 Management's fix — positive OCF "by end of FY27" — is a forward promise, not a delivered outcome.</div>
+  </div>
+
+  <div class="verdict-box syrma">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:8px;">Syrma SGS — The cleanest print in the sector</h3>
+    <div class="flag">🟢 Revenue +67%, PAT +112%, EBITDA margin expanded — the only company here where growth, profit AND margin all moved the right way together.</div>
+    <div class="flag">🟢 Kaga JV opens a genuinely new addressable market (Japanese OEMs) that none of its peers has cracked.</div>
+    <div class="flag">🟡 NWC days rising (63→71) is worth tracking, though still comfortably net-cash.</div>
+  </div>
+
+  <div class="verdict-box amber">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:8px;">Amber Enterprises — Summer helped modestly; JV strategy real but early</h3>
+    <div class="flag">🟡 AC sales benefited from the hot April–May season, but +8% CD growth was muted by a high base and front-loaded pre-stocking; June cooled with early monsoon.</div>
+    <div class="flag">🟢 Electronics (+29%) was the genuine growth story; JV diversification (Oppo, HDI PCB, ILJIN-Singularity) is credible but almost entirely pre-revenue until FY28.</div>
+    <div class="flag">⚠️ No Amber JV named "HTC" exists — confirm if "HKC" (Dixon) or one of Amber's actual JVs was intended.</div>
+  </div>
+
+  <div class="verdict-box pgel">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:8px;">PG Electroplast — Past the FY26 crisis; compressor plant on track, not yet proven</h3>
+    <div class="flag">🟢 FY26's LPG-shortage/diesel-crisis disruption is clearly behind it — record ₹2,034 Cr Q1 revenue, net cash maintained through the capex ramp.</div>
+    <div class="flag">🟡 Compressor plant (2m units/yr, Supa) is still under construction, targeted Q4 FY27 — no slippage reported, but not yet live, so success can't be confirmed from Q1 data.</div>
+  </div>
+</div>
+
+<div class="footer">
+  CB Research · Cauvery Business · India EMS Sector — Q1 FY27 Deep Dive · Compiled 19 August 2026<br>
+  Research summary compiled from public company disclosures and third-party broker notes; not a recommendation to buy, sell or hold any security. Figures are unaudited quarterly results reviewed by statutory auditors as per SEBI (LODR) norms.
+</div>
+
+<script>
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>
