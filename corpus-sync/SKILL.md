@@ -77,6 +77,21 @@ For each new report, read it and ask:
    could answer, the sector file has a gap.
 6. **Are its CSS classes defined?** Cross-sector ones belong in `design-system.md`.
 
+**Mine the School and Assist panels — they are the richest and most overlooked source.**
+
+```bash
+python3 scripts/mine_school.py <sector> --durable
+```
+
+Hundreds of written explanations sit in those panels: the author teaching a sector in their own words,
+in interactive markup rather than in the tables, which is why they get missed.
+
+**Take the mechanism, leave the instance.** A question naming a company, a period or a figure is
+point-in-time — the report answers it and it does not belong in a sector file. What belongs is the
+mechanism the *answer* explains: why a CDMO's revenue steps up at commercialisation, why a carbon border
+tariff lands on production route rather than volume, why an input-cost rise compresses a downstream
+margin before it can be passed on. Those are still true next quarter and for the next company.
+
 **Categories naming no real company** are flagged by `audit_corpus.py` and fail `verify_skill.py`. Fill
 them from a report — **never from general knowledge**, which is a lower bar than everything else in the
 file. An Examples column must *name* companies: "listed hospital chains" names nobody. Where the

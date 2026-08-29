@@ -98,6 +98,23 @@ and the company's own history rather than treating them as fixed.
 - **Diversified resources** — Which segment is actually driving the result? Holding-company structures can
   mask a weak division with a strong one; insist on the segment split.
 
+### CBAM — a carbon tariff, and why it lands unevenly
+
+**CBAM (Carbon Border Adjustment Mechanism) is the EU's carbon tariff on imports** into the bloc, aimed
+at carbon-intensive goods including steel, cement and aluminium. An exporter selling into the EU pays for
+the **carbon embedded in the product** where its home country has no equivalent carbon price.
+
+Two consequences a reader needs:
+
+- **It is an exporter's problem, sized by carbon intensity, not by volume.** A blast-furnace route
+  carries far more embedded carbon than an electric-arc route running on scrap, so **two producers
+  shipping identical tonnage into the EU face very different bills**. State EU export share *and* the
+  production route; either alone misleads.
+- **A producer already inside the EU is not subject to CBAM** — it faces the EU's own emissions trading
+  scheme instead. That is not relief: it is the same carbon cost arriving by a different door, and
+  applied to assets that are expensive to decarbonise. **An Indian producer with European operations is
+  exposed on both sides** and should be read that way.
+
 ### What goes wrong, and the tell
 
 **A cost base that cannot move as fast as the price.** The tells: realisation falling while cost per tonne holds, which compresses the spread from both ends; inventory built at high prices being sold into a falling market; captive raw-material share dropping; and expansion capex committed at the top of a cycle, which is how balance sheets in this sector historically break.
@@ -218,6 +235,7 @@ rather than the company.
 
 | Event | Reaches results via | Exposure basis to cite |
 |---|---|---|
+| **Steel price rise** | own realisation up, **and the customer industry's margin down** | EU export share and production route for CBAM; for the read-across, the downstream sector's ability to pass it on |
 | Coking coal price move | cost per tonne, margin | **captive coal coverage %**; imported share |
 | Iron ore price move | cost per tonne | captive ore coverage % |
 | LME aluminium price move | realisation | production volume, hedge position |

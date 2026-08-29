@@ -121,6 +121,23 @@ Indicative; verify against the company's own history and the category.
 - **Batteries** — Is lead cost passed through? Is the industrial and EV-adjacent book growing beyond
   automotive replacement?
 
+### Input cost, and the pass-through lag
+
+**Steel is the dominant raw material for an OEM and for most component makers**, alongside aluminium,
+copper and, for EV programmes, battery cells. That makes this sector the **downstream victim of a strong
+metals cycle**: the same steel-price rise that expands a steelmaker's margin compresses an automaker's.
+
+What matters is not the input price but **the lag before it can be passed on**:
+
+- OEMs raise prices in discrete steps, usually with a delay of a quarter or more, and a price rise into
+  weak demand costs volume. So **margin compresses first and recovers later**, and a single quarter's
+  margin dip during rising input costs is a timing effect rather than a deterioration.
+- **Component makers are squeezed from both sides** — they buy the same metal and sell to an OEM with the
+  bargaining power to resist a price increase. Contractual pass-through clauses, where they exist, are
+  the thing to check.
+- Read a margin move alongside the input-cost direction before attributing it to operations. **State
+  whether a price increase has been taken, and when it took effect.**
+
 ### What goes wrong, and the tell
 
 **Channel inventory dressed as demand.** Wholesale dispatches are what the company books; retail registrations are what customers actually bought. The tells: dispatches running ahead of registrations quarter after quarter, which means stock is piling up at dealers and a correction is owed; rising discounts; and realisation improving only on mix while volumes stall.
@@ -236,6 +253,7 @@ disclosed by SIAM and available — growing slower than the segment is losing, h
 
 | Event | Reaches results via | Exposure basis to cite |
 |---|---|---|
+| **Steel / aluminium price rise** | raw-material cost, then margin until price increases land | metal share of RM cost; date and size of the last price increase; contractual pass-through in components |
 | EV subsidy change (FAME/state policy) | EV demand and pricing | EV volumes as % of total |
 | Emission-norm transition | compliance cost, pre-buy then trough | affected segment share |
 | GST rate change on vehicles | demand, pricing | segment revenue share |

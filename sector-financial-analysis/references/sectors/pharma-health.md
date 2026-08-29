@@ -120,6 +120,44 @@ Indicative; verify against the company's own disclosure.
 - **Hospitals** — Is occupancy above 65%? Is ARPOB growth mix-led? What is the mature-vs-new split, and
   is the new estate on its breakeven timeline? Is government-scheme exposure rising?
 
+### Distinctions a reader needs before any metric
+
+**Generic versus CDMO — two different businesses, often in one company.** A generic maker sells its own
+copies of off-patent drugs and competes on price, so its enemy is **price erosion** and its skill is cost
+and regulatory execution. A CDMO manufactures **for** an innovator under contract, so its revenue is a
+client's product, its enemy is **client and molecule concentration**, and its skill is chemistry and
+reliability. The margins, the risks and the right valuation multiple all differ. **Where a company runs
+both, insist on the segment split** — a blended margin describes neither business.
+
+- **CDMO commercialisation** is the metric that matters inside CDMO revenue. A molecule moves through
+  development and clinical supply at modest volumes, then **steps up sharply to commercial-scale
+  manufacturing once the client's product is approved and launched**. Revenue from commercial-stage
+  supply is larger, more durable and more predictable than clinical-stage work. **Ask what share of CDMO
+  revenue is commercial rather than clinical** — two companies with identical CDMO revenue can have
+  entirely different forward visibility.
+- **Order-book and client concentration** matter more here than in generics, and a lost molecule is not
+  replaceable in a quarter.
+
+**Biosimilars are not generics.** A generic is a chemically identical copy and is cheap to make once
+approved; a biosimilar copies a *biologic*, which is grown rather than synthesised, cannot be made
+identical, and requires clinical work to prove equivalence. The consequences run the other way from
+generics: **far higher development cost and time, far fewer competitors, and much slower price erosion**,
+so a biosimilar franchise holds its margin for years where a generic's collapses in quarters. Judge a
+biosimilar pipeline on approvals and launch timing, not on molecule count.
+
+**Domestic versus export exposure is the regulatory-risk switch.** A company manufacturing for the US
+market carries USFDA plant risk — an import alert can remove a facility's revenue with no warning and no
+appeal timetable. **A company selling predominantly into the domestic market carries none of it.** State
+the revenue split by geography before discussing regulatory risk at all; without it, a reader cannot tell
+whether an FDA headline is existential or irrelevant to the company in front of them.
+
+**A large biologic coming off patent moves the whole chain, early.** When a blockbuster's protection
+approaches expiry, demand for its **API, its contract manufacturing and its delivery devices** builds
+well before any copy launches, because capacity has to be qualified and built years ahead. So the
+opportunity reaches API makers, CDMOs and device suppliers *before* it reaches the companies that will
+eventually sell the finished product. **Name where in the chain a company sits**, and expect the timing
+of the benefit to differ accordingly.
+
 ### What goes wrong, and the tell
 
 **A regulatory action on a plant or product that was carrying the earnings.** The tells: an inspection observation before it becomes an import alert; a concentration of revenue in one facility or one molecule; price erosion in the base business masked by one good launch; and for hospitals, occupancy held up by discounting rather than demand.
