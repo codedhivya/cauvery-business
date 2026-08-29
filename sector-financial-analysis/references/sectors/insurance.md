@@ -9,12 +9,12 @@ ICICI Lombard, Medi Assist.
 Classify every company before applying any metric — the four categories are measured on genuinely
 different bases and mixing them produces nonsense.
 
-| Category | What it is |
-|---|---|
-| **Life** | Long-duration savings and protection contracts |
-| **Health (SAHI)** | Standalone health insurers — health and personal accident only, cannot write other lines |
-| **General** | Non-life: motor, health, property, crop, liability |
-| **TPA** | **Not an insurer.** Earns a service fee for processing claims on behalf of insurers/employers; zero premium income |
+| Category | What it is | Examples |
+|---|---|---|
+| **Life** | Long-duration savings and protection contracts | LIC, HDFC Life, ICICI Prudential Life, SBI Life, Axis Max Life |
+| **Health (SAHI)** | Standalone health insurers — health and personal accident only, cannot write other lines | Star Health, Niva Bupa |
+| **General** | Non-life: motor, health, property, crop, liability | ICICI Lombard, and the multi-line non-life insurers |
+| **TPA** | **Not an insurer.** Earns a service fee for processing claims on behalf of insurers/employers; zero premium income | Medi Assist |
 
 ## 2. Why insurers are valued differently
 

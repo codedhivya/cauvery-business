@@ -4,12 +4,11 @@ Covers Indian scheduled commercial banks — public sector, private sector, and 
 
 ## 1. Category taxonomy
 
-| Category | What it is |
-|---|---|
-| **Public Sector (PSU)** | Government-majority banks. Large deposit franchises, lower NIMs, higher legacy asset-quality baggage, policy-lending obligations |
-| **Private Sector** | Higher NIMs, stronger fee income, faster growth, generally better cost ratios |
-| **Small Finance Bank (SFB)** | Niche/microfinance-derived lending. Structurally higher NIMs **and** higher credit costs; asset quality is far more cyclical |
-
+| Category | What it is | Examples |
+|---|---|---|
+| **Public Sector (PSU)** | Government-majority banks. Large deposit franchises, lower NIMs, higher legacy asset-quality baggage, policy-lending obligations | SBI, Bank of Baroda, PNB, Canara Bank, Union Bank, Bank of Maharashtra, Indian Bank, IDBI Bank |
+| **Private Sector** | Higher NIMs, stronger fee income, faster growth, generally better cost ratios | HDFC Bank, ICICI Bank, Axis Bank, Kotak Mahindra Bank, IndusInd Bank, Federal Bank |
+| **Small Finance Bank (SFB)** | Niche/microfinance-derived lending. Structurally higher NIMs **and** higher credit costs; asset quality is far more cyclical | AU Small Finance Bank, Jana Small Finance Bank, Equitas, Ujjivan |
 Compare within a category by default. An SFB's 9% NIM and a PSU's 3% NIM are not the same metric doing
 the same job, and ranking them together is meaningless.
 
