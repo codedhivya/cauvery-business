@@ -1,0 +1,810 @@
+<title>Auto Sector Festive Runway</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --surface:#fcfaf8;
+    --surface-2:#f5f0e9;
+    --border:#e8e0d4;
+    --ink:#191510;
+    --ink-muted:#6b6156;
+    --accent:#ff8a3d;
+    --accent-deep:#c85a12;
+    --accent-tint:#ffe7d2;
+    --positive:#1c8a57;
+    --positive-tint:#e3f5ec;
+    --caution:#c23b22;
+    --caution-tint:#fbe7e1;
+    --shadow: 0 1px 2px rgba(25,21,16,.04), 0 6px 20px -8px rgba(25,21,16,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15110c;
+      --surface:#1d1811;
+      --surface-2:#261f16;
+      --border:#3a3021;
+      --ink:#f4ede2;
+      --ink-muted:#b6a891;
+      --accent:#ff9d57;
+      --accent-deep:#ffb578;
+      --accent-tint:#3c2913;
+      --positive:#4fd695;
+      --positive-tint:#1a3327;
+      --caution:#ff8465;
+      --caution-tint:#3a201a;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -10px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15110c;
+    --surface:#1d1811;
+    --surface-2:#261f16;
+    --border:#3a3021;
+    --ink:#f4ede2;
+    --ink-muted:#b6a891;
+    --accent:#ff9d57;
+    --accent-deep:#ffb578;
+    --accent-tint:#3c2913;
+    --positive:#4fd695;
+    --positive-tint:#1a3327;
+    --caution:#ff8465;
+    --caution-tint:#3a201a;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -10px rgba(0,0,0,.55);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 24px 100px;}
+
+  h1,h2,h3{font-family:"Fraunces", Georgia, serif;text-wrap:balance;margin:0;}
+  .num{font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;font-variant-numeric:tabular-nums;}
+
+  /* Masthead */
+  .masthead{
+    display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;
+    padding-bottom:20px;border-bottom:2px solid var(--ink);margin-bottom:22px;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--accent-deep);
+    background:var(--accent-tint);border-radius:999px;padding:5px 12px;margin-bottom:10px;
+  }
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-deep);}
+  .masthead h1{font-size:clamp(26px,4vw,38px);font-weight:700;letter-spacing:-.01em;}
+  .masthead .sub{color:var(--ink-muted);font-size:15px;margin-top:6px;max-width:56ch;}
+  .meta{font-size:12.5px;color:var(--ink-muted);text-align:right;white-space:nowrap;}
+  .meta strong{color:var(--ink);}
+
+  /* Tabs */
+  .tabs{
+    display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;
+    border-bottom:1px solid var(--border);padding-bottom:0;
+  }
+  .tab-btn{
+    font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-muted);
+    background:none;border:none;padding:10px 16px;cursor:pointer;border-radius:8px 8px 0 0;
+    position:relative;top:1px;transition:color .15s ease;
+  }
+  .tab-btn:hover{color:var(--ink);}
+  .tab-btn[aria-selected="true"]{
+    color:var(--ink);border-bottom:2.5px solid var(--accent);
+  }
+  .tab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .panel{display:none;animation:fade .25s ease;}
+  .panel.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
+  @media (prefers-reduced-motion:reduce){.panel{animation:none;}}
+
+  .lede{font-size:15.5px;color:var(--ink-muted);max-width:70ch;margin:0 0 20px;}
+  .lede strong{color:var(--ink);font-weight:600;}
+
+  /* Stat tiles */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:24px;}
+  .tile{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:16px 18px;box-shadow:var(--shadow);
+  }
+  .tile .label{font-size:12px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+  .tile .value{font-family:"Fraunces",serif;font-size:27px;font-weight:700;margin-top:6px;letter-spacing:-.01em;}
+  .tile .delta{font-size:12.5px;margin-top:4px;font-weight:600;}
+  .delta.up{color:var(--positive);}
+  .delta.down{color:var(--caution);}
+  .tile .note{font-size:12px;color:var(--ink-muted);margin-top:5px;}
+
+  /* Section blocks */
+  .block{margin-bottom:28px;}
+  .block h2{font-size:19px;font-weight:600;margin-bottom:4px;}
+  .block .sec-sub{font-size:13.5px;color:var(--ink-muted);margin-bottom:14px;}
+
+  /* Table */
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px;}
+  th{
+    text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--ink-muted);font-weight:600;padding:11px 16px;border-bottom:1px solid var(--border);
+    background:var(--surface-2);
+  }
+  td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td.num-cell{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .pos{color:var(--positive);font-weight:600;}
+  .neg{color:var(--caution);font-weight:600;}
+  .pill{
+    display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;
+  }
+  .pill.growth{background:var(--positive-tint);color:var(--positive);}
+  .pill.watch{background:var(--caution-tint);color:var(--caution);}
+  .pill.neutral{background:var(--accent-tint);color:var(--accent-deep);}
+
+  /* Chart */
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px 14px;box-shadow:var(--shadow);}
+  .chart-title{font-size:13px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px;}
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:11px;}
+  .bar-label{width:118px;flex:none;font-size:13px;font-weight:600;}
+  .bar-track{flex:1;background:var(--surface-2);border-radius:6px;height:22px;position:relative;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent-deep));display:flex;align-items:center;}
+  .bar-val{width:56px;flex:none;text-align:right;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;}
+
+  .two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;}
+  @media (max-width:760px){.two-col{grid-template-columns:1fr;}}
+
+  .callout{
+    background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;
+    padding:15px 18px;font-size:13.5px;color:var(--ink);
+  }
+  .callout strong{color:var(--accent-deep);}
+
+  .progress-wrap{margin-top:10px;}
+  .progress-track{background:var(--surface-2);border-radius:999px;height:14px;position:relative;overflow:hidden;border:1px solid var(--border);}
+  .progress-fill{background:linear-gradient(90deg,var(--accent),var(--accent-deep));height:100%;border-radius:999px;}
+  .progress-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-muted);margin-top:6px;}
+
+  .company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
+  .co-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px 17px;box-shadow:var(--shadow);}
+  .co-card .co-name{font-weight:700;font-size:14.5px;}
+  .co-card .co-tag{font-size:11px;color:var(--accent-deep);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+  .co-card .co-desc{font-size:13px;color:var(--ink-muted);margin-top:7px;}
+
+  /* Company deep-dive: sub-tabs */
+  .subtab-wrap{border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:18px 20px 22px;box-shadow:var(--shadow);}
+  .co-header{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .co-header h2{font-size:21px;font-weight:700;}
+  .co-header .co-meta{font-size:12.5px;color:var(--ink-muted);}
+  .co-header .co-meta strong{color:var(--ink);}
+  .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+  .subtab-btn{
+    font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-muted);
+    background:var(--surface-2);border:1px solid var(--border);border-radius:999px;
+    padding:7px 13px;cursor:pointer;transition:all .15s ease;
+  }
+  .subtab-btn:hover{color:var(--ink);}
+  .subtab-btn[aria-selected="true"]{background:var(--accent-tint);color:var(--accent-deep);border-color:var(--accent);}
+  .subtab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .subpanel{display:none;}
+  .subpanel.active{display:block;animation:fade .2s ease;}
+  .subpanel h3{font-size:15.5px;font-weight:600;margin-bottom:8px;}
+  .subpanel p{font-size:13.5px;color:var(--ink-muted);margin:0 0 12px;max-width:70ch;}
+  .subpanel p strong{color:var(--ink);font-weight:600;}
+  .mini-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
+  .mini-tile{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .mini-tile .label{font-size:11px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+  .mini-tile .value{font-family:"Fraunces",serif;font-size:20px;font-weight:700;margin-top:4px;}
+  .mini-tile .delta{font-size:11.5px;margin-top:2px;font-weight:600;}
+
+  /* Q&A accordion */
+  .qa-item{border:1px solid var(--border);border-radius:10px;background:var(--bg);margin-bottom:9px;overflow:hidden;}
+  .qa-q{width:100%;text-align:left;background:none;border:none;padding:12px 15px;font-family:inherit;
+    font-weight:600;font-size:13.5px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;
+    align-items:center;gap:10px;}
+  .qa-q:hover{color:var(--accent-deep);}
+  .qa-q .chevron{transition:transform .2s ease;color:var(--accent-deep);font-size:11px;flex:none;}
+  .qa-item.open .chevron{transform:rotate(180deg);}
+  .qa-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .qa-a p{padding:0 15px;font-size:13px;color:var(--ink-muted);margin:0 0 13px;}
+  .qa-item.open .qa-a{max-height:220px;}
+
+  /* Quiz */
+  .quiz-card{border:1px solid var(--border);border-radius:12px;background:var(--bg);padding:15px 17px;margin-bottom:12px;}
+  .quiz-q{font-weight:600;font-size:13.5px;margin-bottom:10px;}
+  .quiz-opts{display:grid;gap:7px;}
+  .quiz-opt{text-align:left;padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+    background:var(--surface);font-family:inherit;font-size:13px;cursor:pointer;color:var(--ink);transition:all .12s ease;}
+  .quiz-opt:hover:not(:disabled){border-color:var(--accent);}
+  .quiz-opt.correct{background:var(--positive-tint);border-color:var(--positive);color:var(--positive);font-weight:600;}
+  .quiz-opt.wrong{background:var(--caution-tint);border-color:var(--caution);color:var(--caution);font-weight:600;}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-fb{font-size:12px;color:var(--ink-muted);margin-top:9px;display:none;}
+  .quiz-fb.show{display:block;}
+  .quiz-score{font-size:12.5px;font-weight:600;color:var(--accent-deep);background:var(--accent-tint);
+    display:inline-block;padding:5px 12px;border-radius:999px;margin-bottom:14px;}
+
+  .disclaimer-note{font-size:12px;color:var(--ink-muted);background:var(--surface-2);border-radius:10px;padding:11px 14px;margin-top:4px;}
+
+  footer.foot{margin-top:34px;font-size:12px;color:var(--ink-muted);border-top:1px solid var(--border);padding-top:14px;}
+
+  /* Disclaimer badge */
+  .cb-badge{
+    position:fixed;bottom:16px;right:16px;z-index:50;
+    width:38px;height:38px;border-radius:50%;
+    background:var(--ink);color:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Fraunces",serif;font-weight:700;font-size:13px;
+    cursor:pointer;box-shadow:var(--shadow);
+    animation:blink 2.2s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion:reduce){.cb-badge{animation:none;}}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.45;}}
+  .cb-pop{
+    position:fixed;bottom:60px;right:16px;z-index:50;width:min(300px,80vw);
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    box-shadow:var(--shadow);padding:13px 15px;font-size:11.5px;color:var(--ink-muted);
+    opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .15s ease, transform .15s ease;
+  }
+  .cb-badge:hover + .cb-pop, .cb-pop:hover, .cb-pop.show{
+    opacity:1;transform:translateY(0);pointer-events:auto;
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <div class="eyebrow">CB Research &middot; Sector Note</div>
+      <h1>Auto Sector: the Festive Runway</h1>
+      <div class="sub">Record August passenger vehicle dispatches, a softer two-wheeler mix, and five tailwinds lining up before Navratri&ndash;Diwali. Ancillaries, EV, CNG &amp; ethanol read-through included.</div>
+    </div>
+    <div class="meta">Published <strong>4 Sep 2026</strong><br>Educational note &middot; not investment advice</div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Sector note sections">
+    <button class="tab-btn" role="tab" data-tab="snapshot" aria-selected="true">Snapshot</button>
+    <button class="tab-btn" role="tab" data-tab="tailwinds" aria-selected="false">Tailwinds</button>
+    <button class="tab-btn" role="tab" data-tab="green" aria-selected="false">EV &middot; CNG &middot; Ethanol</button>
+    <button class="tab-btn" role="tab" data-tab="ancillaries" aria-selected="false">Ancillaries</button>
+    <button class="tab-btn" role="tab" data-tab="motherson" aria-selected="false">Motherson Q1 FY27</button>
+    <button class="tab-btn" role="tab" data-tab="outlook" aria-selected="false">Outlook</button>
+  </div>
+
+  <!-- SNAPSHOT -->
+  <section class="panel active" id="snapshot">
+    <p class="lede">August 2026 was a <strong>record August for passenger vehicles</strong> &mdash; roughly 4.5 lakh units dispatched, up ~40% on a weak year-ago base, just 1.7% shy of July's own record. Two-wheelers grew for most large OEMs too, but the <strong>growth segment within 2W &mdash; electric scooters &mdash; cooled 16% month-on-month</strong> after a subsidy cut, and premium motorcycles (350cc+) slipped. Retail momentum around Onam (+61% in Kerala) points to a strong festive stretch ahead.</p>
+
+    <div class="tiles">
+      <div class="tile">
+        <div class="label">PV dispatches, Aug'26</div>
+        <div class="value num">~4.5L</div>
+        <div class="delta up">&#9650; ~40% YoY</div>
+        <div class="note">Record for the month of August</div>
+      </div>
+      <div class="tile">
+        <div class="label">2W wholesale (OEM avg)</div>
+        <div class="value num">+2 to 30%</div>
+        <div class="delta up">&#9650; YoY, OEM-led</div>
+        <div class="note">Broad growth, but mix softening</div>
+      </div>
+      <div class="tile">
+        <div class="label">E-scooter registrations</div>
+        <div class="value num">1.72L</div>
+        <div class="delta down">&#9660; 16.2% MoM</div>
+        <div class="note">+64% YoY &mdash; subsidy taper bites</div>
+      </div>
+      <div class="tile">
+        <div class="label">Onam retail, Kerala</div>
+        <div class="value num">+61%</div>
+        <div class="delta up">&#9650; YoY</div>
+        <div class="note">Early festive read-through</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>PV dispatches by OEM &mdash; August 2026</h2>
+      <div class="sec-sub">Year-on-year growth, wholesale units</div>
+      <div class="chart-card">
+        <div class="chart-title">YoY growth, %</div>
+        <div class="bar-row"><div class="bar-label">Tata Motors</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">+56%</div></div>
+        <div class="bar-row"><div class="bar-label">M&amp;M (SUV)</div><div class="bar-track"><div class="bar-fill" style="width:89%"></div></div><div class="bar-val">+50%</div></div>
+        <div class="bar-row"><div class="bar-label">Maruti Suzuki</div><div class="bar-track"><div class="bar-fill" style="width:62%"></div></div><div class="bar-val">+35%</div></div>
+        <div class="bar-row"><div class="bar-label">Hyundai</div><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><div class="bar-val">+23.6%</div></div>
+        <div class="bar-row"><div class="bar-label">Industry (PV)</div><div class="bar-track"><div class="bar-fill" style="width:71%"></div></div><div class="bar-val">~+40%</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>2W: the honest picture</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>OEM / segment</th><th>Aug'26 wholesale</th><th>YoY</th><th>Read</th></tr></thead>
+          <tbody>
+            <tr><td>Bajaj Auto</td><td class="num-cell">5.4L units</td><td class="num-cell pos">+28 to 30%</td><td><span class="pill growth">Export-led</span></td></tr>
+            <tr><td>TVS Motor</td><td class="num-cell">6.2L units</td><td class="num-cell pos">+21%</td><td><span class="pill growth">Highest-ever month</span></td></tr>
+            <tr><td>Honda Motorcycle</td><td class="num-cell">5.8L units</td><td class="num-cell pos">+8%</td><td><span class="pill neutral">Steady</span></td></tr>
+            <tr><td>Hero MotoCorp</td><td class="num-cell">5.7L units</td><td class="num-cell pos">+2.65%</td><td><span class="pill watch">Exports -24.6%</span></td></tr>
+            <tr><td>Royal Enfield 350cc+</td><td class="num-cell">&mdash;</td><td class="num-cell neg">&minus;13%</td><td><span class="pill watch">Premium soft</span></td></tr>
+            <tr><td>Electric 2W (industry)</td><td class="num-cell">1.72L units</td><td class="num-cell pos">+64% YoY</td><td><span class="pill watch">&minus;16.2% MoM</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAILWINDS -->
+  <section class="panel" id="tailwinds">
+    <p class="lede">Five tailwinds are converging on the same quarter &mdash; three of them squarely consumer-facing, two structural. None is a one-off; each still has months of runway left.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:19%">Tailwind</th><th>What's happening</th><th style="width:24%">Auto read-through</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Festive season</strong></td>
+            <td>Onam retail already up 61% YoY in Kerala; Navratri &amp; Diwali (Oct&ndash;Nov) traditionally carry the year's heaviest retail volumes, with dealer bookings (e.g. Brezza: 55,000+ in 35 days) running ahead of supply.</td>
+            <td><span class="pill growth">Demand pull</span></td>
+          </tr>
+          <tr>
+            <td><strong>GST 2.0 rate cut</strong></td>
+            <td>Two-wheelers up to 350cc and small cars moved from 28% to 18% GST, effective 22 Sep 2025 &mdash; up to &#8377;24,500 cheaper on a 2W. A full year on, the lower price point is now the base, not a one-time pop.</td>
+            <td><span class="pill growth">Price advantage</span></td>
+          </tr>
+          <tr>
+            <td><strong>Income-tax relief</strong></td>
+            <td>Nil tax up to &#8377;12 lakh (&#8377;12.75 lakh for salaried) has been in salaried pockets since FY26 and was left untouched in the FY27 Budget &mdash; more disposable income available for discretionary, big-ticket purchases.</td>
+            <td><span class="pill growth">Disposable income</span></td>
+          </tr>
+          <tr>
+            <td><strong>Indigenisation thrust</strong></td>
+            <td>At the Sept'26 SIAM convention, Commerce Minister Piyush Goyal warned OEMs against "nominal" 10&ndash;15% value-add passed off as local content, and flagged IEC-level tracking two supply-chain levels down.</td>
+            <td><span class="pill neutral">Favours real localisers</span></td>
+          </tr>
+          <tr>
+            <td><strong>Clean-grid milestone</strong></td>
+            <td>Solar + wind briefly supplied a record ~42.8% of grid load in mid-July 2026, on the back of 100+ GW combined capacity &mdash; part of the same indigenisation push now extending to batteries, motors and EV charging infra.</td>
+            <td><span class="pill neutral">EV ecosystem signal</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="block" style="margin-top:22px;">
+      <div class="callout"><strong>Net-net:</strong> two of the five tailwinds (GST, tax relief) are now base-effect rather than fresh triggers &mdash; the incremental swing factor into Diwali is festive footfall plus how convincingly OEMs and ancillaries respond to the localisation push.</div>
+    </div>
+  </section>
+
+  <!-- GREEN MOBILITY -->
+  <section class="panel" id="green">
+    <p class="lede">Three parallel energy transitions are running through Indian mobility at once &mdash; electric, gas and ethanol &mdash; each at a different stage of maturity.</p>
+
+    <div class="two-col">
+      <div class="block">
+        <h2>Electric vehicles</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Metric</th><th>FY26</th></tr></thead>
+            <tbody>
+              <tr><td>Electric car sales</td><td class="num-cell pos">1,98,224 units (+84% YoY)</td></tr>
+              <tr><td>EV share of PV market</td><td class="num-cell">4.3% <span style="color:var(--ink-muted)">(vs 2.7% FY25)</span></td></tr>
+              <tr><td>Tata Motors share</td><td class="num-cell">39.2%</td></tr>
+              <tr><td>JSW MG share</td><td class="num-cell">26.4%</td></tr>
+              <tr><td>Mahindra share</td><td class="num-cell">21.2%</td></tr>
+              <tr><td>E-scooters, Aug'26</td><td class="num-cell">1.72L (+64% YoY, &minus;16.2% MoM)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" style="width:43%"></div></div>
+          <div class="progress-labels"><span>FY25: 2.7% PV share</span><span>FY26: 4.3% PV share</span></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h2>CNG</h2>
+        <p style="font-size:13.5px;color:var(--ink-muted);margin:0 0 10px;">Maruti Suzuki's CNG sales jumped 40&ndash;58% through 2026, with a 9-lakh-unit target for FY27. Seven of India's ten best-selling CNG cars are Marutis &mdash; the segment is now a genuine growth engine, not a niche.</p>
+        <h2 style="margin-top:20px;">Ethanol</h2>
+        <p style="font-size:13.5px;color:var(--ink-muted);margin:0;">India hit its E20 blending target nationwide in 2025 &mdash; five years ahead of the original 2030 goal. Policy focus has now shifted to E27/E30 and flex-fuel vehicles, trimming the crude import bill and supporting farm incomes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANCILLARIES -->
+  <section class="panel" id="ancillaries">
+    <p class="lede">The localisation push raises the bar for ancillaries: real domestic value-add now matters more than assembly-level "Make in India" claims. These are large, diversified component makers with genuine manufacturing depth across ICE and EV platforms.</p>
+
+    <div class="company-grid">
+      <div class="co-card">
+        <div class="co-name">Bosch Ltd</div>
+        <div class="co-tag">Auto technology</div>
+        <div class="co-desc">Deep R&amp;D base in India; fuel injection, sensors &amp; powertrain electronics across ICE and EV.</div>
+      </div>
+      <div class="co-card">
+        <div class="co-name">Samvardhana Motherson Intl</div>
+        <div class="co-tag">Wiring &amp; modules</div>
+        <div class="co-desc">Wiring harnesses, mirrors, polymer modules; global OEM base gives it powertrain-agnostic exposure.</div>
+      </div>
+      <div class="co-card">
+        <div class="co-name">Bharat Forge</div>
+        <div class="co-tag">Forgings</div>
+        <div class="co-desc">Heavy forgings for CVs, diversifying into defence and non-auto industrials.</div>
+      </div>
+      <div class="co-card">
+        <div class="co-name">Sona BLW Precision Forgings</div>
+        <div class="co-tag">EV driveline</div>
+        <div class="co-desc">Differential gears and EV motor systems &mdash; a pure-play beneficiary of EV volume growth.</div>
+      </div>
+      <div class="co-card">
+        <div class="co-name">UNO Minda</div>
+        <div class="co-tag">Switches &amp; lighting</div>
+        <div class="co-desc">Broad OEM relationships across switches, lighting and emerging EV components.</div>
+      </div>
+      <div class="co-card">
+        <div class="co-name">Exide Industries / Amara Raja</div>
+        <div class="co-tag">Batteries</div>
+        <div class="co-desc">Lead-acid incumbents investing into lithium-cell gigafactories for the EV transition.</div>
+      </div>
+      <div class="co-card">
+        <div class="co-name">Cummins India</div>
+        <div class="co-tag">CV engines</div>
+        <div class="co-desc">Heavy-duty diesel engines; positioned for the ongoing commercial-vehicle upcycle.</div>
+      </div>
+      <div class="co-card">
+        <div class="co-name">Belrise Industries</div>
+        <div class="co-tag">Sheet metal &amp; suspension</div>
+        <div class="co-desc">Market leader in precision sheet metal, chassis, suspension &amp; polymer parts across 2W/3W/4W; supplies 27 OEMs incl. Bajaj, Hero, Tata, M&amp;M, JLR. EV-agnostic portfolio; listed May 2025.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOTHERSON DEEP DIVE -->
+  <section class="panel" id="motherson">
+    <p class="lede">A closer look at one of the ancillaries above &mdash; Samvardhana Motherson International (SAMIL) &mdash; using its Q1 FY27 (Apr&ndash;Jun 2026) results. Educational analysis only; CB Research does not issue buy/sell/hold recommendations.</p>
+
+    <div class="subtab-wrap">
+      <div class="co-header">
+        <div>
+          <h2>Samvardhana Motherson International</h2>
+          <div class="co-meta">NSE: MOTHERSON &middot; Auto ancillary &mdash; Wiring, Vision Systems, Modules &amp; Emerging Businesses</div>
+        </div>
+        <div class="co-meta">CMP <strong class="num">&#8377;162</strong> &middot; as of 3 Sep 2026</div>
+      </div>
+
+      <div class="subtabs" role="tablist" aria-label="Motherson analysis sections">
+        <button class="subtab-btn" role="tab" data-subtab="m-dash" aria-selected="true">Dashboard</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-biz" aria-selected="false">Business Model</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-seg" aria-selected="false">Segments</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-fin" aria-selected="false">Financials</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-cf" aria-selected="false">Cash Flow &amp; Ratios</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-val" aria-selected="false">Valuations</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-price" aria-selected="false">Share Activity</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-swot" aria-selected="false">SWOT</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-assist" aria-selected="false">Cauvery Assist</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-quiz" aria-selected="false">Cauvery Socrates</button>
+        <button class="subtab-btn" role="tab" data-subtab="m-view" aria-selected="false">Analyst View</button>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="subpanel active" id="m-dash">
+        <h3>Q1 FY27 at a glance</h3>
+        <p>Record quarterly revenue, delivered through one of the toughest input-cost quarters in years &mdash; copper, aluminium, polymer and freight all spiked together &mdash; yet EBITDA margin still expanded. Leverage fell to its lowest-ever level.</p>
+        <div class="mini-tiles">
+          <div class="mini-tile"><div class="label">Revenue</div><div class="value num">&#8377;35,244 Cr</div><div class="delta" style="color:var(--positive)">&#9650; 16.7% YoY</div></div>
+          <div class="mini-tile"><div class="label">EBITDA</div><div class="value num">&#8377;3,104 Cr</div><div class="delta" style="color:var(--positive)">&#9650; 26% YoY</div></div>
+          <div class="mini-tile"><div class="label">EBITDA margin</div><div class="value num">8.8%</div><div class="delta" style="color:var(--positive)">&#9650; +60 bps</div></div>
+          <div class="mini-tile"><div class="label">PAT (reported)</div><div class="value num">&#8377;1,076 Cr</div><div class="delta" style="color:var(--positive)">&#9650; 77.5% YoY</div></div>
+          <div class="mini-tile"><div class="label">PAT (normalised)</div><div class="value num">&#8377;1,032 Cr</div><div class="delta" style="color:var(--positive)">&#9650; 55% YoY</div></div>
+          <div class="mini-tile"><div class="label">Net leverage</div><div class="value num">0.8x</div><div class="delta" style="color:var(--positive)">Lowest-ever</div></div>
+        </div>
+        <div class="callout">FY26 (full year) revenue crossed &#8377;1.25 trillion for the first time (&#8377;1,26,414 Cr), with PAT of &#8377;4,086 Cr &mdash; a ~32% profit CAGR over the last five years.</div>
+      </div>
+
+      <!-- Business Model -->
+      <div class="subpanel" id="m-biz">
+        <h3>How Motherson makes money</h3>
+        <p>SAMIL is a <strong>Tier-1 global systems supplier</strong>, not a single-part maker &mdash; it designs and builds whole modules (wiring harnesses, mirrors, bumpers, dashboards, polymer assemblies) that OEMs bolt straight onto the line. Growth has come from a deliberate <strong>"diworsification"</strong> strategy: spreading revenue across auto and non-auto, ICE and EV, and dozens of OEMs and geographies, so no single platform or powertrain decides its fate.</p>
+        <p>Two engines built the group: <strong>organic capacity expansion</strong> in existing plants, and <strong>M&amp;A/JV-led entry</strong> into new capabilities (mirrors via SMR, polymers &amp; modules via SMP, truck wiring via PKC). It now runs manufacturing across 41 countries and is extending the same playbook into non-auto &mdash; aerospace, health &amp; medical, IT and logistics &mdash; under its "Emerging Businesses" bucket. Promoter (Samvardhana Motherson group) holds roughly 48.6% of the company.</p>
+      </div>
+
+      <!-- Segments -->
+      <div class="subpanel" id="m-seg">
+        <h3>Segment performance, Q1 FY27</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Segment</th><th>Revenue</th><th>YoY growth</th><th>EBITDA margin</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td>Wiring Harness</td><td class="num-cell">&#8377;11,280 Cr</td><td class="num-cell pos">+31%</td><td class="num-cell">11.1% (&minus;30 bps)</td><td>Led growth; copper pass-through lag hit margin</td></tr>
+              <tr><td>Modules &amp; Polymer</td><td class="num-cell">&mdash;</td><td class="num-cell pos">+11%</td><td class="num-cell pos">6.9% (+50 bps)</td><td>Efficiency gains offsetting input costs</td></tr>
+              <tr><td>Vision Systems (mirrors)</td><td class="num-cell">&mdash;</td><td class="num-cell pos">+10%</td><td class="num-cell">9.2% (flat)</td><td>Stable, mature segment</td></tr>
+              <tr><td>Emerging Businesses</td><td class="num-cell">&#8377;4,795 Cr</td><td class="num-cell pos">+30%</td><td class="num-cell">&mdash;</td><td>Aerospace, electronics, health &amp; IT scaling fast</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;">Wiring Harness is the clearest EV read-through: higher electronic content per vehicle means more copper and more complex harnesses per car, regardless of powertrain.</p>
+      </div>
+
+      <!-- Financials -->
+      <div class="subpanel" id="m-fin">
+        <h3>Q1 FY27 vs Q1 FY26</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Metric</th><th>Q1 FY27</th><th>Q1 FY26</th><th>YoY</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue</td><td class="num-cell">&#8377;35,244 Cr</td><td class="num-cell">&#8377;30,212 Cr</td><td class="num-cell pos">+16.7%</td></tr>
+              <tr><td>EBITDA</td><td class="num-cell">&#8377;3,104 Cr</td><td class="num-cell">&#8377;2,464 Cr</td><td class="num-cell pos">+26%</td></tr>
+              <tr><td>EBITDA margin</td><td class="num-cell">8.8%</td><td class="num-cell">8.2%</td><td class="num-cell pos">+60 bps</td></tr>
+              <tr><td>PAT (reported)</td><td class="num-cell">&#8377;1,076 Cr</td><td class="num-cell">&#8377;606 Cr</td><td class="num-cell pos">+77.5%</td></tr>
+              <tr><td>EPS (basic)</td><td class="num-cell">&#8377;0.98</td><td class="num-cell">&#8377;0.48</td><td class="num-cell pos">+104%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;">One caveat: reported PAT was down ~31% <em>sequentially</em> from a seasonally strong Q4 FY26 (&#8377;1,562 Cr) &mdash; normal quarter-to-quarter pattern, not a YoY read.</p>
+      </div>
+
+      <!-- Cash Flow & Ratios -->
+      <div class="subpanel" id="m-cf">
+        <h3>Cash flow (FY26)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cash flow</th><th>FY26</th></tr></thead>
+            <tbody>
+              <tr><td>Operating cash flow</td><td class="num-cell pos">&#8377;11,284 Cr</td></tr>
+              <tr><td>Investing cash flow</td><td class="num-cell">&minus;&#8377;6,136 Cr</td></tr>
+              <tr><td>Financing cash flow</td><td class="num-cell">&minus;&#8377;3,275 Cr</td></tr>
+              <tr><td>Free cash flow</td><td class="num-cell pos">&#8377;5,373 Cr</td></tr>
+              <tr><td>Capex, Q1 FY27</td><td class="num-cell">&#8377;1,614 Cr <span style="color:var(--ink-muted)">(FY27 guide: &#8377;6,000 Cr &plusmn;10%)</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3 style="margin-top:20px;">Working capital &amp; returns</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Ratio</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Debtor days</td><td class="num-cell">58</td></tr>
+              <tr><td>Inventory days</td><td class="num-cell">68</td></tr>
+              <tr><td>Payable days</td><td class="num-cell">152</td></tr>
+              <tr><td>Net working capital days</td><td class="num-cell pos">&minus;16</td></tr>
+              <tr><td>Cash conversion cycle</td><td class="num-cell pos">&minus;26 days</td></tr>
+              <tr><td>ROE</td><td class="num-cell">11.2% <span style="color:var(--ink-muted)">(3-yr avg 11.6%)</span></td></tr>
+              <tr><td>ROCE</td><td class="num-cell">13.4%</td></tr>
+              <tr><td>Debt / Equity</td><td class="num-cell">0.47x</td></tr>
+              <tr><td>Net leverage (Debt/EBITDA)</td><td class="num-cell pos">0.8x <span style="color:var(--ink-muted)">(guided &lt;1.5x)</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;">A <strong>negative cash conversion cycle</strong> means Motherson collects from OEM customers faster than it pays its own suppliers &mdash; suppliers effectively help fund working capital, a sign of scale and negotiating leverage.</p>
+      </div>
+
+      <!-- Valuations -->
+      <div class="subpanel" id="m-val">
+        <h3>Where the stock trades</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>CMP (3 Sep 2026)</td><td class="num-cell">&#8377;162</td></tr>
+              <tr><td>Market cap</td><td class="num-cell">&#8377;1,70,982 Cr</td></tr>
+              <tr><td>P/E (trailing)</td><td class="num-cell">37.7x</td></tr>
+              <tr><td>P/B</td><td class="num-cell">4.18x</td></tr>
+              <tr><td>Dividend yield</td><td class="num-cell">0.37%</td></tr>
+              <tr><td>52-week range</td><td class="num-cell">&#8377;93.49 &ndash; &#8377;173.27</td></tr>
+              <tr><td>1-year return</td><td class="num-cell pos">+67.9%</td></tr>
+              <tr><td>6-month return</td><td class="num-cell pos">+25.9%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;">At ~38x trailing earnings, the market is already paying up for Motherson's margin resilience and deleveraging &mdash; a premium to its own longer-run average, which leaves less cushion if a quarter disappoints.</p>
+      </div>
+
+      <!-- Share Activity -->
+      <div class="subpanel" id="m-price">
+        <h3>Reasons for recent share market activity</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Driver</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Post-Q3 FY26 re-rating</td><td>Brokerages raised target prices after a Q3 FY26 earnings beat; stock has stayed constructive since.</td></tr>
+              <tr><td>Margin resilience surprise</td><td>Q1 FY27 EBITDA margin expanded despite copper (+40%), aluminium (+45%), German polymer (+55%) and freight (+83% QoQ) all spiking together.</td></tr>
+              <tr><td>Deleveraging</td><td>Net leverage fell to 0.8x, its lowest ever &mdash; reduces balance-sheet risk premium the market was pricing in.</td></tr>
+              <tr><td>Diversification story</td><td>Emerging Businesses (+30% YoY) reduce the stock's pure auto-cyclical character.</td></tr>
+              <tr><td>Muted results-day move</td><td>Normalised PAT growth (+55%) was closer to street expectations than the headline +77.5%, and the stock had already run up into results.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;">Net effect: the stock sits within ~7% of its 52-week high, having recovered sharply from a 52-week low of &#8377;93.49 hit earlier in FY26 amid global tariff and OE production jitters.</p>
+      </div>
+
+      <!-- SWOT -->
+      <div class="subpanel" id="m-swot">
+        <h3>SWOT</h3>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td style="width:12%"><span class="pill growth">Strengths</span></td><td>Scale + diversification across auto/non-auto, ICE/EV and geography; negative working capital cycle; fast deleveraging; wiring harness riding rising content-per-vehicle.</td></tr>
+              <tr><td><span class="pill watch">Weaknesses</span></td><td>Thin absolute EBITDA margin (~8.8%) typical of contract manufacturing; quarterly PAT swings; earnings exposed to metal/polymer/freight cost cycles.</td></tr>
+              <tr><td><span class="pill neutral">Opportunities</span></td><td>Rising wiring content per vehicle (EV harnesses need more copper &amp; complexity); India/global indigenisation push; fast-scaling Emerging Businesses; further bolt-on M&amp;A.</td></tr>
+              <tr><td><span class="pill watch">Threats</span></td><td>Commodity inflation outrunning pass-through clauses; global auto production cyclicality &amp; tariff risk; rich valuation (37.7x P/E) leaves little room for a miss.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cauvery Assist -->
+      <div class="subpanel" id="m-assist">
+        <h3>Cauvery Assist &mdash; investor Q&amp;A</h3>
+        <p>Common questions on this result, answered briefly. Tap a question to expand.</p>
+        <div class="qa-item">
+          <button class="qa-q">Why did profit jump 77% this quarter?<span class="chevron">&#9660;</span></button>
+          <div class="qa-a"><p>Mostly a low base (Q1 FY26 had one-off drags) plus genuine margin expansion and strong wiring-harness growth. The cleaner, normalised measure grew a still-healthy 55%.</p></div>
+        </div>
+        <div class="qa-item">
+          <button class="qa-q">Is Motherson essentially an EV stock?<span class="chevron">&#9660;</span></button>
+          <div class="qa-a"><p>No &mdash; it's platform- and powertrain-agnostic by design, supplying ICE, hybrid and EV OEMs across auto and non-auto verticals. EVs are a tailwind (more wiring/electronic content), not the whole thesis.</p></div>
+        </div>
+        <div class="qa-item">
+          <button class="qa-q">Why did the stock barely move on results day?<span class="chevron">&#9660;</span></button>
+          <div class="qa-a"><p>Normalised profit growth (+55%) was closer to what the street already expected, and the stock had run up into the print &mdash; so the "beat" was smaller than the headline number suggested.</p></div>
+        </div>
+        <div class="qa-item">
+          <button class="qa-q">What's the single biggest risk to watch?<span class="chevron">&#9660;</span></button>
+          <div class="qa-a"><p>How fast commodity costs (copper, aluminium, polymer, freight) keep rising versus how fast Motherson's contracts let it pass those costs on to OEMs.</p></div>
+        </div>
+        <div class="qa-item">
+          <button class="qa-q">How is the company funding &#8377;6,000 Cr of FY27 capex?<span class="chevron">&#9660;</span></button>
+          <div class="qa-a"><p>Largely internal accruals &mdash; FY26 operating cash flow of &#8377;11,284 Cr comfortably covers it, even as leverage keeps falling.</p></div>
+        </div>
+      </div>
+
+      <!-- Cauvery Socrates -->
+      <div class="subpanel" id="m-quiz">
+        <h3>Cauvery Socrates &mdash; quick quiz</h3>
+        <p>Test what you just read. Pick an answer &mdash; it will show if you're right.</p>
+        <div class="quiz-card">
+          <div class="quiz-q">1. What was Motherson's Q1 FY27 EBITDA margin?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="false">4.8%</button>
+            <button class="quiz-opt" data-correct="false">6.9%</button>
+            <button class="quiz-opt" data-correct="true">8.8%</button>
+            <button class="quiz-opt" data-correct="false">11.1%</button>
+          </div>
+          <div class="quiz-fb">EBITDA margin expanded 60 bps YoY to 8.8%, despite sharp commodity inflation.</div>
+        </div>
+        <div class="quiz-card">
+          <div class="quiz-q">2. Which segment grew fastest by revenue in Q1 FY27?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="true">Wiring Harness</button>
+            <button class="quiz-opt" data-correct="false">Modules &amp; Polymer</button>
+            <button class="quiz-opt" data-correct="false">Vision Systems</button>
+            <button class="quiz-opt" data-correct="false">Emerging Businesses</button>
+          </div>
+          <div class="quiz-fb">Wiring Harness led at +31% YoY, just ahead of Emerging Businesses at +30%.</div>
+        </div>
+        <div class="quiz-card">
+          <div class="quiz-q">3. What is Motherson's current net leverage (Debt/EBITDA)?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="false">0.47x</button>
+            <button class="quiz-opt" data-correct="true">0.8x</button>
+            <button class="quiz-opt" data-correct="false">1.5x</button>
+            <button class="quiz-opt" data-correct="false">4.18x</button>
+          </div>
+          <div class="quiz-fb">0.8x &mdash; the lowest in the company's history, with a guardrail of staying under 1.5x.</div>
+        </div>
+        <div class="quiz-card">
+          <div class="quiz-q">4. True or false: Motherson has a negative cash conversion cycle.</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="true">True</button>
+            <button class="quiz-opt" data-correct="false">False</button>
+          </div>
+          <div class="quiz-fb">True &mdash; roughly &minus;26 days, meaning suppliers effectively help fund working capital.</div>
+        </div>
+        <div class="quiz-card">
+          <div class="quiz-q">5. Motherson's business model is best described as:</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="false">A single-product auto parts maker</button>
+            <button class="quiz-opt" data-correct="true">A diversified, Tier-1 auto + non-auto systems supplier</button>
+            <button class="quiz-opt" data-correct="false">A pure-play EV component maker</button>
+            <button class="quiz-opt" data-correct="false">A commodity raw-material trader</button>
+          </div>
+          <div class="quiz-fb">Correct &mdash; deliberately diversified across auto/non-auto, powertrain and geography.</div>
+        </div>
+      </div>
+
+      <!-- Analyst View -->
+      <div class="subpanel" id="m-view">
+        <h3>Analyst view</h3>
+        <p>Educational summary, not a recommendation &mdash; CB Research does not issue buy/sell/hold calls.</p>
+        <p>Q1 FY27 is a story of <strong>margin discipline under pressure</strong>: Motherson pushed through one of its sharpest commodity-cost quarters in years without giving up EBITDA margin, while continuing to de-lever and diversify away from pure auto-cyclicality. That is a genuinely strong operating result. The counterweight is valuation &mdash; at ~38x trailing earnings, much of this good news already appears priced in. The variable worth tracking over the next few quarters isn't the growth rate, which has been consistently strong, but whether margin can keep expanding if input costs (copper, aluminium, polymer, freight) stay elevated for longer than pass-through clauses can absorb.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTLOOK -->
+  <section class="panel" id="outlook">
+    <p class="lede">The setup into Navratri&ndash;Diwali is constructive: a record PV base, gas and ethanol both scaling smoothly, and EVs compounding off a small number &mdash; but two watch-items deserve attention rather than the festive noise.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Watch item</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td><strong>GST/tax base effect fading</strong></td><td>Both tailwinds are now a year (or more) old; festive-quarter comparisons will start reflecting the lower base rather than a fresh boost.</td></tr>
+          <tr><td><strong>E2W subsidy taper</strong></td><td>Two straight months of MoM decline in e-scooter registrations after the incentive cut &mdash; worth tracking whether affordability models restore momentum before Diwali.</td></tr>
+          <tr><td><strong>Localisation audits</strong></td><td>Government IEC-level tracking could separate ancillaries with genuine domestic value-add from those doing nominal assembly.</td></tr>
+          <tr><td><strong>Premium 2W softness</strong></td><td>Royal Enfield's 350cc+ decline suggests discretionary, higher-ticket two-wheeler demand is more cautious than the entry segment.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="block" style="margin-top:22px;">
+      <div class="callout">Bottom line: PV, CNG and ethanol are executing cleanly; EV is compounding off a small base; two-wheelers need the festive quarter to convert broad-based wholesale growth into a cleaner retail and EV-mix story.</div>
+    </div>
+  </section>
+
+  <footer class="foot">CB Research (Cauvery Business Research) &middot; independent equity research &amp; education platform &middot; sources: SIAM, FADA, company disclosures, press &amp; government releases, Aug&ndash;Sep 2026.</footer>
+</div>
+
+<div class="cb-badge" id="cbBadge" tabindex="0" role="button" aria-label="Disclaimer">CB</div>
+<div class="cb-pop" id="cbPop">CB Research is an independent, non-SEBI-registered equity research &amp; education platform. This note is for general education only and is not investment advice or a buy/sell/hold recommendation. Figures are compiled from public disclosures and media reports and may be revised.</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabs.forEach(b=>b.setAttribute('aria-selected','false'));
+      panels.forEach(p=>p.classList.remove('active'));
+      btn.setAttribute('aria-selected','true');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+  // Nested sub-tabs (company deep-dive)
+  document.querySelectorAll('.subtab-wrap').forEach(wrap=>{
+    const btns = wrap.querySelectorAll('.subtab-btn');
+    const panels = wrap.querySelectorAll('.subpanel');
+    btns.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        btns.forEach(b=>b.setAttribute('aria-selected','false'));
+        panels.forEach(p=>p.classList.remove('active'));
+        btn.setAttribute('aria-selected','true');
+        wrap.querySelector('#'+btn.dataset.subtab).classList.add('active');
+      });
+    });
+  });
+
+  // Cauvery Assist accordion
+  document.querySelectorAll('.qa-q').forEach(q=>{
+    q.addEventListener('click', ()=>{
+      q.parentElement.classList.toggle('open');
+    });
+  });
+
+  // Cauvery Socrates quiz
+  document.querySelectorAll('.quiz-card').forEach(card=>{
+    const opts = card.querySelectorAll('.quiz-opt');
+    const fb = card.querySelector('.quiz-fb');
+    opts.forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        if(card.dataset.answered) return;
+        card.dataset.answered = "1";
+        opts.forEach(o=>{
+          o.disabled = true;
+          if(o.dataset.correct === "true") o.classList.add('correct');
+        });
+        if(opt.dataset.correct !== "true") opt.classList.add('wrong');
+        if(fb) fb.classList.add('show');
+      });
+    });
+  });
+
+  const badge = document.getElementById('cbBadge');
+  const pop = document.getElementById('cbPop');
+  badge.addEventListener('click', ()=> pop.classList.toggle('show'));
+  document.addEventListener('click', (e)=>{
+    if(!badge.contains(e.target) && !pop.contains(e.target)) pop.classList.remove('show');
+  });
+</script>

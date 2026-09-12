@@ -68,6 +68,9 @@ Built to be jumped into, not read through, because that is how it is used after 
 - **A "what to watch" quick-reference** by category.
 - **Regulatory quick-reference** where the sector has rules a reader needs, with as-at dates.
 - **A "read a company in 60 seconds" checklist** — five yes/no questions per category.
+- **A metrics map** — for each headline metric, what drives it upstream and what it drives downstream,
+  traced three or four steps. The collection uses this device to show that one metric doing badly
+  cascades through the P&L and balance sheet — which a set of isolated metric cards cannot show.
 
 ### Teaching a single category
 

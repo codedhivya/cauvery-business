@@ -18,7 +18,7 @@ cyclicality and different pricing power, and blending them hides the story.
 | **Two-wheeler OEM** | Motorcycles, scooters, and increasingly electric | Hero MotoCorp, Bajaj Auto, TVS Motor, Eicher (Royal Enfield), Ather Energy |
 | **Passenger vehicle OEM** | Cars and UVs | Maruti Suzuki, Hyundai Motor India, Mahindra & Mahindra, Tata Motors, Kia |
 | **Commercial vehicle OEM** | Trucks and buses; the most cyclical category, tied to freight and infrastructure | Tata Motors, Ashok Leyland, VE Commercial Vehicles (Eicher) |
-| **Auto components** | Parts sold to OEMs and into the aftermarket | Uno Minda, Endurance Technologies, Craftsman Automation, Pricol, Lumax Auto, Belrise Industries |
+| **Auto components** | Parts sold to OEMs and into the aftermarket | Uno Minda, Endurance Technologies, Craftsman Automation, Pricol, Lumax Auto, Belrise Industries, Samvardhana Motherson |
 | **Tyres** | OEM fitment plus replacement demand | MRF, Apollo Tyres, CEAT, JK Tyre, Balkrishna Industries (BKT) |
 | **Batteries** | Automotive and industrial batteries; increasingly EV-linked | Exide Industries, Amara Raja Energy |
 
@@ -138,6 +138,50 @@ What matters is not the input price but **the lag before it can be passed on**:
 - Read a margin move alongside the input-cost direction before attributing it to operations. **State
   whether a price increase has been taken, and when it took effect.**
 
+### The festive season, and what dispatches can and cannot tell you
+
+Indian vehicle demand concentrates around the **Navratri–Diwali** festive period, and the calendar shapes
+every monthly number around it:
+
+- **Dispatches build ahead of it.** OEMs stock dealers in the weeks before the festival, so strong
+  pre-festive wholesale numbers are an *expectation* of demand, not evidence of it. **Festive retail
+  registrations are the confirmation.** Where retail falls short of the stock built, a correction in
+  dispatches follows in the months after.
+- **Regional festivals give the earliest read.** A festival falling earlier in one state is a leading
+  indicator for the national season — a signal, not a forecast.
+- **Compare festive season with festive season.** Festival dates move between calendar months from year to
+  year, so a monthly comparison can shift demand across the boundary. State where the festival fell.
+- **Mix inside a strong month matters.** Total volume can rise while the premium end softens; read segment
+  mix alongside the headline.
+
+### EV demand runs on the subsidy calendar
+
+Electric two-wheeler demand is **highly sensitive to purchase incentives**. When a central or state subsidy
+is cut or tapered, registrations typically fall **month-on-month** straight afterwards, even while
+year-on-year growth still looks strong — the year-ago base simply had lower adoption.
+
+- **A subsidy change is a scheduled demand event.** Note the effective date and read the months either side
+  separately.
+- **Buyers pull purchases forward ahead of a known cut**, so the month before flatters and the month after
+  understates. Neither is the run-rate.
+- **Read month-on-month around the change and year-on-year across it.** Year-on-year alone hides the
+  step-down; month-on-month alone overstates it.
+
+### Reading an EV OEM that is not yet profitable
+
+- **Gross margin before EBITDA.** Whether price, mix, value engineering and supplier terms are holding
+  margin as volume scales and cell, copper and aluminium costs move.
+- **The path to EBITDA break-even**, quarter by quarter. The first positive quarter is a milestone, not a
+  run-rate.
+- **Non-vehicle revenue** — software, charging, accessories and service — as a share of revenue. Higher
+  margin, more recurring, and it deepens retention; it is the part of the model least like an ICE OEM.
+- **Capacity and funding.** Plants and platforms are committed ahead of volume. A strategic stake from an
+  established OEM changes the funding runway and the competitive picture at the same time.
+- **Share within EVs**, not just EV volume — the category grows fast enough to hide share loss.
+- **For component makers, the question is powertrain exposure.** Parts that exist in any vehicle carry
+  little transition risk; engine and exhaust parts carry a lot; alternative-fuel routes such as CNG and
+  ethanol blending extend the runway for ICE-linked suppliers.
+
 ### What goes wrong, and the tell
 
 **Channel inventory dressed as demand.** Wholesale dispatches are what the company books; retail registrations are what customers actually bought. The tells: dispatches running ahead of registrations quarter after quarter, which means stock is piling up at dealers and a correction is owed; rising discounts; and realisation improving only on mix while volumes stall.
@@ -253,6 +297,8 @@ disclosed by SIAM and available — growing slower than the segment is losing, h
 
 | Event | Reaches results via | Exposure basis to cite |
 |---|---|---|
+| **Festive season** | dispatch build, then retail confirmation | dispatch–registration gap; where the festival fell this year |
+| **EV subsidy cut or taper** | EV registrations month-on-month | EV share of volume; effective date of the change |
 | **Steel / aluminium price rise** | raw-material cost, then margin until price increases land | metal share of RM cost; date and size of the last price increase; contractual pass-through in components |
 | EV subsidy change (FAME/state policy) | EV demand and pricing | EV volumes as % of total |
 | Emission-norm transition | compliance cost, pre-buy then trough | affected segment share |

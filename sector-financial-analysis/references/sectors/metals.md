@@ -115,6 +115,21 @@ Two consequences a reader needs:
   applied to assets that are expensive to decarbonise. **An Indian producer with European operations is
   exposed on both sides** and should be read that way.
 
+### New capacity announced inside a diversified parent
+
+A new entrant to a metal segment is sometimes **a project inside a diversified group** rather than a listed
+pure-play. There is no standalone equity to analyse, but the effect on incumbents is real: **treat it as a
+supply and competition event**. State its announced capacity against the domestic market, its timeline —
+long, and usually slipping — and its raw-material and power security relative to the incumbents it will
+compete with.
+
+### Consolidated numbers with a large overseas subsidiary
+
+Where a domestic producer owns a large overseas downstream business, **consolidated profit mixes two
+businesses in two currencies**, and an exceptional item in the overseas subsidiary can swamp the domestic
+result. Read **profit before exceptional items** and the **standalone domestic business** alongside the
+consolidated headline, and say which one a comparison uses.
+
 ### What goes wrong, and the tell
 
 **A cost base that cannot move as fast as the price.** The tells: realisation falling while cost per tonne holds, which compresses the spread from both ends; inventory built at high prices being sold into a falling market; captive raw-material share dropping; and expansion capex committed at the top of a cycle, which is how balance sheets in this sector historically break.

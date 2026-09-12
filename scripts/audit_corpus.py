@@ -41,10 +41,10 @@ SECTOR_KEYWORDS = {
     # Multi-sector pieces first: otherwise a single company name in the filename
     # ('azad', 'sbi') claims a dashboard that covers four unrelated sectors.
     "_cross-sector": ["multisector", "multico", "ranker", "cross_sector", "sector_analysis", "tatacomm_netweb",
-                      "powerproxy", "india_pv"],
+                      "powerproxy", "india_pv", "grasim", "recentipos", "top8"],
     "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss",
                         "ipo_fund", "uti_nippon", "kfintech", "cams"],
-    "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib"],
+    "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib", "fcnr"],
     # note: "rec" alone would match "Recycling"; use the paired filename form instead
     "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jiofinancial", "jio_financial", "mfi", "microfin"],
     "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici"],
@@ -54,7 +54,7 @@ SECTOR_KEYWORDS = {
     "pharma-health": ["pharma", "drreddys", "medtech", "hospital", "gland", "generic",
                       "laurus", "neuland", "divislabs", "lupin", "cipla", "torrent", "cupid", "symbiotec"],
     "auto": ["2w", "tvsmotor", "bajajauto", "auto_spares", "tyre", "battery", "pv_sector",
-             "heromoto", "eichermotors", "maruti", "mahindra", "sansera"],
+             "heromoto", "eichermotors", "maruti", "mahindra", "sansera", "ather", "motherson", "auto_sector"],
     "metals": ["steel", "aluminium", "vedanta", "nalco", "hindalco", "tatasteel"],
     "cement": ["cement", "ultratech"],
     "chemicals": ["chemical", "himadri", "pvc", "paint", "fertilizer", "recycling", "cropchem", "sharda"],
@@ -75,7 +75,7 @@ SECTOR_KEYWORDS = {
     "telecom": ["telecom", "airtel"],
     "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage"],
     # Not company evaluation: news digests, macro/thematic pieces, and site furniture.
-    "_excluded": ["market_breaking", "carrytrade", "macro_analysis", "glossary"],
+    "_excluded": ["market_breaking", "carrytrade", "macro_analysis", "glossary", "usdebt", "aibubble"],
 }
 
 # Finance terms worth noticing if a sector file doesn't define them.

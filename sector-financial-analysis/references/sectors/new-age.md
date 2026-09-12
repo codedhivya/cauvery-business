@@ -18,7 +18,8 @@ Judge them on contribution margin per order and runway, not on reported profit.
 | **Food delivery** | Restaurant aggregation and delivery; the more mature model | Zomato (Eternal), Swiggy |
 | **E-commerce marketplace** | Third-party sellers, platform takes a cut | Meesho, Nykaa |
 | **Services marketplace** | Matches consumers with service professionals | Urban Company |
-| **Omni-channel retail** | Store-led retail with a digital layer — **profitable and arguably `consumer`** | Trent |
+| **Fintech platform** | Insurance-broking and payments marketplaces; a take rate on premiums or transaction value, under a financial regulator's licence | PB Fintech, One 97 Communications (Paytm) |
+| **Omni-channel retail** | Store-led retail with a digital layer — **profitable and arguably `consumer`** | Trent, Lenskart Solutions |
 
 **Boundary note**: `Trent` appears in existing new-age reports but behaves like a `consumer` retailer —
 profitable, store-led, judged on SSSG and revenue per sq ft. Analyse it with `consumer.md`'s framing and
@@ -113,6 +114,34 @@ rather than treating any figure as fixed.
   expensive and less durable?
 - **Is a competitor funding a price war?** In a two-player market, one player's capital raise is the
   other's margin problem.
+
+### Reported profit is not operating profit
+
+A newly profitable platform often holds a large cash pile from its listing, and **the interest on that cash
+lands in other income**. A quarter can therefore show a net profit while the operating business is barely
+break-even or still losing money.
+
+- **Strip other income before calling a platform profitable.** Read EBITDA or adjusted EBITDA margin, and
+  state how much of reported profit other income supplied.
+- **Read profitability by segment.** A group can combine a profitable mature segment with a loss-making
+  growth one; the consolidated number describes neither, and the direction of the loss-maker usually decides
+  the story.
+- **A sequential profit fall during expansion is not automatically deterioration** — new dark stores, cities
+  or categories cost money before they earn it. Say whether the fall tracks an expansion that is still
+  ramping.
+
+### Fintech platforms answer to a regulator the others don't
+
+A fintech marketplace earns a **take rate** — on insurance premiums brokered or payments processed — and
+scales like any platform, so contribution margin and adjusted EBITDA read the same way. The difference is
+the licence. **Its revenue lines exist under a financial regulator's permission**, so a regulatory action
+can remove one outright — a risk a food-delivery or quick-commerce platform does not carry.
+
+- **State the licence each revenue line depends on**, and any open regulatory matter.
+- **Separate the core marketplace from newer lines** such as lending distribution, which carry different
+  economics and a different regulator.
+- **Premium or payment volume is the demand metric**; revenue is volume × take rate, and the take rate is
+  where competition and regulation both show up first.
 
 ### What goes wrong, and the tell
 

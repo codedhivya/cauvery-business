@@ -6,8 +6,8 @@ Covers Indian scheduled commercial banks — public sector, private sector, and 
 
 | Category | What it is | Examples |
 |---|---|---|
-| **Public Sector (PSU)** | Government-majority banks. Large deposit franchises, lower NIMs, higher legacy asset-quality baggage, policy-lending obligations | SBI, Bank of Baroda, PNB, Canara Bank, Union Bank, Bank of Maharashtra, Indian Bank, IDBI Bank |
-| **Private Sector** | Higher NIMs, stronger fee income, faster growth, generally better cost ratios | HDFC Bank, ICICI Bank, Axis Bank, Kotak Mahindra Bank, IndusInd Bank, Federal Bank |
+| **Public Sector (PSU)** | Government-majority banks. Large deposit franchises, lower NIMs, higher legacy asset-quality baggage, policy-lending obligations | SBI, Bank of Baroda, PNB, Canara Bank, Union Bank, Bank of Maharashtra, Indian Bank, IDBI Bank, Indian Overseas Bank, Central Bank of India |
+| **Private Sector** | Higher NIMs, stronger fee income, faster growth, generally better cost ratios | HDFC Bank, ICICI Bank, Axis Bank, Kotak Mahindra Bank, IndusInd Bank, Federal Bank, RBL Bank, YES Bank, Karur Vysya Bank, Tamilnad Mercantile Bank, South Indian Bank, Karnataka Bank |
 | **Small Finance Bank (SFB)** | Niche/microfinance-derived lending. Structurally higher NIMs **and** higher credit costs; asset quality is far more cyclical | AU Small Finance Bank, Jana Small Finance Bank, Equitas, Ujjivan |
 Compare within a category by default. An SFB's 9% NIM and a PSU's 3% NIM are not the same metric doing
 the same job, and ranking them together is meaningless.
@@ -83,6 +83,101 @@ A bank buys money wholesale and sells it retail. Deposits are the raw material, 
 - **Private** — Is deposit growth keeping pace with advances? Is CASA eroding as depositors chase term rates? Is fee income growing? Is unsecured lending share rising faster than provisions?
 - **SFB** — Is the microfinance book showing stress? Is slippage rising? Is the deposit franchise maturing away from bulk funding? Is credit cost within guidance?
 
+### ECL — provisioning moves from losses incurred to losses expected
+
+Under incurred-loss norms a bank provisions once a loan shows it has gone bad. **Expected credit loss
+(ECL)** requires provisioning for losses the bank *expects*, sorted into stages by how far credit risk has
+deteriorated since the loan was made:
+
+- **Stage 1** — performing, no significant deterioration: twelve months of expected loss.
+- **Stage 2** — a significant increase in credit risk, not yet impaired: **lifetime** expected loss. This
+  is where the regime bites. The RBI's framework sets a Stage 2 floor of **5%**, against roughly **0.4%**
+  for a standard or watch-list account under incurred-loss norms — more than ten times the provisioning
+  intensity for any account showing early stress *(as at 2026; confirm the final rule at source)*.
+- **Stage 3** — credit-impaired: lifetime loss, as for NPAs today.
+
+What it changes for analysis:
+
+- **Readiness is visible before the rule lands.** Contingent and floating provisions already held, a high
+  provision coverage ratio, and a secured, retail-heavy book are the buffers. Banks carrying them absorb
+  the transition quietly; banks without them take a capital hit or an earnings drag across the window.
+- **The day-one impact adjusts against opening reserves, not the P&L** — so the first hit lands on
+  capital rather than on reported profit. Read capital ratios through the transition, not just earnings.
+- **Stage 2 becomes the number to watch.** The early-stress bucket now carries a heavy provision, so its
+  size and direction drive future credit cost more directly than GNPA does.
+- **Say "carries the buffers to absorb it", not "has provisioned for it".** A buffer is not a booked ECL
+  line. State whether a bank has disclosed an impact estimate; some have, most have not.
+- **Earnings through the transition are not comparable** with earnings before it.
+
+### Reserve-exempt deposits — FCNR(B) and swap windows
+
+FCNR(B) deposits are foreign-currency term deposits from non-residents. Ordinarily they behave like any
+other deposit. **What changes the arithmetic is when the RBI exempts them from CRR and SLR**, typically
+through a swap window designed to attract dollar inflows.
+
+- **A reserve-exempt deposit does more for credit than an ordinary one.** None of it is locked into cash
+  reserves or statutory securities, so all of it is lendable — which is why a large window can push system
+  liquidity into a surplus the RBI then has to absorb.
+- **It is a windfall, not a franchise.** Deposits gathered through a one-off window say nothing about a
+  bank's ongoing ability to raise low-cost funding. Do not extrapolate them into deposit growth, and do not
+  credit them to CASA strength.
+- **It is foreign currency with a maturity.** The swap terms set the effective rupee cost, and the
+  deposits mature on a known schedule — **a maturity cliff is a funding event**. Ask what happens then.
+- **Deployment decides whether it helps.** Lent out profitably it supports growth and margin; parked in
+  surplus liquidity it earns little and can dilute NIM.
+
+### Liquidity: what the credit-deposit ratio cannot see
+
+- **LCR** = high-quality liquid assets ÷ net cash outflows over a 30-day stress. Short horizon.
+- **NSFR** = available stable funding ÷ required stable funding. Structural, one-year horizon.
+- Both carry an RBI minimum of **100%** *(as at 2026)*.
+- The RBI's revised LCR guidelines, effective **1 April 2026**, apply **higher run-off factors to retail
+  deposits reachable through internet and mobile banking** — treating digitally accessible money as quicker
+  to leave in a stress. A deposit base grown through digital channels consumes more liquidity buffer than the
+  same balance gathered through branches.
+- **A comfortable credit-deposit ratio can sit on short-tenor, rate-sensitive or digitally mobile
+  deposits.** LCR shows the thirty-day picture; **NSFR shows tenor mismatch** — and NSFR is disclosed far
+  less often than LCR, which is itself worth flagging.
+- **Leverage ratio** = Tier 1 capital ÷ total exposure, including off-balance-sheet items, with no risk
+  weighting. The backstop against a capital ratio flattered by low risk weights. Confirm the current
+  minimum at source.
+- **A merger that brings loans without matching deposits** pushes the credit-deposit ratio up overnight and
+  forces the bank to buy funding for several quarters. Margin compression in the quarters after such a deal
+  should be read against that cause first.
+
+### How the metrics cascade
+
+A bank's metrics are a chain, not a list. **Funding** (deposit growth, CASA, cost of deposits) sets the
+cost of money → **lending** (advance growth, yield on advances) sets its price → **income** (NII, NIM,
+fees, treasury) is the spread and the extras → **provisions** (slippage, credit cost, PCR) take their share
+→ **capital** (CRAR, CET-1) sets how much more can be lent → **returns and valuation** (ROA, ROE, P/B).
+
+**When one metric moves, trace it three or four steps.** A rising cost of deposits compresses NIM unless
+yields reprice; that pressures ROA, which slows internal capital generation, which caps growth. A quarter
+carried by treasury gains rather than NII is not a core-earnings quarter, however large the profit.
+
+### Standalone lender or financial group
+
+Some banks own large insurance, asset-management, broking and NBFC subsidiaries whose profits are a
+material share of the group; others are near-pure standalone lenders. **Read the first on a consolidated,
+sum-of-the-parts basis and the second on standalone numbers.** A standalone P/B on a group-heavy bank
+understates what is owned; a consolidated view of a pure lender adds nothing.
+
+### Governance — a franchise can reprice without a fundamental change
+
+A premium bank's multiple is partly a bet on its management and controls, so a governance event can
+re-rate it more sharply than a bad quarter. The tells, in the order they usually surface: **an abrupt
+board-level resignation with a thin explanation** → **regulatory friction** — observations, penalties,
+restrictions → **disclosure of the underlying issue** → **consequences for named executives and a
+leadership transition**. By the time the issue is public, much of the multiple has usually gone.
+
+- **Separate the governance discount from the operating trend.** Capital, asset quality and earnings can
+  hold while the valuation falls; say which is moving.
+- **A leadership transition at a franchise bank is a risk in its own right** — strategy, culture and the
+  regulatory relationship all turn on it, independent of whatever preceded it.
+- **Litigation abroad**, such as a securities class action in a foreign jurisdiction, is a contingent
+  liability to state, not to size without disclosure.
+
 ### What goes wrong, and the tell
 
 **Growth without the funding or the provisioning to support it.** The tells, in order of how early they appear: loan growth running well ahead of deposit growth (the funding is being bought, not gathered); a rising credit-deposit ratio; falling provision coverage while gross NPAs look stable; and restructured or Stage 2 assets climbing before anything reaches NPA. A bank that grows fastest in a boom is usually the one that provisions most in the bust.
@@ -96,6 +191,10 @@ A bank buys money wholesale and sells it retail. Deposits are the raw material, 
 | LCR | ≥100% |
 | Priority Sector Lending | 40% of adjusted net bank credit (higher for SFBs) |
 | CRR / SLR | As prevailing — check the current RBI policy statement rather than assuming |
+| ECL provisioning | Forward-looking, staged; applies from 1 April 2027 with transition to March 2031; day-one impact against opening reserves *(confirm at source)* |
+| NSFR | ≥100%; structural one-year funding stability |
+| LCR run-off for digital deposits | Higher run-off factors for internet/mobile-accessible retail deposits, effective 1 April 2026 |
+| Leverage ratio | Tier 1 ÷ total exposure, unweighted backstop *(confirm current minimum at source)* |
 
 Regulatory levels change with RBI policy. Verify against the current circular rather than carrying a
 figure forward.
@@ -155,6 +254,25 @@ Primary multiple: **P/BV** — banks are valued on book value, since the balance
 Use **P/ABV** (adjusted book value, net of unprovided NPAs) where asset quality is weak, as reported book
 overstates the equity. P/E secondary. Never use EV/EBITDA — see below.
 
+**P/BV means nothing without ROE.** Book value only earns what the bank makes on it, so the multiple a bank
+deserves rises with its return: in steady state, P/BV ≈ (ROE − growth) ÷ (cost of equity − growth). A bank
+at 3× book with a high ROE can be fairly priced while one at 1.3× with a thin ROE is not cheap. **Always
+quote the two together.**
+
+- **Excess capital suppresses ROE.** A bank holding far more capital than its growth needs spreads its
+  profit over a larger equity base, so it can run the best deposit franchise and margin in its peer group
+  and still post one of the lower ROEs. That is a capital-deployment question, not a franchise weakness —
+  say which.
+- **A high margin in a niche does not scale.** The widest margins come from high-yield books — gold,
+  cards, microfinance — or unusually cheap deposits. A small bank's niche margin is real, but the
+  addressable market is too small to carry a very large balance sheet, which is why large banks cannot
+  simply copy it.
+- **A falling cost-to-income ratio lifts ROE without revenue growth**, because each rupee earned now keeps
+  more of itself. Operating efficiency is a return lever in its own right.
+- **For a government-held bank heading into a strategic sale, the transaction can outweigh the quarter.**
+  When the free float is tiny and a controlling stake is being sold, valuation tracks the terms of the sale
+  and the buyer, not the latest P&L. State the stake on offer, the bidders, and the float after the deal.
+
 ### CB Rating substitutions (`cb-rating`)
 
 Financial-sector rules: **leverage is the business model, not a risk flag**, so Debt/Leverage is never a
@@ -196,6 +314,10 @@ Pair it with the standing house disclaimer (see `source-hierarchy.md`).
 
 | Event | Reaches results via | Exposure basis to cite |
 |---|---|---|
+| **Reserve-exempt deposit window** (e.g. an FCNR(B) swap) | liquidity, deposit growth, NIM depending on deployment | amount mobilised against the deposit base; tenor and swap terms; where it was deployed |
+| **ECL implementation** | credit cost and capital through the transition | Stage 2 share; contingent and floating provisions; disclosed impact estimate |
+| **Governance event or leadership exit** | valuation multiple, ahead of fundamentals | nature of the issue; regulatory action taken; transition plan |
+| **Higher LCR run-off on digital deposits** | liquidity buffer requirement | share of deposits accessible through internet and mobile banking |
 | RBI repo rate cut | NIM compression — EBLR-linked loans reprice immediately, deposits reprice slowly | % of book on external benchmark (EBLR) vs MCLR/fixed |
 | RBI repo rate hike | NIM expansion near-term, then deposit-cost catch-up | same |
 | Deposit rate competition | cost of funds up, NIM down | CASA %, share of bulk deposits |

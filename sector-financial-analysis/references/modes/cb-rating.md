@@ -79,3 +79,11 @@ stale components is exactly the drift this framework exists to prevent.
 ## Deliver
 
 Follow `output-conventions.md`.
+
+## A cohort-normalised score ranks the cohort, not the company
+
+Where each component is scaled min–max across the companies being ranked, the score says where a company
+sits **relative to that group**. It is not comparable with a score from a different ranking, and it moves
+when the cohort changes even if the company does not — adding a much stronger or weaker name re-scales
+everyone else. **State the cohort and the normalisation beside any score**, and never compare scores across
+two rankings as though they were on one scale.

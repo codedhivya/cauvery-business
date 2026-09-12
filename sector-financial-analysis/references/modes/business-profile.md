@@ -93,6 +93,9 @@ When a headline number falls sharply, **decompose it before narrating it**:
 - **Base effects.** A period compared against an exceptional quarter is not deteriorating; state the
   comparison base explicitly where it is unusual.
 - **Mix.** Falling realisation with rising volume is a mix shift, not a pricing failure.
+- **Acquired growth.** Revenue that jumps on an acquisition is not demand. Separate organic from inorganic
+  growth, and where revenue rises sharply while profit barely moves and debt steps up, say plainly that the
+  quarter reflects a balance sheet that bought revenue rather than a business that won it.
 
 Where the honest answer is that the business did weaken, say that too. **The purpose is to separate the
 optics from the operations, not to explain away the number.**

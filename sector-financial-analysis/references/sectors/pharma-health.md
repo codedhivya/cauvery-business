@@ -13,7 +13,9 @@ occupancy and revenue per patient. They share almost no metrics, so classify bef
 | **Formulations — US/Export generics** | Generic drugs for regulated markets; approval- and price-erosion-driven | Sun Pharma, Dr Reddy's, Lupin, Aurobindo, Zydus, Glenmark, Alkem, Alembic |
 | **Formulations — Domestic (IPM)** | Branded generics for India; brand and distribution-driven, no price erosion | Mankind, Torrent, Eris, Alkem (domestic arm) |
 | **API / Intermediates** | Active ingredients sold to formulators | Divi's, Laurus Labs, Neuland, Supriya Lifescience |
-| **CDMO / CRO** | Contract development and manufacturing for innovators | Divi's, Sai Life Sciences, Anthem Biosciences, Laurus (CDMO arm), Gland Pharma |
+| **CDMO — Category I (scaled, integrated)** | CDMO is one large leg of a diversified company: broad blue-chip client base, several technology platforms, capacity expansion underway | Divi's Laboratories, Laurus Labs, Gland Pharma |
+| **CDMO — Category II (niche, high-margin)** | Close to pure-play; specialised work at the sector's best margins, but concentrated in a few clients or molecules, so quarters swing | Anthem Biosciences, Neuland Laboratories, Sai Life Sciences |
+| **Innovator / specialty** | Novel drugs, specialty and biosimilar franchises; pricing power outside commodity generics, with pipeline option value | Wockhardt, Glenmark, Sun Pharma |
 | **Hospitals** | Multi-specialty and single-specialty care | Manipal Health, Fortis, Global Health (Medanta), KIMS, Rainbow Children's, Yatharth |
 | **Diagnostics** | Pathology and imaging chains | listed diagnostics chains |
 | **MedTech** | Devices and equipment | Poly Medicure, and listed device makers |
@@ -137,6 +139,33 @@ both, insist on the segment split** — a blended margin describes neither busin
   entirely different forward visibility.
 - **Order-book and client concentration** matter more here than in generics, and a lost molecule is not
   replaceable in a quarter.
+
+**Two kinds of CDMO, which the market tends to lump together.** The collection splits them — as an
+analytical framework, not an official or regulatory label:
+
+- **Category I — scaled and integrated.** The CDMO business is one large leg of a diversified company,
+  typically around 40% or more of revenue alongside generic APIs or own formulations, spanning several
+  platforms (small molecule, peptides, biologics or injectables), with a broad blue-chip client list and a
+  multi-year capacity build already underway. Scale absorbs fixed cost, so **revenue and margin tend to
+  grow together and quarters are steadier**.
+- **Category II — niche and high-margin.** Close to pure-play, earlier in scaling late-phase molecules into
+  commercial supply. Margins are often the best in the sector because the work is specialised, but revenue
+  sits with a handful of clients, products or molecules — **so single quarters swing on delivery
+  timing**. Read the **full-year order-book visibility**, not the quarter: a weak print against a largely
+  booked year is timing, not deterioration.
+
+Where the per-mode tables below say CDMO, they apply to both categories; the difference is how much weight
+a single quarter deserves.
+
+**CRDMO** adds research — early discovery chemistry for the client, one stage before development. It sits
+further upstream in the molecule's life, so more of its revenue is early-stage and further from commercial
+supply.
+
+**Innovator and specialty franchises are not generics either.** Novel drugs, specialty brands and
+biosimilars give pricing power that commodity generics lack, and a pipeline carries option value that
+current earnings do not show. **Separate the innovative or specialty line from the generic base** — a
+company can post a weak generic quarter that its specialty business more than offsets, and a blended number
+hides both.
 
 **Biosimilars are not generics.** A generic is a chemically identical copy and is cheap to make once
 approved; a biosimilar copies a *biologic*, which is grown rather than synthesised, cannot be made

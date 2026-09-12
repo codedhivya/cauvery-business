@@ -54,7 +54,9 @@ PUBLISHED = os.path.join(ROOT, "reports", "published")
 # report-specific Q&A, which is how it went unmined.
 SOURCES = [
     ("school", re.compile(r'class="school-q"[^>]*>(.*?)</div>\s*<div class="school-a"[^>]*>(.*?)</div>', re.S)),
-    ("assist", re.compile(r'class="(?:cba2?-q|assist-q|qa-q)"[^>]*>(.*?)</div>\s*<div class="(?:cba2?-a|assist-a|qa-a)"[^>]*>(.*?)</div>', re.S)),
+    ("assist", re.compile(r'class="(?:cba2?-q|assist-q|qa-q|q)"[^>]*>(.*?)</div>\s*<div class="(?:cba2?-a|assist-a|qa-a|a)"[^>]*>(.*?)</div>', re.S)),
+    # accordion panels: <button class="acc-h">Q</button><div class="acc-b">A</div>
+    ("assist", re.compile(r'<button[^>]*class="[^"]*\bacc-h\b[^"]*"[^>]*>(.*?)</button>\s*<div[^>]*class="[^"]*\bacc-b\b[^"]*"[^>]*>(.*?)</div>', re.S)),
 ]
 JS = re.compile(r'[{,]\s*q\s*:\s*([\'"`])(.*?)\1\s*,\s*a\s*:\s*([\'"`])(.*?)\3', re.S)
 # Quiz items carry options and an explanation rather than a free-text answer,

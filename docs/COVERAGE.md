@@ -13,12 +13,12 @@ sector file was written belongs in an analysis too — the skill sources the con
 live rather than reading it from here. A name's absence is not a statement that the company
 is out of scope.
 
-**18 sectors · 142 classified reports in the published collection.**
+**18 sectors · 151 classified reports in the published collection.**
 
 | Sector | Categories | Reports |
 |---|---:|---:|
-| [`auto`](#auto) | 6 | 10 |
-| [`banking`](#banking) | 3 | 12 |
+| [`auto`](#auto) | 6 | 12 |
+| [`banking`](#banking) | 3 | 16 |
 | [`capital-goods`](#capital-goods) | 8 | 15 |
 | [`capital-markets`](#capital-markets) | 7 | 10 |
 | [`cement`](#cement) | 2 | 2 |
@@ -28,10 +28,10 @@ is out of scope.
 | [`insurance`](#insurance) | 4 | 3 |
 | [`it-services`](#it-services) | 5 | 5 |
 | [`logistics`](#logistics) | 6 | 1 |
-| [`metals`](#metals) | 4 | 6 |
+| [`metals`](#metals) | 4 | 7 |
 | [`nbfc-hfc`](#nbfc-hfc) | 8 | 7 |
-| [`new-age`](#new-age) | 5 | 3 |
-| [`pharma-health`](#pharma-health) | 7 | 18 |
+| [`new-age`](#new-age) | 6 | 4 |
+| [`pharma-health`](#pharma-health) | 9 | 19 |
 | [`power-energy`](#power-energy) | 9 | 13 |
 | [`reit-invit`](#reit-invit) | 9 | 4 |
 | [`telecom`](#telecom) | 3 | 2 |
@@ -40,25 +40,25 @@ is out of scope.
 
 ## auto
 
-*10 reports in the collection.*
+*12 reports in the collection.*
 
 | Category | Companies |
 |---|---|
 | **Two-wheeler OEM** | Hero MotoCorp, Bajaj Auto, TVS Motor, Eicher (Royal Enfield), Ather Energy |
 | **Passenger vehicle OEM** | Maruti Suzuki, Hyundai Motor India, Mahindra & Mahindra, Tata Motors, Kia |
 | **Commercial vehicle OEM** | Tata Motors, Ashok Leyland, VE Commercial Vehicles (Eicher) |
-| **Auto components** | Uno Minda, Endurance Technologies, Craftsman Automation, Pricol, Lumax Auto, Belrise Industries |
+| **Auto components** | Uno Minda, Endurance Technologies, Craftsman Automation, Pricol, Lumax Auto, Belrise Industries, Samvardhana Motherson |
 | **Tyres** | MRF, Apollo Tyres, CEAT, JK Tyre, Balkrishna Industries (BKT) |
 | **Batteries** | Exide Industries, Amara Raja Energy |
 
 ## banking
 
-*12 reports in the collection.*
+*16 reports in the collection.*
 
 | Category | Companies |
 |---|---|
-| **Public Sector (PSU)** | SBI, Bank of Baroda, PNB, Canara Bank, Union Bank, Bank of Maharashtra, Indian Bank, IDBI Bank |
-| **Private Sector** | HDFC Bank, ICICI Bank, Axis Bank, Kotak Mahindra Bank, IndusInd Bank, Federal Bank |
+| **Public Sector (PSU)** | SBI, Bank of Baroda, PNB, Canara Bank, Union Bank, Bank of Maharashtra, Indian Bank, IDBI Bank, Indian Overseas Bank, Central Bank of India |
+| **Private Sector** | HDFC Bank, ICICI Bank, Axis Bank, Kotak Mahindra Bank, IndusInd Bank, Federal Bank, RBL Bank, YES Bank, Karur Vysya Bank, Tamilnad Mercantile Bank, South Indian Bank, Karnataka Bank |
 | **Small Finance Bank (SFB)** | AU Small Finance Bank, Jana Small Finance Bank, Equitas, Ujjivan |
 
 ## capital-goods
@@ -178,7 +178,7 @@ is out of scope.
 
 ## metals
 
-*6 reports in the collection.*
+*7 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -204,7 +204,7 @@ is out of scope.
 
 ## new-age
 
-*3 reports in the collection.*
+*4 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -212,18 +212,21 @@ is out of scope.
 | **Food delivery** | Zomato (Eternal), Swiggy |
 | **E-commerce marketplace** | Meesho, Nykaa |
 | **Services marketplace** | Urban Company |
-| **Omni-channel retail** | Trent |
+| **Fintech platform** | PB Fintech, One 97 Communications (Paytm) |
+| **Omni-channel retail** | Trent, Lenskart Solutions |
 
 ## pharma-health
 
-*18 reports in the collection.*
+*19 reports in the collection.*
 
 | Category | Companies |
 |---|---|
 | **Formulations — US/Export generics** | Sun Pharma, Dr Reddy's, Lupin, Aurobindo, Zydus, Glenmark, Alkem, Alembic |
 | **Formulations — Domestic (IPM)** | Mankind, Torrent, Eris |
 | **API / Intermediates** | Divi's, Laurus Labs, Neuland, Supriya Lifescience |
-| **CDMO / CRO** | Divi's, Sai Life Sciences, Anthem Biosciences, Gland Pharma |
+| **CDMO — Category I (scaled, integrated)** | Divi's Laboratories, Laurus Labs, Gland Pharma |
+| **CDMO — Category II (niche, high-margin)** | Anthem Biosciences, Neuland Laboratories, Sai Life Sciences |
+| **Innovator / specialty** | Wockhardt, Glenmark, Sun Pharma |
 | **Hospitals** | Manipal Health, Fortis, Global Health (Medanta), KIMS, Rainbow Children's, Yatharth |
 | **Diagnostics** | *none named — see below* |
 | **MedTech** | Poly Medicure |
