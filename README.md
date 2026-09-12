@@ -3,7 +3,7 @@
 Equity research tooling for Indian listed companies: a Claude skill that generates research-grade
 analysis artifacts, plus the report collection it produces.
 
-The reports are published at **[elangocauvery.github.io/CB-Finance](https://elangocauvery.github.io/CB-Finance/)**.
+The reports are published at **[share-analysis.cauverybusiness.in](https://share-analysis.cauverybusiness.in/)**.
 
 ---
 
@@ -35,7 +35,7 @@ sector-financial-analysis/
     ├── source-hierarchy.md     sourcing tiers, attribution, compliance
     ├── output-conventions.md   the only file naming paths or tools
     ├── modes/                  HOW to build (15 files, no sector metrics)
-    └── sectors/                WHAT the metrics are (17 files + _template.md)
+    └── sectors/                WHAT the metrics are (18 files + _template.md)
 ```
 
 **15 modes** — dashboard, financials, charts, business-profile, segments, valuation, swot, moats,

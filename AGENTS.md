@@ -7,17 +7,18 @@ it produces (static HTML).
 ```
 sector-financial-analysis/   the analysis skill — source of truth
 corpus-sync/                 the skill that keeps the above in step with the collection
-reports/published/           131 verified reports; the author stands behind these
+reports/published/           verified reports; the author stands behind these
 reports/staging/             generated drafts awaiting human review
 scripts/sync_reports.py      mirrors published reports from the Pages site
 docs/COVERAGE.md/.html       every sector, category and company — generated, never hand-edited
 docs/                        report URL lists
 ```
 
-Reports are published at <https://elangocauvery.github.io/CB-Finance/>.
+Reports are published at <https://share-analysis.cauverybusiness.in/> (moved from GitHub Pages in
+Aug 2026; `sync_reports.py` reads the new host by default).
 
 **Maintaining or extending it?** See **[MAINTENANCE.md](MAINTENANCE.md)** — the sector inventory, the
-recipe for adding a seventeenth sector, and the judgment calls already settled. **All 17 sectors are
+recipe for adding another sector, and the judgment calls already settled. **All 18 sectors are
 built**; the build is complete. Don't re-derive the sector taxonomy by re-auditing the corpus — it's
 already recorded there.
 
@@ -84,7 +85,7 @@ sector-financial-analysis/
     ├── source-hierarchy.md       sourcing tiers, attribution, compliance
     ├── output-conventions.md     THE ONLY FILE NAMING PATHS OR TOOLS
     ├── modes/                    HOW to build (15 files)
-    └── sectors/                  WHAT the metrics are (17 files + _template.md)
+    └── sectors/                  WHAT the metrics are (18 files + _template.md)
 ```
 
 **The split**: mode files own the craft, sector files own the domain. How to build a SWOT grid is
@@ -106,7 +107,7 @@ other agent environments — porting means editing one file, not fifteen.
 python3 scripts/verify_skill.py
 ```
 
-62 checks in one command: the structural contracts (no sector metric in a mode file, no tool name or path
+Every check in one command (the script prints its own tally, which grows with each sector): the structural contracts (no sector metric in a mode file, no tool name or path
 outside `output-conventions.md`, no hardcoded period, every CSS class resolves), per-sector completeness
 (10 numbered sections, 9 delegation targets, CB weights totalling 100%), that each sector still carries
 its defining insight, that every refusal survives, and that the router's depth-routing and scope limits
@@ -179,7 +180,7 @@ missing and rewrites `docs/report_dashboard_urls.txt`. Pass a saved portal page 
 that instead.
 
 A 404 in step 1 is a **broken link on the site itself** — worth fixing at the source, since members hit
-it too. Two are currently live: `Banking_Q1FY27.html` and `india_steel_fy26_dashboard.ai.html`.
+it too.
 
 Step 2 is the one that matters. It flags **unbuilt sectors**, **metrics not defined** in the matching
 sector file, **sections no mode covers**, and **unknown CSS classes**. Not everything it flags needs
