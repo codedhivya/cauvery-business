@@ -47,7 +47,7 @@ is out of scope.
 | **Two-wheeler OEM** | Hero MotoCorp, Bajaj Auto, TVS Motor, Eicher (Royal Enfield), Ather Energy |
 | **Passenger vehicle OEM** | Maruti Suzuki, Hyundai Motor India, Mahindra & Mahindra, Tata Motors, Kia |
 | **Commercial vehicle OEM** | Tata Motors, Ashok Leyland, VE Commercial Vehicles (Eicher) |
-| **Auto components** | Uno Minda, Endurance Technologies, Craftsman Automation, Pricol, Lumax Auto, Belrise Industries, Samvardhana Motherson |
+| **Auto components** | Uno Minda, Endurance Technologies, Craftsman Automation, Pricol, Lumax Auto, Belrise Industries, Samvardhana Motherson, Sansera Engineering |
 | **Tyres** | MRF, Apollo Tyres, CEAT, JK Tyre, Balkrishna Industries (BKT) |
 | **Batteries** | Exide Industries, Amara Raja Energy |
 
