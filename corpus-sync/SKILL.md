@@ -9,9 +9,9 @@ Keeps two things in step: the local mirror of the published collection, and the 
 `sector-financial-analysis`. When reports are published and neither is updated, the skill silently lacks
 what the author already knows.
 
-**The loop is: pull → classify → mine → apply → coverage → verify → baseline.** Steps 1, 2, 5, 6 and 7
-are mechanical.
-**Steps 3 and 4 are the work** — the scripts flag *that* something is new, never *what it means*.
+**The loop is: pull → index → classify → mine → apply → coverage → verify → baseline.** Steps 1, 2, 6, 7
+and 8 are mechanical.
+**Steps 4 and 5 are the work** — the scripts flag *that* something is new, never *what it means*.
 
 ---
 
@@ -35,7 +35,24 @@ the hrefs in the page. That failure looks like a dead site and is not one.
 **A 404 on a few files is different**: those are broken links on the site itself, which members hit too.
 Report them to the user; they are fixable only at the source.
 
-## Step 2 — Classify
+## Step 2 — Rebuild the corpus index
+
+```bash
+python3 scripts/build_corpus_index.py
+```
+
+`docs/corpus-index.txt` flattens all 177 reports into one greppable text file, one line per fragment,
+prefixed by its report. **It goes stale the moment a report lands**, so rebuild it here rather than
+later — every "does the collection already cover X?" question in the steps below is a grep against it:
+
+```bash
+grep -i '<term>' docs/corpus-index.txt | cut -d'|' -f1 | sort -u
+```
+
+It is **a finding aid, not a source.** It tells you which report carries a fact; open that report to read
+and cite it. The file is gitignored and rebuilds in about two seconds.
+
+## Step 3 — Classify
 
 ```bash
 python3 scripts/audit_corpus.py
@@ -55,7 +72,7 @@ for a keyword gap.
 
 **A genuinely new sector is rare and is the user's call** — see *Adding a sector* below.
 
-## Step 3 — Mine each new report
+## Step 4 — Mine each new report
 
 **This is the step that cannot be automated, and the one that carries the value.** The scripts compare
 strings; they cannot tell whether a new metric deserves a definition or was a one-off.
@@ -109,7 +126,7 @@ file. An Examples column must *name* companies: "listed hospital chains" names n
 collection genuinely has no report on a category, record it in `KNOWN_GAPS` in
 `scripts/build_coverage.py` rather than inventing a name.
 
-## Step 4 — Apply
+## Step 5 — Apply
 
 Edit the sector files, mode files or `design-system.md`. Two rules that are easy to break here:
 
@@ -122,7 +139,7 @@ Ask the user when the judgment is genuinely theirs: a new sector, a taxonomy tha
 existing one, or a metric that may be a deliberate one-off. **Do not ask about things the corpus already
 settles** — check first.
 
-## Step 5 — Regenerate the coverage page
+## Step 6 — Regenerate the coverage page
 
 ```bash
 python3 scripts/build_coverage.py
@@ -135,7 +152,7 @@ whether something is covered, so a stale one is worse than none.
 It also surfaces **categories naming no company**, which is usually a gap in the collection rather than
 in the skill. Worth reporting to the user.
 
-## Step 6 — Verify
+## Step 7 — Verify
 
 ```bash
 python3 scripts/verify_skill.py
@@ -144,7 +161,7 @@ python3 scripts/verify_skill.py
 Must pass before baselining. It checks the structural contracts, per-sector completeness, that each
 sector still carries its defining insight, and that every refusal survives.
 
-## Step 7 — Baseline
+## Step 8 — Baseline
 
 ```bash
 python3 scripts/audit_corpus.py --accept

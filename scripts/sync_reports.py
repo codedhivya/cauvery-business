@@ -69,6 +69,16 @@ def report_names(html):
     return sorted(n for n in names if n not in NOT_REPORTS)
 
 
+def next_steps():
+    """Printed on both paths — an in-sync mirror can still have a stale index."""
+    print("\nNext: python3 scripts/audit_corpus.py")
+    print("  — whether the new reports introduce a sector, metric or section")
+    print("    the skill doesn't cover. Findings are advisory.")
+    print("\n      python3 scripts/build_corpus_index.py")
+    print("  — rebuild the greppable text index of the collection. It goes stale")
+    print("    the moment a report lands, and it is how prior coverage is found.")
+
+
 def main():
     if len(sys.argv) > 1:
         src = sys.argv[1]
@@ -106,6 +116,7 @@ def main():
 
     if not missing:
         print("Already in sync.")
+        next_steps()
         return 0
 
     ok, failed = [], []
@@ -127,9 +138,7 @@ def main():
         for name, err in failed:
             print(f"  {name}: {err}")
 
-    print("\nNext: python3 scripts/audit_corpus.py")
-    print("  — whether the new reports introduce a sector, metric or section")
-    print("    the skill doesn't cover. Findings are advisory.")
+    next_steps()
     return 1 if failed else 0
 
 

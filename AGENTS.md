@@ -149,6 +149,37 @@ or the owning sector file, and each sector's CB Rating substitution table totals
 
 ---
 
+## Checking what the collection already says
+
+**Grep the index first.** `docs/corpus-index.txt` flattens every published report into one line per
+fragment, prefixed by its source:
+
+```bash
+grep -i 'kleros' docs/corpus-index.txt
+```
+
+```bash
+grep -i 'mundra' docs/corpus-index.txt | cut -d'|' -f1 | sort -u
+```
+
+The first shows the fact in context; the second answers "which reports cover this?". Both are instant
+across ~26 MB of bilingual HTML, which is the alternative — stripping several large reports at read time,
+for every question.
+
+**It is a finding aid, not a source.** A fragment there has lost its table, its footnote and its as-of
+date. Use it to find the report, then **open that report to read and cite the figure**. Never quote the
+index as the source of a number.
+
+**It goes stale on every sync**, and it is gitignored rather than committed — ~12 MB rewritten wholesale
+each time, rebuilt from tracked reports in about two seconds:
+
+```bash
+python3 scripts/build_corpus_index.py
+```
+
+Tamil is dropped by default: the reports are bilingual and the Tamil is a translation of the adjacent
+English, so indexing it doubles the file without adding a fact. Pass `--keep-tamil` to search it.
+
 ## Syncing new published reports
 
 The published collection is a local mirror of the Pages site. When reports are added there, the mirror
