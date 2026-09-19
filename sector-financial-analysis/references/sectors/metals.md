@@ -294,6 +294,7 @@ prices rose" is not a sourced claim.
 | Vedanta | #c84b2f | #fef3f0 |
 | Hindustan Zinc | #4338ca | #eef2ff |
 | APL Apollo | #7c3aed | #f5f3ff |
+| NMDC | #6b4226 | #f6efe9 |
 
 ## 9. Sector-specific CSS
 
