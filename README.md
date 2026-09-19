@@ -22,6 +22,52 @@ and that mode files must never name a sector-specific metric. (`CLAUDE.md` symli
 | `docs/` | [COVERAGE.md](docs/COVERAGE.md) / [.html](docs/COVERAGE.html) — every sector, category and company · report URL lists · ADRs |
 | `archive/handoff/` | Historical: the 9 per-topic insurance skills this replaced |
 
+## Using this yourself
+
+Everything needed is in the repo, and the skill symlinks under `.claude/skills/` are committed — so
+opening Claude Code inside a clone loads both skills with no setup:
+
+```bash
+git clone https://github.com/codedhivya/cauvery-business.git
+```
+
+```bash
+cd cauvery-business && claude
+```
+
+Then just ask — "how did SBI do", "what is CASA", "build a dashboard for the top 3 private banks". The
+router picks the sector, the mode and whether you wanted an answer or a file.
+
+**One command before the first corpus question**, because the search index is generated rather than
+committed:
+
+```bash
+python3 scripts/build_corpus_index.py
+```
+
+Python 3 is the only requirement — every script uses the standard library, so there is nothing to
+install.
+
+### Using it outside this folder
+
+The skills load only for sessions started inside the clone. To make them available everywhere, symlink
+them into your user skills directory:
+
+```bash
+mkdir -p ~/.claude/skills && ln -s "$PWD/sector-financial-analysis" "$PWD/corpus-sync" ~/.claude/skills/
+```
+
+**The analysis skill still expects this repo's layout.** It writes drafts to `reports/staging/`, and its
+prior-coverage checks read `reports/published/` and `docs/corpus-index.txt`. Run it from a clone and those
+work; run it elsewhere and it will still analyse companies, but it cannot tell you what the collection
+already covers. Those paths live in `references/output-conventions.md` — one file to change if you want a
+different layout.
+
+### Keeping it current
+
+The collection moves. After new reports are published, ask Claude to **"sync"** — the `corpus-sync` skill
+pulls them, rebuilds the index, and folds anything new into the sector files.
+
 ## The skill
 
 `sector-financial-analysis` is a single skill covering every sector. It routes each request by
