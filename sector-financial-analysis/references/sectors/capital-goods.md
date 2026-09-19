@@ -17,9 +17,9 @@ how fast it turns into revenue, and at what margin. Nearly every metric here ser
 | **EMS — box-build** | High-volume consumer assembly. The customer owns the design; the manufacturer earns a conversion fee. Enormous revenue, thin margin, working-capital heavy | Dixon |
 | **EMS — design-led / ODM** | Contributes design and owns some IP. ODM work earns materially better margin than pure contract assembly | Syrma SGS, Amber |
 | **EMS — industrial / semiconductor** | Industrial, aerospace, medical and semiconductor packaging (OSAT). Longer qualification cycles, fewer competitors, better pricing — but heavy capex | Kaynes |
-| **Cables & Wires** | Wires, cables, and increasingly FMEG products | Polycab, Bajel |
+| **Cables & Wires** | Wires, cables, and increasingly FMEG products | Polycab, Bajel, Sterlite Technologies |
 | **Power T&D Equipment** | Transformers, switchgear, grid equipment — sells *to* the power sector, not part of it | Hitachi Energy India, ABB India, Siemens Energy India, Voltamp, CG Power |
-| **Industrial Equipment** | Pumps, cryogenic and process equipment, specialised engineering | MTAR Technologies, INOX India, Shakti Pumps, Shaily Engineering, VA Tech Wabag (water) |
+| **Industrial Equipment** | Pumps, cryogenic and process equipment, specialised engineering | MTAR Technologies, INOX India, Shakti Pumps, Shaily Engineering, VA Tech Wabag (water), Aeroflex Industries |
 
 **Boundary note**: companies that *make equipment for* the power sector belong here; companies that
 *generate or sell* power belong in `power-energy.md`. A transformer maker is an order-book business with
@@ -128,6 +128,21 @@ An order book is not one thing. For businesses serving government and public-sec
 mostly nominated and the other mostly bid, and a shift in the mix changes forward margin without any
 change in order intake. A move away from nomination toward competitive bidding is a **structural margin
 event** and is usually announced long before it shows in results.
+
+### Who is actually buying — the demand driver decides the multiple
+
+Order books in this sector come from distinct end markets, and **which one is growing changes how the
+same company is valued**. Housing and construction demand is steady and cyclical; power transmission
+demand follows grid capex; **data-centre and AI build-out is the newest, and it re-rates suppliers
+fastest** because a single hyperscaler order can be large relative to the existing book and lands with
+multi-year visibility.
+
+- **Name the end market behind an order win**, and say what share of the book it represents. A large
+  order from a new end market is both the growth case and the concentration risk.
+- **A re-rating on one order is a bet on repeatability.** Ask whether the customer is likely to reorder,
+  whether the capability is hard to replicate, and what the book looks like without that order.
+- **Multi-year orders spread across future periods** — check the execution schedule before reading an
+  announced value as near-term revenue.
 
 ### What goes wrong, and the tell
 

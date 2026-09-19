@@ -12,7 +12,7 @@ drops through to profit at a rate rarely seen elsewhere.
 
 | Category | What it is | Examples |
 |---|---|---|
-| **Exchange** | Matches trades; earns transaction charges on turnover | BSE, MCX |
+| **Exchange** | Matches trades; earns transaction charges on turnover | BSE, MCX, NSE |
 | **Depository** | Holds securities in dematerialised form; earns on accounts, transactions and issuer fees | CDSL, NSDL |
 | **RTA (Registrar & Transfer Agent)** | Recordkeeping for mutual funds and issuers; earns fees on AUM serviced | CAMS, KFintech |
 | **Broker** | Executes trades for clients; brokerage plus float and margin-funding income | Angel One, Groww |
@@ -158,6 +158,32 @@ Three consequences for reading one:
 **Co-investment is a capital commitment, not a use of proceeds.** A manager putting its own money into
 its funds — "skin in the game" — is meeting an obligation investors require, so treat it as capital tied
 up rather than as growth spending.
+
+### An exchange's revenue lines, and where the margin sits
+
+**Transaction charges are the largest line and the most exposed.** They scale with turnover and are
+**set under regulatory scrutiny**, so a fee revision by the regulator can cut the biggest revenue line
+without anything changing in the market itself.
+
+Around it sits a **high-margin tail** that rides on the same trade flow at close to zero incremental
+cost: clearing, market data, index licensing, listing fees, and technology or **colocation** services
+sold to members. Because these scale off flow the exchange already carries, **operating leverage is
+extreme** — incremental revenue reaches profit almost intact.
+
+**Derivatives are the most profitable line and the most regulator-sensitive.** Options premium turnover
+carries the richest economics and is exactly where rule changes land — position limits, lot sizes,
+expiry-day rules — so a single regulatory circular can dent group earnings within a quarter. Treat
+derivatives concentration as a risk measure, not just a growth engine.
+
+**An exchange cannot list on itself.** Ownership and self-listing norms prevent it, so an exchange that
+goes public lists on a rival. Two consequences worth stating: the listing venue is a competitor, and
+**the incumbent listed exchange loses its scarcity premium** when a second pure-play arrives — its
+multiple can compress on the announcement alone, with nothing changed in its business.
+
+For analysis: **ask for the split between transaction charges and the tail.** A business with a larger
+non-transaction tail is less exposed to both a fee cut and a quiet market. And where an exchange's
+technology services have previously drawn regulatory action, treat that history as part of the risk
+picture rather than a closed matter.
 
 ### What goes wrong, and the tell
 

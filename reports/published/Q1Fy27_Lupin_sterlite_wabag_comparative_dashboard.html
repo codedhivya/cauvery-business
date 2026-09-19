@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three Stock Stories</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    color-scheme: light;
+    --bg:#ffffff;
+    --surface:#fbfaf7;
+    --surface-2:#f3efe6;
+    --border:#e6e1d4;
+    --border-strong:#d8d1c1;
+    --ink:#18140f;
+    --ink-2:#565046;
+    --muted:#8a8375;
+    --accent:#ea6c1f;
+    --accent-ink:#ffffff;
+    --accent-soft:#fdeade;
+    --accent-soft-border:#f6cca4;
+    --c-lupin:#2a78d6;
+    --c-sterlite:#1baf7a;
+    --c-wabag:#6a4ec9;
+    --good:#0ca30c;
+    --bad:#d03b3b;
+    --warn:#b3790a;
+    --shadow: 0 1px 2px rgba(24,20,15,0.04), 0 6px 20px rgba(24,20,15,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#141210;
+      --surface:#1c1915;
+      --surface-2:#25211a;
+      --border:#38332a;
+      --border-strong:#463f33;
+      --ink:#f7f4ee;
+      --ink-2:#cac3b3;
+      --muted:#968f7d;
+      --accent:#f38a3c;
+      --accent-ink:#1a1108;
+      --accent-soft:#3a2a18;
+      --accent-soft-border:#5a4020;
+      --c-lupin:#4d95ea;
+      --c-sterlite:#2fcf95;
+      --c-wabag:#9a86e6;
+      --good:#3fc23f;
+      --bad:#e8716f;
+      --warn:#e0aa3c;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#141210;
+    --surface:#1c1915;
+    --surface-2:#25211a;
+    --border:#38332a;
+    --border-strong:#463f33;
+    --ink:#f7f4ee;
+    --ink-2:#cac3b3;
+    --muted:#968f7d;
+    --accent:#f38a3c;
+    --accent-ink:#1a1108;
+    --accent-soft:#3a2a18;
+    --accent-soft-border:#5a4020;
+    --c-lupin:#4d95ea;
+    --c-sterlite:#2fcf95;
+    --c-wabag:#9a86e6;
+    --good:#3fc23f;
+    --bad:#e8716f;
+    --warn:#e0aa3c;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .ta{ font-family:'Noto Sans Tamil','Inter',sans-serif; }
+  [hidden]{ display:none !important; }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:20px 20px 80px; }
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    gap:16px; flex-wrap:wrap; padding-bottom:18px; margin-bottom:6px;
+    border-bottom:1px solid var(--border);
+  }
+  .brandline{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  h1.title{
+    font-family:'Fraunces',serif; font-weight:700; font-size:clamp(28px,4vw,42px);
+    line-height:1.05; margin:0; letter-spacing:-0.01em; text-wrap:balance;
+  }
+  .subtitle{ color:var(--ink-2); font-size:15px; margin-top:8px; max-width:640px; line-height:1.5;}
+  .asof{ color:var(--muted); font-size:12.5px; margin-top:10px; }
+  .langbar{ display:flex; gap:6px; flex-shrink:0; }
+  .langbtn{
+    font-family:inherit; font-size:13.5px; font-weight:700; padding:8px 14px;
+    border-radius:999px; border:1.5px solid var(--border-strong); background:var(--surface);
+    color:var(--ink-2); cursor:pointer;
+  }
+  .langbtn[aria-pressed="true"]{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+  .langbtn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ---------- Tabs ---------- */
+  nav.tabs{
+    display:flex; gap:4px; margin:22px 0 24px; border-bottom:2px solid var(--border);
+    overflow-x:auto;
+  }
+  .tabbtn{
+    font-family:inherit; font-size:15px; font-weight:700; color:var(--ink-2);
+    background:none; border:none; padding:11px 16px; cursor:pointer; white-space:nowrap;
+    border-bottom:3px solid transparent; margin-bottom:-2px;
+  }
+  .tabbtn.active{ color:var(--ink); border-bottom-color:var(--accent); }
+  .tabbtn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .tabpanel[hidden]{ display:none; }
+
+  /* ---------- Cards / stat tiles ---------- */
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:760px){ .grid3{ grid-template-columns:1fr; } }
+
+  .stat-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:18px; box-shadow:var(--shadow);
+    border-top:4px solid var(--c);
+  }
+  .stat-card.lupin{ --c:var(--c-lupin); }
+  .stat-card.sterlite{ --c:var(--c-sterlite); }
+  .stat-card.wabag{ --c:var(--c-wabag); }
+
+  .stat-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .stat-name{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; }
+  .stat-tag{
+    font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px;
+    background:var(--accent-soft); border:1px solid var(--accent-soft-border); color:var(--ink);
+    white-space:nowrap;
+  }
+  .stat-price{ font-family:'Fraunces',serif; font-weight:800; font-size:30px; margin-top:10px; font-variant-numeric:tabular-nums;}
+  .stat-delta{ display:inline-flex; align-items:center; gap:5px; font-weight:700; font-size:14px; margin-left:8px; }
+  .stat-delta.up{ color:var(--good); }
+  .stat-delta.down{ color:var(--bad); }
+  .stat-row{ display:flex; justify-content:space-between; font-size:13px; color:var(--ink-2); margin-top:6px; }
+  .stat-row b{ color:var(--ink); font-variant-numeric:tabular-nums; }
+  .stat-reason{ font-size:13px; color:var(--ink-2); margin-top:12px; padding-top:10px; border-top:1px solid var(--border); line-height:1.45;}
+
+  section.block{ margin:34px 0; }
+  h2.sec-title{
+    font-family:'Fraunces',serif; font-weight:700; font-size:22px; margin:0 0 4px;
+  }
+  .sec-desc{ color:var(--ink-2); font-size:14px; margin-bottom:14px; }
+
+  /* ---------- Table ---------- */
+  .tblwrap{ overflow-x:auto; border:1px solid var(--border); border-radius:10px; }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:560px; }
+  thead th{
+    text-align:left; background:var(--surface-2); color:var(--ink-2); font-weight:700;
+    font-size:12px; text-transform:uppercase; letter-spacing:0.03em; padding:10px 12px;
+    border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{ padding:10px 12px; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody td:first-child{ font-weight:700; color:var(--ink); font-variant-numeric:normal; }
+  tbody tr:nth-child(even){ background:var(--surface); }
+  .num{ text-align:right; }
+  .pos{ color:var(--good); font-weight:700; }
+  .neg{ color:var(--bad); font-weight:700; }
+
+  /* ---------- Bar chart ---------- */
+  .chartcard{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px 8px; box-shadow:var(--shadow); }
+  .barrow{ display:grid; grid-template-columns:130px 1fr 74px; align-items:center; gap:10px; margin:14px 0; }
+  .barrow .lbl{ font-size:13px; font-weight:700; }
+  .bartrack{ background:var(--surface-2); border-radius:6px; height:20px; overflow:hidden; }
+  .barfill{ height:100%; border-radius:6px; display:flex; align-items:center; }
+  .barval{ font-size:13.5px; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+  .chart-axis{ display:grid; grid-template-columns:130px 1fr 74px; font-size:11px; color:var(--muted); margin-top:2px;}
+  .chart-axis .ax{ grid-column:2; display:flex; justify-content:space-between; }
+
+  /* ---------- Companies tab ---------- */
+  .company-pills{ display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+  .pill{
+    font-family:inherit; font-weight:700; font-size:14px; padding:10px 16px; border-radius:10px;
+    border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink-2); cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+  }
+  .pill .dot{ width:9px; height:9px; border-radius:50%; background:var(--dotc); }
+  .pill.active{ background:var(--surface-2); color:var(--ink); border-color:var(--ink); }
+  .pill:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .company-view[hidden]{ display:none; }
+  .co-header{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;
+    padding-bottom:16px; border-bottom:2px solid var(--co); margin-bottom:20px;
+  }
+  .co-name{ font-family:'Fraunces',serif; font-weight:800; font-size:26px; }
+  .co-ticker{ color:var(--muted); font-size:13px; margin-top:4px; }
+  .co-desc{ color:var(--ink-2); font-size:14px; margin-top:6px; max-width:560px; }
+  .co-price-badge{ text-align:right; }
+  .co-price{ font-family:'Fraunces',serif; font-weight:800; font-size:26px; font-variant-numeric:tabular-nums; }
+
+  ul.bullets{ margin:0; padding:0; list-style:none; }
+  ul.bullets li{
+    position:relative; padding-left:20px; margin:9px 0; font-size:14.5px; line-height:1.5; color:var(--ink);
+  }
+  ul.bullets li::before{
+    content:''; position:absolute; left:0; top:8px; width:7px; height:7px; border-radius:50%;
+    background:var(--co, var(--accent));
+  }
+
+  .verdict{
+    margin-top:14px; padding:12px 14px; border-radius:9px; background:var(--surface); border:1px dashed var(--border-strong);
+    font-size:13.5px; color:var(--ink-2); line-height:1.5;
+  }
+  .verdict b{ color:var(--ink); }
+
+  /* Reasons tab */
+  .reason-block{
+    border:1px solid var(--border); border-left:5px solid var(--co); border-radius:10px; padding:20px 22px;
+    margin-bottom:22px; background:var(--surface);
+  }
+  .reason-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:6px;}
+  .reason-title{ font-family:'Fraunces',serif; font-weight:700; font-size:20px; }
+  .reason-what{ font-size:13.5px; font-weight:600; color:var(--ink-2); margin-bottom:12px;}
+
+  footer.sources{ margin-top:50px; padding-top:18px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); line-height:1.7; }
+  footer.sources a{ color:var(--ink-2); }
+
+  /* ---------- Cauvery Assist (accordion) ---------- */
+  details.qa{
+    border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-bottom:10px;
+    background:var(--surface);
+  }
+  details.qa summary{
+    cursor:pointer; font-weight:700; font-size:15px; list-style:none; display:flex;
+    justify-content:space-between; align-items:center; gap:12px; color:var(--ink);
+  }
+  details.qa summary::-webkit-details-marker{ display:none; }
+  details.qa summary::after{ content:'+'; font-size:20px; color:var(--accent); flex-shrink:0; font-weight:400; }
+  details.qa[open] summary::after{ content:'\2212'; }
+  details.qa[open] summary{ margin-bottom:10px; }
+  .qa-answer{ font-size:14px; color:var(--ink-2); line-height:1.6; padding-top:10px; border-top:1px solid var(--border); }
+
+  /* ---------- Cauvery Socrates (quiz) ---------- */
+  .quiz-score{
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;
+    padding:13px 18px; background:var(--accent-soft); border:1px solid var(--accent-soft-border);
+    border-radius:10px; font-weight:700; font-size:14.5px; flex-wrap:wrap; gap:10px;
+  }
+  .quiz-q{ border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:14px; background:var(--surface); }
+  .quiz-question{ font-weight:700; font-size:15px; margin-bottom:12px; line-height:1.4; }
+  .quiz-options{ display:grid; gap:8px; }
+  .quiz-opt{
+    text-align:left; font-family:inherit; font-size:14px; padding:10px 13px; border-radius:8px;
+    border:1.5px solid var(--border-strong); background:var(--bg); cursor:pointer; color:var(--ink);
+  }
+  .quiz-opt:hover:not(:disabled){ background:var(--surface-2); }
+  .quiz-opt:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .quiz-opt.correct{ border-color:var(--good); color:var(--good); background:color-mix(in srgb, var(--good) 14%, transparent); font-weight:700; }
+  .quiz-opt.incorrect{ border-color:var(--bad); color:var(--bad); background:color-mix(in srgb, var(--bad) 12%, transparent); font-weight:700; }
+  .quiz-opt:disabled{ cursor:default; opacity:0.92; }
+  .quiz-explain{ margin-top:10px; font-size:13px; color:var(--ink-2); padding-top:10px; border-top:1px dashed var(--border); line-height:1.5; }
+
+  /* ---------- CB disclaimer badge ---------- */
+  .cb-badge{
+    position:fixed; bottom:18px; right:18px; width:42px; height:42px; border-radius:50%;
+    background:var(--accent); color:var(--accent-ink); font-family:'Fraunces',serif; font-weight:800;
+    font-size:14px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 3px 10px rgba(0,0,0,0.25); z-index:1000; border:none;
+    animation: cbpulse 2.4s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .cb-badge{ animation:none; } }
+  @keyframes cbpulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+  .cb-panel{
+    position:fixed; bottom:68px; right:18px; width:min(320px, calc(100vw - 36px)); background:var(--surface);
+    border:1px solid var(--border-strong); border-radius:12px; padding:14px 16px; font-size:12px; color:var(--ink-2);
+    line-height:1.55; box-shadow:var(--shadow); z-index:1000;
+  }
+  .cb-panel[hidden]{ display:none; }
+  .cb-panel b{ color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brandline">
+      <div>
+        <h1 class="title">
+          <span class="i18n en">Three Stock Stories</span>
+          <span class="i18n ta" hidden>மூன்று பங்கு கதைகள்</span>
+        </h1>
+        <div class="subtitle i18n en">Why Lupin fell, why Sterlite Technologies and VA Tech Wabag flew — business models, segments, financials, valuations and the real triggers behind each move.</div>
+        <div class="subtitle i18n ta" hidden>ஏன் லூபின் விழுந்தது, ஏன் ஸ்டெர்லைட் டெக்னாலஜீஸ் மற்றும் வி.ஏ. டெக் வாபாக் பறந்தன — வணிக மாதிரிகள், பிரிவுகள், நிதிநிலைகள், மதிப்பீடுகள் மற்றும் ஒவ்வொரு நிகர்வுக்கும் பின்னால் உள்ள உண்மையான காரணங்கள்.</div>
+        <div class="asof">
+          <span class="i18n en">Data as of 11–12 September 2026 (NSE/BSE) · Educational analysis — not investment advice</span>
+          <span class="i18n ta" hidden>தரவு செப்டம்பர் 11–12, 2026 (NSE/BSE) நிலவரப்படி · கல்வி நோக்கிலான பகுப்பாய்வு — முதலீட்டு ஆலோசனை அல்ல</span>
+        </div>
+      </div>
+    </div>
+    <div class="langbar" role="group" aria-label="Language">
+      <button class="langbtn" data-lang="en" aria-pressed="true" onclick="setLang('en')">English</button>
+      <button class="langbtn" data-lang="ta" aria-pressed="false" onclick="setLang('ta')">தமிழ்</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tabbtn active" data-tab="dashboard" onclick="showTab('dashboard')">
+      <span class="i18n en">Dashboard</span><span class="i18n ta" hidden>டாஷ்போர்டு</span>
+    </button>
+    <button class="tabbtn" data-tab="companies" onclick="showTab('companies')">
+      <span class="i18n en">Companies</span><span class="i18n ta" hidden>நிறுவனங்கள்</span>
+    </button>
+    <button class="tabbtn" data-tab="reasons" onclick="showTab('reasons')">
+      <span class="i18n en">Reasons for the Rise &amp; Fall</span><span class="i18n ta" hidden>உயர்வு/வீழ்ச்சிக்கான காரணங்கள்</span>
+    </button>
+    <button class="tabbtn" data-tab="risks" onclick="showTab('risks')">
+      <span class="i18n en">Risks</span><span class="i18n ta" hidden>ஆபத்துகள்</span>
+    </button>
+    <button class="tabbtn" data-tab="assist" onclick="showTab('assist')">
+      <span class="i18n en">Cauvery Assist</span><span class="i18n ta" hidden>Cauvery Assist</span>
+    </button>
+    <button class="tabbtn" data-tab="socrates" onclick="showTab('socrates')">
+      <span class="i18n en">Cauvery Socrates</span><span class="i18n ta" hidden>Cauvery Socrates</span>
+    </button>
+  </nav>
+
+  <!-- ===================== DASHBOARD TAB ===================== -->
+  <div class="tabpanel" id="tab-dashboard" role="tabpanel">
+
+    <div class="grid3">
+      <div class="stat-card lupin">
+        <div class="stat-head">
+          <div class="stat-name"><span class="i18n en">Lupin</span><span class="i18n ta" hidden>லூபின்</span></div>
+          <div class="stat-tag"><span class="i18n en">Correcting from highs</span><span class="i18n ta" hidden>உச்சத்திலிருந்து திருத்தம்</span></div>
+        </div>
+        <div class="stat-price">₹2,096 <span class="stat-delta down">▼ 17.2%<span class="i18n en"> vs 52-wk high</span><span class="i18n ta" hidden> 52-வார உச்சத்திலிருந்து</span></span></div>
+        <div class="stat-row"><span class="i18n en">52-wk range</span><span class="i18n ta" hidden>52-வார வரம்பு</span><b>₹1,875 – ₹2,530</b></div>
+        <div class="stat-row"><span class="i18n en">1-year change</span><span class="i18n ta" hidden>1 ஆண்டு மாற்றம்</span><b>+12.8%</b></div>
+        <div class="stat-row"><span class="i18n en">Market cap</span><span class="i18n ta" hidden>சந்தை மதிப்பு</span><b>₹95,843 Cr</b></div>
+        <div class="stat-row"><span class="i18n en">P/E (TTM)</span><span class="i18n ta" hidden>P/E (TTM)</span><b>16.1x</b></div>
+        <div class="stat-reason">
+          <span class="i18n en">US Tolvaptan/Mirabegron competition intensifying; FY27 US sales guidance cut sharply.</span>
+          <span class="i18n ta" hidden>அமெரிக்காவில் Tolvaptan/Mirabegron போட்டி தீவிரமடைகிறது; FY27 அமெரிக்க விற்பனை வழிகாட்டுதல் கடுமையாக குறைக்கப்பட்டது.</span>
+        </div>
+      </div>
+
+      <div class="stat-card sterlite">
+        <div class="stat-head">
+          <div class="stat-name"><span class="i18n en">Sterlite Tech</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்</span></div>
+          <div class="stat-tag"><span class="i18n en">AI data-centre re-rating</span><span class="i18n ta" hidden>AI டேட்டா சென்டர் மறு-மதிப்பீடு</span></div>
+        </div>
+        <div class="stat-price">₹897 <span class="stat-delta up">▲ <span class="i18n en">At fresh 52-wk high</span><span class="i18n ta" hidden>புதிய 52-வார உச்சத்தில்</span></span></div>
+        <div class="stat-row"><span class="i18n en">52-wk range</span><span class="i18n ta" hidden>52-வார வரம்பு</span><b>₹84.65 – ₹897</b></div>
+        <div class="stat-row"><span class="i18n en">1-year change</span><span class="i18n ta" hidden>1 ஆண்டு மாற்றம்</span><b>+500%+</b></div>
+        <div class="stat-row"><span class="i18n en">Market cap</span><span class="i18n ta" hidden>சந்தை மதிப்பு</span><b>₹46,132 Cr</b></div>
+        <div class="stat-row"><span class="i18n en">P/E (TTM)</span><span class="i18n ta" hidden>P/E (TTM)</span><b>~195x*</b></div>
+        <div class="stat-reason">
+          <span class="i18n en">₹10,000 Cr hyperscaler AI order (FY27–29); return to profit; "Lakshya" FY29 targets re-rated the stock.</span>
+          <span class="i18n ta" hidden>₹10,000 கோடி hyperscaler AI ஆர்டர் (FY27–29); இலாபத்திற்கு திரும்பியது; "Lakshya" FY29 இலக்குகள் பங்கை மறு-மதிப்பீடு செய்தன.</span>
+        </div>
+      </div>
+
+      <div class="stat-card wabag">
+        <div class="stat-head">
+          <div class="stat-name"><span class="i18n en">VA Tech Wabag</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக்</span></div>
+          <div class="stat-tag"><span class="i18n en">Record order book, Kuwait win</span><span class="i18n ta" hidden>சாதனை ஆர்டர் புத்தகம், குவைத் வெற்றி</span></div>
+        </div>
+        <div class="stat-price">₹2,278 <span class="stat-delta up">▲ <span class="i18n en">At fresh 52-wk high</span><span class="i18n ta" hidden>புதிய 52-வார உச்சத்தில்</span></span></div>
+        <div class="stat-row"><span class="i18n en">52-wk range</span><span class="i18n ta" hidden>52-வார வரம்பு</span><b>₹1,034 – ₹2,278</b></div>
+        <div class="stat-row"><span class="i18n en">1-year change</span><span class="i18n ta" hidden>1 ஆண்டு மாற்றம்</span><b>+41.3%</b></div>
+        <div class="stat-row"><span class="i18n en">Market cap</span><span class="i18n ta" hidden>சந்தை மதிப்பு</span><b>₹14,244 Cr</b></div>
+        <div class="stat-row"><span class="i18n en">P/E (TTM)</span><span class="i18n ta" hidden>P/E (TTM)</span><b>35.8x</b></div>
+        <div class="stat-reason">
+          <span class="i18n en">Order book at all-time high ₹19,400 Cr; Kuwait desalination win; DIIs tripled their stake.</span>
+          <span class="i18n ta" hidden>ஆர்டர் புத்தகம் சாதனை உயரம் ₹19,400 கோடி; குவைத் டிசாலினேஷன் வெற்றி; DII பங்கு மூன்று மடங்கு உயர்ந்தது.</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:var(--muted);margin-top:6px;">
+      <span class="i18n en">*Sterlite's P/E is on a very thin FY26 earnings base and moves sharply with price — not very meaningful in isolation. Prices are volatile, multi-source snapshots as of 9–11 Sep 2026.</span>
+      <span class="i18n ta" hidden>*ஸ்டெர்லைட்டின் P/E மிகக் குறைந்த FY26 லாப அடிப்படையில் உள்ளது, விலையுடன் கூர்மையாக மாறுகிறது — தனித்து பொருள் குறைவு. விலைகள் நிலையற்றவை; செப் 9–11, 2026 நிலவரப்படியான பல மூல தரவுகள்.</span>
+    </div>
+
+    <section class="block">
+      <h2 class="sec-title"><span class="i18n en">At a Glance</span><span class="i18n ta" hidden>ஒரு பார்வையில்</span></h2>
+      <div class="sec-desc"><span class="i18n en">Key numbers side by side, as of 11 Sep 2026</span><span class="i18n ta" hidden>முக்கிய எண்கள் ஒப்பிட்டு, செப் 11, 2026 நிலவரப்படி</span></div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr>
+            <th><span class="i18n en">Company</span><span class="i18n ta" hidden>நிறுவனம்</span></th>
+            <th class="num"><span class="i18n en">CMP (₹)</span><span class="i18n ta" hidden>CMP (₹)</span></th>
+            <th class="num"><span class="i18n en">52-Wk Range</span><span class="i18n ta" hidden>52-வார வரம்பு</span></th>
+            <th class="num"><span class="i18n en">vs 52-Wk High</span><span class="i18n ta" hidden>52-வார உச்சத்திலிருந்து</span></th>
+            <th class="num"><span class="i18n en">1Y Change</span><span class="i18n ta" hidden>1 ஆண்டு மாற்றம்</span></th>
+            <th class="num"><span class="i18n en">Mkt Cap (₹Cr)</span><span class="i18n ta" hidden>சந்தை மதிப்பு (₹Cr)</span></th>
+            <th class="num">P/E</th>
+            <th class="num">ROCE</th>
+            <th class="num">ROE</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><span class="i18n en">Lupin</span><span class="i18n ta" hidden>லூபின்</span></td><td class="num">2,096</td><td class="num">1,875–2,530</td><td class="num neg">−17.2%</td><td class="num">+12.8%</td><td class="num">95,843</td><td class="num">16.1x</td><td class="num">29.9%</td><td class="num">28.7%</td></tr>
+            <tr><td><span class="i18n en">Sterlite Tech</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்</span></td><td class="num">897</td><td class="num">84.65–897</td><td class="num pos"><span class="i18n en">At high</span><span class="i18n ta" hidden>உச்சத்தில்</span></td><td class="num">+500%+</td><td class="num">46,132</td><td class="num">~195x</td><td class="num">7.65%</td><td class="num">1.24%</td></tr>
+            <tr><td><span class="i18n en">VA Tech Wabag</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக்</span></td><td class="num">2,278</td><td class="num">1,034–2,278</td><td class="num pos"><span class="i18n en">At high</span><span class="i18n ta" hidden>உச்சத்தில்</span></td><td class="num">+41.3%</td><td class="num">14,244</td><td class="num">35.8x</td><td class="num">21.3%</td><td class="num">15.9%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="grid3" style="grid-template-columns:1fr 1fr;">
+        <div class="chartcard">
+          <h2 class="sec-title" style="font-size:17px;"><span class="i18n en">Market Capitalisation (₹ Cr)</span><span class="i18n ta" hidden>சந்தை மதிப்பு (₹ கோடி)</span></h2>
+          <div class="barrow"><div class="lbl">Lupin</div><div class="bartrack"><div class="barfill" style="width:100%;background:var(--c-lupin);"></div></div><div class="barval">95,843</div></div>
+          <div class="barrow"><div class="lbl">Sterlite Tech</div><div class="bartrack"><div class="barfill" style="width:48.1%;background:var(--c-sterlite);"></div></div><div class="barval">46,132</div></div>
+          <div class="barrow"><div class="lbl">VA Tech Wabag</div><div class="bartrack"><div class="barfill" style="width:14.9%;background:var(--c-wabag);"></div></div><div class="barval">14,244</div></div>
+        </div>
+        <div class="chartcard">
+          <h2 class="sec-title" style="font-size:17px;">ROE (%) <span style="font-size:12px;font-weight:400;color:var(--muted);">— <span class="i18n en">quality of returns</span><span class="i18n ta" hidden>வருமான தரம்</span></span></h2>
+          <div class="barrow"><div class="lbl">Lupin</div><div class="bartrack"><div class="barfill" style="width:100%;background:var(--c-lupin);"></div></div><div class="barval">28.7%</div></div>
+          <div class="barrow"><div class="lbl">Sterlite Tech</div><div class="bartrack"><div class="barfill" style="width:4.3%;background:var(--c-sterlite);"></div></div><div class="barval">1.24%</div></div>
+          <div class="barrow"><div class="lbl">VA Tech Wabag</div><div class="bartrack"><div class="barfill" style="width:55.4%;background:var(--c-wabag);"></div></div><div class="barval">15.9%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 class="sec-title"><span class="i18n en">The Big Picture</span><span class="i18n ta" hidden>பெரிய படம்</span></h2>
+      <ul class="bullets">
+        <li><span class="i18n en"><b>Lupin</b> — a pharma bellwether correcting on near-term US generics competition; the underlying business (₹5,355 Cr FY26 profit, 3rd-largest US generics player) is not broken.</span>
+            <span class="i18n ta" hidden><b>லூபின்</b> — அமெரிக்க ஜெனரிக் போட்டியால் தற்காலிகமாக திருத்தப்படும் ஒரு முன்னணி மருந்து நிறுவனம்; அடிப்படை வணிகம் (FY26 இல் ₹5,355 கோடி லாபம், அமெரிக்காவில் 3வது பெரிய ஜெனரிக் நிறுவனம்) உடைந்துவிடவில்லை.</span></li>
+        <li><span class="i18n en"><b>Sterlite Technologies</b> — a debt-scarred fibre maker re-rated almost overnight by one mega AI order; priced today for years of flawless execution.</span>
+            <span class="i18n ta" hidden><b>ஸ்டெர்லைட் டெக்னாலஜீஸ்</b> — ஒரு பெரிய AI ஆர்டரால் ஒரே இரவில் என்னும் அளவில் மறு-மதிப்பீடு செய்யப்பட்ட கடன் சுமை நிறைந்த ஃபைபர் நிறுவனம்; இன்று பல ஆண்டுகால குறையற்ற செயலாக்கத்தை எதிர்பார்த்து விலை நிர்ணயிக்கப்பட்டுள்ளது.</span></li>
+        <li><span class="i18n en"><b>VA Tech Wabag</b> — the quiet compounder; steady order-book growth, margin expansion and a debt-free balance sheet, not a single headline event.</span>
+            <span class="i18n ta" hidden><b>வி.ஏ. டெக் வாபாக்</b> — மெதுவாக, நிலையாக வளரும் நிறுவனம்; ஒரே செய்தியால் அல்ல, நிலையான ஆர்டர் புத்தக வளர்ச்சி, லாப அளவீட்டு உயர்வு மற்றும் கடன் இல்லாத இருப்புநிலைக் குறிப்பால் இயங்குகிறது.</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- ===================== COMPANIES TAB ===================== -->
+  <div class="tabpanel" id="tab-companies" role="tabpanel" hidden>
+
+    <div class="company-pills">
+      <button class="pill active" data-co="lupin" style="--dotc:var(--c-lupin);" onclick="showCo('lupin')"><span class="dot"></span><span class="i18n en">Lupin</span><span class="i18n ta" hidden>லூபின்</span></button>
+      <button class="pill" data-co="sterlite" style="--dotc:var(--c-sterlite);" onclick="showCo('sterlite')"><span class="dot"></span><span class="i18n en">Sterlite Technologies</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்னாலஜீஸ்</span></button>
+      <button class="pill" data-co="wabag" style="--dotc:var(--c-wabag);" onclick="showCo('wabag')"><span class="dot"></span><span class="i18n en">VA Tech Wabag</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக்</span></button>
+    </div>
+
+    <!-- ---------- LUPIN ---------- -->
+    <div class="company-view" id="co-lupin" style="--co:var(--c-lupin);">
+      <div class="co-header">
+        <div>
+          <div class="co-name"><span class="i18n en">Lupin Limited</span><span class="i18n ta" hidden>லூபின் லிமிடெட்</span></div>
+          <div class="co-ticker">NSE: LUPIN · BSE: 500257</div>
+          <div class="co-desc">
+            <span class="i18n en">India's 3rd-largest pharma company by US prescriptions; branded formulations, complex generics, biosimilars &amp; APIs.</span>
+            <span class="i18n ta" hidden>அமெரிக்க மருந்துச்சீட்டுகளில் இந்தியாவின் 3வது பெரிய மருந்து நிறுவனம்; பிராண்டட் ஃபார்முலேஷன்கள், சிக்கலான ஜெனரிக்குகள், பயோசிமிலர்கள் &amp; APIகள்.</span>
+          </div>
+        </div>
+        <div class="co-price-badge">
+          <div class="co-price">₹2,096</div>
+          <div style="font-size:12px;color:var(--muted);"><span class="i18n en">as of 11 Sep 2026</span><span class="i18n ta" hidden>செப் 11, 2026 நிலவரப்படி</span></div>
+        </div>
+      </div>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Business Model</span><span class="i18n ta" hidden>வணிக மாதிரி</span></h2>
+        <ul class="bullets">
+          <li><span class="i18n en">Global pharma company: branded formulations, complex generics, biosimilars and active pharmaceutical ingredients (APIs)</span><span class="i18n ta" hidden>உலகளாவிய மருந்து நிறுவனம்: பிராண்டட் ஃபார்முலேஷன்கள், சிக்கலான ஜெனரிக்குகள், பயோசிமிலர்கள் மற்றும் APIகள்</span></li>
+          <li><span class="i18n en">3rd-largest player in the US by both generic and total prescriptions; 8th-largest in India</span><span class="i18n ta" hidden>அமெரிக்காவில் ஜெனரிக் மற்றும் மொத்த மருந்துச்சீட்டுகளில் 3வது பெரிய நிறுவனம்; இந்தியாவில் 8வது பெரியது</span></li>
+          <li><span class="i18n en">151 generic products sold in the US; market leader in 61 of them</span><span class="i18n ta" hidden>அமெரிக்காவில் 151 ஜெனரிக் தயாரிப்புகள் விற்பனை; 61 தயாரிப்புகளில் சந்தை முன்னணி</span></li>
+          <li><span class="i18n en">R&amp;D-heavy (7.5% of sales) focus on complex, hard-to-replicate generics — inhalation, injectables, biosimilars</span><span class="i18n ta" hidden>விற்பனையில் 7.5% R&amp;D-க்கு — இன்ஹேலேஷன், இன்ஜெக்டபிள்ஸ், பயோசிமிலர்கள் போன்ற சிக்கலான ஜெனரிக்குகளில் கவனம்</span></li>
+          <li><span class="i18n en">344 FDA approvals and 430 cumulative ANDA filings show regulatory depth</span><span class="i18n ta" hidden>344 FDA ஒப்புதல்கள் மற்றும் 430 ANDA விண்ணப்பங்கள் ஒழுங்குமுறை ஆழத்தை காட்டுகின்றன</span></li>
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Segments (Geography, FY26)</span><span class="i18n ta" hidden>பிரிவுகள் (நிலவியல், FY26)</span></h2>
+        <div class="tblwrap"><table>
+          <thead><tr><th><span class="i18n en">Geography</span><span class="i18n ta" hidden>நிலவியல்</span></th><th class="num"><span class="i18n en">FY26 Revenue (₹Cr)</span><span class="i18n ta" hidden>FY26 வருவாய் (₹Cr)</span></th><th class="num"><span class="i18n en">YoY Growth</span><span class="i18n ta" hidden>ஆண்டு வளர்ச்சி</span></th><th class="num"><span class="i18n en">% of Total</span><span class="i18n ta" hidden>மொத்தத்தில் %</span></th></tr></thead>
+          <tbody>
+            <tr><td><span class="i18n en">U.S.</span><span class="i18n ta" hidden>அமெரிக்கா</span></td><td class="num">11,678</td><td class="num pos">+46.0%</td><td class="num">42.5%</td></tr>
+            <tr><td><span class="i18n en">India</span><span class="i18n ta" hidden>இந்தியா</span></td><td class="num">8,114</td><td class="num pos">+7.1%</td><td class="num">29.5%</td></tr>
+            <tr><td><span class="i18n en">Emerging Markets</span><span class="i18n ta" hidden>வளர்ந்துவரும் சந்தைகள்</span></td><td class="num">3,483</td><td class="num pos">+35.2%</td><td class="num">12.7%</td></tr>
+            <tr><td><span class="i18n en">Other Developed Markets</span><span class="i18n ta" hidden>மற்ற வளர்ந்த சந்தைகள்</span></td><td class="num">3,244</td><td class="num pos">+13.3%</td><td class="num">11.8%</td></tr>
+            <tr><td><span class="i18n en">API Business</span><span class="i18n ta" hidden>API வணிகம்</span></td><td class="num">969</td><td class="num neg">−17.7%</td><td class="num">3.5%</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Financials</span><span class="i18n ta" hidden>நிதிநிலைகள்</span></h2>
+        <div class="tblwrap"><table>
+          <thead><tr><th><span class="i18n en">Metric</span><span class="i18n ta" hidden>அளவீடு</span></th><th class="num">FY26</th><th class="num">Q1 FY27<br/><span style="font-weight:400;">(Jun'26)</span></th></tr></thead>
+          <tbody>
+            <tr><td><span class="i18n en">Revenue (₹Cr)</span><span class="i18n ta" hidden>வருவாய் (₹Cr)</span></td><td class="num">27,958</td><td class="num">8,277</td></tr>
+            <tr><td><span class="i18n en">EBITDA Margin</span><span class="i18n ta" hidden>EBITDA அளவீடு</span></td><td class="num">33.6%</td><td class="num">30.0%</td></tr>
+            <tr><td><span class="i18n en">PAT (₹Cr)</span><span class="i18n ta" hidden>PAT (₹Cr)</span></td><td class="num">5,355</td><td class="num">1,417</td></tr>
+            <tr><td><span class="i18n en">PAT Margin</span><span class="i18n ta" hidden>PAT அளவீடு</span></td><td class="num">19.5%</td><td class="num">17.1%</td></tr>
+            <tr><td>EPS (₹)</td><td class="num">~117.2</td><td class="num">30.95</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Cash Flow &amp; Key Ratios</span><span class="i18n ta" hidden>பணப்புழக்கம் &amp; முக்கிய விகிதங்கள்</span></h2>
+        <div class="tblwrap"><table>
+          <tbody>
+            <tr><td><span class="i18n en">Operating Cash Flow</span><span class="i18n ta" hidden>இயக்க பணப்புழக்கம்</span></td><td class="num">₹7,334 Cr</td></tr>
+            <tr><td><span class="i18n en">Free Cash Flow</span><span class="i18n ta" hidden>இலவச பணப்புழக்கம்</span></td><td class="num">₹5,527 Cr</td></tr>
+            <tr><td>ROCE</td><td class="num">29.9%</td></tr>
+            <tr><td>ROE</td><td class="num">28.7%</td></tr>
+            <tr><td><span class="i18n en">Debtor Days</span><span class="i18n ta" hidden>கடன்காரர் நாட்கள்</span></td><td class="num">86</td></tr>
+            <tr><td><span class="i18n en">Inventory Days</span><span class="i18n ta" hidden>சரக்கு நாட்கள்</span></td><td class="num">303</td></tr>
+            <tr><td><span class="i18n en">Payable Days</span><span class="i18n ta" hidden>செலுத்தத்தக்க நாட்கள்</span></td><td class="num">208</td></tr>
+            <tr><td><span class="i18n en">Working Capital Days</span><span class="i18n ta" hidden>செயல்பாட்டு மூலதன நாட்கள்</span></td><td class="num">28</td></tr>
+            <tr><td><span class="i18n en">Borrowings vs Equity</span><span class="i18n ta" hidden>கடன் vs பங்கு மூலதனம்</span></td><td class="num">₹6,616 Cr / ₹22,448 Cr</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Valuations</span><span class="i18n ta" hidden>மதிப்பீடுகள்</span></h2>
+        <div class="tblwrap"><table>
+          <tbody>
+            <tr><td>CMP</td><td class="num">₹2,096</td></tr>
+            <tr><td><span class="i18n en">52-Wk Range</span><span class="i18n ta" hidden>52-வார வரம்பு</span></td><td class="num">₹1,875 – ₹2,530</td></tr>
+            <tr><td><span class="i18n en">Market Cap</span><span class="i18n ta" hidden>சந்தை மதிப்பு</span></td><td class="num">₹95,843 Cr</td></tr>
+            <tr><td>P/E (TTM)</td><td class="num">16.1x</td></tr>
+            <tr><td><span class="i18n en">Book Value</span><span class="i18n ta" hidden>புத்தக மதிப்பு</span></td><td class="num">₹491</td></tr>
+            <tr><td>P/B</td><td class="num">4.27x</td></tr>
+            <tr><td><span class="i18n en">Dividend Yield</span><span class="i18n ta" hidden>ஈவுத்தொகை விளைச்சல்</span></td><td class="num">0.87%</td></tr>
+          </tbody>
+        </table></div>
+        <div class="verdict">
+          <span class="i18n en"><b>Verdict:</b> Trading well below its 52-week-high P/E — the market has already priced in slower US growth. Downside looks limited unless Tolvaptan/Mirabegron erosion turns out worse than guided.</span>
+          <span class="i18n ta" hidden><b>முடிவு:</b> 52-வார உச்ச P/E-யிலிருந்து கணிசமாக குறைவாக வர்த்தகமாகிறது — மெதுவான அமெரிக்க வளர்ச்சி ஏற்கனவே விலையில் சேர்க்கப்பட்டுள்ளது. Tolvaptan/Mirabegron சிதைவு வழிகாட்டியதைவிட மோசமாக இல்லாவிட்டால், மேலும் வீழ்ச்சி வரையறுக்கப்பட்டதாகவே தெரிகிறது.</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- ---------- STERLITE ---------- -->
+    <div class="company-view" id="co-sterlite" style="--co:var(--c-sterlite);" hidden>
+      <div class="co-header">
+        <div>
+          <div class="co-name"><span class="i18n en">Sterlite Technologies Ltd</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்னாலஜீஸ் லிமிடெட்</span></div>
+          <div class="co-ticker">NSE: STLTECH · BSE: 532374</div>
+          <div class="co-desc">
+            <span class="i18n en">Optical fibre &amp; cable maker repositioning as an AI data-centre connectivity player.</span>
+            <span class="i18n ta" hidden>ஆப்டிகல் ஃபைபர் &amp; கேபிள் தயாரிப்பாளர், AI டேட்டா சென்டர் இணைப்பு நிறுவனமாக மாற்றமடைகிறது.</span>
+          </div>
+        </div>
+        <div class="co-price-badge">
+          <div class="co-price">₹897</div>
+          <div style="font-size:12px;color:var(--muted);"><span class="i18n en">as of 11 Sep 2026</span><span class="i18n ta" hidden>செப் 11, 2026 நிலவரப்படி</span></div>
+        </div>
+      </div>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Business Model</span><span class="i18n ta" hidden>வணிக மாதிரி</span></h2>
+        <ul class="bullets">
+          <li><span class="i18n en">Originally a telecom optical-fibre &amp; cable manufacturer for broadband/5G rollouts (India's BharatNet, global telcos)</span><span class="i18n ta" hidden>முதலில் ப்ராட்பேண்ட்/5G விரிவாக்கத்திற்கான டெலிகாம் ஆப்டிகல்-ஃபைபர் &amp; கேபிள் தயாரிப்பாளர் (இந்தியாவின் BharatNet, உலகளாவிய டெல்கோக்கள்)</span></li>
+          <li><span class="i18n en">Repositioning as an "AI infrastructure" company via its Neuralis portfolio — ultra-high-density fibre for GPU-intensive AI data centres</span><span class="i18n ta" hidden>Neuralis போர்ட்ஃபோலியோ மூலம் "AI உள்கட்டமைப்பு" நிறுவனமாக மாறுகிறது — GPU-தீவிர AI டேட்டா சென்டர்களுக்கான அதி-அடர்த்தி ஃபைபர்</span></li>
+          <li><span class="i18n en">Secured a ₹10,000 Cr (~$1.1bn) multi-year hyperscaler order for AI data-centre build-outs in the US (FY27–FY29)</span><span class="i18n ta" hidden>அமெரிக்காவில் AI டேட்டா சென்டர் கட்டமைப்புகளுக்கான ₹10,000 கோடி (~$1.1bn) பல-ஆண்டு hyperscaler ஆர்டரை பெற்றது (FY27–FY29)</span></li>
+          <li><span class="i18n en">"Lakshya" roadmap: ₹20,000 Cr revenue target by FY29 (4x FY26) at &gt;27% EBITDA margin</span><span class="i18n ta" hidden>"Lakshya" திட்டம்: FY29-க்குள் ₹20,000 கோடி வருவாய் இலக்கு (FY26-ஐ விட 4 மடங்கு) &gt;27% EBITDA அளவீட்டுடன்</span></li>
+          <li><span class="i18n en">₹3,000 Cr capex approved to expand manufacturing capacity by 50% by FY29</span><span class="i18n ta" hidden>FY29-க்குள் உற்பத்தி திறனை 50% அதிகரிக்க ₹3,000 கோடி மூலதன செலவு அங்கீகரிக்கப்பட்டது</span></li>
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Segments (FY26)</span><span class="i18n ta" hidden>பிரிவுகள் (FY26)</span></h2>
+        <div class="tblwrap"><table>
+          <thead><tr><th><span class="i18n en">Segment</span><span class="i18n ta" hidden>பிரிவு</span></th><th class="num"><span class="i18n en">FY26 Revenue (₹Cr)</span><span class="i18n ta" hidden>FY26 வருவாய் (₹Cr)</span></th><th class="num"><span class="i18n en">YoY Growth</span><span class="i18n ta" hidden>ஆண்டு வளர்ச்சி</span></th><th class="num"><span class="i18n en">% of Total</span><span class="i18n ta" hidden>மொத்தத்தில் %</span></th></tr></thead>
+          <tbody>
+            <tr><td><span class="i18n en">Optical Networking (Fibre &amp; Cable)</span><span class="i18n ta" hidden>ஆப்டிகல் நெட்வொர்க்கிங் (ஃபைபர் &amp; கேபிள்)</span></td><td class="num">4,486</td><td class="num pos">+19.9%</td><td class="num">~94.5%</td></tr>
+            <tr><td><span class="i18n en">Digital &amp; Technology Solutions</span><span class="i18n ta" hidden>டிஜிட்டல் &amp; தொழில்நுட்ப தீர்வுகள்</span></td><td class="num">284</td><td class="num neg">−2.1%</td><td class="num">~6%</td></tr>
+          </tbody>
+        </table></div>
+        <div class="sec-desc" style="margin-top:10px;">
+          <span class="i18n en">STL has effectively become an almost pure optical-fibre play — legacy digital solutions are shrinking as a share of revenue.</span>
+          <span class="i18n ta" hidden>STL நிறுவனம் கிட்டத்தட்ட முழுவதுமாக ஒரு ஆப்டிகல்-ஃபைபர் நிறுவனமாக மாறிவிட்டது — பழைய டிஜிட்டல் தீர்வுகள் வருவாயில் பங்கு குறைந்துவருகிறது.</span>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Financials</span><span class="i18n ta" hidden>நிதிநிலைகள்</span></h2>
+        <div class="tblwrap"><table>
+          <thead><tr><th><span class="i18n en">Metric</span><span class="i18n ta" hidden>அளவீடு</span></th><th class="num">FY26</th><th class="num">Q1 FY27<br/><span style="font-weight:400;">(Jun'26)</span></th></tr></thead>
+          <tbody>
+            <tr><td><span class="i18n en">Revenue (₹Cr)</span><span class="i18n ta" hidden>வருவாய் (₹Cr)</span></td><td class="num">4,745</td><td class="num">1,910</td></tr>
+            <tr><td><span class="i18n en">EBITDA (₹Cr, margin)</span><span class="i18n ta" hidden>EBITDA (₹Cr, அளவீடு)</span></td><td class="num">628 (13.2%)</td><td class="num">~382 (20%)</td></tr>
+            <tr><td><span class="i18n en">PAT (₹Cr)</span><span class="i18n ta" hidden>PAT (₹Cr)</span></td><td class="num">56</td><td class="num">197</td></tr>
+            <tr><td>EPS (₹)</td><td class="num">1.15</td><td class="num">4.04</td></tr>
+          </tbody>
+        </table></div>
+        <div class="sec-desc" style="margin-top:10px;">
+          <span class="i18n en">FY25 PAT was a loss of ₹123 Cr — FY26 marked the turn to profitability, and Q1FY27 PAT alone is already 3.5x all of FY26, showing the order ramp-up hitting the P&amp;L.</span>
+          <span class="i18n ta" hidden>FY25 PAT ₹123 கோடி நஷ்டமாக இருந்தது — FY26 இலாபத்திற்கு திரும்பியதைக் குறித்தது, Q1FY27 PAT மட்டுமே FY26 முழுவதையும் விட 3.5 மடங்கு அதிகம் — ஆர்டர் அதிகரிப்பு P&amp;L-ல் தெரிகிறது.</span>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Cash Flow &amp; Key Ratios</span><span class="i18n ta" hidden>பணப்புழக்கம் &amp; முக்கிய விகிதங்கள்</span></h2>
+        <div class="tblwrap"><table>
+          <tbody>
+            <tr><td><span class="i18n en">Operating Cash Flow</span><span class="i18n ta" hidden>இயக்க பணப்புழக்கம்</span></td><td class="num">₹520 Cr</td></tr>
+            <tr><td><span class="i18n en">Free Cash Flow</span><span class="i18n ta" hidden>இலவச பணப்புழக்கம்</span></td><td class="num">₹344 Cr</td></tr>
+            <tr><td>ROCE</td><td class="num">7.65%</td></tr>
+            <tr><td>ROE</td><td class="num">1.24%</td></tr>
+            <tr><td><span class="i18n en">Debtor Days</span><span class="i18n ta" hidden>கடன்காரர் நாட்கள்</span></td><td class="num">82</td></tr>
+            <tr><td><span class="i18n en">Inventory Days</span><span class="i18n ta" hidden>சரக்கு நாட்கள்</span></td><td class="num">139</td></tr>
+            <tr><td><span class="i18n en">Cash Conversion Cycle</span><span class="i18n ta" hidden>பண மாற்று சுழற்சி</span></td><td class="num">16 <span class="i18n en">days</span><span class="i18n ta" hidden>நாட்கள்</span></td></tr>
+            <tr><td><span class="i18n en">Borrowings vs Equity</span><span class="i18n ta" hidden>கடன் vs பங்கு மூலதனம்</span></td><td class="num">₹1,942 Cr / ₹2,268 Cr</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Valuations</span><span class="i18n ta" hidden>மதிப்பீடுகள்</span></h2>
+        <div class="tblwrap"><table>
+          <tbody>
+            <tr><td>CMP</td><td class="num">₹897</td></tr>
+            <tr><td><span class="i18n en">52-Wk Range</span><span class="i18n ta" hidden>52-வார வரம்பு</span></td><td class="num">₹84.65 – ₹897 <span class="i18n en">(fresh highs)</span><span class="i18n ta" hidden>(புதிய உச்சம்)</span></td></tr>
+            <tr><td><span class="i18n en">Market Cap</span><span class="i18n ta" hidden>சந்தை மதிப்பு</span></td><td class="num">₹46,132 Cr</td></tr>
+            <tr><td>P/E (TTM)</td><td class="num">~195x</td></tr>
+            <tr><td><span class="i18n en">Book Value</span><span class="i18n ta" hidden>புத்தக மதிப்பு</span></td><td class="num">₹46.5</td></tr>
+            <tr><td>P/B</td><td class="num">19.3x</td></tr>
+            <tr><td><span class="i18n en">Dividend Yield</span><span class="i18n ta" hidden>ஈவுத்தொகை விளைச்சல்</span></td><td class="num">0.00%</td></tr>
+          </tbody>
+        </table></div>
+        <div class="verdict">
+          <span class="i18n en"><b>Verdict:</b> P/E is effectively meaningless on a ₹56 Cr FY26 earnings base — the market is pricing FY29 "Lakshya" earnings today, not FY26's. High reward if execution matches the order book; equally high risk if it slips.</span>
+          <span class="i18n ta" hidden><b>முடிவு:</b> ₹56 கோடி FY26 லாப அடிப்படையில் P/E கிட்டத்தட்ட பொருளற்றது — சந்தை இன்று FY29 "Lakshya" லாபத்தை விலை நிர்ணயம் செய்கிறது, FY26-ஐ அல்ல. ஆர்டர் புத்தகத்திற்கு ஏற்ப செயலாக்கம் இருந்தால் அதிக லாபம்; தவறினால் அதிக ஆபத்து.</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- ---------- WABAG ---------- -->
+    <div class="company-view" id="co-wabag" style="--co:var(--c-wabag);" hidden>
+      <div class="co-header">
+        <div>
+          <div class="co-name"><span class="i18n en">VA Tech Wabag Ltd</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக் லிமிடெட்</span></div>
+          <div class="co-ticker">NSE: WABAG · BSE: 533269</div>
+          <div class="co-desc">
+            <span class="i18n en">Pure-play water &amp; wastewater treatment company — EPC + O&amp;M, active in 25+ countries.</span>
+            <span class="i18n ta" hidden>தூய நீர் &amp; கழிவுநீர் சுத்திகரிப்பு நிறுவனம் — EPC + O&amp;M, 25+ நாடுகளில் செயல்படுகிறது.</span>
+          </div>
+        </div>
+        <div class="co-price-badge">
+          <div class="co-price">₹2,278</div>
+          <div style="font-size:12px;color:var(--muted);"><span class="i18n en">as of 11 Sep 2026</span><span class="i18n ta" hidden>செப் 11, 2026 நிலவரப்படி</span></div>
+        </div>
+      </div>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Business Model</span><span class="i18n ta" hidden>வணிக மாதிரி</span></h2>
+        <ul class="bullets">
+          <li><span class="i18n en">Pure-play water/wastewater treatment: desalination, sewage &amp; effluent treatment, water recycling, zero-liquid-discharge</span><span class="i18n ta" hidden>தூய நீர்/கழிவுநீர் சுத்திகரிப்பு: டிசாலினேஷன், கழிவுநீர் சுத்திகரிப்பு, நீர் மறுசுழற்சி, ஜீரோ-லிக்விட்-டிஸ்சார்ஜ்</span></li>
+          <li><span class="i18n en">Delivered via EPC, O&amp;M, DBO, BOOT and HAM contract models across 25+ countries</span><span class="i18n ta" hidden>EPC, O&amp;M, DBO, BOOT மற்றும் HAM ஒப்பந்த மாதிரிகள் மூலம் 25+ நாடுகளில் வழங்கப்படுகிறது</span></li>
+          <li><span class="i18n en">~50–56% of business from international markets, chiefly the Middle East &amp; Africa</span><span class="i18n ta" hidden>வணிகத்தில் ~50–56% சர்வதேச சந்தைகளிலிருந்து, முதன்மையாக மத்திய கிழக்கு &amp; ஆப்பிரிக்கா</span></li>
+          <li><span class="i18n en">Moving into higher-margin verticals — semiconductors, solar manufacturing, green hydrogen, data centres, oil &amp; gas — via selective, technology-led bidding</span><span class="i18n ta" hidden>அதிக லாப வெர்டிகல்களில் நுழைகிறது — செமிகண்டக்டர்கள், சோலார் உற்பத்தி, பசுமை ஹைட்ரஜன், டேட்டா சென்டர்கள், ஆயில் &amp; காஸ் — தேர்ந்தெடுக்கப்பட்ட, தொழில்நுட்ப-அடிப்படையிலான டெண்டரிங் மூலம்</span></li>
+          <li><span class="i18n en">Recently entered Kuwait via a JV, winning the Doha SWRO desalination plant Stage-II DBO contract</span><span class="i18n ta" hidden>ஒரு JV மூலம் குவைத்தில் நுழைந்தது, Doha SWRO டிசாலினேஷன் ஆலை Stage-II DBO ஒப்பந்தத்தை வென்றது</span></li>
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Segments (Order Book Mix)</span><span class="i18n ta" hidden>பிரிவுகள் (ஆர்டர் புத்தக கலவை)</span></h2>
+        <div class="tblwrap"><table>
+          <thead><tr><th><span class="i18n en">Segment</span><span class="i18n ta" hidden>பிரிவு</span></th><th class="num"><span class="i18n en">Share of Order Book</span><span class="i18n ta" hidden>ஆர்டர் புத்தகத்தில் பங்கு</span></th></tr></thead>
+          <tbody>
+            <tr><td>EPC</td><td class="num">~64%</td></tr>
+            <tr><td><span class="i18n en">O&amp;M (recurring)</span><span class="i18n ta" hidden>O&amp;M (தொடர்ச்சியான)</span></td><td class="num">~36–38%</td></tr>
+            <tr><td><span class="i18n en">International (Geography)</span><span class="i18n ta" hidden>சர்வதேசம் (நிலவியல்)</span></td><td class="num">~50–56%</td></tr>
+            <tr><td><span class="i18n en">India (Geography)</span><span class="i18n ta" hidden>இந்தியா (நிலவியல்)</span></td><td class="num">~44–50%</td></tr>
+          </tbody>
+        </table></div>
+        <div class="sec-desc" style="margin-top:10px;">
+          <span class="i18n en">The rising O&amp;M share means a growing slice of revenue is recurring and predictable, not one-off EPC billing.</span>
+          <span class="i18n ta" hidden>O&amp;M பங்கு உயர்வதால் வருவாயில் ஒரு பெரிய பகுதி தொடர்ச்சியானதாகவும் கணிக்கக்கூடியதாகவும் மாறுகிறது, ஒரு-முறை EPC பில்லிங் அல்ல.</span>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Financials</span><span class="i18n ta" hidden>நிதிநிலைகள்</span></h2>
+        <div class="tblwrap"><table>
+          <thead><tr><th><span class="i18n en">Metric</span><span class="i18n ta" hidden>அளவீடு</span></th><th class="num">FY26</th><th class="num">Q1 FY27<br/><span style="font-weight:400;">(Jun'26)</span></th></tr></thead>
+          <tbody>
+            <tr><td><span class="i18n en">Revenue (₹Cr)</span><span class="i18n ta" hidden>வருவாய் (₹Cr)</span></td><td class="num">3,944</td><td class="num">887</td></tr>
+            <tr><td><span class="i18n en">Operating Margin</span><span class="i18n ta" hidden>இயக்க அளவீடு</span></td><td class="num">12%</td><td class="num">9%</td></tr>
+            <tr><td><span class="i18n en">PAT (₹Cr)</span><span class="i18n ta" hidden>PAT (₹Cr)</span></td><td class="num">370</td><td class="num">90 <span class="i18n en">(+37% YoY)</span><span class="i18n ta" hidden>(+37% ஆண்டுவரு)</span></td></tr>
+            <tr><td><span class="i18n en">Order Book (₹Cr)</span><span class="i18n ta" hidden>ஆர்டர் புத்தகம் (₹Cr)</span></td><td class="num">—</td><td class="num">19,400 <span class="i18n en">(all-time high)</span><span class="i18n ta" hidden>(சாதனை உயரம்)</span></td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Cash Flow &amp; Key Ratios</span><span class="i18n ta" hidden>பணப்புழக்கம் &amp; முக்கிய விகிதங்கள்</span></h2>
+        <div class="tblwrap"><table>
+          <tbody>
+            <tr><td><span class="i18n en">Operating Cash Flow</span><span class="i18n ta" hidden>இயக்க பணப்புழக்கம்</span></td><td class="num">₹207 Cr</td></tr>
+            <tr><td><span class="i18n en">Free Cash Flow</span><span class="i18n ta" hidden>இலவச பணப்புழக்கம்</span></td><td class="num">₹202 Cr</td></tr>
+            <tr><td>ROCE</td><td class="num">21.3%</td></tr>
+            <tr><td>ROE</td><td class="num">15.9%</td></tr>
+            <tr><td><span class="i18n en">Debtor Days</span><span class="i18n ta" hidden>கடன்காரர் நாட்கள்</span></td><td class="num">234</td></tr>
+            <tr><td><span class="i18n en">Working Capital Days</span><span class="i18n ta" hidden>செயல்பாட்டு மூலதன நாட்கள்</span></td><td class="num">97</td></tr>
+            <tr><td><span class="i18n en">Borrowings vs Gross Cash</span><span class="i18n ta" hidden>கடன் vs மொத்த பணம்</span></td><td class="num">₹228 Cr / ₹1,080 Cr</td></tr>
+          </tbody>
+        </table></div>
+        <div class="sec-desc" style="margin-top:10px;">
+          <span class="i18n en">Near-debt-free. High debtor days (234) are typical for EPC/government-infra-heavy revenue and worth watching.</span>
+          <span class="i18n ta" hidden>கிட்டத்தட்ட கடன் இல்லாதது. அதிக கடன்காரர் நாட்கள் (234) EPC/அரசு-உள்கட்டமைப்பு வருவாயில் வழக்கமானது, கவனிக்க வேண்டியது.</span>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="sec-title"><span class="i18n en">Valuations</span><span class="i18n ta" hidden>மதிப்பீடுகள்</span></h2>
+        <div class="tblwrap"><table>
+          <tbody>
+            <tr><td>CMP</td><td class="num">₹2,278</td></tr>
+            <tr><td><span class="i18n en">52-Wk Range</span><span class="i18n ta" hidden>52-வார வரம்பு</span></td><td class="num">₹1,034 – ₹2,278 <span class="i18n en">(fresh high)</span><span class="i18n ta" hidden>(புதிய உச்சம்)</span></td></tr>
+            <tr><td><span class="i18n en">Market Cap</span><span class="i18n ta" hidden>சந்தை மதிப்பு</span></td><td class="num">₹14,244 Cr</td></tr>
+            <tr><td>P/E (TTM)</td><td class="num">35.8x</td></tr>
+            <tr><td><span class="i18n en">Book Value</span><span class="i18n ta" hidden>புத்தக மதிப்பு</span></td><td class="num">₹412</td></tr>
+            <tr><td><span class="i18n en">Dividend Yield</span><span class="i18n ta" hidden>ஈவுத்தொகை விளைச்சல்</span></td><td class="num">0.22%</td></tr>
+          </tbody>
+        </table></div>
+        <div class="verdict">
+          <span class="i18n en"><b>Verdict:</b> Premium P/E versus its own history, but backed by a record, 4x-revenue order book and a near-debt-free balance sheet — a fundamentals-led re-rating rather than pure momentum.</span>
+          <span class="i18n ta" hidden><b>முடிவு:</b> தன் வரலாற்றை விட அதிக P/E, ஆனால் சாதனை, 4x-வருவாய் ஆர்டர் புத்தகம் மற்றும் கிட்டத்தட்ட கடன் இல்லாத இருப்புநிலைக் குறிப்பால் ஆதரிக்கப்படுகிறது — வெறும் மொமன்டம் அல்ல, அடிப்படை-ஆதார மறு-மதிப்பீடு.</span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ===================== REASONS TAB ===================== -->
+  <div class="tabpanel" id="tab-reasons" role="tabpanel" hidden>
+
+    <div class="reason-block" style="--co:var(--c-lupin);">
+      <div class="reason-head">
+        <div class="reason-title"><span class="i18n en">Lupin — Why the Stock Has Fallen</span><span class="i18n ta" hidden>லூபின் — பங்கு ஏன் விழுந்தது</span></div>
+      </div>
+      <div class="reason-what">
+        <span class="i18n en">Down ~17% from its 52-week high of ₹2,530; underperformed the market by 9% over one month (Aug 2026)</span>
+        <span class="i18n ta" hidden>52-வார உச்சமான ₹2,530-லிருந்து ~17% வீழ்ச்சி; ஒரு மாதத்தில் (ஆக 2026) சந்தையை விட 9% குறைவான செயல்பாடு</span>
+      </div>
+      <ul class="bullets">
+        <li><span class="i18n en">Competition intensifying on <b>Tolvaptan</b> (a key revenue driver) as Apotex and Teva entered — a 4th competitor was possible by September 2026</span><span class="i18n ta" hidden>முக்கிய வருவாய் மூலமான <b>Tolvaptan</b>-இல் போட்டி தீவிரமடைகிறது, Apotex மற்றும் Teva நுழைந்ததால் — செப்டம்பர் 2026-க்குள் 4வது போட்டியாளரும் வர வாய்ப்பு</span></li>
+        <li><span class="i18n en">Management guided US quarterly sales down to $250–280mn, from $366mn in Q1 FY27 — a sharp deceleration</span><span class="i18n ta" hidden>நிர்வாகம் அமெரிக்க காலாண்டு விற்பனையை Q1 FY27-இல் $366mn-லிருந்து $250–280mn ஆக குறைக்க வழிகாட்டியது — கடுமையான வேகக்குறைவு</span></li>
+        <li><span class="i18n en">Similar pricing pressure flagged on <b>Mirabegron</b></span><span class="i18n ta" hidden><b>Mirabegron</b>-இலும் இதே விலை அழுத்தம் குறிப்பிடப்பட்டது</span></li>
+        <li><span class="i18n en">Rising depreciation and a higher tax rate cloud the margin outlook — brokerages see earnings roughly flat-to-negative over the next two years</span><span class="i18n ta" hidden>அதிகரிக்கும் தேய்மானம் மற்றும் அதிக வரி விகிதம் அளவீட்டு எதிர்பார்ப்பை மங்கலாக்குகின்றன — வரும் இரு ஆண்டுகளில் லாபம் தட்டையாக/எதிர்மறையாக இருக்கும் என்று ப்ரோக்கரேஜ்கள் கருதுகின்றன</span></li>
+        <li><span class="i18n en">The stock had run up to premium multiples (~27x FY28E EPS) pricing in aggressive growth — now de-rating as those assumptions are revised down</span><span class="i18n ta" hidden>பங்கு அதிக மடங்குகளுக்கு (~27x FY28E EPS) உயர்ந்திருந்தது, தீவிர வளர்ச்சியை விலையில் சேர்த்து — இப்போது அந்த எதிர்பார்ப்புகள் குறைக்கப்படுவதால் மறு-மதிப்பீடு குறைகிறது</span></li>
+        <li><span class="i18n en">Broader FII selling across Indian equities through FY26, plus a US "reciprocal tariff" announcement (2 April 2026), added a macro overhang</span><span class="i18n ta" hidden>FY26 முழுவதும் இந்திய பங்குகளில் பரவலான FII விற்பனை, மேலும் அமெரிக்க "reciprocal tariff" அறிவிப்பு (ஏப்ரல் 2, 2026) — மேக்ரோ அழுத்தத்தை சேர்த்தது</span></li>
+        <li><span class="i18n en">Brokerages cut targets — e.g. JM Financial trimmed its target from ₹1,992 to ₹1,806</span><span class="i18n ta" hidden>ப்ரோக்கரேஜ்கள் இலக்குகளை குறைத்தன — எ.கா. JM Financial தன் இலக்கை ₹1,992-லிருந்து ₹1,806 ஆக குறைத்தது</span></li>
+      </ul>
+      <div class="verdict">
+        <span class="i18n en"><b>Balanced view:</b> the core franchise — 3rd-largest US generics player, a strong branded India business, ₹5,355 Cr FY26 profit — remains intact. This reads as a valuation correction on slower incremental growth, not a broken business.</span>
+        <span class="i18n ta" hidden><b>சமநிலையான பார்வை:</b> அடிப்படை வணிகம் — அமெரிக்காவில் 3வது பெரிய ஜெனரிக் நிறுவனம், வலுவான பிராண்டட் இந்திய வணிகம், FY26 இல் ₹5,355 கோடி லாபம் — உடைந்துவிடவில்லை. இது மெதுவான அதிகரிப்பு வளர்ச்சியில் ஏற்படும் மதிப்பீட்டு திருத்தமாகவே தெரிகிறது, உடைந்த வணிகம் அல்ல.</span>
+      </div>
+    </div>
+
+    <div class="reason-block" style="--co:var(--c-sterlite);">
+      <div class="reason-head">
+        <div class="reason-title"><span class="i18n en">Sterlite Technologies — Why the Stock Has Surged</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்னாலஜீஸ் — பங்கு ஏன் பறந்தது</span></div>
+      </div>
+      <div class="reason-what">
+        <span class="i18n en">Up ~500%+ over one year, ~700% YTD in 2026, ~925% from its 52-week low of ₹84.65 (27 Jan 2026)</span>
+        <span class="i18n ta" hidden>ஒரு ஆண்டில் ~500%+, 2026-இல் இதுவரை ~700%, 52-வார குறைவான ₹84.65-லிருந்து (ஜன 27, 2026) ~925% உயர்வு</span>
+      </div>
+      <ul class="bullets">
+        <li><span class="i18n en">Landed a <b>₹10,000 Cr (~$1.1bn)</b> multi-year hyperscaler order for AI data-centre optical connectivity (FY27–FY29) — the single biggest trigger</span><span class="i18n ta" hidden>AI டேட்டா சென்டர் ஆப்டிகல் இணைப்புக்கான <b>₹10,000 கோடி (~$1.1bn)</b> பல-ஆண்டு hyperscaler ஆர்டரை பெற்றது (FY27–FY29) — மிகப்பெரிய தூண்டுதல்</span></li>
+        <li><span class="i18n en">Structural tailwind: the global AI/data-centre capex supercycle, US broadband funding programmes, and India's BharatNet expansion</span><span class="i18n ta" hidden>கட்டமைப்பு காற்று: உலகளாவிய AI/டேட்டா சென்டர் மூலதன செலவு சூப்பர்-சைக்கிள், அமெரிக்க ப்ராட்பேண்ட் நிதி திட்டங்கள், இந்தியாவின் BharatNet விரிவாக்கம்</span></li>
+        <li><span class="i18n en">Returned to profitability in FY26 (₹56 Cr PAT vs a ₹123 Cr loss in FY25) after years of balance-sheet stress</span><span class="i18n ta" hidden>பல ஆண்டுகால இருப்புநிலைக் குறிப்பு அழுத்தத்திற்குப் பிறகு FY26-இல் இலாபத்திற்கு திரும்பியது (FY25 இல் ₹123 கோடி நஷ்டத்திற்கு எதிராக ₹56 கோடி PAT)</span></li>
+        <li><span class="i18n en">"Lakshya" roadmap (4x revenue to ₹20,000 Cr, &gt;27% EBITDA margin by FY29) reset growth expectations sharply higher</span><span class="i18n ta" hidden>"Lakshya" திட்டம் (₹20,000 கோடிக்கு 4x வருவாய், FY29-க்குள் &gt;27% EBITDA அளவீடு) வளர்ச்சி எதிர்பார்ப்புகளை கூர்மையாக உயர்த்தியது</span></li>
+        <li><span class="i18n en">Brokerages scrambled to catch up — Nuvama raised FY27/FY28 EBITDA estimates by 22%/38% and lifted its target from ₹770 to ₹1,100</span><span class="i18n ta" hidden>ப்ரோக்கரேஜ்கள் விரைவாக எதிர்பார்ப்புகளை உயர்த்தின — Nuvama FY27/FY28 EBITDA மதிப்பீடுகளை 22%/38% உயர்த்தி, இலக்கை ₹770-லிருந்து ₹1,100 ஆக உயர்த்தியது</span></li>
+        <li><span class="i18n en">FIIs tripled their stake following the rally; the stock hit repeated 5% upper circuits</span><span class="i18n ta" hidden>உயர்வைத் தொடர்ந்து FII பங்கு மூன்று மடங்கு உயர்ந்தது; பங்கு தொடர்ச்சியாக 5% அப்பர் சர்க்யூட் அடைந்தது</span></li>
+        <li><span class="i18n en">Technicals turned extreme: RSI ~74.5 (overbought), trading above every major moving average</span><span class="i18n ta" hidden>டெக்னிக்கல்ஸ் தீவிரமானது: RSI ~74.5 (overbought), எல்லா முக்கிய moving average-களையும் விட மேலே வர்த்தகம்</span></li>
+      </ul>
+      <div class="verdict">
+        <span class="i18n en"><b>Balanced view:</b> the order is real and transformative, but at P/E ~195x and P/B ~19x, the stock is now priced for flawless multi-year execution — a classic momentum/re-rating story that can be as volatile on the way down as on the way up.</span>
+        <span class="i18n ta" hidden><b>சமநிலையான பார்வை:</b> ஆர்டர் உண்மையானது மற்றும் மாற்றத்தை ஏற்படுத்தக்கூடியது, ஆனால் P/E ~195x மற்றும் P/B ~19x-இல், பங்கு இப்போது பல-ஆண்டு குறையற்ற செயலாக்கத்தை எதிர்பார்த்து விலை நிர்ணயிக்கப்பட்டுள்ளது — உயரும்போது இருந்த அதே நிலையற்ற தன்மையுடன் கீழே இறங்கவும் வாய்ப்புள்ள ஒரு பொதுவான மொமன்டம்/மறு-மதிப்பீடு கதை.</span>
+      </div>
+    </div>
+
+    <div class="reason-block" style="--co:var(--c-wabag);">
+      <div class="reason-head">
+        <div class="reason-title"><span class="i18n en">VA Tech Wabag — Why the Stock Has Surged</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக் — பங்கு ஏன் உயர்ந்தது</span></div>
+      </div>
+      <div class="reason-what">
+        <span class="i18n en">Up 41% over one year, with a 47% surge in just the last 3 months; near its all-time high of ₹2,252</span>
+        <span class="i18n ta" hidden>ஒரு ஆண்டில் 41% உயர்வு, கடந்த 3 மாதங்களில் மட்டும் 47% உயர்வு; அதன் சாதனை உயரமான ₹2,252-க்கு அருகில்</span>
+      </div>
+      <ul class="bullets">
+        <li><span class="i18n en">Order book hit an <b>all-time high of ₹19,400 Cr</b> (+33% YoY) — over 4x annual revenue, above the company's own 3x comfort threshold</span><span class="i18n ta" hidden>ஆர்டர் புத்தகம் <b>சாதனை உயரமான ₹19,400 கோடியை</b> தொட்டது (+33% ஆண்டுவரு) — ஆண்டு வருவாயை விட 4 மடங்குக்கும் அதிகம், நிறுவனத்தின் சொந்த 3x வசதிக்கான வரம்பையும் தாண்டி</span></li>
+        <li><span class="i18n en">Won a "mega" Doha SWRO desalination Stage-II contract in Kuwait (DBO model) via a new JV — first entry into that market</span><span class="i18n ta" hidden>ஒரு புதிய JV மூலம் குவைத்தில் "மெகா" Doha SWRO டிசாலினேஷன் Stage-II ஒப்பந்தத்தை வென்றது (DBO மாதிரி) — அந்த சந்தையில் முதல் நுழைவு</span></li>
+        <li><span class="i18n en">Q1 FY27 order inflows of ₹3,430 Cr and steady beat-and-raise quarterly results</span><span class="i18n ta" hidden>Q1 FY27-இல் ₹3,430 கோடி ஆர்டர் இன்ஃப்ளோ மற்றும் நிலையான எதிர்பார்ப்புகளை மீறும் காலாண்டு முடிவுகள்</span></li>
+        <li><span class="i18n en">Domestic institutional investors tripled their stake — from 2% to 6.3% — over two years, a strong conviction signal</span><span class="i18n ta" hidden>உள்நாட்டு நிறுவன முதலீட்டாளர்கள் இரு ஆண்டுகளில் தங்கள் பங்கை 2%-லிருந்து 6.3% ஆக மூன்று மடங்கு உயர்த்தினர் — வலுவான நம்பிக்கை சமிக்ஞை</span></li>
+        <li><span class="i18n en">Revenue mix shifting toward recurring, higher-visibility O&amp;M contracts (~38% of order book)</span><span class="i18n ta" hidden>வருவாய் கலவை தொடர்ச்சியான, அதிக தெரிவுத்தன்மையுள்ள O&amp;M ஒப்பந்தங்களை நோக்கி மாறுகிறது (~ஆர்டர் புத்தகத்தில் 38%)</span></li>
+        <li><span class="i18n en">Expanding into higher-margin verticals — semiconductors, green hydrogen, data centres, solar manufacturing, oil &amp; gas — via selective, technology-led bidding</span><span class="i18n ta" hidden>அதிக லாப வெர்டிகல்களில் விரிவாக்கம் — செமிகண்டக்டர்கள், பசுமை ஹைட்ரஜன், டேட்டா சென்டர்கள், சோலார் உற்பத்தி, ஆயில் &amp; காஸ் — தேர்ந்தெடுக்கப்பட்ட, தொழில்நுட்ப-அடிப்படையிலான டெண்டரிங் மூலம்</span></li>
+        <li><span class="i18n en">Near-debt-free balance sheet (₹228 Cr borrowings vs ₹1,080 Cr gross cash) with strong ROCE (21.3%) and ROE (15.9%)</span><span class="i18n ta" hidden>கிட்டத்தட்ட கடன் இல்லாத இருப்புநிலைக் குறிப்பு (₹228 கோடி கடன் vs ₹1,080 கோடி மொத்த பணம்) வலுவான ROCE (21.3%) மற்றும் ROE (15.9%) உடன்</span></li>
+        <li><span class="i18n en">Multiple brokerage upgrades — Motilal Oswal, Systematix and Geojit all raised targets (₹2,263–₹2,550+)</span><span class="i18n ta" hidden>பல ப்ரோக்கரேஜ் அப்கிரேடுகள் — Motilal Oswal, Systematix மற்றும் Geojit அனைத்தும் இலக்குகளை உயர்த்தின (₹2,263–₹2,550+)</span></li>
+      </ul>
+      <div class="verdict">
+        <span class="i18n en"><b>Balanced view:</b> unlike a single-event story, this is a steady, fundamentals-led re-rating — record order book, improving margins and a clean balance sheet — though high debtor days (234) and execution risk in new geographies are worth watching.</span>
+        <span class="i18n ta" hidden><b>சமநிலையான பார்வை:</b> ஒரே நிகர்வால் ஏற்படும் கதை அல்ல, இது நிலையான, அடிப்படை-ஆதார மறு-மதிப்பீடு — சாதனை ஆர்டர் புத்தகம், மேம்படும் அளவீடுகள் மற்றும் சுத்தமான இருப்புநிலைக் குறிப்பு — எனினும் அதிக கடன்காரர் நாட்கள் (234) மற்றும் புதிய நிலவியல்களில் செயலாக்க ஆபத்து கவனிக்க வேண்டியவை.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== RISKS TAB ===================== -->
+  <div class="tabpanel" id="tab-risks" role="tabpanel" hidden>
+    <div class="reason-block" style="--co:var(--c-lupin);">
+      <div class="reason-head"><div class="reason-title"><span class="i18n en">Lupin — Key Risks</span><span class="i18n ta" hidden>லூபின் — முக்கிய ஆபத்துகள்</span></div></div>
+      <ul class="bullets">
+        <li><span class="i18n en">Faster-than-expected pricing erosion in Tolvaptan/Mirabegron if more generic competitors enter</span><span class="i18n ta" hidden>மேலும் ஜெனரிக் போட்டியாளர்கள் நுழைந்தால் Tolvaptan/Mirabegron விலை சிதைவு எதிர்பார்த்ததை விட வேகமாக இருக்கலாம்</span></li>
+        <li><span class="i18n en">Any adverse USFDA inspection finding at a key manufacturing site could disrupt US supply</span><span class="i18n ta" hidden>முக்கிய உற்பத்தி தளத்தில் பாதகமான USFDA ஆய்வு கண்டுபிடிப்பு அமெரிக்க விநியோகத்தை பாதிக்கலாம்</span></li>
+        <li><span class="i18n en">Currency risk — a large share of revenue is US-dollar-denominated</span><span class="i18n ta" hidden>நாணய ஆபத்து — வருவாயில் பெரும் பகுதி அமெரிக்க டாலரில் உள்ளது</span></li>
+        <li><span class="i18n en">India price-control regulation (NLEM) could pressure the domestic branded business</span><span class="i18n ta" hidden>இந்திய விலை கட்டுப்பாடு (NLEM) உள்நாட்டு பிராண்டட் வணிகத்தை அழுத்தலாம்</span></li>
+        <li><span class="i18n en">Revenue growth is concentrated in a handful of complex generics — a narrow base</span><span class="i18n ta" hidden>வருவாய் வளர்ச்சி சில சிக்கலான ஜெனரிக்குகளில் மட்டும் குவிந்துள்ளது — குறுகிய அடிப்படை</span></li>
+      </ul>
+    </div>
+
+    <div class="reason-block" style="--co:var(--c-sterlite);">
+      <div class="reason-head"><div class="reason-title"><span class="i18n en">Sterlite Technologies — Key Risks</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்னாலஜீஸ் — முக்கிய ஆபத்துகள்</span></div></div>
+      <ul class="bullets">
+        <li><span class="i18n en">Extremely high valuation (P/E ~195x) leaves almost no room for execution slips</span><span class="i18n ta" hidden>மிக அதிக மதிப்பீடு (P/E ~195x) செயலாக்க தவறுகளுக்கு இடமளிக்கவில்லை</span></li>
+        <li><span class="i18n en">Heavy reliance on a single hyperscaler order — customer concentration risk</span><span class="i18n ta" hidden>ஒரே hyperscaler ஆர்டரை பெரிதும் சார்ந்திருத்தல் — வாடிக்கையாளர் குவிப்பு ஆபத்து</span></li>
+        <li><span class="i18n en">Execution risk on the ₹3,000 Cr capacity expansion and the FY29 "Lakshya" targets</span><span class="i18n ta" hidden>₹3,000 கோடி திறன் விரிவாக்கம் மற்றும் FY29 "Lakshya" இலக்குகளில் செயலாக்க ஆபத்து</span></li>
+        <li><span class="i18n en">Still a thin balance sheet — ROE of just 1.24% and a recent history of losses</span><span class="i18n ta" hidden>இன்னும் மெலிதான இருப்புநிலைக் குறிப்பு — வெறும் 1.24% ROE மற்றும் சமீபத்திய நஷ்ட வரலாறு</span></li>
+        <li><span class="i18n en">Technically overbought (RSI ~74.5) — raises the risk of a sharp correction or profit-booking</span><span class="i18n ta" hidden>டெக்னிக்கலாக overbought (RSI ~74.5) — கூர்மையான திருத்தம் அல்லது லாப-புக்கிங் ஆபத்தை உயர்த்துகிறது</span></li>
+        <li><span class="i18n en">A slowdown in the global AI data-centre capex cycle, or deferment of hyperscaler orders</span><span class="i18n ta" hidden>உலகளாவிய AI டேட்டா சென்டர் மூலதன செலவு சுழற்சியில் மந்தநிலை, அல்லது hyperscaler ஆர்டர்கள் தள்ளிவைக்கப்படுதல்</span></li>
+      </ul>
+    </div>
+
+    <div class="reason-block" style="--co:var(--c-wabag);">
+      <div class="reason-head"><div class="reason-title"><span class="i18n en">VA Tech Wabag — Key Risks</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக் — முக்கிய ஆபத்துகள்</span></div></div>
+      <ul class="bullets">
+        <li><span class="i18n en">High debtor days (234) — collection risk, especially from government and international clients</span><span class="i18n ta" hidden>அதிக கடன்காரர் நாட்கள் (234) — வசூல் ஆபத்து, குறிப்பாக அரசு மற்றும் சர்வதேச வாடிக்கையாளர்களிடமிருந்து</span></li>
+        <li><span class="i18n en">Execution risk in new geographies such as the recent Kuwait entry</span><span class="i18n ta" hidden>சமீபத்திய குவைத் நுழைவு போன்ற புதிய நிலவியல்களில் செயலாக்க ஆபத்து</span></li>
+        <li><span class="i18n en">EPC-segment exposure to project delays, cost overruns and raw-material price swings</span><span class="i18n ta" hidden>EPC-பிரிவு திட்ட தாமதங்கள், செலவு அதிகரிப்பு மற்றும் மூலப்பொருள் விலை ஏற்ற இறக்கங்களுக்கு உள்ளாகிறது</span></li>
+        <li><span class="i18n en">Earnings can be lumpy — tied to large order execution timelines rather than steady billing</span><span class="i18n ta" hidden>வருவாய் சீரற்றதாக இருக்கலாம் — நிலையான பில்லிங் அல்ல, பெரிய ஆர்டர் செயலாக்க காலவரிசையை சார்ந்துள்ளது</span></li>
+        <li><span class="i18n en">Currency and geopolitical risk given a Middle-East/Africa-heavy international order book</span><span class="i18n ta" hidden>மத்திய கிழக்கு/ஆப்பிரிக்கா அதிகமுள்ள சர்வதேச ஆர்டர் புத்தகத்தால் நாணய மற்றும் புவிசார்-அரசியல் ஆபத்து</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===================== CAUVERY ASSIST TAB ===================== -->
+  <div class="tabpanel" id="tab-assist" role="tabpanel" hidden>
+    <div class="sec-desc" style="margin-bottom:18px;">
+      <span class="i18n en">Common investor questions on these three stocks, answered from the numbers on this page. Educational only — not investment advice.</span>
+      <span class="i18n ta" hidden>இந்த மூன்று பங்குகள் குறித்து முதலீட்டாளர்கள் அடிக்கடி கேட்கும் கேள்விகள், இந்தப் பக்கத்தின் எண்களை வைத்து பதிலளிக்கப்பட்டுள்ளன. கல்வி நோக்கிற்காக மட்டும் — முதலீட்டு ஆலோசனை அல்ல.</span>
+    </div>
+
+    <details class="qa"><summary><span class="i18n en">Is Lupin's fall a buying opportunity or a value trap?</span><span class="i18n ta" hidden>லூபினின் வீழ்ச்சி ஒரு வாங்கும் வாய்ப்பா அல்லது ஒரு value trap-ஆ?</span></summary>
+      <div class="qa-answer">
+        <span class="i18n en">Neither label fits neatly — this is educational analysis, not advice. What the numbers show: the core franchise (₹5,355 Cr FY26 profit, 3rd-largest US generics player) is intact, and the stock now trades below its recent peak multiple. The open question is how much further Tolvaptan/Mirabegron pricing erodes — that will decide whether this was a fair correction or the start of a longer de-rating.</span>
+        <span class="i18n ta" hidden>இரண்டு லேபிளும் சரியாகப் பொருந்தாது — இது கல்வி நோக்கிலான பகுப்பாய்வு, ஆலோசனை அல்ல. எண்கள் காட்டுவது: அடிப்படை வணிகம் (FY26 இல் ₹5,355 கோடி லாபம், அமெரிக்காவில் 3வது பெரிய ஜெனரிக் நிறுவனம்) உடைந்துவிடவில்லை, பங்கு இப்போது சமீபத்திய உச்ச மடங்கை விட குறைவாக வர்த்தகமாகிறது. Tolvaptan/Mirabegron விலை இன்னும் எவ்வளவு சிதையும் என்பதே திறந்த கேள்வி — இது நியாயமான திருத்தமா அல்லது நீண்ட மறு-மதிப்பீட்டின் தொடக்கமா என்பதை தீர்மானிக்கும்.</span>
+      </div>
+    </details>
+
+    <details class="qa"><summary><span class="i18n en">Why is Sterlite Technologies' P/E so high — is it overvalued?</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்னாலஜீஸின் P/E ஏன் இவ்வளவு அதிகமாக உள்ளது — இது overvalued ஆ?</span></summary>
+      <div class="qa-answer">
+        <span class="i18n en">The P/E (~195x) looks extreme because it's calculated on a very small FY26 profit base (₹56 Cr) right after the company returned to profitability. The market isn't valuing FY26 earnings — it's valuing the FY29 "Lakshya" target of ₹20,000 Cr revenue at &gt;27% EBITDA margin. Whether that's "overvalued" depends entirely on whether execution matches the order book — there's no fundamental anchor yet, and that is itself the risk.</span>
+        <span class="i18n ta" hidden>P/E (~195x) தீவிரமாகத் தெரிகிறது, ஏனெனில் இது நிறுவனம் இலாபத்திற்கு திரும்பிய உடனேயே மிகச் சிறிய FY26 லாப அடிப்படையில் (₹56 கோடி) கணக்கிடப்படுகிறது. சந்தை FY26 லாபத்தை மதிப்பிடவில்லை — FY29 "Lakshya" இலக்கான ₹20,000 கோடி வருவாயை &gt;27% EBITDA அளவீட்டுடன் மதிப்பிடுகிறது. இது "overvalued"-ஆ என்பது முற்றிலும் ஆர்டர் புத்தகத்திற்கு ஏற்ப செயலாக்கம் இருக்குமா என்பதைப் பொறுத்தது — இன்னும் அடிப்படை நங்கூரம் இல்லை, இதுவே ஆபத்து.</span>
+      </div>
+    </details>
+
+    <details class="qa"><summary><span class="i18n en">How sustainable is VA Tech Wabag's order-book growth?</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக்கின் ஆர்டர் புத்தக வளர்ச்சி எவ்வளவு நிலைத்தன்மையானது?</span></summary>
+      <div class="qa-answer">
+        <span class="i18n en">The order book (₹19,400 Cr) is over 4x annual revenue — well above the company's own 3x comfort threshold — giving strong multi-year visibility. Sustainability depends on continued win-rates in the Middle East/Africa and new verticals (semiconductors, green hydrogen, data centres), plus converting that book into cash, where the high 234 debtor days is the metric to watch.</span>
+        <span class="i18n ta" hidden>ஆர்டர் புத்தகம் (₹19,400 கோடி) ஆண்டு வருவாயை விட 4 மடங்குக்கும் அதிகம் — நிறுவனத்தின் சொந்த 3x வசதிக்கான வரம்பையும் தாண்டி — வலுவான பல-ஆண்டு தெரிவுத்தன்மையை தருகிறது. நிலைத்தன்மை மத்திய கிழக்கு/ஆப்பிரிக்காவிலும் புதிய வெர்டிகல்களிலும் (செமிகண்டக்டர்கள், பசுமை ஹைட்ரஜன், டேட்டா சென்டர்கள்) தொடர்ச்சியான வெற்றி விகிதத்தையும், அந்த புத்தகத்தை பணமாக மாற்றுவதையும் சார்ந்துள்ளது — அதிக 234 கடன்காரர் நாட்களே கவனிக்க வேண்டிய அளவீடு.</span>
+      </div>
+    </details>
+
+    <details class="qa"><summary><span class="i18n en">What exactly is Sterlite's "Neuralis" and "Lakshya"?</span><span class="i18n ta" hidden>ஸ்டெர்லைட்டின் "Neuralis" மற்றும் "Lakshya" என்றால் என்ன?</span></summary>
+      <div class="qa-answer">
+        <span class="i18n en">Neuralis is STL's product portfolio of ultra-high-density optical fibre and connectivity solutions built specifically for GPU-intensive AI data centres. Lakshya is the company's FY29 roadmap built on top of that — targeting ₹20,000 Cr revenue (4x FY26) at over 27% EBITDA margin, backed by a ₹3,000 Cr capacity-expansion plan.</span>
+        <span class="i18n ta" hidden>Neuralis என்பது GPU-தீவிர AI டேட்டா சென்டர்களுக்காக சிறப்பாக உருவாக்கப்பட்ட STL-இன் அதி-அடர்த்தி ஆப்டிகல் ஃபைபர் மற்றும் இணைப்பு தீர்வுகளின் தயாரிப்பு போர்ட்ஃபோலியோ. Lakshya என்பது அதன் மீது கட்டமைக்கப்பட்ட நிறுவனத்தின் FY29 திட்டம் — FY26-ஐ விட 4 மடங்கான ₹20,000 கோடி வருவாயையும் &gt;27% EBITDA அளவீட்டையும் இலக்காகக் கொண்டது, ₹3,000 கோடி திறன்-விரிவாக்க திட்டத்தால் ஆதரிக்கப்படுகிறது.</span>
+      </div>
+    </details>
+
+    <details class="qa"><summary><span class="i18n en">Between the three, which looks "safest" on paper?</span><span class="i18n ta" hidden>மூன்றிலும் எது காகிதத்தில் "பாதுகாப்பானதாக" தெரிகிறது?</span></summary>
+      <div class="qa-answer">
+        <span class="i18n en">By balance-sheet strength and return ratios, Lupin (ROE 28.7%, ROCE 29.9%, moderate debt) and VA Tech Wabag (near-debt-free, ROE 15.9%) both look fundamentally sturdier than Sterlite Technologies (ROE 1.24%, P/E ~195x). "Safest" still isn't the same as "best return" — that depends on your own time horizon and risk appetite, which this dashboard doesn't advise on.</span>
+        <span class="i18n ta" hidden>இருப்புநிலைக் குறிப்பு வலிமை மற்றும் வருமான விகிதங்களின்படி, லூபின் (ROE 28.7%, ROCE 29.9%, மிதமான கடன்) மற்றும் வி.ஏ. டெக் வாபாக் (கிட்டத்தட்ட கடன் இல்லாதது, ROE 15.9%) இரண்டும் ஸ்டெர்லைட் டெக்னாலஜீஸை (ROE 1.24%, P/E ~195x) விட அடிப்படையில் உறுதியானதாகத் தெரிகின்றன. "பாதுகாப்பானது" என்பது "சிறந்த வருமானம்" என்பதற்கு சமமல்ல — அது உங்கள் சொந்த காலக்கெடு மற்றும் ஆபத்து எடுக்கும் திறனைப் பொறுத்தது, இந்த டாஷ்போர்டு அதற்கு ஆலோசனை தராது.</span>
+      </div>
+    </details>
+
+    <details class="qa"><summary><span class="i18n en">What is "working capital days" and why does it matter here?</span><span class="i18n ta" hidden>"செயல்பாட்டு மூலதன நாட்கள்" என்றால் என்ன, இங்கு அது ஏன் முக்கியம்?</span></summary>
+      <div class="qa-answer">
+        <span class="i18n en">It measures how many days of sales are tied up in day-to-day operations (inventory + receivables − payables) — lower is generally more cash-efficient. Lupin's is a modest 28 days; Sterlite's cash-conversion cycle is a tight 16 days; VA Tech Wabag's is 97 days, with debtor days alone at 234 — a reminder that EPC/infrastructure businesses collect cash more slowly than manufacturing or pharma.</span>
+        <span class="i18n ta" hidden>இது தினசரி செயல்பாடுகளில் (சரக்கு + பெறத்தக்கவை − செலுத்தத்தக்கவை) எத்தனை நாட்கள் விற்பனை கட்டப்பட்டுள்ளது என்பதை அளக்கிறது — குறைவாக இருப்பது பொதுவாக அதிக பண-திறன். லூபினுக்கு இது மிதமான 28 நாட்கள்; ஸ்டெர்லைட்டின் பண மாற்று சுழற்சி இறுக்கமான 16 நாட்கள்; வி.ஏ. டெக் வாபாக்கிற்கு 97 நாட்கள், கடன்காரர் நாட்கள் மட்டும் 234 — EPC/உள்கட்டமைப்பு வணிகங்கள் உற்பத்தி அல்லது மருந்து நிறுவனங்களை விட மெதுவாக பணத்தை வசூலிக்கும் என்பதை நினைவூட்டுகிறது.</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===================== CAUVERY SOCRATES TAB ===================== -->
+  <div class="tabpanel" id="tab-socrates" role="tabpanel" hidden>
+    <div class="quiz-score">
+      <span>
+        <span class="i18n en">Your score: </span><span class="i18n ta" hidden>உங்கள் மதிப்பெண்: </span><span class="quiz-score-num">0 / 8</span>
+      </span>
+      <button class="langbtn" onclick="resetQuiz()" style="aria-pressed:false;">
+        <span class="i18n en">Reset Quiz</span><span class="i18n ta" hidden>மீண்டும் தொடங்கு</span>
+      </button>
+    </div>
+
+    <div class="quiz-q" data-correct="1" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">1. What is the single biggest trigger behind Sterlite Technologies' rally?</span><span class="i18n ta" hidden>1. ஸ்டெர்லைட் டெக்னாலஜீஸின் உயர்வுக்குப் பின்னால் உள்ள மிகப்பெரிய ஒற்றைத் தூண்டுதல் என்ன?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">A stock split</span><span class="i18n ta" hidden>ஒரு stock split</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">A ₹10,000 Cr hyperscaler AI data-centre order</span><span class="i18n ta" hidden>₹10,000 கோடி hyperscaler AI டேட்டா சென்டர் ஆர்டர்</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">A dividend announcement</span><span class="i18n ta" hidden>ஒரு ஈவுத்தொகை அறிவிப்பு</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">A merger with a telecom company</span><span class="i18n ta" hidden>ஒரு டெலிகாம் நிறுவனத்துடன் இணைப்பு</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">STL secured a ₹10,000 Cr (~$1.1bn) multi-year order from a hyperscaler for AI data-centre optical connectivity (FY27–FY29).</span><span class="i18n ta" hidden>STL AI டேட்டா சென்டர் ஆப்டிகல் இணைப்புக்காக ஒரு hyperscaler-இடமிருந்து ₹10,000 கோடி (~$1.1bn) பல-ஆண்டு ஆர்டரை பெற்றது (FY27–FY29).</span></div>
+    </div>
+
+    <div class="quiz-q" data-correct="1" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">2. Which two products are driving competitive pressure on Lupin in the US?</span><span class="i18n ta" hidden>2. அமெரிக்காவில் லூபினுக்கு போட்டி அழுத்தத்தை ஏற்படுத்தும் இரண்டு தயாரிப்புகள் எவை?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">Metformin and Atorvastatin</span><span class="i18n ta" hidden>Metformin மற்றும் Atorvastatin</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">Tolvaptan and Mirabegron</span><span class="i18n ta" hidden>Tolvaptan மற்றும் Mirabegron</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">Insulin and Heparin</span><span class="i18n ta" hidden>Insulin மற்றும் Heparin</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">Paracetamol and Ibuprofen</span><span class="i18n ta" hidden>Paracetamol மற்றும் Ibuprofen</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">Tolvaptan and Mirabegron are key Lupin US revenue drivers now facing fresh generic competition from Apotex and Teva.</span><span class="i18n ta" hidden>Tolvaptan மற்றும் Mirabegron லூபினின் முக்கிய அமெரிக்க வருவாய் மூலங்கள், இப்போது Apotex மற்றும் Teva-விடமிருந்து புதிய ஜெனரிக் போட்டியை எதிர்கொள்கின்றன.</span></div>
+    </div>
+
+    <div class="quiz-q" data-correct="2" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">3. VA Tech Wabag's order book of ₹19,400 Cr represents roughly how many times its annual revenue?</span><span class="i18n ta" hidden>3. வி.ஏ. டெக் வாபாக்கின் ₹19,400 கோடி ஆர்டர் புத்தகம் அதன் ஆண்டு வருவாயை விட தோராயமாக எத்தனை மடங்கு?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">About 1x</span><span class="i18n ta" hidden>சுமார் 1x</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">About 2x</span><span class="i18n ta" hidden>சுமார் 2x</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">Over 4x</span><span class="i18n ta" hidden>4x-க்கும் அதிகம்</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">About 10x</span><span class="i18n ta" hidden>சுமார் 10x</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">₹19,400 Cr against FY26 revenue of ₹3,944 Cr is nearly 5x — well above the company's own 3x comfort threshold.</span><span class="i18n ta" hidden>FY26 வருவாய் ₹3,944 கோடிக்கு எதிராக ₹19,400 கோடி என்பது கிட்டத்தட்ட 5x — நிறுவனத்தின் சொந்த 3x வரம்பையும் தாண்டி.</span></div>
+    </div>
+
+    <div class="quiz-q" data-correct="1" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">4. Why is Sterlite Technologies' P/E of ~195x not very meaningful on its own?</span><span class="i18n ta" hidden>4. ஸ்டெர்லைட் டெக்னாலஜீஸின் ~195x P/E விகிதம் ஏன் தனித்து அதிக பொருள் கொண்டதாக இல்லை?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">It's calculated in US dollars</span><span class="i18n ta" hidden>இது அமெரிக்க டாலரில் கணக்கிடப்படுகிறது</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">It's based on a very thin FY26 profit right after a return to profit</span><span class="i18n ta" hidden>இலாபத்திற்கு திரும்பிய உடனேயே மிகச் சிறிய FY26 லாப அடிப்படையில் கணக்கிடப்படுகிறது</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">The company doesn't disclose its P/E</span><span class="i18n ta" hidden>நிறுவனம் தன் P/E-ஐ வெளியிடவில்லை</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">It excludes depreciation</span><span class="i18n ta" hidden>இது தேய்மானத்தை விலக்குகிறது</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">FY26 PAT was just ₹56 Cr — the market is really pricing the FY29 "Lakshya" targets, not FY26 earnings.</span><span class="i18n ta" hidden>FY26 PAT வெறும் ₹56 கோடி மட்டுமே — சந்தை உண்மையில் FY29 "Lakshya" இலக்குகளை விலை நிர்ணயம் செய்கிறது, FY26 லாபத்தை அல்ல.</span></div>
+    </div>
+
+    <div class="quiz-q" data-correct="2" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">5. Roughly what share of Lupin's FY26 revenue came from the US?</span><span class="i18n ta" hidden>5. லூபினின் FY26 வருவாயில் தோராயமாக எத்தனை சதவீதம் அமெரிக்காவிலிருந்து வந்தது?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">About 20%</span><span class="i18n ta" hidden>சுமார் 20%</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">About 30%</span><span class="i18n ta" hidden>சுமார் 30%</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">About 42%</span><span class="i18n ta" hidden>சுமார் 42%</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">About 60%</span><span class="i18n ta" hidden>சுமார் 60%</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">US revenue of ₹11,678 Cr was about 42.5% of FY26's ~₹27,488 Cr formulations + API revenue.</span><span class="i18n ta" hidden>அமெரிக்க வருவாய் ₹11,678 கோடி என்பது FY26-இன் ~₹27,488 கோடி மொத்த வருவாயில் சுமார் 42.5%.</span></div>
+    </div>
+
+    <div class="quiz-q" data-correct="2" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">6. Which of the three companies is described as "near debt-free"?</span><span class="i18n ta" hidden>6. மூன்று நிறுவனங்களில் எது "கிட்டத்தட்ட கடன் இல்லாதது" என விவரிக்கப்படுகிறது?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">Lupin</span><span class="i18n ta" hidden>லூபின்</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">Sterlite Technologies</span><span class="i18n ta" hidden>ஸ்டெர்லைட் டெக்னாலஜீஸ்</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">VA Tech Wabag</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக்</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">All three</span><span class="i18n ta" hidden>மூன்றும்</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">VA Tech Wabag carries just ₹228 Cr borrowings against ₹1,080 Cr gross cash.</span><span class="i18n ta" hidden>வி.ஏ. டெக் வாபாக்கிற்கு ₹1,080 கோடி மொத்த பணத்திற்கு எதிராக வெறும் ₹228 கோடி கடன் மட்டுமே உள்ளது.</span></div>
+    </div>
+
+    <div class="quiz-q" data-correct="1" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">7. What new market did VA Tech Wabag enter with its Doha SWRO desalination Stage-II win?</span><span class="i18n ta" hidden>7. Doha SWRO டிசாலினேஷன் Stage-II வெற்றியுடன் வி.ஏ. டெக் வாபாக் எந்த புதிய சந்தையில் நுழைந்தது?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">Saudi Arabia</span><span class="i18n ta" hidden>சவூதி அரேபியா</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">Kuwait</span><span class="i18n ta" hidden>குவைத்</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">Qatar</span><span class="i18n ta" hidden>கத்தார்</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">Oman</span><span class="i18n ta" hidden>ஓமான்</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">The Doha SWRO plant is in Kuwait — VA Tech Wabag entered via a JV with Heavy Engineering Industries &amp; Shipbuilding Company.</span><span class="i18n ta" hidden>Doha SWRO ஆலை குவைத்தில் உள்ளது — வி.ஏ. டெக் வாபாக் Heavy Engineering Industries &amp; Shipbuilding Company உடன் JV மூலம் நுழைந்தது.</span></div>
+    </div>
+
+    <div class="quiz-q" data-correct="1" data-answered="false">
+      <div class="quiz-question"><span class="i18n en">8. What does ROE (Return on Equity) measure?</span><span class="i18n ta" hidden>8. ROE (Return on Equity) என்ன அளவீடு செய்கிறது?</span></div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-idx="0"><span class="i18n en">How much debt a company has</span><span class="i18n ta" hidden>நிறுவனத்திற்கு எவ்வளவு கடன் உள்ளது</span></button>
+        <button class="quiz-opt" data-idx="1"><span class="i18n en">How efficiently a company turns shareholders' equity into profit</span><span class="i18n ta" hidden>பங்குதாரர் மூலதனத்தை நிறுவனம் எவ்வளவு திறமையாக லாபமாக மாற்றுகிறது</span></button>
+        <button class="quiz-opt" data-idx="2"><span class="i18n en">The company's share price trend</span><span class="i18n ta" hidden>நிறுவனத்தின் பங்கு விலை போக்கு</span></button>
+        <button class="quiz-opt" data-idx="3"><span class="i18n en">The dividend paid per share</span><span class="i18n ta" hidden>ஒரு பங்குக்கு செலுத்தப்படும் ஈவுத்தொகை</span></button>
+      </div>
+      <div class="quiz-explain" hidden><span class="i18n en">ROE = Net Profit ÷ Shareholders' Equity — it shows how efficiently a company generates profit from the capital shareholders have put in.</span><span class="i18n ta" hidden>ROE = நிகர லாபம் ÷ பங்குதாரர் மூலதனம் — பங்குதாரர்கள் போட்ட மூலதனத்திலிருந்து நிறுவனம் எவ்வளவு திறமையாக லாபம் ஈட்டுகிறது என்பதை காட்டுகிறது.</span></div>
+    </div>
+  </div>
+
+</div>
+
+<button class="cb-badge" onclick="toggleDisclaimer()" aria-label="CB Research disclaimer">CB</button>
+<div class="cb-panel" id="cbPanel" hidden>
+  <span class="i18n en"><b>CB Research (Cauvery Business Research)</b> is an independent Indian equity research &amp; education platform. Not SEBI-registered — this content does not constitute and should not be construed as investment advice, and no buy/sell/hold recommendation is made or implied. Figures are compiled from public sources (Screener.in, stockanalysis.com, company filings, financial media) as of 9–12 September 2026 and may not reflect live prices, especially for highly volatile counters. Please verify independently before making any financial decision.</span>
+  <span class="i18n ta" hidden><b>CB Research (Cauvery Business Research)</b> என்பது ஒரு சுயாதீன இந்திய பங்கு ஆராய்ச்சி &amp; கல்வி தளம். SEBI-பதிவு செய்யப்படவில்லை — இந்த உள்ளடக்கம் முதலீட்டு ஆலோசனையாகக் கருதப்படக்கூடாது, buy/sell/hold பரிந்துரை எதுவும் இதில் இல்லை. எண்கள் பொது மூலங்களிலிருந்து (Screener.in, stockanalysis.com, நிறுவன தாக்கல்கள், நிதி ஊடகங்கள்) செப்டம்பர் 9–12, 2026 நிலவரப்படி தொகுக்கப்பட்டவை; மிகவும் நிலையற்ற பங்குகளுக்கு நேரடி விலைகளை பிரதிபலிக்காமல் இருக்கலாம். எந்த நிதி முடிவும் எடுப்பதற்கு முன் சுயாதீனமாக உறுதிப்படுத்தவும்.</span>
+</div>
+
+<script>
+  function setLang(lang){
+    document.querySelectorAll('.i18n.en').forEach(function(el){ el.hidden = (lang !== 'en'); });
+    document.querySelectorAll('.i18n.ta').forEach(function(el){ el.hidden = (lang !== 'ta'); });
+    document.querySelectorAll('.langbtn').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false'); });
+    try{ localStorage.setItem('cb-lang', lang); }catch(e){}
+  }
+  function showTab(tab){
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); });
+    ['dashboard','companies','reasons','risks','assist','socrates'].forEach(function(t){
+      var el = document.getElementById('tab-'+t);
+      if(el) el.hidden = (t !== tab);
+    });
+  }
+
+  /* ---------- Cauvery Socrates quiz ---------- */
+  var quizScore = 0;
+  var quizTotal = 0;
+  function updateQuizScore(){
+    document.querySelectorAll('.quiz-score-num').forEach(function(el){ el.textContent = quizScore + ' / ' + quizTotal; });
+  }
+  function resetQuiz(){
+    quizScore = 0;
+    document.querySelectorAll('.quiz-q').forEach(function(q){
+      q.dataset.answered = 'false';
+      q.querySelectorAll('.quiz-opt').forEach(function(b){ b.disabled = false; b.classList.remove('correct','incorrect'); });
+      var ex = q.querySelector('.quiz-explain');
+      if(ex) ex.hidden = true;
+    });
+    updateQuizScore();
+  }
+  function initQuiz(){
+    var qs = document.querySelectorAll('.quiz-q');
+    quizTotal = qs.length;
+    qs.forEach(function(q){
+      var correct = parseInt(q.dataset.correct, 10);
+      q.querySelectorAll('.quiz-opt').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          if(q.dataset.answered === 'true') return;
+          q.dataset.answered = 'true';
+          var idx = parseInt(btn.dataset.idx, 10);
+          q.querySelectorAll('.quiz-opt').forEach(function(b){ b.disabled = true; });
+          if(idx === correct){
+            btn.classList.add('correct');
+            quizScore++;
+          } else {
+            btn.classList.add('incorrect');
+            var correctBtn = q.querySelector('.quiz-opt[data-idx="' + correct + '"]');
+            if(correctBtn) correctBtn.classList.add('correct');
+          }
+          var ex = q.querySelector('.quiz-explain');
+          if(ex) ex.hidden = false;
+          updateQuizScore();
+        });
+      });
+    });
+    updateQuizScore();
+  }
+  initQuiz();
+  function showCo(co){
+    document.querySelectorAll('.pill').forEach(function(b){ b.classList.toggle('active', b.dataset.co === co); });
+    ['lupin','sterlite','wabag'].forEach(function(c){
+      var el = document.getElementById('co-'+c);
+      if(el) el.hidden = (c !== co);
+    });
+  }
+  function toggleDisclaimer(){
+    var p = document.getElementById('cbPanel');
+    p.hidden = !p.hidden;
+  }
+  document.addEventListener('click', function(e){
+    var p = document.getElementById('cbPanel');
+    if(!p.hidden && !p.contains(e.target) && !e.target.closest('.cb-badge')){ p.hidden = true; }
+  });
+  (function(){
+    try{
+      var saved = localStorage.getItem('cb-lang');
+      if(saved === 'ta'){ setLang('ta'); }
+    }catch(e){}
+  })();
+</script>
+
+</body>
+</html>

@@ -209,6 +209,30 @@ interest rate has not changed.
 - **State the hedged cost, not the headline rate.** An unhedged foreign borrowing is a currency position,
   not cheap funding.
 
+### How a gold loan actually works, and why its AUM can mislead
+
+The mechanics decide the metrics:
+
+1. The borrower pledges gold jewellery, valued against the regulator's purity and valuation norms.
+2. The lender advances a percentage of that value — the **LTV**, now tiered by ticket size under the
+   RBI's rules *(as at 2026; confirm the current tiers at source)*.
+3. Loans are **short-tenure and frequently bullet-repaid** — interest and principal together at the end —
+   rather than amortised through EMIs.
+4. On default the lender **auctions the pledged gold** under prescribed procedures.
+
+Three consequences:
+
+- **AUM growth is not the same as customer growth.** When the gold price rises, the same pledged jewellery
+  supports a larger loan, so the book grows without a single new borrower. **Always separate price-driven
+  growth from volume growth** — ask for borrower or tonnage growth alongside AUM, and treat a
+  gold-price-led AUM surge as a revaluation rather than a franchise win.
+- **Short tenure means the book reprices quickly**, in both directions. Yield and margin can compress
+  sharply quarter-on-quarter when competition or funding cost moves, even while AUM and profit still look
+  strong year-on-year. **A quarter can beat on profit and still be sold on margin** — read the sequential
+  yield and margin, not just the annual growth.
+- **Auction recovery is why credit cost stays low**, and it is a function of collateral liquidity rather
+  than underwriting skill — see the concentration note above.
+
 ### What goes wrong, and the tell
 
 **Asset-liability mismatch, and funding that reprices faster than the book.** The tells: cost of funds rising while yield on advances is flat or contractually fixed; short-term borrowing funding long-tenor assets; reliance on a narrow set of lenders; and a rating outlook change, which in this sector is a leading indicator rather than a lagging one because funding access *is* the business.

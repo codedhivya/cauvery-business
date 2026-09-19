@@ -1,0 +1,1114 @@
+<title>Thermal Backstop</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --surface:#f6f6f3;
+    --surface-2:#efefe9;
+    --ink:#14171c;
+    --ink-soft:#565b63;
+    --ink-faint:#8a8f97;
+    --border:#e2e1dc;
+    --border-strong:#c9c8c1;
+    --accent:#ff9642;
+    --accent-ink:#8a4108;
+    --accent-soft:#fff1e0;
+    --accent-strong:#e67a22;
+    --good:#147a4c;
+    --good-soft:#e5f5ec;
+    --warn:#b4780f;
+    --warn-soft:#fdf1dd;
+    --bad:#bf3327;
+    --bad-soft:#fbe9e6;
+    --radius:10px;
+    --maxw:1000px;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box;}
+  html{padding:0 !important;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Source Sans 3','Segoe UI',Helvetica,Arial,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .ta{font-family:'Noto Sans Tamil','Source Sans 3',sans-serif;}
+  h1,h2,h3,h4{
+    font-family:'Archivo','Source Sans 3',sans-serif;
+    font-weight:800;
+    color:var(--ink);
+    text-wrap:balance;
+    margin:0 0 .4em 0;
+    letter-spacing:-0.01em;
+  }
+  .ta h1,.ta h2,.ta h3,.ta h4{font-family:'Noto Sans Tamil','Archivo',sans-serif;font-weight:700;}
+  p{margin:0 0 .8em 0;}
+  .num{font-variant-numeric:tabular-nums;}
+  a{color:var(--accent-strong);}
+  [hidden]{display:none !important;}
+
+  /* language toggling */
+  html[data-lang="en"] .lang-ta{display:none !important;}
+  html[data-lang="ta"] .lang-en{display:none !important;}
+
+  /* header */
+  header.top{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:saturate(1.1) blur(6px);
+    border-bottom:1px solid var(--border);
+  }
+  .top-inner{
+    max-width:var(--maxw); margin:0 auto; padding:14px 18px 10px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .brand{display:flex; flex-direction:column; gap:2px;}
+  .brand .kicker{
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent-strong);
+  }
+  .brand h1{font-size:22px; margin:0; line-height:1.15;}
+  .brand .sub{font-size:13px; color:var(--ink-soft); margin-top:2px;}
+  .top-actions{display:flex; align-items:center; gap:10px;}
+  .lang-toggle{
+    display:flex; border:1.5px solid var(--border-strong); border-radius:999px; overflow:hidden;
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:12.5px;
+  }
+  .lang-toggle button{
+    border:0; background:var(--bg); color:var(--ink-soft); padding:7px 14px; cursor:pointer;
+  }
+  .lang-toggle button.active{background:var(--accent); color:var(--accent-ink);}
+  .asof{font-size:11.5px; color:var(--ink-faint); text-align:right;}
+
+  /* tabs */
+  nav.tabs{
+    max-width:var(--maxw); margin:0 auto; padding:0 18px;
+    display:flex; gap:2px; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+  }
+  nav.tabs::-webkit-scrollbar{height:5px;}
+  nav.tabs::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:4px;}
+  nav.tabs button{
+    flex:0 0 auto; border:0; background:transparent; cursor:pointer;
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; color:var(--ink-soft);
+    padding:10px 13px 11px; border-bottom:3px solid transparent; white-space:nowrap;
+  }
+  nav.tabs button.active{color:var(--ink); border-bottom-color:var(--accent);}
+  nav.tabs button:hover{color:var(--ink);}
+
+  main{max-width:var(--maxw); margin:0 auto; padding:22px 18px 90px;}
+  section.panel{display:block;}
+  .lede{font-size:15.5px; color:var(--ink-soft); max-width:65ch;}
+
+  /* generic building blocks */
+  .grid{display:grid; gap:12px;}
+  .grid.cols-2{grid-template-columns:1fr 1fr;}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr);}
+  .grid.cols-4{grid-template-columns:repeat(4,1fr);}
+  @media (max-width:760px){
+    .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}
+  }
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px;
+  }
+  .card.tight{padding:12px 14px;}
+  .stat{
+    background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);
+    padding:14px 16px; display:flex; flex-direction:column; gap:4px;
+  }
+  .stat .label{font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); font-weight:700;}
+  .stat .value{font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; line-height:1.05;}
+  .stat .note{font-size:12.5px; color:var(--ink-soft);}
+  .stat.accent{background:var(--accent-soft); border-color:#ffd9ac;}
+  .stat.accent .value{color:var(--accent-ink);}
+  .stat.good .value{color:var(--good);}
+  .stat.warn .value{color:var(--warn);}
+  .stat.bad .value{color:var(--bad);}
+
+  .pill{
+    display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:700;
+    padding:3px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em;
+  }
+  .pill.good{background:var(--good-soft); color:var(--good);}
+  .pill.warn{background:var(--warn-soft); color:var(--warn);}
+  .pill.bad{background:var(--bad-soft); color:var(--bad);}
+  .pill.accent{background:var(--accent-soft); color:var(--accent-ink);}
+  .pill.neutral{background:var(--surface-2); color:var(--ink-soft);}
+
+  ul.bul{margin:0 0 .9em 0; padding-left:1.2em;}
+  ul.bul li{margin-bottom:6px;}
+  ul.bul.tight li{margin-bottom:3px;}
+  .section-title{display:flex; align-items:center; gap:10px; margin:26px 0 10px;}
+  .section-title:first-child{margin-top:0;}
+  .section-title h2{font-size:19px; margin:0;}
+  .section-title .idx{
+    font-family:'Archivo',sans-serif; font-weight:800; font-size:12px; color:var(--accent-ink);
+    background:var(--accent-soft); border-radius:6px; padding:3px 8px;
+  }
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); white-space:nowrap;}
+  th{
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:11.5px; text-transform:uppercase;
+    letter-spacing:.04em; color:var(--ink-soft); background:var(--surface);
+  }
+  tbody tr:last-child td{border-bottom:0;}
+  tbody tr:hover{background:var(--surface);}
+  td.num, th.num{font-variant-numeric:tabular-nums; text-align:right;}
+
+  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+  .bar-label{width:110px; flex:0 0 110px; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .bar-track{flex:1; background:var(--surface-2); border-radius:6px; height:20px; overflow:hidden; position:relative; min-width:0;}
+  .bar-fill{height:100%; border-radius:6px;}
+  .bar-value{flex:0 0 auto; width:132px; font-size:12px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; text-align:left;}
+  @media (max-width:520px){ .bar-label{width:78px; flex-basis:78px; font-size:11.5px;} .bar-value{width:104px; font-size:11px;} }
+
+  .timeline{border-left:3px solid var(--border-strong); margin-left:8px; padding-left:20px;}
+  .tl-item{position:relative; padding-bottom:22px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{
+    content:""; position:absolute; left:-26.5px; top:3px; width:12px; height:12px; border-radius:50%;
+    background:var(--accent); border:2px solid var(--bg); box-shadow:0 0 0 2px var(--accent);
+  }
+  .tl-item .when{font-family:'Archivo',sans-serif; font-weight:800; font-size:12.5px; color:var(--accent-ink); text-transform:uppercase; letter-spacing:.03em;}
+  .tl-item h4{font-size:15px; margin:2px 0 4px;}
+  .tl-item p{font-size:14px; color:var(--ink-soft); margin:0;}
+
+  .company-card{border:1px solid var(--border); border-radius:var(--radius); background:var(--bg); overflow:hidden;}
+  .company-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+    padding:14px 16px; background:var(--surface); border-bottom:1px solid var(--border);
+  }
+  .company-head h3{font-size:17px; margin:0;}
+  .company-head .ticker{font-size:12px; color:var(--ink-faint); font-weight:600;}
+  .company-body{padding:14px 16px;}
+  .kv{display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; margin-bottom:10px;}
+  .kv .k{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); font-weight:700;}
+  .kv .v{font-size:14.5px; font-weight:700; font-variant-numeric:tabular-nums;}
+
+  .swot-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width:640px){.swot-grid{grid-template-columns:1fr;}}
+  .swot-box{border-radius:var(--radius); padding:14px 16px; border:1px solid var(--border);}
+  .swot-box h4{font-size:13px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px;}
+  .swot-box.s{background:var(--good-soft); border-color:#bfe5cf;}
+  .swot-box.w{background:var(--bad-soft); border-color:#f0c6c0;}
+  .swot-box.o{background:var(--accent-soft); border-color:#ffd9ac;}
+  .swot-box.t{background:var(--warn-soft); border-color:#f3d99a;}
+
+  .takeaway{
+    display:flex; gap:12px; align-items:flex-start; border:1px solid var(--border); border-radius:var(--radius);
+    padding:14px 16px; background:var(--bg);
+  }
+  .takeaway .n{
+    font-family:'Archivo',sans-serif; font-weight:800; font-size:20px; color:var(--accent);
+    flex:0 0 auto; width:34px;
+  }
+
+  .foot-note{font-size:12px; color:var(--ink-faint); border-top:1px solid var(--border); margin-top:30px; padding-top:14px;}
+
+  /* financials sub-tabs */
+  .subtabs{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; margin:4px 0 20px; padding-bottom:4px;}
+  .subtabs::-webkit-scrollbar{height:5px;}
+  .subtabs::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:4px;}
+  .subtabs button{
+    flex:0 0 auto; border:1.5px solid var(--border-strong); background:var(--bg); color:var(--ink-soft);
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:12.5px; padding:7px 14px; border-radius:999px;
+    white-space:nowrap; cursor:pointer;
+  }
+  .subtabs button.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .subtabs button:hover:not(.active){border-color:var(--accent);}
+
+  .company-fin-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
+  .company-fin-head h3{font-size:20px; margin:0;}
+  .company-fin-head .ticker{font-size:12.5px; color:var(--ink-faint); font-weight:600;}
+
+  .fin-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;}
+  @media (max-width:760px){ .fin-grid{grid-template-columns:1fr;} }
+  .fin-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;}
+  .fin-card h4{font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; color:var(--accent-ink);}
+  table.fin-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  table.fin-table td{padding:7px 0; border-bottom:1px dashed var(--border); vertical-align:top;}
+  table.fin-table td:first-child{color:var(--ink-soft); padding-right:8px;}
+  table.fin-table td.lang-en:not(:last-child), table.fin-table td.lang-ta:not(:last-child){color:var(--ink-soft); padding-right:8px; font-weight:400;}
+  table.fin-table td:last-child{text-align:right; font-weight:700; font-variant-numeric:tabular-nums; white-space:normal;}
+  table.fin-table tr:last-child td{border-bottom:0;}
+
+  /* disclaimer badge */
+  .cb-badge{
+    position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:40;
+    width:38px; height:38px; border-radius:50%; background:var(--ink); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Archivo',sans-serif; font-weight:800; font-size:12px; cursor:pointer;
+    box-shadow:0 3px 10px rgba(0,0,0,.25);
+    animation:cbpulse 2.2s ease-in-out infinite;
+  }
+  @keyframes cbpulse{
+    0%,100%{box-shadow:0 3px 10px rgba(0,0,0,.25), 0 0 0 0 rgba(255,150,66,.55);}
+    50%{box-shadow:0 3px 10px rgba(0,0,0,.25), 0 0 0 7px rgba(255,150,66,0);}
+  }
+  .cb-disclaimer{
+    position:fixed; right:16px; bottom:calc(62px + env(safe-area-inset-bottom,0px)); z-index:40;
+    max-width:290px; background:var(--ink); color:#fff; border-radius:10px; padding:12px 14px;
+    font-size:12px; line-height:1.5; box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+  @media (max-width:420px){ .cb-disclaimer{max-width:calc(100vw - 32px);} }
+
+  @media (prefers-reduced-motion:reduce){ .cb-badge{animation:none;} }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Source+Sans+3:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap">
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="kicker lang-en">CB Research &middot; Sector Note</span>
+      <span class="kicker lang-ta ta">CB Research &middot; துறை குறிப்பு</span>
+      <h1 class="lang-en">Thermal Becomes the Backstop</h1>
+      <h1 class="lang-ta ta">அனல் மின் உற்பத்தி முதன்மை ஆதாரமாகிறது</h1>
+      <div class="sub lang-en">Wind's off-season + a weak monsoon + El Ni&ntilde;o &mdash; what it means for Tata Power, Adani Power, NTPC &amp; green generators through May 2027</div>
+      <div class="sub lang-ta ta">காற்றாலையின் பருவமுடிவு + பலவீனமான பருவமழை + எல் நினோ &mdash; மே 2027 வரை டாடா பவர், அதானி பவர், என்.டி.பி.சி மற்றும் பசுமை மின் நிறுவனங்களுக்கு இது என்ன அர்த்தம்</div>
+    </div>
+    <div class="top-actions">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+        <button id="btn-ta" onclick="setLang('ta')">த</button>
+      </div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabnav">
+    <button class="tab-btn active" data-tab="dashboard">
+      <span class="lang-en">Dashboard</span><span class="lang-ta ta">டாஷ்போர்டு</span>
+    </button>
+    <button class="tab-btn" data-tab="grid">
+      <span class="lang-en">How the Grid Works</span><span class="lang-ta ta">மின்கட்டமைப்பு</span>
+    </button>
+    <button class="tab-btn" data-tab="thermal">
+      <span class="lang-en">Thermal Majors</span><span class="lang-ta ta">அனல் மின் நிறுவனங்கள்</span>
+    </button>
+    <button class="tab-btn" data-tab="green">
+      <span class="lang-en">Green Generators</span><span class="lang-ta ta">பசுமை மின் நிறுவனங்கள்</span>
+    </button>
+    <button class="tab-btn" data-tab="financials">
+      <span class="lang-en">Financials</span><span class="lang-ta ta">நிதிநிலை</span>
+    </button>
+    <button class="tab-btn" data-tab="market">
+      <span class="lang-en">Market Reaction</span><span class="lang-ta ta">சந்தை எதிர்வினை</span>
+    </button>
+    <button class="tab-btn" data-tab="takeaways">
+      <span class="lang-en">5 Key Takeaways</span><span class="lang-ta ta">5 முக்கிய கருத்துகள்</span>
+    </button>
+    <button class="tab-btn" data-tab="swot">
+      <span class="lang-en">SWOT</span><span class="lang-ta ta">SWOT</span>
+    </button>
+    <button class="tab-btn" data-tab="timeline">
+      <span class="lang-en">Road to May 2027</span><span class="lang-ta ta">மே 2027 பாதை</span>
+    </button>
+    <button class="tab-btn" data-tab="analyst">
+      <span class="lang-en">Analyst View</span><span class="lang-ta ta">ஆய்வாளர் கருத்து</span>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============ DASHBOARD ============ -->
+<section class="panel" data-panel="dashboard">
+  <p class="lede lang-en">India hit a near-record 269&nbsp;GW of peak power demand on 10&nbsp;September 2026 while hydro output ran 12% below last year and wind headed into its seasonal off-period. Coal-fired thermal plants absorbed the gap &mdash; and so did their share prices. Here's the state of play for the names you asked about.</p>
+  <p class="lede lang-ta ta">2026 செப்டம்பர் 10-ல் இந்தியா 269 GW உச்சபட்ச மின் தேவையை எட்டியது; அதே நேரம் நீர்மின் உற்பத்தி கடந்த ஆண்டைவிட 12% குறைவாக இருந்தது, காற்றாலை பருவமும் முடிவை நோக்கி சென்றது. அனல் மின் நிலையங்கள் இந்த இடைவெளியை ஈடுசெய்தன &mdash; அவற்றின் பங்கு விலைகளும் அதற்கேற்ப நகர்ந்தன. நீங்கள் கேட்ட நிறுவனங்களின் தற்போதைய நிலை இதோ.</p>
+
+  <div class="grid cols-4" style="margin:16px 0 22px;">
+    <div class="stat accent">
+      <span class="label lang-en">Peak Demand &middot; 10 Sep 2026</span>
+      <span class="label lang-ta ta">உச்ச தேவை &middot; 10 செப் 2026</span>
+      <span class="value num">269 GW</span>
+      <span class="note lang-en">Rarely seen outside peak summer</span>
+      <span class="note lang-ta ta">கோடை உச்சத்திற்கு வெளியே அரிதாகவே காணப்படும் அளவு</span>
+    </div>
+    <div class="stat bad">
+      <span class="label lang-en">Hydro Output, to 29 Aug</span>
+      <span class="label lang-ta ta">நீர்மின் உற்பத்தி, 29 ஆக வரை</span>
+      <span class="value num">&minus;12% YoY</span>
+      <span class="note lang-en">4th straight month down; June alone &minus;21%</span>
+      <span class="note lang-ta ta">தொடர்ந்து 4-வது மாதம் சரிவு; ஜூன் மட்டும் &minus;21%</span>
+    </div>
+    <div class="stat warn">
+      <span class="label lang-en">Spot Power Price</span>
+      <span class="label lang-ta ta">உடனடி மின் விலை</span>
+      <span class="value num">₹10/unit</span>
+      <span class="note lang-en">Repeatedly hit the regulatory ceiling, Sep 2026</span>
+      <span class="note lang-ta ta">செப் 2026-ல் அரசு நிர்ணயித்த உச்சவரம்பை தொடர்ந்து எட்டியது</span>
+    </div>
+    <div class="stat">
+      <span class="label lang-en">Coal Stock Alerts</span>
+      <span class="label lang-ta ta">நிலக்கரி இருப்பு எச்சரிக்கை</span>
+      <span class="value num">58 plants</span>
+      <span class="note lang-en">"Critical" tag, not a national scarcity &mdash; see Market tab</span>
+      <span class="note lang-ta ta">"நெருக்கடி" குறியீடு, தேசிய பற்றாக்குறை அல்ல &mdash; சந்தை தாவலைப் பார்க்கவும்</span>
+    </div>
+  </div>
+
+  <div class="section-title"><h2 class="lang-en">India's generation mix, by installed capacity</h2><h2 class="lang-ta ta">இந்தியாவின் மின் உற்பத்தி கலவை, நிறுவப்பட்ட திறன் வாரியாக</h2></div>
+  <div class="card">
+    <div class="bar-row"><div class="bar-label lang-en">Coal</div><div class="bar-label lang-ta ta">நிலக்கரி</div><div class="bar-track"><div class="bar-fill" style="width:40.8%;background:#3a3f46;"></div></div><div class="bar-value num">224 GW &middot; 40.8%</div></div>
+    <div class="bar-row"><div class="bar-label lang-en">Solar</div><div class="bar-label lang-ta ta">சூரிய சக்தி</div><div class="bar-track"><div class="bar-fill" style="width:29.5%;background:var(--accent);"></div></div><div class="bar-value num">162 GW &middot; 29.5%</div></div>
+    <div class="bar-row"><div class="bar-label lang-en">Wind</div><div class="bar-label lang-ta ta">காற்றாலை</div><div class="bar-track"><div class="bar-fill" style="width:10.5%;background:#6fa8dc;"></div></div><div class="bar-value num">57 GW &middot; 10.5%</div></div>
+    <div class="bar-row"><div class="bar-label lang-en">Hydro</div><div class="bar-label lang-ta ta">நீர்மின்</div><div class="bar-track"><div class="bar-fill" style="width:9.5%;background:#4e8098;"></div></div><div class="bar-value num">52 GW &middot; 9.5%</div></div>
+    <div class="bar-row"><div class="bar-label lang-en">Nuclear</div><div class="bar-label lang-ta ta">அணு மின்</div><div class="bar-track"><div class="bar-fill" style="width:1.6%;background:#8a6fa8;"></div></div><div class="bar-value num">8.8 GW &middot; 1.6%</div></div>
+    <div class="bar-row" style="margin-bottom:0;"><div class="bar-label lang-en">Biomass/small hydro</div><div class="bar-label lang-ta ta">பயோமாஸ்/சிறு நீர்மின்</div><div class="bar-track"><div class="bar-fill" style="width:3.1%;background:#8a9a5b;"></div></div><div class="bar-value num">17 GW &middot; 3.1%</div></div>
+    <p class="note lang-en" style="margin-top:10px;font-size:12px;">CEA, installed capacity as of June 2026. Installed capacity &ne; actual generation &mdash; coal and gas plants run far above their nameplate share when wind and hydro fall short.</p>
+    <p class="note lang-ta ta" style="margin-top:10px;font-size:12px;">CEA, ஜூன் 2026 நிலவரப்படி நிறுவப்பட்ட திறன். நிறுவப்பட்ட திறன் &ne; உண்மையான உற்பத்தி &mdash; காற்று, நீர்மின் குறையும்போது நிலக்கரி/எரிவாயு நிலையங்கள் தங்கள் பங்கை விட அதிகமாக இயங்குகின்றன.</p>
+  </div>
+
+  <div class="section-title"><h2 class="lang-en">At a glance: the six names</h2><h2 class="lang-ta ta">ஒரு பார்வையில்: ஆறு நிறுவனங்கள்</h2></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th class="lang-en">Company</th><th class="lang-ta ta">நிறுவனம்</th>
+        <th class="num">CMP (₹)</th><th class="num">P/E (TTM)</th>
+        <th class="num lang-en">Q1FY27 PAT YoY</th><th class="num lang-ta ta">Q1FY27 PAT YoY</th>
+        <th class="lang-en">Consensus</th><th class="lang-ta ta">ஒருமித்த கருத்து</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>NTPC <span class="pill neutral">Thermal (PSU)</span></td><td class="num">329.50</td><td class="num">11.65x</td><td class="num">+12%</td><td><span class="pill good">96% Buy</span></td></tr>
+        <tr><td>Adani Power <span class="pill neutral">Thermal</span></td><td class="num">202.00</td><td class="num">28.41x</td><td class="num">+47%</td><td><span class="pill good">89% Buy</span></td></tr>
+        <tr><td>Tata Power <span class="pill neutral">Thermal+Renew.</span></td><td class="num">363.00</td><td class="num">30.16x</td><td class="num">+11%</td><td><span class="pill accent">60% Buy</span></td></tr>
+        <tr><td>Adani Green <span class="pill neutral">Solar+Wind</span></td><td class="num">1,255.00</td><td class="num">122.7x</td><td class="num">&mdash;</td><td><span class="pill good">91% Buy</span></td></tr>
+        <tr><td>Suzlon Energy <span class="pill neutral">Wind OEM</span></td><td class="num">43.35</td><td class="num">19.35x</td><td class="num">&mdash;</td><td><span class="pill good">83% Buy</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="foot-note lang-en">Prices, P/E and analyst-consensus mix as of 15 Sep 2026 close (indmoney.com). Q1FY27 = Apr&ndash;Jun 2026 quarter, company filings. Not a recommendation &mdash; see disclaimer.</p>
+  <p class="foot-note lang-ta ta">விலைகள், P/E, ஆய்வாளர் ஒருமித்த கருத்து 15 செப் 2026 நிலவரப்படி (indmoney.com). Q1FY27 = ஏப்ரல்&ndash;ஜூன் 2026 காலாண்டு, நிறுவன தாக்கல்கள். இது பரிந்துரை அல்ல &mdash; பொறுப்புத்துறப்பைப் பார்க்கவும்.</p>
+</section>
+
+<!-- ============ GRID MECHANICS ============ -->
+<section class="panel" data-panel="grid" hidden>
+  <div class="section-title"><h2 class="lang-en">Why thermal becomes the backstop</h2><h2 class="lang-ta ta">அனல் மின் ஏன் முதன்மை ஆதாரமாகிறது</h2></div>
+  <ul class="bul lang-en">
+    <li><strong>Wind is a monsoon-season resource in India</strong>, not a year-round one. Generation is concentrated June&ndash;September in Tamil Nadu, Gujarat, Karnataka, AP and Rajasthan; capacity factors drop sharply from October and stay low into May every single year. This year's "stoppage" is largely the normal seasonal switch-off &mdash; sharpened because the monsoon itself was weak, so even peak-season wind output undershot.</li>
+    <li><strong>Hydro tracks the monsoon directly.</strong> With June&ndash;Sept rainfall running ~14% below the long-period average (August alone &minus;16%), river flows and reservoir levels are below normal. Most of India's 52 GW hydro fleet is run-of-river, so it feels a weak monsoon immediately, not just in reservoir storage.</li>
+    <li><strong>Solar (29.5% of capacity) can't plug the evening peak.</strong> Demand peaks around 6&ndash;10pm, exactly when solar output fades and wind is absent &mdash; the "duck curve" problem. That gap has to be filled by something dispatchable.</li>
+    <li><strong>Coal is the only source big and flexible enough to backstop at this scale.</strong> At 224 GW installed (40.8% of capacity) it supplied 171.7&ndash;184.9 GW during a recent 270 GW peak day &mdash; roughly two-thirds of national demand.</li>
+    <li><strong>Government has invoked emergency powers to keep costly plants running.</strong> Section 11 of the Electricity Act was used to force Tata Power's imported-coal Mundra plant (4,150 MW) back to full output from April 2026, with directions extended through 30 September 2026 &mdash; a plant that is otherwise loss-making on its old tariffs.</li>
+  </ul>
+  <ul class="bul lang-ta ta">
+    <li><strong>இந்தியாவில் காற்றாலை ஒரு பருவமழை-கால ஆதாரம்</strong>, ஆண்டு முழுவதும் கிடைப்பதில்லை. உற்பத்தி ஜூன்&ndash;செப்டம்பரில் தமிழ்நாடு, குஜராத், கர்நாடகா, ஆந்திரா, ராஜஸ்தானில் குவிந்துள்ளது; அக்டோபர் முதல் திறன் காரணி கூர்மையாக குறைந்து மே வரை தொடர்கிறது &mdash; ஒவ்வோர் ஆண்டும். இந்த ஆண்டு "நிறுத்தம்" பெரும்பாலும் இயல்பான பருவ மாற்றமே &mdash; பருவமழையே பலவீனமாக இருந்ததால் உச்சகால உற்பத்தியும் குறைவாக இருந்தது.</li>
+    <li><strong>நீர்மின் நேரடியாக பருவமழையைச் சார்ந்துள்ளது.</strong> ஜூன்&ndash;செப் மழை நீண்டகால சராசரியை விட ~14% குறைவாக இருப்பதால் (ஆகஸ்ட் மட்டும் &minus;16%), ஆற்று ஓட்டமும் நீர்த்தேக்க அளவும் குறைவாக உள்ளன.</li>
+    <li><strong>சூரிய சக்தி (திறனில் 29.5%) மாலை உச்சத்தை ஈடுகட்ட முடியாது.</strong> தேவை மாலை 6&ndash;10 மணிக்கு உச்சத்தை எட்டுகிறது, அப்போது சூரிய உற்பத்தி குறைகிறது, காற்றும் இல்லை.</li>
+    <li><strong>இந்த அளவில் ஈடுசெய்ய நிலக்கரி மட்டுமே போதுமான அளவு பெரியது.</strong> 224 GW நிறுவப்பட்ட திறனுடன் (40.8%) அது 270 GW உச்ச நாளில் 171.7&ndash;184.9 GW வழங்கியது &mdash; தேசிய தேவையில் மூன்றில் இரண்டு பங்கு.</li>
+    <li><strong>அரசு அவசரகால அதிகாரங்களைப் பயன்படுத்தி நிலையங்களை இயக்குகிறது.</strong> மின்சாரச் சட்டம் பிரிவு 11-ஐப் பயன்படுத்தி டாடா பவரின் இறக்குமதி நிலக்கரி மூண்ட்ரா நிலையத்தை (4,150 MW) ஏப்ரல் 2026 முதல் முழு திறனில் இயக்க உத்தரவிடப்பட்டது, செப் 30, 2026 வரை நீட்டிக்கப்பட்டது.</li>
+  </ul>
+
+  <div class="section-title"><h2 class="lang-en">Installed capacity &amp; grid role</h2><h2 class="lang-ta ta">நிறுவப்பட்ட திறன் &amp; பங்கு</h2></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th class="lang-en">Source</th><th class="lang-ta ta">ஆதாரம்</th>
+        <th class="num">GW</th><th class="num">Share</th>
+        <th class="lang-en">Typical role, Oct&ndash;May</th><th class="lang-ta ta">பங்கு, அக்&ndash;மே</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Coal</td><td class="num">224</td><td class="num">40.8%</td><td class="lang-en">Baseload + swing/peaking backstop</td><td class="lang-ta ta">அடிப்படை + உச்ச-கால ஆதாரம்</td></tr>
+        <tr><td>Solar</td><td class="num">162</td><td class="num">29.5%</td><td class="lang-en">Strong midday, zero at evening peak</td><td class="lang-ta ta">மதியம் வலிமை, மாலை உச்சத்தில் பூஜ்ஜியம்</td></tr>
+        <tr><td>Wind</td><td class="num">57</td><td class="num">10.5%</td><td class="lang-en">Low season &mdash; structurally, every year</td><td class="lang-ta ta">குறைந்த பருவம் &mdash; ஒவ்வோர் ஆண்டும்</td></tr>
+        <tr><td>Hydro</td><td class="num">52</td><td class="num">9.5%</td><td class="lang-en">Depends on carry-over storage; weak this cycle</td><td class="lang-ta ta">நீர்த்தேக்கத்தைச் சார்ந்தது; இந்த சுழற்சியில் பலவீனம்</td></tr>
+        <tr><td class="lang-en">Nuclear</td><td class="lang-ta ta">அணு மின்</td><td class="num">8.8</td><td class="num">1.6%</td><td class="lang-en">Steady baseload, unaffected by weather</td><td class="lang-ta ta">நிலையான அடிப்படை, வானிலை பாதிப்பில்லை</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ THERMAL MAJORS ============ -->
+<section class="panel" data-panel="thermal" hidden>
+  <p class="lede lang-en">All three are running hotter, literally &mdash; higher plant-load factors, and in most cases higher merchant realisations. Here's how each is positioned.</p>
+  <p class="lede lang-ta ta">மூன்று நிறுவனங்களும் அதிக உற்பத்தி தொகுதி காரணி (PLF) மற்றும் பெரும்பாலும் அதிக விலையில் மின் விற்பனையுடன் இயங்குகின்றன.</p>
+
+  <div class="grid cols-3" style="margin-top:14px;">
+    <div class="company-card">
+      <div class="company-head"><div><h3>NTPC</h3><div class="ticker">NSE: NTPC &middot; Maharatna PSU</div></div><span class="pill good">PLF 76.7%</span></div>
+      <div class="company-body">
+        <div class="kv">
+          <div><div class="k lang-en">CMP</div><div class="k lang-ta ta">தற்போதைய விலை</div><div class="v">₹329.50</div></div>
+          <div><div class="k lang-en">52-wk range</div><div class="k lang-ta ta">52-வார வரம்பு</div><div class="v">₹316&ndash;414</div></div>
+          <div><div class="k lang-en">Mkt cap</div><div class="k lang-ta ta">சந்தை மதிப்பு</div><div class="v">₹3.23L cr</div></div>
+          <div><div class="k">P/E (TTM)</div><div class="v">11.65x</div></div>
+        </div>
+        <ul class="bul tight lang-en">
+          <li>Q1FY27 standalone PAT ₹5,342cr (+12% YoY); consolidated PAT ₹6,896cr (+13%)</li>
+          <li>Coal PLF 76.71% vs India average 70.32% &mdash; running well ahead of the pack</li>
+          <li>Cheapest of the three on P/E (11.65x vs sector ~30x); largest generator, ~1/4 of national output</li>
+          <li>Also has NTPC Green Energy arm &mdash; a hedge if the thesis reverses</li>
+        </ul>
+        <ul class="bul tight lang-ta ta">
+          <li>Q1FY27 நிலைநிற்கும் PAT ₹5,342 கோடி (+12%); ஒருங்கிணைந்த PAT ₹6,896 கோடி (+13%)</li>
+          <li>நிலக்கரி PLF 76.71% (இந்திய சராசரி 70.32%) &mdash; போட்டியாளர்களை விட முன்னிலையில்</li>
+          <li>மூன்றிலும் மலிவான P/E (11.65x); மிகப்பெரிய உற்பத்தியாளர்</li>
+          <li>NTPC பசுமை மின் பிரிவும் உண்டு &mdash; கருதுகோள் தலைகீழானால் பாதுகாப்பு</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="company-card">
+      <div class="company-head"><div><h3>Adani Power</h3><div class="ticker">NSE: ADANIPOWER</div></div><span class="pill good">PLF 77.9%</span></div>
+      <div class="company-body">
+        <div class="kv">
+          <div><div class="k lang-en">CMP</div><div class="k lang-ta ta">தற்போதைய விலை</div><div class="v">₹202.00</div></div>
+          <div><div class="k lang-en">52-wk range</div><div class="k lang-ta ta">52-வார வரம்பு</div><div class="v">₹120&ndash;254</div></div>
+          <div><div class="k lang-en">Mkt cap</div><div class="k lang-ta ta">சந்தை மதிப்பு</div><div class="v">₹4.05L cr</div></div>
+          <div><div class="k">P/E (TTM)</div><div class="v">28.41x</div></div>
+        </div>
+        <ul class="bul tight lang-en">
+          <li>Q1FY27 revenue ₹17,550cr (+28% YoY); PAT ₹4,867cr (+47%); highest-ever quarterly EBITDA ₹6,983cr</li>
+          <li>PLF jumped to 77.9% from 67.0% a year ago; sales volume +17% to 28.8 BU</li>
+          <li>18,330 MW installed, targeting 45 GW long term &mdash; most direct, highest-beta play on thermal demand</li>
+          <li>Richest valuation of the PSU/thermal pair &mdash; more of the good news may already be priced in</li>
+        </ul>
+        <ul class="bul tight lang-ta ta">
+          <li>Q1FY27 வருவாய் ₹17,550 கோடி (+28%); PAT ₹4,867 கோடி (+47%); இதுவரையிலான உச்ச EBITDA ₹6,983 கோடி</li>
+          <li>PLF 67.0%-லிருந்து 77.9%-ஆக உயர்ந்தது; விற்பனை அளவு +17%</li>
+          <li>18,330 MW நிறுவப்பட்ட திறன், நீண்டகால இலக்கு 45 GW &mdash; அதிக ஏற்ற இறக்க பங்கு</li>
+          <li>மதிப்பீடு ஏற்கனவே உயர்வாக உள்ளது &mdash; நல்ல செய்தி ஏற்கனவே விலையில் இணைந்திருக்கலாம்</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="company-card">
+      <div class="company-head"><div><h3>Tata Power</h3><div class="ticker">NSE: TATAPOWER</div></div><span class="pill accent">Thermal + Renew.</span></div>
+      <div class="company-body">
+        <div class="kv">
+          <div><div class="k lang-en">CMP</div><div class="k lang-ta ta">தற்போதைய விலை</div><div class="v">₹363.00</div></div>
+          <div><div class="k lang-en">52-wk range</div><div class="k lang-ta ta">52-வார வரம்பு</div><div class="v">₹343&ndash;465</div></div>
+          <div><div class="k lang-en">Mkt cap</div><div class="k lang-ta ta">சந்தை மதிப்பு</div><div class="v">₹1.17L cr</div></div>
+          <div><div class="k">P/E (TTM)</div><div class="v">30.16x</div></div>
+        </div>
+        <ul class="bul tight lang-en">
+          <li>Q1FY27 revenue ₹18,898cr (+8%); PAT ₹1,401cr (+11%); renewables PAT ₹612cr (+15%)</li>
+          <li>Mundra (4,150 MW, imported coal) back at full output under govt Section 11 order &mdash; a direct beneficiary of the shortage, though its PPA repricing is still pending</li>
+          <li>Only one of the three with a real renewables/solar-manufacturing engine (12 GW pipeline; module/cell PAT up 3.9x) &mdash; a natural hedge either way</li>
+          <li>Lowest analyst-buy skew of the three (60%) &mdash; market already sees it as a mixed, not pure, thermal call</li>
+        </ul>
+        <ul class="bul tight lang-ta ta">
+          <li>Q1FY27 வருவாய் ₹18,898 கோடி (+8%); PAT ₹1,401 கோடி (+11%); புதுப்பிக்கத்தக்க PAT ₹612 கோடி (+15%)</li>
+          <li>மூண்ட்ரா (4,150 MW, இறக்குமதி நிலக்கரி) அரசு உத்தரவின் கீழ் முழு திறனில் &mdash; பற்றாக்குறையால் நேரடியாக பயனடைகிறது, ஆனால் PPA மறு விலை நிர்ணயம் நிலுவையில்</li>
+          <li>மூன்றிலும் உண்மையான புதுப்பிக்கத்தக்க/சோலார் உற்பத்தி பிரிவு உள்ள ஒரே நிறுவனம் &mdash; இரு விதமாகவும் பாதுகாப்பு</li>
+          <li>மூன்றிலும் குறைந்த வாங்கு பரிந்துரை (60%) &mdash; கலப்பு நிறுவனமாக சந்தை பார்க்கிறது</li>
+        </ul>
+        <div class="card tight" style="background:var(--bad-soft); border-color:#f0c6c0; margin-top:4px;">
+          <span class="pill bad lang-en" style="margin-bottom:6px;">Risk flag &middot; Singapore litigation</span>
+          <span class="pill bad lang-ta ta" style="margin-bottom:6px;">ஆபத்து எச்சரிக்கை &middot; சிங்கப்பூர் வழக்கு</span>
+          <p class="lang-en" style="margin:6px 0 0; font-size:13px;">Kleros Capital Partners won a <strong>US$490.32M</strong> SIAC arbitration award against Tata Power (Jul&ndash;Aug 2025) over a scrapped Russian coal-mine bid, on a 2:1 finding that Tata Power breached NDA/good-faith duties. With 5.33% p.a. interest since Nov 2020 plus costs, the exposure now tops <strong>~US$640M</strong>. Singapore's Commercial Court dismissed all of Tata Power's challenges on 26&ndash;27 Aug 2026 (shares fell ~4.3% that day); the company has 28 days to appeal to Singapore's Court of Appeal and says it will. <strong>No provision has been booked</strong> in financials so far &mdash; a loss on appeal could mean a sudden hit, and Kleros can otherwise pursue enforcement in any country where Tata Power group holds assets.</p>
+          <p class="lang-ta ta" style="margin:6px 0 0; font-size:13px;">Kleros Capital Partners நிறுவனம், ரஷ்யாவில் கைவிடப்பட்ட நிலக்கரி சுரங்க ஒப்பந்தம் தொடர்பாக டாடா பவர் மீது <strong>US$490.32 மில்லியன்</strong> SIAC நடுவர் தீர்ப்பை (ஜூலை&ndash;ஆக 2025) வென்றது. நவ 2020 முதல் ஆண்டுக்கு 5.33% வட்டி + செலவுகளுடன் இப்போது <strong>~US$640 மில்லியன்</strong>. சிங்கப்பூர் வணிக நீதிமன்றம் 26&ndash;27 ஆக 2026-ல் டாடா பவரின் அனைத்து மறுப்புகளையும் தள்ளுபடி செய்தது (அன்று பங்கு ~4.3% வீழ்ச்சி); நிறுவனம் மேல்முறையீடு செய்ய திட்டமிட்டுள்ளது. நிதி அறிக்கைகளில் <strong>எந்த ஒதுக்கீடும் இதுவரை செய்யப்படவில்லை</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GREEN GENERATORS ============ -->
+<section class="panel" data-panel="green" hidden>
+  <p class="lede lang-en">A weak wind/hydro season hits green <em>generators</em> and green <em>equipment makers</em> differently &mdash; generation-linked revenue dips for one, order books matter more for the other.</p>
+  <p class="lede lang-ta ta">பலவீனமான காற்று/நீர்மின் பருவம் பசுமை <em>உற்பத்தியாளர்களையும்</em> பசுமை <em>உபகரண தயாரிப்பாளர்களையும்</em> வெவ்வேறு விதமாக பாதிக்கிறது.</p>
+
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="company-card">
+      <div class="company-head"><div><h3>Adani Green Energy</h3><div class="ticker">NSE: ADANIGREEN &middot; Solar + Wind IPP</div></div><span class="pill warn">Rich P/E</span></div>
+      <div class="company-body">
+        <div class="kv">
+          <div><div class="k lang-en">CMP</div><div class="k lang-ta ta">தற்போதைய விலை</div><div class="v">₹1,255</div></div>
+          <div><div class="k lang-en">52-wk range</div><div class="k lang-ta ta">52-வார வரம்பு</div><div class="v">₹765&ndash;1,632</div></div>
+          <div><div class="k lang-en">Mkt cap</div><div class="k lang-ta ta">சந்தை மதிப்பு</div><div class="v">₹2.11L cr</div></div>
+          <div><div class="k">P/E (TTM)</div><div class="v">122.7x</div></div>
+        </div>
+        <ul class="bul tight lang-en">
+          <li>Growth story is capacity build-out, not weather &mdash; management guided to ~25% generation growth and 15% revenue growth for the year even before this dry spell</li>
+          <li>A weak wind/solar-irradiance season trims near-term output per MW, but the stock trades on the multi-year capacity ramp, not one quarter</li>
+          <li>P/E of 122.7x (vs sector ~30x) means it's priced for that growth to show up &mdash; a lot can go wrong before that changes the story</li>
+        </ul>
+        <ul class="bul tight lang-ta ta">
+          <li>வளர்ச்சி கதை திறன் அதிகரிப்பில் உள்ளது, வானிலையில் அல்ல &mdash; ~25% உற்பத்தி வளர்ச்சி இலக்கு</li>
+          <li>பலவீனமான பருவம் MW-க்கான உற்பத்தியை குறைக்கலாம், ஆனால் பங்கு பல ஆண்டு திறன் வளர்ச்சியை அடிப்படையாகக் கொண்டது</li>
+          <li>P/E 122.7x (துறை ~30x) &mdash; அதிக வளர்ச்சி எதிர்பார்ப்பு ஏற்கனவே விலையில் உள்ளது</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="company-card">
+      <div class="company-head"><div><h3>Suzlon Energy</h3><div class="ticker">NSE: SUZLON &middot; Wind turbine OEM</div></div><span class="pill accent">Order-book driven</span></div>
+      <div class="company-body">
+        <div class="kv">
+          <div><div class="k lang-en">CMP</div><div class="k lang-ta ta">தற்போதைய விலை</div><div class="v">₹43.35</div></div>
+          <div><div class="k lang-en">52-wk range</div><div class="k lang-ta ta">52-வார வரம்பு</div><div class="v">₹38&ndash;62</div></div>
+          <div><div class="k lang-en">Mkt cap</div><div class="k lang-ta ta">சந்தை மதிப்பு</div><div class="v">₹60,159cr</div></div>
+          <div><div class="k">P/E (TTM)</div><div class="v">19.35x</div></div>
+        </div>
+        <ul class="bul tight lang-en">
+          <li>Sells turbines, not electricity &mdash; revenue tracks utilities' capacity-addition orders, not how much wind actually blows this season</li>
+          <li>Some insulation from a single bad wind season, but persistent under-generation can slow utilities' appetite to commission new wind capacity</li>
+          <li>Stock down ~10% over the past month even as thermal names rallied &mdash; the market is treating this as a thermal, not a wind, story</li>
+        </ul>
+        <ul class="bul tight lang-ta ta">
+          <li>மின்சாரம் அல்ல, டர்பைன்களை விற்கிறது &mdash; வருவாய் இந்த பருவத்தின் காற்று அளவை அல்ல, பயன்பாட்டு நிறுவனங்களின் திறன் ஆர்டர்களை பின்பற்றுகிறது</li>
+          <li>ஒரு மோசமான காற்று பருவத்திலிருந்து ஓரளவு பாதுகாப்பு, ஆனால் தொடர் குறை-உற்பத்தி புதிய ஆர்டர்களை தாமதப்படுத்தலாம்</li>
+          <li>அனல் மின் பங்குகள் ஏறும் போதும் இந்த பங்கு கடந்த மாதம் ~10% குறைந்தது</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p class="foot-note lang-en" style="margin-top:14px;">Full Q1FY27 financials, capacity, ratios and valuation for JSW Energy and NTPC Green Energy are in the Financials tab, alongside the other six names.</p>
+  <p class="foot-note lang-ta ta" style="margin-top:14px;">JSW Energy மற்றும் NTPC Green Energy உள்ளிட்ட அனைத்து நிறுவனங்களின் முழு Q1FY27 நிதிநிலை விவரங்களும் நிதிநிலை தாவலில் உள்ளன.</p>
+</section>
+
+<!-- ============ FINANCIALS ============ -->
+<section class="panel" data-panel="financials" hidden>
+  <p class="lede lang-en">Q1 FY27 (Apr&ndash;Jun 2026) results, capacity, ratios and valuation for all eight names &mdash; company filings, exchange disclosures and indmoney.com live quotes (15&ndash;16 Sep 2026).</p>
+  <p class="lede lang-ta ta">அனைத்து எட்டு நிறுவனங்களுக்குமான Q1 FY27 (ஏப்ரல்&ndash;ஜூன் 2026) முடிவுகள், திறன், விகிதங்கள் மற்றும் மதிப்பீடு.</p>
+
+  <div class="subtabs" id="finsubtabs">
+    <button class="subtab-btn active" data-company="tatapower">Tata Power</button>
+    <button class="subtab-btn" data-company="adanipower">Adani Power</button>
+    <button class="subtab-btn" data-company="ntpc">NTPC</button>
+    <button class="subtab-btn" data-company="suzlon">Suzlon</button>
+    <button class="subtab-btn" data-company="jswenergy">JSW Energy</button>
+    <button class="subtab-btn" data-company="cesc">CESC</button>
+    <button class="subtab-btn" data-company="coalindia">Coal India</button>
+    <button class="subtab-btn" data-company="ntpcgreen">NTPC Green</button>
+  </div>
+
+  <!-- TATA POWER -->
+  <div class="company-fin" data-company="tatapower">
+    <div class="company-fin-head"><div><h3>Tata Power</h3><div class="ticker">NSE: TATAPOWER &middot; Thermal + Renewables + T&amp;D</div></div><span class="pill bad lang-en">Singapore litigation risk &mdash; see Thermal tab</span><span class="pill bad lang-ta ta">சிங்கப்பூர் வழக்கு ஆபத்து</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Revenue</td><td class="lang-ta ta">வருவாய்</td><td>₹18,898 cr <span class="pill good" style="margin-left:4px;">+8%</span></td></tr>
+          <tr><td>EBITDA</td><td>₹4,249 cr <span class="pill good" style="margin-left:4px;">+8%</span></td></tr>
+          <tr><td>PAT</td><td>₹1,401 cr <span class="pill good" style="margin-left:4px;">+11%</span></td></tr>
+          <tr><td class="lang-en">Renewables seg. PAT</td><td class="lang-ta ta">புதுப்பிக்கத்தக்க பிரிவு PAT</td><td>₹612 cr <span class="pill good" style="margin-left:4px;">+15%</span></td></tr>
+          <tr><td class="lang-en">Solar mfg. PAT</td><td class="lang-ta ta">சோலார் உற்பத்தி PAT</td><td>₹371 cr <span class="pill good" style="margin-left:4px;">+3.9x</span></td></tr>
+          <tr><td class="lang-en">T&amp;D seg. PAT</td><td class="lang-ta ta">T&amp;D பிரிவு PAT</td><td>₹492 cr <span class="pill good" style="margin-left:4px;">+11%</span></td></tr>
+          <tr><td class="lang-en">Capex deployed</td><td class="lang-ta ta">முதலீடு</td><td>₹5,375 cr</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Mundra (imported coal)</td><td class="lang-ta ta">மூண்ட்ரா</td><td>4,150 MW</td></tr>
+          <tr><td class="lang-en">Renewables portfolio</td><td class="lang-ta ta">புதுப்பிக்கத்தக்க திறன்</td><td>12 GW (6.7 GW live)</td></tr>
+          <tr><td class="lang-en">Rooftop solar, cumulative</td><td class="lang-ta ta">கூரை சோலார்</td><td>5.2 GWp</td></tr>
+          <tr><td class="lang-en">Solar modules made, Q1</td><td class="lang-ta ta">சோலார் மாட்யூல்</td><td>1,001 MW</td></tr>
+          <tr><td class="lang-en">Solar cells made, Q1</td><td class="lang-ta ta">சோலார் செல்</td><td>862 MW</td></tr>
+          <tr><td class="lang-en">T&amp;D network</td><td class="lang-ta ta">T&amp;D வலையமைப்பு</td><td>7,894 ckm</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>30.16x</td></tr>
+          <tr><td>P/B (approx.)</td><td>~2.99x</td></tr>
+          <tr><td>EPS (TTM)</td><td>₹16.01</td></tr>
+          <tr><td class="lang-en">Dividend yield</td><td class="lang-ta ta">ஈவுத்தொகை மகசூல்</td><td>0.66%</td></tr>
+          <tr><td class="lang-en">Industry P/E</td><td class="lang-ta ta">துறை P/E</td><td>~30.6x</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹363.00</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹342.50&ndash;464.90</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹1,16,518 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>60% Buy / 24% Hold / 16% Sell</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADANI POWER -->
+  <div class="company-fin" data-company="adanipower" hidden>
+    <div class="company-fin-head"><div><h3>Adani Power</h3><div class="ticker">NSE: ADANIPOWER &middot; Thermal IPP</div></div><span class="pill good">PLF 77.9%</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Revenue</td><td class="lang-ta ta">வருவாய்</td><td>₹17,550 cr <span class="pill good" style="margin-left:4px;">+28.1%</span></td></tr>
+          <tr><td>EBITDA <span class="pill accent" style="margin-left:4px;">highest-ever qtr</span></td><td>₹6,983 cr <span class="pill good" style="margin-left:4px;">+21.6%</span></td></tr>
+          <tr><td>PAT</td><td>₹4,867 cr <span class="pill good" style="margin-left:4px;">+47.2%</span></td></tr>
+          <tr><td class="lang-en">Sales volume</td><td class="lang-ta ta">விற்பனை அளவு</td><td>28.8 BU <span class="pill good" style="margin-left:4px;">+16.9%</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Installed capacity</td><td class="lang-ta ta">நிறுவப்பட்ட திறன்</td><td>18,330 MW</td></tr>
+          <tr><td>PLF</td><td>77.9% <span class="pill neutral" style="margin-left:4px;">vs 67.0% Q1FY26</span></td></tr>
+          <tr><td class="lang-en">Long-term target</td><td class="lang-ta ta">நீண்டகால இலக்கு</td><td>45 GW</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>28.41x</td></tr>
+          <tr><td>P/B</td><td>5.69x</td></tr>
+          <tr><td>PEG</td><td>24.37</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹202.00</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹120.00&ndash;254.20</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹4,04,921 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>89% Buy</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- NTPC -->
+  <div class="company-fin" data-company="ntpc" hidden>
+    <div class="company-fin-head"><div><h3>NTPC</h3><div class="ticker">NSE: NTPC &middot; Maharatna PSU, Thermal + Green arm</div></div><span class="pill good">PLF 76.7%</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Standalone total income</td><td class="lang-ta ta">நிலைநிற்கும் மொத்த வருமானம்</td><td>₹44,512 cr <span class="pill good" style="margin-left:4px;">+3%</span></td></tr>
+          <tr><td class="lang-en">Standalone PAT</td><td class="lang-ta ta">நிலைநிற்கும் PAT</td><td>₹5,342 cr <span class="pill good" style="margin-left:4px;">+12%</span></td></tr>
+          <tr><td class="lang-en">Consolidated PAT</td><td class="lang-ta ta">ஒருங்கிணைந்த PAT</td><td>₹6,896 cr <span class="pill good" style="margin-left:4px;">+13%</span></td></tr>
+          <tr><td class="lang-en">Group companies' profit</td><td class="lang-ta ta">குழு நிறுவனங்கள் லாபம்</td><td>₹1,832 cr <span class="pill good" style="margin-left:4px;">+62%</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Coal PLF</td><td class="lang-ta ta">நிலக்கரி PLF</td><td>76.71% <span class="pill neutral" style="margin-left:4px;">India avg 70.32%</span></td></tr>
+          <tr><td class="lang-en">Share of national generation</td><td class="lang-ta ta">தேசிய உற்பத்தி பங்கு</td><td>~25%</td></tr>
+          <tr><td class="lang-en">Group capacity (incl. NTPC Green)</td><td class="lang-ta ta">குழு திறன்</td><td>91,086 MW</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>11.65x</td></tr>
+          <tr><td>P/B</td><td>2.06x</td></tr>
+          <tr><td class="lang-en">Dividend yield</td><td class="lang-ta ta">ஈவுத்தொகை மகசூல்</td><td>2.43%</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹329.50</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹315.55&ndash;414.40</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹3,23,287 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>96% Buy</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUZLON -->
+  <div class="company-fin" data-company="suzlon" hidden>
+    <div class="company-fin-head"><div><h3>Suzlon Energy</h3><div class="ticker">NSE: SUZLON &middot; Wind turbine OEM</div></div><span class="pill warn">Margin under pressure</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Revenue</td><td class="lang-ta ta">வருவாய்</td><td>₹3,819 cr <span class="pill good" style="margin-left:4px;">+23%</span></td></tr>
+          <tr><td>EBITDA <span class="pill neutral" style="margin-left:4px;">margin 15.6%, &minus;360bps</span></td><td>₹595 cr <span class="pill bad" style="margin-left:4px;">&minus;0.7%</span></td></tr>
+          <tr><td>PAT</td><td>₹305 cr <span class="pill bad" style="margin-left:4px;">&minus;5.9%</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Q1 deliveries</td><td class="lang-ta ta">Q1 விநியோகம்</td><td>506 MW <span class="pill good" style="margin-left:4px;">best-ever Q1</span></td></tr>
+          <tr><td class="lang-en">Commissioning</td><td class="lang-ta ta">இயக்கத்தொடக்கம்</td><td>269 MW <span class="pill good" style="margin-left:4px;">2x YoY</span></td></tr>
+          <tr><td class="lang-en">Order book</td><td class="lang-ta ta">ஆர்டர் புத்தகம்</td><td>~6.1 GW <span class="pill neutral" style="margin-left:4px;">84% PSU/C&amp;I</span></td></tr>
+          <tr><td class="lang-en">Fresh orders, Q1</td><td class="lang-ta ta">புதிய ஆர்டர்கள்</td><td>~1 GW</td></tr>
+          <tr><td class="lang-en">Blade capacity (Jaisalmer)</td><td class="lang-ta ta">பிளேட் திறன்</td><td>1,260 MW <span class="pill neutral" style="margin-left:4px;">2x from 630 MW</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>19.35x</td></tr>
+          <tr><td>P/B</td><td>5.53x</td></tr>
+          <tr><td>PEG</td><td>26.15</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹43.35</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹38.19&ndash;61.50</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹60,159 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>83% Buy / 17% Hold</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="foot-note lang-en">Deliveries and order book grew despite the weak wind season &mdash; confirms Suzlon sells turbines, not electricity; margin compression is a cost/mix story, not a generation-shortfall one.</p>
+    <p class="foot-note lang-ta ta">பலவீனமான காற்று பருவத்திலும் விநியோகமும் ஆர்டர் புத்தகமும் வளர்ந்தன &mdash; Suzlon மின்சாரம் அல்ல, டர்பைன்களை விற்கிறது என்பதை உறுதிப்படுத்துகிறது.</p>
+  </div>
+
+  <!-- JSW ENERGY -->
+  <div class="company-fin" data-company="jswenergy" hidden>
+    <div class="company-fin-head"><div><h3>JSW Energy</h3><div class="ticker">NSE: JSWENERGY &middot; Thermal + Renewables + Hydro</div></div><span class="pill bad">PAT &minus;36%</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Revenue</td><td class="lang-ta ta">வருவாய்</td><td>₹5,437 cr <span class="pill neutral" style="margin-left:4px;">~flat</span></td></tr>
+          <tr><td>PAT</td><td>₹532 cr <span class="pill bad" style="margin-left:4px;">&minus;36%</span></td></tr>
+          <tr><td class="lang-en">Power sales</td><td class="lang-ta ta">மின் விற்பனை</td><td>12.9 BU <span class="pill bad" style="margin-left:4px;">&minus;5%</span></td></tr>
+          <tr><td class="lang-en">Thermal generation</td><td class="lang-ta ta">அனல் உற்பத்தி</td><td>8 BU <span class="pill bad" style="margin-left:4px;">&minus;6%</span></td></tr>
+          <tr><td class="lang-en">Renewable generation</td><td class="lang-ta ta">புதுப்பிக்கத்தக்க உற்பத்தி</td><td>4.8 BU <span class="pill bad" style="margin-left:4px;">&minus;3%</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Total installed</td><td class="lang-ta ta">மொத்த திறன்</td><td>14,535 MW</td></tr>
+          <tr><td class="lang-en">Renewable share</td><td class="lang-ta ta">புதுப்பிக்கத்தக்க பங்கு</td><td>61% <span class="pill neutral" style="margin-left:4px;">wind 3,125 / solar 2,275 / hybrid 1,696 / hydro 1,781 MW</span></td></tr>
+          <tr><td class="lang-en">Thermal share</td><td class="lang-ta ta">அனல் பங்கு</td><td>39%</td></tr>
+          <tr><td class="lang-en">Added in Q1</td><td class="lang-ta ta">Q1 சேர்க்கை</td><td>~1.1 GW <span class="pill neutral" style="margin-left:4px;">FY27 target 3 GW</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>46.96x</td></tr>
+          <tr><td>P/B</td><td>3.51x</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹505.00</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹427.75&ndash;617.35</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹96,524 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>60% Buy / 20% Hold / 20% Sell</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="foot-note lang-en">A live counter-example to the sector thesis: profit fell 36% YoY on weaker hydrology at its own hydro plants and lower generation at Mahanadi thermal &mdash; the dry cycle can hurt a hybrid generator's numbers even as it helps pure-thermal peers.</p>
+    <p class="foot-note lang-ta ta">இந்த துறை கருதுகோளுக்கு நேர் எதிரான உதாரணம்: சொந்த நீர்மின் நிலையங்களில் பலவீனமான நீரோட்டம் மற்றும் மஹாநதி அனல் நிலையத்தில் குறைந்த உற்பத்தி காரணமாக லாபம் 36% குறைந்தது.</p>
+  </div>
+
+  <!-- CESC -->
+  <div class="company-fin" data-company="cesc" hidden>
+    <div class="company-fin-head"><div><h3>CESC</h3><div class="ticker">NSE: CESC &middot; Distribution utility + Thermal + Renewables</div></div><span class="pill accent">4.5 GW RE target</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Revenue</td><td class="lang-ta ta">வருவாய்</td><td>₹5,559 cr <span class="pill good" style="margin-left:4px;">+5%</span></td></tr>
+          <tr><td>PAT</td><td>₹419 cr <span class="pill good" style="margin-left:4px;">+3%</span></td></tr>
+          <tr><td class="lang-en">Interim dividend</td><td class="lang-ta ta">இடைக்கால ஈவுத்தொகை</td><td>₹6/share</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Thermal generation</td><td class="lang-ta ta">அனல் உற்பத்தி திறன்</td><td>2,125 MW <span class="pill neutral" style="margin-left:4px;">Budge Budge 750, Haldia 600, Dhariwal 600, Titagarh 240, Southern 135, Crescent 40</span></td></tr>
+          <tr><td class="lang-en">Core business</td><td class="lang-ta ta">முதன்மை தொழில்</td><td>Distribution: Kolkata, Noida, Rajasthan, Malegaon</td></tr>
+          <tr><td class="lang-en">Solar acquired (from ReNew)</td><td class="lang-ta ta">ReNew-இலிருந்து சோலார்</td><td>1.4 GW <span class="pill neutral" style="margin-left:4px;">~₹4,859 cr</span></td></tr>
+          <tr><td class="lang-en">Renewable target</td><td class="lang-ta ta">புதுப்பிக்கத்தக்க இலக்கு</td><td>4.5 GW by FY29</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>12.4x</td></tr>
+          <tr><td>P/B</td><td>2.06x</td></tr>
+          <tr><td class="lang-en">Dividend yield</td><td class="lang-ta ta">ஈவுத்தொகை மகசூல்</td><td>4.01%</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹141.57</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹138.12&ndash;204.50</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹18,783 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>91% Buy</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="foot-note lang-en">Stock is down ~17% over the past month despite the profit beat &mdash; market is weighing debt-funded renewable capex and Malegaon distribution losses more than this quarter's print.</p>
+    <p class="foot-note lang-ta ta">லாபம் அதிகரித்திருந்தாலும் கடந்த மாதம் பங்கு ~17% குறைந்தது &mdash; கடன் சார்ந்த முதலீடு மற்றும் மலேகான் இழப்புகளை சந்தை கவனிக்கிறது.</p>
+  </div>
+
+  <!-- COAL INDIA -->
+  <div class="company-fin" data-company="coalindia" hidden>
+    <div class="company-fin-head"><div><h3>Coal India</h3><div class="ticker">NSE: COALINDIA &middot; Maharatna PSU, ~80% of domestic coal output</div></div><span class="pill accent">Demand-led shift</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Revenue</td><td class="lang-ta ta">வருவாய்</td><td>₹46,255 cr <span class="pill good" style="margin-left:4px;">+7.8%</span></td></tr>
+          <tr><td class="lang-en">Total income</td><td class="lang-ta ta">மொத்த வருமானம்</td><td>₹48,295 cr <span class="pill good" style="margin-left:4px;">+8.4%</span></td></tr>
+          <tr><td>PAT</td><td>₹8,850 cr <span class="pill good" style="margin-left:4px;">+0.7%</span></td></tr>
+          <tr><td class="lang-en">Operating profit</td><td class="lang-ta ta">இயக்க லாபம்</td><td>₹11,479 cr <span class="pill bad" style="margin-left:4px;">&minus;1.3%</span></td></tr>
+          <tr><td class="lang-en">Interim dividend</td><td class="lang-ta ta">இடைக்கால ஈவுத்தொகை</td><td>₹5.50/share</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Q1 production</td><td class="lang-ta ta">Q1 உற்பத்தி</td><td>169.6 MT <span class="pill bad" style="margin-left:4px;">&minus;7.5%</span></td></tr>
+          <tr><td class="lang-en">Q1 dispatch/offtake</td><td class="lang-ta ta">Q1 விநியோகம்</td><td>197.7 MT <span class="pill good" style="margin-left:4px;">+3.5%</span></td></tr>
+          <tr><td class="lang-en">Power-sector supply</td><td class="lang-ta ta">மின் துறை விநியோகம்</td><td>154.75 MT <span class="pill good" style="margin-left:4px;">+1.8%</span></td></tr>
+          <tr><td class="lang-en">Pithead stock drawdown</td><td class="lang-ta ta">இருப்பு குறைப்பு</td><td>~130 &rarr; ~50 MT target <span class="pill warn" style="margin-left:4px;">28.3 MT liquidated in Q1</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>8.42x</td></tr>
+          <tr><td>P/B</td><td>13.43x</td></tr>
+          <tr><td>ROE</td><td>84.5%</td></tr>
+          <tr><td>ROCE</td><td>62.5%</td></tr>
+          <tr><td class="lang-en">Dividend yield</td><td class="lang-ta ta">ஈவுத்தொகை மகசூல்</td><td>5.89%</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹419.25</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹369.60&ndash;491.25</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹2,62,779 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>58% Buy / 29% Hold / 13% Sell</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="foot-note lang-en">The missing piece behind September's "58 critical plants" scare: CIL deliberately cut pithead stock from ~130 MT toward a ~50 MT target this year for "operational flexibility." Thinner buffers by design made a routine monsoon logistics hiccup look sharper than in past years &mdash; see Market Reaction tab.</p>
+    <p class="foot-note lang-ta ta">செப்டம்பரின் "58 நெருக்கடி நிலையங்கள்" பீதிக்குப் பின்னணி: CIL தானாகவே இருப்பை ~130-லிருந்து ~50 MT இலக்காக குறைத்தது &mdash; வடிவமைப்பால் மெல்லிய இருப்பு, பற்றாக்குறை அல்ல.</p>
+  </div>
+
+  <!-- NTPC GREEN -->
+  <div class="company-fin" data-company="ntpcgreen" hidden>
+    <div class="company-fin-head"><div><h3>NTPC Green Energy</h3><div class="ticker">NSE: NTPCGREEN &middot; Listed renewables arm of NTPC</div></div><span class="pill bad">Weakest consensus of the 8</span></div>
+    <div class="fin-grid">
+      <div class="fin-card"><h4 class="lang-en">Financials &middot; Q1 FY27</h4><h4 class="lang-ta ta">நிதி நிலை &middot; Q1 FY27</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Revenue</td><td class="lang-ta ta">வருவாய்</td><td>₹1,107 cr <span class="pill good" style="margin-left:4px;">+63%</span></td></tr>
+          <tr><td>EBITDA <span class="pill neutral" style="margin-left:4px;">margin ~89%</span></td><td>₹989 cr <span class="pill good" style="margin-left:4px;">+64%</span></td></tr>
+          <tr><td>PAT</td><td>₹305 cr <span class="pill good" style="margin-left:4px;">+38%</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Capacity &amp; Operations</h4><h4 class="lang-ta ta">திறன் &amp; செயல்பாடு</h4>
+        <table class="fin-table">
+          <tr><td class="lang-en">Installed capacity</td><td class="lang-ta ta">நிறுவப்பட்ட திறன்</td><td>~10,671 MW <span class="pill neutral" style="margin-left:4px;">crossed 10 GW, Apr 2026</span></td></tr>
+          <tr><td class="lang-en">Capex funding raised</td><td class="lang-ta ta">முதலீட்டு நிதி</td><td>₹2,500 cr NCDs <span class="pill neutral" style="margin-left:4px;">7.27%, 10-yr</span></td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Key Ratios</h4><h4 class="lang-ta ta">முக்கிய விகிதங்கள்</h4>
+        <table class="fin-table">
+          <tr><td>P/E (TTM)</td><td>122.45x</td></tr>
+          <tr><td>P/B</td><td>4.12x</td></tr>
+        </table>
+      </div>
+      <div class="fin-card"><h4 class="lang-en">Valuation</h4><h4 class="lang-ta ta">மதிப்பீடு</h4>
+        <table class="fin-table">
+          <tr><td>CMP</td><td>₹85.63</td></tr>
+          <tr><td class="lang-en">52-wk range</td><td class="lang-ta ta">52-வார வரம்பு</td><td>₹84.00&ndash;119.95</td></tr>
+          <tr><td class="lang-en">Market cap</td><td class="lang-ta ta">சந்தை மதிப்பு</td><td>₹72,348 cr</td></tr>
+          <tr><td class="lang-en">Analyst consensus</td><td class="lang-ta ta">ஆய்வாளர் கருத்து</td><td>0% Buy / 57% Hold / 43% Sell</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="foot-note lang-en">Fundamentals are strong (revenue +63%, PAT +38%) but the stock trades near its 52-week low with zero "Buy" calls &mdash; a valuation reset (P/E 122x), not an operating problem. Worth watching for a re-rating if growth keeps compounding at this pace.</p>
+    <p class="foot-note lang-ta ta">அடிப்படைகள் வலுவாக உள்ளன (வருவாய் +63%, PAT +38%) ஆனால் பங்கு 52-வார தாழ்வுக்கு அருகில் உள்ளது, "Buy" பரிந்துரை பூஜ்ஜியம் &mdash; இது மதிப்பீட்டு சரிசெய்தல், செயல்பாட்டு பிரச்சினை அல்ல.</p>
+  </div>
+
+</section>
+
+<!-- ============ MARKET REACTION ============ -->
+<section class="panel" data-panel="market" hidden>
+  <div class="section-title"><h2 class="lang-en">The coal-stock scare, decoded</h2><h2 class="lang-ta ta">நிலக்கரி இருப்பு பீதி, விளக்கம்</h2></div>
+  <ul class="bul lang-en">
+    <li>By early September 2026, <strong>58&ndash;59 thermal plants</strong> were flagged with coal stocks below 25% of the norm &mdash; the headline that triggered "power cut" alarm.</li>
+    <li>Context matters: national stocks stood at <strong>26.9 MT</strong> versus just <strong>8.1 MT</strong> during the real 2021 crisis. Coal India's pithead stock was a record <strong>~76 MT</strong>.</li>
+    <li>KPMG's Vikas Gaba, quoted in Business Standard: "a plant falling below the applicable norm is not necessarily about to run out of coal."</li>
+    <li>It was a <strong>monsoon logistics bottleneck</strong> &mdash; rain disrupting mining and rail movement &mdash; not a scarcity. The Coal Ministry response was swift: rake loading rose from 370 to 444 rakes/day (3&ndash;6 Sep), and Coal India's daily output jumped from 1.36 to 1.83 MT within days.</li>
+    <li>Net: no widespread load-shedding has been reported through mid-September despite the 269 GW peak &mdash; the system held.</li>
+  </ul>
+  <ul class="bul lang-ta ta">
+    <li>2026 செப்டம்பர் முற்பகுதியில் <strong>58&ndash;59 அனல் நிலையங்கள்</strong> நிலக்கரி இருப்பு விதிமுறையை விட 25%க்கும் குறைவாக இருந்ததாக குறியிடப்பட்டன.</li>
+    <li>சூழல்: தேசிய இருப்பு <strong>26.9 மில்லியன் டன்</strong> &mdash; 2021 நெருக்கடியின்போது இருந்த <strong>8.1 மில்லியன் டன்</strong>ஐ விட அதிகம். கோல் இந்தியாவின் இருப்பு சாதனை <strong>~76 மில்லியன் டன்</strong>.</li>
+    <li>இது ஒரு <strong>பருவமழை தளவாட தடை</strong> &mdash; பற்றாக்குறை அல்ல. நிலக்கரி அமைச்சகம் விரைவாக பதிலளித்தது: நாள் ஒன்றுக்கு ரேக் ஏற்றுதல் 370-லிருந்து 444-ஆக உயர்ந்தது.</li>
+    <li>முடிவு: 269 GW உச்சத்தை எட்டியும் செப்டம்பர் நடுப்பகுதி வரை பரவலான மின் துண்டிப்பு எதுவும் பதிவாகவில்லை.</li>
+  </ul>
+
+  <div class="section-title"><h2 class="lang-en">Why the stocks actually moved</h2><h2 class="lang-ta ta">பங்குகள் ஏன் நகர்ந்தன</h2></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th class="lang-en">When</th><th class="lang-ta ta">எப்போது</th><th class="lang-en">What happened</th><th class="lang-ta ta">என்ன நடந்தது</th></tr></thead>
+      <tbody>
+        <tr><td>13 Mar 2026</td><td class="lang-en">Record March demand (224.6 GW); coal utilisation hit 95% at peak &mdash; NTPC Green +6.5%, Adani Power +3.5%</td><td class="lang-ta ta">மார்ச் சாதனை தேவை; நிலக்கரி பயன்பாடு 95%</td></tr>
+        <tr><td>15 Apr 2026</td><td class="lang-en">Brokerages flagged summer-demand breakouts across NTPC, Adani Power, Adani Green, Power Grid, Tata Power (9&ndash;24% upside calls)</td><td class="lang-ta ta">தரகு நிறுவனங்கள் கோடை தேவை உயர்வை சுட்டிக்காட்டின</td></tr>
+        <tr><td>21 May 2026</td><td class="lang-en">All-India peak hits then-record 270.8 GW; renewables cover 34% of that peak instant, coal 171.7&ndash;184.9 GW</td><td class="lang-ta ta">அகில இந்திய உச்சம் 270.8 GW</td></tr>
+        <tr><td>Early Sep 2026</td><td class="lang-en">Coal-stock alerts + spot price at ceiling (₹10/unit) &mdash; merchant-heavy names (Adani Power) benefit most, DISCOMs (buyers) squeezed</td><td class="lang-ta ta">நிலக்கரி எச்சரிக்கை + உடனடி விலை உச்சவரம்பில்</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="foot-note lang-en">Price caps mean merchant sellers don't capture the full spot spike &mdash; and DISCOM financial stress from buying at high spot rates is a real payment-delay risk for all three thermal names, not just an upside story.</p>
+  <p class="foot-note lang-ta ta">விலை உச்சவரம்பு காரணமாக விற்பனையாளர்கள் முழு லாபத்தையும் பெறுவதில்லை &mdash; அதிக விலையில் வாங்கும் DISCOM-களின் நிதி நெருக்கடி மூன்று அனல் நிறுவனங்களுக்கும் கட்டண தாமத ஆபத்தாக உள்ளது.</p>
+</section>
+
+<!-- ============ TAKEAWAYS ============ -->
+<section class="panel" data-panel="takeaways" hidden>
+  <div class="grid" style="grid-template-columns:1fr; gap:10px;">
+    <div class="takeaway"><div class="n">01</div><div>
+      <p class="lang-en" style="margin:0;"><strong>The thesis is directionally right, but "power cuts all over India" overstates it.</strong> Coal logistics were strained in early Sept 2026, not coal supply &mdash; and the grid met a near-record 269 GW peak without reported widespread outages.</p>
+      <p class="lang-ta ta" style="margin:0;"><strong>கருதுகோள் திசையில் சரியானதே, ஆனால் "இந்தியா முழுவதும் மின் துண்டிப்பு" என்பது மிகைப்படுத்தல்.</strong> நிலக்கரி தளவாடம் மட்டுமே சிக்கலாக இருந்தது, விநியோகம் அல்ல.</p>
+    </div></div>
+    <div class="takeaway"><div class="n">02</div><div>
+      <p class="lang-en" style="margin:0;"><strong>Wind "stopping" is mostly seasonal, not a new breakdown.</strong> India's wind resource is a June&ndash;September phenomenon every year; low output October&ndash;May is structural. This year is worse only because the monsoon itself underperformed.</p>
+      <p class="lang-ta ta" style="margin:0;"><strong>காற்றாலை "நிறுத்தம்" பெரும்பாலும் பருவகாலமானது, புதிய சிதைவு அல்ல.</strong> இந்தியாவின் காற்று வளம் ஒவ்வோர் ஆண்டும் ஜூன்&ndash;செப்டம்பர் நிகழ்வு.</p>
+    </div></div>
+    <div class="takeaway"><div class="n">03</div><div>
+      <p class="lang-en" style="margin:0;"><strong>NTPC and Adani Power are the cleanest ways to play the thermal backstop</strong> &mdash; both posted double-digit PLF gains and profit growth in Q1FY27. NTPC is cheaper on P/E; Adani Power is higher-beta and already richer-valued.</p>
+      <p class="lang-ta ta" style="margin:0;"><strong>NTPC மற்றும் Adani Power தூய அனல் மின் கருதுகோளுக்கு தெளிவான தேர்வுகள்.</strong> NTPC மலிவானது; Adani Power அதிக ஏற்ற-இறக்கம் கொண்டது.</p>
+    </div></div>
+    <div class="takeaway"><div class="n">04</div><div>
+      <p class="lang-en" style="margin:0;"><strong>Tata Power is a hybrid call, not a pure thermal one &mdash; and it carries a company-specific litigation risk worth watching.</strong> Mundra's forced full-output run is a near-term tailwind, but Singapore's Commercial Court dismissed Tata Power's challenge to a ~US$640M Kleros arbitration award on 26&ndash;27 Aug 2026 (shares fell ~4.3%). No provision is booked yet; an appeal is due within 28 days. This sits alongside the thermal-backstop story, not inside it &mdash; see the risk flag on its card.</p>
+      <p class="lang-ta ta" style="margin:0;"><strong>டாடா பவர் ஒரு கலப்பு பங்கு, தூய அனல் பங்கு அல்ல &mdash; கவனிக்க வேண்டிய நிறுவனம்-சார்ந்த வழக்கு ஆபத்தும் உள்ளது.</strong> மூண்ட்ரா குறுகிய கால ஆதரவு, ஆனால் சிங்கப்பூர் நீதிமன்றம் ~US$640M Kleros வழக்கில் டாடா பவரின் மறுப்பை 26&ndash;27 ஆக 2026-ல் தள்ளுபடி செய்தது (பங்கு ~4.3% வீழ்ச்சி). இன்னும் ஒதுக்கீடு செய்யப்படவில்லை; 28 நாட்களில் மேல்முறையீடு எதிர்பார்க்கப்படுகிறது.</p>
+    </div></div>
+    <div class="takeaway"><div class="n">05</div><div>
+      <p class="lang-en" style="margin:0;"><strong>Green generators aren't "losing" this cycle &mdash; they're just not the near-term trade.</strong> Adani Green's story runs on capacity build-out over years; Suzlon depends on order books, not this season's wind. Both are priced for growth already (P/E 122.7x and 19.35x), so a prolonged dry spell is a sentiment risk, not (yet) a fundamentals break.</p>
+      <p class="lang-ta ta" style="margin:0;"><strong>பசுமை மின் நிறுவனங்கள் இந்த சுழற்சியில் "தோல்வி" அடையவில்லை &mdash; அவை அருகில் வரும் வர்த்தகம் அல்ல.</strong> Adani Green ஆண்டுகள் நீளும் திறன் கட்டமைப்பில் இயங்குகிறது; Suzlon ஆர்டர் புத்தகத்தைச் சார்ந்தது.</p>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ SWOT ============ -->
+<section class="panel" data-panel="swot" hidden>
+  <p class="lede lang-en">SWOT for the theme as a whole &mdash; thermal generators riding this dry cycle, with green names as the counter-balance.</p>
+  <p class="lede lang-ta ta">இந்த கருப்பொருளுக்கான SWOT பகுப்பாய்வு &mdash; இந்த வறண்ட சுழற்சியில் அனல் மின் நிறுவனங்கள், பசுமை நிறுவனங்கள் சமநிலைப்படுத்தும் காரணியாக.</p>
+  <div class="swot-grid" style="margin-top:12px;">
+    <div class="swot-box s">
+      <h4 class="lang-en" style="color:var(--good);">Strengths</h4><h4 class="lang-ta ta" style="color:var(--good);">பலம்</h4>
+      <ul class="bul tight lang-en"><li>Coal fleet is large, flexible and dispatchable on demand</li><li>Govt actively backstops thermal via emergency directions (Section 11)</li><li>Record PLFs are flowing straight into Q1FY27 profit growth</li></ul>
+      <ul class="bul tight lang-ta ta"><li>நிலக்கரி திறன் பெரியது, நெகிழ்வானது</li><li>அரசு அவசரகால உத்தரவுகள் மூலம் ஆதரவு</li><li>உயர் PLF நேரடியாக லாபத்தில்</li></ul>
+    </div>
+    <div class="swot-box w">
+      <h4 class="lang-en" style="color:var(--bad);">Weaknesses</h4><h4 class="lang-ta ta" style="color:var(--bad);">பலவீனங்கள்</h4>
+      <ul class="bul tight lang-en"><li>Price caps limit how much merchant upside sellers actually capture</li><li>DISCOMs under financial strain from expensive spot purchases &mdash; a payment-delay risk</li><li>Tata Power's Mundra tariff/PPA situation still unresolved beyond Sep 2026</li><li>Tata Power: ~US$640M Kleros arbitration exposure (Singapore) unprovided-for &mdash; company-specific, not sector-wide</li></ul>
+      <ul class="bul tight lang-ta ta"><li>விலை உச்சவரம்பு லாபத்தை கட்டுப்படுத்துகிறது</li><li>DISCOM-களின் நிதி நெருக்கடி கட்டண தாமத ஆபத்து</li><li>மூண்ட்ரா ஒப்பந்த நிலை இன்னும் தீர்க்கப்படவில்லை</li><li>டாடா பவர்: ~US$640M Kleros வழக்கு ஆபத்து ஒதுக்கீடு செய்யப்படவில்லை &mdash; நிறுவனம் சார்ந்தது, துறை அளவில் அல்ல</li></ul>
+    </div>
+    <div class="swot-box o">
+      <h4 class="lang-en" style="color:var(--accent-ink);">Opportunities</h4><h4 class="lang-ta ta" style="color:var(--accent-ink);">வாய்ப்புகள்</h4>
+      <ul class="bul tight lang-en"><li>El Ni&ntilde;o intensifying through Feb 2027 per WMO &mdash; extends the thermal-demand window</li><li>Elevated spot prices through the dry season benefit merchant-capacity IPPs</li><li>Green names get a cheaper entry if sentiment de-rates them on a bad season</li></ul>
+      <ul class="bul tight lang-ta ta"><li>எல் நினோ பிப்ரவரி 2027 வரை தீவிரமடையும் &mdash; அனல் தேவை நீடிக்கும்</li><li>உயர் உடனடி விலைகள் merchant IPP-களுக்கு நன்மை</li><li>பசுமை பங்குகள் மலிவாகக் கிடைக்கலாம்</li></ul>
+    </div>
+    <div class="swot-box t">
+      <h4 class="lang-en" style="color:var(--warn);">Threats</h4><h4 class="lang-ta ta" style="color:var(--warn);">அச்சுறுத்தல்கள்</h4>
+      <ul class="bul tight lang-en"><li>A stronger-than-expected 2027 monsoon onset would flip the trade quickly</li><li>Coal-logistics stress could recur through winter if rail/mining bottlenecks persist</li><li>Thermal names are already up sharply &mdash; much of the good news may be priced in</li></ul>
+      <ul class="bul tight lang-ta ta"><li>எதிர்பார்த்ததை விட வலுவான 2027 பருவமழை விரைவில் மாற்றும்</li><li>குளிர்காலத்திலும் நிலக்கரி தளவாட நெருக்கடி மீண்டும் வரலாம்</li><li>அனல் பங்குகள் ஏற்கனவே அதிகரித்துவிட்டன</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TIMELINE ============ -->
+<section class="panel" data-panel="timeline" hidden>
+  <p class="lede lang-en">No forecaster has issued a 2027 monsoon call yet &mdash; IMD typically does that closer to April. Here's what's actually on record for the months between now and then.</p>
+  <p class="lede lang-ta ta">2027 பருவமழைக்கான முன்னறிவிப்பு இன்னும் வெளியிடப்படவில்லை &mdash; IMD பொதுவாக ஏப்ரலுக்கு அருகில் அதை வெளியிடும். இப்போதிலிருந்து அதுவரை பதிவில் உள்ளவை இங்கே.</p>
+  <div class="timeline" style="margin-top:18px;">
+    <div class="tl-item">
+      <div class="when lang-en">Sep 2026 &mdash; Now</div><div class="when lang-ta ta">செப் 2026 &mdash; இப்போது</div>
+      <h4 class="lang-en">Coal-logistics stress, record spot prices</h4><h4 class="lang-ta ta">நிலக்கரி தளவாட நெருக்கடி, சாதனை உடனடி விலைகள்</h4>
+      <p class="lang-en">58 plants flagged critical, resolved via faster rake loading within days. Spot price capped at ₹10/unit. Peak demand 269 GW.</p>
+      <p class="lang-ta ta">58 நிலையங்கள் குறியிடப்பட்டன, விரைவான ரேக் ஏற்றுதல் மூலம் தீர்க்கப்பட்டது. உடனடி விலை ₹10/அலகில் உச்சவரம்பு.</p>
+    </div>
+    <div class="tl-item">
+      <div class="when lang-en">Oct 2026 &mdash; Wind season ends</div><div class="when lang-ta ta">அக் 2026 &mdash; காற்று பருவம் முடிவு</div>
+      <h4 class="lang-en">Structural low season begins</h4><h4 class="lang-ta ta">கட்டமைப்பு குறைந்த பருவம் தொடக்கம்</h4>
+      <p class="lang-en">Wind capacity factors fall as they do every year; hydro carry-over storage (already below normal) continues to run down through the dry months.</p>
+      <p class="lang-ta ta">ஒவ்வோர் ஆண்டும் நடப்பது போல காற்று திறன் காரணி குறையும்; நீர்த்தேக்க இருப்பு தொடர்ந்து குறையும்.</p>
+    </div>
+    <div class="tl-item">
+      <div class="when lang-en">Nov 2026 &ndash; Feb 2027</div><div class="when lang-ta ta">நவ 2026 &ndash; பிப் 2027</div>
+      <h4 class="lang-en">El Ni&ntilde;o peaks (WMO forecast)</h4><h4 class="lang-ta ta" >எல் நினோ உச்சம் (WMO முன்னறிவிப்பு)</h4>
+      <p class="lang-en">WMO expects El Ni&ntilde;o to intensify into a "very strong" event and persist through Feb 2027 &mdash; warmer, drier winter; risk of terminal heat stress on the Rabi wheat crop into Feb&ndash;Mar. Thermal PLFs likely stay elevated through this window.</p>
+      <p class="lang-ta ta">எல் நினோ "மிகவும் வலிமையான" நிகழ்வாக தீவிரமடைந்து பிப் 2027 வரை நீடிக்கும் என WMO எதிர்பார்க்கிறது &mdash; வெப்பமான, வறண்ட குளிர்காலம். இந்த காலகட்டத்தில் அனல் PLF உயர்ந்த நிலையிலேயே இருக்கக்கூடும்.</p>
+    </div>
+    <div class="tl-item">
+      <div class="when lang-en">Mar &ndash; May 2027</div><div class="when lang-ta ta">மார் &ndash; மே 2027</div>
+      <h4 class="lang-en">Pre-monsoon summer peak, before any relief</h4><h4 class="lang-ta ta">பருவமழைக்கு முந்தைய கோடை உச்சம், நிவாரணத்திற்கு முன்</h4>
+      <p class="lang-en">India's highest demand months historically land here &mdash; and hydro/wind can't meaningfully recover until the monsoon actually arrives. IMD's first 2027 monsoon outlook is typically released in April; none exists yet as of this note.</p>
+      <p class="lang-ta ta">இந்தியாவின் அதிக தேவை கொண்ட மாதங்கள் வரலாற்று ரீதியாக இங்கு விழுகின்றன &mdash; பருவமழை வராதவரை நீர்மின்/காற்று மீள முடியாது. IMD-யின் முதல் 2027 முன்னறிவிப்பு பொதுவாக ஏப்ரலில் வெளியாகும்.</p>
+    </div>
+    <div class="tl-item">
+      <div class="when lang-en">Jun 2027 &mdash; If monsoon arrives on schedule</div><div class="when lang-ta ta">ஜூன் 2027 &mdash; பருவமழை சரியான நேரத்தில் வந்தால்</div>
+      <h4 class="lang-en">The trade's natural expiry</h4><h4 class="lang-ta ta">வர்த்தகத்தின் இயல்பான முடிவு</h4>
+      <p class="lang-en">SW monsoon onset typically resets both hydro inflows and wind generation together &mdash; historically the point where thermal's backstop role eases. Watch IMD's April/May 2027 forecast for early signal; a delayed or weak monsoon would extend this thesis further.</p>
+      <p class="lang-ta ta">தென்மேற்கு பருவமழை தொடக்கம் பொதுவாக நீர்மின் மற்றும் காற்று உற்பத்தி இரண்டையும் மீட்டமைக்கும் &mdash; அனல் பங்கு குறையும் புள்ளி. தாமதமான அல்லது பலவீனமான பருவமழை இந்த கருதுகோளை மேலும் நீட்டிக்கும்.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ANALYST VIEW ============ -->
+<section class="panel" data-panel="analyst" hidden>
+  <div class="section-title"><h2 class="lang-en">Putting it together</h2><h2 class="lang-ta ta">ஒருங்கிணைத்துப் பார்த்தால்</h2></div>
+  <ul class="bul lang-en">
+    <li>Your underlying read is correct in direction: a weak monsoon has pushed hydro down and wind into its seasonal trough at the same time, and coal is carrying the load. That is real and it's visible in Q1FY27 numbers already.</li>
+    <li>Where it needs tempering: this is not (yet) a supply crisis. Coal India has record pithead stocks; the "critical" plant count was a rail/monsoon logistics issue that the ministry cleared within days. No broad-based load-shedding has been reported even at a near-record 269 GW peak.</li>
+    <li>NTPC and Adani Power are the most direct thermal-backstop plays; NTPC is the cheaper, lower-beta way in, Adani Power the higher-beta, already-richer one. Tata Power is a hybrid &mdash; near-term Mundra tailwind, longer-term renewables story.</li>
+    <li>Green names (Adani Green, Suzlon) aren't the trade for this specific dry-season thesis, but a sentiment-driven dip on "bad wind season" headlines is worth watching as a possible entry, given both are priced for multi-year growth, not this quarter's weather.</li>
+    <li>Biggest swing factor for the whole thesis: WMO has El Ni&ntilde;o persisting only through Feb 2027 with confidence; nothing is on record yet for spring/pre-monsoon 2027. Revisit this when IMD's first monsoon outlook lands, typically in April.</li>
+  </ul>
+  <ul class="bul lang-ta ta">
+    <li>உங்கள் அடிப்படை பார்வை திசையில் சரியானதே: பலவீனமான பருவமழை நீர்மினை குறைத்து, காற்றாலையையும் பருவகால குறைவுக்கு தள்ளியுள்ளது, நிலக்கரி சுமையை தாங்குகிறது. இது Q1FY27 எண்களில் ஏற்கனவே தெரிகிறது.</li>
+    <li>சரிசெய்ய வேண்டியது: இது இன்னும் ஒரு விநியோக நெருக்கடி அல்ல. கோல் இந்தியாவின் இருப்பு சாதனை அளவில் உள்ளது; "நெருக்கடி" நிலையங்களின் எண்ணிக்கை ஒரு ரயில்/பருவமழை தளவாட பிரச்சினை, சில நாட்களில் தீர்க்கப்பட்டது.</li>
+    <li>NTPC மற்றும் Adani Power மிக நேரடியான அனல் பங்குகள்; NTPC மலிவானது, குறைந்த ஏற்ற-இறக்கம்; Adani Power அதிக ஏற்ற-இறக்கம், ஏற்கனவே உயர் மதிப்பீடு. டாடா பவர் ஒரு கலப்பு பங்கு.</li>
+    <li>பசுமை பங்குகள் (Adani Green, Suzlon) இந்த குறிப்பிட்ட வறண்ட-பருவ கருதுகோளுக்கான வர்த்தகம் அல்ல, ஆனால் "மோசமான காற்று பருவம்" தலைப்புச் செய்திகளால் விலை குறைந்தால் அது நுழைவு வாய்ப்பாக இருக்கலாம்.</li>
+    <li>முழு கருதுகோளுக்கும் மிகப்பெரிய மாற்று காரணி: WMO எல் நினோ பிப்ரவரி 2027 வரை மட்டுமே நம்பிக்கையுடன் கணித்துள்ளது; வசந்த/முன்-பருவமழை 2027க்கு இன்னும் எதுவும் பதிவில் இல்லை.</li>
+  </ul>
+
+  <div class="section-title"><h2 class="lang-en">Sources</h2><h2 class="lang-ta ta">ஆதாரங்கள்</h2></div>
+  <ul class="bul tight lang-en" style="font-size:12.5px;color:var(--ink-soft);">
+    <li>Business Today, "Power crunch ahead? Weak monsoon cuts hydro output" (2 Sep 2026)</li>
+    <li>Down To Earth, Power Demand Tracker (record 270.8 GW peak, 21 May 2026)</li>
+    <li>Whalesbook, "India Power Prices Hit 2026 Highs as Demand Touches 269 GW" (Sep 2026)</li>
+    <li>Business Standard, "Power plants with critical coal levels rise to 58; experts say no crisis" (6 Sep 2026) and "Coal ministry steps up supplies..." (7 Sep 2026)</li>
+    <li>Business Standard, "WMO says El Ni&ntilde;o to persist through Feb 2027" (4 Sep 2026)</li>
+    <li>Company filings/press releases: NTPC, Adani Power and Tata Power Q1 FY27 results (Jul 2026); indmoney.com live quotes (15 Sep 2026)</li>
+    <li>Business Today, brokerage target-price roundup for Suzlon/BHEL/Adani Green/JSW Energy/Tata Power (2 Apr 2026) and Bonanza technical picks via Business Standard (15 Apr 2026)</li>
+    <li>PowerPeakDigest / CEA installed-capacity data (June 2026)</li>
+  </ul>
+  <div class="ta" style="display:none;"></div>
+</section>
+
+</main>
+
+<div class="cb-disclaimer" id="cbDisc" hidden>
+  <strong class="lang-en">Not investment advice.</strong>
+  <strong class="lang-ta ta">முதலீட்டு ஆலோசனை அல்ல.</strong>
+  <p class="lang-en" style="margin:6px 0 0;color:#fff;">CB Research (Cauvery Business Research) is an independent equity research &amp; education platform. We are not SEBI-registered and do not issue buy/sell/hold recommendations. This note is for educational purposes, compiled from public disclosures and news reports as of 16 Sep 2026; verify before acting.</p>
+  <p class="lang-ta ta" style="margin:6px 0 0;color:#fff;">CB Research (காவேரி பிசினஸ் ரிசர்ச்) ஒரு சுயேச்சையான ஈக்விட்டி ஆராய்ச்சி &amp; கல்வி தளம். இது SEBI-யில் பதிவு செய்யப்படவில்லை; வாங்க/விற்க பரிந்துரைகள் வழங்கப்படுவதில்லை. இக்குறிப்பு 16 செப் 2026 நிலவரப்படி பொது தகவல்களிலிருந்து தொகுக்கப்பட்டது; செயல்படும் முன் சரிபார்க்கவும்.</p>
+</div>
+<div class="cb-badge" id="cbBadge" onclick="toggleDisc()">CB</div>
+
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-ta').classList.toggle('active', l==='ta');
+  try{localStorage.setItem('cb_lang', l);}catch(e){}
+}
+function toggleDisc(){
+  var d = document.getElementById('cbDisc');
+  d.hidden = !d.hidden;
+}
+(function(){
+  var l='en';
+  try{ l = localStorage.getItem('cb_lang') || 'en'; }catch(e){}
+  document.documentElement.dataset.lang = l;
+})();
+
+function showTab(id){
+  document.querySelectorAll('.panel').forEach(function(p){
+    p.hidden = (p.getAttribute('data-panel') !== id);
+  });
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-tab') === id);
+  });
+  try{ localStorage.setItem('cb_tab', id); }catch(e){}
+  window.scrollTo({top:0, behavior:'instant'});
+}
+document.querySelectorAll('.tab-btn').forEach(function(b){
+  b.addEventListener('click', function(){ showTab(b.getAttribute('data-tab')); });
+});
+(function(){
+  var t='dashboard';
+  try{ t = localStorage.getItem('cb_tab') || 'dashboard'; }catch(e){}
+  if(document.querySelector('.panel[data-panel="'+t+'"]')){ showTab(t); }
+})();
+
+function showCompanyFin(id){
+  document.querySelectorAll('.company-fin').forEach(function(c){
+    c.hidden = (c.getAttribute('data-company') !== id);
+  });
+  document.querySelectorAll('.subtab-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-company') === id);
+  });
+}
+document.querySelectorAll('.subtab-btn').forEach(function(b){
+  b.addEventListener('click', function(){ showCompanyFin(b.getAttribute('data-company')); });
+});
+</script>

@@ -13,26 +13,26 @@ sector file was written belongs in an analysis too — the skill sources the con
 live rather than reading it from here. A name's absence is not a statement that the company
 is out of scope.
 
-**18 sectors · 151 classified reports in the published collection.**
+**18 sectors · 156 classified reports in the published collection.**
 
 | Sector | Categories | Reports |
 |---|---:|---:|
 | [`auto`](#auto) | 6 | 12 |
 | [`banking`](#banking) | 3 | 16 |
-| [`capital-goods`](#capital-goods) | 8 | 15 |
-| [`capital-markets`](#capital-markets) | 7 | 10 |
+| [`capital-goods`](#capital-goods) | 8 | 16 |
+| [`capital-markets`](#capital-markets) | 7 | 11 |
 | [`cement`](#cement) | 2 | 2 |
 | [`chemicals`](#chemicals) | 6 | 7 |
 | [`consumer`](#consumer) | 11 | 22 |
 | [`infra-realty`](#infra-realty) | 3 | 2 |
 | [`insurance`](#insurance) | 4 | 3 |
-| [`it-services`](#it-services) | 5 | 5 |
+| [`it-services`](#it-services) | 5 | 6 |
 | [`logistics`](#logistics) | 6 | 1 |
 | [`metals`](#metals) | 4 | 7 |
-| [`nbfc-hfc`](#nbfc-hfc) | 8 | 7 |
+| [`nbfc-hfc`](#nbfc-hfc) | 8 | 8 |
 | [`new-age`](#new-age) | 6 | 4 |
 | [`pharma-health`](#pharma-health) | 9 | 19 |
-| [`power-energy`](#power-energy) | 9 | 13 |
+| [`power-energy`](#power-energy) | 9 | 14 |
 | [`reit-invit`](#reit-invit) | 9 | 4 |
 | [`telecom`](#telecom) | 3 | 2 |
 
@@ -63,7 +63,7 @@ is out of scope.
 
 ## capital-goods
 
-*15 reports in the collection.*
+*16 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -72,17 +72,17 @@ is out of scope.
 | **EMS — box-build** | Dixon |
 | **EMS — design-led / ODM** | Syrma SGS, Amber |
 | **EMS — industrial / semiconductor** | Kaynes |
-| **Cables & Wires** | Polycab, Bajel |
+| **Cables & Wires** | Polycab, Bajel, Sterlite Technologies |
 | **Power T&D Equipment** | Hitachi Energy India, ABB India, Siemens Energy India, Voltamp, CG Power |
-| **Industrial Equipment** | MTAR Technologies, INOX India, Shakti Pumps, Shaily Engineering, VA Tech Wabag (water) |
+| **Industrial Equipment** | MTAR Technologies, INOX India, Shakti Pumps, Shaily Engineering, VA Tech Wabag (water), Aeroflex Industries |
 
 ## capital-markets
 
-*10 reports in the collection.*
+*11 reports in the collection.*
 
 | Category | Companies |
 |---|---|
-| **Exchange** | BSE, MCX |
+| **Exchange** | BSE, MCX, NSE |
 | **Depository** | CDSL, NSDL |
 | **RTA (Registrar & Transfer Agent)** | CAMS, KFintech |
 | **Broker** | Angel One, Groww |
@@ -153,7 +153,7 @@ is out of scope.
 
 ## it-services
 
-*5 reports in the collection.*
+*6 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -189,7 +189,7 @@ is out of scope.
 
 ## nbfc-hfc
 
-*7 reports in the collection.*
+*8 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -233,7 +233,7 @@ is out of scope.
 
 ## power-energy
 
-*13 reports in the collection.*
+*14 reports in the collection.*
 
 | Category | Companies |
 |---|---|

@@ -116,6 +116,41 @@ Indicative; verify against the company's own history.
 - **Internet / classifieds** — Are billings growing faster than revenue (a leading signal)? Is the core
   segment's margin funding new verticals, and are those approaching breakeven?
 
+### Where AI actually lands in the P&L
+
+AI reaches this sector through **price**, not through demand disappearing. In a time-and-materials
+contract the client pays for effort, so **a delivery method that needs less effort earns less revenue
+unless the work is repriced**. That is the whole mechanism, and it decides whether AI is a margin
+opportunity or a revenue leak:
+
+- **If productivity gains are passed to the client**, revenue per project falls and the sector deflates.
+- **If the firm charges for the outcome instead of the hours**, the gain is kept and margin expands.
+
+So the number that matters is **whether pricing is moving to outcome-based or AI-led work at a premium**,
+not how many AI tools a company lists. **Ask what share of revenue is priced on outcomes rather than
+effort**, and treat vague "AI-enabled" commentary without a pricing change as unproven.
+
+**Headcount stops tracking revenue.** Where AI genuinely lifts productivity, revenue can grow with flat
+or falling headcount — so revenue per employee becomes the signal, and a hiring slowdown may mean
+efficiency rather than weak demand. Read it alongside deal wins before deciding which.
+
+### When the sector reprices on a narrative
+
+This sector's valuation now moves on the **AI-disruption narrative** as much as on deal flow, and the two
+move on different timescales. A change in sentiment about how fast AI will displace services work can
+move every name in the index in a day, with no change in any company's order book.
+
+**Separate the two explicitly.** A narrative-driven move is not evidence about the business. What would
+actually constitute evidence:
+
+- **Deal wins and large-contract announcements** showing up in reported results, not in commentary.
+- **Pricing power on AI-led work** — firms charging more, rather than absorbing the productivity gain.
+- **A durable change in client budgets**, which is driven by client-industry conditions and interest
+  rates far more than by any statement about AI.
+
+Client caution about discretionary spending is a **separate** headwind from AI displacement, and the two
+are routinely conflated. Say which one a given quarter reflects.
+
 ### What goes wrong, and the tell
 
 **Growth bought with headcount rather than won on price.** The tells: revenue growing while revenue-per-employee stalls; utilisation climbing toward its ceiling with no pricing improvement, which means the next quarter needs hiring; rising attrition, which raises replacement cost and disrupts delivery; and deal wins skewed to renewals over net-new.

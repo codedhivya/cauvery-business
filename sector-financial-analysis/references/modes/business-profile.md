@@ -69,6 +69,11 @@ Cover, when disclosed:
 - **Public float and liquidity** — a thin float exaggerates price moves and makes any valuation multiple
   less reliable.
 - **Recent placements, offers for sale or lock-in expiries**, which change the float on a known date.
+- **For a listing, separate the offer for sale from the fresh issue.** In an offer for sale, existing
+  holders sell and **the company receives nothing** — no capital to deploy, and the proceeds tell you
+  about the sellers' intentions rather than the business's plans. A fresh issue raises money for the
+  company, so state what it is for. A listing that is entirely an offer for sale changes the register and
+  the float, not the balance sheet, and should never be described as the company "raising" money.
 
 **State the as-of date.** Shareholding is a quarterly filing, so it is always at least somewhat stale
 relative to the price it is being read against.

@@ -172,6 +172,35 @@ Indicative; verify against current conditions, which move more in this sector th
 - **Exchange** — Is traded volume growing? Is market share holding against new entrants? Any regulatory
   change to market coupling?
 
+### Why thermal is the backstop — renewable seasonality and the grid
+
+**Installed capacity is not generation.** Coal's share of capacity understates its share of output,
+because thermal plants run far above their nameplate share whenever renewables fall short. Reading a
+capacity mix as if it were a generation mix is the most common error in this sector.
+
+Each renewable source fails in a different, predictable way:
+
+- **Wind is a monsoon-season resource in India, not a year-round one.** Generation concentrates in the
+  monsoon months and capacity factors drop sharply from around October and stay low into the following
+  summer — **every year**. Much of what looks like a wind "collapse" in the second half is the normal
+  seasonal switch-off, and should be described as such.
+- **Hydro tracks the monsoon directly**, and most of the fleet is run-of-river rather than reservoir-fed,
+  so it feels a weak monsoon immediately rather than with a storage lag.
+- **Solar cannot serve the evening peak.** Output ends as demand peaks, which is precisely when the grid
+  is tightest.
+
+**So thermal absorbs the gap**, and the transmission runs: weak monsoon or seasonal wind lull → renewable
+output undershoots → thermal PLF rises → spot power prices rise, sometimes to the regulatory ceiling →
+merchant realisations and thermal earnings rise with them. A generator's exposure to that sequence
+depends on its **merchant share**; a fully contracted plant sees volume but not price.
+
+**State the season and the weather backdrop before attributing anything to operations.** A thermal
+generator's strong quarter during a weak monsoon is largely the grid's doing; a green generator's weak
+quarter in the same period is not necessarily execution failure.
+
+**A "critical" coal-stock tag at some plants is not a national shortage** — it is a plant-level inventory
+flag. Say how many plants and at what level before calling it a fuel crisis.
+
 ### What goes wrong, and the tell
 
 **Counterparty payment behaviour, which fails long before generation does.** The tells: receivable days from distribution companies lengthening; a rising share of merchant exposure taken on as contracted capacity rolls off; fuel cost that cannot be passed through; and for manufacturers, a policy timeline slipping in a business whose demand exists because of that policy.
