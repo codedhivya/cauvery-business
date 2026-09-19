@@ -41,7 +41,7 @@ Report them to the user; they are fixable only at the source.
 python3 scripts/build_corpus_index.py
 ```
 
-`docs/corpus-index.txt` flattens all 177 reports into one greppable text file, one line per fragment,
+`docs/corpus-index.txt` flattens all published reports into one greppable text file, one line per fragment,
 prefixed by its report. **It goes stale the moment a report lands**, so rebuild it here rather than
 later — every "does the collection already cover X?" question in the steps below is a grep against it:
 
