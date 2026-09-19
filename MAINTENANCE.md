@@ -1,6 +1,6 @@
 # Maintenance Guide — `sector-financial-analysis`
 
-**The build is complete.** All 17 sector families in the corpus have a file, and none required a
+**The build is complete.** All 18 sector families in the corpus have a file, and none required a
 mode-file change. This document is what you need to *maintain* it: how to add a seventeenth sector, the
 judgment calls already settled so they aren't re-litigated, and how to keep the skill current as new
 reports arrive.
@@ -10,16 +10,17 @@ shaped this way, see [docs/adr/](docs/adr/README.md).
 
 | | |
 |---|---|
-| **Sectors** | 17 — every family in the 131-report corpus, plus REITs/InvITs as an asset class |
+| **Sectors** | 18 — every family in the corpus, plus REITs/InvITs as an asset class |
 | **Modes** | 15, unchanged across all four build phases |
-| **Coverage** | 123 of 131 reports; the rest are cross-sector scope, 2 news digests, a macro piece and the glossary |
+| **Coverage** | Nearly every report maps to a sector file; the rest are cross-sector scope, news digests, macro pieces and the glossary. `python3 scripts/audit_corpus.py` prints the current split |
 | **Built in** | 5 phases — insurance+banking, then by report count, then a corpus refresh that added `new-age` |
 
 ---
 
 ## Sector inventory
 
-Derived by auditing all 131 reports. Report counts drive build order — biggest first.
+Derived by auditing the corpus as it stood at 131 reports — a historical note, not a current count.
+Report counts drove build order, biggest first.
 
 | Sector | Reports | Status | Notes |
 |---|---|---|---|
@@ -252,7 +253,7 @@ about compliance. Where the corpus did not establish a number, the file names th
 and leaves the number to be sourced.
 
 The discipline that makes this safe is universal, so it lives in `source-hierarchy.md` under **Answering
-a regulatory question** rather than being copied into 17 files: start from the sector file, confirm at
+a regulatory question** rather than being copied into every sector file: start from the sector file, confirm at
 source for the period, check the published collection, and **if you cannot confirm, say the rule and say
 it is unconfirmed**. Always state the as-at date.
 
