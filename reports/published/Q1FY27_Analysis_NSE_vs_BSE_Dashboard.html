@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NSE vs BSE Analysis Dashboard</title>
+<style>
+:root{
+  --bg:#ffffff; --surface:#ffffff; --soft:#f6f6f4; --line:#e3e2dd; --line2:#cfcec8;
+  --ink:#0b0b0b; --ink2:#3d3c39; --muted:#6b6a65;
+  --nse:#2a78d6; --nse-soft:#e8f1fc; --bse:#eb6834; --bse-soft:#fdeee7;
+  --hi:#b42318; --hi-bg:#fdecea; --md:#8a5a00; --md-bg:#fff4dc; --lo:#1b6b3a; --lo-bg:#e6f5ec;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 60px}
+header.top{border-bottom:1px solid var(--line);background:#fff;padding:22px 0 14px}
+.brand{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:28px;line-height:1.2;margin:6px 0 6px}
+.sub{color:var(--ink2);max-width:860px;margin:0}
+.stamp{margin-top:10px;font-size:12.5px;color:var(--muted)}
+nav.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+nav.tabs .in{max-width:1180px;margin:0 auto;padding:0 16px;display:flex;gap:4px}
+nav.tabs button{background:none;border:0;padding:13px 14px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.on{color:var(--ink);border-bottom-color:var(--nse)}
+section.pane{display:none;padding-top:22px}
+section.pane.on{display:block}
+h2{font-size:21px;margin:26px 0 10px}
+h3{font-size:16px;margin:20px 0 8px}
+p{margin:8px 0}
+.note{font-size:12.5px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:820px){.grid2,.grid3,.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:#fff}
+.card.nse{border-top:4px solid var(--nse)} .card.bse{border-top:4px solid var(--bse)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;margin:2px 4px 2px 0}
+.tag.nse{background:var(--nse-soft);color:#12468a} .tag.bse{background:var(--bse-soft);color:#8a3210}
+.tag.gray{background:var(--soft);color:var(--ink2)}
+.kpi{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;background:var(--soft)}
+.kpi .l{font-size:12px;color:var(--muted)} .kpi .v{font-size:22px;font-weight:700;margin-top:2px} .kpi .s{font-size:12px;color:var(--ink2)}
+.callout{border-left:4px solid var(--nse);background:var(--nse-soft);padding:12px 14px;border-radius:6px;margin:14px 0}
+.callout.warn{border-left-color:var(--bse);background:var(--bse-soft)}
+.callout.gray{border-left-color:var(--line2);background:var(--soft)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);margin:10px 0 16px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-weight:700;font-size:13px;position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.src,th.src{font-size:12px;color:var(--muted);white-space:nowrap}
+.c-nse{color:#12468a;font-weight:700} .c-bse{color:#8a3210;font-weight:700}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.hi{background:var(--hi-bg);color:var(--hi)} .pill.md{background:var(--md-bg);color:var(--md)} .pill.lo{background:var(--lo-bg);color:var(--lo)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{border:1px solid var(--line2);background:#fff;border-radius:99px;padding:6px 13px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chartcard{border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:12px 0}
+.chartcard h3{margin:0 0 4px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin:6px 0 4px}
+.scroll{overflow-x:auto}
+canvas{display:block}
+#tip{position:fixed;pointer-events:none;background:#fff;border:1px solid var(--line2);box-shadow:0 4px 14px rgba(0,0,0,.12);border-radius:8px;padding:7px 10px;font-size:12.5px;display:none;z-index:50}
+.hbar{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;margin:6px 0;font-size:14px}
+.hbar .bar{height:16px;border-radius:0 4px 4px 0;background:#b9b8b1;min-width:2px}
+.hbar .val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+input[type=range]{width:100%}
+label.f{display:block;font-size:13px;font-weight:600;margin:10px 0 2px;color:var(--ink2)}
+input[type=number],select{width:100%;padding:8px 10px;border:1px solid var(--line2);border-radius:8px;font:inherit;background:#fff}
+.out{font-size:26px;font-weight:800}
+.wt{display:grid;grid-template-columns:1.2fr 2fr 60px;gap:10px;align-items:center}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+ol.src{padding-left:20px;font-size:13px} ol.src li{margin:4px 0}
+ul.tight{margin:6px 0 6px 18px;padding:0} ul.tight li{margin:4px 0}
+</style>
+</head>
+<body>
+<div id="tip"></div>
+<header class="top"><div class="wrap" style="padding-bottom:0">
+  <div class="brand">Cauvery Business Research (CB Research) · Sector Intelligence</div>
+  <h1>NSE vs BSE: Which Exchange Is Better? IPO-Day Deep Dive</h1>
+  <p class="sub">Financials, business model, segments, risks, global comparison, verdict and a 3 to 5 year holding view. Built around the BusinessLine research note of 19 September 2026 and cross-checked against NSE DRHP summaries, BSE results and broker commentary.</p>
+  <div class="stamp">Data as of 21 September 2026 (NSE IPO closing day) · Latest reported period: FY26 and Q1FY27 · All figures in ₹ crore unless stated · Educational analysis, not investment advice</div>
+</div></header>
+
+<nav class="tabs"><div class="in" id="tabs">
+  <button data-t="verdict" class="on">Verdict</button>
+  <button data-t="fin">Financials</button>
+  <button data-t="biz">Business &amp; Segments</button>
+  <button data-t="risk">Risks</button>
+  <button data-t="global">Global Peers</button>
+  <button data-t="people">Analysts &amp; Management</button>
+  <button data-t="calc">3-5 Year View</button>
+  <button data-t="src">Sources</button>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ================= VERDICT ================= -->
+<section class="pane on" id="verdict">
+  <div class="grid2">
+    <div class="card nse">
+      <span class="tag nse">NSE</span><span class="tag gray">IPO price band ₹1,700-1,785</span>
+      <h3 style="margin-top:8px">Best business in the country. Not a bargain at the IPO price.</h3>
+      <p><b>Call: HOLD / ACCUMULATE ON DIPS.</b> Own the franchise, but do not chase it. A better entry is the ₹1,300-1,450 zone.</p>
+      <div class="grid2" style="gap:10px;margin-top:10px">
+        <div class="kpi"><div class="l">Market cap at ₹1,785</div><div class="v">₹4.42 lakh cr</div><div class="s">≈ 3.4x BSE</div></div>
+        <div class="kpi"><div class="l">P/E on FY26 EPS ₹41.6</div><div class="v">43x</div><div class="s">≈ 48x excl. NSDL gain (my estimate)</div></div>
+        <div class="kpi"><div class="l">Cash market share</div><div class="v">93%</div><div class="s">100% in stock F&amp;O</div></div>
+        <div class="kpi"><div class="l">FY26 operating revenue</div><div class="v">-3%</div><div class="s">₹16,601 cr; first fall in a decade</div></div>
+      </div>
+    </div>
+    <div class="card bse">
+      <span class="tag bse">BSE</span><span class="tag gray">Listed challenger</span>
+      <h3 style="margin-top:8px">Fastest-growing exchange, but priced richer than NSE.</h3>
+      <p><b>Call: HOLD (satellite position only).</b> Momentum is superb, but market-share gains are nearing saturation and most brokers sit at Hold/Neutral. Better entry: ₹2,800-3,100.</p>
+      <div class="grid2" style="gap:10px;margin-top:10px">
+        <div class="kpi"><div class="l">Market cap (approx.)</div><div class="v">₹1.31-1.34 lakh cr</div><div class="s">Price ₹3,245-3,384 (Aug-Sep 2026)</div></div>
+        <div class="kpi"><div class="l">P/E on FY26 EPS ₹60.6</div><div class="v">53x</div><div class="s">MCX at ≈ 62x</div></div>
+        <div class="kpi"><div class="l">FY26 PAT growth</div><div class="v">+88%</div><div class="s">₹2,497 cr vs ₹1,322 cr</div></div>
+        <div class="kpi"><div class="l">Q1FY27 PAT growth</div><div class="v">+62%</div><div class="s">₹873 cr, EBITDA margin 67%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>Bottom line.</b> NSE is the stronger, deeper, more profitable franchise and the only one with a near-monopoly moat (93% of cash equities, 100% of stock derivatives, #1 globally by derivatives contracts). BSE is the faster-growing, cheaper-to-trade challenger that has already captured the easy share gains. At today's prices both are expensive against global exchanges (21-34x P/E), both live on options volumes, and both face the same regulator. My verdict: <b>NSE is the better long-term core holding, but only at a price that gives a margin of safety; BSE is a higher-beta satellite.</b> Section "3-5 Year View" shows the arithmetic.
+  </div>
+
+  <h2>Which is the best? Three lenses</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Lens</th><th>Winner</th><th>Why</th></tr>
+    <tr><td>Business quality and moat</td><td class="c-nse">NSE</td><td>93% cash share, 100% single-stock F&amp;O, 98.9% index futures, ₹1,286 revenue per investor vs BSE ₹195, normalised EBITDA margin 76.2%, ROE about 33%.</td></tr>
+    <tr><td>Growth momentum</td><td class="c-bse">BSE</td><td>FY26 revenue +59%, PAT +88%; Q1FY27 PAT +62%. NSE operating revenue fell 3% and normalised EBITDA about 5% in FY26.</td></tr>
+    <tr><td>Valuation today</td><td class="c-nse">NSE (marginally)</td><td>43x vs 53x. NSE is about 19% cheaper on P/E, but 33x EV/EBITDA is roughly double global peers (14-17x).</td></tr>
+    <tr><td>Regulatory / options dependence</td><td>Both exposed</td><td>NSE: options ≈ 60% of operating revenue. BSE: derivatives ≈ 65% of FY26 operating revenue and 85% of Q1FY27 operating revenue is transaction charges.</td></tr>
+    <tr><td>Risk-adjusted 3-5 year return at today's price</td><td>No clear winner</td><td>NSE at ₹1,785 needs a re-rating-proof growth story; BSE needs market-share and volume growth to continue. See scenario maths.</td></tr>
+    <tr><td><b>Overall</b></td><td><b class="c-nse">NSE for core, BSE for satellite</b></td><td>Weighted scorecard below favours NSE. Change the weights to match your own priorities.</td></tr>
+  </table></div>
+
+  <h2>Interactive weighted scorecard</h2>
+  <p class="note">Scores (1-10) are my judgement from the data in this file. Move the weight sliders; totals update instantly.</p>
+  <div class="grid2">
+    <div class="card" id="weights"></div>
+    <div class="card">
+      <div class="grid2" style="gap:10px">
+        <div class="kpi" style="border-top:4px solid var(--nse)"><div class="l">NSE weighted score</div><div class="v" id="sNSE">-</div></div>
+        <div class="kpi" style="border-top:4px solid var(--bse)"><div class="l">BSE weighted score</div><div class="v" id="sBSE">-</div></div>
+      </div>
+      <p style="margin-top:12px" id="sTxt"></p>
+      <div class="scroll"><canvas id="cScore" height="260"></canvas></div>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table id="scoreTbl"></table></div>
+
+  <h2>If you are deciding this week</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Situation</th><th>Practical view (not advice)</th></tr>
+    <tr><td>Got NSE allotment (allotment 22 Sep, listing 24 Sep on BSE)</td><td>The grey market premium was about ₹160 (≈ 9%). Holding a core position for 3-5 years is defensible if you can sit through a 25-30% drawdown; otherwise consider booking a part on the listing pop and re-buying lower.</td></tr>
+    <tr><td>Did not get allotment</td><td>Do not chase the listing day. Watch the ₹1,300-1,450 zone and the next two quarters for options-revenue trend, SEBI actions and the colocation settlement.</td></tr>
+    <tr><td>Already own BSE</td><td>Hold. Avoid adding above ₹3,300 (about 54x FY26 EPS). Reassess if options market share gains stall or STT / bank-guarantee rules bite further.</td></tr>
+    <tr><td>Want exchange exposure with less valuation risk</td><td>Split: core NSE on dips, small BSE satellite, and watch global exchanges (21-26x P/E) as a diversifier through a global fund.</td></tr>
+  </table></div>
+</section>
+
+<!-- ================= FINANCIALS ================= -->
+<section class="pane" id="fin">
+  <h2>Head-to-head: FY26 snapshot</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Metric (₹ crore)</th><th class="num">NSE</th><th class="num">BSE</th><th>Comment</th><th class="src">Src</th></tr>
+    <tr><td>Operating revenue</td><td class="num">16,601</td><td class="num">4,834</td><td>NSE ≈ 3.4x BSE</td><td class="src">S1, S8</td></tr>
+    <tr><td>Total income / total revenue</td><td class="num">18,713</td><td class="num">5,148</td><td>Includes other and investment income</td><td class="src">S1, S8</td></tr>
+    <tr><td>Operating EBITDA (reported)</td><td class="num">11,098</td><td class="num">3,079</td><td>NSE hit by ₹1,432 cr SEBI settlement provision</td><td class="src">S1, S8</td></tr>
+    <tr><td>EBITDA margin (reported)</td><td class="num">67%</td><td class="num">64%</td><td>NSE normalised: 76.2%</td><td class="src">S1, S8</td></tr>
+    <tr><td>Profit after tax</td><td class="num">10,302</td><td class="num">2,497</td><td>NSE PAT includes ₹1,201 cr NSDL stake-sale gain</td><td class="src">S1, S8</td></tr>
+    <tr><td>EPS (₹)</td><td class="num">41.6</td><td class="num">60.6</td><td>Different share counts; compare P/E, not EPS</td><td class="src">S1, S13</td></tr>
+    <tr><td>Operating revenue growth, FY26</td><td class="num">-3%</td><td class="num">+63%</td><td>Opposite direction</td><td class="src">S1, S8</td></tr>
+    <tr><td>PAT growth, FY26</td><td class="num">-15.5%</td><td class="num">+88%</td><td>NSE FY25 PAT ₹12,188 cr; BSE FY25 ₹1,322 cr</td><td class="src">S2, S8</td></tr>
+    <tr><td>Revenue per investor (₹)</td><td class="num">1,286</td><td class="num">195</td><td>NSE was ₹1,611 in FY24</td><td class="src">S1</td></tr>
+    <tr><td>P/E on FY26 EPS</td><td class="num">≈ 43x</td><td class="num">≈ 53x</td><td>MCX ≈ 62x</td><td class="src">S1, S13</td></tr>
+    <tr><td>Market cap (approx.)</td><td class="num">4,42,000</td><td class="num">1,31,000-1,34,000</td><td>NSE at ₹1,785; BSE at ₹3,245-3,384</td><td class="src">S1, S11, S13</td></tr>
+  </table></div>
+
+  <div class="chartcard">
+    <h3>Total income / revenue: FY25 vs FY26 (₹ crore)</h3>
+    <div class="legend"><span><span class="dot" style="background:var(--nse)"></span>NSE</span><span><span class="dot" style="background:var(--bse)"></span>BSE</span></div>
+    <div class="scroll"><canvas id="c1" height="330"></canvas></div>
+  </div>
+  <div class="grid2">
+    <div class="chartcard">
+      <h3>Profit after tax: FY25 vs FY26 (₹ crore)</h3>
+      <div class="legend"><span><span class="dot" style="background:var(--nse)"></span>NSE</span><span><span class="dot" style="background:var(--bse)"></span>BSE</span></div>
+      <div class="scroll"><canvas id="c2" height="330"></canvas></div>
+    </div>
+    <div class="chartcard">
+      <h3>EBITDA in absolute ₹ crore</h3>
+      <div class="legend"><span><span class="dot" style="background:var(--nse)"></span>NSE</span><span><span class="dot" style="background:var(--bse)"></span>BSE</span></div>
+      <div class="scroll"><canvas id="c3" height="330"></canvas></div>
+      <p class="note">* NSE normalised EBITDA = 76.2% margin on ₹16,601 cr operating revenue (adds back the SEBI settlement provision); derived figure.</p>
+    </div>
+  </div>
+
+  <h2>NSE: three-year trend</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>₹ crore</th><th class="num">FY24</th><th class="num">FY25</th><th class="num">FY26</th><th>Note</th><th class="src">Src</th></tr>
+    <tr><td>Revenue from operations</td><td class="num">14,780</td><td class="num">17,141</td><td class="num">16,601</td><td>FY24-26 CAGR about 6%</td><td class="src">S1, S2</td></tr>
+    <tr><td>Total income</td><td class="num">16,352</td><td class="num">19,177</td><td class="num">18,713</td><td>-2.4% in FY26</td><td class="src">S2</td></tr>
+    <tr><td>Operating EBITDA</td><td class="num">n/d</td><td class="num">n/d</td><td class="num">11,098</td><td>FY24-26 CAGR about 5%; fell over 12% in FY26 (normalised about -5%)</td><td class="src">S1</td></tr>
+    <tr><td>Normalised EBITDA margin</td><td class="num">77.4%</td><td class="num">77.7%</td><td class="num">76.2%</td><td>Highest among leading exchange groups</td><td class="src">S3</td></tr>
+    <tr><td>Profit after tax</td><td class="num">8,306</td><td class="num">12,188</td><td class="num">10,302</td><td>FY24-26 CAGR about 11% (helped by other income)</td><td class="src">S1, S2</td></tr>
+    <tr><td>Diluted EPS (₹)</td><td class="num">33.56</td><td class="num">49.24</td><td class="num">41.62</td><td>Base for 43x P/E</td><td class="src">S3</td></tr>
+    <tr><td>Return on equity</td><td class="num">37.4%</td><td class="num">44.9%</td><td class="num">33.0%</td><td>Falling with lower profit and larger cash pile</td><td class="src">S3</td></tr>
+    <tr><td>Cash + treasury</td><td class="num">71,200</td><td class="num">65,900</td><td class="num">97,000</td><td>Rounded from ₹712 / 659 / 970 bn</td><td class="src">S3</td></tr>
+  </table></div>
+  <div class="callout gray"><b>Reading the NSE numbers.</b> Two one-offs distort FY26: a ₹1,432 cr provision for the SEBI colocation and dark-fibre settlement (reduces EBITDA) and a ₹1,201 cr pre-tax gain on the partial NSDL stake sale (increases PAT). Excluding the NSDL gain (about ₹1,050-1,200 cr after tax), the P/E at the upper band is roughly 48x, not 43x. Adding back the provision as well brings it back to about 42x. Either way NSE is priced well above global peers.</div>
+
+  <h2>BSE: recent trend</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>₹ crore</th><th class="num">FY25</th><th class="num">FY26</th><th class="num">Q1FY27</th><th>Note</th><th class="src">Src</th></tr>
+    <tr><td>Total revenue</td><td class="num">3,236</td><td class="num">5,148</td><td class="num">1,701-1,707</td><td>Record quarter; +63-64% YoY</td><td class="src">S8, S9, S10</td></tr>
+    <tr><td>Operating revenue</td><td class="num">≈ 2,966</td><td class="num">4,834</td><td class="num">1,566</td><td>FY25 derived from +63% growth</td><td class="src">S8, S9</td></tr>
+    <tr><td>Transaction charges</td><td class="num">n/d</td><td class="num">n/d</td><td class="num">1,328</td><td>+80% YoY; 85% of Q1 operating revenue</td><td class="src">S9</td></tr>
+    <tr><td>EBITDA</td><td class="num">1,500</td><td class="num">3,079</td><td class="num">1,046</td><td>Margin 51% → 64% → 67%</td><td class="src">S8, S9</td></tr>
+    <tr><td>Profit after tax</td><td class="num">1,322</td><td class="num">2,497</td><td class="num">873</td><td>Q1FY27 +62% YoY (one source shows ₹853 cr; ₹873 cr per Business Standard and call transcript)</td><td class="src">S8, S9, S14</td></tr>
+    <tr><td>Avg daily premium turnover (derivatives)</td><td class="num">8,977</td><td class="num">19,522</td><td class="num">29,615</td><td>+118% in FY26; +96% YoY in Q1FY27</td><td class="src">S8, S9</td></tr>
+    <tr><td>Avg daily cash turnover</td><td class="num">n/d</td><td class="num">7,950</td><td class="num">9,955</td><td>Record levels</td><td class="src">S8, S9</td></tr>
+    <tr><td>Dividend per share (₹)</td><td class="num">n/d</td><td class="num">10</td><td class="num">-</td><td>Face value ₹2</td><td class="src">S8</td></tr>
+  </table></div>
+  <div class="callout warn"><b>Reading the BSE numbers.</b> Growth is exceptional but the trajectory has cooled: brokers cut FY27-FY29 EPS by 5-15% in August on the closing-auction session, higher STT and tighter RBI bank-guarantee norms. BSE options volumes fell about 12% in August versus about 14% for NSE.</div>
+  <p class="note">n/d = not disclosed in the sources reviewed.</p>
+</section>
+
+<!-- ================= BUSINESS ================= -->
+<section class="pane" id="biz">
+  <div class="callout gray"><b>Simple analogy.</b> An exchange is like the Koyambedu wholesale market. Traders (brokers) rent stalls and pay a small fee on every deal. The market owner does not sell vegetables, so it takes no price risk; it earns on volume. NSE is the giant central market where 93% of the buying and selling happens. BSE is the older market next door, now offering near-zero fees on some counters to pull traders across.</div>
+
+  <h2>Business model side by side</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th style="width:170px">Aspect</th><th>NSE</th><th>BSE</th><th class="src">Src</th></tr>
+    <tr><td>Core role</td><td>Multi-asset exchange: equity, currency, commodity and debt trading infrastructure. Investors trade only via registered members such as brokers.</td><td>Asia's oldest exchange; equity cash, equity derivatives, mutual-fund platform, listings, clearing and data.</td><td class="src">S1, S9</td></tr>
+    <tr><td>Main earnings</td><td>Transaction charges (cash, futures, options) ≈ 79% of operating revenue; options alone ≈ 60%.</td><td>Transaction charges dominate (85% of Q1FY27 operating revenue); equity derivatives ≈ 65% of FY26 operating revenue.</td><td class="src">S1, S8, S9</td></tr>
+    <tr><td>Non-transaction income</td><td>Connectivity, data feeds and terminals, colocation racks, licensing, listing, treasury: ≈ 12% of operating revenue in FY26 (9% in FY24).</td><td>StAR MF (₹285 cr FY26), colocation (₹51 cr in Q1FY27), listing, data (own market-data business from 1 Jan 2027), clearing.</td><td class="src">S1, S8, S9</td></tr>
+    <tr><td>Pricing strategy</td><td>Premium pricing: uniform ₹3,503 per crore of option premium.</td><td>Disruptor pricing: nil on equity futures, ≈ ₹500 per crore on most options; ₹3,250 on Sensex and Bankex.</td><td class="src">S1</td></tr>
+    <tr><td>Clearing</td><td>NSE Clearing (AAA rated) and NSE IFSC Clearing.</td><td>BSE Clearing Limited (formerly Indian Clearing Corporation).</td><td class="src">S3, S9</td></tr>
+    <tr><td>Data / indices</td><td>NSE Indices (425 indices incl. Nifty 50), NSE Data &amp; Analytics (₹470 cr).</td><td>16 new indices launched; 2 more approved for derivatives; direct market-data control from Jan 2027.</td><td class="src">S3, S9</td></tr>
+    <tr><td>International</td><td>NSE International Exchange at GIFT City (99.81% IFSC equity-derivative share).</td><td>Global #1 in number of IPO listings (255 companies in FY26).</td><td class="src">S3, S8</td></tr>
+    <tr><td>Moat</td><td>Network effect: deepest liquidity; every trade earns several fee lines.</td><td>Price advantage and product design (Thursday expiry, Sensex/Bankex); growing broker and FPI adoption (about 650 FPIs, target 800).</td><td class="src">S4, S9</td></tr>
+    <tr><td>Growth levers</td><td>Non-transaction revenue, new asset classes (electricity, natural gas), GIFT City, data. DRHP does not yet set numerical growth targets.</td><td>Double-digit cash share target by early 2027, corporate bonds, StAR MF and NPS, data services, gold.</td><td class="src">S2, S4, S9</td></tr>
+  </table></div>
+
+  <h2>Revenue mix</h2>
+  <div class="grid2">
+    <div>
+      <h3><span class="dot" style="background:var(--nse)"></span>NSE: FY26 operating revenue ₹16,601 cr</h3>
+      <div class="tbl-wrap"><table>
+        <tr><th>Stream</th><th class="num">₹ cr</th><th class="num">Share</th></tr>
+        <tr><td>Transaction charges (cash + F&amp;O)</td><td class="num">13,057</td><td class="num">78.6%</td></tr>
+        <tr><td>&nbsp;&nbsp;of which options (approx.)</td><td class="num">≈ 9,960</td><td class="num">≈ 60%</td></tr>
+        <tr><td>Data centre &amp; connectivity</td><td class="num">1,330</td><td class="num">8.0%</td></tr>
+        <tr><td>Treasury income</td><td class="num">840</td><td class="num">5.1%</td></tr>
+        <tr><td>Data feed &amp; terminals</td><td class="num">470</td><td class="num">2.8%</td></tr>
+        <tr><td>Clearing &amp; index licensing</td><td class="num">400</td><td class="num">2.4%</td></tr>
+        <tr><td>Listing services</td><td class="num">350</td><td class="num">2.1%</td></tr>
+      </table></div>
+      <p class="note">Sources S1, S3. The BusinessLine note counts non-transaction revenue (connectivity, data, colocation, licensing) at ₹1,956 cr ≈ 12%.</p>
+    </div>
+    <div>
+      <h3><span class="dot" style="background:var(--bse)"></span>BSE: FY26 operating revenue ₹4,834 cr</h3>
+      <div class="tbl-wrap"><table>
+        <tr><th>Segment</th><th class="num">₹ cr</th><th class="num">Share</th></tr>
+        <tr><td>Equity derivatives</td><td class="num">3,134</td><td class="num">64.8%</td></tr>
+        <tr><td>StAR MF (mutual fund platform)</td><td class="num">285</td><td class="num">5.9%</td></tr>
+        <tr><td>Cash market, listing, data, clearing, colocation, others (balancing figure)</td><td class="num">1,415</td><td class="num">29.3%</td></tr>
+      </table></div>
+      <p class="note">Sources S8. Balancing figure is my derivation. Q1FY27: transaction charges ₹1,328 cr of ₹1,566 cr operating revenue (85%), so concentration has risen.</p>
+    </div>
+  </div>
+
+  <h2>Segment market share</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Segment (FY26)</th><th class="num">NSE</th><th>BSE / others</th><th class="src">Src</th></tr>
+    <tr><td>Equity cash turnover</td><td class="num">93%</td><td>BSE targets "meaningful double-digit" share by early 2027</td><td class="src">S1, S9</td></tr>
+    <tr><td>Single-stock futures and options</td><td class="num">100%</td><td>Nil</td><td class="src">S1</td></tr>
+    <tr><td>Index futures</td><td class="num">98.9%</td><td>≈ 1.1%</td><td class="src">S1</td></tr>
+    <tr><td>Index options (premium turnover)</td><td class="num">72.1%</td><td>≈ 27.9% (implied)</td><td class="src">S1</td></tr>
+    <tr><td>Equity options premium turnover, FY26</td><td class="num">74.71%</td><td>≈ 25.3% (implied)</td><td class="src">S1</td></tr>
+    <tr><td>Equity options premium turnover, Q1FY27</td><td class="num">68.48%</td><td>≈ 31.5% (implied)</td><td class="src">S1</td></tr>
+    <tr><td>Global equity cash trades (count)</td><td class="num">11.4%</td><td>-</td><td class="src">S1</td></tr>
+    <tr><td>Global equity derivative contracts (count)</td><td class="num">51.2%</td><td>-</td><td class="src">S1</td></tr>
+  </table></div>
+  <div class="chartcard">
+    <h3>The options share shift: NSE vs BSE (equity options, premium turnover, %)</h3>
+    <div class="legend"><span><span class="dot" style="background:var(--nse)"></span>NSE (reported)</span><span><span class="dot" style="background:var(--bse)"></span>BSE (implied = 100 minus NSE)</span></div>
+    <div class="scroll"><canvas id="c4" height="330"></canvas></div>
+    <p class="note">BSE share is implied because only two exchanges offer equity options. Source S1.</p>
+  </div>
+  <div class="grid3">
+    <div class="kpi"><div class="l">NSE fee per crore of premium</div><div class="v">₹3,503</div><div class="s">Uniform on all options</div></div>
+    <div class="kpi"><div class="l">BSE fee per crore of premium</div><div class="v">≈ ₹500</div><div class="s">₹3,250 on Sensex and Bankex</div></div>
+    <div class="kpi"><div class="l">Price gap</div><div class="v">≈ 7x</div><div class="s">Like Jio vs Airtel in early days</div></div>
+  </div>
+</section>
+
+<!-- ================= RISKS ================= -->
+<section class="pane" id="risk">
+  <h2>Risk register</h2>
+  <p class="note">Filter by exchange or severity. Severity is my judgement of impact times likelihood over the next 3-5 years.</p>
+  <div class="chips" id="rfEx">
+    <button class="chip on" data-v="all">All</button><button class="chip" data-v="NSE">NSE</button><button class="chip" data-v="BSE">BSE</button>
+  </div>
+  <div class="chips" id="rfSev">
+    <button class="chip on" data-v="all">Any severity</button><button class="chip" data-v="High">High</button><button class="chip" data-v="Medium">Medium</button><button class="chip" data-v="Low">Low</button>
+  </div>
+  <div class="tbl-wrap"><table id="riskTbl">
+    <tr><th>Risk</th><th>Applies to</th><th>Evidence</th><th>Severity</th><th>What to monitor</th><th class="src">Src</th></tr>
+    <tr data-ex="NSE BSE" data-sev="High"><td><b>Options concentration</b></td><td>Both</td><td>NSE: options ≈ 60% of operating revenue, mostly weekly. BSE: derivatives ≈ 65% of FY26 operating revenue; transaction charges 85% of Q1FY27.</td><td><span class="pill hi">▲ High</span></td><td>Non-transaction share (NSE 12% today); BSE mix of cash, MF, data</td><td class="src">S1, S8, S9</td></tr>
+    <tr data-ex="NSE BSE" data-sev="High"><td><b>Regulatory and tax clampdown on F&amp;O</b></td><td>Both</td><td>SEBI: higher lot sizes, one weekly expiry per exchange, upfront premium. Union Budget 2026 raised STT on F&amp;O. SEBI report: retail F&amp;O losses ₹91,685 cr in FY26. NSE equity-futures ADTV -14.2%, options premium ADTV -7.7% in FY26.</td><td><span class="pill hi">▲ High</span></td><td>SEBI circulars on weekly expiry, lot sizes; STT changes; expiry-day option-position ratios</td><td class="src">S1</td></tr>
+    <tr data-ex="NSE" data-sev="High"><td><b>Options market-share loss and price war</b></td><td>NSE</td><td>NSE options premium share: 96.86% (FY24) → 87.43% → 74.71% → 68.48% (Q1FY27). BSE charges ≈ ₹500 vs NSE ₹3,503 per crore.</td><td><span class="pill hi">▲ High</span></td><td>Quarterly share; any NSE fee cut (would hit margin)</td><td class="src">S1</td></tr>
+    <tr data-ex="NSE BSE" data-sev="High"><td><b>Rich valuation vs global peers</b></td><td>Both</td><td>NSE 43x P/E and 33x EV/EBITDA vs Nasdaq 26x/17x, ICE 23x/16x, Cboe 21x/14x. BSE 53x. Peers grew faster (Nasdaq 10%, ICE 7%, Cboe 15% vs NSE 6% over two years).</td><td><span class="pill hi">▲ High</span></td><td>Post-listing price vs earnings growth; brokers' target cuts</td><td class="src">S1, S13</td></tr>
+    <tr data-ex="BSE" data-sev="High"><td><b>Market-share saturation and cost norms</b></td><td>BSE</td><td>Nuvama and Jefferies downgraded in August: closing-auction session impact on option volumes, RBI bank-guarantee rules (effective 1 July), higher STT, share gains nearing saturation.</td><td><span class="pill hi">▲ High</span></td><td>Monthly options volumes; prop-trader participation; share of premium turnover</td><td class="src">S9, S11</td></tr>
+    <tr data-ex="NSE" data-sev="Medium"><td><b>Pending SEBI legacy cases</b></td><td>NSE</td><td>Colocation and dark-fibre settlement: provision ₹1,391-1,432 cr against proposed ₹1,491 cr; settlement and Supreme Court appeals pending. Auditor emphasis-of-matter for three years.</td><td><span class="pill md">◆ Medium</span></td><td>Final settlement order; any new enforcement action</td><td class="src">S1, S2, S3</td></tr>
+    <tr data-ex="NSE" data-sev="Medium"><td><b>Governance and ownership structure</b></td><td>NSE</td><td>No identifiable promoter; PSU holders ≈ 30%; chairperson post was vacant 651 days (Srinivas Injeti appointed 9 Sep 2025); top-10 members = 46.78% of revenue; past CEO exits.</td><td><span class="pill md">◆ Medium</span></td><td>Board independence, CEO succession, member concentration</td><td class="src">S2, S3</td></tr>
+    <tr data-ex="NSE" data-sev="Medium"><td><b>Growth articulation gap</b></td><td>NSE</td><td>DRHP does not set a specific next-phase growth programme with targets. FY24-26 revenue CAGR 6%, EBITDA CAGR 5%.</td><td><span class="pill md">◆ Medium</span></td><td>Management guidance after listing; non-transaction revenue growth</td><td class="src">S1, S2</td></tr>
+    <tr data-ex="NSE BSE" data-sev="Medium"><td><b>Volume cyclicality</b></td><td>Both</td><td>Earnings track market volumes. August 2026 options volumes: BSE -12%, NSE -14%.</td><td><span class="pill md">◆ Medium</span></td><td>Market drawdowns, retail account additions, cash ADTV</td><td class="src">S11</td></tr>
+    <tr data-ex="NSE BSE" data-sev="Medium"><td><b>Technology, cyber and outage risk</b></td><td>Both</td><td>Disclosed as a key risk in the NSE DRHP; exchanges are single points of failure for the market.</td><td><span class="pill md">◆ Medium</span></td><td>Outage incidents, SEBI audits</td><td class="src">S3</td></tr>
+    <tr data-ex="NSE" data-sev="Low"><td><b>Post-listing supply overhang</b></td><td>NSE</td><td>100% OFS by SBI, Morgan Stanley, Bank of Baroda, SHCIL and insurers; PSU holders still hold sizeable stakes and could sell later. No money reaches the company.</td><td><span class="pill lo">● Low</span></td><td>Lock-in expiry, block deals</td><td class="src">S1, S2, S3</td></tr>
+    <tr data-ex="BSE" data-sev="Low"><td><b>Cash-market share push may stall</b></td><td>BSE</td><td>Management admits barriers such as contract-note standardisation and price execution; still targets double-digit share by early 2027. This is upside optionality, not in base case.</td><td><span class="pill lo">● Low</span></td><td>Cash market share each quarter</td><td class="src">S9</td></tr>
+  </table></div>
+  <div class="callout warn"><b>Biggest single risk to a 3-5 year thesis:</b> a second round of F&amp;O curbs (fewer weekly expiries, higher lot sizes or higher STT) at a time when NSE's other businesses are still only about 12% of revenue. SEBI itself has shown that retail traders lost ₹91,685 crore in options in FY26, so the direction of policy is tighter, not looser.</div>
+</section>
+
+<!-- ================= GLOBAL ================= -->
+<section class="pane" id="global">
+  <h2>Valuation: NSE vs the world's exchanges</h2>
+  <p class="note">Trailing P/E, as reported in the sources (lower = cheaper). Grey bars are peers; blue = NSE; orange = BSE.</p>
+  <div class="chartcard" id="pebars"></div>
+  <div class="tbl-wrap"><table>
+    <tr><th>Exchange</th><th class="num">P/E (TTM)</th><th class="num">EV/EBITDA</th><th class="num">2-year revenue CAGR</th><th class="src">Src</th></tr>
+    <tr><td class="c-nse">NSE (at ₹1,785)</td><td class="num">43x</td><td class="num">33x</td><td class="num">6%</td><td class="src">S1</td></tr>
+    <tr><td class="c-bse">BSE</td><td class="num">53x</td><td class="num">n/d</td><td class="num">FY26: +63%</td><td class="src">S1, S8</td></tr>
+    <tr><td>Nasdaq</td><td class="num">26x</td><td class="num">17x</td><td class="num">10%</td><td class="src">S1</td></tr>
+    <tr><td>ICE (Intercontinental Exchange)</td><td class="num">23x</td><td class="num">16x</td><td class="num">7%</td><td class="src">S1</td></tr>
+    <tr><td>Cboe Global Markets</td><td class="num">21x</td><td class="num">14x</td><td class="num">15%</td><td class="src">S1</td></tr>
+    <tr><td>Singapore Exchange (SGX)</td><td class="num">34.3x</td><td class="num">n/d</td><td class="num">n/d</td><td class="src">S6, S7</td></tr>
+    <tr><td>London Stock Exchange Group</td><td class="num">29.3x</td><td class="num">n/d</td><td class="num">n/d</td><td class="src">S6, S7</td></tr>
+    <tr><td>HKEX</td><td class="num">25.2x</td><td class="num">n/d</td><td class="num">n/d</td><td class="src">S6, S7</td></tr>
+    <tr><td>CME, Deutsche Börse, Japan Exchange</td><td class="num">≈ 21-25x</td><td class="num">n/d</td><td class="num">n/d</td><td class="src">S6, S7</td></tr>
+  </table></div>
+
+  <h2>Business-model comparison</h2>
+  <p class="note">Qualitative and indicative; revenue engines are described from general industry knowledge, not from the NSE article.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Exchange</th><th>Main revenue engines</th><th>Diversification vs NSE</th></tr>
+    <tr><td class="c-nse">NSE</td><td>Trading fees (79%), mostly index options; connectivity, data, colocation, listing, clearing</td><td>Baseline: concentrated but the highest margin and highest volume</td></tr>
+    <tr><td class="c-bse">BSE</td><td>Trading fees (mostly options), StAR MF, listing, data, clearing</td><td>Similar or lower diversification</td></tr>
+    <tr><td>CME Group</td><td>Interest-rate, equity-index, energy, metals, FX and agricultural futures; clearing; market data</td><td>Much more diversified across asset classes; institutional hedging demand</td></tr>
+    <tr><td>ICE</td><td>Energy and commodities, fixed income and data services, mortgage technology, NYSE listings</td><td>Highly diversified; large subscription and data income</td></tr>
+    <tr><td>Nasdaq</td><td>Market services, financial technology and software, index and data, listings</td><td>Large recurring technology and data share</td></tr>
+    <tr><td>Cboe</td><td>US options (SPX, VIX), futures, equities, FX, data</td><td>Options-heavy like NSE, but mostly institutional flow and global expansion</td></tr>
+    <tr><td>LSEG</td><td>Data and analytics, FTSE Russell indices, post-trade clearing (LCH), capital markets</td><td>Data-led; trading is a minority of revenue</td></tr>
+    <tr><td>HKEX</td><td>Cash equities, derivatives, LME metals, Stock Connect, clearing</td><td>Multi-asset, China-gateway growth</td></tr>
+    <tr><td>SGX</td><td>FX and equity-index derivatives, fixed income, commodities, cash equities</td><td>Derivatives-led with a global institutional base</td></tr>
+  </table></div>
+
+  <div class="grid3">
+    <div class="kpi"><div class="l">NSE market cap vs Nasdaq at similar revenue</div><div class="v">$45 bn vs $4 bn</div><div class="s">Nasdaq in 2011 had revenue like NSE today</div></div>
+    <div class="kpi"><div class="l">Exchange value / market value</div><div class="v">1.2-1.3%</div><div class="s">Nasdaq 0.11%, Euronext 0.20% (DRHP analysis)</div></div>
+    <div class="kpi"><div class="l">NSE lowest non-volume cost base</div><div class="v">22.7%</div><div class="s">of revenue in FY26 (CME 31.7%)</div></div>
+  </div>
+  <div class="callout"><b>What the comparison says.</b> NSE wins on volume (51% of the world's equity-derivative contracts), margin and cost efficiency, and it is growing in a young, under-penetrated market. But global exchanges earn a mix of data, clearing, technology and multi-asset trading fees and have grown faster recently. NSE is asking investors to pay about 1.6-2x their P/E and 2x their EV/EBITDA while its revenue grew slower. The premium is justified only if India's capital-market financialisation delivers 15%+ earnings growth for many years.</div>
+</section>
+
+<!-- ================= PEOPLE ================= -->
+<section class="pane" id="people">
+  <h2>Analysts' Rating</h2>
+  <h3><span class="dot" style="background:var(--nse)"></span>NSE (IPO stage)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Rating</th><th>Who</th><th>Reasoning</th><th class="src">Src</th></tr>
+    <tr><td><span class="pill lo">SUBSCRIBE</span></td><td>16 brokerages incl. Nirmal Bang, Geojit, Spark, YES Securities, Choice, Angel One, Aditya Birla Money, Ventura, Swastika, Marwadi, LKP, Way2Wealth</td><td>Monopoly-like share (93% cash, 99.8% equity futures), high margins, cash generation, negligible debt, discount to BSE's P/E, long-term financialisation</td><td class="src">S4, S5</td></tr>
+    <tr><td><span class="pill md">NEUTRAL</span></td><td>Religare Broking</td><td>Regulatory risks and high dependence on transaction volumes</td><td class="src">S5</td></tr>
+    <tr><td><span class="pill hi">WAIT / AVOID FOR NOW</span></td><td>BusinessLine Research Bureau (Akhil Nallamuthu)</td><td>No margin of safety at 43x; 60% options dependence; BSE share gains; premium to better-growing global peers; wait for post-listing entry</td><td class="src">S1</td></tr>
+    <tr><td>Target prices</td><td colspan="2">No target prices published yet; IPO-stage ratings are "subscribe/avoid". Expect research coverage after listing (24 September).</td><td class="src">-</td></tr>
+  </table></div>
+  <p class="note">IPO status: opened 17 Sep, closes 21 Sep; ₹22,562 cr OFS; subscribed 115% at close of 18 Sep and 1.22x by day two; retail lot 8 shares (₹14,280 at the upper band); allotment 22 Sep; listing 24 Sep (on BSE); grey market premium ≈ ₹160 (9%).</p>
+
+  <h3><span class="dot" style="background:var(--bse)"></span>BSE (listed stock, price ₹3,245-3,384)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Broker</th><th>Rating</th><th class="num">Target (₹)</th><th>As of</th><th class="src">Src</th></tr>
+    <tr><td>Jefferies</td><td><span class="pill hi">SELL / UNDERPERFORM</span></td><td class="num">2,940</td><td>18 Aug (was Hold ₹3,520)</td><td class="src">S11, S12</td></tr>
+    <tr><td>Nuvama</td><td><span class="pill md">HOLD</span></td><td class="num">3,240</td><td>18 Aug (was Buy ₹4,090)</td><td class="src">S11, S12</td></tr>
+    <tr><td>ICICI Securities</td><td><span class="pill md">HOLD</span></td><td class="num">3,530</td><td>18 Aug</td><td class="src">S11</td></tr>
+    <tr><td>360 One Capital</td><td><span class="pill md">HOLD</span></td><td class="num">3,765</td><td>5 Aug / 18 Aug</td><td class="src">S11, S12</td></tr>
+    <tr><td>Motilal Oswal (MOFSL)</td><td><span class="pill md">NEUTRAL</span></td><td class="num">3,900</td><td>5 Aug</td><td class="src">S12</td></tr>
+    <tr><td>Centrum Broking</td><td><span class="pill md">NEUTRAL</span></td><td class="num">3,940</td><td>5 Aug</td><td class="src">S12</td></tr>
+    <tr><td>JPMorgan</td><td><span class="pill md">NEUTRAL</span></td><td class="num">4,090</td><td>5 Aug</td><td class="src">S12</td></tr>
+    <tr><td>UBS</td><td><span class="pill md">NEUTRAL</span></td><td class="num">4,500</td><td>5 Aug</td><td class="src">S12</td></tr>
+    <tr><td>Avendus Spark / Haitong</td><td>n/d</td><td class="num">3,950 / 4,060</td><td>5 Aug</td><td class="src">S12</td></tr>
+  </table></div>
+  <div class="callout gray"><b>Consensus read:</b> mostly Hold/Neutral with one Sell after August's downgrades. Average of the ten listed targets is about ₹3,790, roughly 12-17% above the current price (₹3,245-3,384), but the trend is cut, not raise. Some targets pre-date the downgrades.</div>
+  <h3>My rating (CB Research view, not SEBI-registered)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th></th><th>Rating</th><th>Indicative fair-value zone</th><th>Comment</th></tr>
+    <tr><td class="c-nse">NSE</td><td><span class="pill md">HOLD / ACCUMULATE ON DIPS</span></td><td>₹1,300-1,450 attractive; ₹1,450-1,800 fair; above ₹1,800 rich</td><td>≈ 35-39x normalised FY26 EPS (about ₹37.6) at the attractive zone</td></tr>
+    <tr><td class="c-bse">BSE</td><td><span class="pill md">HOLD</span></td><td>₹2,800-3,100 attractive; ₹3,100-3,700 fair; above ₹3,700 rich</td><td>≈ 34x Q1FY27 annualised EPS (about ₹85) at ₹2,900</td></tr>
+  </table></div>
+
+  <h2>Management and Board</h2>
+  <div class="grid2">
+    <div class="card nse">
+      <h3>NSE</h3>
+      <ul class="tight">
+        <li><b>Chairman:</b> Srinivas Injeti (appointed 9 Sep 2025; the post was vacant for 651 days before that).</li>
+        <li><b>MD and CEO:</b> Ashishkumar Chauhan (FY26 remuneration about ₹15.9 cr).</li>
+        <li><b>Board:</b> 12 directors: 3 executive, 7 public-interest directors, 2 non-independent.</li>
+        <li><b>Ownership:</b> No identifiable promoter. LIC 10.72%, Aranda Investments (Temasek) 4.54%, SHCIL 4.44%, SBI Capital Markets 4.33%, Mahagony 3.73%, SBI 3.23%. PSU institutions ≈ 30%.</li>
+        <li><b>OFS sellers:</b> SBI, Morgan Stanley, Bank of Baroda, SHCIL, insurers.</li>
+        <li><b>Track record:</b> professionally managed, AAA-rated clearing, 8 subsidiaries; legacy colocation and governance cases; two consecutive past CEO exits.</li>
+      </ul>
+      <p><b>CB Research view:</b> operationally excellent; governance improving but the legacy overhang, pending settlement and no-promoter structure keep it at Medium risk.</p>
+    </div>
+    <div class="card bse">
+      <h3>BSE</h3>
+      <ul class="tight">
+        <li><b>MD and CEO:</b> Sundararaman Ramamurthy (SEBI approved appointment in Nov 2022); credited with the Sensex / Thursday-expiry derivatives push.</li>
+        <li><b>Strategy:</b> derivatives share gains, double-digit cash share by early 2027, corporate bonds, StAR MF and NPS, own market-data business from 1 Jan 2027, FPI expansion (about 650 to 800).</li>
+        <li><b>Clearing:</b> Indian Clearing Corporation rebranded as BSE Clearing Limited.</li>
+        <li><b>Capital returns:</b> ₹10 per share dividend for FY26.</li>
+      </ul>
+      <p><b>CB Research view:</b> aggressive, execution-focused management. Cost-based price leadership won share fast; the challenge now is growth beyond options and defending share once rivals and regulators react.</p>
+    </div>
+  </div>
+  <p class="note">Detailed BSE board composition was not available in the sources reviewed and is intentionally not guessed.</p>
+</section>
+
+<!-- ================= CALC ================= -->
+<section class="pane" id="calc">
+  <h2>Is it good for a 3 to 5 year holding?</h2>
+  <div class="grid2">
+    <div class="card nse">
+      <h3>NSE: 3-5 year verdict</h3>
+      <p><b>Good business, poor entry at ₹1,785.</b> On my base case (EPS +9% a year, exit P/E 36x) the price return is only about 1% a year over 3 years and 4% over 5 years. At ₹1,300-1,450 the same base case gives about 8-11% a year over 5 years. Bull case (EPS +14%, P/E 44x) gives about 14% at the IPO price.</p>
+      <p><b>Holding fit:</b> Yes, as a core position, if bought at a discount to the IPO price and if you accept regulatory headline risk.</p>
+    </div>
+    <div class="card bse">
+      <h3>BSE: 3-5 year verdict</h3>
+      <p><b>Higher expected return, wider outcome range.</b> Base case (EPS +18% a year, exit P/E 38x) gives about 8% over 3 years and 12% over 5 years from ₹3,300. Bear case (EPS +8%, P/E 25x) is about -16% and -7% a year. Growth has already been visible; the question is how much is left.</p>
+      <p><b>Holding fit:</b> Yes, as a satellite position with a stop-and-review rule on market share and SEBI actions.</p>
+    </div>
+  </div>
+
+  <h2>Scenario table (auto-calculated)</h2>
+  <p class="note">Price CAGR only, excluding dividends. Exit EPS = FY26 EPS × (1 + growth) ^ (holding years + 0.5) because we are half-way through FY27. Illustrative, not a forecast. NSE uses normalised FY26 EPS of ₹37.6 (excluding NSDL gain).</p>
+  <div class="tbl-wrap"><table id="scTbl"></table></div>
+  <div class="chartcard">
+    <h3>Price CAGR by scenario (%)</h3>
+    <div class="legend"><span><span class="dot" style="background:var(--nse)"></span>NSE at ₹1,785</span><span><span class="dot" style="background:var(--bse)"></span>BSE at ₹3,300</span></div>
+    <div class="scroll"><canvas id="c5" height="340"></canvas></div>
+  </div>
+
+  <h2>Build your own scenario</h2>
+  <div class="grid2">
+    <div class="card">
+      <label class="f">Exchange</label>
+      <select id="ex"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
+      <label class="f">Entry price (₹)</label><input type="number" id="px" value="1785">
+      <label class="f">Base EPS, FY26 (₹)</label><input type="number" id="eps" value="37.6" step="0.1">
+      <label class="f">EPS growth per year: <b id="gv">9%</b></label><input type="range" id="g" min="-5" max="30" value="9" step="1">
+      <label class="f">Exit P/E: <b id="pv">36x</b></label><input type="range" id="pe" min="15" max="60" value="36" step="1">
+      <label class="f">Holding period (years): <b id="yv">5</b></label><input type="range" id="y" min="3" max="5" value="5" step="1">
+      <label class="f">Dividend yield on entry price: <b id="dv">1.0%</b></label><input type="range" id="dy" min="0" max="3" value="1" step="0.1">
+      <label class="f">Target annual return for entry-price finder: <b id="tv">12%</b></label><input type="range" id="tr" min="6" max="20" value="12" step="1">
+    </div>
+    <div class="card">
+      <div class="grid2" style="gap:10px">
+        <div class="kpi"><div class="l">Exit EPS (₹)</div><div class="v" id="oE">-</div></div>
+        <div class="kpi"><div class="l">Exit price (₹)</div><div class="v" id="oP">-</div></div>
+        <div class="kpi"><div class="l">Price CAGR</div><div class="v" id="oC">-</div></div>
+        <div class="kpi"><div class="l">Approx. total CAGR (with dividend)</div><div class="v" id="oT">-</div></div>
+      </div>
+      <p style="margin-top:14px">Result: <span class="out" id="oV"></span></p>
+      <div class="callout gray" id="oEntry"></div>
+      <p class="note">Entry price defaults change when you switch the exchange (NSE: ₹1,785, EPS ₹37.6, dividend 1.0% assumed; BSE: ₹3,300, EPS ₹60.61, dividend 0.3% from ₹10 per share).</p>
+    </div>
+  </div>
+
+  <h2>What would make me more positive or more negative</h2>
+  <div class="grid2">
+    <div class="card"><h3>Positive triggers</h3>
+      <ul class="tight"><li>NSE non-transaction revenue rising well beyond 12% of operating revenue</li><li>Settlement of the SEBI colocation cases with no new actions</li><li>NSE options revenue growth resuming after FY26's -1.9%</li><li>BSE reaching double-digit cash share and diversifying beyond options</li><li>Price correction to the accumulation zones above</li></ul></div>
+    <div class="card"><h3>Negative triggers</h3>
+      <ul class="tight"><li>Further SEBI limits on weekly expiries, higher lot sizes or higher STT</li><li>NSE forced into a fee cut to defend share (margin risk)</li><li>Options premium share for NSE falling below about 60%</li><li>More broker EPS cuts for BSE, or volume declines beyond the market</li><li>A major outage or a new governance issue</li></ul></div>
+  </div>
+</section>
+
+<!-- ================= SOURCES ================= -->
+<section class="pane" id="src">
+  <h2>Sources</h2>
+  <ol class="src">
+    <li><b>S1</b> · The Hindu BusinessLine, "NSE IPO: valuation does not offer margin of safety" (Akhil Nallamuthu, 19 Sep 2026) – supplied by the user; primary source for NSE segment data, market share, valuation and global peers.</li>
+    <li><b>S2</b> · Finnovate, "NSE IPO 2026: DRHP filed – valuation, risks and what investors should know" – finnovate.in/learn/blog/nse-ipo-drhp-2026-valuation-analysis</li>
+    <li><b>S3</b> · ABI Analytics, "NSE India IPO Prospectus – DRHP Summary" – abianalytics.com/NSE_IPO_Summary.html</li>
+    <li><b>S4</b> · BusinessToday, "NSE IPO closes today: top 15 brokers say subscribe" (21 Sep 2026)</li>
+    <li><b>S5</b> · Business Standard, "NSE's much-awaited IPO opens today; should you apply?" (16 Sep 2026)</li>
+    <li><b>S6</b> · Business Standard, "Pricey affair! Is NSE's valuation premium to global peers justified?" (16 Sep 2026)</li>
+    <li><b>S7</b> · BusinessToday, "NSE IPO: SGX, LSEG, ICE and CME Group – how NSE compares with global peers" (17 Sep 2026)</li>
+    <li><b>S8</b> · Indian Masterminds, "BSE records strongest financial performance in 150-year history, revenue crosses ₹5,000 crore in FY26"</li>
+    <li><b>S9</b> · Investing.com, "Earnings call transcript: BSE Limited posts record Q1 growth" (Aug 2026)</li>
+    <li><b>S10</b> · Univest, "BSE Limited Q1 results FY27"</li>
+    <li><b>S11</b> · BusinessToday, "BSE shareholders in a fix: two downgrades in two days" (18 Aug 2026)</li>
+    <li><b>S12</b> · BusinessToday, "BSE share price targets: Buy, sell or hold? What Jefferies, UBS, JPMorgan say" (5 Aug 2026)</li>
+    <li><b>S13</b> · BusinessToday, "BSE shares drop 3% as NSE fixes IPO price band" (11 Sep 2026)</li>
+    <li><b>S14</b> · Business Standard Capital Market News, "BSE Q1 PAT rises 62% YoY" (5 Aug 2026)</li>
+  </ol>
+  <div class="callout gray"><b>Data notes.</b> Where sources differ (NSE issue size ₹22,562 vs ₹22,569 cr; BSE Q1 PAT ₹853 vs ₹873 cr; NSE P/E 43x vs 48-58x in other notes), the BusinessLine note or the company-reported figure is used and the difference is flagged. Figures marked "≈", "derived", "implied" or "my estimate" are calculations by CB Research. n/d = not disclosed in the sources reviewed.</div>
+</section>
+
+<footer>
+  <p><b>Disclaimer.</b> CB Research (Cauvery Business Research) is not a SEBI-registered research analyst or investment adviser. This dashboard is for education and information only and is not a recommendation to buy, sell or hold any security. Scenario maths uses stated assumptions and is not a forecast. Investments in securities are subject to market risks; consult a SEBI-registered adviser before investing.</p>
+</footer>
+</div>
+
+<script>
+const fmt = n => Number(n).toLocaleString('en-IN');
+const NSE_C = '#2a78d6', BSE_C = '#eb6834';
+
+/* ---------- tabs ---------- */
+const drawn = {};
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x===b));
+  document.querySelectorAll('section.pane').forEach(s => s.classList.toggle('on', s.id===b.dataset.t));
+  window.scrollTo({top:0});
+  render(b.dataset.t);
+});
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById('tip');
+function showTip(x,y,html){ tip.innerHTML = html; tip.style.display='block'; tip.style.left=(x+14)+'px'; tip.style.top=(y+14)+'px'; }
+function hideTip(){ tip.style.display='none'; }
+
+/* ---------- bar chart on canvas ---------- */
+function barChart(id, cfg){
+  const c = document.getElementById(id); if(!c) return;
+  const wrap = c.parentElement;
+  const W = Math.max(wrap.clientWidth, cfg.minW || 900), H = cfg.h || 330;
+  const dpr = window.devicePixelRatio || 1;
+  c.width = W*dpr; c.height = H*dpr; c.style.width = W+'px'; c.style.height = H+'px';
+  const x = c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,W,H);
+  const m = {l:70,r:20,t:34,b:56}, pw = W-m.l-m.r, ph = H-m.t-m.b;
+  const all = cfg.series.flatMap(s => s.data.filter(v => v!=null));
+  let mx = Math.max(...all, 0), mn = Math.min(...all, 0);
+  const step = niceStep((mx-mn)||1);
+  mx = Math.ceil(mx/step)*step; mn = Math.floor(mn/step)*step; if(mx===mn) mx += step;
+  const Y = v => m.t + ph*(1-(v-mn)/(mx-mn));
+  x.font = '12px system-ui, sans-serif'; x.textBaseline='middle';
+  for(let v=mn; v<=mx+1e-9; v+=step){
+    x.strokeStyle = v===0 ? '#9d9c95' : '#ecebe7'; x.lineWidth = v===0?1.2:1;
+    x.beginPath(); x.moveTo(m.l,Y(v)); x.lineTo(W-m.r,Y(v)); x.stroke();
+    x.fillStyle='#6b6a65'; x.textAlign='right'; x.fillText((cfg.axisFmt||fmt)(v), m.l-8, Y(v));
+  }
+  const n = cfg.labels.length, gw = pw/n, ns = cfg.series.length;
+  const bw = Math.min(70, gw*0.7/ns), gap = 2;
+  const rects = [];
+  cfg.labels.forEach((lab,i) => {
+    const cx = m.l + gw*i + gw/2, total = ns*bw + (ns-1)*gap;
+    x.fillStyle='#3d3c39'; x.textAlign='center'; x.textBaseline='top'; x.font='13px system-ui, sans-serif';
+    wrapText(x, lab, cx, H-m.b+10, gw-10, 15);
+    cfg.series.forEach((s,j) => {
+      const v = s.data[i]; if(v==null) return;
+      const bx = cx - total/2 + j*(bw+gap), y0 = Y(0), y1 = Y(v);
+      const col = (s.colors && s.colors[i]) || s.color;
+      x.fillStyle = col; roundBar(x, bx, Math.min(y0,y1), bw, Math.abs(y1-y0), 4, v>=0);
+      x.fillStyle = '#0b0b0b'; x.font = '600 12.5px system-ui, sans-serif'; x.textAlign='center';
+      x.textBaseline = v>=0 ? 'bottom':'top';
+      x.fillText((cfg.valFmt||fmt)(v), bx+bw/2, v>=0 ? Math.min(y0,y1)-5 : Math.max(y0,y1)+5);
+      rects.push({x:bx,y:Math.min(y0,y1),w:bw,h:Math.abs(y1-y0),html:'<b>'+(s.name||'')+'</b><br>'+lab+': '+(cfg.valFmt||fmt)(v)+(cfg.unit||'')});
+    });
+  });
+  x.textBaseline='alphabetic';
+  c.onmousemove = ev => {
+    const r = c.getBoundingClientRect(), px = ev.clientX-r.left, py = ev.clientY-r.top;
+    const h = rects.find(q => px>=q.x-4 && px<=q.x+q.w+4 && py>=q.y-16 && py<=q.y+q.h+4);
+    if(h) showTip(ev.clientX, ev.clientY, h.html); else hideTip();
+  };
+  c.onmouseleave = hideTip;
+}
+function niceStep(range){ const raw = range/5, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw/p; return (f<=1?1:f<=2?2:f<=5?5:10)*p; }
+function roundBar(x, bx, by, w, h, r, up){
+  r = Math.min(r, w/2, h||0); x.beginPath();
+  if(up){ x.moveTo(bx,by+h); x.lineTo(bx,by+r); x.quadraticCurveTo(bx,by,bx+r,by); x.lineTo(bx+w-r,by); x.quadraticCurveTo(bx+w,by,bx+w,by+r); x.lineTo(bx+w,by+h); }
+  else { x.moveTo(bx,by); x.lineTo(bx,by+h-r); x.quadraticCurveTo(bx,by+h,bx+r,by+h); x.lineTo(bx+w-r,by+h); x.quadraticCurveTo(bx+w,by+h,bx+w,by+h-r); x.lineTo(bx+w,by); }
+  x.closePath(); x.fill();
+}
+function wrapText(x, text, cx, y, maxW, lh){
+  const words = text.split(' '); let line = '', yy = y;
+  words.forEach(w => { const t = line ? line+' '+w : w; if(x.measureText(t).width > maxW && line){ x.fillText(line,cx,yy); line=w; yy+=lh; } else line=t; });
+  x.fillText(line,cx,yy);
+}
+
+/* ---------- scorecard ---------- */
+const crit = [
+  {k:'Market dominance and moat', w:20, n:10, b:6, why:'NSE 93% cash, 100% stock F&O; BSE strong only in select index options'},
+  {k:'Profitability and balance sheet', w:15, n:9, b:8, why:'NSE normalised margin 76%, ROE 33%, ≈₹97,000 cr cash; BSE 64-67% margin'},
+  {k:'Growth momentum', w:15, n:4, b:9, why:'NSE revenue -3% in FY26; BSE +63%'},
+  {k:'Revenue diversification', w:10, n:5, b:4, why:'NSE 12% non-transaction; BSE 85% transaction in Q1FY27'},
+  {k:'Valuation', w:20, n:5, b:3, why:'43x (≈48x adj.) vs 53x; both above global 21-34x'},
+  {k:'Regulatory / options risk', w:10, n:4, b:3, why:'Both concentrated; BSE exposed to expiry-day, bank-guarantee and STT changes'},
+  {k:'Governance and legacy issues', w:5, n:5, b:6, why:'NSE settlement pending, chair vacancy history; BSE cleaner'},
+  {k:'Global standing', w:5, n:9, b:6, why:'NSE #1 by contracts; BSE #1 by IPO listings'}
+];
+function buildScore(){
+  const box = document.getElementById('weights');
+  box.innerHTML = '<h3 style="margin-top:0">Your weights (total %)</h3>' + crit.map((c,i) =>
+    `<div class="wt" style="margin:8px 0"><div style="font-size:13.5px">${c.k}</div><input type="range" min="0" max="40" value="${c.w}" data-i="${i}"><b id="w${i}">${c.w}</b></div>`).join('');
+  box.oninput = e => { if(e.target.dataset.i!=null){ crit[e.target.dataset.i].w = +e.target.value; document.getElementById('w'+e.target.dataset.i).textContent = e.target.value; calcScore(); } };
+  document.getElementById('scoreTbl').innerHTML = '<tr><th>Criterion</th><th class="num">NSE score</th><th class="num">BSE score</th><th>Basis</th></tr>' +
+    crit.map(c => `<tr><td>${c.k}</td><td class="num c-nse">${c.n}</td><td class="num c-bse">${c.b}</td><td>${c.why}</td></tr>`).join('');
+  calcScore();
+}
+function calcScore(){
+  const tw = crit.reduce((a,c)=>a+c.w,0) || 1;
+  const n = crit.reduce((a,c)=>a+c.w*c.n,0)/tw, b = crit.reduce((a,c)=>a+c.w*c.b,0)/tw;
+  document.getElementById('sNSE').textContent = n.toFixed(2) + ' / 10';
+  document.getElementById('sBSE').textContent = b.toFixed(2) + ' / 10';
+  const d = n-b;
+  document.getElementById('sTxt').innerHTML = Math.abs(d)<0.15 ? 'On your weights the two are <b>about equal</b>.' :
+    '<b>' + (d>0?'NSE':'BSE') + '</b> leads by ' + Math.abs(d).toFixed(2) + ' points on your weights (weights total ' + tw + '%).';
+  barChart('cScore', {labels:['Weighted score'], minW:320, h:260, unit:' / 10',
+    series:[{name:'NSE',color:NSE_C,data:[+n.toFixed(2)]},{name:'BSE',color:BSE_C,data:[+b.toFixed(2)]}],
+    valFmt:v=>v.toFixed(2), axisFmt:v=>v.toFixed(0)});
+}
+
+/* ---------- charts ---------- */
+function drawFinCharts(){
+  barChart('c1',{labels:['FY25','FY26'],unit:' ₹ cr',series:[{name:'NSE total income',color:NSE_C,data:[19177,18713]},{name:'BSE total revenue',color:BSE_C,data:[3236,5148]}]});
+  barChart('c2',{labels:['FY25','FY26'],unit:' ₹ cr',minW:520,series:[{name:'NSE PAT',color:NSE_C,data:[12188,10302]},{name:'BSE PAT',color:BSE_C,data:[1322,2497]}]});
+  barChart('c3',{labels:['NSE FY26 reported','NSE FY26 normalised*','BSE FY25','BSE FY26'],unit:' ₹ cr',minW:520,
+    series:[{name:'EBITDA',color:NSE_C,colors:[NSE_C,NSE_C,BSE_C,BSE_C],data:[11098,12650,1500,3079]}]});
+}
+function drawBizCharts(){
+  barChart('c4',{labels:['FY24','FY25','FY26','Q1FY27'],unit:' %',valFmt:v=>v.toFixed(2)+'%',axisFmt:v=>v+'%',
+    series:[{name:'NSE',color:NSE_C,data:[96.86,87.43,74.71,68.48]},{name:'BSE (implied)',color:BSE_C,data:[3.14,12.57,25.29,31.52]}]});
+}
+
+/* ---------- global P/E bars ---------- */
+function drawPE(){
+  const rows = [['BSE',53,'b'],['NSE (IPO band)',43,'n'],['SGX',34.3,''],['LSEG',29.3,''],['Nasdaq',26,''],['HKEX',25.2,''],['ICE',23,''],['Cboe',21,'']];
+  const mx = 60;
+  document.getElementById('pebars').innerHTML = '<h3>Trailing P/E (x)</h3>' + rows.map(r =>
+    `<div class="hbar"><div>${r[0]}</div><div><div class="bar" style="width:${r[1]/mx*100}%;background:${r[2]==='n'?NSE_C:r[2]==='b'?BSE_C:'#b9b8b1'}"></div></div><div class="val">${r[1]}x</div></div>`).join('') +
+    '<p class="note">MCX ≈ 62x (not shown). CME, Deutsche Börse and Japan Exchange trade at roughly 21-25x. Sources S1, S6, S7.</p>';
+}
+
+/* ---------- risk filters ---------- */
+let rEx='all', rSev='all';
+function applyRisk(){
+  document.querySelectorAll('#riskTbl tr[data-ex]').forEach(tr => {
+    const okE = rEx==='all' || tr.dataset.ex.split(' ').includes(rEx);
+    const okS = rSev==='all' || tr.dataset.sev===rSev;
+    tr.style.display = okE && okS ? '' : 'none';
+  });
+}
+function chipGroup(id, cb){
+  document.getElementById(id).addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if(!b) return;
+    document.querySelectorAll('#'+id+' .chip').forEach(x => x.classList.toggle('on', x===b)); cb(b.dataset.v);
+  });
+}
+chipGroup('rfEx', v => { rEx=v; applyRisk(); });
+chipGroup('rfSev', v => { rSev=v; applyRisk(); });
+
+/* ---------- scenarios & calculator ---------- */
+const scen = {
+  NSE:{px:1785, eps:37.6, s:[['Bear',3,28],['Base',9,36],['Bull',14,44]]},
+  BSE:{px:3300, eps:60.61, s:[['Bear',8,25],['Base',18,38],['Bull',25,48]]}
+};
+function project(eps0, px, g, pe, yrs){
+  const e = eps0*Math.pow(1+g/100, yrs+0.5), tp = e*pe, cagr = (Math.pow(tp/px, 1/yrs)-1)*100;
+  return {e, tp, cagr};
+}
+function buildScen(){
+  let h = '<tr><th>Scenario</th><th>Exchange (entry)</th><th class="num">EPS growth</th><th class="num">Exit P/E</th><th class="num">3-year exit price</th><th class="num">3-year CAGR</th><th class="num">5-year exit price</th><th class="num">5-year CAGR</th></tr>';
+  const labels = [], nse3=[], nse5=[], bse3=[], bse5=[];
+  ['NSE','BSE'].forEach(k => {
+    scen[k].s.forEach(s => {
+      const a = project(scen[k].eps, scen[k].px, s[1], s[2], 3), b = project(scen[k].eps, scen[k].px, s[1], s[2], 5);
+      h += `<tr><td>${s[0]}</td><td class="${k==='NSE'?'c-nse':'c-bse'}">${k} (₹${fmt(scen[k].px)})</td><td class="num">${s[1]}%</td><td class="num">${s[2]}x</td><td class="num">₹${fmt(Math.round(a.tp))}</td><td class="num">${a.cagr.toFixed(1)}%</td><td class="num">₹${fmt(Math.round(b.tp))}</td><td class="num">${b.cagr.toFixed(1)}%</td></tr>`;
+    });
+  });
+  document.getElementById('scTbl').innerHTML = h;
+  const lab = [];
+  const n3=[],n5=[],b3=[],b5=[];
+  scen.NSE.s.forEach((s,i) => { lab.push(s[0]+' 3-yr'); lab.push(s[0]+' 5-yr'); });
+  const nse = [], bse = [];
+  scen.NSE.s.forEach((s,i) => { nse.push(+project(scen.NSE.eps,scen.NSE.px,s[1],s[2],3).cagr.toFixed(1)); nse.push(+project(scen.NSE.eps,scen.NSE.px,s[1],s[2],5).cagr.toFixed(1));
+    const t = scen.BSE.s[i]; bse.push(+project(scen.BSE.eps,scen.BSE.px,t[1],t[2],3).cagr.toFixed(1)); bse.push(+project(scen.BSE.eps,scen.BSE.px,t[1],t[2],5).cagr.toFixed(1)); });
+  barChart('c5',{labels:lab,valFmt:v=>v.toFixed(1)+'%',axisFmt:v=>v+'%',unit:' % a year',
+    series:[{name:'NSE',color:NSE_C,data:nse},{name:'BSE',color:BSE_C,data:bse}]});
+}
+const $ = id => document.getElementById(id);
+function calc(){
+  const px=+$('px').value, eps=+$('eps').value, g=+$('g').value, pe=+$('pe').value, y=+$('y').value, dy=+$('dy').value, tr=+$('tr').value;
+  $('gv').textContent=g+'%'; $('pv').textContent=pe+'x'; $('yv').textContent=y; $('dv').textContent=dy.toFixed(1)+'%'; $('tv').textContent=tr+'%';
+  if(!(px>0) || !(eps>0)) return;
+  const r = project(eps,px,g,pe,y), tot = r.cagr + dy;
+  $('oE').textContent = '₹'+r.e.toFixed(1); $('oP').textContent = '₹'+fmt(Math.round(r.tp));
+  $('oC').textContent = r.cagr.toFixed(1)+'%'; $('oT').textContent = tot.toFixed(1)+'%';
+  const mult = Math.pow(1+tot/100, y);
+  $('oV').innerHTML = '₹1,00,000 grows to about ₹' + fmt(Math.round(100000*mult));
+  const entry = r.tp/Math.pow(1+(tr-dy)/100, y);
+  $('oEntry').innerHTML = `To earn <b>${tr}%</b> a year (including dividend) under these assumptions, the entry price should be at or below about <b>₹${fmt(Math.round(entry))}</b> (${(entry/px*100-100).toFixed(0)}% vs the entry price entered).`;
+}
+['px','eps','g','pe','y','dy','tr'].forEach(i => $(i).addEventListener('input', calc));
+$('ex').addEventListener('change', () => {
+  const k = $('ex').value, d = scen[k];
+  $('px').value = d.px; $('eps').value = d.eps; $('g').value = d.s[1][1]; $('pe').value = d.s[1][2]; $('dy').value = k==='NSE' ? 1.0 : 0.3;
+  calc();
+});
+
+/* ---------- render on demand ---------- */
+function render(t){
+  if(t==='verdict'){ calcScore(); }
+  if(t==='fin') drawFinCharts();
+  if(t==='biz') drawBizCharts();
+  if(t==='global') drawPE();
+  if(t==='calc'){ buildScen(); calc(); }
+}
+buildScore(); drawPE(); calc();
+window.addEventListener('resize', () => { const on = document.querySelector('section.pane.on'); if(on) render(on.id); });
+</script>
+</body>
+</html>

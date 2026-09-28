@@ -13,26 +13,26 @@ sector file was written belongs in an analysis too — the skill sources the con
 live rather than reading it from here. A name's absence is not a statement that the company
 is out of scope.
 
-**18 sectors · 156 classified reports in the published collection.**
+**18 sectors · 161 classified reports in the published collection.**
 
 | Sector | Categories | Reports |
 |---|---:|---:|
 | [`auto`](#auto) | 6 | 12 |
 | [`banking`](#banking) | 3 | 16 |
 | [`capital-goods`](#capital-goods) | 8 | 16 |
-| [`capital-markets`](#capital-markets) | 7 | 11 |
+| [`capital-markets`](#capital-markets) | 7 | 13 |
 | [`cement`](#cement) | 2 | 2 |
 | [`chemicals`](#chemicals) | 6 | 7 |
 | [`consumer`](#consumer) | 11 | 22 |
 | [`infra-realty`](#infra-realty) | 3 | 2 |
-| [`insurance`](#insurance) | 4 | 3 |
-| [`it-services`](#it-services) | 5 | 6 |
+| [`insurance`](#insurance) | 4 | 4 |
+| [`it-services`](#it-services) | 5 | 7 |
 | [`logistics`](#logistics) | 6 | 1 |
 | [`metals`](#metals) | 4 | 7 |
 | [`nbfc-hfc`](#nbfc-hfc) | 8 | 8 |
 | [`new-age`](#new-age) | 6 | 4 |
 | [`pharma-health`](#pharma-health) | 9 | 19 |
-| [`power-energy`](#power-energy) | 9 | 14 |
+| [`power-energy`](#power-energy) | 9 | 15 |
 | [`reit-invit`](#reit-invit) | 9 | 4 |
 | [`telecom`](#telecom) | 3 | 2 |
 
@@ -78,7 +78,7 @@ is out of scope.
 
 ## capital-markets
 
-*11 reports in the collection.*
+*13 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -142,7 +142,7 @@ is out of scope.
 
 ## insurance
 
-*3 reports in the collection.*
+*4 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -153,7 +153,7 @@ is out of scope.
 
 ## it-services
 
-*6 reports in the collection.*
+*7 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -233,7 +233,7 @@ is out of scope.
 
 ## power-energy
 
-*14 reports in the collection.*
+*15 reports in the collection.*
 
 | Category | Companies |
 |---|---|

@@ -194,6 +194,12 @@ output undershoots → thermal PLF rises → spot power prices rise, sometimes t
 merchant realisations and thermal earnings rise with them. A generator's exposure to that sequence
 depends on its **merchant share**; a fully contracted plant sees volume but not price.
 
+**Thermal is not the only beneficiary.** Within Renewable IPP, a plain solar or wind asset is exposed to
+the same evening gap it cannot fill. A **firm and dispatchable (FDRE)** or **round-the-clock (RTC)**
+contract — solar or wind paired with battery storage, sized and priced to deliver through the evening
+peak — captures the same shortage premium without thermal's fuel exposure. Treat FDRE/RTC-contracted
+capacity as a distinct line within Renewable IPP rather than folding it into plain solar/wind PLF.
+
 **State the season and the weather backdrop before attributing anything to operations.** A thermal
 generator's strong quarter during a weak monsoon is largely the grid's doing; a green generator's weak
 quarter in the same period is not necessarily execution failure.

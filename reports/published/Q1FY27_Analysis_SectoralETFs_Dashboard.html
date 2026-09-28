@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sectoral ETF Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1c2230;--mute:#5d6678;--line:#e3e6ec;--brand:#0b6e4f;--brand2:#e8f4ef;--pos:#138a50;--neg:#c0392b;--warn:#b7791f;--accent:#1f5fbf}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Noto Sans Tamil",system-ui,sans-serif;font-size:15px;line-height:1.55}
+body.ta{font-family:"Noto Sans Tamil",Inter,system-ui,sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;padding:12px 0}
+.brand{font-weight:700;color:var(--brand);font-size:18px}
+.brand small{display:block;font-weight:400;color:var(--mute);font-size:12px}
+.ctrls{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+button,select{font:inherit;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--ink)}
+button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+button.voice{border-color:var(--accent);color:var(--accent)}
+button.voice.speaking{background:var(--accent);color:#fff}
+nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px}
+nav button{white-space:nowrap;border:none;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--mute);font-weight:600}
+nav button.on{color:var(--brand);border-bottom-color:var(--brand);background:none}
+main{padding:20px 0 40px}
+section{display:none}
+section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:18px;margin:0 0 10px}
+h3{font-size:15px;margin:14px 0 6px}
+.sub{color:var(--mute);font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .l{font-size:12px;color:var(--mute)}
+.kpi .v{font-size:24px;font-weight:700}
+.kpi .n{font-size:12px;color:var(--mute)}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.shead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tbl{width:100%;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{background:#f1f4f7;font-size:12px;color:var(--mute);cursor:pointer;position:sticky;top:0}
+tr:hover td{background:#fafcfd}
+.bars{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.bar{display:grid;grid-template-columns:190px 1fr;align-items:center;gap:8px;font-size:13px}
+.track{position:relative;height:24px;background:#f3f5f8;border-radius:4px}
+.mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#9aa3b2}
+.fill{position:absolute;top:3px;height:18px;border-radius:3px}
+.val{position:absolute;top:3px;font-size:12px;font-weight:600;line-height:18px}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.buy{background:#e3f5ea;color:var(--pos)}.hold{background:#fdf3e1;color:var(--warn)}.sell{background:#fbe6e4;color:var(--neg)}
+.note{background:var(--brand2);border-left:4px solid var(--brand);padding:10px 14px;border-radius:6px;font-size:14px}
+.warnbox{background:#fff8ea;border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px;font-size:13px}
+ul{margin:6px 0;padding-left:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chips button{font-size:13px;padding:4px 10px}
+#vstatus{font-size:12px;color:var(--accent)}
+footer{color:var(--mute);font-size:12px;padding:20px 0}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}.bar{grid-template-columns:120px 1fr}.kpi .v{font-size:20px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+ <div class="top">
+  <div class="brand">CB Research · Sectoral ETF Monitor<small id="tagline"></small></div>
+  <div class="ctrls">
+   <button id="bEN" class="on" onclick="setLang('en')">English</button>
+   <button id="bTA" onclick="setLang('ta')">தமிழ்</button>
+   <button class="voice" id="bRead" onclick="readSection()"></button>
+   <button id="bStop" onclick="stopSpeak()"></button>
+   <select id="rate" title="Speed"><option value="0.85">0.85x</option><option value="1" selected>1x</option><option value="1.2">1.2x</option></select>
+   <button class="voice" id="bMic" onclick="listen()"></button>
+   <span id="vstatus"></span>
+  </div>
+ </div>
+ <nav id="nav"></nav>
+</div></header>
+
+<main class="wrap">
+
+<section id="s-overview"></section>
+<section id="s-returns"></section>
+<section id="s-etfs"></section>
+<section id="s-fall"></section>
+<section id="s-q1"></section>
+<section id="s-view"></section>
+
+<footer id="foot"></footer>
+</main>
+
+<script>
+/* ============ DATA (price returns, %) ============
+ cy25 = calendar 2025; ytd = 1-Jan-2026 to 31-Aug-2026; y1 = 1 year to 31-Aug-2026;
+ qtd = 1-Jul to 31-Aug-2026 (Q2FY27 so far); beta vs Nifty 50 and std dev (annualised) as per factsheet;
+ feb25 = Feb-2025 month (worst month of the 2024-25 correction); jun26 = Jun-2026 month (last month of Q1FY27) */
+const S=[
+ {k:'defence',en:'Nifty India Defence',ta:'நிஃப்டி இந்தியா டிஃபென்ஸ்',cy25:null,ytd:25.44,y1:31.15,qtd:1.71,beta:1.11,sd:27.38},
+ {k:'metal',en:'Nifty Metal',ta:'நிஃப்டி மெட்டல்',cy25:24.02,ytd:18.14,y1:44.12,qtd:6.45,beta:1.07,sd:25.79,jun26:-6.51,fb:'mid'},
+ {k:'pharma',en:'Nifty Pharma',ta:'நிஃப்டி பார்மா',cy25:-2.14,ytd:19.64,y1:24.69,qtd:7.96,beta:0.54,sd:15.01,pe:38.19,pem:33.10},
+ {k:'psubank',en:'Nifty PSU Bank',ta:'நிஃப்டி பொதுத்துறை வங்கி',cy25:27.67,ytd:0.90,y1:27.43,qtd:0.38,beta:1.28,sd:27.52,mar26:-19.83},
+ {k:'auto',en:'Nifty Auto',ta:'நிஃப்டி ஆட்டோ',cy25:21.86,ytd:2.31,y1:15.55,qtd:7.69,beta:1.29,sd:19.37,feb25:-10.35,mar26:-15},
+ {k:'bank',en:'Nifty Bank',ta:'நிஃப்டி வங்கி',cy25:16.49,ytd:-2.61,y1:8.14,qtd:-0.01,beta:1.15,sd:16.97,feb25:-2.51,mar26:-15,jun26:6.41,pe:14.38,pem:17.36},
+ {k:'pvtbank',en:'Nifty Private Bank',ta:'நிஃப்டி தனியார் வங்கி',cy25:null,ytd:-2.49,y1:7.47,qtd:-0.61,beta:1.10,sd:null,feb25:-0.66,mar26:-15,jun26:6.43},
+ {k:'finserv',en:'Nifty Financial Services',ta:'நிஃப்டி நிதிச் சேவைகள்',cy25:17.11,ytd:-4.78,y1:2.84,qtd:-1.88,beta:1.19,sd:16.82,mar26:-15,jun26:5.11},
+ {k:'energy',en:'Nifty Energy',ta:'நிஃப்டி எனர்ஜி',cy25:0.13,ytd:7.43,y1:12.81,qtd:-4.57,beta:1.03,sd:19.66},
+ {k:'cpse',en:'Nifty CPSE',ta:'நிஃப்டி CPSE',cy25:4.08,ytd:0.16,y1:3.80,qtd:-4.91,beta:0.66,sd:21.51},
+ {k:'media',en:'Nifty Media',ta:'நிஃப்டி மீடியா',cy25:-22.16,ytd:7.80,y1:-3.39,qtd:3.20,beta:0.90,sd:27.17,feb25:-12.11},
+ {k:'realty',en:'Nifty Realty',ta:'நிஃப்டி ரியல்டி',cy25:-16.10,ytd:2.98,y1:3.84,qtd:5.23,beta:1.54,sd:27.93,feb25:-13.40,mar26:-15},
+ {k:'fmcg',en:'Nifty FMCG',ta:'நிஃப்டி FMCG',cy25:-2.81,ytd:-17.03,y1:-18.02,qtd:-7.59,beta:0.71,sd:14.02,feb25:-10.08,pe:33.76,pem:41.76},
+ {k:'it',en:'Nifty IT',ta:'நிஃப்டி IT',cy25:-9.71,ytd:-17.67,y1:-11.34,qtd:21.04,beta:0.96,sd:22.11,feb25:-12.53,jun26:-9.56,pe:18.27,pem:27.12}
+];
+const N50={en:'Nifty 50 (benchmark)',ta:'நிஃப்டி 50 (அளவுகோல்)',cy25:10.30,ytd:-7.84,y1:-1.42,qtd:0.31,beta:1,sd:13.81,pe:20.55,pem:22.59};
+function comp(o){return (o.cy25==null||o.ytd==null)?null:((1+o.cy25/100)*(1+o.ytd/100)-1)*100}
+S.forEach(o=>o.c20=comp(o)); N50.c20=comp(N50);
+
+/* ETF universe: name, NSE symbol, AMC, sector key, approx expense ratio */
+const E=[
+ ['Motilal Oswal Nifty India Defence ETF','MODEFENCE','Motilal Oswal','defence','~0.67%'],
+ ['Groww Nifty India Defence ETF','GROWWDEFNC','Groww','defence','—'],
+ ['ICICI Pru Nifty Metal ETF','METALIETF','ICICI Prudential','metal','~0.52%'],
+ ['Mirae Asset Nifty Metal ETF','METAL','Mirae Asset','metal','—'],
+ ['Nippon India Nifty Pharma ETF','PHARMABEES','Nippon India','pharma','~0.21%'],
+ ['ICICI Pru Nifty Healthcare ETF','HEALTHIETF','ICICI Prudential','pharma','—'],
+ ['Nippon India ETF Nifty PSU Bank BeES','PSUBNKBEES','Nippon India','psubank','~0.52%'],
+ ['Kotak Nifty PSU Bank ETF','PSUBANK','Kotak','psubank','—'],
+ ['Nippon India Nifty Auto ETF','AUTOBEES','Nippon India','auto','~0.22%'],
+ ['ICICI Pru Nifty Auto ETF','AUTOIETF','ICICI Prudential','auto','~0.20%'],
+ ['Nippon India ETF Nifty Bank BeES','BANKBEES','Nippon India','bank','~0.21%'],
+ ['ICICI Pru Nifty Bank ETF','BANKIETF','ICICI Prudential','bank','—'],
+ ['SBI Nifty Bank ETF','SETFNIFBK','SBI','bank','—'],
+ ['ICICI Pru Nifty Private Bank ETF','PVTBANIETF','ICICI Prudential','pvtbank','~0.18%'],
+ ['ICICI Pru Nifty Financial Services ETF','FINIETF','ICICI Prudential','finserv','—'],
+ ['Mirae Asset Nifty Financial Services ETF','BFSI','Mirae Asset','finserv','~0.21%'],
+ ['ICICI Pru Nifty Oil & Gas ETF','OILIETF','ICICI Prudential','energy','~0.43%'],
+ ['CPSE ETF','CPSEETF','Nippon India','cpse','~0.07%'],
+ ['Bharat 22 ETF','ICICIB22','ICICI Prudential','cpse','—'],
+ ['Motilal Oswal Nifty Realty ETF','MOREALTY','Motilal Oswal','realty','~0.81%'],
+ ['ICICI Pru Nifty FMCG ETF','FMCGIETF','ICICI Prudential','fmcg','~0.20%'],
+ ['Nippon India ETF Nifty IT','ITBEES','Nippon India','it','~0.29%'],
+ ['ICICI Pru Nifty IT ETF','ITIETF','ICICI Prudential','it','—']
+];
+
+/* Research view: stance per sector */
+const V={
+ defence:['hold','Strong 1Y run (+31%); order books solid but priced in. Hold; add only on 10%+ dips.','ஒரு வருடத்தில் +31% உயர்வு; ஆர்டர்கள் வலுவானவை, ஆனால் விலையில் ஏற்கனவே பிரதிபலிக்கிறது. வைத்திருங்கள்; 10%+ சரிவில் மட்டும் கூட்டுங்கள்.'],
+ metal:['hold','Top 20-month performer (~+46%). Cyclical and high volatility; book partial profits, re-enter on corrections.','20 மாதங்களில் சிறந்த செயல்பாடு (~+46%). சுழற்சி சார்ந்தது, அதிக ஏற்ற இறக்கம்; பகுதி லாபம் எடுத்து, சரிவில் மீண்டும் நுழையுங்கள்.'],
+ pharma:['buy','Lowest beta (0.54) and positive in the 2026 fall. Best "falling-market" sector ETF; valuation 15% above 7-yr median, so buy in tranches.','குறைந்த பீட்டா (0.54); 2026 சரிவிலும் லாபம். சரியும் சந்தைக்கு சிறந்த துறை ETF; மதிப்பீடு சற்று அதிகம், எனவே தவணையாக வாங்குங்கள்.'],
+ psubank:['buy','Cheap and strong over 2 years, but fell ~20% in March 2026 alone. Accumulate only on sharp dips; keep position small.','மலிவான மதிப்பீடு, 2 ஆண்டுகளில் நல்ல வருமானம்; ஆனால் மார்ச் 2026-ல் மட்டும் ~20% சரிவு. கூர்மையான சரிவில் மட்டும் சிறிதளவு சேர்க்கவும்.'],
+ auto:['hold','Good 20-month return (~+25%); high beta (1.29). Hold existing; fresh buying after a correction.','20 மாதங்களில் ~+25%; பீட்டா அதிகம் (1.29). இருப்பதை வைத்திருங்கள்; புதிய முதலீடு சரிவுக்குப் பின்.'],
+ bank:['buy','P/E ~17% below 7-yr median; bounced +6.4% in June 2026. Core sector ETF for staggered buying.','P/E 7 ஆண்டு சராசரியை விட ~17% குறைவு; ஜூன் 2026-ல் +6.4% மீட்சி. படிப்படியாக வாங்க ஏற்ற முக்கிய துறை ETF.'],
+ pvtbank:['hold','Similar to Bank index with less PSU exposure. Hold / prefer Nifty Bank ETF for liquidity.','வங்கி குறியீட்டைப் போன்றது. வைத்திருங்கள்; பணப்புழக்கத்திற்காக Nifty Bank ETF சிறந்தது.'],
+ finserv:['hold','Largest weight in Nifty 50; adds little diversification. Hold.','நிஃப்டி 50-ல் அதிக எடை; பன்முகத்தன்மை குறைவு. வைத்திருங்கள்.'],
+ energy:['hold','Sensitive to crude oil shocks (2026 trigger). Hold.','கச்சா எண்ணெய் விலை அதிர்ச்சிக்கு உணர்திறன் அதிகம். வைத்திருங்கள்.'],
+ cpse:['hold','Very low cost (~0.07%), high dividend PSU basket; flat over 20 months. Hold for income.','மிகக் குறைந்த செலவு, அதிக டிவிடெண்ட்; 20 மாதங்களில் சமநிலை. வருமானத்திற்காக வைத்திருங்கள்.'],
+ media:['sell','Structural pressure; negative over 20 months. Avoid.','கட்டமைப்பு அழுத்தம்; 20 மாதங்களில் நஷ்டம். தவிர்க்கவும்.'],
+ realty:['sell','Highest beta (1.54); fell hardest in both corrections. Avoid in a falling market.','அதிக பீட்டா (1.54); இரண்டு சரிவுகளிலும் அதிக வீழ்ச்சி. சரியும் சந்தையில் தவிர்க்கவும்.'],
+ fmcg:['hold','Defensive on paper but -17% in 2026 (demand slowdown, crude). P/E now 19% below median: watchlist for recovery.','காகிதத்தில் பாதுகாப்பானது, ஆனால் 2026-ல் -17%. P/E இப்போது சராசரியை விட 19% குறைவு: மீட்சிக்கு கண்காணிப்பில் வைக்கவும்.'],
+ it:['hold','Worst 20-month sector (~-26%) on AI-disruption fears, but P/E 33% below median and +21% rally in Jul-Aug. Contrarian: small SIP only.','AI அச்சத்தால் 20 மாதங்களில் மோசமான துறை (~-26%); ஆனால் P/E சராசரியை விட 33% குறைவு, ஜூலை-ஆகஸ்ட்டில் +21% மீட்சி. எதிர்மறை வாய்ப்பு: சிறிய SIP மட்டும்.']
+};
+
+/* ============ i18n ============ */
+const T={
+en:{
+ tagline:'Sectoral index ETFs · 2-year review to Q1FY27 · data to 31-Aug-2026',
+ read:'Listen',stop:'Stop',mic:'Voice command',
+ tabs:['Overview','Sector Returns','ETF List','Falling Market','Q1FY27','Research View'],
+ ovTitle:'Sectoral ETFs: which sectors worked in the last 2 years?',
+ ovSub:'Window: Jan-2025 to Aug-2026 (about 20 months, covering FY26 and Q1FY27, plus Jul-Aug 2026). Price returns of Nifty sectoral indices, which the ETFs track.',
+ k1:'Best sector (20 months)',k2:'Worst sector (20 months)',k3:'Nifty 50 (20 months)',k4:'Nifty 50 in Q1FY27',
+ k4n:'31-Mar-26 ≈ 22,300 → 30-Jun-26 = 23,865.75',
+ ovPoints:['The broad market went almost nowhere: Nifty 50 was about +1.7% over 20 months, with two corrections of about 15% each.','Sector choice made the difference: Metal, PSU Bank, Auto, Pharma and Defence beat Nifty 50 by a wide margin; IT, FMCG, Media and Realty lost money.','Leadership rotated every year: PSU Bank, Metal and Auto led 2025; Defence, Pharma and Metal led 2026.','In falling markets, low-beta Pharma held up best. High-beta PSU Bank, Realty and Auto fell hardest.'],
+ ovNote:'Takeaway: sectoral ETFs can beat the index, but only with timing and rotation. Use them as a "satellite" (up to 20-25% of equity), with a Nifty 50 / Nifty Next 50 ETF as the core.',
+ rTitle:'Sector index returns',rSub:'Click a period. Bars are price returns (%). Composite 20M = CY2025 compounded with 2026 YTD.',
+ p:{c20:'20 months (Jan-25 → Aug-26)',cy25:'CY2025',ytd:'2026 YTD (to 31-Aug)',y1:'1 year (to 31-Aug-26)',qtd:'Jul-Aug 2026'},
+ th:['Sector index','CY2025','2026 YTD','20M composite','1 year','Jul-Aug 26','Beta','Volatility'],
+ eTitle:'Sectoral ETFs listed on NSE',eSub:'Filter by sector. Expense ratios are approximate; check the latest AMC factsheet, trading volume and bid-ask spread before buying.',
+ eth:['ETF','NSE symbol','AMC','Tracks','20M index return','Expense ratio (approx.)'],all:'All',
+ fTitle:'Does this work in a falling market?',
+ fSub:'Two real tests inside our window: the Sep-2024 → Mar-2025 correction and the Jan → Mar-2026 crash.',
+ fShort:'Short answer: partly. A sectoral ETF falls with the market unless the sector is defensive for that specific shock. No sector protected in both falls.',
+ f1:'Test 1: Sep-2024 to Feb/Mar-2025 (Nifty about -16% from peak)',
+ f1t:'Worst month was Feb-2025: Realty -13.4%, IT -12.5%, Media -12.1%, Auto -10.4%, FMCG -10.1%. Banks held up best (Bank -2.5%, Private Bank -0.7%).',
+ f2:'Test 2: Jan to Mar-2026 (Nifty 26,373 → ~22,512, about -14.6%)',
+ f2t:'Trigger: US-Iran war, Brent above $110, FII selling. In March 2026 alone PSU Bank fell 19.8%; Realty, Bank, Financial Services, Private Bank and Auto each fell more than 15%. Pharma, Defence and Metal ended 2026 YTD strongly positive.',
+ fth:['Sector','Beta','Feb-25 month','Mar-26 month','2026 YTD','Falling-market behaviour'],
+ beh:{good:'Held up',mid:'Mixed',bad:'Fell hard'},
+ fRules:'Rules for using sector ETFs in a falling market',
+ fList:['Prefer low-beta sectors (beta below 0.8): Pharma/Healthcare first; FMCG only when valuations are low.','Avoid high-beta sectors (beta above 1.2) while the fall is on: Realty, PSU Bank, Auto.','Buy beaten sectors in 3-4 tranches after a 15-20% fall, not in one lot. PSU Bank and Bank recovered fast after March 2026.','Match the ETF to the shock: an oil shock hurts Banks, FMCG, Auto; an AI or US-slowdown shock hurts IT.','Keep a core of Nifty 50 plus gold or debt. Keep sector ETFs to 20-25% of equity.','Check liquidity: trade on NSE near iNAV and use limit orders. Small ETFs can trade at a premium in panic.'],
+ qTitle:'Q1FY27 (Apr-Jun 2026) snapshot',
+ qPoints:['Nifty 50 rebounded about 7% in the quarter, from about 22,300 (30-Mar-26, last FY26 session) to 23,865.75 (30-Jun-26).','June 2026: Bank +6.4%, Private Bank +6.4%, Financial Services +5.1%. The banks that fell most in March led the recovery.','June 2026: IT -9.6% (AI-deflation fears), Metal -6.5%, Commodities -4.7%.','Valuations on 23-Jun-26 vs 7-year median P/E: IT -33%, FMCG -19%, Bank -17%, Nifty 50 -9%, Pharma +15%.','After the quarter (Jul-Aug 26): IT +21%, Pharma +8%, Auto +7.7%, Metal +6.5%; CPSE -4.9%, Energy -4.6%, FMCG -7.6%.'],
+ qth:['Index','P/E (23-Jun-26)','7-yr median P/E','Gap'],
+ vTitle:'Research view by sector ETF',vSub:'Buy = accumulate in tranches · Hold = keep, no fresh lump sum · Sell = avoid / exit. Index ETFs have no price targets; stance is relative to Nifty 50 over 12 months.',
+ vth:['Sector','Stance','Reason'],st:{buy:'BUY',hold:'HOLD',sell:'SELL'},
+ alloc:'Sample allocation for new money (satellite part of equity)',
+ allocL:['Nifty Bank ETF: 30%','Nifty Pharma / Healthcare ETF: 30%','PSU Bank ETF (on dips): 15%','IT ETF (small SIP, contrarian): 15%','Metal or Defence ETF (tactical): 10%'],
+ disc:'For education only. CB Research is not a SEBI-registered research analyst or investment adviser. ETFs carry market risk; past returns do not guarantee future returns. Returns shown are index price returns; ETF returns will differ by expense ratio and tracking error.',
+ vHelp:'Say: overview, returns, ETF, falling, quarter, view, Tamil, English, read, stop',
+ noVoice:'Voice not supported in this browser',noTa:'No Tamil voice found on this device; reading with default voice.',listening:'Listening…'
+},
+ta:{
+ tagline:'துறை குறியீட்டு ETF-கள் · Q1FY27 வரை 2 ஆண்டு ஆய்வு · 31-ஆக-2026 வரை தரவு',
+ read:'கேளுங்கள்',stop:'நிறுத்து',mic:'குரல் கட்டளை',
+ tabs:['மேலோட்டம்','துறை வருமானம்','ETF பட்டியல்','சரியும் சந்தை','Q1FY27','ஆய்வுப் பார்வை'],
+ ovTitle:'துறை ETF-கள்: கடந்த 2 ஆண்டுகளில் எந்தத் துறைகள் வெற்றி பெற்றன?',
+ ovSub:'காலம்: ஜன-2025 முதல் ஆக-2026 வரை (சுமார் 20 மாதங்கள்; FY26, Q1FY27 மற்றும் ஜூலை-ஆகஸ்ட் 2026). ETF-கள் பின்தொடரும் நிஃப்டி துறை குறியீடுகளின் விலை வருமானம்.',
+ k1:'சிறந்த துறை (20 மாதம்)',k2:'மோசமான துறை (20 மாதம்)',k3:'நிஃப்டி 50 (20 மாதம்)',k4:'Q1FY27-ல் நிஃப்டி 50',
+ k4n:'31-மார்-26 ≈ 22,300 → 30-ஜூன்-26 = 23,865.75',
+ ovPoints:['பரந்த சந்தை கிட்டத்தட்ட நகரவில்லை: 20 மாதங்களில் நிஃப்டி 50 சுமார் +1.7% மட்டுமே; இடையில் தலா ~15% இரண்டு சரிவுகள்.','துறைத் தேர்வே வித்தியாசம்: மெட்டல், பொதுத்துறை வங்கி, ஆட்டோ, பார்மா, டிஃபென்ஸ் நிஃப்டியை விட மிக அதிகம்; IT, FMCG, மீடியா, ரியல்டி நஷ்டம்.','ஒவ்வொரு ஆண்டும் தலைமை மாறியது: 2025-ல் PSU வங்கி, மெட்டல், ஆட்டோ; 2026-ல் டிஃபென்ஸ், பார்மா, மெட்டல்.','சரியும் சந்தையில் குறைந்த பீட்டா கொண்ட பார்மா சிறப்பாகத் தாங்கியது. அதிக பீட்டா PSU வங்கி, ரியல்டி, ஆட்டோ அதிகம் சரிந்தன.'],
+ ovNote:'முடிவு: துறை ETF-கள் குறியீட்டை வெல்லலாம், ஆனால் சரியான நேரம் மற்றும் சுழற்சி அவசியம். பங்கு முதலீட்டில் 20-25% வரை "துணை" முதலீடாகவும், நிஃப்டி 50 / நெக்ஸ்ட் 50 ETF-ஐ "மைய" முதலீடாகவும் வைக்கவும்.',
+ rTitle:'துறை குறியீட்டு வருமானம்',rSub:'காலத்தைத் தேர்ந்தெடுக்கவும். பார்கள் விலை வருமானம் (%). 20 மாத கூட்டு = CY2025 × 2026 YTD.',
+ p:{c20:'20 மாதம் (ஜன-25 → ஆக-26)',cy25:'CY2025',ytd:'2026 YTD (31-ஆக வரை)',y1:'1 ஆண்டு (31-ஆக-26 வரை)',qtd:'ஜூலை-ஆகஸ்ட் 2026'},
+ th:['துறை குறியீடு','CY2025','2026 YTD','20 மாத கூட்டு','1 ஆண்டு','ஜூலை-ஆக 26','பீட்டா','ஏற்ற இறக்கம்'],
+ eTitle:'NSE-ல் பட்டியலிடப்பட்ட துறை ETF-கள்',eSub:'துறை வாரியாக வடிகட்டவும். செலவு விகிதம் தோராயமானது; வாங்கும் முன் AMC உண்மைத்தாள், வர்த்தக அளவு, வாங்க-விற்க இடைவெளியைச் சரிபார்க்கவும்.',
+ eth:['ETF','NSE குறியீடு','AMC','பின்தொடர்வது','20 மாத குறியீட்டு வருமானம்','செலவு விகிதம் (தோராயம்)'],all:'அனைத்தும்',
+ fTitle:'சரியும் சந்தையில் இது வேலை செய்யுமா?',
+ fSub:'நம் காலகட்டத்திலேயே இரண்டு உண்மைச் சோதனைகள்: செப்-2024 → மார்-2025 சரிவு, ஜன → மார்-2026 வீழ்ச்சி.',
+ fShort:'சுருக்கமான பதில்: ஓரளவு மட்டுமே. அந்தக் குறிப்பிட்ட அதிர்ச்சிக்கு அந்தத் துறை பாதுகாப்பானதாக இல்லையென்றால், துறை ETF-உம் சந்தையுடன் சேர்ந்து சரியும். இரண்டு சரிவுகளிலும் எந்தத் துறையும் முழுப் பாதுகாப்பு தரவில்லை.',
+ f1:'சோதனை 1: செப்-2024 முதல் பிப்/மார்-2025 (உச்சத்திலிருந்து நிஃப்டி சுமார் -16%)',
+ f1t:'மோசமான மாதம் பிப்-2025: ரியல்டி -13.4%, IT -12.5%, மீடியா -12.1%, ஆட்டோ -10.4%, FMCG -10.1%. வங்கிகள் சிறப்பாகத் தாங்கின (வங்கி -2.5%, தனியார் வங்கி -0.7%).',
+ f2:'சோதனை 2: ஜன முதல் மார்-2026 (நிஃப்டி 26,373 → ~22,512, சுமார் -14.6%)',
+ f2t:'காரணம்: அமெரிக்கா-ஈரான் போர், பிரெண்ட் $110-க்கு மேல், வெளிநாட்டு முதலீட்டாளர் விற்பனை. மார்ச் 2026-ல் மட்டும் PSU வங்கி 19.8% சரிவு; ரியல்டி, வங்கி, நிதிச் சேவைகள், தனியார் வங்கி, ஆட்டோ தலா 15%-க்கு மேல் சரிவு. பார்மா, டிஃபென்ஸ், மெட்டல் 2026 YTD-ல் வலுவான லாபம்.',
+ fth:['துறை','பீட்டா','பிப்-25 மாதம்','மார்-26 மாதம்','2026 YTD','சரியும் சந்தை நடத்தை'],
+ beh:{good:'தாங்கியது',mid:'கலவை',bad:'அதிக சரிவு'},
+ fRules:'சரியும் சந்தையில் துறை ETF பயன்படுத்த விதிகள்',
+ fList:['குறைந்த பீட்டா (0.8-க்குக் கீழ்) துறைகளை விரும்புங்கள்: முதலில் பார்மா/ஹெல்த்கேர்; மதிப்பீடு குறைவாக இருக்கும்போது மட்டும் FMCG.','சரிவு நடக்கும்போது அதிக பீட்டா (1.2-க்கு மேல்) துறைகளைத் தவிர்க்கவும்: ரியல்டி, PSU வங்கி, ஆட்டோ.','15-20% சரிவுக்குப் பின் அடிபட்ட துறைகளை 3-4 தவணைகளில் வாங்குங்கள், ஒரே தடவையில் அல்ல. மார்ச் 2026-க்குப் பின் வங்கிகள் விரைவாக மீண்டன.','அதிர்ச்சிக்கு ஏற்ற ETF: எண்ணெய் அதிர்ச்சி வங்கி, FMCG, ஆட்டோவைப் பாதிக்கும்; AI அல்லது அமெரிக்க மந்தநிலை IT-ஐப் பாதிக்கும்.','மையமாக நிஃப்டி 50 மற்றும் தங்கம் அல்லது கடன் நிதி வைத்திருங்கள். துறை ETF-களை பங்கு முதலீட்டில் 20-25%-க்குள் வைக்கவும்.','பணப்புழக்கத்தைச் சரிபார்க்கவும்: iNAV அருகில் limit order மூலம் வர்த்தகம் செய்யுங்கள். பதற்ற நேரத்தில் சிறிய ETF-கள் பிரீமியத்தில் விற்கப்படலாம்.'],
+ qTitle:'Q1FY27 (ஏப்-ஜூன் 2026) சுருக்கம்',
+ qPoints:['காலாண்டில் நிஃப்டி 50 சுமார் 7% மீண்டது: ~22,300 (30-மார்-26, FY26 கடைசி வர்த்தக நாள்) இலிருந்து 23,865.75 (30-ஜூன்-26).','ஜூன் 2026: வங்கி +6.4%, தனியார் வங்கி +6.4%, நிதிச் சேவைகள் +5.1%. மார்ச்சில் அதிகம் சரிந்த வங்கிகளே மீட்சியை வழிநடத்தின.','ஜூன் 2026: IT -9.6% (AI அச்சம்), மெட்டல் -6.5%, கமாடிட்டீஸ் -4.7%.','23-ஜூன்-26 மதிப்பீடு vs 7 ஆண்டு சராசரி P/E: IT -33%, FMCG -19%, வங்கி -17%, நிஃப்டி 50 -9%, பார்மா +15%.','காலாண்டுக்குப் பின் (ஜூலை-ஆக 26): IT +21%, பார்மா +8%, ஆட்டோ +7.7%, மெட்டல் +6.5%; CPSE -4.9%, எனர்ஜி -4.6%, FMCG -7.6%.'],
+ qth:['குறியீடு','P/E (23-ஜூன்-26)','7 ஆண்டு சராசரி P/E','இடைவெளி'],
+ vTitle:'துறை ETF வாரியான ஆய்வுப் பார்வை',vSub:'வாங்கு = தவணையாகச் சேர் · வைத்திரு = புதிய மொத்த முதலீடு வேண்டாம் · விற்பனை = தவிர் / வெளியேறு. குறியீட்டு ETF-களுக்கு இலக்கு விலை இல்லை; 12 மாதங்களில் நிஃப்டி 50-உடன் ஒப்பிட்ட நிலைப்பாடு.',
+ vth:['துறை','நிலைப்பாடு','காரணம்'],st:{buy:'வாங்கு',hold:'வைத்திரு',sell:'விற்பனை'},
+ alloc:'புதிய முதலீட்டுக்கான மாதிரி ஒதுக்கீடு (பங்கு முதலீட்டின் துணைப் பகுதி)',
+ allocL:['நிஃப்டி வங்கி ETF: 30%','நிஃப்டி பார்மா / ஹெல்த்கேர் ETF: 30%','PSU வங்கி ETF (சரிவில்): 15%','IT ETF (சிறிய SIP): 15%','மெட்டல் அல்லது டிஃபென்ஸ் ETF (தந்திரோபாய): 10%'],
+ disc:'கல்வி நோக்கத்திற்கு மட்டும். CB Research SEBI-யில் பதிவு பெற்ற ஆய்வாளர் அல்லது முதலீட்டு ஆலோசகர் அல்ல. ETF-கள் சந்தை அபாயத்திற்கு உட்பட்டவை; கடந்த வருமானம் எதிர்கால வருமானத்திற்கு உத்தரவாதம் அல்ல. காட்டப்பட்டவை குறியீட்டு விலை வருமானம்; ETF வருமானம் செலவு விகிதம் மற்றும் tracking error-ஆல் மாறுபடும்.',
+ vHelp:'சொல்லுங்கள்: மேலோட்டம், வருமானம், ETF, சரிவு, காலாண்டு, பார்வை, தமிழ், English, படி, நிறுத்து',
+ noVoice:'இந்த உலாவியில் குரல் வசதி இல்லை',noTa:'இந்தச் சாதனத்தில் தமிழ் குரல் இல்லை; இயல்புக் குரலில் படிக்கிறது.',listening:'கேட்கிறது…'
+}};
+
+
+/* ============ RENDER ============ */
+let L='en',TAB='overview',PER='c20',EF='all';
+const tabs=['overview','returns','etfs','fall','q1','view'];
+const f=(v,d=2)=>v==null?'—':(v>0?'+':'')+v.toFixed(d)+'%';
+const cls=v=>v==null?'':(v>=0?'pos':'neg');
+const nm=o=>L==='en'?o.en:o.ta;
+const $=id=>document.getElementById(id);
+
+function render(){
+ const t=T[L];
+ document.body.classList.toggle('ta',L==='ta');
+ document.documentElement.lang=L==='en'?'en':'ta';
+ $('tagline').textContent=t.tagline;
+ $('bRead').textContent='▶ '+t.read; $('bStop').textContent='■ '+t.stop; $('bMic').textContent='🎤 '+t.mic;
+ $('bMic').title=t.vHelp;
+ $('nav').innerHTML=tabs.map((k,i)=>`<button class="${k===TAB?'on':''}" onclick="go('${k}')">${t.tabs[i]}</button>`).join('');
+ tabs.forEach(k=>$('s-'+k).classList.toggle('on',k===TAB));
+ const ranked=S.filter(o=>o.c20!=null).sort((a,b)=>b.c20-a.c20);
+ const best=ranked[0],worst=ranked[ranked.length-1];
+
+ $('s-overview').innerHTML=`<div class="card"><h1>${t.ovTitle}</h1><div class="sub">${t.ovSub}</div></div>
+ <div class="kpis">
+  <div class="kpi"><div class="l">${t.k1}</div><div class="v pos">${f(best.c20,1)}</div><div class="n">${nm(best)}</div></div>
+  <div class="kpi"><div class="l">${t.k2}</div><div class="v neg">${f(worst.c20,1)}</div><div class="n">${nm(worst)}</div></div>
+  <div class="kpi"><div class="l">${t.k3}</div><div class="v ${cls(N50.c20)}">${f(N50.c20,1)}</div><div class="n">CY25 ${f(N50.cy25,1)} · 2026 YTD ${f(N50.ytd,1)}</div></div>
+  <div class="kpi"><div class="l">${t.k4}</div><div class="v pos">≈ +7%</div><div class="n">${t.k4n}</div></div>
+ </div>
+ <div class="card" style="margin-top:16px"><ul>${t.ovPoints.map(x=>`<li>${x}</li>`).join('')}</ul><div class="note">${t.ovNote}</div></div>
+ <div class="card"><h2>${t.p.c20}</h2>${bars('c20')}</div>`;
+
+ $('s-returns').innerHTML=`<div class="card"><div class="shead"><h2>${t.rTitle}</h2></div><div class="sub">${t.rSub}</div>
+ <div class="chips">${Object.keys(t.p).map(k=>`<button class="${k===PER?'on':''}" onclick="PER='${k}';render()">${t.p[k]}</button>`).join('')}</div>
+ ${bars(PER)}</div>
+ <div class="card tbl"><table id="rt"><thead><tr>${t.th.map((h,i)=>`<th onclick="sortRt(${i})">${h}</th>`).join('')}</tr></thead><tbody>
+ ${[...S,N50].map(o=>`<tr${o===N50?' style="font-weight:700;background:#f7faf9"':''}><td>${nm(o)}</td><td class="${cls(o.cy25)}">${f(o.cy25)}</td><td class="${cls(o.ytd)}">${f(o.ytd)}</td><td class="${cls(o.c20)}">${f(o.c20)}</td><td class="${cls(o.y1)}">${f(o.y1)}</td><td class="${cls(o.qtd)}">${f(o.qtd)}</td><td>${o.beta.toFixed(2)}</td><td>${o.sd==null?'—':o.sd.toFixed(2)+'%'}</td></tr>`).join('')}
+ </tbody></table></div>`;
+
+ const secs=['all',...new Set(E.map(e=>e[3]))];
+ $('s-etfs').innerHTML=`<div class="card"><h2>${t.eTitle}</h2><div class="sub">${t.eSub}</div>
+ <div class="chips">${secs.map(k=>`<button class="${k===EF?'on':''}" onclick="EF='${k}';render()">${k==='all'?t.all:nm(S.find(o=>o.k===k)).replace(/^நிஃப்டி |^Nifty /,'')}</button>`).join('')}</div></div>
+ <div class="card tbl"><table><thead><tr>${t.eth.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+ ${E.filter(e=>EF==='all'||e[3]===EF).map(e=>{const o=S.find(s=>s.k===e[3]);const r=o.c20!=null?o.c20:o.y1;return `<tr><td>${e[0]}</td><td><b>${e[1]}</b></td><td>${e[2]}</td><td>${nm(o)}</td><td class="${cls(r)}">${f(r,1)}${o.c20==null?' (1Y)':''}</td><td>${e[4]}</td></tr>`}).join('')}
+ </tbody></table></div>`;
+
+ const bh=o=>{if(o.fb)return o.fb;const w=[o.feb25,o.mar26].filter(v=>v!=null);const m=w.length?Math.min(...w):null;
+  if(o.beta<0.8&&(o.ytd>0))return 'good';if(o.beta>=1.2||(m!=null&&m<=-12))return 'bad';if(o.ytd!=null&&o.ytd>10&&(m==null||m>-12))return 'good';return 'mid'};
+ $('s-fall').innerHTML=`<div class="card"><h2>${t.fTitle}</h2><div class="sub">${t.fSub}</div><p class="note">${t.fShort}</p></div>
+ <div class="grid2"><div class="card"><h3>${t.f1}</h3><p>${t.f1t}</p></div><div class="card"><h3>${t.f2}</h3><p>${t.f2t}</p></div></div>
+ <div class="card tbl"><table><thead><tr>${t.fth.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+ ${[...S].sort((a,b)=>a.beta-b.beta).map(o=>{const b=bh(o);return `<tr><td>${nm(o)}</td><td>${o.beta.toFixed(2)}</td><td class="${cls(o.feb25)}">${f(o.feb25)}</td><td class="${cls(o.mar26)}">${o.mar26===-15?(L==='en'?'< -15%':'-15%-க்கு மேல்'):f(o.mar26)}</td><td class="${cls(o.ytd)}">${f(o.ytd)}</td><td><span class="pill ${b==='good'?'buy':b==='bad'?'sell':'hold'}">${t.beh[b]}</span></td></tr>`}).join('')}
+ </tbody></table><div class="sub" style="margin-top:6px">Beta &lt; 1 = ${L==='en'?'moves less than Nifty 50':'நிஃப்டி 50-ஐ விடக் குறைவாக நகரும்'} · Beta &gt; 1 = ${L==='en'?'moves more than Nifty 50':'நிஃப்டி 50-ஐ விட அதிகமாக நகரும்'}</div></div>
+ <div class="card"><h3>${t.fRules}</h3><ol>${t.fList.map(x=>`<li>${x}</li>`).join('')}</ol></div>`;
+
+ const pes=[...S.filter(o=>o.pe),N50];
+ $('s-q1').innerHTML=`<div class="card"><h2>${t.qTitle}</h2><ul>${t.qPoints.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+ <div class="card tbl"><table><thead><tr>${t.qth.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+ ${pes.map(o=>{const g=(o.pe/o.pem-1)*100;return `<tr><td>${nm(o)}</td><td>${o.pe.toFixed(2)}</td><td>${o.pem.toFixed(2)}</td><td class="${g<0?'pos':'neg'}">${f(g,0)}</td></tr>`}).join('')}
+ </tbody></table></div>
+ <div class="card"><h2>${L==='en'?'June 2026 month (last month of Q1FY27)':'ஜூன் 2026 மாதம் (Q1FY27 கடைசி மாதம்)'}</h2>${bars('jun26')}</div>`;
+
+ $('s-view').innerHTML=`<div class="card"><h2>${t.vTitle}</h2><div class="sub">${t.vSub}</div></div>
+ <div class="card tbl"><table><thead><tr>${t.vth.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+ ${S.map(o=>{const v=V[o.k];return `<tr><td>${nm(o)}</td><td><span class="pill ${v[0]}">${t.st[v[0]]}</span></td><td style="text-align:left;white-space:normal">${L==='en'?v[1]:v[2]}</td></tr>`}).join('')}
+ </tbody></table></div>
+ <div class="card"><h3>${t.alloc}</h3><ul>${t.allocL.map(x=>`<li>${x}</li>`).join('')}</ul><div class="warnbox">${t.disc}</div></div>`;
+
+
+ $('foot').textContent=t.disc;
+}
+
+function bars(key){
+ const rows=S.filter(o=>o[key]!=null).sort((a,b)=>b[key]-a[key]);
+ if(key!=='jun26'&&N50[key]!=null)rows.push(N50);
+ const mx=Math.max(...rows.map(o=>Math.abs(o[key])),1)*1.25;
+ return `<div class="bars">${rows.map(o=>{const v=o[key],w=Math.abs(v)/mx*50,pos=v>=0;
+  return `<div class="bar"><div${o===N50?' style="font-weight:700"':''}>${nm(o)}</div><div class="track"><div class="mid"></div>
+  <div class="fill" style="${pos?`left:50%`:`right:50%`};width:${w}%;background:${o===N50?'#5d6678':pos?'#1d9a5f':'#d0574a'}"></div>
+  <div class="val ${pos?'pos':'neg'}" style="${pos?`left:calc(50% + ${w}% + 4px)`:`right:calc(50% + ${w}% + 4px)`}">${f(v,1)}</div></div></div>`}).join('')}</div>`;
+}
+
+let sortDir={};
+function sortRt(i){
+ const tb=document.querySelector('#rt tbody');const rows=[...tb.rows];sortDir[i]=!sortDir[i];
+ rows.sort((a,b)=>{const x=a.cells[i].textContent,y=b.cells[i].textContent;
+  if(i===0)return sortDir[i]?x.localeCompare(y):y.localeCompare(x);
+  const p=s=>s==='—'?-999:parseFloat(s);return sortDir[i]?p(y)-p(x):p(x)-p(y)});
+ rows.forEach(r=>tb.appendChild(r));
+}
+function go(k){TAB=k;stopSpeak();render();window.scrollTo({top:0,behavior:'smooth'})}
+function setLang(l){L=l;$('bEN').classList.toggle('on',l==='en');$('bTA').classList.toggle('on',l==='ta');stopSpeak();render()}
+
+/* ============ VOICE ASSIST ============ */
+const synth=window.speechSynthesis;
+function narration(){
+ const t=T[L],ranked=S.filter(o=>o.c20!=null).sort((a,b)=>b.c20-a.c20);
+ const top=ranked.slice(0,3).map(o=>nm(o)+' '+o.c20.toFixed(1)+'%').join(', ');
+ const bot=ranked.slice(-3).map(o=>nm(o)+' '+o.c20.toFixed(1)+'%').join(', ');
+ switch(TAB){
+  case 'overview':return [t.ovTitle,t.ovSub,...t.ovPoints,t.ovNote].join('. ');
+  case 'returns':return L==='en'?`${t.rTitle}. Over 20 months the top three are ${top}. The bottom three are ${bot}. Nifty 50 returned ${N50.c20.toFixed(1)} percent.`:`${t.rTitle}. 20 மாதங்களில் முதல் மூன்று: ${top}. கடைசி மூன்று: ${bot}. நிஃப்டி 50 வருமானம் ${N50.c20.toFixed(1)} சதவீதம்.`;
+  case 'etfs':return L==='en'?`${t.eTitle}. ${t.eSub} Popular choices: Bank BeES for banking, PSU Bank BeES for public sector banks, Pharma BeES for pharma, IT BeES for IT, Metal I ETF for metals, and Motilal Oswal Defence ETF for defence.`:`${t.eTitle}. ${t.eSub} பிரபலமானவை: வங்கிக்கு Bank BeES, பொதுத்துறை வங்கிக்கு PSU Bank BeES, பார்மாவுக்கு Pharma BeES, IT-க்கு IT BeES, மெட்டலுக்கு Metal I ETF, டிஃபென்ஸுக்கு மோதிலால் ஓஸ்வால் டிஃபென்ஸ் ETF.`;
+  case 'fall':return [t.fTitle,t.fShort,t.f1,t.f1t,t.f2,t.f2t,t.fRules,...t.fList].join('. ');
+  case 'q1':return [t.qTitle,...t.qPoints].join('. ');
+  case 'view':return [t.vTitle,...S.map(o=>nm(o)+': '+t.st[V[o.k][0]]+'. '+(L==='en'?V[o.k][1]:V[o.k][2])),t.disc].join(' ');
+ }
+}
+function pickVoice(){
+ const vs=synth.getVoices(),want=L==='en'?['en-IN','en-GB','en-US']:['ta-IN','ta'];
+ for(const w of want){const v=vs.find(x=>x.lang&&x.lang.replace('_','-').toLowerCase().startsWith(w.toLowerCase()));if(v)return v}
+ return null;
+}
+function readSection(){
+ if(!synth){$('vstatus').textContent=T[L].noVoice;return}
+ stopSpeak();
+ const txt=narration().replace(/→/g,L==='en'?' to ':' முதல் ').replace(/≈/g,L==='en'?'about ':'சுமார் ').replace(/~/g,'');
+ const v=pickVoice(); if(L==='ta'&&!v)$('vstatus').textContent=T.ta.noTa;
+ const parts=txt.match(/[^.!?]+[.!?]*/g)||[txt];
+ parts.forEach((p,i)=>{const u=new SpeechSynthesisUtterance(p.trim());u.lang=L==='en'?'en-IN':'ta-IN';if(v)u.voice=v;u.rate=parseFloat($('rate').value);
+  if(i===0)u.onstart=()=>$('bRead').classList.add('speaking');
+  if(i===parts.length-1)u.onend=()=>$('bRead').classList.remove('speaking');
+  synth.speak(u)});
+}
+function stopSpeak(){if(synth)synth.cancel();$('bRead')&&$('bRead').classList.remove('speaking')}
+if(synth)synth.onvoiceschanged=()=>{};
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function listen(){
+ if(!SR){$('vstatus').textContent=T[L].noVoice;return}
+ const r=new SR();r.lang=L==='en'?'en-IN':'ta-IN';r.interimResults=false;
+ $('vstatus').textContent=T[L].listening;
+ r.onresult=e=>{const s=e.results[0][0].transcript.toLowerCase();$('vstatus').textContent='“'+s+'”';handleCmd(s)};
+ r.onerror=()=>{$('vstatus').textContent=T[L].vHelp};
+ r.start();
+}
+function handleCmd(s){
+ const has=(...w)=>w.some(x=>s.includes(x));
+ if(has('tamil','தமிழ்'))return setLang('ta');
+ if(has('english','ஆங்கிலம்'))return setLang('en');
+ if(has('stop','நிறுத்து'))return stopSpeak();
+ if(has('overview','summary','மேலோட்ட'))go('overview');
+ else if(has('return','performance','வருமான'))go('returns');
+ else if(has('etf','list','பட்டியல்'))go('etfs');
+ else if(has('fall','crash','bear','சரி','வீழ்ச்சி'))go('fall');
+ else if(has('quarter','q1','காலாண்டு'))go('q1');
+ else if(has('view','rating','buy','பார்வை','நிலைப்பாடு'))go('view');
+
+ if(has('read','listen','படி','கேள்'))readSection();
+}
+render();
+</script>
+</body>
+</html>

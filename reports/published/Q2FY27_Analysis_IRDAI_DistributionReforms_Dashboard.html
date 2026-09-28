@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IRDAI Insurance Distribution Reforms — Sector Impact Analysis</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#ffffff; --panel-alt:#f7f9fb; --border:#dfe4ea;
+    --text:#1a2433; --text-muted:#5a6472; --accent:#0b5fa5; --accent-dark:#073d6b;
+    --good:#0f7a3d; --bad:#b3261e; --warn:#a86400; --tab-bg:#eef2f6;
+  }
+  :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5;}
+  header{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;padding:22px 20px 18px;}
+  header h1{margin:0 0 4px;font-size:1.35rem;}
+  header p{margin:0;font-size:.85rem;opacity:.9;}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:.72rem;}
+  .meta span{background:rgba(255,255,255,.15);padding:3px 9px;border-radius:12px;}
+  nav.tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--tab-bg);padding:8px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+  nav.tabs button{border:1px solid var(--border);background:#fff;color:var(--text);padding:8px 12px;border-radius:8px;font-size:.78rem;cursor:pointer;font-weight:600;}
+  nav.tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  main{max-width:1100px;margin:0 auto;padding:16px 16px 60px;}
+  section.tab{display:none;}
+  section.tab.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  h2{color:var(--accent-dark);font-size:1.15rem;border-bottom:2px solid var(--accent);padding-bottom:6px;margin-top:0;}
+  h3{color:var(--accent-dark);font-size:.98rem;margin-bottom:6px;}
+  .card{background:var(--panel-alt);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:10px;background:#fff;}
+  caption{text-align:left;font-weight:700;color:var(--accent-dark);padding:4px 0;font-size:.85rem;}
+  th,td{border:1px solid var(--border);padding:7px 8px;text-align:left;vertical-align:top;}
+  th{background:var(--accent);color:#fff;font-size:.76rem;}
+  tr:nth-child(even) td{background:#f7f9fb;}
+  .tag-good{color:var(--good);font-weight:700;}
+  .tag-bad{color:var(--bad);font-weight:700;}
+  .tag-warn{color:var(--warn);font-weight:700;}
+  .chartwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px;overflow-x:auto;}
+  .chartwrap canvas{min-width:520px;}
+  .chartwrap svg{width:100%;height:auto;display:block;min-width:420px;}
+  .chart-title{font-size:.82rem;font-weight:700;color:var(--accent-dark);text-align:center;margin:0 0 6px;}
+  .chart-legend{display:flex;justify-content:center;gap:16px;font-size:.72rem;font-weight:600;color:var(--text-muted);margin-top:4px;}
+  .chart-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .chart-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .sources{font-size:.78rem;}
+  .sources ol{padding-left:18px;}
+  .sources li{margin-bottom:6px;}
+  .pill{display:inline-block;background:var(--accent);color:#fff;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-left:6px;}
+  .note{font-size:.75rem;color:var(--text-muted);margin-top:6px;}
+  .badge{position:fixed;bottom:14px;right:14px;background:var(--accent-dark);color:#fff;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:20;animation:blink 2.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.55}}
+  .disclaimer{display:none;position:fixed;bottom:58px;right:14px;max-width:260px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:.68rem;color:var(--text-muted);box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:20;}
+  .disclaimer.show{display:block;}
+  .cba-bubble{position:fixed;bottom:14px;right:60px;background:var(--accent);color:#fff;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:20;border:none;}
+  .cba-panel{display:none;position:fixed;bottom:60px;right:14px;width:min(420px,92vw);max-height:min(640px,80vh);background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.28);z-index:21;overflow:hidden;flex-direction:column;}
+  .cba-panel.show{display:flex;}
+  .cba-panel-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--accent-dark);color:#fff;font-weight:700;font-size:.85rem;}
+  .cba-panel-hd button{background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;line-height:1;}
+  .cba-panel-body{overflow-y:auto;padding:10px;}
+  @media(max-width:480px){.cba-bubble{right:60px;}.cba-panel{right:4px;left:4px;width:auto;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>IRDAI "Recalibrating Economics of Insurance Distribution" — Sector Impact Analysis</h1>
+  <p>How the draft distribution/commission reforms reshape banks, listed intermediaries and insurers</p>
+  <div class="meta">
+    <span>⚠ Draft consultation paper — not yet notified as regulation</span>
+    <span>Consultation paper released Sept 2026</span>
+    <span>Feedback window closes 25 Oct 2026</span>
+    <span>Proposed effective FY28 (glide path)</span>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tablink active" data-tab="overview">Overview</button>
+  <button class="tablink" data-tab="banks">Banks</button>
+  <button class="tablink" data-tab="intermediaries">Listed Intermediaries</button>
+  <button class="tablink" data-tab="upside">Insurers — Upside</button>
+  <button class="tablink" data-tab="downside">Insurers — Downside Risk</button>
+  <button class="tablink" data-tab="status">Consultation Status</button>
+  <button class="tablink" data-tab="sources">Sources</button>
+</nav>
+
+<main>
+
+<!-- OVERVIEW -->
+<section id="overview" class="tab active">
+  <h2>What IRDAI Has Proposed</h2>
+  <div class="card">
+    <p>IRDAI's consultation paper <em>"Recalibrating Economics of Insurance Distribution"</em> is the most significant proposed overhaul of distribution rules since the 2023 Expenses of Management (EoM) reforms. It re-introduces <strong>hard commission caps</strong> (reversing the 2023 move to an entity-level EoM ceiling), tightens overall expense limits, and restructures the distributor landscape from eight categories into three: Insurance Distribution Entity (IDE), Insurance Distribution Person (IDP), and Market Infrastructure Institution for Insurance (MII).</p>
+  </div>
+
+  <table>
+    <caption>Why IRDAI is acting — commissions have outrun premium growth (FY23→FY25)</caption>
+    <thead><tr><th>Segment</th><th>Premium growth</th><th>Commission growth</th><th>Gap</th></tr></thead>
+    <tbody>
+      <tr><td>Motor insurance</td><td>~34%</td><td>~259%</td><td class="tag-bad">7.6x</td></tr>
+      <tr><td>Retail health</td><td>~53%</td><td>~118%</td><td class="tag-bad">2.2x</td></tr>
+      <tr><td>Broker commissions (overall)</td><td>—</td><td>8.5% (FY23) → 17% (FY25)</td><td class="tag-bad">Doubled</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <caption>Key proposed changes (subject to consultation — not yet final)</caption>
+    <thead><tr><th>Area</th><th>Current</th><th>Proposed</th></tr></thead>
+    <tbody>
+      <tr><td>Credit-life commission</td><td>~28%</td><td class="tag-good">Capped at 2%</td></tr>
+      <tr><td>Motor own-damage (OD) commission</td><td>~16%</td><td class="tag-good">Capped at 5%</td></tr>
+      <tr><td>Loan-packaged motor third-party</td><td>Variable</td><td class="tag-good">Nil</td></tr>
+      <tr><td>Health commission</td><td>~40%</td><td class="tag-good">Capped at 5%</td></tr>
+      <tr><td>Life insurer EoM ceiling</td><td>15% of GDPI</td><td>Glide: 12.5% (2 yrs) → 10% (5 yrs)</td></tr>
+      <tr><td>General insurer EoM ceiling</td><td>~30% of GWP</td><td>20% of GDPI (5-yr glide)</td></tr>
+      <tr><td>Loan-linked bundling of insurance</td><td>Common practice</td><td class="tag-good">Proposed ban</td></tr>
+      <tr><td>Volume/reward-linked staff incentives</td><td>Widespread</td><td class="tag-good">Proposed ban</td></tr>
+      <tr><td>Bank commission disclosure</td><td>Not mandatory</td><td class="tag-good">Mandatory disclosure to customer</td></tr>
+      <tr><td>Distributor entry capital</td><td>Higher, category-specific</td><td>Cut to ₹10 lakh (simplified IDE/IDP/MII structure)</td></tr>
+    </tbody>
+  </table>
+  <p class="note">All-inclusive caps mean commissions, incentives, rewards, gifts, trips and related-party payments are proposed to be counted together — closing the workaround where insurers paid extra through non-commission channels.</p>
+</section>
+
+<!-- BANKS -->
+<section id="banks" class="tab">
+  <h2>1. Banks — Bancassurance Fee Income Under Pressure</h2>
+  <div class="card">
+    <p>Banks earned <strong>over ₹20,000 crore</strong> in FY26 from distributing life, health and general insurance — pure fee income with no underwriting risk carried. Bancassurance pays an average commission of ~33% today; the draft proposes compression plus mandatory disclosure of the commission to the customer at point of sale.</p>
+  </div>
+
+  <table>
+    <caption>FY26 bancassurance commission/brokerage income — major banks</caption>
+    <thead><tr><th>Bank</th><th>FY26 insurance distribution income</th><th>Affiliated insurer(s)</th></tr></thead>
+    <tbody>
+      <tr><td>HDFC Bank</td><td>Part of ~₹18,565 cr (top 5 combined)</td><td>HDFC Life, HDFC ERGO</td></tr>
+      <tr><td>ICICI Bank</td><td>Part of ~₹18,565 cr (top 5 combined)</td><td>ICICI Prudential Life, ICICI Lombard</td></tr>
+      <tr><td>Axis Bank</td><td>Part of ~₹18,565 cr (top 5 combined)</td><td>Max Life (strategic distribution tie-up)</td></tr>
+      <tr><td>State Bank of India</td><td>~₹2,795 cr</td><td>SBI Life, SBI General</td></tr>
+      <tr><td>Kotak Mahindra Bank</td><td>Part of ~₹18,565 cr (top 5 combined)</td><td>Kotak Life, Kotak General</td></tr>
+    </tbody>
+  </table>
+
+  <div class="chartwrap">
+    <p class="chart-title">FY26 Bancassurance Income — Top Banks (₹18,565 cr top-5 combined; SBI shown separately)</p>
+    <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: HDFC Bank, ICICI Bank, Axis Bank and Kotak combined earned about 15,770 crore rupees from bancassurance in FY26; State Bank of India earned about 2,795 crore rupees.">
+      <line x1="50" y1="250" x2="450" y2="250" stroke="#dfe4ea" stroke-width="1.5"/>
+      <rect x="110" y="50" width="120" height="200" rx="4" fill="#0b5fa5"/>
+      <text x="170" y="40" text-anchor="middle" font-size="14" font-weight="700" fill="#1a2433">₹15,770 cr</text>
+      <text x="170" y="270" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">HDFC + ICICI +</text>
+      <text x="170" y="285" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">Axis + Kotak</text>
+      <rect x="310" y="215" width="120" height="35" rx="4" fill="#0f7a3d"/>
+      <text x="370" y="205" text-anchor="middle" font-size="14" font-weight="700" fill="#1a2433">₹2,795 cr</text>
+      <text x="370" y="270" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">State Bank</text>
+      <text x="370" y="285" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">of India</text>
+    </svg>
+  </div>
+
+  <table>
+    <caption>Estimated financial impact if bancassurance caps go through</caption>
+    <thead><tr><th>Metric</th><th>Estimate</th></tr></thead>
+    <tbody>
+      <tr><td>Bancassurance share of private-bank fee income / total revenue</td><td>~10% / ~2%</td></tr>
+      <tr><td>Bancassurance share of PSU-bank fee income / total revenue</td><td>~7% / ~1%</td></tr>
+      <tr><td>India bancassurance income pool, 3-yr CAGR</td><td>~25%, pool ~$1.7 bn</td></tr>
+      <tr><td>Projected banca fee-income decline (if caps introduced)</td><td class="tag-bad">15–30%</td></tr>
+      <tr><td>Projected bank PAT impact</td><td class="tag-warn">1–2% (lower if phased)</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Kotak Mahindra Bank, ICICI Bank and SBI already show the highest "other income" (commissions + insurance) as a share of total income among large banks — these are the names with the most to lose in headline fee income, though the actual profit hit is cushioned by a proposed multi-year glide path. Credit-life (single-premium, loan-attached) is the single most exposed product line given the proposed ban on compulsory loan-linked bundling.</p>
+</section>
+
+<!-- INTERMEDIARIES -->
+<section id="intermediaries" class="tab">
+  <h2>2. Listed Intermediaries — Digital Aggregators and Brokers</h2>
+  <div class="card">
+    <p>PB Fintech (Policybazaar) is the main listed pure-play insurance intermediary on Indian exchanges. It holds a Composite Insurance Broker licence and commands ~90% share of the online insurance aggregator segment. The stock has repeatedly moved on IRDAI commission-cap news over the past two years.</p>
+  </div>
+
+  <table>
+    <caption>PB Fintech (Policybazaar) — exposure to the reform</caption>
+    <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Market position</td><td>~90% share of online insurance aggregator segment</td></tr>
+      <tr><td>Licence status</td><td>Composite Insurance Broker (life, general, reinsurance)</td></tr>
+      <tr><td>FY26 quarterly trend</td><td>PAT +164.6% YoY, revenue +38.2% YoY in the quarter reported (aided also by GST exemption on individual life/health premiums)</td></tr>
+      <tr><td>Reform exposure</td><td class="tag-warn">Steeper proposed cuts for intermediaries than for individual agents, from FY28</td></tr>
+      <tr><td>Offsetting factor</td><td class="tag-good">Deeper Bima Sugam (national insurance marketplace) integration could open new distribution/data revenue</td></tr>
+      <tr><td>Prior regulatory friction</td><td>₹5 crore IRDAI penalty (Aug 2025) for delayed premium remittance on a sample of policies</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <caption>Broker market concentration — why regulator is targeting intermediaries specifically</caption>
+    <thead><tr><th>Metric</th><th>Figure</th></tr></thead>
+    <tbody>
+      <tr><td>Registered insurance brokers in India</td><td>462</td></tr>
+      <tr><td>Brokers controlling 70% of broker-channel market</td><td class="tag-bad">Just 10</td></tr>
+      <tr><td>Implication</td><td>Regulator flags bargaining-power concentration and systemic risk; expects further consolidation as smaller brokers struggle with tighter caps and ₹10 lakh entry-capital reset</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Separately, the Insurance Laws (Amendment) Bill — cleared by Cabinet and tabled in the Lok Sabha — proposes raising FDI in insurance to 100% from 74% and formally empowers IRDAI to cap commissions by regulation. That FDI liberalisation is a net positive for the sector even as near-term commission-rule uncertainty weighs on intermediary stocks.</p>
+</section>
+
+<!-- UPSIDE -->
+<section id="upside" class="tab">
+  <h2>3. Insurers — Where They Benefit</h2>
+  <div class="card">
+    <p>For insurance companies themselves, tighter distribution economics is a double-edged sword: it hurts near-term volumes but improves the long-run quality and profitability of the business they write.</p>
+  </div>
+  <table>
+    <caption>Structural upside for insurers</caption>
+    <thead><tr><th>Benefit</th><th>Why it helps insurers</th></tr></thead>
+    <tbody>
+      <tr><td>Lower commission leakage</td><td>More of the premium rupee stays with the insurer/policyholder instead of being paid out as acquisition cost — supports embedded value and VNB margins over time</td></tr>
+      <tr><td>Ban on compulsory loan-bundling</td><td>Ends forced-attach credit-life sales that generated poor persistency and high lapse/complaint ratios — cleaner, stickier book going forward</td></tr>
+      <tr><td>Ban on volume-linked staff incentives</td><td>Reduces mis-selling and consequent claim disputes/reputational cost for insurers</td></tr>
+      <tr><td>Mandatory commission disclosure</td><td>Rebuilds customer trust in the channel, which over time supports penetration (India's insurance penetration is still low vs global peers)</td></tr>
+      <tr><td>Reduced dependence on a single bank parent</td><td>Insurers are pushed toward diversified, multi-channel distribution — reduces single-partner concentration risk (a long-standing IRDAI concern since 2023)</td></tr>
+      <tr><td>100% FDI proposal (separate Amendment Bill)</td><td>Easier access to foreign capital for insurers needing to fund the transition to lower-cost distribution models</td></tr>
+      <tr><td>Simplified 3-tier distributor architecture + lower entry capital</td><td>Could widen the pool of small-ticket, rural/semi-urban distributors over time, aiding the "Insurance for all" penetration goal</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- DOWNSIDE -->
+<section id="downside" class="tab">
+  <h2>4. Insurers — Where They Lose / Are At Risk</h2>
+  <div class="card">
+    <p>Industry executives and analysts expect a <strong>2–3 year growth disruption</strong> as the new caps bite, with the pain distributed unevenly across insurers.</p>
+  </div>
+  <table>
+    <caption>Downside risks by insurer type</caption>
+    <thead><tr><th>Insurer type</th><th>Risk</th></tr></thead>
+    <tbody>
+      <tr><td>Bank-promoted life insurers (HDFC Life, SBI Life, ICICI Prudential Life, Kotak Life)</td><td class="tag-bad">Heavy reliance on the parent bank's branch network for distribution — a bancassurance-fee squeeze at the bank flows straight through to new-business volumes for these insurers</td></tr>
+      <tr><td>Insurers selling credit-life via NBFC/bank loan tie-ups</td><td class="tag-bad">Single-premium credit-life (commission cut from ~28% to a proposed 2%) is the most exposed product line; compulsory bundling ban removes a large chunk of the current sales funnel outright</td></tr>
+      <tr><td>Smaller/newer life and general insurers</td><td class="tag-bad">Higher fixed operating costs as a % of premium while scaling up — the tighter EoM ceiling (12.5%→10% for life, 20% for general) is proportionately harder to meet than for large, scaled insurers</td></tr>
+      <tr><td>Standalone health insurers</td><td class="tag-warn">Health commission cut from ~40% to a proposed 5% removes a major agent/broker incentive at a time when acquisition costs are already flagged as high and group-health pricing as thin</td></tr>
+      <tr><td>General insurers (fire/property lines)</td><td class="tag-warn">IRDAI has separately flagged discounting of up to 99% off standard fire-insurance rates — a related governance/underwriting-discipline concern layered on top of the distribution reform</td></tr>
+      <tr><td>Whole sector, near term</td><td class="tag-bad">Analysts expect a sharp correction in new-business growth for roughly 2–3 years post-implementation unless the glide path is lengthened; the current proposal already softened once (life EoM glide extended to 5 years) after industry pushback</td></tr>
+    </tbody>
+  </table>
+
+  <div class="chartwrap">
+    <p class="chart-title">Expense-of-Management Ceiling — Current vs Proposed (% of GDPI/GWP)</p>
+    <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grouped bar chart: life insurer EoM cap falls from 15 percent to a proposed 10 percent; general insurer EoM cap falls from 30 percent to a proposed 20 percent.">
+      <line x1="50" y1="250" x2="450" y2="250" stroke="#dfe4ea" stroke-width="1.5"/>
+      <rect x="90"  y="164" width="46" height="86"  rx="3" fill="#a86400"/>
+      <rect x="145" y="193" width="46" height="57"  rx="3" fill="#0f7a3d"/>
+      <text x="113" y="154" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2433">15%</text>
+      <text x="168" y="183" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2433">10%</text>
+      <text x="140" y="270" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">Life insurer</text>
+      <text x="140" y="285" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">EoM cap</text>
+      <rect x="290" y="79"  width="46" height="171" rx="3" fill="#a86400"/>
+      <rect x="345" y="136" width="46" height="114" rx="3" fill="#0f7a3d"/>
+      <text x="313" y="69"  text-anchor="middle" font-size="13" font-weight="700" fill="#1a2433">30%</text>
+      <text x="368" y="126" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2433">20%</text>
+      <text x="340" y="270" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">General insurer</text>
+      <text x="340" y="285" text-anchor="middle" font-size="12" font-weight="600" fill="#1a2433">EoM cap</text>
+    </svg>
+    <div class="chart-legend"><span><i style="background:#a86400"></i>Current</span><span><i style="background:#0f7a3d"></i>Proposed (end of glide path)</span></div>
+  </div>
+  <p class="note">Net read: large, well-diversified insurers with strong non-bank distribution (agency, digital, direct) are better placed to absorb the reform; insurers most dependent on a single bancassurance parent or on credit-life/health commission-heavy channels carry the most downside risk through FY28–FY30.</p>
+</section>
+
+<!-- STATUS -->
+<section id="status" class="tab">
+  <h2>5. Consultation Status — Draft, Not Yet Regulation</h2>
+  <div class="card">
+    <p><strong>Nothing in this paper is currently binding.</strong> IRDAI has issued it as a consultation paper seeking stakeholder feedback — the standard first stage before any regulation is notified. Every figure in the earlier tabs (commission caps, EoM ceilings, the loan-bundling ban) is a <em>proposal</em>, not a rule in force.</p>
+  </div>
+
+  <table>
+    <caption>Where things stand</caption>
+    <thead><tr><th>Stage</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Consultation paper released</td><td class="tag-good">Done — Sept 2026</td></tr>
+      <tr><td>Industry feedback window</td><td class="tag-warn">Open — closes 25 Oct 2026</td></tr>
+      <tr><td>Review of feedback / revised draft</td><td class="tag-bad">Pending</td></tr>
+      <tr><td>Final regulation notified</td><td class="tag-bad">Pending — no confirmed date</td></tr>
+      <tr><td>Proposed effective date (if approved as drafted)</td><td>FY28, with multi-year glide paths on EoM caps</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <caption>Signs the draft is already moving before finalisation</caption>
+    <thead><tr><th>Signal</th><th>What it suggests</th></tr></thead>
+    <tbody>
+      <tr><td>Life insurer EoM glide path extended from 2 years to 5 years for the 10% floor</td><td>Numbers in the draft are not fixed — industry pushback is already softening some terms</td></tr>
+      <tr><td>Press coverage calling the draft a "shock" with potential for "significant disruption"</td><td>Heavy lobbying expected during the feedback window; final caps could be less severe, especially on credit-life and health</td></tr>
+      <tr><td>Separate Insurance Laws (Amendment) Bill formally empowering IRDAI to cap commissions by regulation</td><td>The legal basis for enforcing hard caps is itself still going through Parliament — regulation-making power needs this Bill to be enacted first</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Practical read: treat every number in this dashboard as the regulator's opening position, not the final rulebook. Re-check after 25 Oct 2026, and again once IRDAI publishes a revised draft or final notification — the effective caps, glide-path lengths and implementation date could all still change.</p>
+</section>
+
+<!-- SOURCES -->
+<section id="sources" class="tab">
+  <h2>Sources</h2>
+  <div class="card sources">
+    <ol>
+      <li>Business Standard — "Irdai's draft distribution norms could put insurance volumes at risk", 24 Sep 2026</li>
+      <li>Business Standard — "Irdai's distribution reforms may disrupt insurance growth in near term", 24 Sep 2026</li>
+      <li>Insights Market — "IRDAI Insurance Distribution Reforms: What Changes for Banks, NBFCs and Insurers"</li>
+      <li>Whalesbook — "IRDAI Proposes Strict Caps on Insurance Commissions and Sales Reforms"</li>
+      <li>Whalesbook — "IRDAI Proposes Strict Commission Caps for Insurers"</li>
+      <li>Whalesbook — "IRDAI Reforms Insurance Distribution: New Caps on Commissions and Expenses"</li>
+      <li>Finnovate — "Banks Earn Over ₹20,000 Crore From Insurance Sales in FY26: The Rewards and Risks of Bancassurance", 28 Jul 2026</li>
+      <li>Business Standard — "Banca cap may impact banks' net profit by 1-2%, says IIFL Securities"</li>
+      <li>Sahi Markets — "PB Fintech Preps for IRDAI Distribution Reforms Arriving Within 4 Weeks to Impact Commissions"</li>
+      <li>Business Standard / Wealthy.in / Chola Securities — coverage of the Insurance Laws (Amendment) Bill, 2025 and its commission-capping and 100% FDI provisions</li>
+      <li>ValueResearchOnline — "10 banks with multiple pockets" (non-interest income composition)</li>
+    </ol>
+    <p class="note">The consultation paper is in draft form; final regulations may differ after the feedback window (closing 25 Oct 2026) and further industry representations. Figures above are as reported in the cited coverage and should be cross-checked against IRDAI's official consultation paper and exchange filings before use in any investment decision.</p>
+  </div>
+</section>
+
+</main>
+
+<div class="badge" id="cbBadge">CB</div>
+<div class="disclaimer" id="cbDisclaimer">Prepared by CB Research for informational purposes only. Not a SEBI-registered investment advisory. Based on a draft IRDAI consultation paper — subject to change. Not a recommendation to buy, sell or hold any security.</div>
+
+<button type="button" class="cba-bubble" id="cbaBubble" aria-label="Ask CB Assist">💬</button>
+<div class="cba-panel" id="cbaPanel">
+  <div class="cba-panel-hd"><span>CB Assist</span><button type="button" id="cbaClose" aria-label="Close">✕</button></div>
+  <div class="cba-panel-body"><div id="assist"></div></div>
+</div>
+
+<script>
+/* ===== Cauvery Assist widget (embedded) ===== */
+(function(global){
+"use strict";
+
+var CSS = '\
+.cba{--cba-ink:#101318;--cba-ink2:#2E3440;--cba-mute:#5B6472;--cba-line:#ECE4D8;--cba-soft:#FFF6EC;--cba-soft2:#FFFBF6;--cba-acc:#F28C28;--cba-acc-ink:#A8520A;--cba-acc-l:#FDD9B5;--cba-good:#127A3A;--cba-good-bg:#E7F6EC;--cba-warn:#9A5B00;--cba-warn-bg:#FFF3D6;--cba-bad:#B42318;--cba-bad-bg:#FDECEA;\
+ font-family:Inter,"Noto Sans Tamil",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--cba-ink);display:grid;grid-template-columns:1fr;gap:16px}\
+.cba *{box-sizing:border-box}.cba>*{min-width:0}\
+.cba [hidden]{display:none!important}\
+.cba button{font-family:inherit;cursor:pointer}\
+.cba button:focus-visible,.cba input:focus-visible,.cba select:focus-visible{outline:3px solid var(--cba-acc);outline-offset:2px}\
+.cba .en,.cba .ta{}\
+.cba.cba-ta .en{display:none!important}.cba:not(.cba-ta) .ta{display:none!important}\
+.cba-box{border:1px solid var(--cba-line);border-radius:16px;display:flex;flex-direction:column;height:min(420px,60vh);min-height:320px;background:#fff}\
+.cba-hd{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--cba-line);flex-wrap:wrap}\
+.cba-hd .t{font-weight:800;flex:1;min-width:100px;font-size:13px}\
+.cba-log{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--cba-soft2)}\
+.cba-msg{max-width:92%;padding:9px 11px;border-radius:14px;font-size:13.5px;font-weight:500;line-height:1.5}\
+.cba-msg.u{align-self:flex-end;background:var(--cba-ink);color:#fff;border-bottom-right-radius:4px}\
+.cba-msg.b{align-self:flex-start;background:#fff;border:1px solid var(--cba-line);border-bottom-left-radius:4px}\
+.cba-ans{font-weight:600;font-size:14px;line-height:1.55}\
+.cba details{margin-top:8px;border-top:1px dashed var(--cba-line);padding-top:6px;font-size:12.5px}\
+.cba summary{cursor:pointer;font-weight:800;color:var(--cba-acc-ink);font-size:11.5px}\
+.cba details ul{margin:6px 0 0;padding-left:18px}\
+.cba table{border-collapse:collapse;width:100%;font-size:12px;margin-top:6px}\
+.cba td,.cba th{padding:5px 7px;border-bottom:1px solid var(--cba-line);text-align:left}\
+.cba td.n{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}\
+.cba-acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}\
+.cba-mini{border:1px solid var(--cba-line);background:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:3px 9px;color:var(--cba-ink2)}\
+.cba-mini:hover{border-color:var(--cba-acc);color:var(--cba-acc-ink)}\
+.cba-mini[disabled]{opacity:.45;cursor:default}\
+.cba-follow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}\
+.cba-follow button{border:1px dashed var(--cba-acc);background:var(--cba-soft);color:var(--cba-acc-ink);font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 10px}\
+.cba-spd{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--cba-line);border-radius:999px;padding:2px 4px;font-size:11px;font-weight:700}\
+.cba-spd .cba-mini{width:24px;height:22px;padding:0;font-size:14px;line-height:1}\
+.cba-num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}\
+.cba-status{font:600 11px "IBM Plex Mono",ui-monospace,monospace;color:var(--cba-mute);padding:0 12px 8px;min-height:16px}\
+.cba-lbar{display:flex;align-items:center;gap:8px;padding:0 12px 8px;flex-wrap:wrap}\
+.cba-lt{flex:1;min-width:100px;height:7px;background:#F1ECE5;border-radius:4px;overflow:hidden}\
+.cba-lt i{display:block;height:100%;width:0;background:var(--cba-acc);transition:width .1s linear}\
+.cba-in{display:flex;gap:8px;padding:10px;border-top:1px solid var(--cba-line);align-items:center}\
+.cba-in input{flex:1;min-width:0;border:1.5px solid var(--cba-line);border-radius:12px;padding:10px 11px;font:500 13.5px inherit;font-family:inherit;color:var(--cba-ink);background:#fff}\
+.cba-in input:focus{border-color:var(--cba-acc);outline:none}\
+.cba-mic{width:40px;height:40px;border-radius:50%;border:0;background:var(--cba-acc);color:#fff;display:grid;place-items:center;flex:none;position:relative}\
+.cba-mic svg{width:19px;height:19px}\
+.cba-mic.live{background:var(--cba-bad)}\
+.cba-mic.live::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:3px solid var(--cba-bad);animation:cbaPulse 1.1s ease-out infinite}\
+@keyframes cbaPulse{from{transform:scale(.9);opacity:.9}to{transform:scale(1.25);opacity:0}}\
+@media (prefers-reduced-motion:reduce){.cba-mic.live::after{animation:none}}\
+.cba-send{height:40px;border:0;border-radius:12px;background:var(--cba-ink);color:#fff;font-weight:800;padding:0 12px;font-size:13px}\
+.cba-card{border:1px solid var(--cba-line);border-radius:14px;padding:14px;background:#fff;margin-bottom:12px}\
+.cba-card h3{font-size:14px;font-weight:800;margin:0 0 6px}\
+.cba-set{font-weight:800;font-size:12px;margin-top:8px}\
+.cba-tog{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;margin:6px 0}\
+.cba-tog input{width:17px;height:17px;accent-color:var(--cba-acc)}\
+.cba select{font:600 12px inherit;font-family:inherit;border:1.5px solid var(--cba-line);border-radius:8px;padding:6px;width:100%;color:var(--cba-ink);background:#fff}\
+.cba-seg{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}\
+.cba-seg button{border:1.5px solid var(--cba-line);background:#fff;font-weight:800;font-size:11.5px;padding:5px 10px;border-radius:999px;color:var(--cba-ink)}\
+.cba-seg button.on{border-color:var(--cba-ink);background:var(--cba-ink);color:#fff}\
+.cba-qs{display:flex;flex-direction:column;gap:6px}\
+.cba-qs button{text-align:left;border:1px solid var(--cba-line);background:#fff;border-radius:10px;padding:7px 9px;font-size:12px;font-weight:600;color:var(--cba-ink)}\
+.cba-qs button:hover{border-color:var(--cba-acc);background:var(--cba-soft)}\
+.cba-note{font-size:11px;color:var(--cba-mute);font-weight:600;margin-top:6px}\
+.cba-chip{display:inline-flex;font-weight:800;font-size:11px;padding:3px 9px;border-radius:999px;background:var(--cba-soft);color:var(--cba-acc-ink);border:1px solid var(--cba-acc-l)}\
+';
+
+function T(en,ta){ return '<span class="en">'+en+'</span><span class="ta">'+ta+'</span>'; }
+function A(en,ta){ return {en:en,ta:ta}; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
+function fill(tpl,o){ return tpl.replace(/\{(\w+)\}/g,function(_,k){ return o[k]!==undefined?o[k]:""; }); }
+function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+
+/* default verdict words for a -1..+1 score */
+var VERDICT=[
+ [0.35,{en:"leaning boon",ta:"வரம் பக்கம் சாயுது"}],
+ [0.1,{en:"showing early boon signs",ta:"நல்ல signs தெரியுது"}],
+ [-0.1,{en:"mixed, too early to call",ta:"mixed — இன்னும் சொல்ல முடியாது"}],
+ [-0.35,{en:"under early strain",ta:"கொஞ்சம் pressure-ல இருக்கு"}],
+ [-9,{en:"leaning bane",ta:"சாபம் பக்கம் சாயுது"}]
+];
+
+function mount(root, cfg){
+  cfg=cfg||{};
+  var P=cfg.storageKey||"cba";
+  var LANG=cfg.lang||"en";
+  var ENT=cfg.entities||[], MET=cfg.metrics||[], KB=cfg.kb||[];
+  var verdicts=cfg.verdicts||VERDICT;
+  var ctx={ents:[],mets:[]};
+
+  if(!document.getElementById("cba-style")){ var st=document.createElement("style"); st.id="cba-style"; st.textContent=CSS; document.head.appendChild(st); }
+  root.classList.add("cba");
+  root.innerHTML='\
+<div class="cba-box">\
+ <div class="cba-hd"><div class="t">'+esc(cfg.title||"Cauvery Assist")+'</div>\
+  <div class="cba-spd" role="group" aria-label="Reading speed"><button type="button" class="cba-mini" data-x="spdDown" aria-label="Slower">−</button><span class="cba-num" data-x="spdV">0.80×</span><button type="button" class="cba-mini" data-x="spdUp" aria-label="Faster">+</button></div>\
+  <button type="button" class="cba-mini" data-x="pause" disabled>'+T("Pause","Pause")+'</button>\
+  <button type="button" class="cba-mini" data-x="stop">'+T("Stop voice","Voice stop")+'</button>\
+  <button type="button" class="cba-mini" data-x="clear">'+T("Clear","Clear")+'</button></div>\
+ <div class="cba-log" data-x="log" aria-live="polite"></div>\
+ <div class="cba-status" data-x="status"></div>\
+ <div class="cba-lbar" data-x="lbar" hidden><div class="cba-lt"><i data-x="lfill"></i></div>\
+  <button type="button" class="cba-mini" data-x="lsend">'+T("Done, send now","முடிஞ்சது, அனுப்பு")+'</button>\
+  <button type="button" class="cba-mini" data-x="lcancel">'+T("Cancel","Cancel")+'</button></div>\
+ <form class="cba-in" data-x="form" autocomplete="off">\
+  <button class="cba-mic" data-x="mic" type="button" aria-label="Speak your question"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>\
+  <input data-x="q" type="text" aria-label="Question">\
+  <button class="cba-send" type="submit">'+T("Ask","கேளு")+'</button></form>\
+</div>\
+<div class="cba-side">\
+ <div class="cba-card"><h3>'+T("Voice settings","Voice settings")+'</h3>\
+  <label class="cba-tog"><input type="checkbox" data-x="auto" checked> '+T("Read answers aloud","பதிலை படிச்சு காட்டு")+'</label>\
+  <label class="cba-tog"><input type="checkbox" data-x="convo"> '+T("Conversation mode (listen again after answering)","Conversation mode (பதில் சொன்னதும் மறுபடி கேக்கும்)")+'</label>\
+  <div class="cba-set">'+T("Voice","Voice")+'</div><select data-x="voice" aria-label="Voice"></select>\
+  <div class="cba-set">'+T("Reading speed","படிக்கிற வேகம்")+' <span class="cba-num" data-x="rateV">0.80×</span></div>\
+  <div class="cba-seg" data-x="spdSeg"><button type="button" data-r="0.65">'+T("Slow","Slow")+'</button><button type="button" data-r="0.8">'+T("Relaxed","நிதானமா")+'</button><button type="button" data-r="0.95">'+T("Normal","Normal")+'</button><button type="button" data-r="1.15">'+T("Fast","Fast")+'</button></div>\
+  <input type="range" data-x="rate" min="0.5" max="1.5" step="0.05" value="0.8" style="width:100%;accent-color:var(--cba-acc)" aria-label="Reading speed">\
+  <label class="cba-tog"><input type="checkbox" data-x="gaps" checked> '+T("Short pause between points","ஒவ்வொரு point-க்கும் நடுவுல சின்ன gap")+'</label>\
+  <div class="cba-set">'+T("Listening","கேக்கிற முறை")+'</div>\
+  <label class="cba-note" style="display:block">'+T("Answer after I stop talking for","நான் பேசி நிறுத்தினதும் எவ்வளவு நேரம் wait பண்ணணும்")+'</label>\
+  <select data-x="wait"><option value="2000">2 sec</option><option value="3000" selected>3 sec</option><option value="5000">5 sec</option><option value="0">Only when I tap Done / Done தட்டும்போது மட்டும்</option></select>\
+  <label class="cba-tog"><input type="checkbox" data-x="review"> '+T("Let me check the text before sending","அனுப்பறதுக்கு முன்னாடி text-ஐ check பண்றேன்")+'</label>\
+  <p class="cba-note" data-x="vnote"></p></div>\
+ <div class="cba-card"><h3>'+T("Try asking","இப்படி கேளுங்க")+'</h3><div class="cba-qs" data-x="sugg"></div></div>\
+</div>';
+  function X(n){ return root.querySelector('[data-x="'+n+'"]'); }
+
+  /* ================= speaking ================= */
+  var synth=global.speechSynthesis||null, voices=[], RATE=0.8;
+  var sr=parseFloat(ls(P+"_rate")); if(sr>=0.5&&sr<=1.5) RATE=sr;
+  function langVoices(l){ return voices.filter(function(v){ return (v.lang||"").toLowerCase().indexOf(l)===0; }); }
+  function fillVoices(){
+    var s=X("voice");
+    if(!synth){ s.innerHTML="<option>—</option>"; X("vnote").innerHTML=T("This browser cannot speak. Answers will show as text.","இந்த browser பேசாது; பதில் text-ஆ மட்டும் வரும்."); return; }
+    var list=langVoices(LANG).sort(function(a,b){ return (/IN/i.test(b.lang)?1:0)-(/IN/i.test(a.lang)?1:0); });
+    s.innerHTML= list.length? list.map(function(v){return '<option value="'+esc(v.name)+'">'+esc(v.name)+' ('+v.lang+')</option>';}).join("") : '<option value="">'+(LANG==="ta"?"Tamil voice இல்ல":"Default voice")+'</option>';
+    var saved=ls(P+"_voice_"+LANG); if(saved && list.some(function(v){return v.name===saved;})) s.value=saved;
+    X("vnote").innerHTML=(LANG==="ta"&&!list.length)?
+      T("","இந்த device-ல Tamil voice இல்ல. Android Chrome-ல Google Tamil voice பொதுவா இருக்கும்; Windows-ல Settings → Time & language → Speech → Tamil add பண்ணுங்க. அது வரைக்கும் பதில் text-ஆ வரும்."):
+      T("Voices come from your device. Indian voices are listed first.","Voices உங்க device-ல இருந்து வருது; Indian voices முதல்ல இருக்கும்.");
+  }
+  function loadVoices(){ if(!synth) return; voices=synth.getVoices()||[]; fillVoices(); }
+  if(synth){ loadVoices(); if("onvoiceschanged" in synth) synth.addEventListener("voiceschanged",loadVoices); }
+  X("voice").onchange=function(){ ls(P+"_voice_"+LANG,this.value); };
+  function setRate(r){
+    RATE=Math.max(0.5,Math.min(1.5,Math.round(r*100)/100));
+    X("rate").value=RATE; X("rateV").textContent=RATE.toFixed(2)+"×"; X("spdV").textContent=RATE.toFixed(2)+"×";
+    X("spdSeg").querySelectorAll("button").forEach(function(b){ b.classList.toggle("on",Math.abs(+b.dataset.r-RATE)<0.01); });
+    ls(P+"_rate",RATE);
+  }
+  X("rate").oninput=function(){ setRate(+this.value); };
+  X("spdSeg").addEventListener("click",function(e){ var b=e.target.closest("button"); if(b) setRate(+b.dataset.r); });
+  X("spdDown").onclick=function(){ setRate(RATE-0.1); };
+  X("spdUp").onclick=function(){ setRate(RATE+0.1); };
+  setRate(RATE);
+
+  function plain(html){
+    var d=document.createElement("div"); d.innerHTML=html;
+    d.querySelectorAll(LANG==="ta"?".en":".ta").forEach(function(n){n.remove();});
+    d.querySelectorAll("li,tr,br,h3").forEach(function(n){ n.appendChild(document.createTextNode(". ")); });
+    d.querySelectorAll("td,th").forEach(function(n){ n.appendChild(document.createTextNode(", ")); });
+    return (d.textContent||"").replace(/[✓✗→·|]/g," ").replace(/\s*\.\s*\./g,".").replace(/\s+/g," ").trim();
+  }
+  function sentences(t){
+    var parts=t.match(/[^.!?।;:]+[.!?।;:]?/g)||[t], out=[];
+    parts.forEach(function(p){ p=p.trim(); if(!p||/^[.,;:]+$/.test(p)) return;
+      while(p.length>200){ var c=p.lastIndexOf(",",200); if(c<60) c=p.lastIndexOf(" ",200); out.push(p.slice(0,c+1)); p=p.slice(c+1).trim(); }
+      out.push(p); });
+    return out;
+  }
+  var speaking=false, paused=false, sq=[], sqDone=null, sqTimer=null, sqVoice=null;
+  function updPause(){ var b=X("pause"); b.innerHTML=paused?T("Resume","Resume"):T("Pause","Pause"); b.disabled=!speaking; }
+  function next(){
+    if(!sq.length){ speaking=false; updPause(); if(sqDone){ var cb=sqDone; sqDone=null; cb(); } return; }
+    var s=sq.shift();
+    var u=new SpeechSynthesisUtterance(s);
+    if(sqVoice) u.voice=sqVoice; u.rate=RATE; u.lang= sqVoice?sqVoice.lang:(LANG==="ta"?"ta-IN":"en-IN");
+    u.onend=function(){ if(X("gaps").checked && sq.length) sqTimer=setTimeout(next,220); else next(); };
+    u.onerror=function(){ next(); };
+    synth.speak(u);
+  }
+  function stopSpeak(){ if(synth) synth.cancel(); clearTimeout(sqTimer); sq=[]; speaking=false; paused=false; updPause(); }
+  function speak(text,onEnd){
+    stopSpeak();
+    if(!synth||!text){ if(onEnd) onEnd(); return; }
+    var list=langVoices(LANG); if(LANG==="ta"&&!list.length){ if(onEnd) onEnd(); return; }
+    var name=X("voice").value; sqVoice=voices.filter(function(v){return v.name===name;})[0]||list[0]||null;
+    sq=sentences(text); sqDone=onEnd||null; speaking=true; paused=false; updPause(); next();
+  }
+  X("pause").onclick=function(){ if(!synth||!speaking) return; if(paused){ synth.resume(); paused=false; } else { synth.pause(); paused=true; } updPause(); };
+  X("stop").onclick=function(){ stopSpeak(); X("convo").checked=false; };
+
+  /* ================= listening (waits until you finish) ================= */
+  var SR=global.SpeechRecognition||global.webkitSpeechRecognition||null, rec=null, listening=false, micBlocked=false;
+  var ANDROID=/Android/i.test(navigator.userAgent);
+  var L={want:false,committed:"",session:"",heard:false,silT:null,tick:null,deadline:0,waitMs:3000};
+  var sw=ls(P+"_wait"); if(sw!==null) X("wait").value=sw;
+  if(ls(P+"_review")==="1") X("review").checked=true;
+  X("wait").onchange=function(){ ls(P+"_wait",this.value); };
+  X("review").onchange=function(){ ls(P+"_review",this.checked?"1":"0"); };
+  function status(m){ X("status").textContent=m||""; }
+  function heard(){ return (L.committed+" "+L.session).replace(/\s+/g," ").trim(); }
+  function micMsg(){ return LANG==="ta"?"இந்த page-ல microphone block ஆகியிருக்கு. File-ஐ உங்க website-ல (GitHub Pages) Chrome-ல திறந்தா voice work ஆகும். இங்க type பண்ணுங்க — பதிலை படிச்சு காட்டுவேன்.":"The microphone is blocked on this page. Voice input works when the file is opened from your website (e.g. GitHub Pages) in Chrome. You can type here, and answers will still be read aloud."; }
+  function arm(ms){
+    clearTimeout(L.silT); clearInterval(L.tick);
+    if(!ms){ X("lfill").style.width="0"; return; }
+    L.deadline=Date.now()+ms;
+    L.tick=setInterval(function(){ var left=Math.max(0,L.deadline-Date.now()); X("lfill").style.width=(100-left/ms*100)+"%";
+      if(L.heard) status(LANG==="ta"?"முடிச்சிட்டீங்களா? "+Math.ceil(left/1000)+" second-ல அனுப்பிடுவேன் — இன்னும் பேசினா wait பண்ணுவேன்":"Finished? Sending in "+Math.ceil(left/1000)+"s. Keep talking to add more."); },100);
+    L.silT=setTimeout(function(){ finish(true); },ms);
+  }
+  function newRec(){
+    var r=new SR(); r.lang= LANG==="ta"?"ta-IN":"en-IN"; r.interimResults=true; r.maxAlternatives=1; r.continuous=!ANDROID;
+    r.onresult=function(e){ var t=""; for(var i=0;i<e.results.length;i++) t+=e.results[i][0].transcript+" ";
+      L.session=t.trim(); L.heard=true; X("q").value=heard();
+      if(L.waitMs) arm(L.waitMs); else status(LANG==="ta"?"கேட்டுட்டு இருக்கேன்… முடிஞ்சதும் 'முடிஞ்சது' தட்டுங்க":"Listening… tap 'Done' when you finish"); };
+    r.onerror=function(e){
+      if(e.error==="not-allowed"||e.error==="service-not-allowed"){ micBlocked=true; L.want=false; endUI(); status(micMsg()); X("convo").checked=false; }
+      else if(e.error==="audio-capture"){ L.want=false; endUI(); status(LANG==="ta"?"Microphone கிடைக்கல.":"No microphone found."); } };
+    r.onend=function(){ L.committed=heard(); L.session="";
+      if(L.want) setTimeout(function(){ if(!L.want) return; try{ rec=newRec(); rec.start(); }catch(err){} },120); };
+    return r;
+  }
+  function startListen(){
+    if(!SR){ status(LANG==="ta"?"இந்த browser-ல voice input இல்ல — Chrome/Edge use பண்ணுங்க. Type பண்றது எல்லா இடத்துலயும் work ஆகும்.":"Voice input is not available in this browser. Use Chrome or Edge. Typing works everywhere."); return; }
+    if(micBlocked){ status(micMsg()); return; }
+    stopSpeak();
+    L.want=true; L.committed=""; L.session=""; L.heard=false; L.waitMs=+X("wait").value;
+    X("q").value=""; listening=true; X("mic").classList.add("live"); X("lbar").hidden=false;
+    status(LANG==="ta"?"கேட்டுட்டு இருக்கேன்… நிதானமா பேசுங்க":"Listening… take your time");
+    arm(0); L.silT=setTimeout(function(){ if(!L.heard) finish(false); },12000);
+    try{ rec=newRec(); rec.start(); }catch(err){ status(micMsg()); endUI(); }
+  }
+  function endUI(){ listening=false; clearTimeout(L.silT); clearInterval(L.tick); X("mic").classList.remove("live"); X("lbar").hidden=true; X("lfill").style.width="0"; }
+  function finish(send){
+    L.want=false; try{ if(rec) rec.stop(); }catch(e){}
+    endUI(); var v=heard();
+    if(!send||!v){ status(v?"":(LANG==="ta"?"எதுவும் கேக்கல — mic-ஐ தட்டி மறுபடி try பண்ணுங்க.":"No speech heard. Tap the mic and try again.")); if(!v) X("convo").checked=false; return; }
+    if(X("review").checked){ X("q").value=v; X("q").focus(); status(LANG==="ta"?"Check பண்ணிட்டு 'கேளு' தட்டுங்க":"Check the text, then tap Ask"); return; }
+    status(""); ask(v);
+  }
+  X("mic").onclick=function(){ if(listening){ finish(true); return; } startListen(); };
+  X("lsend").onclick=function(){ finish(true); };
+  X("lcancel").onclick=function(){ finish(false); X("q").value=""; status(""); X("convo").checked=false; };
+
+  /* ================= direct-answer engine ================= */
+  function nm(e){ return e.short||e.name; }
+  function metOf(k){ return MET.filter(function(m){return m.key===k;})[0]; }
+  function val(m,e){ return e.values? e.values[m.key] : undefined; }
+  function fmt(m,v){ return m.fmt? m.fmt(v) : (typeof v==="number"? v+(m.unit||"") : v); }
+  function verdictOf(x){ for(var i=0;i<verdicts.length;i++) if(x>=verdicts[i][0]) return verdicts[i][1]; return verdicts[verdicts.length-1][1]; }
+  function sc(x){ return (x>=0?"+":"")+x.toFixed(2); }
+  function sentence(m,e){
+    var v=val(m,e), o={name:nm(e), label:m.label.en, v:v===null||v===undefined?"":fmt(m,v)}, oT={name:nm(e), label:m.label.ta, v:o.v};
+    if(m.key==="score"){ var vv=verdictOf(v); return A(nm(e)+" is "+vv.en+" ("+sc(v)+"). "+((e.why||{}).en||""), nm(e)+" "+vv.ta+" ("+sc(v)+"). "+((e.why||{}).ta||"")); }
+    if(e.text && e.text[m.key]) return e.text[m.key];
+    if(v===null||v===undefined){ var ms=cfg.missing||A("{name} hasn't disclosed {label}.","{name} {label} data கிடைக்கல."); return A(fill(ms.en,o),fill(ms.ta,oT)); }
+    var s=m.say||A("{name}'s {label} is {v}.","{name} {label} {v}.");
+    return A(fill(s.en,o),fill(s.ta,oT));
+  }
+  function joinA(l){ return A(l.map(function(a){return a.en;}).join(" "), l.map(function(a){return a.ta;}).join(" ")); }
+  function rank(k,pool,dir){ var m=metOf(k); return pool.filter(function(e){ var v=val(m,e); return typeof v==="number"; }).sort(function(a,b){ return dir*(val(m,b)-val(m,a)); }); }
+  function table(k,pool){ var m=metOf(k); return '<table><tbody>'+rank(k,pool,1).map(function(e){return '<tr><td style="font-weight:800">'+esc(nm(e))+'</td><td class="n">'+fmt(m,val(m,e))+'</td></tr>';}).join("")+'</tbody></table>'; }
+  function norm(s){ return " "+s.toLowerCase().replace(/[?!.,;:()"'`]/g," ").replace(/\s+/g," ")+" "; }
+  function has(q,list){ return (list||[]).some(function(k){ return q.indexOf(k.toLowerCase())>=0; }); }
+  function kbBest(q){ var best=null,bs=0; KB.forEach(function(e){ var s=0; e.k.forEach(function(k){ if(q.indexOf(k.toLowerCase())>=0) s+=k.length>6?2:1; }); if(s>bs){bs=s;best=e;} }); return best; }
+  function fromKB(e){ return {a:typeof e.a==="function"?e.a():e.a, d:e.d?(typeof e.d==="function"?e.d():(e.d.en!==undefined?T(e.d.en,e.d.ta):e.d)):"", tab:e.tab, f:e.f}; }
+  var NOADVICE=cfg.noAdvice||A("We can't tell you to buy or sell. CB Research isn't SEBI-registered, so please ask a registered advisor.","Buy பண்ணுங்க, sell பண்ணுங்க-ன்னு நாங்க சொல்ல முடியாது. CB Research SEBI-registered இல்ல; registered advisor-கிட்ட கேளுங்க.");
+
+  function answer(raw){
+    var q=norm(raw);
+    var ents=ENT.filter(function(e){ return has(q,[e.name].concat(e.aliases||[])); });
+    var hits=MET.map(function(m){ return {k:m.key, w:(m.kw||[]).filter(function(k){ return q.indexOf(k.toLowerCase())>=0; })}; }).filter(function(h){ return h.w.length; });
+    /* drop a metric whose matched words are all inside another metric's longer match (e.g. "revenue" inside "ai revenue") */
+    var mets=hits.filter(function(h){ return !h.w.every(function(w){ return hits.some(function(o){ return o!==h && o.w.some(function(ow){ return ow.length>w.length && ow.toLowerCase().indexOf(w.toLowerCase())>=0; }); }); }); }).map(function(h){return h.k;});
+    var hi=/highest|most |best|top |max|biggest|leading|strongest|higher|அதிக|ஜாஸ்தி|பெஸ்ட்|டாப்|உயர்ந்த|நிறைய/.test(q);
+    var lo=/lowest|least|worst|min |smallest|weakest|lower|குறைந்த|கம்மி|குறைவு|மோசம்|வொர்ஸ்ட்/.test(q);
+    var compare=/compare|vs|versus|against|ஒப்பிடு|ஒப்பீடு|கம்பேர்/.test(q)||ents.length>1;
+    var all=/all compan|every compan|sector|all five|across|அனைத்து|எல்லா/.test(q);
+    var concept=/what is|what does|meaning|explain|என்றால் என்ன|னா என்ன|விளக்க/.test(q);
+    var follow=/^ (and|what about|how about|its|their|also|அதன்|அதோட|அப்போ|மற்றும்|அப்புறம்)/.test(q);
+    var pron=/ (its|it's|their|they|them|those|அதோட|அதன்|அவங்க|அவங்களோட) /.test(q);
+    if(/ (buy|sell|should i|invest|target price|recommend|வாங்க|விக்க|விற்க|வாங்கலாமா|முதலீடு பண்ண) /.test(q)) return {a:NOADVICE};
+    if((follow||pron) && !ents.length && ctx.ents.length && (mets.length||pron||/risk|why|ஏன்|ரிஸ்க்|பிரச்சனை/.test(q))) ents=ctx.ents;
+    if(follow && ents.length && !mets.length && ctx.mets.length && !/risk|why|ஏன்|ரிஸ்க்/.test(q)) mets=ctx.mets;
+    if(!ents.length && ctx.ents.length>1 && ctx.ents.length<ENT.length && /overall|better|மொத்தமா/.test(q)) ents=ctx.ents;
+    if(!ents.length && !mets.length && (all||/compare/.test(q)) && ctx.mets.length) mets=ctx.mets;
+
+    if(concept && !ents.length){ var c0=kbBest(q); if(c0) return fromKB(c0); }
+    var numMet=mets.filter(function(k){ var m=metOf(k); return m && m.numeric!==false && ENT.some(function(e){return typeof val(m,e)==="number";}); })[0];
+
+    /* highest / lowest */
+    if((hi||lo) && numMet && ents.length!==1){
+      var pool=ents.length>1?ents:ENT, m=metOf(numMet), dir= lo&&!hi ? -1 : 1;
+      if(m.lowerIsBetter && /best|better/.test(q)) dir=-1;
+      var r=rank(numMet,pool,dir), top=r[0]; ctx={ents:pool,mets:[numMet]};
+      var w=dir>0?["highest","அதிகம்"]:["lowest","கம்மி"];
+      var nx=r[1]?[" Next is "+nm(r[1])+" at "+fmt(m,val(m,r[1]))+"."," அடுத்து "+nm(r[1])+" ("+fmt(m,val(m,r[1]))+")."]:["",""];
+      return {a:A(nm(top)+" has the "+w[0]+" "+m.label.en+" at "+fmt(m,val(m,top))+"."+nx[0], nm(top)+"-க்கு தான் "+m.label.ta+" "+w[1]+" — "+fmt(m,val(m,top))+"."+nx[1]), d:table(numMet,pool), f:[["Tell me about "+nm(top), nm(top)+" பத்தி சொல்லு"]]};
+    }
+    /* two or more entities */
+    if(ents.length>1){
+      ctx={ents:ents,mets:mets};
+      if(numMet){ var m2=metOf(numMet), rr=rank(numMet,ents,m2.lowerIsBetter?-1:1), parts=rr.map(function(e){return nm(e)+" "+fmt(m2,val(m2,e));}).join(", ");
+        return {a:A("On "+m2.label.en+": "+parts+". "+nm(rr[0])+" is "+(m2.lowerIsBetter?"lowest.":"ahead."), m2.label.ta+": "+parts+". "+nm(rr[0])+" தான் "+(m2.lowerIsBetter?"கம்மி.":"முன்னாடி.")), f:[["Which is better overall?","மொத்தமா எது better?"]]}; }
+      if(mets.length) return {a:joinA(ents.map(function(e){return sentence(metOf(mets[0]),e);}))};
+      if(metOf("score")){ var rs=rank("score",ents,1), a1=rs[0], a2=rs[rs.length-1], ms=metOf("score");
+        return {a:A(nm(a1)+" is ahead of "+nm(a2)+" ("+sc(val(ms,a1))+" vs "+sc(val(ms,a2))+"). "+((a1.why||{}).en||""), nm(a1)+" தான் "+nm(a2)+"-ஐ விட முன்னாடி ("+sc(val(ms,a1))+" vs "+sc(val(ms,a2))+"). "+((a1.why||{}).ta||"")), d:table("score",ents)}; }
+      return {a:joinA(ents.map(function(e){return e.summary||A(nm(e),nm(e));}))};
+    }
+    /* one entity */
+    if(ents.length===1){
+      var e=ents[0];
+      if(!mets.length && /why|ஏன்/.test(q) && e.why){ ctx={ents:ents,mets:[]}; return {a:e.why}; }
+      if(!mets.length && /risk|problem|worry|concern|பிரச்சனை|ரிஸ்க்|கவலை/.test(q) && e.risk){ ctx={ents:ents,mets:[]}; return {a:e.risk}; }
+      if(!mets.length){ if(metOf("score")) mets=["score"]; else { ctx={ents:ents,mets:[]}; return {a:e.summary||A(nm(e),nm(e))}; } }
+      ctx={ents:ents,mets:mets};
+      var list=mets.slice(0,3).map(function(k){return sentence(metOf(k),e);});
+      if(mets[0]==="score" && /^ (is|will|does|are|can)/.test(q)){ var x=val(metOf("score"),e);
+        list[0]=A((x>=0.1?"Yes, so far. ":(x>-0.1?"Not clear yet. ":"Not yet. "))+list[0].en,(x>=0.1?"ஆமா, இதுவரைக்கும். ":(x>-0.1?"இன்னும் clear-ஆ இல்ல. ":"இன்னும் இல்ல. "))+list[0].ta); }
+      return {a:joinA(list), f: mets[0]==="score"? [["What about its "+(MET[0]?MET[0].label.en:"numbers")+"?","அதோட "+(MET[0]?MET[0].label.ta:"numbers")+"?"],["Its risks?","அதோட risk என்ன?"]] : [["Compare with all","எல்லாத்தோடயும் compare பண்ணு"]]};
+    }
+    /* metric, no entity → sector line (unless a KB entry fits better) */
+    if(numMet && numMet!=="score"){
+      var kb=kbBest(q); if(kb && !all && !/compare/.test(q) && kb.preferOverMetric) return fromKB(kb);
+      var m3=metOf(numMet), r3=rank(numMet,ENT,1), t=r3[0], b=r3[r3.length-1]; ctx={ents:ENT,mets:[numMet]};
+      return {a:A("On "+m3.label.en+", "+nm(t)+" is highest at "+fmt(m3,val(m3,t))+" and "+nm(b)+" is lowest at "+fmt(m3,val(m3,b))+".", m3.label.ta+"-ல "+nm(t)+" தான் அதிகம் ("+fmt(m3,val(m3,t))+"), "+nm(b)+" தான் கம்மி ("+fmt(m3,val(m3,b))+")."), d:table(numMet,ENT)};
+    }
+    var k2=kbBest(q); if(k2){ ctx={ents:[],mets:[]}; return fromKB(k2); }
+    if(mets.length) return {a:joinA(ENT.map(function(e){return sentence(metOf(mets[0]),e);}))};
+    return {a:cfg.fallback||A("Sorry, I didn't get that. Try a name plus a topic, like \"HCL margin\".","Sorry, புரியல. பேரும் topic-உம் சேர்த்து கேளுங்க — உதா. \"HCL margin\"."), f:(cfg.suggestions||[]).slice(0,3)};
+  }
+
+  /* ================= chat UI ================= */
+  var log=X("log");
+  function add(who,opts){
+    var d=document.createElement("div"); d.className="cba-msg "+who;
+    if(who==="u"){ d.textContent=opts; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
+    var body='<div class="cba-ans">'+T(opts.a.en,opts.a.ta)+'</div>';
+    if(opts.d) body+='<details><summary>'+T("More details","இன்னும் details")+'</summary><div>'+opts.d+'</div></details>';
+    body+='<div class="cba-acts"><button type="button" class="cba-mini" data-a="say">🔊 '+T("Replay","மறுபடி கேளு")+'</button>'+(opts.tab&&cfg.onOpenTab?'<button type="button" class="cba-mini" data-a="tab" data-t="'+esc(opts.tab)+'">'+T("Open related tab","அந்த tab-ஐ திற")+' →</button>':'')+'</div>';
+    if(opts.f&&opts.f.length) body+='<div class="cba-follow">'+opts.f.map(function(x){return '<button type="button" data-qen="'+esc(x[0])+'" data-qta="'+esc(x[1])+'">'+T(esc(x[0]),esc(x[1]))+'</button>';}).join("")+'</div>';
+    d.innerHTML=body; d._a=opts.a;
+    log.appendChild(d); log.scrollTop=log.scrollHeight; return d;
+  }
+  log.addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return;
+    if(b.dataset.a==="say"){ var m=b.closest(".cba-msg"); speak(LANG==="ta"?m._a.ta:m._a.en); }
+    else if(b.dataset.a==="tab"){ cfg.onOpenTab(b.dataset.t); }
+    else if(b.dataset.qen){ ask(LANG==="ta"?b.dataset.qta:b.dataset.qen); } });
+  function ask(text){
+    text=(text||"").trim(); if(!text) return;
+    add("u",text); X("q").value="";
+    var r=answer(text); add("b",r);
+    var line=LANG==="ta"?r.a.ta:r.a.en;
+    var again=function(){ if(X("convo").checked && !micBlocked) setTimeout(startListen,900); };
+    if(X("auto").checked) speak(line,again); else again();
+  }
+  X("form").addEventListener("submit",function(e){ e.preventDefault(); ask(X("q").value); });
+  function greet(){ add("b",{a:cfg.greeting||A("Vanakam! Ask me by voice or text. I'll answer in one or two lines.","வணக்கம்! Voice-ல கேளுங்க இல்ல type பண்ணுங்க. ஒண்ணு ரெண்டு வரியில நேரா பதில் சொல்லுவேன்."), f:(cfg.suggestions||[]).slice(0,2)}); }
+  X("clear").onclick=function(){ log.innerHTML=""; ctx={ents:[],mets:[]}; greet(); };
+  function renderSugg(){ X("sugg").innerHTML=(cfg.suggestions||[]).map(function(s){return '<button type="button" data-en="'+esc(s[0])+'" data-ta="'+esc(s[1])+'">'+T(esc(s[0]),esc(s[1]))+'</button>';}).join(""); }
+  X("sugg").addEventListener("click",function(e){ var b=e.target.closest("button"); if(b) ask(LANG==="ta"?b.dataset.ta:b.dataset.en); });
+  function setLang(l){ LANG=l==="ta"?"ta":"en"; root.classList.toggle("cba-ta",LANG==="ta");
+    X("q").placeholder= LANG==="ta"? (cfg.placeholder&&cfg.placeholder.ta||"கேளுங்க…") : (cfg.placeholder&&cfg.placeholder.en||"Ask a question…");
+    fillVoices(); }
+  setLang(LANG); renderSugg(); greet();
+
+  return {ask:ask, speak:function(t,cb){ speak(t,cb); }, plain:plain, stop:stopSpeak, setLang:setLang, answer:answer, listen:startListen};
+}
+
+global.CauveryAssist={mount:mount, T:T, A:A};
+})(window);
+/* ===== end Cauvery Assist widget ===== */
+
+/* ---- CB Assist config for this dashboard (KB-only, bilingual) ---- */
+var CBA_A = CauveryAssist.A;
+var CBA_KB = [
+  { k:["overview","what changed","what is proposed","recalibrating","consultation paper","draft paper","what is this"],
+    a: CBA_A("IRDAI's draft paper — Recalibrating Economics of Insurance Distribution — reintroduces hard commission caps, tightens expense-of-management ceilings, and bans compulsory loan-bundling and volume-linked incentives. See the Overview tab for the full comparison table.",
+             "IRDAI-oடு draft paper — Recalibrating Economics of Insurance Distribution — commission-க்கு hard caps கொண்டு வரும், EoM ceiling-ஐ tight பண்ணும், loan-bundling, volume-linked incentives-ஐ ban பண்ணும். Overview tab-ல முழு table இருக்கு."),
+    tab:"overview", f:[["What about banks?","Banks-க்கு என்ன ஆகும்?"],["Is this final regulation?","இது final regulation-ஆ?"]] },
+
+  { k:["bank","banks","bancassurance","banca","non-interest income","fee income"],
+    a: CBA_A("Banks earned over ₹20,000 crore in FY26 from bancassurance. HDFC Bank, ICICI Bank, Axis and Kotak together made ~₹18,565 crore, SBI ~₹2,795 crore. Estimated hit: 15–30% fee-income decline, 1–2% PAT impact if the caps go through unphased.",
+             "Banks FY26-ல bancassurance-ல ₹20,000 crore-க்கு மேல சம்பாதிச்சுது. HDFC Bank, ICICI Bank, Axis, Kotak சேர்ந்து ~₹18,565 crore, SBI தனியா ~₹2,795 crore. Caps வந்தா fee income 15–30% குறையலாம், PAT-ல 1–2% hit."),
+    tab:"banks", f:[["Which bank is most exposed?","எந்த bank-க்கு அதிக risk?"],["Tell me about intermediaries","Intermediaries பத்தி சொல்லு"]] },
+
+  { k:["intermediar","broker","pb fintech","policybazaar","aggregator","distributor concentration"],
+    a: CBA_A("PB Fintech (Policybazaar) is the main listed intermediary, ~90% of the online aggregator segment. It faces steeper proposed cuts than individual agents, but deeper Bima Sugam integration could open new revenue. Just 10 of 462 registered brokers control 70% of the broker market.",
+             "PB Fintech (Policybazaar) தான் main listed intermediary — online aggregator segment-ல ~90% share. Individual agents-ஐ விட intermediaries-க்கு அதிக cuts propose பண்ணிருக்காங்க, ஆனா Bima Sugam integration வந்தா புது revenue வரலாம். 462 brokers-ல 10 பேர் தான் 70% market வச்சிருக்காங்க."),
+    tab:"intermediaries", f:[["Why did PB Fintech stock fall?","PB Fintech stock ஏன் விழுந்துச்சு?"],["What about insurers' upside?","Insurers-க்கு என்ன benefit?"]] },
+
+  { k:["pb fintech price","pb fintech stock","policybazaar share","policybazaar stock","rebound","crash","bloodbath","stock fell","stock fall"],
+    a: CBA_A("PB Fintech crashed ~36% on 24 Sept 2026 the day the IRDAI paper landed, then bounced ~4–5% the next day after management called the proposal 'quite extreme' on an analyst call and floated a possible insurance-manufacturing angle. Analysts still flag the draft as a structural risk to its commission-based model.",
+             "IRDAI paper வந்த நாளே (24 Sept 2026) PB Fintech ~36% crash ஆச்சு, அடுத்த நாள் ~4–5% bounce பண்ணுச்சு — management analyst call-ல proposal-ஐ 'quite extreme' -ன்னு சொல்லி, insurance manufacturing-க்கு போகலாம்-ன்னு hint பண்ணதுனால. ஆனா commission model-க்கு இது structural risk-ன்னு analysts சொல்றாங்க."),
+    tab:"intermediaries" },
+
+  { k:["insurer benefit","insurers benefit","upside","insurer upside","insurers upside","how insurers benefit","good for insurers"],
+    a: CBA_A("Insurers benefit from lower commission leakage, cleaner persistency once forced loan-bundling ends, less mis-selling, and reduced dependence on a single bank parent. A separate Bill proposes 100% FDI in insurance, easing capital access.",
+             "Insurers-க்கு benefit: commission leakage குறையும், forced loan-bundling நின்னா persistency நல்லா இருக்கும், mis-selling குறையும், ஒரே bank parent-ஐ சார்ந்திருக்கிற risk குறையும். FDI 100%-க்கு உயர்த்த ஒரு Bill வேற இருக்கு — capital access easy ஆகும்."),
+    tab:"upside", f:[["What's the downside risk?","என்ன downside risk இருக்கு?"]] },
+
+  { k:["insurer risk","insurers risk","downside","insurer lose","insurers lose","credit life","health commission","insurer downside"],
+    a: CBA_A("Bank-promoted insurers like HDFC Life, SBI Life and ICICI Prudential are most exposed to their parent bank's fee squeeze. Credit-life and standalone health commissions face the deepest cuts. Analysts expect 2–3 years of growth disruption industry-wide.",
+             "HDFC Life, SBI Life, ICICI Prudential மாதிரி bank-promoted insurers-க்கு தான் அதிக risk — parent bank fee squeeze நேரா affect பண்ணும். Credit-life, standalone health commission-க்கு தான் அதிக cut. Industry முழுக்க 2–3 வருஷம் growth disrupt ஆகும்-ன்னு analysts சொல்றாங்க."),
+    tab:"downside" },
+
+  { k:["regulation","is this final","final rule","status","feedback window","timeline","when will it be implemented","effective date"],
+    a: CBA_A("This is still a draft consultation paper, not regulation. Feedback closes 25 Oct 2026, and the life-insurer EoM glide path was already extended from 2 to 5 years after industry pushback — so final numbers could still change. Proposed effective date is FY28.",
+             "இது இன்னும் draft consultation paper தான், regulation இல்ல. Feedback window 25 Oct 2026 வரைக்கும் open. Life insurer EoM glide path 2 வருஷத்துல இருந்து 5 வருஷமா already extend பண்ணிருக்காங்க — final numbers இன்னும் மாறலாம். Proposed effective date FY28."),
+    tab:"status", f:[["What is proposed for banks?","Banks-க்கு என்ன propose பண்ணிருக்காங்க?"]] }
+];
+
+var cbaAssist = CauveryAssist.mount(document.getElementById("assist"), {
+  title: "CB Assist",
+  lang: "en",
+  storageKey: "cba_irdai",
+  kb: CBA_KB,
+  greeting: CBA_A("Vanakam! Ask me about the IRDAI distribution reform — banks, intermediaries, insurers, or the consultation status.","வணக்கம்! IRDAI distribution reform பத்தி கேளுங்க — banks, intermediaries, insurers, அல்லது consultation status."),
+  suggestions: [
+    ["How are banks affected?","Banks-க்கு எப்படி affect ஆகும்?"],
+    ["Why did PB Fintech stock crash?","PB Fintech stock ஏன் crash ஆச்சு?"],
+    ["Is this final regulation?","இது final regulation-ஆ?"]
+  ],
+  onOpenTab: function(tabId){
+    var btn = document.querySelector('.tablink[data-tab="'+tabId+'"]');
+    if(btn) btn.click();
+    document.getElementById('cbaPanel').classList.remove('show');
+    var sec = document.getElementById(tabId);
+    if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+});
+
+document.getElementById('cbaBubble').addEventListener('click', function(){
+  document.getElementById('cbaPanel').classList.toggle('show');
+});
+document.getElementById('cbaClose').addEventListener('click', function(){
+  document.getElementById('cbaPanel').classList.remove('show');
+});
+</script>
+
+<script>
+document.querySelectorAll('.tablink').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tablink').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('section.tab').forEach(function(s){s.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+document.getElementById('cbBadge').addEventListener('click', function(){
+  document.getElementById('cbDisclaimer').classList.toggle('show');
+});
+
+</script>
+</body>
+</html>

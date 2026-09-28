@@ -43,11 +43,11 @@ SECTOR_KEYWORDS = {
     "_cross-sector": ["multisector", "multico", "ranker", "cross_sector", "sector_analysis", "tatacomm_netweb",
                       "powerproxy", "india_pv", "grasim", "recentipos", "top8", "sterlite_wabag", "three_stock"],
     "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss",
-                        "ipo_fund", "uti_nippon", "kfintech", "cams", "_nse"],
+                        "ipo_fund", "uti_nippon", "kfintech", "cams", "_nse", "sectoraletf", "etf_"],
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib", "fcnr"],
     # note: "rec" alone would match "Recycling"; use the paired filename form instead
     "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jiofinancial", "jio_financial", "mfi", "microfin", "muthoot"],
-    "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici"],
+    "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici", "irdai"],
     # note: bare "ipo" over-matches — a hospital IPO is pharma-health and a solar IPO is
     # power-energy. Only IPO *funds* and IPO-market reports belong here.
     "it-services": ["it_services", "tcs", "hcl", "infoedge", "fractal", "itservices"],
@@ -75,7 +75,8 @@ SECTOR_KEYWORDS = {
     "telecom": ["telecom", "airtel"],
     "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage"],
     # Not company evaluation: news digests, macro/thematic pieces, and site furniture.
-    "_excluded": ["market_breaking", "carrytrade", "macro_analysis", "glossary", "usdebt", "aibubble"],
+    "_excluded": ["market_breaking", "carrytrade", "macro_analysis", "glossary", "usdebt", "aibubble",
+                  "yield_shock"],
 }
 
 # Finance terms worth noticing if a sector file doesn't define them.
