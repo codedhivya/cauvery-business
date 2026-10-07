@@ -1,0 +1,714 @@
+<title>Hospital Drug Markup Probe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap">
+<style>
+/* Layout: sticky header + scrollable tab strip, one panel per section, white page, light-orange accent */
+:root{
+  --bg:#ffffff; --panel:#ffffff; --soft:#fff6ec; --line:#f1dcc6; --ink:#1a1612; --muted:#5b5047;
+  --accent:#F28C28; --accent-ink:#9a4c00; --bad:#c62828; --good:#1b7a3a; --warn:#b26a00;
+  --f-display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Noto Sans Tamil",system-ui,sans-serif;
+  --f-ta:"Noto Sans Tamil","IBM Plex Sans",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;font-weight:400}
+body.lang-ta{font-family:var(--f-ta)}
+.lang-en .ta,.lang-ta .en{display:none!important}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:0 96px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:2px solid var(--line)}
+.hrow{max-width:1080px;margin:0 auto;padding:12px 16px 6px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;gap:10px;align-items:center;min-width:0}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--accent);color:#fff;font:800 16px/38px var(--f-display);text-align:center;flex:none}
+.brand h1{font:800 clamp(18px,3.4vw,24px)/1.15 var(--f-display);margin:0;text-wrap:balance}
+.brand small{display:block;color:var(--muted);font-weight:600;font-size:13px}
+.langbtn{display:flex;border:2px solid var(--accent);border-radius:999px;overflow:hidden}
+.langbtn button{border:0;background:#fff;color:var(--accent-ink);font:700 14px var(--f-body);padding:6px 14px;cursor:pointer}
+.langbtn button.on{background:var(--accent);color:#fff}
+nav.tabs{max-width:1080px;margin:0 auto;padding:4px 16px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+nav.tabs button{flex:none;border:1.5px solid var(--line);background:#fff;color:var(--ink);font:700 14px var(--f-body);padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.tabs button:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--accent-ink);outline-offset:2px}
+section.panel{display:none;padding-top:22px}
+section.panel.on{display:block}
+h2{font:800 clamp(22px,4vw,30px)/1.2 var(--f-display);margin:0 0 6px;text-wrap:balance}
+.lang-ta h2,.lang-ta h3{font-family:var(--f-ta);font-weight:700}
+h3{font:700 18px/1.3 var(--f-display);margin:0 0 8px}
+.lede{color:var(--muted);font-weight:600;margin:0 0 18px;max-width:68ch}
+ul.pts{margin:0;padding-left:20px;display:grid;gap:6px}
+ul.pts li{font-weight:600}
+ul.pts li b{color:var(--accent-ink)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.card{border:1.5px solid var(--line);border-radius:12px;padding:16px;background:var(--panel);min-width:0}
+.card.hl{background:var(--soft);border-color:var(--accent)}
+.kpi .v{font:800 30px/1.1 var(--f-mono);font-variant-numeric:tabular-nums}
+.kpi .l{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+.lang-ta .kpi .l{text-transform:none;letter-spacing:0}
+.neg{color:var(--bad)} .pos{color:var(--good)}
+.pill{display:inline-block;font:700 12px var(--f-body);padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--accent-ink);border:1px solid var(--line)}
+.pill.red{background:#fdecea;color:var(--bad);border-color:#f5c2bd}
+.pill.grn{background:#e8f5ec;color:var(--good);border-color:#bfe0c9}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;font-weight:600;vertical-align:top}
+th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;background:var(--soft)}
+.lang-ta th{text-transform:none}
+td.n{font-family:var(--f-mono);text-align:right;white-space:nowrap}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:120px 1fr 60px;gap:10px;align-items:center;font-weight:700;font-size:14px}
+.bar .t{height:20px;background:#f7efe6;border-radius:5px;overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.bar .t i.r{background:var(--bad)}
+.bar .n{font-family:var(--f-mono);text-align:right}
+.ctrl{display:grid;gap:4px;margin-bottom:12px}
+.ctrl label{font-weight:700;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.ctrl label span.v{font-family:var(--f-mono);color:var(--accent-ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=number],input[type=text]{width:100%;font:700 16px var(--f-mono);padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input[type=text]{font-family:var(--f-body)}
+.btn{border:0;background:var(--accent);color:#fff;font:700 14px var(--f-body);padding:9px 14px;border-radius:8px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--accent-ink);border:1.5px solid var(--accent)}
+.note{font-size:13px;color:var(--muted);font-weight:600;margin-top:10px}
+.verdict{border-left:6px solid var(--accent);background:var(--soft);padding:14px 16px;border-radius:0 12px 12px 0;font-weight:700;font-size:17px}
+svg text{font-family:var(--f-body);font-weight:700}
+.swot{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.swot .card h3{display:flex;align-items:center;gap:8px}
+.tl{display:grid;gap:0;border-left:3px solid var(--line);margin-left:8px}
+.tl .e{position:relative;padding:0 0 16px 20px}
+.tl .e::before{content:"";position:absolute;left:-9px;top:4px;width:15px;height:15px;border-radius:50%;background:#fff;border:3px solid var(--accent)}
+.tl .e.next::before{background:var(--accent)}
+.tl .d{font:700 13px var(--f-mono);color:var(--accent-ink)}
+.tl .e p{margin:2px 0 0;font-weight:600}
+/* Assist */
+.chat{border:1.5px solid var(--line);border-radius:12px;display:flex;flex-direction:column;height:min(520px,70vh)}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:88%;padding:10px 12px;border-radius:12px;font-weight:600}
+.m.u{align-self:flex-end;background:var(--accent);color:#fff}
+.m.b{align-self:flex-start;background:var(--soft);border:1px solid var(--line)}
+.m.b details{margin-top:6px;font-weight:500;font-size:14px}
+.m.b summary{cursor:pointer;color:var(--accent-ink);font-weight:700}
+.m.b .acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.m.b .acts button{border:1px solid var(--line);background:#fff;border-radius:6px;font:700 12px var(--f-body);padding:3px 8px;cursor:pointer;color:var(--accent-ink)}
+.ask{display:flex;gap:8px;padding:10px;border-top:1.5px solid var(--line)}
+.sugs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.sugs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;font:600 13px var(--f-body);padding:5px 11px;cursor:pointer;color:var(--ink)}
+.spd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:700;font-size:14px;margin-bottom:8px}
+.spd input{width:140px}
+/* Quiz */
+.q{border:1.5px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.q .opts{display:grid;gap:8px;margin-top:10px}
+.q .opts button{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:10px 12px;font:600 15px var(--f-body);cursor:pointer;color:var(--ink)}
+.lang-ta .q .opts button{font-family:var(--f-ta)}
+.q .opts button.ok{background:#e8f5ec;border-color:var(--good)}
+.q .opts button.no{background:#fdecea;border-color:var(--bad)}
+.q .ex{margin-top:8px;font-weight:600;color:var(--muted)}
+/* floating */
+.cb-badge{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40}
+.cb-badge .b{width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;font:800 16px/46px var(--f-display);text-align:center;cursor:pointer;animation:blink 1.6s ease-in-out infinite;border:0}
+.cb-badge .tip{position:absolute;right:0;bottom:56px;width:min(300px,80vw);background:#fff;border:1.5px solid var(--accent);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;display:none;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.cb-badge:hover .tip,.cb-badge.open .tip{display:block}
+.va{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:40;border:0;background:#fff;color:var(--accent-ink);border:2px solid var(--accent);border-radius:999px;font:700 13px var(--f-body);padding:8px 12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.readtab{margin:0 0 14px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.cb-badge .b{animation:none}}
+@media (max-width:520px){.bar{grid-template-columns:90px 1fr 52px;font-size:13px}}
+</style>
+
+<header class="top">
+  <div class="hrow">
+    <div class="brand">
+      <div class="logo">CB</div>
+      <div><h1><span class="en">SC vs Hospital Drug Markups</span><span class="ta">SC vs Hospital மருந்து Markup</span></h1>
+      <small><span class="en">CB Research · Sector explainer · 1 Oct 2026</span><span class="ta">CB Research · Sector விளக்கம் · 1 அக் 2026</span></small></div>
+    </div>
+    <div class="langbtn" role="group" aria-label="Language">
+      <button id="bEn" class="on" onclick="setLang('en')">English</button>
+      <button id="bTa" onclick="setLang('ta')">தமிழ்</button>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+
+<main class="wrap">
+
+<!-- DASHBOARD -->
+<section class="panel" id="dash" data-en="Dashboard" data-ta="Dashboard">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">₹2,700 drug, ₹27,000 MRP. Robbery?</span><span class="ta">₹2,700 மருந்து, ₹27,000 MRP. இது கொள்ளையா?</span></h2>
+  <p class="lede"><span class="en">The Supreme Court called a 10x cancer-drug markup "carnage". Hospital stocks lost about ₹24,800 cr in a day. Here is what happened and what it means.</span><span class="ta">Cancer மருந்துக்கு 10 மடங்கு markup-ஐ Supreme Court "carnage"-னு சொல்லிச்சு. ஒரே நாள்ல hospital stocks சுமார் ₹24,800 கோடி இழந்துச்சு. என்ன நடந்துச்சு, இதோட அர்த்தம் என்ன — பாருங்க.</span></p>
+  <div class="grid g4">
+    <div class="card kpi hl"><div class="v">10x</div><div class="l"><span class="en">PTR → MRP gap</span><span class="ta">PTR → MRP இடைவெளி</span></div></div>
+    <div class="card kpi"><div class="v">16%</div><div class="l"><span class="en">Margin SC floated</span><span class="ta">SC சொன்ன margin</span></div></div>
+    <div class="card kpi"><div class="v neg">−5%</div><div class="l"><span class="en">BSE Hospitals index, 30 Sep</span><span class="ta">BSE Hospitals index, 30 செப்</span></div></div>
+    <div class="card kpi"><div class="v">12 Oct</div><div class="l"><span class="en">Next hearing</span><span class="ta">அடுத்த விசாரணை</span></div></div>
+  </div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3><span class="en">At a glance</span><span class="ta">ஒரே பார்வையில</span></h3>
+      <ul class="pts">
+        <li class="en"><b>₹2,700 is not the retail price.</b> It is the price to retailer (PTR). ₹27,000 is the MRP printed by the drug maker.</li>
+        <li class="ta"><b>₹2,700 retail price இல்லங்க.</b> அது Price to Retailer (PTR). ₹27,000 MRP-ஐ print பண்றது மருந்து company தான்.</li>
+        <li class="en">Selling at MRP is <b>legal</b>. The gap is a rules gap, not a crime.</li>
+        <li class="ta">MRP-ல விக்கறது <b>சட்டப்படி சரி</b> தான். இது rules-ல இருக்கற ஓட்டை, crime இல்ல.</li>
+        <li class="en">SC's problem: patients <b>forced</b> to buy at in-house pharmacies.</li>
+        <li class="ta">SC-க்கு பெரிய கவலை: hospital pharmacy-ல தான் வாங்கணும்னு <b>கட்டாயப்படுத்தறது</b>.</li>
+        <li class="en">Nothing is final. Government asked for 2 weeks.</li>
+        <li class="ta">இன்னும் எதுவும் final ஆகல. Government 2 வாரம் கேட்டிருக்கு.</li>
+      </ul></div>
+    <div class="card"><h3><span class="en">Impact range (brokerages)</span><span class="ta">பாதிப்பு அளவு (brokerages)</span></h3>
+      <ul class="pts">
+        <li class="en">Medicines ≈ <b>12–15%</b> of hospital revenue (Axis)</li>
+        <li class="ta">மருந்து ≈ hospital revenue-ல <b>12–15%</b> (Axis)</li>
+        <li class="en">EBITDA hit <b>2–5%</b> if no pass-on (Jefferies)</li>
+        <li class="ta">Pass-on பண்ண முடியலைன்னா EBITDA <b>2–5%</b> குறையும் (Jefferies)</li>
+        <li class="en">Margin drag <b>50–150 bps</b> for pharmacy-heavy chains (Bonanza)</li>
+        <li class="ta">Pharmacy அதிகம் உள்ள chains-க்கு margin <b>50–150 bps</b> குறையலாம் (Bonanza)</li>
+        <li class="en">Worst case <b>high-single to double digit</b> EBITDA hit (Macquarie)</li>
+        <li class="ta">மோசமான நிலையில EBITDA <b>8–10%+</b> வரை (Macquarie)</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- WHAT SC SAID -->
+<section class="panel" id="sc" data-en="What SC Said" data-ta="SC சொன்னது">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">What the Supreme Court said</span><span class="ta">Supreme Court என்ன சொல்லிச்சு</span></h2>
+  <p class="lede"><span class="en">Bench: Justices Vikram Nath and Sandeep Mehta. Petitions on drug pricing under DPCO 2013 and generic prescribing.</span><span class="ta">Bench: Justice Vikram Nath, Justice Sandeep Mehta. DPCO 2013 கீழ drug pricing, generic prescription பத்தின petitions.</span></p>
+  <div class="grid g2">
+    <div class="card hl"><h3><span class="en">Key observations</span><span class="ta">முக்கிய கருத்துகள்</span></h3>
+      <ul class="pts">
+        <li class="en">22 Sep: called the gap <b>"broad daylight dacoity"</b></li>
+        <li class="ta">22 செப்: இந்த gap-ஐ <b>"பட்டப்பகல் கொள்ளை"</b>-னு சொன்னாங்க</li>
+        <li class="en">Late Sep: 10x markup is <b>"carnage"</b></li>
+        <li class="ta">செப் கடைசி: 10x markup ஒரு <b>"carnage"</b></li>
+        <li class="en">Asked: why not a <b>uniform 16% margin</b> on all medicines?</li>
+        <li class="ta">கேள்வி: எல்லா மருந்துக்கும் <b>ஒரே 16% margin</b> ஏன் வைக்கக் கூடாது?</li>
+        <li class="en">Asked Centre to examine <b>forced in-house pharmacy</b> buying</li>
+        <li class="ta"><b>Hospital pharmacy-ல தான் வாங்கணும்</b>-ங்கற practice-ஐ Centre ஆராயணும்</li>
+        <li class="en">Taxpayer angle: govt schemes pay these bills</li>
+        <li class="ta">Taxpayer கோணம்: Govt schemes தான் இந்த bills-ஐ கட்டுது</li>
+      </ul></div>
+    <div class="card"><h3><span class="en">Government's response</span><span class="ta">Government பதில்</span></h3>
+      <ul class="pts">
+        <li class="en">SG Tushar Mehta: will examine, need a <b>balance</b></li>
+        <li class="ta">SG Tushar Mehta: ஆராய்வோம், ஒரு <b>balance</b> வேணும்</li>
+        <li class="en">Sought <b>2 weeks</b>; next hearing <b>12 Oct</b></li>
+        <li class="ta"><b>2 வாரம்</b> கேட்டாங்க; அடுத்த hearing <b>12 அக்</b></li>
+        <li class="en">Said pharma firms don't look like the main gainers</li>
+        <li class="ta">Pharma companies தான் main-ஆ லாபம் பாக்கறாங்கன்னு தெரியலன்னு சொன்னாங்க</li>
+      </ul>
+      <p class="note"><span class="en">These are oral remarks, not a binding order.</span><span class="ta">இது வாய்மொழி கருத்துகள் தான், binding order இல்ல.</span></p></div>
+  </div>
+</section>
+
+<!-- PRICE CHAIN -->
+<section class="panel" id="chain" data-en="Price Chain" data-ta="விலை சங்கிலி">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">Picture it: where ₹27,000 goes</span><span class="ta">கற்பனை பண்ணுங்க: ₹27,000 எங்க போகுது</span></h2>
+  <p class="lede"><span class="en">One vial, four hands. The price you pay is the number printed on the box.</span><span class="ta">ஒரு vial, நாலு கைகள். நீங்க கட்டுறது box-ல print ஆன விலை தான்.</span></p>
+  <div class="card tblwrap">
+    <svg viewBox="0 0 900 230" width="100%" style="min-width:620px" role="img" aria-label="Drug price chain">
+      <g>
+        <rect x="10" y="40" width="190" height="90" rx="12" fill="#fff6ec" stroke="#F28C28" stroke-width="2"/>
+        <text x="105" y="74" text-anchor="middle" font-size="16" fill="#1a1612" class="en">Drug maker</text>
+        <text x="105" y="74" text-anchor="middle" font-size="15" fill="#1a1612" class="ta">மருந்து company</text>
+        <text x="105" y="104" text-anchor="middle" font-size="14" fill="#5b5047" class="en">Prints MRP ₹27,000</text>
+        <text x="105" y="104" text-anchor="middle" font-size="13" fill="#5b5047" class="ta">MRP ₹27,000 print</text>
+        <rect x="240" y="40" width="190" height="90" rx="12" fill="#fff6ec" stroke="#F28C28" stroke-width="2"/>
+        <text x="335" y="74" text-anchor="middle" font-size="16" fill="#1a1612" class="en">Distributor</text>
+        <text x="335" y="74" text-anchor="middle" font-size="15" fill="#1a1612" class="ta">Distributor</text>
+        <text x="335" y="104" text-anchor="middle" font-size="14" fill="#5b5047" class="en">Small cut</text>
+        <text x="335" y="104" text-anchor="middle" font-size="13" fill="#5b5047" class="ta">சின்ன பங்கு</text>
+        <rect x="470" y="40" width="190" height="90" rx="12" fill="#F28C28" stroke="#F28C28" stroke-width="2"/>
+        <text x="565" y="74" text-anchor="middle" font-size="16" fill="#ffffff" class="en">Hospital pharmacy</text>
+        <text x="565" y="74" text-anchor="middle" font-size="15" fill="#ffffff" class="ta">Hospital pharmacy</text>
+        <text x="565" y="104" text-anchor="middle" font-size="14" fill="#ffffff" class="en">Buys ₹2,700 (PTR)</text>
+        <text x="565" y="104" text-anchor="middle" font-size="13" fill="#ffffff" class="ta">₹2,700-க்கு வாங்குது</text>
+        <rect x="700" y="40" width="190" height="90" rx="12" fill="#fdecea" stroke="#c62828" stroke-width="2"/>
+        <text x="795" y="74" text-anchor="middle" font-size="16" fill="#1a1612" class="en">Patient / insurer</text>
+        <text x="795" y="74" text-anchor="middle" font-size="15" fill="#1a1612" class="ta">நோயாளி / insurer</text>
+        <text x="795" y="104" text-anchor="middle" font-size="14" fill="#c62828" class="en">Pays ₹27,000</text>
+        <text x="795" y="104" text-anchor="middle" font-size="13" fill="#c62828" class="ta">₹27,000 கட்டுறாங்க</text>
+        <path d="M200 85 L236 85" stroke="#9a4c00" stroke-width="3" fill="none" marker-end="url(#ar)"/>
+        <path d="M430 85 L466 85" stroke="#9a4c00" stroke-width="3" fill="none" marker-end="url(#ar)"/>
+        <path d="M660 85 L696 85" stroke="#9a4c00" stroke-width="3" fill="none" marker-end="url(#ar)"/>
+        <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9a4c00"/></marker></defs>
+        <rect x="470" y="160" width="420" height="50" rx="10" fill="#fff" stroke="#c62828" stroke-dasharray="6 4" stroke-width="2"/>
+        <text x="680" y="191" text-anchor="middle" font-size="15" fill="#c62828" class="en">Gap ₹24,300 stays inside the hospital</text>
+        <text x="680" y="191" text-anchor="middle" font-size="14" fill="#c62828" class="ta">₹24,300 gap hospital-க்குள்ளயே நிக்குது</text>
+      </g>
+    </svg>
+  </div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card hl"><h3><span class="en">Markup calculator</span><span class="ta">Markup calculator</span></h3>
+      <div class="grid g2" style="gap:10px">
+        <div class="ctrl"><label for="ptr"><span class="en">PTR (₹)</span><span class="ta">PTR (₹)</span></label><input id="ptr" type="number" value="2700" min="1"></div>
+        <div class="ctrl"><label for="mrp"><span class="en">MRP (₹)</span><span class="ta">MRP (₹)</span></label><input id="mrp" type="number" value="27000" min="1"></div>
+      </div>
+      <div class="tblwrap"><table><tbody id="calcOut"></tbody></table></div>
+    </div>
+    <div class="card"><h3><span class="en">Why can the MRP be 10x?</span><span class="ta">MRP ஏன் 10 மடங்கு இருக்க முடியுது?</span></h3>
+      <ul class="pts">
+        <li class="en"><b>Scheduled drugs</b> (NLEM list): ceiling price = avg PTR + 16% retailer margin</li>
+        <li class="ta"><b>Scheduled drugs</b> (NLEM list): ceiling price = சராசரி PTR + 16% retailer margin</li>
+        <li class="en"><b>Non-scheduled drugs</b> (~80% of market): maker fixes MRP freely; only a 10%/yr hike cap</li>
+        <li class="ta"><b>Non-scheduled drugs</b> (market-ல ~80%): MRP-ஐ company இஷ்டப்படி fix பண்ணலாம்; வருஷத்துக்கு 10% hike மட்டும் தான் limit</li>
+        <li class="en">Brands compete for hospital orders with <b>fat trade margins</b>, not lower prices</li>
+        <li class="ta">Hospital order-க்கு brands போட்டி போடறது <b>பெரிய trade margin</b> குடுத்து தான், விலை குறைச்சு இல்ல</li>
+        <li class="en">2019 precedent: NPPA capped trade margin at <b>30%</b> on 42 non-scheduled cancer drugs; many MRPs fell sharply</li>
+        <li class="ta">2019 உதாரணம்: 42 non-scheduled cancer drugs-க்கு NPPA trade margin-ஐ <b>30%</b>-ல cap பண்ணுச்சு; நிறைய MRP-கள் நல்லா குறைஞ்சுது</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- ROBBERY? -->
+<section class="panel" id="robbery" data-en="Robbery?" data-ta="கொள்ளையா?">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">Is it robbery?</span><span class="ta">இது கொள்ளையா?</span></h2>
+  <div class="verdict"><span class="en">Legally, no. Ethically, it is a captive-market charge. The bigger fault is the rule that lets makers print any MRP on non-scheduled drugs.</span><span class="ta">சட்டப்படி இல்லங்க. ஆனா நியாயப்படி பார்த்தா, தப்பிக்க முடியாத நோயாளி கிட்ட வசூல் பண்றது தான். பெரிய தப்பு — non-scheduled drugs-க்கு எந்த MRP வேணாலும் print பண்ண அனுமதிக்கற rule தான்.</span></div>
+  <div class="tblwrap card" style="margin-top:14px">
+    <table>
+      <thead><tr><th><span class="en">Player</span><span class="ta">யாரு</span></th><th><span class="en">What they do</span><span class="ta">என்ன பண்றாங்க</span></th><th><span class="en">Share of blame</span><span class="ta">பொறுப்பு</span></th></tr></thead>
+      <tbody>
+        <tr><td><span class="en">Drug maker</span><span class="ta">மருந்து company</span></td><td><span class="en">Prints inflated MRP to win hospital shelf space</span><span class="ta">Hospital order பிடிக்க MRP-ஐ ஏத்தி print பண்றாங்க</span></td><td><span class="pill red"><span class="en">High</span><span class="ta">அதிகம்</span></span></td></tr>
+        <tr><td><span class="en">Hospital pharmacy</span><span class="ta">Hospital pharmacy</span></td><td><span class="en">Buys near PTR, bills full MRP, may insist on in-house purchase</span><span class="ta">PTR-க்கு வாங்கி முழு MRP bill பண்றாங்க; உள்ளேயே வாங்கணும்னு சொல்லலாம்</span></td><td><span class="pill red"><span class="en">High</span><span class="ta">அதிகம்</span></span></td></tr>
+        <tr><td><span class="en">Regulator (NPPA/DPCO)</span><span class="ta">Regulator (NPPA/DPCO)</span></td><td><span class="en">No standing cap on trade margins for non-scheduled drugs</span><span class="ta">Non-scheduled drugs-க்கு நிரந்தர trade margin cap இல்ல</span></td><td><span class="pill"><span class="en">Medium</span><span class="ta">நடுத்தரம்</span></span></td></tr>
+        <tr><td><span class="en">Doctor</span><span class="ta">Doctor</span></td><td><span class="en">Prescribes brand, not generic</span><span class="ta">Generic இல்லாம brand எழுதறாங்க</span></td><td><span class="pill"><span class="en">Medium</span><span class="ta">நடுத்தரம்</span></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3><span class="en">Hospitals' side</span><span class="ta">Hospitals பக்கம்</span></h3>
+      <ul class="pts">
+        <li class="en">Pharmacy margin cross-subsidises low room and doctor fees</li>
+        <li class="ta">Pharmacy margin வெச்சு தான் room, doctor fees-ஐ குறைவா வெச்சிருக்கோம்னு சொல்றாங்க</li>
+        <li class="en">Cold-chain and drug-quality control for cancer drugs</li>
+        <li class="ta">Cancer drugs-க்கு cold-chain, quality control பொறுப்பு</li>
+        <li class="en">Insured patients pay package rates, not per-item</li>
+        <li class="ta">Insured patients package rate கட்டுறாங்க, ஒவ்வொரு item-க்கும் இல்ல</li>
+        <li class="en">Axis: the 10x case is an exception, not the norm</li>
+        <li class="ta">Axis: இந்த 10x case ஒரு exception, எல்லாமே இப்படி இல்ல</li>
+      </ul></div>
+    <div class="card"><h3><span class="en">Patients' side</span><span class="ta">நோயாளிகள் பக்கம்</span></h3>
+      <ul class="pts">
+        <li class="en">No real choice mid-treatment: a captive buyer</li>
+        <li class="ta">Treatment நடுவுல வேற வழி இல்ல — கட்டிப்போட்ட customer</li>
+        <li class="en">Same drug often cheaper at outside or online pharmacies</li>
+        <li class="ta">அதே மருந்து வெளி pharmacy, online-ல பெரும்பாலும் குறைவு</li>
+        <li class="en">Cancer care runs for months: costs pile up</li>
+        <li class="ta">Cancer treatment மாசக்கணக்குல போகும் — செலவு கூடிக்கிட்டே போகும்</li>
+        <li class="en">Govt schemes and insurers pay MRP too, so premiums rise</li>
+        <li class="ta">Govt schemes, insurers-உம் MRP தான் கட்டுறாங்க — premium ஏறுது</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- BUSINESS MODEL -->
+<section class="panel" id="model" data-en="Business Model" data-ta="Business Model">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">How a hospital earns</span><span class="ta">Hospital எப்படி சம்பாதிக்குது</span></h2>
+  <p class="lede"><span class="en">Illustrative split of a tertiary-care bill. Pharmacy is a small slice of revenue but a rich slice of profit.</span><span class="ta">ஒரு tertiary hospital bill-ஓட மாதிரி பிரிவு. Pharmacy revenue-ல சின்ன பங்கு, ஆனா profit-ல கொழுத்த பங்கு.</span></p>
+  <div class="grid g2">
+    <div class="card"><h3><span class="en">Share of revenue (approx.)</span><span class="ta">Revenue பங்கு (தோராயமா)</span></h3>
+      <div class="bars" id="mixBars"></div>
+      <p class="note"><span class="en">Medicines 12–15% (Axis); drugs + consumables + implants ~21% (Macquarie); 25–30% of tertiary bills (BofA). Rest is CB's illustration.</span><span class="ta">மருந்து 12–15% (Axis); drugs + consumables + implants ~21% (Macquarie); tertiary bill-ல 25–30% (BofA). மீதி CB-ஓட உதாரணம்.</span></p></div>
+    <div class="card"><h3><span class="en">Who is more exposed</span><span class="ta">யாருக்கு அதிக பாதிப்பு</span></h3>
+      <ul class="pts">
+        <li class="en"><b>Pharmacy-heavy:</b> Apollo, Max, Aster, Medanta, Fortis — 50–150 bps margin risk</li>
+        <li class="ta"><b>Pharmacy அதிகம்:</b> Apollo, Max, Aster, Medanta, Fortis — 50–150 bps margin risk</li>
+        <li class="en"><b>Clinical-heavy:</b> KIMS, Narayana, Rainbow, Jupiter, Shalby — up to 50 bps</li>
+        <li class="ta"><b>Clinical அதிகம்:</b> KIMS, Narayana, Rainbow, Jupiter, Shalby — 50 bps வரை</li>
+        <li class="en">KIMS pharmacy share is high at <b>20–22%</b> (Axis)</li>
+        <li class="ta">KIMS pharmacy பங்கு அதிகம் — <b>20–22%</b> (Axis)</li>
+        <li class="en">Oncology-focused chains face the sharpest scrutiny</li>
+        <li class="ta">Oncology மேல focus பண்ற chains மேல தான் கூர்மையான கவனம்</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- SEGMENTS / EXPOSURE -->
+<section class="panel" id="seg" data-en="Segments" data-ta="Segments">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">Exposure by segment</span><span class="ta">Segment வாரியா பாதிப்பு</span></h2>
+  <div class="grid g2">
+    <div class="card"><h3><span class="en">Revenue from govt schemes (HSBC)</span><span class="ta">Govt schemes-ல இருந்து revenue (HSBC)</span></h3>
+      <div class="bars" id="govBars"></div>
+      <p class="note"><span class="en">Ranges shown at midpoint. Govt-scheme bills are where the SC's taxpayer argument bites.</span><span class="ta">Range-ஓட நடு மதிப்பு காட்டியிருக்கோம். SC-ஓட taxpayer வாதம் இங்க தான் கடிக்கும்.</span></p></div>
+    <div class="card"><h3><span class="en">Revenue pools at risk</span><span class="ta">Risk-ல இருக்கற revenue</span></h3>
+      <div class="tblwrap"><table>
+        <thead><tr><th><span class="en">Pool</span><span class="ta">பிரிவு</span></th><th style="text-align:right">% rev</th><th><span class="en">Source</span><span class="ta">Source</span></th></tr></thead>
+        <tbody>
+          <tr><td><span class="en">Oncology drug markups</span><span class="ta">Oncology drug markup</span></td><td class="n">4–6%</td><td>Jefferies</td></tr>
+          <tr><td><span class="en">Consumables markups</span><span class="ta">Consumables markup</span></td><td class="n">12–15%</td><td>Jefferies</td></tr>
+          <tr><td><span class="en">In-patient medicines</span><span class="ta">In-patient மருந்து</span></td><td class="n">~15%</td><td>Axis</td></tr>
+          <tr><td><span class="en">Drugs+consumables+implants</span><span class="ta">Drugs+consumables+implants</span></td><td class="n">~21%</td><td>Macquarie</td></tr>
+        </tbody></table></div></div>
+  </div>
+</section>
+
+<!-- IMPACT SIMULATOR -->
+<section class="panel" id="sim" data-en="Impact Simulator" data-ta="Impact Simulator">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">What a 16% cap could do</span><span class="ta">16% cap வந்தா என்ன ஆகும்</span></h2>
+  <p class="lede"><span class="en">Move the sliders. Illustrative model for a ₹100 revenue hospital, not company data.</span><span class="ta">Sliders-ஐ நகர்த்துங்க. ₹100 revenue உள்ள ஒரு hospital-க்கான மாதிரி model, company data இல்ல.</span></p>
+  <div class="grid g2">
+    <div class="card hl">
+      <div class="ctrl"><label for="sShare"><span><span class="en">Medicines share of revenue</span><span class="ta">Revenue-ல மருந்து பங்கு</span></span><span class="v" id="vShare"></span></label><input id="sShare" type="range" min="5" max="25" step="1" value="13"></div>
+      <div class="ctrl"><label for="sGm"><span><span class="en">Current gross margin on drugs</span><span class="ta">இப்போ மருந்துல gross margin</span></span><span class="v" id="vGm"></span></label><input id="sGm" type="range" min="14" max="60" step="1" value="30"></div>
+      <div class="ctrl"><label for="sCap"><span><span class="en">Cap on markup over cost</span><span class="ta">Cost மேல markup cap</span></span><span class="v" id="vCap"></span></label><input id="sCap" type="range" min="10" max="40" step="1" value="16"></div>
+      <div class="ctrl"><label for="sOff"><span><span class="en">Recovered via package repricing</span><span class="ta">Package விலை மாத்தி திரும்பப் பெறறது</span></span><span class="v" id="vOff"></span></label><input id="sOff" type="range" min="0" max="100" step="5" value="60"></div>
+      <div class="ctrl"><label for="sEb"><span><span class="en">Base EBITDA margin</span><span class="ta">Base EBITDA margin</span></span><span class="v" id="vEb"></span></label><input id="sEb" type="range" min="12" max="32" step="1" value="23"></div>
+      <button class="btn ghost" id="simReset"><span class="en">Reset to base case</span><span class="ta">Base case-க்கு திரும்ப</span></button>
+    </div>
+    <div class="card">
+      <div class="grid g2" style="gap:10px">
+        <div class="kpi"><div class="v neg" id="oRev"></div><div class="l"><span class="en">Revenue lost</span><span class="ta">இழக்கும் revenue</span></div></div>
+        <div class="kpi"><div class="v neg" id="oEb"></div><div class="l"><span class="en">EBITDA change</span><span class="ta">EBITDA மாற்றம்</span></div></div>
+        <div class="kpi"><div class="v" id="oMg"></div><div class="l"><span class="en">New EBITDA margin</span><span class="ta">புது EBITDA margin</span></div></div>
+        <div class="kpi"><div class="v" id="oBps"></div><div class="l"><span class="en">Margin drag</span><span class="ta">Margin குறைவு</span></div></div>
+      </div>
+      <div class="bars" style="margin-top:14px" id="simBars"></div>
+      <p class="note" id="simNote"></p>
+    </div>
+  </div>
+</section>
+
+<!-- STOCKS -->
+<section class="panel" id="stocks" data-en="Market Reaction" data-ta="Market Reaction">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">Reasons for share market activity</span><span class="ta">Share market அசைவுக்கு காரணங்கள்</span></h2>
+  <div class="grid g2">
+    <div class="card"><h3><span class="en">30 Sep fall (Bloomberg)</span><span class="ta">30 செப் சரிவு (Bloomberg)</span></h3>
+      <div class="bars" id="fallBars"></div>
+      <p class="note"><span class="en">BSE Hospitals index −5%; 16 of 17 members fell; ~₹24,800 cr wiped out. Some names fell up to 10% and slipped again on 1 Oct.</span><span class="ta">BSE Hospitals index −5%; 17-ல 16 stocks இறங்கிச்சு; ~₹24,800 கோடி போச்சு. சில stocks 10% வரை விழுந்து, 1 அக்-லயும் இறங்கிச்சு.</span></p></div>
+    <div class="card"><h3><span class="en">Why the sharp reaction</span><span class="ta">ஏன் இவ்வளவு வேகமான reaction</span></h3>
+      <ul class="pts">
+        <li class="en"><b>Third hit in 8 weeks:</b> Parliament panel (Aug), Maharashtra FDA (Sep), now SC</li>
+        <li class="ta"><b>8 வாரத்துல மூணாவது அடி:</b> Parliament panel (ஆக), Maharashtra FDA (செப்), இப்போ SC</li>
+        <li class="en"><b>Rich valuations:</b> little room for margin surprises</li>
+        <li class="ta"><b>அதிக valuations:</b> margin surprise-க்கு இடம் கம்மி</li>
+        <li class="en"><b>Pharmacy is high-margin:</b> small revenue, big profit share</li>
+        <li class="ta"><b>Pharmacy high-margin:</b> revenue கம்மி, profit பங்கு அதிகம்</li>
+        <li class="en"><b>Policy uncertainty:</b> scope of any cap is unknown</li>
+        <li class="ta"><b>Policy தெளிவில்ல:</b> cap எவ்வளவு, எதுக்குன்னு தெரியல</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- VALUATIONS -->
+<section class="panel" id="val" data-en="Valuations" data-ta="Valuations">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">Valuations and brokerage views</span><span class="ta">Valuations, brokerage கருத்துகள்</span></h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="v">20–27x</div><div class="l"><span class="en">FY28 EV/EBITDA now</span><span class="ta">FY28 EV/EBITDA இப்போ</span></div></div>
+    <div class="card kpi"><div class="v">25–35x</div><div class="l"><span class="en">A year ago</span><span class="ta">ஒரு வருஷம் முன்னாடி</span></div></div>
+    <div class="card kpi"><div class="v">60%</div><div class="l"><span class="en">Offset Macquarie assumes</span><span class="ta">Macquarie எதிர்பார்க்கும் offset</span></div></div>
+  </div>
+  <div class="card tblwrap" style="margin-top:14px">
+    <table>
+      <thead><tr><th><span class="en">Brokerage</span><span class="ta">Brokerage</span></th><th><span class="en">View</span><span class="ta">கருத்து</span></th><th><span class="en">Tone</span><span class="ta">தொனி</span></th></tr></thead>
+      <tbody>
+        <tr><td>BofA</td><td><span class="en">Regulatory dips tend to be short-lived; much of pharmacy already at 16–20% regulated margin</span><span class="ta">Regulation dips சீக்கிரம் சரியாகும்; pharmacy-ல நிறைய ஏற்கனவே 16–20% regulated margin</span></td><td><span class="pill grn"><span class="en">Calm</span><span class="ta">அமைதி</span></span></td></tr>
+        <tr><td>Jefferies</td><td><span class="en">2–5% EBITDA hit if not passed on; past overhangs became entry points</span><span class="ta">Pass-on இல்லைன்னா EBITDA 2–5% குறைவு; முன்னாடி இப்படி வந்தது entry points ஆச்சு</span></td><td><span class="pill grn"><span class="en">Calm</span><span class="ta">அமைதி</span></span></td></tr>
+        <tr><td>HSBC</td><td><span class="en">Headline risk; unsure of on-ground change; focus seems govt channels</span><span class="ta">Headline risk; நிஜத்துல மாற்றம் வருமான்னு சந்தேகம்; govt channels மேல focus</span></td><td><span class="pill"><span class="en">Watchful</span><span class="ta">கவனம்</span></span></td></tr>
+        <tr><td>Macquarie</td><td><span class="en">Meaningful hit possible: high-single to double digit EBITDA</span><span class="ta">பெரிய அடி சாத்தியம்: EBITDA high-single to double digit</span></td><td><span class="pill red"><span class="en">Cautious</span><span class="ta">எச்சரிக்கை</span></span></td></tr>
+        <tr><td>Axis Capital</td><td><span class="en">Pharmacy will stay under scrutiny; 10x case is an exception</span><span class="ta">Pharmacy மேல கவனம் தொடரும்; 10x case ஒரு exception</span></td><td><span class="pill"><span class="en">Watchful</span><span class="ta">கவனம்</span></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 5 TAKEAWAYS -->
+<section class="panel" id="take" data-en="5 Key Takeaways" data-ta="5 முக்கிய பாடங்கள்">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">5 key takeaways</span><span class="ta">5 முக்கிய பாடங்கள்</span></h2>
+  <div class="grid g2">
+    <div class="card"><h3>1 · <span class="en">PTR ≠ retail price</span><span class="ta">PTR ≠ retail விலை</span></h3><p class="en">₹2,700 is the trade price. The ₹27,000 MRP is the maker's number.</p><p class="ta">₹2,700 trade விலை. ₹27,000 MRP company-ஓட number.</p></div>
+    <div class="card"><h3>2 · <span class="en">Legal, but unfair</span><span class="ta">சட்டப்படி சரி, நியாயம் இல்ல</span></h3><p class="en">Selling at MRP is allowed. Forcing captive patients is the real issue.</p><p class="ta">MRP-ல விக்கலாம். கட்டிப்போட்ட நோயாளிகளை கட்டாயப்படுத்தறது தான் பிரச்சனை.</p></div>
+    <div class="card"><h3>3 · <span class="en">Margin hit is manageable</span><span class="ta">Margin பாதிப்பு சமாளிக்கலாம்</span></h3><p class="en">Most estimates: 2–5% EBITDA, or 50–150 bps margin, after repricing.</p><p class="ta">பெரும்பாலான கணிப்பு: EBITDA 2–5%, இல்ல margin 50–150 bps, repricing-க்கு அப்புறம்.</p></div>
+    <div class="card"><h3>4 · <span class="en">Regulation risk is rising</span><span class="ta">Regulation risk ஏறுது</span></h3><p class="en">Parliament, state FDA and SC are all pointing the same way.</p><p class="ta">Parliament, state FDA, SC — எல்லாரும் ஒரே திசையில.</p></div>
+    <div class="card"><h3>5 · <span class="en">12 Oct is the next marker</span><span class="ta">12 அக் அடுத்த முக்கிய நாள்</span></h3><p class="en">Watch the Centre's reply: a cap, a trade-margin rule, or a free-choice order.</p><p class="ta">Centre பதில பாருங்க: cap-ஆ, trade-margin rule-ஆ, இல்ல வெளியே வாங்கலாம்-னு order-ஆ.</p></div>
+  </div>
+</section>
+
+<!-- SWOT -->
+<section class="panel" id="swot" data-en="SWOT" data-ta="SWOT">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">Hospital sector SWOT</span><span class="ta">Hospital sector SWOT</span></h2>
+  <div class="swot">
+    <div class="card"><h3><span class="pill grn">S</span><span class="en">Strengths</span><span class="ta">பலம்</span></h3><ul class="pts"><li class="en">Volume growth, bed additions</li><li class="ta">Volume growth, புது beds</li><li class="en">Pricing power in tertiary care</li><li class="ta">Tertiary care-ல pricing power</li></ul></div>
+    <div class="card"><h3><span class="pill red">W</span><span class="en">Weaknesses</span><span class="ta">பலவீனம்</span></h3><ul class="pts"><li class="en">Profit leans on pharmacy & consumables</li><li class="ta">Profit pharmacy, consumables மேல சாய்ஞ்சிருக்கு</li><li class="en">Opaque billing hurts trust</li><li class="ta">தெளிவில்லாத billing நம்பிக்கையை குறைக்குது</li></ul></div>
+    <div class="card"><h3><span class="pill grn">O</span><span class="en">Opportunities</span><span class="ta">வாய்ப்புகள்</span></h3><ul class="pts"><li class="en">Transparent package pricing</li><li class="ta">தெளிவான package pricing</li><li class="en">Shift value to clinical outcomes</li><li class="ta">Clinical outcomes மேல value-ஐ மாத்தலாம்</li></ul></div>
+    <div class="card"><h3><span class="pill red">T</span><span class="en">Threats</span><span class="ta">அச்சுறுத்தல்</span></h3><ul class="pts"><li class="en">Margin caps, room-rent caps</li><li class="ta">Margin cap, room-rent cap</li><li class="en">Forced-purchase ban</li><li class="ta">கட்டாய வாங்குதல் தடை</li></ul></div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="panel" id="time" data-en="Timeline" data-ta="காலவரிசை">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">How we got here</span><span class="ta">இங்க எப்படி வந்தோம்</span></h2>
+  <div class="tl">
+    <div class="e"><div class="d">Feb 2019</div><p class="en">NPPA caps trade margin at 30% on 42 non-scheduled cancer drugs</p><p class="ta">42 non-scheduled cancer drugs-க்கு NPPA 30% trade margin cap</p></div>
+    <div class="e"><div class="d">7 Aug 2026</div><p class="en">Parliament health panel (176th report): ≤20% gap between landing price and MRP; room-rent caps. Hospital index ~−3% over 2 days</p><p class="ta">Parliament health panel (176-வது report): landing price-க்கும் MRP-க்கும் ≤20% gap; room-rent cap. Hospital index 2 நாள்ல ~−3%</p></div>
+    <div class="e"><div class="d">Mid-Sep 2026</div><p class="en">Maharashtra FDA flags consumable markups up to 2,841%</p><p class="ta">Maharashtra FDA consumables-ல 2,841% வரை markup கண்டுபிடிச்சுது</p></div>
+    <div class="e"><div class="d">18 Sep 2026</div><p class="en">Centre starts talks on trade-margin rationalisation for devices</p><p class="ta">Devices-க்கு trade-margin rationalisation பத்தி Centre பேச்சு ஆரம்பம்</p></div>
+    <div class="e"><div class="d">22 Sep 2026</div><p class="en">SC: "broad daylight dacoity"</p><p class="ta">SC: "பட்டப்பகல் கொள்ளை"</p></div>
+    <div class="e"><div class="d">29–30 Sep 2026</div><p class="en">SC: "carnage", floats uniform 16%; stocks fall</p><p class="ta">SC: "carnage", ஒரே 16% யோசனை; stocks சரிவு</p></div>
+    <div class="e next"><div class="d">12 Oct 2026</div><p class="en">Next hearing: Centre's reply due</p><p class="ta">அடுத்த hearing: Centre பதில் சொல்லணும்</p></div>
+  </div>
+</section>
+
+<!-- ASSIST -->
+<section class="panel" id="assistTab" data-en="Cauvery Assist" data-ta="Cauvery Assist">
+  <h2><span class="en">Cauvery Assist</span><span class="ta">Cauvery Assist</span></h2>
+  <p class="lede"><span class="en">Ask a question. You get a direct answer, read aloud.</span><span class="ta">கேள்வி கேளுங்க. நேரடியா பதில் கிடைக்கும், சத்தமா படிச்சும் காட்டும்.</span></p>
+  <div class="spd"><span class="en">Read-aloud speed</span><span class="ta">படிக்கும் வேகம்</span> <input id="rate" type="range" min="0.5" max="1.5" step="0.05" value="0.8"><span id="rateV" style="font-family:var(--f-mono)">0.80×</span>
+    <button class="btn ghost" id="stopSpk" style="padding:5px 10px"><span class="en">Stop</span><span class="ta">நிறுத்து</span></button></div>
+  <div class="sugs" id="sugs"></div>
+  <div class="chat"><div class="msgs" id="msgs"></div>
+    <form class="ask" id="askF"><input type="text" id="askI" autocomplete="off"><button class="btn" type="submit"><span class="en">Ask</span><span class="ta">கேளுங்க</span></button></form></div>
+</section>
+
+<!-- QUIZ -->
+<section class="panel" id="quiz" data-en="Cauvery Socrates" data-ta="Cauvery Socrates">
+  <h2><span class="en">Cauvery Socrates</span><span class="ta">Cauvery Socrates</span></h2>
+  <p class="lede"><span class="en">Test yourself. Score: </span><span class="ta">உங்களை test பண்ணுங்க. Score: </span><b id="qScore">0</b> / <b id="qTot">0</b></p>
+  <div id="qBox"></div>
+</section>
+
+<!-- ANALYST VIEW -->
+<section class="panel" id="view" data-en="Analyst View" data-ta="Analyst View">
+  <button class="btn ghost readtab"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படிங்க</span></button>
+  <h2><span class="en">CB Analyst View</span><span class="ta">CB Analyst View</span></h2>
+  <div class="verdict"><span class="en">A real ethical problem, a modest earnings problem, and a growing regulatory problem.</span><span class="ta">நியாய ரீதியா உண்மையான பிரச்சனை, earnings-க்கு சின்ன பிரச்சனை, regulation ரீதியா வளர்ற பிரச்சனை.</span></div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card"><h3><span class="en">Likely outcomes</span><span class="ta">நடக்க வாய்ப்புள்ளது</span></h3><ul class="pts">
+      <li class="en"><b>Most likely:</b> trade-margin cap on cancer & high-value drugs, like 2019</li><li class="ta"><b>அதிக வாய்ப்பு:</b> 2019 மாதிரி cancer, high-value drugs-க்கு trade-margin cap</li>
+      <li class="en"><b>Possible:</b> right to buy medicines outside</li><li class="ta"><b>வாய்ப்பு:</b> வெளியே மருந்து வாங்கும் உரிமை</li>
+      <li class="en"><b>Less likely:</b> flat 16% on every drug — needs DPCO overhaul</li><li class="ta"><b>குறைவான வாய்ப்பு:</b> எல்லா மருந்துக்கும் 16% — DPCO-வை முழுசா மாத்தணும்</li></ul></div>
+    <div class="card"><h3><span class="en">What to track</span><span class="ta">எதை கவனிக்கணும்</span></h3><ul class="pts">
+      <li class="en">Centre's affidavit on 12 Oct</li><li class="ta">12 அக் Centre affidavit</li>
+      <li class="en">NPPA notifications on trade margins</li><li class="ta">Trade margins பத்தி NPPA notifications</li>
+      <li class="en">Q2/Q3 commentary on pharmacy margins</li><li class="ta">Q2/Q3-ல pharmacy margin பத்தி management பேச்சு</li></ul></div>
+    <div class="card"><h3><span class="en">For patients today</span><span class="ta">இன்னைக்கு நோயாளிகளுக்கு</span></h3><ul class="pts">
+      <li class="en">Ask for the generic or the bill's PTR-based price</li><li class="ta">Generic கேளுங்க, இல்ல விலை விவரம் கேளுங்க</li>
+      <li class="en">Compare with outside / Jan Aushadhi prices</li><li class="ta">வெளி pharmacy / Jan Aushadhi விலையோட compare பண்ணுங்க</li>
+      <li class="en">Never pay above MRP — that is illegal</li><li class="ta">MRP-க்கு மேல ஒருபோதும் கட்டாதீங்க — அது சட்டவிரோதம்</li></ul></div>
+  </div>
+  <p class="note"><span class="en">Sources: PTI via OnManorama, ETV Bharat, Bloomberg via ThePrint, Business Standard, Upstox, Business Today, Medical Buyer (Sep–Oct 2026).</span><span class="ta">Sources: PTI (OnManorama), ETV Bharat, Bloomberg (ThePrint), Business Standard, Upstox, Business Today, Medical Buyer (செப்–அக் 2026).</span></p>
+</section>
+</main>
+
+<button class="va" id="vaBtn"><span class="en">🎙 Voice Assist</span><span class="ta">🎙 Voice Assist</span></button>
+<div class="cb-badge" id="cbBadge"><button class="b" aria-label="Disclaimer">CB</button>
+  <div class="tip"><span class="en">CB Research is for education only. Not SEBI-registered. No buy/sell/hold advice. Figures from public reports; simulator is illustrative.</span><span class="ta">CB Research கல்விக்காக மட்டும். SEBI-registered இல்ல. Buy/sell/hold advice இல்ல. எண்கள் public reports-ல இருந்து; simulator ஒரு மாதிரி மட்டும்.</span></div></div>
+
+<script>
+var LANG="en";
+function t(en,ta){return LANG==="ta"?ta:en}
+function fmt(n){return "₹"+Math.round(n).toLocaleString("en-IN")}
+
+/* Tabs */
+var panels=[].slice.call(document.querySelectorAll("section.panel"));
+var tabsEl=document.getElementById("tabs");
+function buildTabs(){
+  tabsEl.innerHTML="";
+  panels.forEach(function(p){
+    var b=document.createElement("button");b.textContent=p.dataset[LANG];b.dataset.id=p.id;
+    if(p.classList.contains("on"))b.classList.add("on");
+    b.onclick=function(){showTab(p.id)};tabsEl.appendChild(b);
+  });
+}
+function showTab(id){
+  panels.forEach(function(p){p.classList.toggle("on",p.id===id)});
+  [].forEach.call(tabsEl.children,function(b){b.classList.toggle("on",b.dataset.id===id)});
+  try{localStorage.setItem("cb_scdrug_tab",id)}catch(e){}
+  window.scrollTo({top:0});
+}
+function setLang(l){
+  LANG=l;document.body.className="lang-"+l;
+  document.getElementById("bEn").classList.toggle("on",l==="en");
+  document.getElementById("bTa").classList.toggle("on",l==="ta");
+  buildTabs();renderAll();
+  try{localStorage.setItem("cb_scdrug_lang",l)}catch(e){}
+}
+
+/* Bars */
+function bars(el,rows,max,red){
+  el.innerHTML=rows.map(function(r){
+    var w=Math.min(100,Math.abs(r[1])/max*100);
+    return '<div class="bar"><span>'+r[0]+'</span><div class="t"><i class="'+(red?"r":"")+'" style="width:'+w+'%"></i></div><span class="n">'+r[2]+'</span></div>';
+  }).join("");
+}
+function renderStatic(){
+  bars(document.getElementById("mixBars"),[
+    [t("Room & nursing","Room & nursing"),30,"~30%"],[t("Procedures/OT","Procedures/OT"),28,"~28%"],
+    [t("Diagnostics","Diagnostics"),15,"~15%"],[t("Medicines","மருந்து"),13,"12–15%"],
+    [t("Consumables","Consumables"),8,"~8%"],[t("Other","மற்றவை"),6,"~6%"]],35);
+  bars(document.getElementById("govBars"),[
+    ["Max",19,"17–21%"],["Fortis",19,"17–21%"],["Medanta",19,"17–21%"],["Narayana",19,"17–21%"],
+    ["Manipal",14,"14%"],["Aster",10,"9–11%"],["Apollo",10,"9–11%"]],25);
+  bars(document.getElementById("fallBars"),[
+    ["Fortis",6.3,"−6.3%"],["Apollo",5.7,"−5.7%"],["Max",5.3,"−5.3%"],[t("BSE Hospitals","BSE Hospitals"),5,"−5.0%"]],8,true);
+}
+
+/* Calculator */
+function calc(){
+  var p=+document.getElementById("ptr").value||0,m=+document.getElementById("mrp").value||0;
+  var cap=p*1.16,mult=p?m/p:0,mk=p?(m-p)/p*100:0;
+  var rows=[
+    [t("Markup multiple","Markup மடங்கு"),mult.toFixed(1)+"x"],
+    [t("Markup over PTR","PTR மேல markup"),mk.toFixed(0)+"%"],
+    [t("Gap kept by seller","விற்பவர் வைக்கும் gap"),fmt(m-p)],
+    [t("Price at 16% over PTR","PTR + 16% விலை"),fmt(cap)],
+    [t("Patient saves per unit","ஒரு unit-க்கு சேமிப்பு"),fmt(Math.max(0,m-cap))]];
+  document.getElementById("calcOut").innerHTML=rows.map(function(r){return "<tr><td>"+r[0]+'</td><td class="n">'+r[1]+"</td></tr>"}).join("");
+}
+["ptr","mrp"].forEach(function(id){document.getElementById(id).addEventListener("input",calc)});
+
+/* Simulator */
+var S={sShare:13,sGm:30,sCap:16,sOff:60,sEb:23};
+function sim(){
+  var sh=+sShare.value,gm=+sGm.value,cap=+sCap.value,off=+sOff.value,eb=+sEb.value;
+  vShare.textContent=sh+"%";vGm.textContent=gm+"%";vCap.textContent=cap+"%";vOff.textContent=off+"%";vEb.textContent=eb+"%";
+  var cost=sh*(1-gm/100),newRev=Math.min(sh,cost*(1+cap/100)),lost=sh-newRev;
+  var hit=lost*(1-off/100),newE=eb-hit,newRevTot=100-lost*(1-off/100);
+  var chg=-hit/eb*100,newM=newE/newRevTot*100,bps=(eb-newM)*100;
+  oRev.textContent=lost.toFixed(1)+"%";oEb.textContent=(chg<=0?"":"+")+chg.toFixed(1)+"%";
+  oMg.textContent=newM.toFixed(1)+"%";oBps.textContent=Math.round(bps)+" bps";
+  bars(simBars,[[t("EBITDA before","முன் EBITDA"),eb,eb.toFixed(1)],[t("EBITDA after","பின் EBITDA"),newE,newE.toFixed(1)]],35);
+  simNote.textContent=t(
+    "Drug cost = "+cost.toFixed(1)+" of 100 revenue. Capped drug price = "+newRev.toFixed(1)+". Jefferies' range is 2–5%; Macquarie's harsher case is ~8–10%+.",
+    "மருந்து cost = 100 revenue-ல "+cost.toFixed(1)+". Cap பண்ணின விலை = "+newRev.toFixed(1)+". Jefferies range 2–5%; Macquarie கடுமையான case ~8–10%+.");
+}
+var sShare=document.getElementById("sShare"),sGm=document.getElementById("sGm"),sCap=document.getElementById("sCap"),sOff=document.getElementById("sOff"),sEb=document.getElementById("sEb");
+var vShare=document.getElementById("vShare"),vGm=document.getElementById("vGm"),vCap=document.getElementById("vCap"),vOff=document.getElementById("vOff"),vEb=document.getElementById("vEb");
+var oRev=document.getElementById("oRev"),oEb=document.getElementById("oEb"),oMg=document.getElementById("oMg"),oBps=document.getElementById("oBps"),simBars=document.getElementById("simBars"),simNote=document.getElementById("simNote");
+[sShare,sGm,sCap,sOff,sEb].forEach(function(e){e.addEventListener("input",sim)});
+document.getElementById("simReset").onclick=function(){for(var k in S)document.getElementById(k).value=S[k];sim()};
+
+/* Speech */
+var rate=0.8;
+try{var sr=parseFloat(localStorage.getItem("cb_scdrug_rate"));if(sr)rate=sr}catch(e){}
+var rateEl=document.getElementById("rate");rateEl.value=rate;
+function showRate(){document.getElementById("rateV").textContent=(+rate).toFixed(2)+"×"}
+rateEl.oninput=function(){rate=+rateEl.value;showRate();try{localStorage.setItem("cb_scdrug_rate",rate)}catch(e){}};showRate();
+function pickVoice(){
+  if(!window.speechSynthesis)return null;
+  var vs=speechSynthesis.getVoices(),want=LANG==="ta"?"ta":"en-IN";
+  return vs.find(function(v){return v.lang&&v.lang.indexOf(want)===0})||vs.find(function(v){return v.lang&&v.lang.indexOf(LANG==="ta"?"ta":"en")===0})||null;
+}
+function speak(text){
+  if(!window.speechSynthesis)return;speechSynthesis.cancel();
+  var parts=text.replace(/\s+/g," ").match(/[^.!?।]+[.!?।]?/g)||[text];
+  parts.forEach(function(s){var u=new SpeechSynthesisUtterance(s.trim());u.rate=rate;u.lang=LANG==="ta"?"ta-IN":"en-IN";var v=pickVoice();if(v)u.voice=v;speechSynthesis.speak(u)});
+}
+document.getElementById("stopSpk").onclick=function(){if(window.speechSynthesis)speechSynthesis.cancel()};
+document.addEventListener("click",function(e){
+  var b=e.target.closest(".readtab");if(!b)return;
+  var p=b.closest("section");var c=p.cloneNode(true);c.querySelectorAll(".readtab,svg").forEach(function(x){x.remove()});
+  c.querySelectorAll(LANG==="ta"?".en":".ta").forEach(function(x){x.remove()});
+  speak(c.innerText);
+});
+
+/* Assist KB */
+var KB=[
+ {k:["robbery","loot","cheat","dacoity","கொள்ளை","ஏமாத்து","திருட்டு"],
+  a:["Legally no — selling at MRP is allowed. Ethically, charging captive patients 10x the trade price is unfair.","சட்டப்படி இல்லங்க — MRP-ல விக்கலாம். ஆனா கட்டிப்போட்ட நோயாளி கிட்ட 10 மடங்கு வாங்கறது நியாயம் இல்ல."],tab:"robbery"},
+ {k:["2700","2,700","27000","27,000","ptr","retail price","ரீடெயில்","விலை"],
+  a:["₹2,700 is the price to retailer (PTR); ₹27,000 is the MRP printed by the drug maker.","₹2,700 Price to Retailer (PTR); ₹27,000 company print பண்ண MRP."],tab:"chain"},
+ {k:["16","sixteen","cap","margin cap","கேப்","மார்ஜின்"],
+  a:["The SC asked why a uniform 16% margin can't apply to all medicines. It is a suggestion, not an order.","எல்லா மருந்துக்கும் ஏன் ஒரே 16% margin வைக்கக் கூடாதுன்னு SC கேட்டுச்சு. இது யோசனை தான், order இல்ல."],tab:"sc"},
+ {k:["fall","fell","stock","share","drop","why","சரிவு","இறங்கு","ஷேர்","ஸ்டாக்"],
+  a:["Stocks fell because pharmacy is a high-margin business and a cap could cut profits. The BSE Hospitals index fell 5% on 30 Sep.","Pharmacy high-margin business, cap வந்தா profit குறையும் — அதனால stocks இறங்கிச்சு. 30 செப் BSE Hospitals index 5% விழுந்துச்சு."],tab:"stocks"},
+ {k:["apollo","அப்பல்லோ"],a:["Apollo fell 5.7% on 30 Sep. HSBC says only 9–11% of its revenue is from govt schemes.","30 செப் Apollo 5.7% இறங்கிச்சு. HSBC படி அதோட govt scheme revenue 9–11% தான்."],tab:"stocks"},
+ {k:["fortis","போர்டிஸ்"],a:["Fortis fell 6.3% on 30 Sep, the most among the big three. Govt-scheme exposure is 17–21% (HSBC).","30 செப் Fortis 6.3% இறங்கிச்சு — பெரிய மூணுல அதிகம். Govt scheme exposure 17–21% (HSBC)."],tab:"stocks"},
+ {k:["max","மேக்ஸ்"],a:["Max Healthcare fell 5.3% on 30 Sep. Its govt-scheme exposure is 17–21% (HSBC).","30 செப் Max Healthcare 5.3% இறங்கிச்சு. Govt scheme exposure 17–21% (HSBC)."],tab:"stocks"},
+ {k:["kims","கிம்ஸ்"],a:["KIMS has a high pharmacy share, about 20–22% of revenue (Axis).","KIMS-க்கு pharmacy பங்கு அதிகம் — revenue-ல சுமார் 20–22% (Axis)."],tab:"model"},
+ {k:["ebitda","impact","profit","hit","பாதிப்பு","லாபம்","எபிட்டா"],
+  a:["Most brokerages see a 2–5% EBITDA hit; Macquarie's harsher case is high-single to double digit.","பெரும்பாலான brokerages EBITDA 2–5% குறையும்னு சொல்றாங்க; Macquarie கடுமையான case-ல 8–10%+."],tab:"sim"},
+ {k:["hearing","next","when","october","12","விசாரணை","எப்போ","அடுத்த"],
+  a:["The next hearing is on 12 October 2026, when the Centre is due to reply.","அடுத்த hearing 12 அக்டோபர் 2026 — அன்னைக்கு Centre பதில் சொல்லணும்."],tab:"time"},
+ {k:["scheduled","non-scheduled","dpco","nlem","why mrp","ஷெட்யூல்"],
+  a:["Non-scheduled drugs, about 80% of the market, have no MRP ceiling — only a 10% yearly hike limit.","Non-scheduled drugs — market-ல ~80% — அதுக்கு MRP ceiling இல்ல, வருஷத்துக்கு 10% hike limit மட்டும் தான்."],tab:"chain"},
+ {k:["2019","precedent","history","before","முன்னாடி"],
+  a:["In 2019 NPPA capped trade margins at 30% on 42 cancer drugs, and many MRPs fell sharply.","2019-ல 42 cancer drugs-க்கு NPPA 30% trade margin cap போட்டுச்சு, நிறைய MRP நல்லா குறைஞ்சுது."],tab:"time"},
+ {k:["patient","what should i do","save","நோயாளி","என்ன பண்ண","சேமி"],
+  a:["Ask for generics, compare outside or Jan Aushadhi prices, and never pay above MRP.","Generic கேளுங்க, வெளி pharmacy / Jan Aushadhi விலையோட compare பண்ணுங்க, MRP-க்கு மேல கட்டாதீங்க."],tab:"view"},
+ {k:["forced","in-house","own pharmacy","கட்டாய","உள்ளேயே"],
+  a:["The SC asked the Centre to examine hospitals forcing patients to buy from their own pharmacies.","Hospital pharmacy-ல தான் வாங்கணும்னு கட்டாயப்படுத்தறதை ஆராயுங்கன்னு SC Centre-கிட்ட சொல்லிச்சு."],tab:"sc"},
+ {k:["parliament","panel","20%","பார்லிமென்ட்"],
+  a:["In August, Parliament's health panel asked for a gap of at most 20% between landing price and MRP.","ஆகஸ்ட்ல Parliament health panel landing price-க்கும் MRP-க்கும் 20%-க்கு மேல gap இருக்கக் கூடாதுன்னு சொல்லிச்சு."],tab:"time"},
+ {k:["valuation","ev/ebitda","cheap","expensive","வேல்யூஷன்"],
+  a:["After the fall, hospitals trade around 20–27x FY28 EV/EBITDA, down from 25–35x a year ago (Jefferies).","சரிவுக்கு அப்புறம் hospitals FY28 EV/EBITDA 20–27x-ல இருக்கு, ஒரு வருஷம் முன்னாடி 25–35x (Jefferies)."],tab:"val"}
+];
+var ADV=["buy","sell","hold","invest","should i","target","வாங்கலாமா","விக்கலாமா","முதலீடு"];
+function answer(q){
+  var s=q.toLowerCase();
+  if(ADV.some(function(w){return s.indexOf(w)>-1}))return {a:t("I can't give buy, sell or hold advice — CB Research is not SEBI-registered. I can explain the facts and risks.","Buy, sell, hold advice குடுக்க முடியாதுங்க — CB Research SEBI-registered இல்ல. Facts, risks-ஐ விளக்க முடியும்.")};
+  var best=null,score=0;
+  KB.forEach(function(e){var sc=0;e.k.forEach(function(k){if(s.indexOf(k)>-1)sc+=k.length});if(sc>score){score=sc;best=e}});
+  if(!best)return {a:t("I don't have that on this dashboard. Try asking about the 16% cap, stock fall, or the ₹2,700 vs ₹27,000 gap.","இந்த dashboard-ல அது இல்லங்க. 16% cap, stock சரிவு, ₹2,700 vs ₹27,000 பத்தி கேளுங்க.")};
+  return {a:best.a[LANG==="ta"?1:0],tab:best.tab};
+}
+var msgs=document.getElementById("msgs");
+function addMsg(txt,who,tab){
+  var d=document.createElement("div");d.className="m "+who;d.textContent=txt;
+  if(who==="b"){var a=document.createElement("div");a.className="acts";
+    var r=document.createElement("button");r.textContent=t("🔊 Read","🔊 படி");r.onclick=function(){speak(txt)};a.appendChild(r);
+    if(tab){var o=document.createElement("button");o.textContent=t("Open related tab","தொடர்புடைய tab");o.onclick=function(){showTab(tab)};a.appendChild(o)}
+    d.appendChild(a)}
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+document.getElementById("askF").addEventListener("submit",function(e){
+  e.preventDefault();var i=document.getElementById("askI"),q=i.value.trim();if(!q)return;
+  addMsg(q,"u");var r=answer(q);addMsg(r.a,"b",r.tab);speak(r.a);i.value="";
+});
+var SUG=[["Is it robbery?","இது கொள்ளையா?"],["What is ₹2,700?","₹2,700 என்ன விலை?"],["Why did stocks fall?","Stocks ஏன் இறங்கிச்சு?"],["EBITDA impact?","EBITDA பாதிப்பு?"],["Next hearing?","அடுத்த hearing எப்போ?"],["Should I buy Apollo?","Apollo வாங்கலாமா?"]];
+function renderAssist(){
+  document.getElementById("askI").placeholder=t("Ask: Is it robbery?","கேளுங்க: இது கொள்ளையா?");
+  var sg=document.getElementById("sugs");sg.innerHTML="";
+  SUG.forEach(function(p){var b=document.createElement("button");b.type="button";b.textContent=p[LANG==="ta"?1:0];
+    b.onclick=function(){document.getElementById("askI").value=b.textContent;document.getElementById("askF").requestSubmit()};sg.appendChild(b)});
+  msgs.innerHTML="";addMsg(t("Vanakam! Ask me about the SC's drug-markup remarks and hospital stocks.","வணக்கம்! SC drug-markup கருத்துகள், hospital stocks பத்தி கேளுங்க."),"b");
+}
+document.getElementById("vaBtn").onclick=function(){showTab("assistTab");document.getElementById("askI").focus()};
+
+/* Quiz */
+var QZ=[
+ {q:["What is ₹2,700 in the SC's example?","SC உதாரணத்துல ₹2,700 என்ன?"],o:[["The MRP","MRP"],["Price to retailer (PTR)","Price to Retailer (PTR)"],["Manufacturing cost","தயாரிப்பு செலவு"]],c:1,e:["₹2,700 is PTR; ₹27,000 is MRP.","₹2,700 PTR; ₹27,000 MRP."]},
+ {q:["Is selling a drug at MRP legal?","MRP-ல மருந்து விக்கறது சட்டப்படி சரியா?"],o:[["Yes","ஆமா"],["No","இல்ல"]],c:0,e:["Only selling above MRP is illegal.","MRP-க்கு மேல விக்கறது தான் சட்டவிரோதம்."]},
+ {q:["What margin did the SC float for all medicines?","எல்லா மருந்துக்கும் SC சொன்ன margin?"],o:[["10%","10%"],["16%","16%"],["30%","30%"]],c:1,e:["16% is the retailer margin in DPCO 2013.","DPCO 2013-ல retailer margin 16%."]},
+ {q:["Roughly what share of the drug market is non-scheduled?","Non-scheduled drugs market-ல எவ்வளவு?"],o:[["~20%","~20%"],["~50%","~50%"],["~80%","~80%"]],c:2,e:["About 80%+ by number and value.","எண்ணிக்கை, மதிப்புல ~80%+."]},
+ {q:["Which chain has a higher pharmacy share (20–22%)?","எந்த chain-க்கு pharmacy பங்கு 20–22%?"],o:[["KIMS","KIMS"],["Narayana","Narayana"],["Rainbow","Rainbow"]],c:0,e:["Axis puts KIMS at 20–22%.","Axis படி KIMS 20–22%."]},
+ {q:["When is the next SC hearing?","அடுத்த SC hearing எப்போ?"],o:[["1 Oct","1 அக்"],["12 Oct","12 அக்"],["12 Nov","12 நவ"]],c:1,e:["Centre sought two weeks; hearing on 12 Oct.","Centre 2 வாரம் கேட்டுச்சு; 12 அக் hearing."]}
+];
+var qScore=0,qDone=0;
+function renderQuiz(){
+  qScore=0;qDone=0;var box=document.getElementById("qBox");box.innerHTML="";
+  document.getElementById("qTot").textContent=QZ.length;document.getElementById("qScore").textContent=0;
+  QZ.forEach(function(z,i){
+    var L=LANG==="ta"?1:0,d=document.createElement("div");d.className="q";
+    d.innerHTML="<b>"+(i+1)+". "+z.q[L]+'</b><div class="opts"></div><div class="ex" hidden></div>';
+    var op=d.querySelector(".opts"),ex=d.querySelector(".ex");
+    z.o.forEach(function(o,j){var b=document.createElement("button");b.textContent=o[L];
+      b.onclick=function(){if(d.dataset.done)return;d.dataset.done=1;qDone++;
+        if(j===z.c){b.classList.add("ok");qScore++}else{b.classList.add("no");op.children[z.c].classList.add("ok")}
+        ex.textContent=z.e[L];ex.hidden=false;document.getElementById("qScore").textContent=qScore};op.appendChild(b)});
+    box.appendChild(d);
+  });
+}
+
+/* Badge tap */
+document.querySelector("#cbBadge .b").onclick=function(){document.getElementById("cbBadge").classList.toggle("open")};
+
+function renderAll(){renderStatic();calc();sim();renderAssist();renderQuiz()}
+var startTab="dash",startLang="en";
+try{startTab=localStorage.getItem("cb_scdrug_tab")||"dash";startLang=localStorage.getItem("cb_scdrug_lang")||"en"}catch(e){}
+if(location.hash&&document.getElementById(location.hash.slice(1)))startTab=location.hash.slice(1);
+if(!document.getElementById(startTab))startTab="dash";
+document.getElementById(startTab).classList.add("on");
+setLang(startLang);
+</script>

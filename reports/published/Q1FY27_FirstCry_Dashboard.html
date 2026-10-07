@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 FY27 Analysis | FirstCry (Brainbees Solutions) Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#fff;--ink:#1a2233;--sub:#5b6579;--line:#e4e8f0;--blue:#1a56b0;--blue-lt:#eaf1fb;--teal:#0d7d7d;--green:#127a3d;--green-lt:#e8f8ee;--red:#b3261e;--red-lt:#fdecea;--amber:#a9660b;--amber-lt:#fdf1de;--purple:#5b3b9e;--purple-lt:#f1ecfb;--pink:#c2185b;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:#fff;color:var(--ink);}
+header.masthead{background:linear-gradient(120deg,#1a56b0,#0d7d7d);color:#fff;padding:22px 28px;position:relative;}
+header.masthead .tagline{font-size:12px;opacity:.85;letter-spacing:.5px;text-transform:uppercase;}
+header.masthead h1{margin:6px 0 4px;font-size:26px;}
+header.masthead .sub{font-size:14px;opacity:.92;max-width:900px;}
+.datebar{margin-top:10px;font-size:12px;background:rgba(255,255,255,.15);display:inline-block;padding:5px 12px;border-radius:20px;}
+.langtoggle{position:absolute;top:22px;right:28px;}
+.langtoggle button{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);color:#fff;padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointer;margin-left:4px;}
+.langtoggle button.active{background:#fff;color:var(--blue);font-weight:600;}
+nav.tabs{position:sticky;top:0;background:#fff;border-bottom:2px solid var(--line);display:flex;overflow-x:auto;z-index:50;}
+nav.tabs button{flex:none;background:none;border:none;padding:14px 16px;font-size:13.5px;font-weight:600;color:var(--sub);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+nav.tabs button.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-lt);}
+main{max-width:1180px;margin:0 auto;padding:22px 24px 90px;}
+.tabpanel{display:none;} .tabpanel.active{display:block;}
+h2.section-title{font-size:20px;margin:6px 0 14px;color:var(--blue);border-left:4px solid var(--teal);padding-left:10px;}
+h3.sub-title{font-size:16px;margin:22px 0 10px;color:#22314f;}
+p.lede{color:var(--sub);font-size:14px;line-height:1.65;}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0;}
+.kpi{background:var(--blue-lt);border-radius:10px;padding:12px 14px;}
+.kpi .lbl{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;}
+.kpi .val{font-size:19px;font-weight:700;color:var(--blue);margin-top:2px;}
+.kpi.neg{background:var(--red-lt);} .kpi.neg .val{color:var(--red);}
+.kpi.pos{background:var(--green-lt);} .kpi.pos .val{color:var(--green);}
+.kpi.warn{background:var(--amber-lt);} .kpi.warn .val{color:var(--amber);}
+.tblwrap{overflow-x:auto;}
+table.datatable{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0 18px;min-width:640px;}
+table.datatable th{background:var(--blue-lt);color:var(--blue);text-align:left;padding:9px 10px;font-size:12px;text-transform:uppercase;border-bottom:2px solid var(--line);}
+table.datatable td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+table.datatable tr.hl td{background:#fff4f8;font-weight:700;}
+.pos-c{color:var(--green);font-weight:700;} .neg-c{color:var(--red);font-weight:700;}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;}
+.tag.pos{background:var(--green-lt);color:var(--green);} .tag.neg{background:var(--red-lt);color:var(--red);} .tag.warn{background:var(--amber-lt);color:var(--amber);}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 18px;}
+.swot-box{border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;}
+.swot-box h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;}
+.swot-s{background:var(--green-lt);} .swot-s h4{color:var(--green);}
+.swot-w{background:var(--red-lt);} .swot-w h4{color:var(--red);}
+.swot-o{background:var(--blue-lt);} .swot-o h4{color:var(--blue);}
+.swot-t{background:var(--amber-lt);} .swot-t h4{color:var(--amber);}
+ul.clean{margin:6px 0;padding-left:18px;} ul.clean li{margin-bottom:5px;line-height:1.55;font-size:13.5px;}
+.chart-wrap{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin:14px 0;overflow-x:auto;}
+.chart-wrap canvas{min-width:640px;max-height:340px;}
+.minigrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.minigrid .chart-wrap canvas{min-width:0;max-height:240px;}
+@media(max-width:900px){.minigrid{grid-template-columns:1fr;}}
+.note{font-size:12px;color:var(--sub);background:#f7f9fc;border-left:3px solid var(--teal);padding:8px 12px;border-radius:6px;margin:10px 0;line-height:1.55;}
+.flag{font-size:11px;color:var(--amber);}
+.ta{display:none;color:#3a2f6b;} .langTA .ta{display:block;} .langTA .en{display:none;}
+.twocol{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;} @media(max-width:760px){.twocol,.swot-grid{grid-template-columns:1fr;}}
+.mgmt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
+.mgmt-card{background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+.mgmt-card .role{font-size:11px;color:var(--sub);text-transform:uppercase;} .mgmt-card .name{font-weight:700;color:var(--blue);margin-top:2px;}
+.verdict{border:2px solid var(--blue);border-radius:12px;padding:16px;background:var(--blue-lt);}
+#cbBadge{position:fixed;bottom:18px;right:18px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1a56b0,#0d7d7d);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer;z-index:200;animation:blink 2.2s infinite;}
+@keyframes blink{0%,100%{box-shadow:0 3px 10px rgba(20,40,80,.3);}50%{box-shadow:0 0 0 8px rgba(26,86,176,.15);}}
+#cbPopup{position:fixed;bottom:80px;right:18px;width:270px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;font-size:11.5px;color:var(--sub);box-shadow:0 6px 24px rgba(0,0,0,.15);display:none;z-index:200;line-height:1.5;}
+#cbPopup.show{display:block;}
+#assistBubble{position:fixed;bottom:18px;right:82px;width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;z-index:200;}
+#assistPanel{position:fixed;bottom:80px;right:18px;width:330px;max-height:460px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);display:none;flex-direction:column;z-index:210;overflow:hidden;}
+#assistPanel.show{display:flex;}
+#assistHead{background:linear-gradient(120deg,#1a56b0,#0d7d7d);color:#fff;padding:10px 14px;font-size:13px;font-weight:700;display:flex;justify-content:space-between;}
+#assistHead .close{cursor:pointer;}
+#assistLog{flex:1;overflow-y:auto;padding:10px 12px;font-size:12.5px;background:#f7f9fc;}
+.msg{margin-bottom:10px;padding:8px 10px;border-radius:8px;max-width:88%;line-height:1.45;}
+.msg.user{background:var(--blue);color:#fff;margin-left:auto;} .msg.bot{background:#fff;border:1px solid var(--line);}
+#assistInputRow{display:flex;border-top:1px solid var(--line);padding:8px;gap:6px;}
+#assistInput{flex:1;border:1px solid var(--line);border-radius:16px;padding:7px 12px;font-size:12.5px;outline:none;}
+#assistMic,#assistSend{border:none;background:var(--blue-lt);color:var(--blue);width:32px;height:32px;border-radius:50%;cursor:pointer;}
+#assistMic.listening{background:var(--red);color:#fff;}
+.socrates-card{background:linear-gradient(135deg,var(--purple-lt),#fff);border:1px solid #ddd3f4;border-radius:12px;padding:18px;margin-bottom:16px;}
+.socrates-q{font-weight:700;color:var(--purple);margin-bottom:10px;}
+.socrates-opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:13px;cursor:pointer;}
+.socrates-opt.correct{background:var(--green-lt);border-color:var(--green);} .socrates-opt.wrong{background:var(--red-lt);border-color:var(--red);}
+.socrates-feedback{font-size:13px;margin-top:8px;padding:10px;border-radius:8px;background:#fff;border-left:3px solid var(--purple);}
+textarea#socFreeText{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;min-height:60px;}
+.btn{background:var(--blue);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;}
+.btn.secondary{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
+
+.bm-detail{margin-top:8px;padding:10px 12px;background:#f7f9fc;border-left:3px solid #0d7d7d;font-size:13px;line-height:1.55;border-radius:6px;}
+.bmnode:hover rect{opacity:.85;}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="langtoggle"><button id="btnEN" class="active" onclick="setLang('en')">EN</button><button id="btnTA" onclick="setLang('ta')">TA</button></div>
+  <div class="tagline">CB Research &middot; Cauvery Business</div>
+  <h1>FirstCry (Brainbees Solutions): Q1 FY27 Business &amp; Investment Analysis</h1>
+  <div class="sub">Results for the quarter ended June 2026, the journey since the August 2024 IPO, segments &amp; model, EBITDA/net-profit reality check, SWOT and peer comparison with the 9 new-age listed companies covered earlier</div>
+</header>
+
+<nav class="tabs" id="tabNav">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="business">Business Profile</button>
+  <button data-tab="financials">Financials</button>
+  <button data-tab="cashflow">Cash Flow &amp; Working Capital</button>
+  <button data-tab="valuation">IPO to Today &amp; Valuation</button>
+  <button data-tab="peers">Peer Comparison</button>
+  <button data-tab="swot">SWOT</button>
+  <button data-tab="analysts">Analysts' Rating</button>
+  <button data-tab="management">Management &amp; Board</button>
+  <button data-tab="socrates">Cauvery Socrates</button>
+</nav>
+
+<main>
+<!-- OVERVIEW -->
+<section id="tab-overview" class="tabpanel active">
+  <h2 class="section-title">Overview: Is FirstCry EBITDA-positive? Net-profitable?</h2>
+  <div class="verdict">
+    <p class="en" style="margin:0;font-size:14px;line-height:1.7;"><b>Short answer:</b> FirstCry is <b>EBITDA-positive</b> (reported EBITDA &#8377;59.65 crore, 2.8% margin; company-defined Adjusted EBITDA &#8377;89.3 crore, 4.24% margin) but <b>not yet net-profitable on a consolidated basis</b> &mdash; Q1 FY27 consolidated loss after tax was about &#8377;44 crore (narrowed 34% YoY from &#8377;66.5 crore). The parent-company (standalone) entity did earn a profit (&#8377;21.6 crore) and the India multi-channel business was PAT-positive; the losses come from the International (UAE/KSA) business and other consolidated items. Roughly &#8377;47 crore of the quarter's operating cushion appears to come from other income, so on an ex-other-income basis the consolidated loss would be about &#8377;90 crore (CB Research approximate working, flagged below).</p>
+    <p class="ta" style="margin:0;font-size:14px;line-height:1.7;"><b>Short-ஆ சொன்னா:</b> FirstCry <b>EBITDA-positive</b>தான் (reported EBITDA &#8377;59.65 crore, 2.8% margin; company-ஓட Adjusted EBITDA &#8377;89.3 crore, 4.24%), ஆனா consolidated-ஆ <b>இன்னும் net profit வரல</b> &mdash; Q1 FY27-ல loss after tax சுமார் &#8377;44 crore (போன வருஷம் &#8377;66.5 crore-ல இருந்து 34% குறைஞ்சிருக்கு). Standalone parent entity &#8377;21.6 crore profit காட்டியிருக்கு, India multi-channel business-உம் PAT-positive; loss எல்லாம் International (UAE/KSA) business-ல இருந்து வருது. Other income (சுமார் &#8377;47 crore) கழிச்சா consolidated loss கிட்டத்தட்ட &#8377;90 crore வரும் (CB Research approximate working).</p>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lbl">Revenue (Q1 FY27)</div><div class="val">&#8377;2,106.2 cr</div></div>
+    <div class="kpi pos"><div class="lbl">Reported EBITDA</div><div class="val">&#8377;59.65 cr</div></div>
+    <div class="kpi pos"><div class="lbl">Adjusted EBITDA</div><div class="val">&#8377;89.3 cr (4.24%)</div></div>
+    <div class="kpi neg"><div class="lbl">Consolidated PAT</div><div class="val">-&#8377;43.96 cr</div></div>
+    <div class="kpi pos"><div class="lbl">Standalone PAT</div><div class="val">+&#8377;21.6 cr</div></div>
+    <div class="kpi"><div class="lbl">Cash PAT</div><div class="val">&#8377;50.8 cr</div></div>
+    <div class="kpi neg"><div class="lbl">IPO &#8377;465 &rarr; CMP &#8377;176</div><div class="val">-62%</div></div>
+    <div class="kpi"><div class="lbl">Market Cap</div><div class="val">&#8377;8,898 cr</div></div>
+  </div>
+  <h3 class="sub-title">What stands out</h3>
+  <ul class="clean en">
+    <li>Growth re-accelerated: revenue +13% YoY, the strongest in five quarters; India multi-channel +~18% (best in seven quarters).</li>
+    <li>Margins are under pressure even as growth improves: gross margin fell to 36.5% from 38.5%; Adjusted EBITDA margin slipped to 4.24% from 4.98% (diapering competition, rupee depreciation and crude-linked raw material costs, per management).</li>
+    <li>Globalbees (brand aggregator) delivered Adjusted EBITDA up 308% YoY; International losses (Adjusted EBITDA) reduced about 22% YoY.</li>
+    <li>The stock trades about 62% below the &#8377;465 IPO price, unlike Eternal, Nykaa, CarTrade and others that are above their IPO prices &mdash; see Peer Comparison.</li>
+  </ul>
+  <ul class="clean ta">
+    <li>Growth மறுபடி வேகமெடுத்திருக்கு: revenue +13% YoY (5 quarter-ல best); India multi-channel +~18% (7 quarter-ல best).</li>
+    <li>ஆனா margin அழுத்தத்துல இருக்கு: gross margin 38.5%-ல இருந்து 36.5%-க்கு குறைஞ்சிருக்கு; Adjusted EBITDA margin 4.98%-ல இருந்து 4.24%-க்கு (diaper category competition, rupee depreciation, crude-linked raw material cost).</li>
+    <li>Globalbees-ஓட Adjusted EBITDA +308% YoY; International loss ~22% குறைஞ்சிருக்கு.</li>
+    <li>Stock, &#8377;465 IPO price-ஐ விட ~62% கீழே இருக்கு &mdash; Eternal, Nykaa, CarTrade மாதிரி IPO-க்கு மேல இல்ல.</li>
+  </ul>
+</section>
+
+<!-- BUSINESS -->
+<section id="tab-business" class="tabpanel">
+  <h2 class="section-title">Business Segments &amp; Model</h2>
+  <p class="lede">FirstCry (Brainbees Solutions, founded 2010) is India's largest multi-channel retailer for mothers', babies' and kids' products &mdash; apparel, footwear, diapers, toys, baby gear, nursery and personal care, up to age 12 &mdash; sold through its website/app and FirstCry/BabyHug modern stores (company-owned and franchised).</p>
+  <h3 class="sub-title">Visual 1: How the business model works (click any box)</h3>
+  <p class="lede en">Read left to right: what FirstCry sells, how it reaches parents, who buys, and what comes out at the bottom line in Q1 FY27.</p>
+  <p class="lede ta">Left-ல இருந்து right-க்கு படிங்க: என்ன விக்குறாங்க, parents-கிட்ட எப்படி போய் சேருறாங்க, யார் வாங்குறாங்க, கடைசில Q1 FY27-ல என்ன மிச்சம் ஆகுது.</p>
+  <div class="card" id="fcModel"></div>
+  <h3 class="sub-title">Visual 2: The category-specialist flywheel</h3>
+  <p class="lede en">Why a focused category retailer can compound: repeat buying funds own brands, own brands lift margin, and margin funds reach and speed. The red note marks where the loop is currently strained.</p>
+  <p class="lede ta">ஒரே category-ல focus பண்ணா எப்படி வளருது: repeat purchase &rarr; own brands &rarr; margin &rarr; stores/delivery-ல reinvest. இப்போ gross margin குறைஞ்சிருக்கிறதுதான் இந்த loop-ல அழுத்தம்.</p>
+  <div class="card" id="fcFly"></div>
+  <h3 class="sub-title">Visual 3: Segment map (tile width = share of segment revenue)</h3>
+  <div class="card" id="fcSeg"></div>
+  <h3 class="sub-title">Visual 4: From EBITDA to net loss (Q1 FY27 profit bridge, &#8377; crore)</h3>
+  <p class="lede en">Shows why an EBITDA-positive business still ends in a consolidated loss. Bars marked &dagger; are derived by CB Research from PBDAT, loss before tax and PAT and are approximate.</p>
+  <p class="lede ta">EBITDA positive-ஆ இருந்தும் கடைசில loss ஏன் வருதுன்னு இந்த bridge காட்டுது. &dagger; போட்டது CB Research derive பண்ணது, approximate.</p>
+  <div class="card" id="fcBridge"></div>
+  <div class="tblwrap"><table class="datatable">
+    <tr><th>Segment</th><th>Q1 FY27 Revenue (&#8377; cr)</th><th>What it is</th><th>Profitability read</th></tr>
+    <tr><td>India multi-channel (core)</td><td>1,455.9 (+~18% YoY)</td><td>Online platform + ~1,190 modern stores (as of 31 Mar 2026), own brands (BabyHug, Cutewalk, Babyoye, etc.), faster delivery (RocketBees, Qwik)</td><td>PAT-positive in Q1 FY27; margin pressure from diapering competition and manufacturing costs</td></tr>
+    <tr><td>International (UAE &amp; KSA)</td><td>232.1 (+12% YoY)</td><td>Online-led retail in the Gulf; first Riyadh store planned</td><td>Still loss-making; Adjusted EBITDA loss ~&#8377;16.7 cr, down ~22% YoY; FY26 margin about -10%</td></tr>
+    <tr><td>Globalbees (brand aggregator)</td><td>424.3</td><td>Roll-up of D2C/marketplace brands; brand rationalisation done in Q1</td><td>Adjusted EBITDA &#8377;16.7 cr (3.9% margin), +308% YoY; listing seen as likely exit route</td></tr>
+    <tr><td>Others (preschool/other)</td><td>19.3 (+47% YoY)</td><td>Asset-light preschool franchise and related</td><td>Adjusted EBITDA &#8377;5.0 cr (26% margin)</td></tr>
+  </table></div>
+  <div class="note">Segment revenues do not sum exactly to consolidated revenue (&#8377;2,106.2 cr) because of inter-company eliminations. Globalbees and International figures are converted from &#8377; million in the company presentation.</div>
+  <div class="twocol">
+    <div class="card"><h3 class="sub-title" style="margin-top:0;">Business model</h3><ul class="clean">
+      <li>Category focus creates high repeat: management cites an average of 8.0 transactions by Year 4 of a cohort and 10.5 by Year 8.</li>
+      <li>Vertical integration through own brands raises gross margin (mix ~ mid-30s %), but exposes the company to raw-material and manufacturing costs.</li>
+      <li>Omnichannel: online plus modern stores; offline GMV grew ~15% YoY in Q1 FY27; net addition target of about 90&ndash;100 stores in FY27.</li>
+      <li>Delivery speed as a moat: RocketBees in 72 cities (over half of online shipments); Qwik in 12 cities (~125,000 shipments in June 2026).</li>
+    </ul></div>
+    <div class="card"><h3 class="sub-title" style="margin-top:0;">Stores &amp; footprint (dark stores / physical)</h3><ul class="clean">
+      <li>Modern stores: 1,190 as of 31 March 2026 (company-owned and franchise); Q1 FY27 count not confirmed &mdash; flagged n/a.</li>
+      <li>Unlike Blinkit-style dark stores, FirstCry's quick-delivery uses in-house delivery networks and store/warehouse hubs; a separate dark-store count is not disclosed &mdash; n/a.</li>
+      <li>Annual unique transacting customers: 11.8 million (+10% YoY); India multi-channel 11.3 million.</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- FINANCIALS -->
+<section id="tab-financials" class="tabpanel">
+  <h2 class="section-title">Financials: Q1 FY27 and Trend</h2>
+  <div class="tblwrap"><table class="datatable">
+    <tr><th>Metric (consolidated)</th><th>Q1 FY27</th><th>Q1 FY26</th><th>Change</th></tr>
+    <tr><td>Revenue from operations (&#8377; cr)</td><td>2,106.2</td><td>1,862.6</td><td class="pos-c">+13.1%</td></tr>
+    <tr><td>GMV (&#8377; cr)</td><td>2,807.2</td><td>~2,506 (implied)</td><td class="pos-c">+12%</td></tr>
+    <tr><td>Gross margin</td><td>36.5%</td><td>38.5%</td><td class="neg-c">-200 bps</td></tr>
+    <tr><td>Reported EBITDA (&#8377; cr)</td><td>59.65</td><td>~33.1 (implied from +80%)</td><td class="pos-c">+80%</td></tr>
+    <tr><td>Adjusted EBITDA (&#8377; cr)</td><td>89.3 (4.24%)</td><td>92.7 (4.98%)</td><td class="neg-c">-3.7%</td></tr>
+    <tr><td>PBDAT incl. other income (&#8377; cr)</td><td>106.6</td><td>81.5</td><td class="pos-c">+31%</td></tr>
+    <tr><td>Other income (derived, &#8377; cr)</td><td>~47 (PBDAT less reported EBITDA)</td><td>n/a</td><td>flagged</td></tr>
+    <tr><td>Loss before tax (&#8377; cr)</td><td>-42.8</td><td>-66.3</td><td class="pos-c">narrowed</td></tr>
+    <tr><td>Consolidated loss after tax (&#8377; cr)</td><td>-43.96</td><td>-66.5</td><td class="pos-c">-34% loss</td></tr>
+    <tr><td>Standalone PAT (&#8377; cr)</td><td>+21.6</td><td>+3.1</td><td class="pos-c">up</td></tr>
+    <tr><td>Cash PAT (&#8377; cr)</td><td>50.8</td><td>n/a</td><td>&nbsp;</td></tr>
+  </table></div>
+  <div class="note"><b>Real profit check (approximate, flagged):</b> if the ~&#8377;47 crore of other income is excluded, the consolidated pre-tax loss would be roughly &#8377;90 crore (about double the reported &#8377;43 crore), i.e. FirstCry's operating business is not yet covering depreciation, finance costs and ESOP charges. Other income is derived as PBDAT (&#8377;106.6 cr) less reported EBITDA (&#8377;59.65 cr) and is not an audited line-item; verify against the full financial statements. Reported EBITDA and Adjusted EBITDA differ because the company's adjusted measure excludes items such as ESOP costs.</div>
+  <h3 class="sub-title">Annual trend</h3>
+  <div class="tblwrap"><table class="datatable">
+    <tr><th>Year</th><th>Revenue (&#8377; cr)</th><th>Net result (&#8377; cr)</th><th>Remark</th></tr>
+    <tr><td>FY25</td><td>7,660</td><td class="neg-c">-191 (derived)</td><td>Listed Aug 2024</td></tr>
+    <tr><td>FY26</td><td>8,548 (+11.6%)</td><td class="neg-c">-140</td><td>Loss narrowed ~27%; cash flow turned positive; NWC days 57 (from 71)</td></tr>
+    <tr><td>Q1 FY26</td><td>1,862.6</td><td class="neg-c">-66.5</td><td>&nbsp;</td></tr>
+    <tr><td>Q1 FY27</td><td>2,106.2</td><td class="neg-c">-44.0</td><td>Loss narrowed 34%</td></tr>
+  </table></div>
+  <p class="lede">Each chart below uses its own axis. The bars are not drawn to a common scale, so read the labelled value on each bar rather than comparing bar heights across charts.</p>
+  <div class="minigrid">
+    <div class="chart-wrap"><canvas id="chartRev"></canvas></div>
+    <div class="chart-wrap"><canvas id="chartEbitda"></canvas></div>
+    <div class="chart-wrap"><canvas id="chartPat"></canvas></div>
+  </div>
+  <div class="chart-wrap"><canvas id="chartSeg"></canvas></div>
+  <div class="note">FY25 revenue and net loss are derived from the FY26 figures and reported percentage changes (FY26 revenue growth 11.6%; FY26 loss 26.76% lower than FY25) &mdash; approximate; verify with annual reports.</div>
+</section>
+
+<!-- CASH FLOW -->
+<section id="tab-cashflow" class="tabpanel">
+  <h2 class="section-title">Cash Flow, Working Capital &amp; Key Ratios</h2>
+  <div class="kpi-grid">
+    <div class="kpi pos"><div class="lbl">Net working capital days (FY26)</div><div class="val">57 (FY25: 71)</div></div>
+    <div class="kpi pos"><div class="lbl">Inventory days (FY26)</div><div class="val">85 (FY25: 102)</div></div>
+    <div class="kpi pos"><div class="lbl">Free cash flow</div><div class="val">Positive in FY26</div></div>
+    <div class="kpi"><div class="lbl">Cash PAT (Q1 FY27)</div><div class="val">&#8377;50.8 cr</div></div>
+    <div class="kpi warn"><div class="lbl">ROE</div><div class="val">~1.8% (aggregator)</div></div>
+    <div class="kpi"><div class="lbl">P/B</div><div class="val">~1.4x</div></div>
+  </div>
+  <ul class="clean">
+    <li><b>Operating / investing / financing cash flow:</b> absolute FY26 and Q1 FY27 cash-flow-statement figures were not available &mdash; n/a, flagged rather than estimated. Directionally, management reported that the group turned free-cash-flow positive in FY26 and that faster stock turnover is releasing cash.</li>
+    <li><b>Working capital:</b> inventory days improved from 102 to 85 and net working capital days from 71 to 57 in FY26 &mdash; a genuine improvement for an inventory-heavy retailer.</li>
+    <li><b>Profitability ratios:</b> reported EBITDA margin 2.8%; Adjusted EBITDA 4.24%; PAT margin about -2.1% (consolidated). Return ratios are low because the group is still loss-making at the consolidated level.</li>
+    <li><b>Balance sheet:</b> IPO proceeds (fresh issue) provide a cash cushion, which is also why other income (interest on treasury) is meaningful relative to operating profit; the company has sought shareholder approval on utilisation of IPO proceeds (AGM 22 Sep 2026).</li>
+  </ul>
+  <div class="note">P/B and ROE are aggregator-derived snapshots at different dates; treat as indicative.</div>
+</section>
+
+<!-- VALUATION -->
+<section id="tab-valuation" class="tabpanel">
+  <h2 class="section-title">IPO to Today &amp; Valuation</h2>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lbl">IPO issue price (Aug 2024)</div><div class="val">&#8377;465</div></div>
+    <div class="kpi neg"><div class="lbl">CMP (22 Sep 2026)</div><div class="val">&#8377;176.3</div></div>
+    <div class="kpi neg"><div class="lbl">Change since IPO</div><div class="val" id="chgIpo">-62.1%</div></div>
+    <div class="kpi"><div class="lbl">52-week range</div><div class="val">&#8377;163 &ndash; 391</div></div>
+    <div class="kpi"><div class="lbl">Market cap</div><div class="val">&#8377;8,898 cr</div></div>
+    <div class="kpi warn"><div class="lbl">P/E (TTM, aggregator)</div><div class="val">~70x</div></div>
+  </div>
+  <div class="tblwrap"><table class="datatable">
+    <tr><th>Milestone</th><th>Price / event</th></tr>
+    <tr><td>IPO (Aug 2024)</td><td>Issue price &#8377;465 (upper end of band); fresh issue plus offer for sale</td></tr>
+    <tr><td>Around Aug 2025 (one year ago)</td><td>Stock roughly in the &#8377;350&ndash;400 zone; 1-year return to Sep 2026 shown by one aggregator as about -53%</td></tr>
+    <tr><td>7 Apr 2026</td><td>Surged over 10% intraday to about &#8377;250</td></tr>
+    <tr><td>13 Aug 2026 (Q1 results)</td><td>Traded near &#8377;214 on the day, close to the then 52-week low</td></tr>
+    <tr><td>15 Sep 2026</td><td>Bounced ~5&ndash;7% to about &#8377;179 after a ~54% one-year fall</td></tr>
+    <tr><td>22 Sep 2026</td><td>~&#8377;176 (range &#8377;170&ndash;182); 52-week low &#8377;163.4</td></tr>
+  </table></div>
+  <div class="note">Price history between milestones is from exchange-derived aggregator pages and press reports of differing dates and may not be strictly comparable (one aggregator lists a 52-week high of &#8377;498.95 vs &#8377;390.8 on others). Not a price recommendation. Check the live quote before use.</div>
+  <h3 class="sub-title">Why the stock fell</h3>
+  <ul class="clean">
+    <li>Persistent consolidated losses and no clear date for net profitability, while peers such as Nykaa have moved to profits.</li>
+    <li>Gross-margin compression (diapering competition, input costs) and India multi-channel margin decline despite better growth.</li>
+    <li>Slower-than-hoped International (UAE/KSA) turnaround because of promotional intensity from large horizontal e-commerce entrants.</li>
+    <li>Large pre-IPO investor lock-in expiries and share overhang typical of new-age IPOs (general pattern; not specifically verified for each date).</li>
+  </ul>
+</section>
+
+<!-- PEERS -->
+<section id="tab-peers" class="tabpanel">
+  <h2 class="section-title">Peer Comparison: FirstCry vs the 9 New-Age Companies (Q1 FY27)</h2>
+  <p class="lede">Figures use each company's Q1 FY27 reported numbers as compiled in the earlier CB Research new-age tech dashboard. "Stock vs IPO" for peers is from the press table used there (split/bonus adjusted; different date); FirstCry's is computed from CMP vs &#8377;465.</p>
+  <div class="tblwrap"><table class="datatable" id="peerTable" style="min-width:980px"></table></div>
+  <div class="note"><b>How the new column is calculated:</b> PAT excl. other income = reported PAT minus other income (simple subtraction, as requested; the tax effect on other income is ignored, which is conservative for companies that pay tax). &dagger; derived by CB Research: FirstCry = PBDAT less reported EBITDA; RateGain = total income less revenue from operations. ~ approximate (Easy Trip Planners, other income not separately reported; about &#8377;2&ndash;3 crore).</div>
+  <div class="chart-wrap"><canvas id="chartPeerMargin"></canvas></div>
+  <div class="chart-wrap"><canvas id="chartPeerEbitda"></canvas></div>
+  <div class="chart-wrap"><canvas id="chartPeerReal"></canvas></div>
+  <div class="note">Peer charts are ratio-based (% of revenue) rather than absolute, because Eternal&rsquo;s revenue is over 100x that of the smallest names and absolute bars would not be comparable. Absolute EBITDA/PAT figures appear beside each bar and in the table above.</div>
+  <h3 class="sub-title">Where FirstCry stands</h3>
+  <div id="peerRanks"></div>
+</section>
+
+<!-- SWOT -->
+<section id="tab-swot" class="tabpanel">
+  <h2 class="section-title">SWOT Analysis</h2>
+  <div class="swot-grid">
+    <div class="swot-box swot-s"><h4>Strengths</h4><ul class="clean">
+      <li>India's largest multi-channel mother-baby-kids retailer; category specialist with high repeat behaviour</li>
+      <li>Omnichannel reach: ~1,190 modern stores plus app/web; 11.8 million annual transacting customers</li>
+      <li>Own-brand portfolio and vertical integration support gross margin in the mid-30s</li>
+      <li>Improving working capital (NWC days 57, inventory days 85) and positive free cash flow in FY26</li>
+      <li>Globalbees now covering fixed costs; Adjusted EBITDA up 308% YoY</li>
+    </ul></div>
+    <div class="swot-box swot-w"><h4>Weaknesses</h4><ul class="clean">
+      <li>Still consolidated loss-making (Q1 FY27 &#8377;44 cr; FY26 about &#8377;140 cr)</li>
+      <li>Gross margin down 200 bps YoY; Adjusted EBITDA margin down to 4.24%</li>
+      <li>International (UAE/KSA) still loss-making after several years</li>
+      <li>Meaningful reliance on other income: ex-other-income loss roughly double the reported loss (approximate)</li>
+      <li>Low ROE (~1.8%) and premium P/E on thin earnings</li>
+    </ul></div>
+    <div class="swot-box swot-o"><h4>Opportunities</h4><ul class="clean">
+      <li>Net addition of ~90&ndash;100 modern stores planned in FY27 plus offline portfolio realignment</li>
+      <li>RocketBees/Qwik faster delivery to counter quick-commerce entrants</li>
+      <li>Globalbees listing as a value-unlocking exit route</li>
+      <li>Gulf expansion incl. first Riyadh store; management expects gross-margin recovery from Q2 FY27</li>
+    </ul></div>
+    <div class="swot-box swot-t"><h4>Threats</h4><ul class="clean">
+      <li>Quick-commerce and horizontal players (Blinkit, Zepto, Amazon, Flipkart, Nykaa-style category extensions) targeting baby categories</li>
+      <li>Diapering price wars; rupee depreciation and crude-linked raw-material costs</li>
+      <li>India's birth-rate trends over the long term (risk flagged by brokers)</li>
+      <li>Physical-store expansion may cannibalise existing footprint (flagged by a broker at IPO)</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- ANALYSTS -->
+<section id="tab-analysts" class="tabpanel">
+  <h2 class="section-title">Analysts' Rating (third-party)</h2>
+  <p class="lede">CB Research does not issue its own buy/sell/hold recommendation. Third-party views collated below; dates matter because the share price has fallen sharply.</p>
+  <div class="tblwrap"><table class="datatable">
+    <tr><th>Broker / consensus</th><th>Rating</th><th>Target price</th><th>As of</th></tr>
+    <tr><td>Consensus of 7 analysts (StockAnalysis)</td><td>Hold</td><td>&#8377;243 (avg.)</td><td>Aug&ndash;Sep 2026</td></tr>
+    <tr><td>Trendlyne consensus (7 analysts)</td><td>n/a</td><td>&#8377;278</td><td>7 Aug 2026</td></tr>
+    <tr><td>Simply Wall St consensus (revised)</td><td>n/a</td><td>&#8377;205 (cut from &#8377;240)</td><td>Aug 2026</td></tr>
+    <tr><td>JM Financial (initiation)</td><td>Buy</td><td>&#8377;692 (Mar'26 TP; SoTP)</td><td>Dec 2024 (stale)</td></tr>
+  </table></div>
+  <div class="note">Individual current broker calls after Q1 FY27 were not found; marked n/a rather than estimated. The JM Financial call predates the ~60% fall and should not be read as current.</div>
+</section>
+
+<!-- MANAGEMENT -->
+<section id="tab-management" class="tabpanel">
+  <h2 class="section-title">Management &amp; Board</h2>
+  <div class="mgmt-grid">
+    <div class="mgmt-card"><div class="role">Founder, Chairman &amp; Managing Director / CEO</div><div class="name">Supam Maheshwari</div></div>
+    <div class="mgmt-card"><div class="role">Co-founder &amp; Executive Director</div><div class="name">Amitava Saha</div></div>
+    <div class="mgmt-card"><div class="role">Full board, CFO and independent directors</div><div class="name">n/a &mdash; verify in the annual report / BSE filing</div></div>
+  </div>
+  <div class="note">Only leadership names that could be confirmed are listed; titles should be verified against the latest annual report. The 16th AGM (22 Sep 2026) included director re-appointment and remuneration resolutions.</div>
+</section>
+
+<!-- SOCRATES -->
+<section id="tab-socrates" class="tabpanel">
+  <h2 class="section-title">Cauvery Socrates</h2>
+  <div class="socrates-card" id="socCard"></div>
+  <div class="card">
+    <div class="socrates-q">In your own words:</div>
+    <textarea id="socFreeText" placeholder="Why can a company be EBITDA-positive but still report a net loss?"></textarea>
+    <div style="margin-top:10px;"><button class="btn" onclick="socReflect()">Get a Socratic follow-up</button></div>
+    <div id="socFollowup" class="socrates-feedback" style="display:none;"></div>
+  </div>
+  <div style="text-align:right;"><button class="btn secondary" onclick="nextSocQ()">Next question &rarr;</button></div>
+</section>
+</main>
+
+<div id="cbBadge" onclick="document.getElementById('cbPopup').classList.toggle('show')">CB</div>
+<div id="cbPopup"><b>Prepared by CB Research</b><br>CB Research (Cauvery Business Research) is an independent financial-education initiative and is not a SEBI-registered research analyst. This is not investment advice. Figures are as available on the preparation date; derived or unverified figures are flagged. Consult a SEBI-registered advisor before investing.</div>
+<div id="assistBubble" onclick="toggleAssist()">&#128172;</div>
+<div id="assistPanel">
+  <div id="assistHead"><span>CB Assist (voice-enabled)</span><span class="close" onclick="toggleAssist()">&times;</span></div>
+  <div id="assistLog"></div>
+  <div id="assistInputRow"><button id="assistMic" onclick="toggleMic()">&#127908;</button><input id="assistInput" placeholder="Ask about FirstCry or peers..." onkeydown="if(event.key==='Enter')sendAssist()"><button id="assistSend" onclick="sendAssist()">&#10148;</button></div>
+</div>
+
+<script>
+var CO = {
+  name:"FirstCry (Brainbees Solutions)", ticker:"NSE: FIRSTCRY | BSE: 544226",
+  ipo:{date:"Aug 2024", price:465}, cmp:{price:176.3, asOf:"22 Sep 2026"}, mcap:8898,
+  q1:{revenue:2106.2, ebitda:59.65, adjEbitda:89.3, adjMargin:4.24, ebitdaMargin:2.8, pat:-43.96, standalonePat:21.6, otherIncome:47, cashPat:50.8, gm:36.5, gmPrev:38.5},
+  seg:{india:1455.9, intl:232.1, globalbees:424.3, others:19.3},
+  stores:1190, nwcDays:57, invDays:85
+};
+var PEERS = [
+  {n:"Eternal (Zomato)", rev:20211, ebitda:594, m:2.94, pat:92, oi:375, oiF:"", ipo:340.8},
+  {n:"FSN E-commerce (Nykaa)", rev:2782, ebitda:236, m:8.5, pat:80, oi:9.3, oiF:"", ipo:78.0},
+  {n:"One 97 (Paytm)", rev:2448, ebitda:203, m:8.29, pat:220, oi:182, oiF:"", ipo:-22.1},
+  {n:"FirstCry (Brainbees)", rev:2106.2, ebitda:59.65, m:2.8, pat:-43.96, oi:47, oiF:"\u2020", ipo:-62.1, me:true},
+  {n:"PB Fintech", rev:1888, ebitda:186, m:9.85, pat:163, oi:93, oiF:"", ipo:19.0},
+  {n:"RateGain", rev:785, ebitda:193.4, m:24.6, pat:94.9, oi:3.1, oiF:"\u2020", ipo:94.8},
+  {n:"Nazara", rev:428.8, ebitda:46, m:10.8, pat:-82, oi:8.8, oiF:"", ipo:173.5},
+  {n:"CarTrade Tech", rev:201.2, ebitda:63, m:31.0, pat:56.75, oi:28.6, oiF:"", ipo:85.6},
+  {n:"MapMyIndia (CE Info)", rev:139.7, ebitda:56.1, m:40.2, pat:49.7, oi:19.7, oiF:"", ipo:-14.6},
+  {n:"Easy Trip Planners", rev:134.7, ebitda:-12.88, m:-9.6, pat:-11.69, oi:2.5, oiF:"~", ipo:1.3}
+];
+function f(n){return (typeof n==='number')?n.toLocaleString('en-IN',{maximumFractionDigits:2}):n;}
+function cls(v){return v>=0?'pos-c':'neg-c';}
+
+document.getElementById('tabNav').addEventListener('click',function(e){
+  if(e.target.tagName!=='BUTTON')return;
+  document.querySelectorAll('#tabNav button').forEach(function(b){b.classList.remove('active');});
+  e.target.classList.add('active');
+  document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-'+e.target.getAttribute('data-tab')).classList.add('active');
+});
+
+/* peer table + ranks */
+(function(){
+  PEERS.forEach(function(p){p.real=+(p.pat-p.oi).toFixed(1);});
+  var h='<tr><th>Company</th><th>Revenue (&#8377; cr)</th><th>EBITDA (&#8377; cr)</th><th>EBITDA margin</th><th>Other income (&#8377; cr)</th><th>PAT (&#8377; cr)</th><th>PAT excl. other income (&#8377; cr)</th><th>EBITDA +ve?</th><th>PAT +ve?</th><th>Stock vs IPO</th></tr>';
+  PEERS.forEach(function(p){
+    h+='<tr'+(p.me?' class="hl"':'')+'><td>'+p.n+'</td><td>'+f(p.rev)+'</td><td class="'+cls(p.ebitda)+'">'+f(p.ebitda)+'</td><td>'+p.m+'%</td><td>'+p.oiF+f(p.oi)+'</td><td class="'+cls(p.pat)+'">'+f(p.pat)+'</td><td class="'+cls(p.real)+'"><b>'+f(p.real)+'</b></td><td>'+(p.ebitda>0?'Yes':'No')+'</td><td>'+(p.pat>0?'Yes':'No')+'</td><td class="'+cls(p.ipo)+'">'+(p.ipo>0?'+':'')+p.ipo+'%</td></tr>';
+  });
+  document.getElementById('peerTable').innerHTML=h;
+  function rank(key,desc){var s=PEERS.slice().sort(function(a,b){return desc?b[key]-a[key]:a[key]-b[key];});for(var i=0;i<s.length;i++){if(s[i].me)return i+1;}}
+  function ratioRank(){var s=PEERS.slice().sort(function(a,b){return b.real/b.rev-a.real/a.rev;});for(var i=0;i<s.length;i++){if(s[i].me)return i+1;}}
+  var negRep=PEERS.filter(function(p){return p.pat<0;}).map(function(p){return p.n;});
+  var negReal=PEERS.filter(function(p){return p.real<0;}).map(function(p){return p.n;});
+  var deps=PEERS.filter(function(p){return p.pat>0&&p.real>=0;}).sort(function(a,b){return b.oi/b.pat-a.oi/a.pat;}).map(function(p){return p.n+' '+Math.round(p.oi/p.pat*100)+'%';});
+  var r='<ul class="clean">'+
+   '<li><b>Scale:</b> #'+rank('rev',true)+' of 10 by revenue &mdash; larger than PB Fintech, RateGain and the smaller names, but one-tenth of Eternal.</li>'+
+   '<li><b>EBITDA margin:</b> #'+rank('m',true)+' of 10 (reported 2.8%; Adjusted 4.24% would place it a little higher) &mdash; ahead only of Easy Trip Planners.</li>'+
+   '<li><b>Net profit as reported:</b> '+negRep.length+' companies report a consolidated loss ('+negRep.join(', ')+').</li>'+
+   '<li><b>Net profit excluding other income:</b> '+negReal.length+' of 10 are in the red once other income is taken out ('+negReal.join(', ')+'). FirstCry&rsquo;s loss would be about &#8377;'+f(-PEERS.filter(function(p){return p.me;})[0].real)+' crore, #'+ratioRank()+' of 10 on loss/profit as % of revenue.</li>'+
+   '<li><b>Other income as share of reported PAT (profit-making companies):</b> '+deps.join(', ')+'. Eternal&rsquo;s reported PAT of &#8377;92 crore is smaller than its &#8377;375 crore of other income.</li>'+
+   '<li><b>Stock vs IPO:</b> #'+rank('ipo',true)+' of 10 &mdash; the weakest since IPO in this group (-62%), below even Paytm (-22%) and MapMyIndia (-15%).</li></ul>';
+  document.getElementById('peerRanks').innerHTML=r;
+})();
+
+/* charts with values on bar tops */
+var valuePlugin={id:'vals',afterDatasetsDraw:function(ch){var c=ch.ctx;var horiz=ch.options.indexAxis==='y';ch.data.datasets.forEach(function(ds,i){var m=ch.getDatasetMeta(i);m.data.forEach(function(b,j){var v=ds.data[j];var t=ds.customLabels?ds.customLabels[j]:Number(v).toLocaleString('en-IN');c.save();c.fillStyle='#1a2233';c.font='11px sans-serif';if(horiz){c.textAlign='left';c.fillText(t,v>=0?b.x+4:b.base+4,b.y+4);}else{c.textAlign='center';c.fillText(t,b.x,v>=0?b.y-4:b.y+13);}c.restore();});});}};
+window.addEventListener('load',function(){
+  try{
+    if(typeof Chart==='undefined')throw new Error('no chart lib');
+    ['chartSeg', 'chartPeerMargin', 'chartPeerEbitda', 'chartPeerReal'].forEach(function(id){var c=document.getElementById(id);if(c){c.parentNode.style.height=(id=='chartSeg'?260:420)+'px';c.style.maxHeight='none';c.style.minWidth='0';}});
+    function mini(id,title,labels,data,color,pad){
+      new Chart(document.getElementById(id),{type:'bar',plugins:[valuePlugin],
+        data:{labels:labels,datasets:[{data:data,backgroundColor:color}]},
+        options:{responsive:true,layout:{padding:{top:18}},plugins:{legend:{display:false},title:{display:true,text:title}},scales:{y:{display:false,grace:'20%'}}}});
+    }
+    mini('chartRev','Revenue (\u20b9 cr)',['Q1 FY26','Q1 FY27'],[1862.6,2106.2],'#1a56b0');
+    mini('chartEbitda','Reported EBITDA (\u20b9 cr)',['Q1 FY26 (implied)','Q1 FY27'],[33.1,59.65],'#0d7d7d');
+    mini('chartPat','Consolidated PAT (\u20b9 cr)',['Q1 FY26','Q1 FY27'],[-66.5,-43.96],'#b3261e');
+    var segV=[1455.9,424.3,232.1,19.3],tot=segV.reduce(function(a,b){return a+b;},0);
+    new Chart(document.getElementById('chartSeg'),{type:'bar',plugins:[valuePlugin],
+      data:{labels:['India multi-channel','Globalbees','International','Others'],datasets:[{data:segV.map(function(v){return +(v/tot*100).toFixed(1);}),customLabels:segV.map(function(v){return (v/tot*100).toFixed(1)+'%  (\u20b9'+v+' cr)';}),backgroundColor:['#1a56b0','#0d7d7d','#a9660b','#5b3b9e']}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:110}},plugins:{legend:{display:false},title:{display:true,text:'Share of Q1 FY27 segment revenue (%), with \u20b9 crore in brackets'}},scales:{x:{display:false}}}});
+    var s=PEERS.slice().sort(function(a,b){return b.m-a.m;});
+    new Chart(document.getElementById('chartPeerMargin'),{type:'bar',plugins:[valuePlugin],
+      data:{labels:s.map(function(p){return p.n;}),datasets:[{data:s.map(function(p){return p.m;}),customLabels:s.map(function(p){return p.m+'%  (EBITDA \u20b9'+f(p.ebitda)+' cr)';}),backgroundColor:s.map(function(p){return p.me?'#c2185b':'#1a56b0';})}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:150,left:120}},plugins:{legend:{display:false},title:{display:true,text:'EBITDA as % of revenue (comparable across sizes); absolute EBITDA in brackets'}},scales:{x:{display:false}}}});
+    var s2=PEERS.slice().sort(function(a,b){return b.pat/b.rev-a.pat/a.rev;});
+    new Chart(document.getElementById('chartPeerEbitda'),{type:'bar',plugins:[valuePlugin],
+      data:{labels:s2.map(function(p){return p.n;}),datasets:[{data:s2.map(function(p){return +(p.pat/p.rev*100).toFixed(1);}),customLabels:s2.map(function(p){return (p.pat/p.rev*100).toFixed(1)+'%  (PAT \u20b9'+f(p.pat)+' cr)';}),backgroundColor:s2.map(function(p){return p.me?'#c2185b':'#0d7d7d';})}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:150,left:120}},plugins:{legend:{display:false},title:{display:true,text:'PAT as % of revenue (comparable across sizes); absolute PAT in brackets'}},scales:{x:{display:false}}}});
+    var s3=PEERS.slice().sort(function(a,b){return b.real/b.rev-a.real/a.rev;});
+    new Chart(document.getElementById('chartPeerReal'),{type:'bar',plugins:[valuePlugin],
+      data:{labels:s3.map(function(p){return p.n;}),datasets:[{data:s3.map(function(p){return +(p.real/p.rev*100).toFixed(1);}),customLabels:s3.map(function(p){return (p.real/p.rev*100).toFixed(1)+'%  (PAT excl. other income \u20b9'+f(p.real)+' cr)';}),backgroundColor:s3.map(function(p){return p.me?'#c2185b':'#a9660b';})}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:230,left:120}},plugins:{legend:{display:false},title:{display:true,text:'PAT excluding other income as % of revenue (comparable across sizes); absolute figure in brackets'}},scales:{x:{display:false}}}});
+  }catch(e){
+    document.querySelectorAll('.chart-wrap').forEach(function(w){w.innerHTML='<div class="note">Chart could not load (offline or blocked). The tables on this page carry the same figures.</div>';});
+  }
+});
+
+
+/* ===== Tamil (Tanglish) language engine ===== */
+var LANG='en';
+var TA_MAP={"FirstCry (Brainbees Solutions): Q1 FY27 Business & Investment Analysis": "FirstCry (Brainbees Solutions): Q1 FY27 Business மற்றும் Investment Analysis", "Results for the quarter ended June 2026, the journey since the August 2024 IPO, segments & model, EBITDA/net-profit reality check, SWOT and peer comparison with the 9 new-age listed companies covered earlier": "2026 ஜூன் காலாண்டு results, 2024 ஆகஸ்ட் IPO-ல இருந்து இதுவரை ஆன பயணம், segments மற்றும் business model, EBITDA/net profit reality check, SWOT, ஏற்கனவே பார்த்த 9 new-age நிறுவனங்களோட peer comparison", "Business Profile": "Business விவரம்", "Cash Flow & Working Capital": "Cash Flow மற்றும் Working Capital", "IPO to Today & Valuation": "IPO-ல இருந்து இன்னைக்கு வரை மற்றும் Valuation", "Peer Comparison": "Peer ஒப்பீடு", "Analysts' Rating": "Analysts Rating", "Management & Board": "Management மற்றும் Board", "Overview: Is FirstCry EBITDA-positive? Net-profitable?": "Overview: FirstCry EBITDA-positive-ஆ? Net profit வந்துடுச்சா?", "What stands out": "முக்கியமா கவனிக்க வேண்டியது", "Business Segments & Model": "Business Segments மற்றும் Model", "FirstCry (Brainbees Solutions, founded 2010) is India's largest multi-channel retailer for mothers', babies' and kids' products — apparel, footwear, diapers, toys, baby gear, nursery and personal care, up to age 12 — sold through its website/app and FirstCry/BabyHug modern stores (company-owned and franchised).": "FirstCry (Brainbees Solutions, 2010-ல ஆரம்பிச்சது) இந்தியாவோட மிகப்பெரிய multi-channel retailer &mdash; அம்மா, குழந்தைங்க, 12 வயசு வரையான கிட்ஸ் products (apparel, footwear, diapers, toys, baby gear, nursery, personal care). Website/app மற்றும் FirstCry/BabyHug modern stores (சொந்த மற்றும் franchise) வழியா விக்குறாங்க.", "Visual 1: How the business model works (click any box)": "Visual 1: Business model எப்படி வேலை செய்யுது (எந்த box-ஐயும் click பண்ணுங்க)", "Click any box to see what it means.": "எந்த box-ஐயாவது click பண்ணுங்க, அதோட அர்த்தம் தெரியும்.", "Visual 2: The category-specialist flywheel": "Visual 2: Category-specialist flywheel (சுழல் சக்கரம்)", "Visual 3: Segment map (tile width = share of segment revenue)": "Visual 3: Segment map (tile அகலம் = segment revenue share)", "Visual 4: From EBITDA to net loss (Q1 FY27 profit bridge, ₹ crore)": "Visual 4: EBITDA-ல இருந்து net loss வரை (Q1 FY27 profit bridge, ₹ crore)", "Segment": "Segment", "Q1 FY27 Revenue (₹ cr)": "Q1 FY27 Revenue (₹ cr)", "What it is": "என்ன business", "Profitability read": "Profitability நிலைமை", "Online platform + ~1,190 modern stores (as of 31 Mar 2026), own brands (BabyHug, Cutewalk, Babyoye, etc.), faster delivery (RocketBees, Qwik)": "Online platform + ~1,190 modern stores (2026 மார்ச் 31 நிலவரம்), own brands (BabyHug, Cutewalk, Babyoye, etc.), faster delivery (RocketBees, Qwik)", "PAT-positive in Q1 FY27; margin pressure from diapering competition and manufacturing costs": "Q1 FY27-ல PAT-positive; diaper competition மற்றும் manufacturing cost-னால margin அழுத்தம்", "Online-led retail in the Gulf; first Riyadh store planned": "Gulf-ல online-led retail; முதல் Riyadh store plan-ல இருக்கு", "Still loss-making; Adjusted EBITDA loss ~₹16.7 cr, down ~22% YoY; FY26 margin about -10%": "இன்னும் loss-ல; Adjusted EBITDA loss ~₹16.7 cr, YoY ~22% குறைஞ்சிருக்கு; FY26 margin கிட்டத்தட்ட -10%", "Roll-up of D2C/marketplace brands; brand rationalisation done in Q1": "D2C/marketplace brands-ஐ roll-up பண்ணது; Q1-ல brand rationalisation முடிஞ்சது", "Adjusted EBITDA ₹16.7 cr (3.9% margin), +308% YoY; listing seen as likely exit route": "Adjusted EBITDA ₹16.7 cr (3.9% margin), YoY +308%; listing தான் exit route-ஆ இருக்கும்னு பார்க்கப்படுது", "Others (preschool/other)": "Others (preschool/மத்தது)", "Asset-light preschool franchise and related": "Asset-light preschool franchise மற்றும் அது சார்ந்தது", "Adjusted EBITDA ₹5.0 cr (26% margin)": "Adjusted EBITDA ₹5.0 cr (26% margin)", "Segment revenues do not sum exactly to consolidated revenue (₹2,106.2 cr) because of inter-company eliminations. Globalbees and International figures are converted from ₹ million in the company presentation.": "Segment revenue-கள் consolidated revenue-வோட (₹2,106.2 cr) சரியா கூட்டாது, ஏன்னா inter-company eliminations இருக்கு. Globalbees மற்றும் International figures company presentation-ல இருக்குற ₹ million-ல இருந்து convert பண்ணது.", "Business model": "Business model", "Category focus creates high repeat: management cites an average of 8.0 transactions by Year 4 of a cohort and 10.5 by Year 8.": "Category focus-னால repeat purchase அதிகம்: management சொல்றது, ஒரு customer cohort-க்கு Year 4-ல சராசரி 8.0 transactions, Year 8-ல 10.5.", "Vertical integration through own brands raises gross margin (mix ~ mid-30s %), but exposes the company to raw-material and manufacturing costs.": "Own brands மூலமா vertical integration பண்றதால gross margin உயருது (mid-30s %), ஆனா raw-material மற்றும் manufacturing cost risk-உம் வருது.", "Omnichannel: online plus modern stores; offline GMV grew ~15% YoY in Q1 FY27; net addition target of about 90–100 stores in FY27.": "Omnichannel: online + modern stores; Q1 FY27-ல offline GMV ~15% YoY வளர்ச்சி; FY27-ல ~90&ndash;100 stores net சேர்க்கிற target.", "Delivery speed as a moat: RocketBees in 72 cities (over half of online shipments); Qwik in 12 cities (~125,000 shipments in June 2026).": "Delivery speed தான் moat: RocketBees 72 cities-ல (online shipments-ல பாதிக்கு மேல); Qwik 12 cities-ல (2026 ஜூன்ல ~125,000 shipments).", "Stores & footprint (dark stores / physical)": "Stores மற்றும் footprint (dark stores / physical)", "Modern stores: 1,190 as of 31 March 2026 (company-owned and franchise); Q1 FY27 count not confirmed — flagged n/a.": "Modern stores: 2026 மார்ச் 31 நிலவரப்படி 1,190 (சொந்த மற்றும் franchise); Q1 FY27 count உறுதி ஆகல &mdash; n/a-னு flag பண்ணது.", "Unlike Blinkit-style dark stores, FirstCry's quick-delivery uses in-house delivery networks and store/warehouse hubs; a separate dark-store count is not disclosed — n/a.": "Blinkit மாதிரி dark stores இல்ல; FirstCry-ஓட quick-delivery சொந்த delivery network மற்றும் store/warehouse hubs வழியா நடக்குது; தனியா dark-store count சொல்லல &mdash; n/a.", "Annual unique transacting customers: 11.8 million (+10% YoY); India multi-channel 11.3 million.": "வருஷத்துக்கு unique transacting customers: 11.8 million (+10% YoY); India multi-channel 11.3 million.", "Financials: Q1 FY27 and Trend": "Financials: Q1 FY27 மற்றும் Trend", "Metric (consolidated)": "Metric (consolidated)", "Change": "மாற்றம்", "~2,506 (implied)": "~2,506 (கணக்கிட்டது)", "~33.1 (implied from +80%)": "~33.1 (+80%-ல இருந்து கணக்கிட்டது)", "~47 (PBDAT less reported EBITDA)": "~47 (PBDAT-ல இருந்து reported EBITDA கழிச்சது)", "flagged": "flag பண்ணது", "narrowed": "குறைஞ்சிருக்கு", "-34% loss": "Loss 34% குறைவு", "Real profit check (approximate, flagged): if the ~₹47 crore of other income is excluded, the consolidated pre-tax loss would be roughly ₹90 crore (about double the reported ₹43 crore), i.e. FirstCry's operating business is not yet covering depreciation, finance costs and ESOP charges. Other income is derived as PBDAT (₹106.6 cr) less reported EBITDA (₹59.65 cr) and is not an audited line-item; verify against the full financial statements. Reported EBITDA and Adjusted EBITDA differ because the company's adjusted measure excludes items such as ESOP costs.": "<b>Real profit check (approximate, flag பண்ணது):</b> ~₹47 crore other income-ஐ எடுத்துட்டா consolidated pre-tax loss கிட்டத்தட்ட ₹90 crore வரும் (reported ₹43 crore-ஓட ரெண்டு மடங்கு), அதாவது FirstCry-ஓட operating business இன்னும் depreciation, finance costs, ESOP charges-ஐ ஈடு கட்டல. Other income-ஐ PBDAT (₹106.6 cr) - reported EBITDA (₹59.65 cr) வெச்சு derive பண்ணோம்; இது audited line-item இல்ல, முழு financial statements-ல verify பண்ணுங்க. Reported EBITDA-வும் Adjusted EBITDA-வும் வேறுபடுறது ஏன்னா company-ஓட adjusted measure-ல ESOP costs மாதிரி items விலக்கப்படுது.", "Annual trend": "வருஷ வாரியா trend", "Year": "வருஷம்", "Net result (₹ cr)": "Net result (₹ cr)", "Remark": "குறிப்பு", "-191 (derived)": "-191 (கணக்கிட்டது)", "Listed Aug 2024": "2024 ஆகஸ்ட்ல listing", "Loss narrowed ~27%; cash flow turned positive; NWC days 57 (from 71)": "Loss ~27% குறைஞ்சது; cash flow positive ஆச்சு; NWC days 57 (71-ல இருந்து)", "Loss narrowed 34%": "Loss 34% குறைஞ்சது", "Each chart below uses its own axis. The bars are not drawn to a common scale, so read the labelled value on each bar rather than comparing bar heights across charts.": "ஒவ்வொரு chart-க்கும் தனி axis. Bars ஒரே scale-ல வரையல, அதனால chart-க்கு chart bar உயரத்தை compare பண்ணாம, ஒவ்வொரு bar-லயும் இருக்குற value-ஐ படிங்க.", "FY25 revenue and net loss are derived from the FY26 figures and reported percentage changes (FY26 revenue growth 11.6%; FY26 loss 26.76% lower than FY25) — approximate; verify with annual reports.": "FY25 revenue மற்றும் net loss, FY26 figures மற்றும் reported percentage changes-ல இருந்து derive பண்ணது (FY26 revenue growth 11.6%; FY26 loss, FY25-ஐ விட 26.76% குறைவு) &mdash; approximate; annual report-ல verify பண்ணுங்க.", "Cash Flow, Working Capital & Key Ratios": "Cash Flow, Working Capital மற்றும் Key Ratios", "Positive in FY26": "FY26-ல positive", "Operating / investing / financing cash flow: absolute FY26 and Q1 FY27 cash-flow-statement figures were not available — n/a, flagged rather than estimated. Directionally, management reported that the group turned free-cash-flow positive in FY26 and that faster stock turnover is releasing cash.": "<b>Operating / investing / financing cash flow:</b> FY26 மற்றும் Q1 FY27-க்கான absolute cash-flow-statement figures கிடைக்கல &mdash; estimate பண்ணாம n/a-னு flag பண்ணோம். Direction-ஆ சொன்னா, FY26-ல group free-cash-flow positive ஆச்சு, stock turnover வேகமா ஆனதால cash release ஆகுதுன்னு management சொன்னாங்க.", "Working capital: inventory days improved from 102 to 85 and net working capital days from 71 to 57 in FY26 — a genuine improvement for an inventory-heavy retailer.": "<b>Working capital:</b> FY26-ல inventory days 102-ல இருந்து 85-க்கும், net working capital days 71-ல இருந்து 57-க்கும் improve ஆச்சு &mdash; inventory அதிகம் இருக்குற retailer-க்கு இது உண்மையான முன்னேற்றம்.", "Profitability ratios: reported EBITDA margin 2.8%; Adjusted EBITDA 4.24%; PAT margin about -2.1% (consolidated). Return ratios are low because the group is still loss-making at the consolidated level.": "<b>Profitability ratios:</b> reported EBITDA margin 2.8%; Adjusted EBITDA 4.24%; PAT margin கிட்டத்தட்ட -2.1% (consolidated). Group இன்னும் consolidated-ஆ loss-ல இருக்குறதால return ratios குறைவு.", "Balance sheet: IPO proceeds (fresh issue) provide a cash cushion, which is also why other income (interest on treasury) is meaningful relative to operating profit; the company has sought shareholder approval on utilisation of IPO proceeds (AGM 22 Sep 2026).": "<b>Balance sheet:</b> IPO proceeds (fresh issue) cash cushion தருது; அதனாலதான் other income (treasury interest) operating profit-க்கு ஒப்பிடும்போது பெரிசா இருக்கு; IPO proceeds பயன்பாடு பத்தி company shareholders approval கேட்டிருக்கு (AGM 22 Sep 2026).", "P/B and ROE are aggregator-derived snapshots at different dates; treat as indicative.": "P/B மற்றும் ROE வெவ்வேற தேதிகள்ல aggregator-ல இருந்து எடுத்த snapshots; indicative-ஆ மட்டும் பாருங்க.", "IPO issue price (Aug 2024)": "IPO issue price (2024 ஆகஸ்ட்)", "CMP (22 Sep 2026)": "CMP (2026 செப் 22)", "Change since IPO": "IPO-ல இருந்து மாற்றம்", "52-week range": "52 வார range", "Milestone": "முக்கிய கட்டம்", "Price / event": "விலை / நிகழ்வு", "IPO (Aug 2024)": "IPO (2024 ஆகஸ்ட்)", "Issue price ₹465 (upper end of band); fresh issue plus offer for sale": "Issue price ₹465 (band-ஓட upper end); fresh issue + offer for sale", "Around Aug 2025 (one year ago)": "2025 ஆகஸ்ட் (ஒரு வருஷம் முன்னாடி)", "Stock roughly in the ₹350–400 zone; 1-year return to Sep 2026 shown by one aggregator as about -53%": "Stock கிட்டத்தட்ட ₹350&ndash;400 zone-ல; 2026 செப் வரை 1-year return, ஒரு aggregator-ல ~-53%னு காட்டுது", "7 Apr 2026": "2026 ஏப் 7", "Surged over 10% intraday to about ₹250": "Intraday-ல 10%-க்கு மேல ஏறி ~₹250", "13 Aug 2026 (Q1 results)": "2026 ஆக 13 (Q1 results)", "Traded near ₹214 on the day, close to the then 52-week low": "அன்னைக்கு ~₹214-ல trade; அப்போதைய 52-week low-க்கு பக்கத்துல", "15 Sep 2026": "2026 செப் 15", "Bounced ~5–7% to about ₹179 after a ~54% one-year fall": "~54% ஒரு வருஷ சரிவுக்கு அப்புறம் ~5&ndash;7% ஏறி ~₹179", "22 Sep 2026": "2026 செப் 22", "~₹176 (range ₹170–182); 52-week low ₹163.4": "~₹176 (range ₹170&ndash;182); 52-week low ₹163.4", "Price history between milestones is from exchange-derived aggregator pages and press reports of differing dates and may not be strictly comparable (one aggregator lists a 52-week high of ₹498.95 vs ₹390.8 on others). Not a price recommendation. Check the live quote before use.": "Milestones-க்கு நடுவுல இருக்குற விலை history, exchange-derived aggregator pages மற்றும் வெவ்வேற தேதி press reports-ல இருந்து; strictly comparable-ஆ இருக்காது (ஒரு aggregator 52-week high ₹498.95னு காட்டுது, மத்தவங்க ₹390.8). இது price recommendation இல்ல. பயன்படுத்தறதுக்கு முன்னாடி live quote பாருங்க.", "Why the stock fell": "ஏன் stock இறங்குச்சு", "Persistent consolidated losses and no clear date for net profitability, while peers such as Nykaa have moved to profits.": "தொடர்ந்து consolidated losses, net profit எப்போ வரும்னு clear date இல்ல; Nykaa மாதிரி peers profit-க்கு வந்துட்டாங்க.", "Gross-margin compression (diapering competition, input costs) and India multi-channel margin decline despite better growth.": "Gross margin அழுத்தம் (diaper competition, input costs) மற்றும் growth நல்லா இருந்தும் India multi-channel margin குறைஞ்சது.", "Slower-than-hoped International (UAE/KSA) turnaround because of promotional intensity from large horizontal e-commerce entrants.": "International (UAE/KSA) turnaround எதிர்பார்த்ததை விட மெதுவா; பெரிய horizontal e-commerce நிறுவனங்களோட promotion அதிகம்.", "Large pre-IPO investor lock-in expiries and share overhang typical of new-age IPOs (general pattern; not specifically verified for each date).": "Pre-IPO investors lock-in முடிஞ்சது மற்றும் share overhang &mdash; new-age IPO-களுக்கு பொதுவான pattern (ஒவ்வொரு தேதிக்கும் தனியா verify பண்ணல).", "Peer Comparison: FirstCry vs the 9 New-Age Companies (Q1 FY27)": "Peer ஒப்பீடு: FirstCry vs 9 New-Age நிறுவனங்க (Q1 FY27)", "Figures use each company's Q1 FY27 reported numbers as compiled in the earlier CB Research new-age tech dashboard. \"Stock vs IPO\" for peers is from the press table used there (split/bonus adjusted; different date); FirstCry's is computed from CMP vs ₹465.": "இந்த figures, முன்னாடி CB Research new-age tech dashboard-ல compile பண்ண ஒவ்வொரு நிறுவனத்தோட Q1 FY27 reported numbers. Peers-ஓட \"Stock vs IPO\" அங்க பயன்படுத்தின press table-ல இருந்து (split/bonus adjusted; தேதி வேற); FirstCry-க்கு CMP vs ₹465-ல இருந்து கணக்கிட்டது.", "Company": "நிறுவனம்", "PAT excl. other income (₹ cr)": "Other income கழிச்சு PAT (₹ cr)", "EBITDA +ve?": "EBITDA +ve-ஆ?", "PAT +ve?": "PAT +ve-ஆ?", "Stock vs IPO": "IPO-க்கு எதிரா Stock", "How the new column is calculated: PAT excl. other income = reported PAT minus other income (simple subtraction, as requested; the tax effect on other income is ignored, which is conservative for companies that pay tax). † derived by CB Research: FirstCry = PBDAT less reported EBITDA; RateGain = total income less revenue from operations. ~ approximate (Easy Trip Planners, other income not separately reported; about ₹2–3 crore).": "<b>புது column எப்படி கணக்கிட்டது:</b> Other income கழிச்சு PAT = reported PAT - other income (simple கழித்தல்; other income மேல வர்ற tax effect-ஐ கணக்குல எடுக்கல, tax கட்டுற நிறுவனங்களுக்கு இது conservative). &dagger; CB Research derive பண்ணது: FirstCry = PBDAT - reported EBITDA; RateGain = total income - revenue from operations. ~ approximate (Easy Trip Planners-க்கு other income தனியா report ஆகல; ~₹2&ndash;3 crore).", "Peer charts are ratio-based (% of revenue) rather than absolute, because Eternal’s revenue is over 100x that of the smallest names and absolute bars would not be comparable. Absolute EBITDA/PAT figures appear beside each bar and in the table above.": "Peer charts absolute இல்லாம revenue-ல % ஆ (ratio) வரையப்பட்டிருக்கு, ஏன்னா Eternal-ஓட revenue சின்ன நிறுவனங்களை விட 100 மடங்குக்கு மேல; absolute bars-ஐ compare பண்ண முடியாது. Absolute EBITDA/PAT ஒவ்வொரு bar பக்கத்துலயும் மேல இருக்குற table-லயும் இருக்கு.", "Where FirstCry stands": "FirstCry எங்க நிக்குது", "Scale: #4 of 10 by revenue — larger than PB Fintech, RateGain and the smaller names, but one-tenth of Eternal.": "<b>Scale:</b> Revenue-ல 10-ல #4 &mdash; PB Fintech, RateGain, சின்ன நிறுவனங்களை விட பெரிசு, ஆனா Eternal-ஓட பத்துல ஒரு பங்கு.", "EBITDA margin: #9 of 10 (reported 2.8%; Adjusted 4.24% would place it a little higher) — ahead only of Easy Trip Planners.": "<b>EBITDA margin:</b> 10-ல #9 (reported 2.8%; Adjusted 4.24% வெச்சா கொஞ்சம் மேல வரும்) &mdash; Easy Trip Planners-க்கு மட்டும்தான் முன்னாடி.", "Net profit as reported: 3 companies report a consolidated loss (FirstCry (Brainbees), Nazara, Easy Trip Planners).": "<b>Reported net profit:</b> 3 நிறுவனங்க consolidated loss report பண்றாங்க (FirstCry, Nazara, Easy Trip Planners).", "Net profit excluding other income: 4 of 10 are in the red once other income is taken out (Eternal (Zomato), FirstCry (Brainbees), Nazara, Easy Trip Planners). FirstCry’s loss would be about ₹91 crore, #8 of 10 on loss/profit as % of revenue.": "<b>Other income கழிச்சா net profit:</b> Other income எடுத்தா 10-ல 4 நிறுவனங்க loss-ல (Eternal, FirstCry, Nazara, Easy Trip Planners). FirstCry-ஓட loss கிட்டத்தட்ட ₹91 crore, revenue-ல % ஆ பார்த்தா 10-ல #8.", "Other income as share of reported PAT (profit-making companies): One 97 (Paytm) 83%, PB Fintech 57%, CarTrade Tech 50%, MapMyIndia (CE Info) 40%, FSN E-commerce (Nykaa) 12%, RateGain 3%. Eternal’s reported PAT of ₹92 crore is smaller than its ₹375 crore of other income.": "<b>Reported PAT-ல other income பங்கு (profit-ல இருக்குற நிறுவனங்க):</b> Paytm 83%, PB Fintech 57%, CarTrade 50%, MapMyIndia 40%, Nykaa 12%, RateGain 3%. Eternal-ஓட reported PAT ₹92 crore, அதோட ₹375 crore other income-ஐ விட குறைவு.", "Stock vs IPO: #10 of 10 — the weakest since IPO in this group (-62%), below even Paytm (-22%) and MapMyIndia (-15%).": "<b>Stock vs IPO:</b> 10-ல #10 &mdash; இந்த group-ல IPO-ல இருந்து மிக மோசமான performance (-62%), Paytm (-22%) மற்றும் MapMyIndia (-15%)-ஐ விடவும் கீழ.", "SWOT Analysis": "SWOT பகுப்பாய்வு", "Strengths": "பலம் (Strengths)", "India's largest multi-channel mother-baby-kids retailer; category specialist with high repeat behaviour": "India-வோட மிகப்பெரிய multi-channel mother-baby-kids retailer; category specialist, repeat behaviour அதிகம்", "Omnichannel reach: ~1,190 modern stores plus app/web; 11.8 million annual transacting customers": "Omnichannel reach: ~1,190 modern stores + app/web; வருஷத்துக்கு 11.8 million transacting customers", "Own-brand portfolio and vertical integration support gross margin in the mid-30s": "Own-brand portfolio மற்றும் vertical integration gross margin-ஐ mid-30s-ல தாங்குது", "Improving working capital (NWC days 57, inventory days 85) and positive free cash flow in FY26": "Working capital improve ஆச்சு (NWC days 57, inventory days 85), FY26-ல free cash flow positive", "Globalbees now covering fixed costs; Adjusted EBITDA up 308% YoY": "Globalbees இப்போ fixed costs-ஐ ஈடு கட்டுது; Adjusted EBITDA YoY +308%", "Weaknesses": "பலவீனம் (Weaknesses)", "Still consolidated loss-making (Q1 FY27 ₹44 cr; FY26 about ₹140 cr)": "இன்னும் consolidated loss-ல (Q1 FY27 ₹44 cr; FY26 ~₹140 cr)", "Gross margin down 200 bps YoY; Adjusted EBITDA margin down to 4.24%": "Gross margin YoY 200 bps குறைவு; Adjusted EBITDA margin 4.24%-க்கு இறங்குச்சு", "International (UAE/KSA) still loss-making after several years": "International (UAE/KSA) பல வருஷம் ஆகியும் இன்னும் loss-ல", "Meaningful reliance on other income: ex-other-income loss roughly double the reported loss (approximate)": "Other income மேல கணிசமான சார்பு: அதை எடுத்தா loss, reported loss-ஐ விட கிட்டத்தட்ட ரெண்டு மடங்கு (approximate)", "Low ROE (~1.8%) and premium P/E on thin earnings": "குறைவான ROE (~1.8%) மற்றும் thin earnings-க்கு premium P/E", "Opportunities": "வாய்ப்புகள் (Opportunities)", "Net addition of ~90–100 modern stores planned in FY27 plus offline portfolio realignment": "FY27-ல ~90&ndash;100 modern stores net சேர்க்கிற plan + offline portfolio realignment", "RocketBees/Qwik faster delivery to counter quick-commerce entrants": "RocketBees/Qwik faster delivery, quick-commerce நிறுவனங்களை எதிர்கொள்ள", "Globalbees listing as a value-unlocking exit route": "Globalbees listing, value-unlock பண்ற exit route", "Gulf expansion incl. first Riyadh store; management expects gross-margin recovery from Q2 FY27": "Gulf expansion (முதல் Riyadh store உட்பட); Q2 FY27-ல இருந்து gross-margin recovery வரும்னு management எதிர்பார்க்குது", "Threats": "அச்சுறுத்தல் (Threats)", "Quick-commerce and horizontal players (Blinkit, Zepto, Amazon, Flipkart, Nykaa-style category extensions) targeting baby categories": "Quick-commerce மற்றும் horizontal players (Blinkit, Zepto, Amazon, Flipkart, Nykaa மாதிரி category extensions) baby categories-ஐ குறி வெக்கிறாங்க", "Diapering price wars; rupee depreciation and crude-linked raw-material costs": "Diaper price wars; ரூபாய் மதிப்பு சரிவு மற்றும் crude-linked raw-material costs", "India's birth-rate trends over the long term (risk flagged by brokers)": "நீண்ட காலத்துல இந்தியாவோட birth-rate trend (brokers flag பண்ண risk)", "Physical-store expansion may cannibalise existing footprint (flagged by a broker at IPO)": "Physical-store expansion, இருக்குற footprint-ஐயே cannibalise பண்ணலாம் (IPO சமயம் ஒரு broker flag பண்ணது)", "Analysts' Rating (third-party)": "Analysts Rating (third-party)", "CB Research does not issue its own buy/sell/hold recommendation. Third-party views collated below; dates matter because the share price has fallen sharply.": "CB Research தானா buy/sell/hold recommendation தராது. Third-party views கீழ collate பண்ணிருக்கு; share price கடுமையா இறங்கினதால தேதி முக்கியம்.", "₹243 (avg.)": "₹243 (சராசரி)", "₹205 (cut from ₹240)": "₹205 (₹240-ல இருந்து குறைச்சது)", "Dec 2024 (stale)": "Dec 2024 (பழசு)", "Individual current broker calls after Q1 FY27 were not found; marked n/a rather than estimated. The JM Financial call predates the ~60% fall and should not be read as current.": "Q1 FY27-க்கு அப்புறம் தனித்தனி broker calls கிடைக்கல; estimate பண்ணாம n/a-னு mark பண்ணோம். JM Financial call ~60% சரிவுக்கு முன்னாடி வந்தது, இப்போதைய view-ஆ எடுக்காதீங்க.", "Founder, Chairman & Managing Director / CEO": "Founder, Chairman மற்றும் Managing Director / CEO", "Co-founder & Executive Director": "Co-founder மற்றும் Executive Director", "Full board, CFO and independent directors": "முழு board, CFO மற்றும் independent directors", "n/a — verify in the annual report / BSE filing": "n/a &mdash; annual report / BSE filing-ல verify பண்ணுங்க", "Only leadership names that could be confirmed are listed; titles should be verified against the latest annual report. The 16th AGM (22 Sep 2026) included director re-appointment and remuneration resolutions.": "உறுதி செய்ய முடிஞ்ச leadership பேர்கள் மட்டும் இருக்கு; titles-ஐ latest annual report-ல verify பண்ணுங்க. 16-வது AGM (22 Sep 2026)-ல director re-appointment மற்றும் remuneration resolutions இருந்தது.", "In your own words:": "உங்க சொந்த வார்த்தைகள்ல:", "Get a Socratic follow-up": "Socratic follow-up வேணும்", "Next question →": "அடுத்த கேள்வி &rarr;"};
+var TA_N={"FirstCry reports positive EBITDA but a consolidated net loss. Which items sit between EBITDA and net profit?": "FirstCry EBITDA positive-ஆ report பண்ணுது, ஆனா consolidated net loss. EBITDA-க்கும் net profit-க்கும் நடுவுல என்ன items இருக்கு?", "Depreciation, finance costs, tax, exceptional items and (for the group) losses in loss-making subsidiaries": "Depreciation, finance costs, tax, exceptional items மற்றும் (group-க்கு) loss-ல இருக்குற subsidiaries-ஓட losses", "Only GST": "GST மட்டும்", "Only dividends paid": "கொடுத்த dividends மட்டும்", "Nothing; they are always equal": "ஒண்ணும் இல்ல; அவை எப்பவும் சமம்", "EBITDA is before depreciation, interest and tax. FirstCry's consolidated loss comes after those, and after subsidiary (e.g. International) losses.": "EBITDA, depreciation, interest, tax-க்கு முன்னாடி வர்றது. FirstCry-ஓட consolidated loss இவை எல்லாத்துக்கும் அப்புறம், subsidiary (உ.தா. International) losses-க்கு அப்புறமும் வருது.", "Standalone PAT is positive (₹21.6 cr) but consolidated PAT is a loss (₹44 cr). What does this suggest?": "Standalone PAT positive (₹21.6 cr), ஆனா consolidated PAT loss (₹44 cr). இது என்ன சொல்லுது?", "Subsidiary businesses are losing more than the parent earns": "Parent சம்பாதிக்கிறதை விட subsidiary businesses அதிகமா இழக்குது", "The auditor made an error": "Auditor தப்பு பண்ணிட்டார்", "Standalone figures are always higher by rule": "Standalone figures எப்பவும் அதிகமா இருக்கணும்ங்கிறது விதி", "Tax is refunded on consolidation": "Consolidation-ல tax திருப்பிக் கொடுப்பாங்க", "Consolidation adds subsidiaries. Losses in International and other subsidiaries more than offset the parent's profit.": "Consolidation-ல subsidiaries சேருது. International மற்றும் மத்த subsidiaries-ஓட losses, parent-ஓட profit-ஐ விட அதிகமா இருக்கு.", "If about ₹47 crore of the quarter's income is \"other income\" (treasury interest), how should you judge core profitability?": "Quarter-ஓட income-ல ~₹47 crore \"other income\" (treasury interest)-னா, core profitability-ஐ எப்படி judge பண்ணணும்?", "Look at the result excluding other income; the operating loss is larger than reported": "Other income தவிர்த்து result பாருங்க; operating loss reported-ஐ விட பெரிசு", "Ignore it; other income is the same as sales": "Ignore பண்ணுங்க; other income-உம் sales-உம் ஒண்ணுதான்", "Add it twice": "ரெண்டு தடவை கூட்டுங்க", "It only matters for banks": "இது banks-க்கு மட்டும்தான் முக்கியம்", "Other income is real cash but not repeatable operating earnings. Without it, the consolidated loss would be about double (approximate).": "Other income உண்மையான cash தான், ஆனா repeat ஆகுற operating earnings இல்ல. அது இல்லன்னா consolidated loss கிட்டத்தட்ட ரெண்டு மடங்கு (approximate).", "The stock is ~62% below its IPO price while revenue is up 13%. Why can both be true?": "Stock IPO price-ஐ விட ~62% கீழ, ஆனா revenue 13% ஏறியிருக்கு. ரெண்டும் எப்படி உண்மை ஆக முடியும்?", "Price reflects expected profits, margins and valuation, not just revenue growth": "Price, எதிர்பார்க்கிற profits, margins, valuation-ஐ பிரதிபலிக்குது, revenue growth மட்டும் இல்ல", "Revenue growth always lifts the price": "Revenue growth எப்பவும் price-ஐ உயர்த்தும்", "IPO prices never matter": "IPO prices எப்பவும் முக்கியம் இல்ல", "Exchanges set the price": "Exchanges தான் price-ஐ நிர்ணயிக்கும்", "Markets price future earnings and margins. Growth without profitability, plus a high starting valuation, can lead to falls even as sales grow.": "Markets எதிர்கால earnings மற்றும் margins-ஐ விலையில வெக்குது. லாபம் இல்லாத growth + அதிக starting valuation இருந்தா sales வளர்ந்தாலும் விலை இறங்கலாம்.", "Correct. ": "சரி. ", "Not quite. ": "கிட்டத்தட்ட, ஆனா இல்ல. ", "Good. Follow-up: if FirstCry's International losses keep shrinking about 20% a year and Globalbees keeps scaling, roughly when might the consolidated line turn positive, and which assumption would you test first (gross margin, store additions, or other income staying steady)?": "நல்லது. Follow-up: FirstCry-ஓட International losses வருஷத்துக்கு ~20% குறைஞ்சிட்டே இருந்து, Globalbees scale ஆகிட்டே இருந்தா, consolidated line எப்போ positive ஆகும்? எந்த assumption-ஐ முதல்ல test பண்ணுவீங்க (gross margin, store additions, இல்ல other income நிலையா இருக்குமா)?", "Try a sentence or two first; a rough guess helps you learn faster.": "முதல்ல ஒரு வரி ரெண்டு வரி எழுதுங்க; ஒரு rough guess கூட வேகமா கத்துக்க உதவும்.", "Q": "கேள்வி ", "Hi! Ask me about FirstCry: results, EBITDA, net profit, stores, IPO vs price, SWOT, or how it compares with peers like Nykaa and Eternal.": "வணக்கம்! FirstCry பத்தி கேளுங்க: results, EBITDA, net profit, stores, IPO vs price, SWOT, இல்ல Nykaa, Eternal மாதிரி peers-ஓட எப்படி ஒப்பிடுது.", "Q1 FY27 reported EBITDA is ₹59.65 crore (2.8%); company Adjusted EBITDA is ₹89.3 crore (4.24%, vs 4.98% a year ago). So FirstCry is EBITDA-positive.": "Q1 FY27 reported EBITDA ₹59.65 crore (2.8%); company Adjusted EBITDA ₹89.3 crore (4.24%, ஒரு வருஷம் முன்னாடி 4.98%). அதனால FirstCry EBITDA-positive.", "Consolidated loss after tax was about ₹44 crore in Q1 FY27 (vs ₹66.5 crore a year ago). Standalone PAT was +₹21.6 crore and India multi-channel was PAT-positive; International drags. Ex other income (~₹47 crore) the loss would be roughly ₹90 crore (approximate).": "Q1 FY27-ல consolidated loss after tax ~₹44 crore (ஒரு வருஷம் முன்னாடி ₹66.5 crore). Standalone PAT +₹21.6 crore, India multi-channel PAT-positive; International இழுக்குது. Other income (~₹47 crore) எடுத்தா loss கிட்டத்தட்ட ₹90 crore (approximate).", "Revenue ₹2,106.2 crore, +13.1% YoY; GMV ₹2,807.2 crore, +12%; India multi-channel ₹1,455.9 crore (+~18%).": "Revenue ₹2,106.2 crore, YoY +13.1%; GMV ₹2,807.2 crore, +12%; India multi-channel ₹1,455.9 crore (+~18%).", "IPO price ₹465 (Aug 2024). CMP about ₹176.3 on 22 Sep 2026, roughly 62% below the IPO price. Market cap about ₹8,898 crore.": "IPO price ₹465 (2024 ஆகஸ்ட்). 2026 செப் 22-ல CMP ~₹176.3, IPO price-ஐ விட ~62% கீழ. Market cap ~₹8,898 crore.", "About 1,190 modern stores as of 31 Mar 2026; net addition target ~90-100 in FY27. A separate dark-store count is not disclosed. RocketBees delivery covers 72 cities and Qwik 12 cities.": "2026 மார்ச் 31 நிலவரம் ~1,190 modern stores; FY27-ல ~90-100 net சேர்க்கிற target. தனியா dark-store count சொல்லல. RocketBees 72 cities-லயும் Qwik 12 cities-லயும் இயங்குது.", "Segments: India multi-channel (core), International UAE/KSA, Globalbees (brand aggregator) and Others (preschool).": "Segments: India multi-channel (core), International UAE/KSA, Globalbees (brand aggregator), Others (preschool).", "Strengths: category leader, omnichannel, own brands. Weaknesses: consolidated loss, gross-margin pressure, International drag. Threats: quick commerce, diaper price wars, input costs.": "பலம்: category leader, omnichannel, own brands. பலவீனம்: consolidated loss, gross-margin அழுத்தம், International இழுப்பு. அச்சுறுத்தல்: quick commerce, diaper price wars, input costs.", "Among the 10 companies FirstCry ranks 4th by revenue, 9th by EBITDA margin, and last by stock return since IPO (-62%). Three report a consolidated loss (FirstCry, Nazara, Easy Trip). Excluding other income (PAT minus other income) four are in the red: Eternal, FirstCry (about ₹91 cr loss), Nazara and Easy Trip.": "10 நிறுவனங்கள்ல FirstCry revenue-ல 4-வது, EBITDA margin-ல 9-வது, IPO-ல இருந்து stock return-ல கடைசி (-62%). மூணு பேர் consolidated loss report பண்றாங்க (FirstCry, Nazara, Easy Trip). Other income கழிச்சா (PAT - other income) நாலு பேர் loss-ல: Eternal, FirstCry (~₹91 cr loss), Nazara, Easy Trip.", "Third-party consensus: Hold, average target about ₹243 (7 analysts); trimmed targets around ₹205 by one aggregator. JM Financial Buy at ₹692 dates from Dec 2024 and is stale.": "Third-party consensus: Hold, சராசரி target ~₹243 (7 analysts); ஒரு aggregator target-ஐ ~₹205-க்கு குறைச்சிருக்கு. JM Financial-ஓட ₹692 Buy 2024 டிசம்பர்ல வந்தது, இப்போ பழசு.", "Founder Supam Maheshwari leads the company; Amitava Saha is co-founder. Full board details are n/a here; verify in the annual report.": "Founder Supam Maheshwari நிறுவனத்தை வழிநடத்துறார்; Amitava Saha co-founder. முழு board details இங்க n/a; annual report-ல verify பண்ணுங்க.", "I can answer on revenue, EBITDA, net profit, stores, IPO vs price, segments, SWOT, analysts, management and peer comparison.": "Revenue, EBITDA, net profit, stores, IPO vs price, segments, SWOT, analysts, management, peer comparison பத்தி பதில் சொல்வேன்.", "Voice input is not supported in this browser. Please type.": "இந்த browser-ல voice input support இல்ல. Type பண்ணுங்க.", "Revenue (₹ cr)": "Revenue (₹ cr)", "Reported EBITDA (₹ cr)": "Reported EBITDA (₹ cr)", "Consolidated PAT (₹ cr)": "Consolidated PAT (₹ cr)", "Share of Q1 FY27 segment revenue (%), with ₹ crore in brackets": "Q1 FY27 segment revenue பங்கு (%), ₹ crore அடைப்புக்குள்ள", "EBITDA as % of revenue (comparable across sizes); absolute EBITDA in brackets": "Revenue-ல EBITDA % (எந்த size-லயும் compare பண்ணலாம்); absolute EBITDA அடைப்புக்குள்ள", "PAT as % of revenue (comparable across sizes); absolute PAT in brackets": "Revenue-ல PAT % (எந்த size-லயும் compare பண்ணலாம்); absolute PAT அடைப்புக்குள்ள", "PAT excluding other income as % of revenue (comparable across sizes); absolute figure in brackets": "Other income தவிர்த்து PAT, revenue-ல % (எந்த size-லயும் compare பண்ணலாம்); absolute figure அடைப்புக்குள்ள", "Q1 FY27 EBITDA as % of revenue (absolute EBITDA ₹ crore in brackets)": "Q1 FY27 revenue-ல EBITDA % (absolute EBITDA ₹ crore அடைப்புக்குள்ள)", "Q1 FY27 PAT as % of revenue (absolute PAT ₹ crore in brackets)": "Q1 FY27 revenue-ல PAT % (absolute PAT ₹ crore அடைப்புக்குள்ள)", "Click any box to see what it means.": "எந்த box-ஐயாவது click பண்ணுங்க, அதோட அர்த்தம் தெரியும்.", "Ask about FirstCry or peers...": "FirstCry அல்லது peers பத்தி கேளுங்க...", "Ask about revenue, EBITDA, SWOT...": "Revenue, EBITDA, SWOT பத்தி கேளுங்க...", "Why can a company be EBITDA-positive but still report a net loss?": "ஒரு நிறுவனம் EBITDA-positive-ஆ இருந்தும் net loss ஏன் report பண்ணுது?", "Why do you think 'other income' can distort the picture of a company's real operating health?": "ஒரு நிறுவனத்தோட உண்மையான operating health-ஐ 'other income' ஏன் திசை திருப்பலாம்னு நினைக்கிறீங்க?", "CB Assist (voice-enabled)": "CB Assist (voice-enabled)", "CB Assist (Voice-enabled)": "CB Assist (voice-enabled)", "Who it serves": "யாருக்கு சேவை", "How it earns": "எப்படி சம்பாதிக்குது", "Physical footprint": "Physical footprint", "Q1 FY27 profit reality": "Q1 FY27 profit நிலைமை", "1. What it sells": "1. என்ன விக்குது", "2. How it reaches parents": "2. Parents-ஐ எப்படி சேருது", "3. Who buys": "3. யார் வாங்குறாங்க", "4. What comes out (Q1 FY27)": "4. விளைவு (Q1 FY27)", "Category focus: mother, baby, kids": "Category focus: அம்மா, baby, kids", "High repeat purchase (8.0 orders by Year 4)": "அதிக repeat purchase (Year 4-ல 8.0 orders)", "Own brands lift gross margin (36.5%)": "Own brands gross margin-ஐ உயர்த்துது (36.5%)", "Reinvest: stores, RocketBees, Qwik": "Reinvest: stores, RocketBees, Qwik", "More parents, more data, more brands": "அதிக parents, அதிக data, அதிக brands", "FirstCry flywheel": "FirstCry flywheel", "Pressure point: gross margin down 200 bps YoY": "அழுத்தப் புள்ளி: gross margin YoY 200 bps குறைவு", "and consolidated PAT still negative": "consolidated PAT இன்னும் negative", "PAT-positive; margin under pressure": "PAT-positive; margin அழுத்தத்துல", "Adj. EBITDA ₹16.7 cr (3.9%)": "Adj. EBITDA ₹16.7 cr (3.9%)", "Adj. EBITDA loss ~₹16.7 cr": "Adj. EBITDA loss ~₹16.7 cr", "Adj. EBITDA margin ~26%": "Adj. EBITDA margin ~26%", "of segment revenue": "segment revenue-ல", "Reported EBITDA": "Reported EBITDA", "Other income (derived)": "Other income (derived)", "PBDAT": "PBDAT", "Depreciation, finance cost, other (derived)": "Depreciation, finance cost, மத்தது (derived)", "Loss before tax": "Tax-க்கு முன் loss", "Tax and other (derived)": "Tax மற்றும் மத்தது (derived)", "Consolidated PAT": "Consolidated PAT"};
+var TA_NODE={"Third-party brands": ["Third-party brands", "Category range (apparel, footwear, diapers, toys, baby gear, nursery, personal care, 12 வயசு வரை) platform-லயும் stores-லயும் விக்கிற மத்த brands-ஓட products-உம் உள்ளடங்கும்."], "Own brands (BabyHug, Cutewalk, Babyoye)": ["Own brands (BabyHug, Cutewalk, Babyoye)", "Own brands மூலமா vertical integration gross margin-ஐ (mid-30s %) உயர்த்துது, ஆனா raw-material மற்றும் manufacturing costs risk-உம் வருது. Q1 FY27-ல இதுதான் அழுத்தப் புள்ளி: gross margin 36.5% vs ஒரு வருஷம் முன்னாடி 38.5%."], "Globalbees brands": ["Globalbees brands", "Brand aggregator (D2C மற்றும் marketplace brands roll-up). Q1 FY27 revenue ₹424.3 cr, Adjusted EBITDA ₹16.7 cr (3.9%), YoY +308%. Listing, exit route-ஆ இருக்கலாம்னு பார்க்கப்படுது."], "App and website": ["App மற்றும் website", "Online platform தான் business-ஓட மையம். Q1 FY27-ல India multi-channel revenue ₹1,455.9 cr (YoY +~18%)."], "~1,190 modern stores": ["~1,190 modern stores", "2026 மார்ச் 31 நிலவரப்படி சொந்த மற்றும் franchise stores; FY27-ல ~90-100 net சேர்க்கிற target; Q1 FY27-ல offline GMV ~15% YoY வளர்ச்சி. Q1 FY27 store count உறுதி ஆகல (n/a)."], "RocketBees fast delivery": ["RocketBees fast delivery", "72 cities-ல இயங்குது; online shipments-ல பாதிக்கு மேல carry பண்ணுது."], "Qwik quick delivery": ["Qwik quick delivery", "12 cities-ல இயங்குது; 2026 ஜூன்ல ~125,000 shipments."], "India: 11.3 m customers": ["India: 11.3 m customers", "India multi-channel-ல வருஷத்துக்கு unique transacting customers 11.3 million (group மொத்தம் 11.8 million, YoY +10%)."], "Repeat: 8.0 orders by Year 4": ["Repeat: Year 4-ல 8.0 orders", "Management சொல்றது: customer cohort-க்கு Year 4-ல சராசரி 8.0 transactions, Year 8-ல 10.5 &mdash; category specialist-ஓட repeat behaviour."], "UAE and KSA (International)": ["UAE மற்றும் KSA (International)", "Gulf-ல online-led retail. Revenue ₹232.1 cr (+12%); Adjusted EBITDA loss ~₹16.7 cr, YoY ~22% குறைவு; முதல் Riyadh store plan-ல."], "Gross margin 36.5%": ["Gross margin 36.5%", "ஒரு வருஷம் முன்னாடி 38.5% (diaper competition, ரூபாய் மதிப்பு சரிவு, crude-linked input costs, management சொல்றபடி). Q2 FY27-ல இருந்து recovery வரும்னு management எதிர்பார்க்குது."], "Adjusted EBITDA 4.24%": ["Adjusted EBITDA 4.24%", "₹89.3 cr, ஒரு வருஷம் முன்னாடி 4.98%. Reported EBITDA ₹59.65 cr (2.8%). Positive தான், ஆனா margin சரியுது."], "Other income ~₹47 cr": ["Other income ~₹47 cr", "PBDAT-ல இருந்து reported EBITDA கழிச்சு derive பண்ணது; பெரும்பாலும் IPO cash மேல treasury income. Approximate, audited line item இல்ல."], "Consolidated PAT -₹44 cr": ["Consolidated PAT -₹44 cr", "₹66.5 cr-ல இருந்து 34% loss குறைஞ்சது. Standalone PAT +₹21.6 cr; International மற்றும் மத்த subsidiaries இழுக்குது."]};
+function trn(s){return (LANG==='ta'&&TA_N.hasOwnProperty(s))?TA_N[s]:s;}
+function nzs(s){return s.replace(/\s+/g,' ').trim();}
+function taSkip(el){
+  if(!el||el.nodeType!==1)return true;
+  var t=el.tagName.toUpperCase();
+  if(/^(SCRIPT|STYLE|CANVAS|TEXTAREA|INPUT|SVG|BUTTON_X)$/.test(t))return true;
+  if(el.namespaceURI&&el.namespaceURI.indexOf('svg')>-1)return true;
+  if(el.classList.contains('ta')||el.classList.contains('en'))return true;
+  if(el.id==='assistPanel'||el.id==='cbPopup'||el.id==='cbBadge'||el.classList.contains('langtoggle'))return true;
+  return false;
+}
+function taWalk(el){
+  if(taSkip(el))return;
+  if(el.__orig===undefined){
+    var k=nzs(el.textContent);
+    if(k&&TA_MAP.hasOwnProperty(k)){
+      var tg=el;
+      while(tg.children.length===1&&nzs(tg.children[0].textContent)===k&&!tg.children[0].classList.contains('ta')&&!tg.children[0].classList.contains('en')){tg=tg.children[0];}
+      tg.__orig=tg.innerHTML;tg.setAttribute('data-tr','1');tg.innerHTML=TA_MAP[k];return;}
+  } else return;
+  Array.prototype.slice.call(el.children).forEach(taWalk);
+}
+function taRestore(){
+  document.querySelectorAll('[data-tr]').forEach(function(e){if(e.__orig!==undefined){e.innerHTML=e.__orig;}delete e.__orig;e.removeAttribute('data-tr');});
+}
+window.LANG_HOOKS=window.LANG_HOOKS||[];
+function setLang(l){
+  LANG=l;
+  document.body.classList.toggle('langTA',l==='ta');
+  document.getElementById('btnEN').classList.toggle('active',l==='en');
+  document.getElementById('btnTA').classList.toggle('active',l==='ta');
+  taRestore();
+  if(l==='ta'){taWalk(document.body);}
+  var ph=[['assistInput'],['socFreeText']];
+  ph.forEach(function(p){var e=document.getElementById(p[0]);if(!e)return;if(!e.getAttribute('data-ph'))e.setAttribute('data-ph',e.placeholder);e.placeholder=trn(e.getAttribute('data-ph'));});
+  window.LANG_HOOKS.forEach(function(f){try{f();}catch(e){console.warn(e);}});
+}
+LANG_HOOKS.push(function(){
+  if(typeof Chart==='undefined'||!Chart.getChart)return;
+  document.querySelectorAll('canvas').forEach(function(c){
+    var ch=Chart.getChart(c);if(!ch)return;var t=ch.options.plugins&&ch.options.plugins.title;if(!t)return;
+    if(ch.__t0===undefined)ch.__t0=t.text;
+    t.text=trn(ch.__t0);ch.update();
+  });
+});
+
+/* ===== Business-model graphics (shared) ===== */
+var BMCFG={};
+function bmWrap(s,n){var w=s.split(' '),l=[],c='';w.forEach(function(x){if((c+' '+x).trim().length>n&&c){l.push(c);c=x;}else c=(c+' '+x).trim();});if(c)l.push(c);return l.slice(0,3);}
+function bmT(n){var v=TA_NODE[n.t+'||'+n.d]||TA_NODE[n.t];if(LANG==='ta'&&v)return {t:v[0],d:v[1]};return {t:n.t,d:n.d};}
+function bmMap(id,cfg){BMCFG[id]=cfg;bmDraw(id);}
+function bmDraw(id){
+  var el=document.getElementById(id),cfg=BMCFG[id];if(!el||!cfg)return;
+  var cols=cfg.cols,W=960,nc=cols.length,cw=200,gap=(W-nc*cw)/(nc-1),nh=64,vg=14,top=46,mx=0,wr=(LANG==='ta'?18:24);
+  cols.forEach(function(c){mx=Math.max(mx,c.nodes.length);});
+  var H=top+mx*(nh+vg)+6;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:720px;font-family:Segoe UI,Roboto,Arial,sans-serif"><defs><marker id="'+id+'-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa5b8"/></marker></defs>';
+  cols.forEach(function(c,ci){
+    var x=ci*(cw+gap);
+    s+='<rect x="'+x+'" y="4" width="'+cw+'" height="30" rx="15" fill="'+c.color+'"/><text x="'+(x+cw/2)+'" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">'+trn(c.title)+'</text>';
+    var off=(mx-c.nodes.length)*(nh+vg)/2;
+    c.nodes.forEach(function(n,ni){
+      var y=top+off+ni*(nh+vg),tt=bmT(n),lines=bmWrap(tt.t,wr),bg=n.bg||c.bg,st=n.color||c.color;
+      s+='<g class="bmnode" data-c="'+ci+'" data-n="'+ni+'" style="cursor:pointer"><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+nh+'" rx="10" fill="'+bg+'" stroke="'+st+'" stroke-width="1.5"/>';
+      var ty=y+nh/2-(lines.length-1)*8+4;
+      lines.forEach(function(l,li){s+='<text x="'+(x+cw/2)+'" y="'+(ty+li*16)+'" text-anchor="middle" font-size="12.5" fill="#1a2233">'+l+'</text>';});
+      s+='</g>';
+    });
+    if(ci<nc-1){var ax=x+cw+6,ay=top+(mx*(nh+vg))/2-vg/2;s+='<line x1="'+ax+'" y1="'+ay+'" x2="'+(ax+gap-16)+'" y2="'+ay+'" stroke="#9aa5b8" stroke-width="2.5" marker-end="url(#'+id+'-ar)"/>';}
+  });
+  s+='</svg>';
+  el.innerHTML='<div style="overflow-x:auto">'+s+'</div><div class="bm-detail" id="'+id+'-d">'+trn('Click any box to see what it means.')+'</div>';
+  el.querySelectorAll('.bmnode').forEach(function(g){g.addEventListener('click',function(){
+    var n=cols[+g.getAttribute('data-c')].nodes[+g.getAttribute('data-n')],tt=bmT(n);
+    el.querySelectorAll('.bmnode rect').forEach(function(r){r.setAttribute('stroke-width','1.5');});
+    g.querySelector('rect').setAttribute('stroke-width','3.5');
+    document.getElementById(id+'-d').innerHTML='<b>'+tt.t+':</b> '+tt.d;});});
+}
+LANG_HOOKS.push(function(){Object.keys(BMCFG).forEach(bmDraw);});
+var BM_STY={p:{bg:'#e8f8ee',color:'#127a3d'},n:{bg:'#fdecea',color:'#b3261e'},w:{bg:'#fdf1de',color:'#a9660b'}};
+function bmNodes(arr){return arr.map(function(a){var o={t:a[0],d:a[1]};if(a[2]&&BM_STY[a[2]]){o.bg=BM_STY[a[2]].bg;o.color=BM_STY[a[2]].color;}return o;});}
+
+/* ===== FirstCry visuals ===== */
+(function(){
+  bmMap('fcModel',{cols:[
+    {title:'1. What it sells',color:'#1a56b0',bg:'#eaf1fb',nodes:bmNodes([
+      ['Third-party brands','Category range (apparel, footwear, diapers, toys, baby gear, nursery, personal care, up to age 12) includes products of other brands sold on the platform and in stores.'],
+      ['Own brands (BabyHug, Cutewalk, Babyoye)','Vertical integration through own brands lifts gross margin (mid-30s %) but exposes the company to raw-material and manufacturing costs. This is the pressure point in Q1 FY27: gross margin 36.5% vs 38.5% a year ago.'],
+      ['Globalbees brands','Brand aggregator (roll-up of D2C and marketplace brands). Q1 FY27 revenue \u20b9424.3 cr, Adjusted EBITDA \u20b916.7 cr (3.9%), up 308% YoY. A listing is seen as a likely exit route.']])},
+    {title:'2. How it reaches parents',color:'#0d7d7d',bg:'#e6f6f6',nodes:bmNodes([
+      ['App and website','The online platform is the core of the business. India multi-channel revenue was \u20b91,455.9 cr in Q1 FY27 (+~18% YoY).'],
+      ['~1,190 modern stores','Company-owned and franchise stores as of 31 Mar 2026; net addition target ~90 to 100 in FY27; offline GMV grew ~15% YoY in Q1 FY27. The Q1 FY27 store count was not confirmed (n/a).'],
+      ['RocketBees fast delivery','Runs in 72 cities and carries more than half of online shipments.'],
+      ['Qwik quick delivery','Runs in 12 cities; about 125,000 shipments in June 2026.']])},
+    {title:'3. Who buys',color:'#5b3b9e',bg:'#f1ecfb',nodes:bmNodes([
+      ['India: 11.3 m customers','India multi-channel annual unique transacting customers: 11.3 million (group total 11.8 million, +10% YoY).'],
+      ['Repeat: 8.0 orders by Year 4','Management cites an average of 8.0 transactions by Year 4 and 10.5 by Year 8 of a customer cohort: the repeat behaviour of a category specialist.'],
+      ['UAE and KSA (International)','Online-led Gulf retail. Revenue \u20b9232.1 cr (+12%); Adjusted EBITDA loss ~\u20b916.7 cr, down ~22% YoY; first Riyadh store planned.']])},
+    {title:'4. What comes out (Q1 FY27)',color:'#a9660b',bg:'#fdf1de',nodes:bmNodes([
+      ['Gross margin 36.5%','Down from 38.5% a year ago (diapering competition, rupee depreciation, crude-linked input costs, per management). Management expects recovery from Q2 FY27.','w'],
+      ['Adjusted EBITDA 4.24%','\u20b989.3 cr vs 4.98% a year ago. Reported EBITDA is \u20b959.65 cr (2.8%). Positive, but margin is slipping.','p'],
+      ['Other income ~\u20b947 cr','Derived (PBDAT less reported EBITDA); largely treasury income on IPO cash. Approximate, not an audited line item.','w'],
+      ['Consolidated PAT -\u20b944 cr','Loss narrowed 34% from \u20b966.5 cr. Standalone PAT is +\u20b921.6 cr; International and other subsidiaries drag.','n']])}
+  ]});
+
+  window.fcVis=function(){
+  /* flywheel */
+  var f=[{t:'Category focus: mother, baby, kids',x:450,y:58},{t:'High repeat purchase (8.0 orders by Year 4)',x:770,y:150},{t:'Own brands lift gross margin (36.5%)',x:660,y:330},{t:'Reinvest: stores, RocketBees, Qwik',x:240,y:330},{t:'More parents, more data, more brands',x:130,y:150}];
+  var w=230,h=62,s='<svg viewBox="0 0 900 400" width="100%" style="min-width:720px;font-family:Segoe UI,Roboto,Arial,sans-serif"><defs><marker id="fw-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0d7d7d"/></marker></defs>';
+  f.forEach(function(a,i){var b=f[(i+1)%f.length],dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy);
+    function cut(){var tx=dx===0?1e9:(w/2)/Math.abs(dx),ty=dy===0?1e9:(h/2)/Math.abs(dy);return Math.min(tx,ty)*len+8;}
+    var c=cut(),ux=dx/len,uy=dy/len;
+    s+='<line x1="'+(a.x+ux*c)+'" y1="'+(a.y+uy*c)+'" x2="'+(b.x-ux*c)+'" y2="'+(b.y-uy*c)+'" stroke="#0d7d7d" stroke-width="3" marker-end="url(#fw-ar)"/>';});
+  f.forEach(function(a,i){var L=bmWrap(trn(a.t),LANG==='ta'?20:26),cl=i===2?'#a9660b':'#1a56b0',bg=i===2?'#fdf1de':'#eaf1fb';
+    s+='<rect x="'+(a.x-w/2)+'" y="'+(a.y-h/2)+'" width="'+w+'" height="'+h+'" rx="12" fill="'+bg+'" stroke="'+cl+'" stroke-width="2"/>';
+    L.forEach(function(l,k){s+='<text x="'+a.x+'" y="'+(a.y-(L.length-1)*8+4+k*16)+'" text-anchor="middle" font-size="13" fill="#1a2233">'+l+'</text>';});});
+  s+='<text x="450" y="205" text-anchor="middle" font-size="15" font-weight="700" fill="#0d7d7d">'+trn('FirstCry flywheel')+'</text><text x="450" y="228" text-anchor="middle" font-size="12" fill="#b3261e">'+trn('Pressure point: gross margin down 200 bps YoY')+'</text><text x="450" y="246" text-anchor="middle" font-size="12" fill="#5b6579">'+trn('and consolidated PAT still negative')+'</text></svg>';
+  document.getElementById('fcFly').innerHTML='<div style="overflow-x:auto">'+s+'</div>';
+
+  /* segment tiles */
+  var seg=[{n:'India multi-channel',v:1455.9,p:68.3,st:'PAT-positive; margin under pressure',c:'#e8f8ee',b:'#127a3d'},{n:'Globalbees',v:424.3,p:19.9,st:'Adj. EBITDA \u20b916.7 cr (3.9%)',c:'#e6f6f6',b:'#0d7d7d'},{n:'International',v:232.1,p:10.9,st:'Adj. EBITDA loss ~\u20b916.7 cr',c:'#fdecea',b:'#b3261e'},{n:'Others',v:19.3,p:0.9,st:'Adj. EBITDA margin ~26%',c:'#f1ecfb',b:'#5b3b9e'}];
+  var t='<div style="display:flex;gap:6px;min-height:150px;flex-wrap:nowrap;overflow-x:auto">';
+  seg.forEach(function(x){t+='<div title="'+x.n+'" style="flex:'+x.p+' 1 0;min-width:'+(x.p<5?110:150)+'px;background:'+x.c+';border:2px solid '+x.b+';border-radius:10px;padding:10px;font-size:12.5px;line-height:1.5"><b style="color:'+x.b+'">'+x.n+'</b><br>\u20b9'+x.v.toLocaleString('en-IN')+' cr<br><b>'+x.p+'%</b> '+trn('of segment revenue')+'<br><span style="color:#5b6579">'+trn(x.st)+'</span></div>';});
+  t+='</div>';
+  document.getElementById('fcSeg').innerHTML=t;
+
+  /* profit bridge */
+  var st=[{l:'Reported EBITDA',a:0,b:59.65,c:'#127a3d',v:'+59.65'},{l:'Other income (derived)',a:59.65,b:106.6,c:'#a9660b',v:'+46.9\u2020'},{l:'PBDAT',a:0,b:106.6,c:'#1a56b0',v:'106.6'},{l:'Depreciation, finance cost, other (derived)',a:106.6,b:-42.8,c:'#b3261e',v:'-149.4\u2020'},{l:'Loss before tax',a:0,b:-42.8,c:'#b3261e',v:'-42.8'},{l:'Tax and other (derived)',a:-42.8,b:-43.96,c:'#b3261e',v:'-1.2\u2020'},{l:'Consolidated PAT',a:0,b:-43.96,c:'#b3261e',v:'-43.96'}];
+  function Y(v){return 30+(120-v)*1.55;}
+  var g='<svg viewBox="0 0 900 380" width="100%" style="min-width:720px;font-family:Segoe UI,Roboto,Arial,sans-serif"><line x1="10" x2="890" y1="'+Y(0)+'" y2="'+Y(0)+'" stroke="#5b6579" stroke-dasharray="4 3"/><text x="12" y="'+(Y(0)-4)+'" font-size="11" fill="#5b6579">0</text>';
+  st.forEach(function(x,i){var bx=30+i*125,y1=Y(Math.max(x.a,x.b)),y2=Y(Math.min(x.a,x.b)),hh=Math.max(y2-y1,2.5);
+    g+='<rect x="'+bx+'" y="'+y1+'" width="80" height="'+hh+'" rx="4" fill="'+x.c+'"/>';
+    var neg=x.b<x.a||(x.a===0&&x.b<0);
+    g+='<text x="'+(bx+40)+'" y="'+(neg?y2+15:y1-6)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a2233">'+x.v+'</text>';
+    bmWrap(trn(x.l),LANG==='ta'?13:16).forEach(function(l,k){g+='<text x="'+(bx+40)+'" y="'+(318+k*15)+'" text-anchor="middle" font-size="11.5" fill="#1a2233">'+l+'</text>';});});
+  g+='</svg>';
+  document.getElementById('fcBridge').innerHTML='<div style="overflow-x:auto">'+g+'</div>';
+  };
+  window.fcVis();
+  LANG_HOOKS.push(function(){window.fcVis();});
+})();
+
+/* CB Assist */
+var logEl;
+function toggleAssist(){var p=document.getElementById('assistPanel');p.classList.toggle('show');if(p.classList.contains('show')&&!logEl){logEl=document.getElementById('assistLog');bot('Hi! Ask me about FirstCry: results, EBITDA, net profit, stores, IPO vs price, SWOT, or how it compares with peers like Nykaa and Eternal.');}}
+function bot(t){t=trn(t);var d=document.createElement('div');d.className='msg bot';d.textContent=t;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;speak(t);}
+function usr(t){var d=document.createElement('div');d.className='msg user';d.textContent=t;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+function sendAssist(){var i=document.getElementById('assistInput');var q=i.value.trim();if(!q)return;usr(q);i.value='';setTimeout(function(){answer(q);},200);}
+function answer(q){
+  q=q.toLowerCase();
+  if(/ebitda|ஈபிட்டா/.test(q)) return bot('Q1 FY27 reported EBITDA is \u20b959.65 crore (2.8%); company Adjusted EBITDA is \u20b989.3 crore (4.24%, vs 4.98% a year ago). So FirstCry is EBITDA-positive.');
+  if(/net profit|pat|loss|profit|லாபம்|நஷ்டம்/.test(q)) return bot('Consolidated loss after tax was about \u20b944 crore in Q1 FY27 (vs \u20b966.5 crore a year ago). Standalone PAT was +\u20b921.6 crore and India multi-channel was PAT-positive; International drags. Ex other income (~\u20b947 crore) the loss would be roughly \u20b990 crore (approximate).');
+  if(/revenue|sales|gmv|வருவாய்|விற்பனை/.test(q)) return bot('Revenue \u20b92,106.2 crore, +13.1% YoY; GMV \u20b92,807.2 crore, +12%; India multi-channel \u20b91,455.9 crore (+~18%).');
+  if(/ipo|price|stock|share|cmp|விலை/.test(q)) return bot('IPO price \u20b9465 (Aug 2024). CMP about \u20b9176.3 on 22 Sep 2026, roughly 62% below the IPO price. Market cap about \u20b98,898 crore.');
+  if(/store|dark|outlet|ஸ்டோர்|கடை/.test(q)) return bot('About 1,190 modern stores as of 31 Mar 2026; net addition target ~90-100 in FY27. A separate dark-store count is not disclosed. RocketBees delivery covers 72 cities and Qwik 12 cities.');
+  if(/segment|business|model/.test(q)) return bot('Segments: India multi-channel (core), International UAE/KSA, Globalbees (brand aggregator) and Others (preschool).');
+  if(/swot|strength|weak|threat/.test(q)) return bot('Strengths: category leader, omnichannel, own brands. Weaknesses: consolidated loss, gross-margin pressure, International drag. Threats: quick commerce, diaper price wars, input costs.');
+  if(/peer|compare|nykaa|eternal|paytm|rank/.test(q)) return bot('Among the 10 companies FirstCry ranks 4th by revenue, 9th by EBITDA margin, and last by stock return since IPO (-62%). Three report a consolidated loss (FirstCry, Nazara, Easy Trip). Excluding other income (PAT minus other income) four are in the red: Eternal, FirstCry (about \u20b991 cr loss), Nazara and Easy Trip.');
+  if(/analyst|target|rating/.test(q)) return bot('Third-party consensus: Hold, average target about \u20b9243 (7 analysts); trimmed targets around \u20b9205 by one aggregator. JM Financial Buy at \u20b9692 dates from Dec 2024 and is stale.');
+  if(/ceo|management|founder/.test(q)) return bot('Founder Supam Maheshwari leads the company; Amitava Saha is co-founder. Full board details are n/a here; verify in the annual report.');
+  bot('I can answer on revenue, EBITDA, net profit, stores, IPO vs price, segments, SWOT, analysts, management and peer comparison.');
+}
+var recog=null,listening=false;
+function toggleMic(){var b=document.getElementById('assistMic');var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){bot('Voice input is not supported in this browser. Please type.');return;}if(listening){recog.stop();return;}recog=new SR();recog.lang=(LANG==='ta'?'ta-IN':'en-IN');recog.onstart=function(){listening=true;b.classList.add('listening');};recog.onend=function(){listening=false;b.classList.remove('listening');};recog.onresult=function(e){document.getElementById('assistInput').value=e.results[0][0].transcript;sendAssist();};recog.start();}
+function speak(t){if(!('speechSynthesis' in window))return;try{var u=new SpeechSynthesisUtterance(t);u.lang=(LANG==='ta'?'ta-IN':'en-IN');window.speechSynthesis.cancel();window.speechSynthesis.speak(u);}catch(e){}}
+
+/* Socrates */
+var Q=[
+ {q:'FirstCry reports positive EBITDA but a consolidated net loss. Which items sit between EBITDA and net profit?',o:[['Depreciation, finance costs, tax, exceptional items and (for the group) losses in loss-making subsidiaries',1],['Only GST',0],['Only dividends paid',0],['Nothing; they are always equal',0]],fb:'EBITDA is before depreciation, interest and tax. FirstCry\'s consolidated loss comes after those, and after subsidiary (e.g. International) losses.'},
+ {q:'Standalone PAT is positive (\u20b921.6 cr) but consolidated PAT is a loss (\u20b944 cr). What does this suggest?',o:[['Subsidiary businesses are losing more than the parent earns',1],['The auditor made an error',0],['Standalone figures are always higher by rule',0],['Tax is refunded on consolidation',0]],fb:'Consolidation adds subsidiaries. Losses in International and other subsidiaries more than offset the parent\'s profit.'},
+ {q:'If about \u20b947 crore of the quarter\'s income is "other income" (treasury interest), how should you judge core profitability?',o:[['Look at the result excluding other income; the operating loss is larger than reported',1],['Ignore it; other income is the same as sales',0],['Add it twice',0],['It only matters for banks',0]],fb:'Other income is real cash but not repeatable operating earnings. Without it, the consolidated loss would be about double (approximate).'},
+ {q:'The stock is ~62% below its IPO price while revenue is up 13%. Why can both be true?',o:[['Price reflects expected profits, margins and valuation, not just revenue growth',1],['Revenue growth always lifts the price',0],['IPO prices never matter',0],['Exchanges set the price',0]],fb:'Markets price future earnings and margins. Growth without profitability, plus a high starting valuation, can lead to falls even as sales grow.'}
+];
+var qi=0;
+function renderQ(){var q=Q[qi],h='<div class="socrates-q">'+trn('Q')+(qi+1)+'. '+trn(q.q)+'</div>';q.o.forEach(function(o,i){h+='<button class="socrates-opt" onclick="ans('+i+')">'+trn(o[0])+'</button>';});h+='<div class="socrates-feedback" id="socFb" style="display:none;"></div>';document.getElementById('socCard').innerHTML=h;document.getElementById('socFollowup').style.display='none';document.getElementById('socFreeText').value='';}
+function ans(i){var q=Q[qi];document.querySelectorAll('.socrates-opt').forEach(function(b,k){b.disabled=true;if(q.o[k][1])b.classList.add('correct');else if(k===i)b.classList.add('wrong');});var fb=document.getElementById('socFb');fb.style.display='block';fb.textContent=trn(q.o[i][1]?'Correct. ':'Not quite. ')+trn(q.fb);}
+function nextSocQ(){qi=(qi+1)%Q.length;renderQ();}
+function socReflect(){var t=document.getElementById('socFreeText').value.trim(),fu=document.getElementById('socFollowup');fu.style.display='block';fu.textContent=trn(t?'Good. Follow-up: if FirstCry\'s International losses keep shrinking about 20% a year and Globalbees keeps scaling, roughly when might the consolidated line turn positive, and which assumption would you test first (gross margin, store additions, or other income staying steady)?':'Try a sentence or two first; a rough guess helps you learn faster.');}
+renderQ();
+LANG_HOOKS.push(function(){renderQ();});
+</script>
+</body>
+</html>

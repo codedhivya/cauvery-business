@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 FY27 Analysis | New-Age Tech IPO Companies Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#ffffff; --panel:#ffffff; --ink:#1a2233; --sub:#5b6579; --line:#e4e8f0;
+  --blue:#1a56b0; --blue-lt:#eaf1fb; --teal:#0d7d7d; --teal-lt:#e6f6f6;
+  --green:#127a3d; --green-lt:#e8f8ee; --red:#b3261e; --red-lt:#fdecea;
+  --amber:#a9660b; --amber-lt:#fdf1de; --purple:#5b3b9e; --purple-lt:#f1ecfb;
+  --grad1:#1a56b0; --grad2:#0d7d7d;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+.watermark-note{position:fixed;bottom:10px;left:10px;font-size:10px;color:#c3c9d4;z-index:1;}
+header.masthead{background:linear-gradient(120deg,var(--grad1),var(--grad2));color:#fff;padding:22px 28px;}
+header.masthead .tagline{font-size:12px;opacity:.85;letter-spacing:.5px;text-transform:uppercase;}
+header.masthead h1{margin:6px 0 4px;font-size:26px;}
+header.masthead .sub{font-size:14px;opacity:.92;}
+header.masthead .datebar{margin-top:10px;font-size:12px;background:rgba(255,255,255,.15);display:inline-block;padding:5px 12px;border-radius:20px;}
+.langtoggle{position:absolute;top:22px;right:28px;}
+.langtoggle button{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);color:#fff;padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointer;margin-left:4px;}
+.langtoggle button.active{background:#fff;color:var(--blue);font-weight:600;}
+nav.tabs{position:sticky;top:0;background:#fff;border-bottom:2px solid var(--line);display:flex;overflow-x:auto;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.04);}
+nav.tabs button{flex:none;background:none;border:none;padding:14px 18px;font-size:13.5px;font-weight:600;color:var(--sub);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+nav.tabs button:hover{color:var(--blue);}
+nav.tabs button.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-lt);}
+main{max-width:1180px;margin:0 auto;padding:22px 24px 90px;}
+.tabpanel{display:none;animation:fade .25s ease;}
+.tabpanel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+h2.section-title{font-size:20px;margin:6px 0 14px;color:var(--blue);border-left:4px solid var(--teal);padding-left:10px;}
+h3.sub-title{font-size:16px;margin:22px 0 10px;color:#22314f;}
+p.lede{color:var(--sub);font-size:14px;line-height:1.6;}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(20,30,60,.04);}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0;}
+.kpi{background:var(--blue-lt);border-radius:10px;padding:12px 14px;}
+.kpi .lbl{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;}
+.kpi .val{font-size:19px;font-weight:700;color:var(--blue);margin-top:2px;}
+.kpi.neg{background:var(--red-lt);} .kpi.neg .val{color:var(--red);}
+.kpi.pos{background:var(--green-lt);} .kpi.pos .val{color:var(--green);}
+.kpi.warn{background:var(--amber-lt);} .kpi.warn .val{color:var(--amber);}
+table.datatable{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0 18px;}
+table.datatable th{background:var(--blue-lt);color:var(--blue);text-align:left;padding:9px 10px;font-size:12px;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid var(--line);}
+table.datatable td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+table.datatable tr:hover td{background:#f7f9fc;}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;}
+.tag.pos{background:var(--green-lt);color:var(--green);}
+.tag.neg{background:var(--red-lt);color:var(--red);}
+.tag.warn{background:var(--amber-lt);color:var(--amber);}
+.pillbar{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 18px;position:sticky;top:52px;background:#fff;padding:8px 0;z-index:30;}
+.pillbar button{border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;}
+.pillbar button.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.company-panel{display:none;}
+.company-panel.active{display:block;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 18px;}
+.swot-box{border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;}
+.swot-box h4{margin:0 0 6px;font-size:13px;letter-spacing:.4px;text-transform:uppercase;}
+.swot-s{background:var(--green-lt);} .swot-s h4{color:var(--green);}
+.swot-w{background:var(--red-lt);} .swot-w h4{color:var(--red);}
+.swot-o{background:var(--blue-lt);} .swot-o h4{color:var(--blue);}
+.swot-t{background:var(--amber-lt);} .swot-t h4{color:var(--amber);}
+ul.clean{margin:6px 0;padding-left:18px;}
+ul.clean li{margin-bottom:4px;}
+.chart-wrap{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin:14px 0;}
+.chart-wrap canvas{max-height:320px;}
+.note{font-size:11.5px;color:var(--sub);background:#f7f9fc;border-left:3px solid var(--teal);padding:8px 12px;border-radius:6px;margin:10px 0;}
+.flag{font-size:11px;color:var(--amber);}
+.ta{display:none;color:#3a2f6b;font-style:italic;}
+.langTA .ta{display:block;}
+.langTA .en{display:none;}
+.twocol{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+@media(max-width:760px){.twocol{grid-template-columns:1fr;} .swot-grid{grid-template-columns:1fr;}}
+.mgmt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
+.mgmt-card{background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+.mgmt-card .role{font-size:11px;color:var(--sub);text-transform:uppercase;}
+.mgmt-card .name{font-weight:700;font-size:14px;margin:2px 0;color:var(--blue);}
+/* CB watermark badge */
+#cbBadge{position:fixed;bottom:18px;right:18px;width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--teal));color:#fff;display:flex;align-items:center;
+  justify-content:center;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 3px 10px rgba(20,40,80,.3);
+  z-index:200;animation:blink 2.2s infinite;}
+@keyframes blink{0%,100%{box-shadow:0 3px 10px rgba(20,40,80,.3);}50%{box-shadow:0 0 0 8px rgba(26,86,176,.15);}}
+#cbPopup{position:fixed;bottom:80px;right:18px;width:260px;background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:14px;font-size:11.5px;color:var(--sub);box-shadow:0 6px 24px rgba(0,0,0,.15);
+  display:none;z-index:200;line-height:1.5;}
+#cbPopup.show{display:block;}
+/* CB Assist floating chat bubble */
+#assistBubble{position:fixed;bottom:18px;right:82px;width:52px;height:52px;border-radius:50%;
+  background:#fff;border:2px solid var(--blue);color:var(--blue);display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;box-shadow:0 3px 10px rgba(20,40,80,.2);z-index:200;}
+#assistPanel{position:fixed;bottom:80px;right:18px;width:330px;max-height:460px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);display:none;
+  flex-direction:column;z-index:210;overflow:hidden;}
+#assistPanel.show{display:flex;}
+#assistHead{background:linear-gradient(120deg,var(--blue),var(--teal));color:#fff;padding:10px 14px;font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+#assistHead span.close{cursor:pointer;font-size:16px;}
+#assistLog{flex:1;overflow-y:auto;padding:10px 12px;font-size:12.5px;background:#f7f9fc;}
+.msg{margin-bottom:10px;padding:8px 10px;border-radius:8px;max-width:85%;line-height:1.45;}
+.msg.user{background:var(--blue);color:#fff;margin-left:auto;}
+.msg.bot{background:#fff;border:1px solid var(--line);}
+#assistInputRow{display:flex;border-top:1px solid var(--line);padding:8px;gap:6px;}
+#assistInput{flex:1;border:1px solid var(--line);border-radius:16px;padding:7px 12px;font-size:12.5px;outline:none;}
+#assistMic,#assistSend{border:none;background:var(--blue-lt);color:var(--blue);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;}
+#assistMic.listening{background:var(--red);color:#fff;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+/* Socrates */
+.socrates-card{background:linear-gradient(135deg,var(--purple-lt),#fff);border:1px solid #ddd3f4;border-radius:12px;padding:18px;margin-bottom:16px;}
+.socrates-q{font-weight:700;color:var(--purple);margin-bottom:10px;}
+.socrates-opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:9px 12px;margin-bottom:8px;font-size:13px;cursor:pointer;}
+.socrates-opt:hover{border-color:var(--purple);}
+.socrates-opt.correct{background:var(--green-lt);border-color:var(--green);}
+.socrates-opt.wrong{background:var(--red-lt);border-color:var(--red);}
+.socrates-feedback{font-size:13px;margin-top:8px;padding:10px;border-radius:8px;background:#fff;border-left:3px solid var(--purple);}
+textarea#socFreeText{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;min-height:60px;}
+.btn{background:var(--blue);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;}
+.btn.secondary{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
+footer.pagefoot{text-align:center;font-size:11px;color:#aab1c0;padding:20px 0 60px;}
+.pos-c{color:var(--green);font-weight:700;}
+.neg-c{color:var(--red);font-weight:700;}
+
+.bm-detail{margin-top:8px;padding:10px 12px;background:#f7f9fc;border-left:3px solid #0d7d7d;font-size:13px;line-height:1.55;border-radius:6px;}
+.bmnode:hover rect{opacity:.85;}
+</style>
+</head>
+<body>
+<div class="watermark-note"></div>
+<header class="masthead">
+  <div class="langtoggle">
+    <button id="btnEN" class="active" onclick="setLang('en')">EN</button>
+    <button id="btnTA" onclick="setLang('ta')">TA</button>
+  </div>
+  <div class="tagline">CB Research &middot; Cauvery Business</div>
+  <h1>Still Paying for Tomorrow: India's New-Age Listed Tech Companies</h1>
+  <div class="sub">Q1 FY27 (Quarter ended June 2026) performance review &mdash; revenue, EBITDA, other income, real operating profit, IPO price vs. CMP, business segments, stores &amp; SWOT across 9 companies</div>
+</header>
+
+<nav class="tabs" id="tabNav">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="snapshot">Sector Snapshot</button>
+  <button data-tab="financials">Companies (Financials)</button>
+  <button data-tab="analysts">Analysts' Rating</button>
+  <button data-tab="management">Management &amp; Board</button>
+  <button data-tab="socrates">Cauvery Socrates</button>
+</nav>
+
+<main>
+
+<!-- ================= OVERVIEW ================= -->
+<section id="tab-overview" class="tabpanel active">
+  <h2 class="section-title">Overview</h2>
+  <p class="lede en">Five years after India's new-age technology IPO wave (2021&ndash;22), most of these companies are still finding their way to durable profitability. Barring a handful, most constituents trade below or only marginally above their IPO offer price (split/bonus-adjusted). Even where a company reports a headline net profit, a large share of that profit in several cases comes from <b>other income</b> &mdash; interest earned on IPO cash reserves and treasury investments &mdash; rather than from the core operating business. This dashboard examines the Q1 FY27 (quarter ended June 2026) results of nine listed new-age companies against this lens.</p>
+  <p class="lede ta">2021&ndash;22ல வந்த இந்தியாவோட புதுசு டெக் IPO wave முடிஞ்சு 5 வருஷமாகியும், இதுல பெரும்பாலான நிறுவனங்க இன்னும் stable-ஆ profit பண்றதுக்கான வழியைத்தான் தேடிட்டு இருக்காங்க. ரொம்ப குறைவான நிறுவனங்களைத் தவிர, மத்தவங்க இன்னும் IPO offer price-க்கு கீழேயோ, இல்லன்னா கொஞ்சம் மேலேயோதான் trade ஆகிட்டு இருக்காங்க (split/bonus adjust பண்ணிப் பார்த்தாலும் இதுதான் நிலைமை). Net profit காட்டுற நிறுவனங்கள்ல கூட, அந்த profit-ல பெரிய பங்கு &ldquo;other income&rdquo;-ல இருந்துதான் வருது &mdash; அதாவது IPO-ல வந்த cash-க்கு கிடைக்குற வட்டி வருமானம் &mdash; core business-ல இருந்து அல்ல. இந்த dashboard 9 நிறுவனங்களோட Q1 FY27 (ஜூன் 2026 காலாண்டு) முடிவுகளை இந்த angle வெச்சு பார்க்குது.</p>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lbl en">Companies Covered</div><div class="lbl ta">Cover பண்றது</div><div class="val">9</div></div>
+    <div class="kpi pos"><div class="lbl en">Genuinely Profitable (Ops-led)</div><div class="lbl ta">Real-ஆ Profit (Core Business-ல)</div><div class="val">RateGain, MapMyIndia, CarTrade*</div></div>
+    <div class="kpi warn"><div class="lbl en">Profit Cushioned by Other Income</div><div class="lbl ta">Other Income Support-ல நிக்குறது</div><div class="val">Eternal, Paytm, PB Fintech*</div></div>
+    <div class="kpi neg"><div class="lbl en">Loss-Making in Q1 FY27</div><div class="lbl ta">Loss-ல இருக்குறது</div><div class="val">Easy Trip, Nazara</div></div>
+  </div>
+  <div class="note en">*CarTrade and PB Fintech are broadly profitable operationally too, but other income/treasury income still forms a meaningful (30&ndash;40%) slice of reported PAT &mdash; see the Financials tab for the company-wise workings. Classification is CB Research's own reading of Q1 FY27 disclosures, not a formal rating.</div>
+
+  <h3 class="sub-title en">Key Themes</h3>
+  <h3 class="sub-title ta">Main Points</h3>
+  <ul class="clean en">
+    <li><b>Stock price vs IPO:</b> Only Nazara, RateGain, Eternal, CarTrade, FSN/Nykaa and PB Fintech trade meaningfully above their (split/bonus-adjusted) IPO price as of the latest snapshot; Paytm and CE Info Systems/MapMyIndia remain below; Easy Trip Planners is barely above water.</li>
+    <li><b>EBITDA margins remain thin or negative for several names</b> even five years post-listing (Easy Trip FY26 EBITDA margin -2.8%; Eternal FY26 EBITDA margin just 2.2% despite being India's largest food-tech/quick-commerce platform).</li>
+    <li><b>"Real" profitability check:</b> Stripping out other income from PAT turns several headline profits materially smaller or into losses &mdash; most visibly for Eternal and Paytm in Q1 FY27.</li>
+    <li><b>Business model shift:</b> Asset-light marketplaces (Zomato, CarWale, Policybazaar) increasingly lean on capital-heavy, physical-footprint businesses &mdash; Blinkit's dark stores, Nykaa's physical beauty stores, CarTrade's Automall yards &amp; abSure/Signature outlets, Paytm's device network &mdash; to drive growth, which changes their margin and capital-intensity profile.</li>
+  </ul>
+  <ul class="clean ta">
+    <li><b>Stock price vs IPO:</b> Nazara, RateGain, Eternal, CarTrade, Nykaa, PB Fintech &mdash; இந்த ஆறு நிறுவனங்க மட்டும்தான் இப்போ IPO price-க்கு நல்லா மேல இருக்காங்க (split/bonus adjust பண்ணி). Paytm, MapMyIndia இன்னும் கீழேதான் இருக்காங்க; Easy Trip Planners &ldquo;தலை மட்டும் தண்ணீருக்கு மேல&rdquo; மாதிரி நிலைமை &mdash; barely மேல.</li>
+    <li><b>EBITDA margin இன்னும் மொக்குதான்:</b> 5 வருஷம் ஆனாலும் பல நிறுவனங்க margin மெலிதா அல்லது negative-ஆவே இருக்கு (Easy Trip FY26: -2.8%; Eternal FY26: வெறும் 2.2%, அதுவும் India-ல largest food-tech/quick-commerce நிறுவனமா இருந்தும்).</li>
+    <li><b>&ldquo;Real&rdquo; profit check:</b> PAT-ல இருந்து other income-ஐ கழிச்சு பார்த்தா, பல நிறுவனங்களோட profit கணிசமா குறையும் இல்ல loss-ஆவே மாறும் &mdash; Eternal, Paytm இதுக்கு நல்ல உதாரணம் இந்த quarter-ல.</li>
+    <li><b>Business model shift:</b> Zomato, CarWale, Policybazaar மாதிரி asset-light marketplace நிறுவனங்க, growth-க்காக capital-heavy physical business-க்கு நகர்ந்திட்டு இருக்காங்க &mdash; Blinkit dark stores, Nykaa physical stores, CarTrade Automall யார்ட்ஸ் &amp; abSure/Signature outlets, Paytm device network &mdash; இதுல margin-உம் capital தேவையும் மாறுது.</li>
+  </ul>
+  <div class="note">Voice-enabled CB Assist (bottom-right chat bubble) can answer quick questions on any company's revenue, EBITDA, other income or SWOT. Cauvery Socrates (separate tab) offers a Socratic self-test on the themes covered here.</div>
+</section>
+
+<!-- ================= SECTOR SNAPSHOT ================= -->
+<section id="tab-snapshot" class="tabpanel">
+  <h2 class="section-title en">Sector Snapshot: "Still Paying for Tomorrow"</h2>
+  <h2 class="section-title ta">Sector Snapshot: &ldquo;இன்னும் நாளைக்கே பணம் கட்டிட்டு இருக்கோம்&rdquo;</h2>
+  <p class="lede en">Stock returns since IPO and EBITDA margin trajectory (FY22 vs FY26), replicated and cross-checked against BSE/NSE filings and Bloomberg/Capitaline-style data as reported in the financial press.</p>
+  <table class="datatable">
+    <tr><th>Company</th><th>Stock chg. since IPO offer price (%)</th><th>FY22 EBITDA margin (%)</th><th>FY26 EBITDA margin (%)</th><th>FY26 P/E</th></tr>
+    <tr><td>Easy Trip Planners</td><td class="neg-c">1.3</td><td>56.3</td><td class="neg-c">-2.8</td><td>NA (loss-making basis)</td></tr>
+    <tr><td>Nazara Technologies</td><td class="pos-c">173.5</td><td>15.2</td><td>13.9</td><td>105.5</td></tr>
+    <tr><td>RateGain Travel Tech.</td><td class="pos-c">94.8</td><td>8.7</td><td>18.5</td><td>49.6</td></tr>
+    <tr><td>Eternal (Zomato)</td><td class="pos-c">340.8</td><td class="neg-c">-44.0</td><td>2.2</td><td>572.5</td></tr>
+    <tr><td>CarTrade Tech</td><td class="pos-c">85.6</td><td class="neg-c">-42.9</td><td>33.0</td><td>35.3</td></tr>
+    <tr><td>FSN E-commerce (Nykaa)</td><td class="pos-c">78.0</td><td>4.3</td><td>7.5</td><td>335.7</td></tr>
+    <tr><td>PB Fintech (Policybazaar)</td><td class="pos-c">19.0</td><td class="neg-c">-64.9</td><td>6.9</td><td>97.9</td></tr>
+    <tr><td>One 97 (Paytm)</td><td class="neg-c">-22.1</td><td class="neg-c">-47.0</td><td>8.4</td><td>110.7</td></tr>
+    <tr><td>CE Info Systems (MapMyIndia)</td><td class="neg-c">-14.6</td><td>43.0</td><td>37.0</td><td>32.6</td></tr>
+  </table>
+  <div class="note">Figures are on an adjusted basis. NA# = company reported losses in FY26. Stock price change is calculated against split/bonus-adjusted IPO offer prices. This table reflects a point-in-time newspaper compilation; see the Financials tab for CB Research's own Q1 FY27 figures and latest available CMP per company.</div>
+
+  <h3 class="sub-title">Q1 FY27 at a glance &mdash; Revenue, EBITDA &amp; PAT (₹ crore)</h3>
+  <p class="lede en">Company sizes differ enormously (Eternal&rsquo;s revenue is over 100x the smallest names), so absolute bars would not be comparable. These charts show ratios (% of revenue) instead, with the absolute &#8377; crore figure beside each bar.</p>
+  <p class="lede ta">Company size ரொம்ப வித்தியாசமா இருக்கு (Eternal revenue சின்ன நிறுவனங்களை விட 100 மடங்குக்கு மேல), அதனால absolute bar வெச்சு compare பண்ண முடியாது. அதுக்குப் பதிலா % of revenue காட்டியிருக்கோம்; ஒவ்வொரு bar-க்கும் பக்கத்துல ₹ crore value இருக்கு.</p>
+  <div class="chart-wrap"><canvas id="chartRevenue"></canvas></div>
+  <div class="chart-wrap"><canvas id="chartMargin"></canvas></div>
+  <div class="note en">Even after five years, per the financial press coverage of this data, the focus for most of these companies remains centred on revenue growth and EBITDA, much as it was at the time of listing; the shift to robust, sustained operating profitability is still incomplete for several names.</div>
+</section>
+
+<!-- ================= FINANCIALS (COMPANIES) ================= -->
+<section id="tab-financials" class="tabpanel">
+  <h2 class="section-title en">Company-wise Financials, Segments, Stores &amp; SWOT &mdash; Q1 FY27</h2>
+  <h2 class="section-title ta">ஒவ்வொரு நிறுவனத்தோட Financials, Segments, Stores &amp; SWOT</h2>
+  <p class="lede en">Select a company below. Each sub-tab includes Q1 FY27 financials (revenue, reported EBITDA, other income, an approximate "real" operating profit excluding other income, and IPO price vs. current market price), business segments &amp; model, physical stores/dark stores footprint, and a SWOT analysis.</p>
+  <div class="pillbar" id="companyPills"></div>
+  <div id="companyPanels"></div>
+</section>
+
+<!-- ================= ANALYSTS' RATING ================= -->
+<section id="tab-analysts" class="tabpanel">
+  <h2 class="section-title">Analysts' Rating</h2>
+  <p class="lede en">CB Research does not issue its own buy/sell/hold recommendations. The table below collates <b>third-party broker views</b> as reported in the financial press around the Q1 FY27 result dates; verify the latest target price with the respective brokerage before acting.</p>
+  <table class="datatable" id="analystsTable"></table>
+  <div class="note">Ratings are third-party views attributed to named brokerages, as reported around the time of Q1 FY27 results (Jul&ndash;Aug 2026). Not all 9 companies had a publicly reported fresh broker call in the window researched; those are marked "n/a" rather than estimated, per CB Research's data-integrity policy.</div>
+</section>
+
+<!-- ================= MANAGEMENT & BOARD ================= -->
+<section id="tab-management" class="tabpanel">
+  <h2 class="section-title">Management &amp; Board (Key Leadership)</h2>
+  <div class="mgmt-grid" id="mgmtGrid"></div>
+</section>
+
+<!-- ================= CAUVERY SOCRATES ================= -->
+<section id="tab-socrates" class="tabpanel">
+  <h2 class="section-title en">Cauvery Socrates &mdash; Test Your Understanding</h2>
+  <h2 class="section-title ta">Cauvery Socrates &mdash; உங்க Understanding-ஐ Test பண்ணுங்க</h2>
+  <p class="lede">A Socratic self-test: answer the multiple-choice question, then reflect in your own words. This is a learning tool, not investment advice.</p>
+  <div class="socrates-card" id="socCard"></div>
+  <div class="card">
+    <div class="socrates-q">Now explain it in your own words:</div>
+    <textarea id="socFreeText" placeholder="Why do you think 'other income' can distort the picture of a company's real operating health?"></textarea>
+    <div style="margin-top:10px;"><button class="btn" onclick="socReflect()">Get a Socratic follow-up</button></div>
+    <div id="socFollowup" class="socrates-feedback" style="display:none;"></div>
+  </div>
+  <div style="text-align:right;"><button class="btn secondary" onclick="nextSocQ()">Next question &rarr;</button></div>
+</section>
+
+</main>
+
+<div id="cbBadge" onclick="toggleCB()">CB</div>
+<div id="cbPopup">
+  <b>Prepared by CB Research</b><br>
+  CB Research (Cauvery Business Research) is an independent financial education initiative. This dashboard does not constitute investment advice, and CB Research is not a SEBI-registered research analyst. Figures are as available on the preparation date; unverified or estimated figures are flagged accordingly. Please consult a SEBI-registered advisor before making investment decisions.
+</div>
+
+<div id="assistBubble" onclick="toggleAssist()">&#128172;</div>
+<div id="assistPanel">
+  <div id="assistHead"><span>CB Assist (Voice-enabled)</span><span class="close" onclick="toggleAssist()">&times;</span></div>
+  <div id="assistLog"></div>
+  <div id="assistInputRow">
+    <button id="assistMic" onclick="toggleMic()" title="Voice input">&#127908;</button>
+    <input id="assistInput" placeholder="Ask about revenue, EBITDA, SWOT..." onkeydown="if(event.key==='Enter')sendAssist()">
+    <button id="assistSend" onclick="sendAssist()">&#10148;</button>
+  </div>
+</div>
+
+<footer class="pagefoot">CB Research | Cauvery Business &mdash; New-Age Tech Companies Q1 FY27 Dashboard</footer>
+
+<script>
+/* ============ Mandatory machine-readable data object ============ */
+var CO = {
+easytrip:{
+  name:"Easy Trip Planners (EaseMyTrip)", ticker:"NSE: EASEMYTRIP | BSE: 543272",
+  ipo:{date:"Mar 2021", price:187, adjNote:"1:1 bonus (Nov 2022) + subsequent bonus actions; split/bonus-adjusted IPO reference ≈ ₹5.9", adjPrice:5.9},
+  cmp:{price:5.90, asOf:"Sep 2026"},
+  q1fy27:{revenue:134.71, otherIncome:"~2-3 (n/a exact)", totalIncome:"n/a", ebitda:-12.88, ebitdaMargin:-9.6, pat:-11.69, patMargin:-8.7,
+    realProfitNote:"Loss-making at both EBITDA and PAT level; the small negative EBITDA already excludes any cushioning from other income, so the 'real' operating picture is a loss of a similar or slightly larger magnitude than reported PAT.",
+    yoy:"Swung from PAT of ₹0.44cr in Q1 FY26 to a loss of ₹11.69cr in Q1 FY27; revenue +18.4% YoY"},
+  segments:["Air ticketing (largest historically, now under pressure from meta-search competition)","Hotels &amp; holiday packages (fastest-growing; room nights +95% YoY in Q1 FY27)","Rail, bus &amp; ancillary services (-45.8% YoY, a soft spot)","B2C, B2B (corporate/B2E) and B2B2C distribution channels","International/Dubai operations (GBR ₹462cr in Q1 FY27, +45% YoY)"],
+  stores:"Pure online OTA (EaseMyTrip.com/app) plus an in-house call centre; no physical retail stores or dark stores. Subsidiaries/offices in the Philippines, Singapore, Thailand, UAE, UK, USA, New Zealand, Saudi Arabia and Brazil support the international book of business.",
+  swot:{
+    s:["Zero-convenience-fee positioning built a large 14 million+ user base","Diversified travel product stack (air, hotel, rail/bus, holidays)","Asset-light model with historically low capex needs","Strong Dubai/international growth momentum"],
+    w:["Reverted to net losses in FY26 (-₹47.6cr) and continued in Q1 FY27 (-₹11.7cr) after a large exceptional airline-related provision (-₹509.6cr) hit FY26","Rising service costs and ad spend are outpacing revenue growth","High dependence on the structurally low-margin air-ticketing segment, which is shrinking"],
+    o:["Structural shift toward higher-margin hotels/holiday packages","Planned ₹500cr capital raise to fund hotels/holidays/tech expansion","Government MoUs (e.g., Jharkhand tourism) for destination marketing tie-ups"],
+    t:["Intense competition from MakeMyTrip, Yatra, ixigo and direct airline/OTA channels","Thin margins in a commoditised online travel category","Execution risk in the stated pivot from a transactional to a higher-margin model"]},
+  analyst:"n/a (no fresh broker target price publicly reported around Q1 FY27 results)",
+  mgmt:[{role:"Co-founder &amp; Group CEO",name:"Nishant Pitti"},{role:"Co-founder &amp; Executive Director",name:"Rikant Pittie"},{role:"Co-founder &amp; Whole-time Director",name:"Prashant Pitti"}]
+},
+nazara:{
+  name:"Nazara Technologies", ticker:"NSE: NAZARA | BSE: 543280",
+  ipo:{date:"Mar 2021", price:1101, adjNote:"1:1 bonus (2022) + 2:1 split &amp; 1:1 bonus (2025) — cumulative ~4x adjustment; split-adjusted reference ≈ ₹275", adjPrice:275},
+  cmp:{price:303.65,asOf:"early Aug 2026 (near results date); check live quote for latest"},
+  q1fy27:{revenue:428.77, otherIncome:8.8, totalIncome:"n/a", ebitda:46, ebitdaMargin:10.8, pat:-82, patMargin:"n/a (loss)",
+    realProfitNote:"Unusually, the drag here is NOT other income but non-operating items: EBITDA was solidly positive (₹46cr, 10.8% margin) yet the company posted a net LOSS of ₹82cr, mainly from share of loss from associates and an impairment charge (linked to Moonshine/PokerBaazi). This is the mirror-image problem to Eternal/Paytm — a decent core business dragged down by non-core investment write-downs rather than propped up by treasury income. Other income was only about \u20b98.8 crore, so excluding it the loss would be about \u20b991 crore (simple subtraction).",
+    yoy:"Revenue -14% YoY (largely Nodwin Gaming deconsolidation); comparable revenue +~9% YoY; EBITDA margin improved from 9.5% to 10.8%"},
+  segments:["Gaming (mobile games — PAC-MAN, Kiddopia, World Cricket Championship; revenue ₹275cr, +14% YoY, EBITDA margin 19.5%, the core profit engine)","eSports &amp; skill-based/real-money-adjacent gaming (post-RMG-ban restructuring)","Sports media &amp; ad-tech (Sportskeeda — exposed to Google search-algorithm volatility)","Adtech/Halaplay and other diversified digital entertainment bets","Pending consolidation of Bluetile &amp; BestPlay (global gaming studios, ~$303mn all-cash acquisition, ₹518cr revenue/₹55cr EBITDA in Q1FY27 standalone) from Q2 FY27"],
+  stores:"No dark stores/retail footprint in the core digital gaming business. Nazara does hold a physical-format bet through its investment in Funky Monkeys Play Center (children's indoor play centres; stake increased to ~68.1% in Q1 FY27) — a small, non-core physical adjacency.",
+  swot:{
+    s:["Diversified portfolio across gaming, eSports, ad-tech and sports media reduces single-title risk","Core gaming segment genuinely profitable (19.5% EBITDA margin) and growing","Aggressive but funded M&amp;A strategy (Bluetile/BestPlay) to scale internationally","New CEO (Raymond Stauffer, effective Sep 2026) bringing global gaming-industry experience"],
+    w:["Consolidated net loss despite positive EBITDA — associate losses and impairments (Moonshine/Nodwin) have repeatedly hit the bottom line","Revenue volatility from portfolio churn/deconsolidation (Nodwin) makes YoY comparisons noisy","Sportskeeda traffic exposed to Google core-update volatility"],
+    o:["Bluetile/BestPlay consolidation from Q2 FY27 expected to materially scale the gaming business and EBITDA","Management targets doubling EBITDA in FY27","Large addressable market in India's under-monetised mobile gaming base"],
+    t:["Regulatory overhang from the real-money-gaming ban and retrospective GST ruling on the gaming sector","Integration risk on a $303mn cross-border acquisition","Continued write-off risk on legacy associate investments"]},
+  analyst:"n/a for the Q1 FY27 window; market cap/valuation snapshots around results implied a P/E near 11.5x on a trailing FY26 basis",
+  mgmt:[{role:"Founder &amp; Joint MD",name:"Nitish Mittersain"},{role:"Incoming Group CEO (eff. Sep 2026)",name:"Raymond A. Stauffer"},{role:"Joint MD",name:"Manish Agarwal"}]
+},
+rategain:{
+  name:"RateGain Travel Technologies", ticker:"NSE: RATEGAIN | BSE: 543417",
+  ipo:{date:"Dec 2022", price:425, adjNote:"No known split/bonus since listing", adjPrice:425},
+  cmp:{price:945,asOf:"early Jul 2026; check live quote for latest post-results move"},
+  q1fy27:{revenue:785.0, otherIncome:3.1, totalIncome:788.1, ebitda:193.4, ebitdaMargin:24.6, pat:94.9, patMargin:12.1,
+    realProfitNote:"One of the few genuinely profitable names in this set: Adjusted EBITDA of ₹193.4cr (24.6% margin, highest ever) converts into a reported PAT of ₹94.9cr and an Adjusted PAT of ₹116.8cr — profit here is substantially operations-led (Sojern acquisition integration), not a treasury-income story: other income is only about \u20b93.1 crore (derived: total income less revenue), so PAT excluding it is roughly \u20b992 crore. Free cash flow of ₹135.2cr (78.8% conversion) reinforces the quality of earnings.",
+    yoy:"Revenue +188% YoY (Sojern consolidation); PAT +102% YoY and +36% QoQ"},
+  segments:["Distribution (DHISCO/RevGain-type connectivity &amp; distribution SaaS for travel/hospitality)","Data-as-a-Service / travel ad-tech (Sojern — acquired Nov 2025, driving the revenue step-change)","Hospitality &amp; Rate Intelligence solutions (AI-powered pricing/demand tools for hotels)"],
+  stores:"Pure B2B SaaS company — no consumer-facing stores or dark stores. Physical footprint is limited to global offices supporting APAC (a record quarter for new business), EMEA and Americas clients.",
+  swot:{
+    s:["Highest-ever quarterly Adjusted EBITDA margin (24.6%) with genuine free-cash-flow backing","Sojern acquisition materially scaled revenue (+188% YoY) and diversified into ad-tech/data","Record new-business sign-ups in Asia-Pacific","Actively de-levering — 25% of acquisition debt repaid within a quarter of closing (38% by early Aug 2026)"],
+    w:["Gross margin has compressed (69.2% in Q1FY27 vs ~75% in FY23-25) as ad-spend-linked revenue mix grows","Finance costs stepped up materially post-acquisition (from near-zero to ₹16.5cr/quarter)","Integration risk on a large, recent cross-border acquisition"],
+    o:["FY27 EBITDA guidance of ₹650-700cr (21.5-22.5% margin) if integration tracks to plan","Sustained travel demand tailwinds (e.g., FIFA World Cup period cited as a Q1 driver)","Cross-sell of Sojern's ad-tech stack into RateGain's existing hotel/OTA client base"],
+    t:["Travel-demand cyclicality (geopolitical/macro shocks can hit bookings sharply)","Leverage from the Sojern deal still being worked down (net debt ₹615.4cr as of Jun 2026)","Competitive SaaS market for hospitality distribution and pricing tools"]},
+  analyst:"n/a specific fresh target reported in the Q1 FY27 window reviewed; stock traded broadly in the ₹930-950 band around results",
+  mgmt:[{role:"Founder, Chairman &amp; CEO",name:"Bhanu Chopra"}]
+},
+eternal:{
+  name:"Eternal (formerly Zomato) — Zomato, Blinkit, District, Hyperpure", ticker:"NSE: ETERNAL | BSE: 543320",
+  ipo:{date:"Jul 2021", price:76, adjNote:"No known split/bonus since listing", adjPrice:76},
+  cmp:{price:320,asOf:"mid Aug 2026 (~₹318-328 range); check live quote"},
+  q1fy27:{revenue:20211, otherIncome:375, totalIncome:20586, ebitda:594, ebitdaMargin:2.94, pat:92, patMargin:0.45,
+    realProfitNote:"Illustrative back-of-envelope: with total income (₹20,586cr) exceeding revenue from operations (₹20,211cr) by ~₹375cr of other income, and PAT of only ₹92cr against an operating EBITDA of ₹594cr, depreciation/ESOP/tax charges are heavy. Applying a rough post-tax adjustment, excluding other income would likely turn the ~₹92cr reported profit into a modest net LOSS at the PAT line — i.e., on a like-for-like operating basis (ex-other income), Eternal is not yet clearly profitable at the very bottom line, even though EBITDA and food-delivery/Blinkit segment economics are improving fast. Figures approximate; not an audited disclosure — flagged.",
+    yoy:"Revenue +182% YoY (Blinkit inventory-model consolidation); PAT +268% YoY but -47% QoQ due to higher tax"},
+  segments:["Food delivery (Zomato app) — EBITDA ₹621cr, +33% YoY, the most mature and profitable segment","Blinkit (quick commerce) — now the LARGEST revenue contributor at 77.5% of total (₹15,664cr); turned EBITDA-positive at ₹365cr in Q1 FY27 (vs -₹42cr loss a year ago), 5th consecutive quarter of improvement","District (going-out/events/ticketing) — revenue ₹318cr (+54% YoY) but still EBITDA-negative (-₹62cr)","Hyperpure (B2B food &amp; grocery supplies to restaurants) — revenue fell sequentially in Q1 FY27","Nugget by Zomato business transferred to subsidiary Carthero Technologies for ₹350cr during the quarter"],
+  stores:"Blinkit's quick-commerce model is built on a dense network of <b>dark stores</b> (unlisted-to-public exact Q1 FY27 count; last broadly disclosed scale was in the low thousands of dark stores across India as of FY26 — flagged n/a for the precise Q1 FY27 number, to be updated from the investor deck). Hyperpure operates warehousing/fulfilment infrastructure for B2B supply. Food delivery and District remain largely asset-light/marketplace models.",
+  swot:{
+    s:["India's largest integrated food-tech + quick-commerce platform by scale","Blinkit turned EBITDA-positive — a major inflection point after years of cash burn","Diversified across delivery, quick commerce, dining-out/events and B2B supplies","Strong brand recall (Zomato/Blinkit) and deep logistics network"],
+    w:["PAT of just ₹92cr on ₹20,211cr of revenue — wafer-thin ~0.45% net margin","Meaningful reliance on other income to show even a modest headline profit; core-business PAT ex-other-income likely negative","District (going-out) still loss-making; Hyperpure revenue volatile","Extremely high P/E (572.5x on FY26 basis per press data) prices in years of future profit growth"],
+    o:["Continued Blinkit EBITDA scale-up as dark-store network matures","Cross-sell across Zomato/Blinkit/District ecosystem (bundled memberships, ads)","Quick-commerce category still growing rapidly in urban India"],
+    t:["Intense quick-commerce competition (Swiggy Instamart, Zepto, Amazon Now, BigBasket)","Heavy capex/opex to sustain dark-store expansion could pressure cash generation","Regulatory/gig-worker cost risk across food delivery and quick commerce"]},
+  analyst:"Street PAT estimate for Q1 FY27 was ~₹258cr; actual ₹92cr was seen as a miss despite strong topline — flagged as a market-reaction data point, not a CB Research view",
+  mgmt:[{role:"Founder, MD &amp; CEO",name:"Deepinder Goyal"},{role:"Group CEO, Eternal (new appointment, Jan 2026)",name:"Albinder Dhindsa"},{role:"Non-Executive Nominee Director",name:"Sanjeev Bikhchandani"}]
+},
+cartrade:{
+  name:"CarTrade Tech — CarWale, BikeWale, CarTrade.com, Shriram Automall, OLX India", ticker:"NSE: CARTRADE | BSE: 544059",
+  ipo:{date:"Aug 2021", price:1618, adjNote:"No known split/bonus since listing", adjPrice:1618},
+  cmp:{price:2830,asOf:"late Jul 2026 (~₹2,800-2,860 range post-results); check live quote"},
+  q1fy27:{revenue:201.16, otherIncome:28.6, totalIncome:229.74, ebitda:63, ebitdaMargin:31.0, pat:56.75, patMargin:28.2,
+    realProfitNote:"Approximate working: PBT is roughly ₹75-76cr on a PAT of ₹56.75cr; stripping the ₹28.6cr of other income (largely treasury interest on its ₹1,321cr cash pile) leaves an operating PBT of roughly ₹47cr, and a post-tax 'real' operating profit of approximately ₹35cr — meaning close to 35-40% of reported PAT in Q1 FY27 came from other income rather than the core auto-marketplace business. Still comfortably profitable on a like-for-like basis, just less so than the headline suggests. Figures approximate; flagged as CB Research estimate.",
+    yoy:"Total income +16% YoY; EBITDA +45% YoY (16th consecutive quarter of >45% EBITDA growth per company disclosure); PAT +21% YoY but -21% QoQ on higher tax/labour-law provision"},
+  segments:["Consumer Group — CarWale, BikeWale, CarTrade.com (revenue ₹78.11cr, +18% YoY, EBITDA margin 33%)","Remarketing Group — Shriram Automall &amp; Adroit Auto (vehicle auctions; revenue ₹67.23cr, +13% YoY, EBITDA +38%)","OLX India (classifieds; strongest growth — revenue +29%, EBITDA +76% YoY)","New Spinny partnership for certified used-car listings on CarWale/OLX (commission-based, no balance-sheet inventory risk)","VAYA AI — proprietary AI tool for buyer-listing matching, pricing and condition checks"],
+  stores:"Genuinely 'phygital' — over 500 physical touchpoints nationally: Shriram Automall vehicle-auction yards, CarWale abSure &amp; Signature used-car dealership/inspection centres (expanding to 550+ locations with the Spinny tie-up), and OLX India franchise outlets. This physical network differentiates CarTrade from purely online marketplaces and is a genuine asset base, not a series of loss-making dark stores.",
+  swot:{
+    s:["Debt-free with ₹1,321cr cash reserves — a rare fortress balance sheet in this peer set","16 consecutive quarters of >45% EBITDA growth per management disclosure","Diversified across consumer (CarWale/BikeWale), remarketing (Automall) and classifieds (OLX)","500+ physical touchpoints give a defensible, hard-to-replicate moat versus app-only rivals"],
+    w:["Sequential PAT decline (-21% QoQ) on tax/labour-code provisions shows some earnings lumpiness","~35-40% of Q1 FY27 PAT is other-income-driven rather than core-operations-driven","Seasonally the weakest quarter for the core auto business per management commentary"],
+    o:["Spinny partnership to scale certified used-car volumes without inventory risk","OLX India's 76% EBITDA growth suggests continued monetisation headroom in classifieds","VAYA AI rollout to improve conversion and reduce customer-acquisition cost"],
+    t:["Elevated valuation (EV/EBITDA ~46.9x, EV/Sales ~16x per press commentary) leaves little margin of safety","Highly cyclical exposure to India's auto/used-vehicle demand","Competitive intensity from Spinny (as both partner and potential competitor), CARS24, Droom"]},
+  analyst:"UBS: Buy, target ₹4,000 (cites strong operating leverage &amp; margin expansion); Nomura: Buy, target ₹3,286",
+  mgmt:[{role:"Co-founder, Chairman &amp; Group CEO",name:"Vinay Sanghi"}]
+},
+nykaa:{
+  name:"FSN E-Commerce Ventures (Nykaa) — Nykaa Beauty &amp; Nykaa Fashion", ticker:"NSE: NYKAA | BSE: 543384",
+  ipo:{date:"Nov 2021", price:1125, adjNote:"5:1 bonus issue (Nov 2022) → 6x share count; split/bonus-adjusted IPO reference ≈ ₹187.5", adjPrice:187.5},
+  cmp:{price:326,asOf:"17 Sep 2026"},
+  q1fy27:{revenue:2782, otherIncome:9.3, totalIncome:"n/a", ebitda:236, ebitdaMargin:8.5, pat:80, patMargin:2.9,
+    realProfitNote:"Nykaa's Q1 FY27 profit looks predominantly operations-led: EBITDA growth (+68% YoY to ₹236cr) has comfortably outpaced revenue growth (+29% YoY), and both EBITDA and PAT margins hit 12-13 quarter highs. Unlike Eternal/Paytm, there is no evidence in reported disclosures of a large other-income prop to PAT this quarter — and other income is small (about \u20b99.3 crore: total income \u20b92,791.31 crore vs revenue \u20b92,782 crore), so excluding it leaves PAT of roughly \u20b971 crore (simple subtraction).",
+    yoy:"Revenue +29% YoY (highest in 13 quarters); EBITDA +68% YoY; PAT +226% YoY"},
+  segments:["Beauty (BPC) — largest segment; GMV +28% YoY to ₹4,105cr; new brand launches (Rare Beauty, SK-II, Judydoll)","Fashion — outpacing overall growth, nearing/at breakeven per management commentary","eB2B distribution (Nykaa SuperStore/Nykaa Prof) supplying retailers/salons","House-of-brands (owned labels incl. Dot &amp; Key, Nykaa Cosmetics)"],
+  stores:"Omnichannel — approximately 324 physical Beauty retail stores across India as of the Q1 FY27 business update (up from ~140 stores in FY23), alongside e-commerce, giving Nykaa one of the largest organised beauty-retail store networks among new-age listed companies. No dark stores in the Blinkit/quick-commerce sense; stores are full-format retail/experience outlets.",
+  swot:{
+    s:["Best EBITDA margin (8.5%) and margin trajectory in 12-13 quarters — genuine operating leverage showing through","Store network (~324 outlets) plus content-led online platform gives an omnichannel moat","Brand-partnership pipeline (Rare Beauty, SK-II) strengthens premium positioning","Fashion vertical nearing breakeven reduces group-level drag"],
+    w:["Governance concerns linger from the controversial 5:1 bonus-share issue in Nov 2022, timed to the pre-IPO lock-in expiry","Net margin still low (2.9%) versus a very high P/E (335.7x on FY26 basis per press data)","Fashion vertical historically loss-making, though improving"],
+    o:["Continued store expansion and category extension (wellness, e-B2B)","Premiumisation trend in Indian beauty &amp; personal care","Superstore/eB2B channel to unlock offline retailer/salon demand"],
+    t:["Intense competition from Amazon, Purplle, Myntra Beauty, quick-commerce players entering beauty (Blinkit/Zepto beauty verticals)","High valuation multiple leaves limited room for execution missteps","Working-capital intensity of physical retail expansion"]},
+  analyst:"Jefferies: Buy, target ₹400; Nomura: Buy, target ₹411; CLSA: Outperform (raised focus on margin expansion)",
+  mgmt:[{role:"Founder, Executive Chairperson &amp; CEO",name:"Falguni Nayar"}]
+},
+pbfintech:{
+  name:"PB Fintech — Policybazaar &amp; Paisabazaar", ticker:"NSE: POLICYBZR | BSE: 543390",
+  ipo:{date:"Nov 2021", price:980, adjNote:"No known split/bonus since listing", adjPrice:980},
+  cmp:{price:1830,asOf:"17 Sep 2026"},
+  q1fy27:{revenue:1888, otherIncome:93, totalIncome:"n/a", ebitda:186, ebitdaMargin:9.85, pat:163, patMargin:8.6,
+    realProfitNote:"Other income was about \u20b993 crore (total income \u20b91,981.3 crore vs revenue \u20b91,888.3 crore), largely treasury income on IPO cash. Reported EBITDA excluding other income is \u20b9139 crore (7.4%); the company\u2019s Adjusted EBITDA is \u20b9186 crore. Reported PAT of \u20b9163 crore is higher than reported EBITDA because of that other income: excluding it (simple subtraction) PAT would be roughly \u20b970 crore, i.e. about 57% of PAT is other-income-linked. Core online business growth is genuine (Adjusted EBITDA +109% YoY).",
+    yoy:"Revenue +40% YoY; Adjusted EBITDA +109% YoY; PAT +92% YoY (₹85cr → ₹163cr)"},
+  segments:["Insurance marketplace (Policybazaar) — core online business; total insurance premium ₹8,372cr in Q1 FY27, +41% YoY; new protection business +53% YoY, new health +59% YoY","Credit marketplace (Paisabazaar) — core credit revenue ₹127cr (+25% YoY); disbursals ₹2,776cr (+33% YoY)","PB Partners — offline/agent-led insurance distribution channel; 1.13 lakh active partners, +55% YoY","New initiatives — Policybazaar for Business, PB Health, PB Connect, Policybazaar UAE (profitable in FY26 and Q1 FY27)"],
+  stores:"Primarily a digital marketplace; PB Partners channel uses 500,000+ advisors (largely home/field-based, not branded retail stores). The company had earlier flagged plans for ~100 physical outlets; no updated large-format store count was found for Q1 FY27 (flagged n/a). No dark-store or warehouse-style physical footprint, given the intangible nature of insurance/credit distribution.",
+  swot:{
+    s:["India's largest online insurance marketplace with a five-year revenue CAGR of ~51%","PAT margin turned from -47% to +9% over five years — a genuine structural improvement","Renewal revenue (a high-margin, near-pass-through-to-EBITDA stream) reached ₹935cr on a rolling 12-month basis","Profitable UAE overseas expansion"],
+    w:["Adjusted EBITDA still modest relative to revenue (~10% margin) despite scale","A meaningful share of reported PAT is not yet clearly separated from treasury/other income in disclosures reviewed","Renewals-vs-fresh-business mix shifts can create margin volatility as management itself has flagged"],
+    o:["Targeting ₹1,000cr group PAT for FY27 as a stated milestone","Renewals growing faster than fresh premium — a structurally higher-margin tailwind","Under-penetrated insurance/credit markets in Tier 2/3 India"],
+    t:["Regulatory changes in insurance distribution/commission structures (IRDAI)","Competitive intensity from bank-led and other digital insurance distributors","Credit-cycle sensitivity in the Paisabazaar lending-distribution business"]},
+  analyst:"n/a specific fresh target reported in the Q1 FY27 window reviewed",
+  mgmt:[{role:"Co-founder, Chairman &amp; Group CEO",name:"Yashish Dahiya"},{role:"Co-founder &amp; Whole-time Director",name:"Alok Bansal"},{role:"Co-founder",name:"Avaneesh Nirjar"}]
+},
+paytm:{
+  name:"One 97 Communications (Paytm)", ticker:"NSE: PAYTM | BSE: 543396",
+  ipo:{date:"Nov 2021", price:2150, adjNote:"No known split/bonus since listing", adjPrice:2150},
+  cmp:{price:1700,asOf:"early Sep 2026 (~₹1,650-1,700 range); check live quote"},
+  q1fy27:{revenue:2448, otherIncome:182, totalIncome:2630, ebitda:203, ebitdaMargin:8.29, pat:220, patMargin:9.0,
+    realProfitNote:"This is the clearest example of the 'other income' effect in the set: Paytm carries large accumulated losses, so its effective cash tax rate is low, meaning PAT (₹220cr) tracks close to PBT. Of the ₹220cr PAT, ₹182cr — roughly 83% — is other income (largely treasury interest on IPO-proceeds cash reserves). Stripping this out implies a 'real' operating profit of only around ₹35-40cr for the quarter, versus an EBITDA of ₹203cr — i.e., core-business profitability, while improving, is still a small fraction of the headline profit number.",
+    yoy:"Revenue +28% YoY; EBITDA +182% YoY (highest ever, margin 8.29% vs 3.73% a year ago); PAT +79% YoY, +20% QoQ"},
+  segments:["Payment services (largest — revenue ₹1,384cr, +33% YoY): UPI, wallet, Soundbox/device-led merchant payments","Distribution of financial services (revenue ₹814cr, +45% YoY): loans, insurance, wealth via Paytm Money (₹100cr planned additional investment)","Marketing services (revenue ₹239cr, -3% YoY): ad/aggregator/ticketing and other businesses"],
+  stores:"Not a retail-store business, but has a very large <b>physical device network</b> — 1.30 crore+ subscription merchants using Soundbox/EDC devices as of recent disclosures, which functions as Paytm's 'physical footprint' and a recurring-revenue anchor for the payments business; no dark stores or warehouses.",
+  swot:{
+    s:["Record quarterly EBITDA (₹203cr, all-time high) signalling genuine AI-led operating-leverage gains","Diversified into financial-services distribution and marketing, reducing pure-payments dependence","Largest device-led merchant network in Indian fintech (subscription merchants at an all-time high)","Management guiding to 15-20% EBITDA margins over the next 2-3 years"],
+    w:["~83% of Q1 FY27 PAT traced to other/treasury income rather than core operations on CB Research's approximate working","Marketing-services revenue declining YoY","History of large losses (FY25 net loss ₹789cr) still weighs on investor memory and valuation multiples"],
+    o:["Financial-services distribution (loans/insurance) offers higher-margin cross-sell into an existing large user base","Continued AI-led cost efficiency could narrow the gap between EBITDA and 'real' operating PAT","Potential re-rating if core-business (ex-other-income) profitability scales as guided"],
+    t:["Regulatory/compliance overhangs (e.g., SEBI notice to CEO/CFO on 2023 loan-disclosure timing, reported Aug 2026)","Proposed digital-payments fee changes flagged as a sentiment risk by the market","Intense UPI/payments competition from PhonePe, Google Pay and bank-led apps compressing take-rates"]},
+  analyst:"CLSA: Underperform, trimmed FY27-29 EBITDA estimates, target ₹1,050; Citi: raised target after strong Q1 FY27 print; Goldman Sachs: retained rating (detail n/a)",
+  mgmt:[{role:"Founder, MD &amp; CEO",name:"Vijay Shekhar Sharma"}]
+},
+mapmyindia:{
+  name:"CE Info Systems (MapmyIndia / MAPPLS)", ticker:"NSE: MAPMYINDIA | BSE: 543425",
+  ipo:{date:"Dec 2021", price:1033, adjNote:"No known split/bonus since listing", adjPrice:1033},
+  cmp:{price:1109,asOf:"4 Aug 2026 (results day close); check live quote"},
+  q1fy27:{revenue:139.7, otherIncome:19.7, totalIncome:159.4, ebitda:56.1, ebitdaMargin:40.2, pat:49.7, patMargin:31.2,
+    realProfitNote:"Approximate working: with total income ₹159.4cr vs. revenue from operations ₹139.7cr (~₹19.7cr of other income) and PAT of ₹49.7cr, back-solving for an operating PBT and applying a ~25% effective tax rate suggests a 'real' operating net profit of roughly ₹34-35cr — meaning about 30% of PAT is other-income-linked (largely interest on ₹745cr+ of cash/financial-instrument reserves) and roughly 70% is genuinely core-business profit. This is among the healthiest 'real profit' mixes in the peer set, alongside RateGain.",
+    yoy:"Revenue +15% YoY; EBITDA broadly flat in absolute terms with a lower margin (40.2% vs prior year) due to product mix shift and a one-time ~₹4cr write-off; PAT +6-8% YoY"},
+  segments:["Map-led: digital map data, geospatial software, APIs, royalties/subscriptions — largest revenue stream at ₹114cr, roughly flat YoY","IoT-led: location-based IoT/connected-mobility &amp; logistics hardware+software — revenue ₹41.1cr, +75% YoY, IoT segment EBITDA margin improved to 13.1% from 8.7%","New market-wise reporting: Automotive ₹58.8cr (42.1% mix), Enterprise ₹64.2cr (46.0% mix), Government ₹16.7cr (11.9% mix)"],
+  stores:"B2B/B2G deep-tech company — no consumer stores or dark stores. Physical presence is limited to IoT hardware (fleet-tracking/connected-mobility devices) supplied to automotive OEMs, enterprises and government/logistics customers; the 'footprint' is embedded devices rather than retail locations.",
+  swot:{
+    s:["Highest EBITDA margin in the peer set (40.2%) — a genuinely high-margin, IP-led business model","Strong balance sheet with ₹745cr+ cash/financial instruments and no material debt concerns flagged","Rare-in-India strategic asset in digital mapping with automotive-OEM and government relationships","New Joint MD (Rohan Verma, eff. Jul 2026) continuity in a founder-led leadership structure"],
+    w:["Margin compression YoY (product mix shifting toward lower-margin IoT hardware) even as revenue grows","Stock down ~36-38% over the past year despite continued profitability — re-rating risk from growth-rate concerns","Government segment (11.9% of revenue) carries payment-cycle and one-off write-off risk (as seen this quarter)"],
+    o:["IoT-led business scaling fast (+75% YoY) with improving margins as it matures","AI-native mapping/geospatial roadmap flagged by management as a next leg of growth","Growing demand for connected-mobility and fleet-management solutions in India"],
+    t:["Competitive and geopolitical dependency risk around alternatives to global mapping providers (Google Maps, etc.) in India","Customer concentration risk in automotive/enterprise segments","IoT hardware business is inherently lower-margin than the core map-data license business, diluting blended margins over time"]},
+  analyst:"n/a specific fresh target reported in the Q1 FY27 window reviewed; shares fell ~4-6% on results day despite a profitable beat, reflecting growth-rate concerns rather than a profitability issue",
+  mgmt:[{role:"Chairman &amp; Managing Director",name:"Rakesh Verma"},{role:"Joint Managing Director (eff. Jul 2026)",name:"Rohan Verma"}]
+}
+};
+var COMPANY_ORDER = ["easytrip","nazara","rategain","eternal","cartrade","nykaa","pbfintech","paytm","mapmyindia"];
+
+/* ============ util ============ */
+function fmtINR(n){
+  if(typeof n !== "number") return n;
+  return n.toLocaleString('en-IN',{maximumFractionDigits:2});
+}
+function tagFor(v){
+  if(typeof v !== "number") return '<span class="tag warn">n/a</span>';
+  if(v>0) return '<span class="tag pos">₹'+fmtINR(v)+' cr</span>';
+  return '<span class="tag neg">₹'+fmtINR(v)+' cr</span>';
+}
+
+/* ============ tab switching ============ */
+document.getElementById('tabNav').addEventListener('click',function(e){
+  if(e.target.tagName!=='BUTTON')return;
+  var tab=e.target.getAttribute('data-tab');
+  document.querySelectorAll('#tabNav button').forEach(function(b){b.classList.remove('active');});
+  e.target.classList.add('active');
+  document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-'+tab).classList.add('active');
+});
+
+/* ============ language toggle ============ */
+
+
+/* ===== Tamil (Tanglish) language engine ===== */
+var LANG='en';
+var TA_MAP={"Still Paying for Tomorrow: India's New-Age Listed Tech Companies": "Still Paying for Tomorrow: இந்தியாவோட New-Age Listed Tech நிறுவனங்க", "Q1 FY27 (Quarter ended June 2026) performance review — revenue, EBITDA, other income, real operating profit, IPO price vs. CMP, business segments, stores & SWOT across 9 companies": "Q1 FY27 (2026 ஜூன் காலாண்டு) performance review &mdash; revenue, EBITDA, other income, real operating profit, IPO price vs CMP, business segments, stores மற்றும் SWOT, 9 நிறுவனங்களுக்கும்", "Sector Snapshot": "Sector Snapshot", "Companies (Financials)": "நிறுவனங்க (Financials)", "Analysts' Rating": "Analysts Rating", "Management & Board": "Management மற்றும் Board", "Voice-enabled CB Assist (bottom-right chat bubble) can answer quick questions on any company's revenue, EBITDA, other income or SWOT. Cauvery Socrates (separate tab) offers a Socratic self-test on the themes covered here.": "Voice-enabled CB Assist (கீழ வலது மூலையில இருக்குற chat bubble) எந்த நிறுவனத்தோட revenue, EBITDA, other income, SWOT பத்தியும் உடனே பதில் சொல்லும். Cauvery Socrates (தனி tab) இந்த topics-ல Socratic self-test தருது.", "Company": "நிறுவனம்", "Stock chg. since IPO offer price (%)": "IPO offer price-ல இருந்து stock மாற்றம் (%)", "FY22 EBITDA margin (%)": "FY22 EBITDA margin (%)", "FY26 EBITDA margin (%)": "FY26 EBITDA margin (%)", "NA (loss-making basis)": "NA (loss-ல இருக்குறதால)", "Figures are on an adjusted basis. NA# = company reported losses in FY26. Stock price change is calculated against split/bonus-adjusted IPO offer prices. This table reflects a point-in-time newspaper compilation; see the Financials tab for CB Research's own Q1 FY27 figures and latest available CMP per company.": "Figures adjusted basis-ல. NA# = FY26-ல நிறுவனம் loss report பண்ணது. Stock விலை மாற்றம், split/bonus adjust பண்ண IPO offer price-க்கு எதிரா கணக்கிட்டது. இது ஒரு குறிப்பிட்ட நேரத்தோட newspaper compilation; ஒவ்வொரு நிறுவனத்தோட CB Research Q1 FY27 figures மற்றும் latest CMP-க்கு Financials tab பாருங்க.", "Q1 FY27 at a glance — Revenue, EBITDA & PAT (₹ crore)": "Q1 FY27 ஒரு பார்வை &mdash; Revenue-ல EBITDA மற்றும் PAT %", "NSE: EASEMYTRIP | BSE: 543272 · IPO: Mar 2021 at ₹187 · 1:1 bonus (Nov 2022) + subsequent bonus actions; split/bonus-adjusted IPO reference ≈ ₹5.9": "NSE: EASEMYTRIP | BSE: 543272 · IPO: 2021 மார்ச்ல ₹187 · 1:1 bonus (2022 நவ) + அப்புறம் வந்த bonus actions; split/bonus adjust பண்ண IPO reference ≈ ₹5.9", "YoY: Swung from PAT of ₹0.44cr in Q1 FY26 to a loss of ₹11.69cr in Q1 FY27; revenue +18.4% YoY · CMP as of Sep 2026": "<b>YoY:</b> Q1 FY26-ல PAT ₹0.44cr இருந்தது, Q1 FY27-ல ₹11.69cr loss-க்கு போயிடுச்சு; revenue YoY +18.4% · CMP 2026 செப் நிலவரம்", "Real Operating Profit Check (excl. Other Income) CB Research approximate working — flagged, not an audited figure": "<b>Real Operating Profit Check (other income தவிர்த்து)</b> CB Research approximate working &mdash; flag பண்ணது, audited figure இல்ல", "Loss-making at both EBITDA and PAT level; the small negative EBITDA already excludes any cushioning from other income, so the 'real' operating picture is a loss of a similar or slightly larger magnitude than reported PAT.": "EBITDA மற்றும் PAT ரெண்டு லெவல்லயும் loss; சின்ன negative EBITDA-லயே other income cushion ஏற்கனவே இல்ல, அதனால 'real' operating நிலைமை reported PAT loss-க்கு சமமான அல்லது கொஞ்சம் பெரிய loss.", "Business Model Map (click any box for detail)": "Business Model Map (எந்த box-ஐயும் click பண்ணா detail தெரியும்)", "Click any box to see what it means.": "எந்த box-ஐயாவது click பண்ணுங்க, அதோட அர்த்தம் தெரியும்.", "Business Segments & Model": "Business Segments மற்றும் Model", "Air ticketing (largest historically, now under pressure from meta-search competition)": "Air ticketing (வரலாற்றுல பெரிசு, இப்போ meta-search competition-னால அழுத்தம்)", "Hotels & holiday packages (fastest-growing; room nights +95% YoY in Q1 FY27)": "Hotels மற்றும் holiday packages (வேகமா வளருது; Q1 FY27-ல room nights YoY +95%)", "Rail, bus & ancillary services (-45.8% YoY, a soft spot)": "Rail, bus மற்றும் ancillary services (YoY -45.8%, பலவீனமான பகுதி)", "B2C, B2B (corporate/B2E) and B2B2C distribution channels": "B2C, B2B (corporate/B2E) மற்றும் B2B2C distribution channels", "International/Dubai operations (GBR ₹462cr in Q1 FY27, +45% YoY)": "International/Dubai operations (Q1 FY27-ல GBR ₹462cr, YoY +45%)", "Stores / Dark Stores / Physical Footprint": "Stores / Dark Stores / Physical Footprint (கடை அமைப்பு)", "Pure online OTA (EaseMyTrip.com/app) plus an in-house call centre; no physical retail stores or dark stores. Subsidiaries/offices in the Philippines, Singapore, Thailand, UAE, UK, USA, New Zealand, Saudi Arabia and Brazil support the international book of business.": "Pure online OTA (EaseMyTrip.com/app) + சொந்த call centre; physical retail stores அல்லது dark stores இல்ல. Philippines, Singapore, Thailand, UAE, UK, USA, New Zealand, Saudi Arabia, Brazil-ல subsidiaries/offices international business-ஐ ஆதரிக்குது.", "SWOT Analysis": "SWOT பகுப்பாய்வு", "Strengths": "பலம் (Strengths)", "Zero-convenience-fee positioning built a large 14 million+ user base": "Zero-convenience-fee positioning-னால 14 million+ user base உருவாச்சு", "Diversified travel product stack (air, hotel, rail/bus, holidays)": "பலவிதமான travel products (air, hotel, rail/bus, holidays)", "Asset-light model with historically low capex needs": "Asset-light model; capex தேவை வரலாற்றுல குறைவு", "Strong Dubai/international growth momentum": "Dubai/international growth momentum வலுவா இருக்கு", "Weaknesses": "பலவீனம் (Weaknesses)", "Reverted to net losses in FY26 (-₹47.6cr) and continued in Q1 FY27 (-₹11.7cr) after a large exceptional airline-related provision (-₹509.6cr) hit FY26": "FY26-ல மறுபடி net loss (-₹47.6cr), Q1 FY27-லயும் தொடருது (-₹11.7cr); FY26-ல பெரிய exceptional airline-related provision (-₹509.6cr) அடிச்சது", "Rising service costs and ad spend are outpacing revenue growth": "Service costs மற்றும் ad spend, revenue growth-ஐ விட வேகமா ஏறுது", "High dependence on the structurally low-margin air-ticketing segment, which is shrinking": "குறைஞ்சிட்டு வர்ற, low-margin air-ticketing segment மேல அதிக சார்பு", "Opportunities": "வாய்ப்புகள் (Opportunities)", "Structural shift toward higher-margin hotels/holiday packages": "Higher-margin hotels/holiday packages பக்கம் structural shift", "Planned ₹500cr capital raise to fund hotels/holidays/tech expansion": "Hotels/holidays/tech expansion-க்கு ₹500cr capital raise plan", "Government MoUs (e.g., Jharkhand tourism) for destination marketing tie-ups": "Destination marketing tie-ups-க்கு government MoUs (உ.தா. Jharkhand tourism)", "Threats": "அச்சுறுத்தல் (Threats)", "Intense competition from MakeMyTrip, Yatra, ixigo and direct airline/OTA channels": "MakeMyTrip, Yatra, ixigo மற்றும் direct airline/OTA channels-ஓட கடும் போட்டி", "Thin margins in a commoditised online travel category": "Commoditised online travel category-ல thin margins", "Execution risk in the stated pivot from a transactional to a higher-margin model": "Transactional model-ல இருந்து higher-margin model-க்கு மாறுற pivot-ல execution risk", "Analysts' Rating (third-party)": "Analysts Rating (third-party)", "n/a (no fresh broker target price publicly reported around Q1 FY27 results)": "n/a (Q1 FY27 results சமயம் புது broker target price பகிரங்கமா report ஆகல)", "NSE: NAZARA | BSE: 543280 · IPO: Mar 2021 at ₹1101 · 1:1 bonus (2022) + 2:1 split & 1:1 bonus (2025) — cumulative ~4x adjustment; split-adjusted reference ≈ ₹275": "NSE: NAZARA | BSE: 543280 · IPO: 2021 மார்ச்ல ₹1101 · 1:1 bonus (2022) + 2:1 split மற்றும் 1:1 bonus (2025) &mdash; cumulative ~4x adjustment; split-adjusted reference ≈ ₹275", "YoY: Revenue -14% YoY (largely Nodwin Gaming deconsolidation); comparable revenue +~9% YoY; EBITDA margin improved from 9.5% to 10.8% · CMP as of early Aug 2026 (near results date); check live quote for latest": "<b>YoY:</b> Revenue YoY -14% (Nodwin Gaming deconsolidation-னால); comparable revenue +~9% YoY; EBITDA margin 9.5%-ல இருந்து 10.8%-க்கு improve · CMP 2026 ஆக ஆரம்பம் (results தேதிக்கு பக்கத்துல); latest quote பாருங்க", "Unusually, the drag here is NOT other income but non-operating items: EBITDA was solidly positive (₹46cr, 10.8% margin) yet the company posted a net LOSS of ₹82cr, mainly from share of loss from associates and an impairment charge (linked to Moonshine/PokerBaazi). This is the mirror-image problem to Eternal/Paytm — a decent core business dragged down by non-core investment write-downs rather than propped up by treasury income. Other income was only about ₹8.8 crore, so excluding it the loss would be about ₹91 crore (simple subtraction).": "இங்க விசித்திரம் என்னன்னா, இழுக்குறது other income இல்ல, non-operating items: EBITDA நல்லா positive (₹46cr, 10.8% margin) இருந்தும், associates-ஓட loss share மற்றும் impairment charge (Moonshine/PokerBaazi தொடர்பு)-னால net LOSS ₹82cr. இது Eternal/Paytm-க்கு நேர்மாறான பிரச்சனை &mdash; நல்ல core business, treasury income-ல தாங்கப்படாம non-core investment write-downs-ல இழுக்கப்படுது. Other income ~₹8.8 crore தான், அதை எடுத்தா loss ~₹91 crore (simple கழித்தல்).", "Gaming (mobile games — PAC-MAN, Kiddopia, World Cricket Championship; revenue ₹275cr, +14% YoY, EBITDA margin 19.5%, the core profit engine)": "Gaming (mobile games &mdash; PAC-MAN, Kiddopia, World Cricket Championship; revenue ₹275cr, YoY +14%, EBITDA margin 19.5%) &mdash; core லாபம் தர்ற பகுதி", "eSports & skill-based/real-money-adjacent gaming (post-RMG-ban restructuring)": "eSports மற்றும் skill-based/real-money-adjacent gaming (RMG ban-க்கு அப்புறம் restructuring)", "Sports media & ad-tech (Sportskeeda — exposed to Google search-algorithm volatility)": "Sports media மற்றும் ad-tech (Sportskeeda &mdash; Google search-algorithm volatility-க்கு ஆளாகும்)", "Adtech/Halaplay and other diversified digital entertainment bets": "Adtech/Halaplay மற்றும் மத்த diversified digital entertainment முயற்சிகள்", "Pending consolidation of Bluetile & BestPlay (global gaming studios, ~$303mn all-cash acquisition, ₹518cr revenue/₹55cr EBITDA in Q1FY27 standalone) from Q2 FY27": "Bluetile மற்றும் BestPlay consolidation pending (global gaming studios, ~$303mn all-cash acquisition, Q1FY27 standalone-ல ₹518cr revenue/₹55cr EBITDA) Q2 FY27-ல இருந்து", "No dark stores/retail footprint in the core digital gaming business. Nazara does hold a physical-format bet through its investment in Funky Monkeys Play Center (children's indoor play centres; stake increased to ~68.1% in Q1 FY27) — a small, non-core physical adjacency.": "Core digital gaming business-ல dark stores/retail footprint இல்ல. Funky Monkeys Play Center-ல முதலீடு (children's indoor play centres; Q1 FY27-ல stake ~68.1%-க்கு உயர்வு) &mdash; சின்ன, non-core physical adjacency.", "Diversified portfolio across gaming, eSports, ad-tech and sports media reduces single-title risk": "Gaming, eSports, ad-tech, sports media-ன்னு diversified portfolio, single-title risk-ஐ குறைக்குது", "Core gaming segment genuinely profitable (19.5% EBITDA margin) and growing": "Core gaming segment உண்மையிலயே லாபம் (19.5% EBITDA margin), வளருது", "Aggressive but funded M&A strategy (Bluetile/BestPlay) to scale internationally": "Aggressive ஆனா funded M&A strategy (Bluetile/BestPlay), international scale-க்கு", "New CEO (Raymond Stauffer, effective Sep 2026) bringing global gaming-industry experience": "புது CEO (Raymond Stauffer, 2026 செப் முதல்) global gaming அனுபவத்தோட", "Consolidated net loss despite positive EBITDA — associate losses and impairments (Moonshine/Nodwin) have repeatedly hit the bottom line": "EBITDA positive-ஆ இருந்தும் consolidated net loss &mdash; associate losses மற்றும் impairments (Moonshine/Nodwin) அடிக்கடி bottom line-ஐ தாக்குது", "Revenue volatility from portfolio churn/deconsolidation (Nodwin) makes YoY comparisons noisy": "Portfolio churn/deconsolidation (Nodwin)-னால revenue volatility, YoY comparisons noisy", "Sportskeeda traffic exposed to Google core-update volatility": "Sportskeeda traffic, Google core-update volatility-க்கு ஆளாகும்", "Bluetile/BestPlay consolidation from Q2 FY27 expected to materially scale the gaming business and EBITDA": "Q2 FY27-ல இருந்து Bluetile/BestPlay consolidation, gaming business மற்றும் EBITDA-ஐ கணிசமா scale பண்ணும்", "Management targets doubling EBITDA in FY27": "FY27-ல EBITDA-ஐ இரட்டிப்பாக்கணும்னு management target", "Large addressable market in India's under-monetised mobile gaming base": "இந்தியாவோட under-monetised mobile gaming base-ல பெரிய addressable market", "Regulatory overhang from the real-money-gaming ban and retrospective GST ruling on the gaming sector": "Real-money-gaming ban மற்றும் gaming sector மேல retrospective GST ruling-ல regulatory overhang", "Integration risk on a $303mn cross-border acquisition": "$303mn cross-border acquisition-ல integration risk", "Continued write-off risk on legacy associate investments": "பழைய associate investments-ல தொடர்ந்து write-off risk", "n/a for the Q1 FY27 window; market cap/valuation snapshots around results implied a P/E near 11.5x on a trailing FY26 basis": "Q1 FY27 window-க்கு n/a; results சமயம் trailing FY26 basis-ல P/E ~11.5x-னு valuation snapshots காட்டுது", "NSE: RATEGAIN | BSE: 543417 · IPO: Dec 2022 at ₹425 · No known split/bonus since listing": "NSE: RATEGAIN | BSE: 543417 · IPO: 2022 டிசம்பர்ல ₹425 · Listing-க்கு அப்புறம் split/bonus எதுவும் இல்ல", "YoY: Revenue +188% YoY (Sojern consolidation); PAT +102% YoY and +36% QoQ · CMP as of early Jul 2026; check live quote for latest post-results move": "<b>YoY:</b> Revenue YoY +188% (Sojern consolidation); PAT YoY +102% மற்றும் QoQ +36% · CMP 2026 ஜூலை ஆரம்பம்; results-க்கு அப்புறம் latest quote பாருங்க", "One of the few genuinely profitable names in this set: Adjusted EBITDA of ₹193.4cr (24.6% margin, highest ever) converts into a reported PAT of ₹94.9cr and an Adjusted PAT of ₹116.8cr — profit here is substantially operations-led (Sojern acquisition integration), not a treasury-income story: other income is only about ₹3.1 crore (derived: total income less revenue), so PAT excluding it is roughly ₹92 crore. Free cash flow of ₹135.2cr (78.8% conversion) reinforces the quality of earnings.": "இந்த set-ல உண்மையிலயே லாபம் காட்டுற சில நிறுவனங்கள்ல ஒண்ணு: Adjusted EBITDA ₹193.4cr (24.6% margin, எப்பவும் இல்லாத அதிகம்) reported PAT ₹94.9cr, Adjusted PAT ₹116.8cr-ஆ மாறுது &mdash; profit பெரும்பாலும் operations-led (Sojern integration), treasury-income கதை இல்ல: other income ~₹3.1 crore தான் (derived: total income - revenue), அதை எடுத்தா PAT ~₹92 crore. Free cash flow ₹135.2cr (78.8% conversion) earnings quality-ஐ உறுதி பண்ணுது.", "Distribution (DHISCO/RevGain-type connectivity & distribution SaaS for travel/hospitality)": "Distribution (DHISCO/RevGain மாதிரி connectivity மற்றும் distribution SaaS, travel/hospitality-க்கு)", "Data-as-a-Service / travel ad-tech (Sojern — acquired Nov 2025, driving the revenue step-change)": "Data-as-a-Service / travel ad-tech (Sojern &mdash; 2025 நவம்பர்ல வாங்கினது, revenue-ல பெரிய ஏற்றத்துக்கு காரணம்)", "Hospitality & Rate Intelligence solutions (AI-powered pricing/demand tools for hotels)": "Hospitality மற்றும் Rate Intelligence solutions (hotels-க்கு AI-powered pricing/demand tools)", "Pure B2B SaaS company — no consumer-facing stores or dark stores. Physical footprint is limited to global offices supporting APAC (a record quarter for new business), EMEA and Americas clients.": "Pure B2B SaaS நிறுவனம் &mdash; consumer stores அல்லது dark stores இல்ல. Physical footprint APAC (new business-ல record quarter), EMEA, Americas clients-க்கான global offices மட்டும்.", "Highest-ever quarterly Adjusted EBITDA margin (24.6%) with genuine free-cash-flow backing": "எப்பவும் இல்லாத அதிகபட்ச quarterly Adjusted EBITDA margin (24.6%), உண்மையான free-cash-flow ஆதரவோட", "Sojern acquisition materially scaled revenue (+188% YoY) and diversified into ad-tech/data": "Sojern acquisition revenue-ஐ கணிசமா scale பண்ணது (YoY +188%), ad-tech/data-ல diversify ஆச்சு", "Record new-business sign-ups in Asia-Pacific": "Asia-Pacific-ல record new-business sign-ups", "Actively de-levering — 25% of acquisition debt repaid within a quarter of closing (38% by early Aug 2026)": "Debt குறைக்கிறாங்க &mdash; closing-ஆன ஒரு quarter-க்குள்ள acquisition debt-ல 25% திருப்பிட்டாங்க (2026 ஆக ஆரம்பத்துல 38%)", "Gross margin has compressed (69.2% in Q1FY27 vs ~75% in FY23-25) as ad-spend-linked revenue mix grows": "Ad-spend-linked revenue mix வளர்றதால gross margin குறைஞ்சிருக்கு (Q1FY27-ல 69.2%, FY23-25-ல ~75%)", "Finance costs stepped up materially post-acquisition (from near-zero to ₹16.5cr/quarter)": "Acquisition-க்கு அப்புறம் finance costs கணிசமா ஏறியிருக்கு (கிட்டத்தட்ட zero-ல இருந்து ₹16.5cr/quarter)", "Integration risk on a large, recent cross-border acquisition": "பெரிய, சமீபத்திய cross-border acquisition-ல integration risk", "FY27 EBITDA guidance of ₹650-700cr (21.5-22.5% margin) if integration tracks to plan": "Integration plan-படி நடந்தா FY27 EBITDA guidance ₹650-700cr (21.5-22.5% margin)", "Sustained travel demand tailwinds (e.g., FIFA World Cup period cited as a Q1 driver)": "Travel demand tailwinds தொடருது (உ.தா. FIFA World Cup காலம் Q1 driver-ஆ சொல்லப்பட்டது)", "Cross-sell of Sojern's ad-tech stack into RateGain's existing hotel/OTA client base": "Sojern-ஓட ad-tech stack-ஐ RateGain-ஓட இருக்குற hotel/OTA clients-க்கு cross-sell", "Travel-demand cyclicality (geopolitical/macro shocks can hit bookings sharply)": "Travel-demand cyclicality (geopolitical/macro shocks bookings-ஐ கடுமையா பாதிக்கலாம்)", "Leverage from the Sojern deal still being worked down (net debt ₹615.4cr as of Jun 2026)": "Sojern deal leverage இன்னும் குறைச்சிட்டு இருக்காங்க (2026 ஜூன் நிலவரம் net debt ₹615.4cr)", "Competitive SaaS market for hospitality distribution and pricing tools": "Hospitality distribution மற்றும் pricing tools-க்கு போட்டி நிறைந்த SaaS market", "n/a specific fresh target reported in the Q1 FY27 window reviewed; stock traded broadly in the ₹930-950 band around results": "Q1 FY27 window-ல specific புது target report ஆகல; results சமயம் stock ₹930-950 band-ல", "Eternal (formerly Zomato) — Zomato, Blinkit, District, Hyperpure": "Eternal (முன்னாடி Zomato) &mdash; Zomato, Blinkit, District, Hyperpure", "NSE: ETERNAL | BSE: 543320 · IPO: Jul 2021 at ₹76 · No known split/bonus since listing": "NSE: ETERNAL | BSE: 543320 · IPO: 2021 ஜூலைல ₹76 · Listing-க்கு அப்புறம் split/bonus எதுவும் இல்ல", "YoY: Revenue +182% YoY (Blinkit inventory-model consolidation); PAT +268% YoY but -47% QoQ due to higher tax · CMP as of mid Aug 2026 (~₹318-328 range); check live quote": "<b>YoY:</b> Revenue YoY +182% (Blinkit inventory-model consolidation); PAT YoY +268% ஆனா QoQ -47% (அதிக tax-னால) · CMP 2026 ஆக நடுப்பகுதி (~₹318-328 range); live quote பாருங்க", "Illustrative back-of-envelope: with total income (₹20,586cr) exceeding revenue from operations (₹20,211cr) by ~₹375cr of other income, and PAT of only ₹92cr against an operating EBITDA of ₹594cr, depreciation/ESOP/tax charges are heavy. Applying a rough post-tax adjustment, excluding other income would likely turn the ~₹92cr reported profit into a modest net LOSS at the PAT line — i.e., on a like-for-like operating basis (ex-other income), Eternal is not yet clearly profitable at the very bottom line, even though EBITDA and food-delivery/Blinkit segment economics are improving fast. Figures approximate; not an audited disclosure — flagged.": "Illustrative back-of-envelope: total income (₹20,586cr), revenue from operations (₹20,211cr)-ஐ ~₹375cr (other income) அளவு தாண்டுது; operating EBITDA ₹594cr இருந்தும் PAT ₹92cr தான், depreciation/ESOP/tax charges அதிகம். Rough post-tax adjustment போட்டு other income-ஐ எடுத்தா ~₹92cr reported profit, PAT line-ல சிறிய net LOSS-ஆ மாற வாய்ப்பு &mdash; அதாவது ex-other-income like-for-like basis-ல Eternal கடைசி bottom line-ல இன்னும் தெளிவா லாபம் இல்ல, EBITDA மற்றும் food-delivery/Blinkit economics வேகமா improve ஆனாலும். Figures approximate; audited disclosure இல்ல &mdash; flag பண்ணது.", "Food delivery (Zomato app) — EBITDA ₹621cr, +33% YoY, the most mature and profitable segment": "Food delivery (Zomato app) &mdash; EBITDA ₹621cr, YoY +33%, மிகவும் mature மற்றும் லாபமான segment", "Blinkit (quick commerce) — now the LARGEST revenue contributor at 77.5% of total (₹15,664cr); turned EBITDA-positive at ₹365cr in Q1 FY27 (vs -₹42cr loss a year ago), 5th consecutive quarter of improvement": "Blinkit (quick commerce) &mdash; இப்போ மிகப்பெரிய revenue contributor, total-ல 77.5% (₹15,664cr); Q1 FY27-ல ₹365cr EBITDA-positive (ஒரு வருஷம் முன்னாடி -₹42cr loss), தொடர்ந்து 5-வது quarter improvement", "District (going-out/events/ticketing) — revenue ₹318cr (+54% YoY) but still EBITDA-negative (-₹62cr)": "District (going-out/events/ticketing) &mdash; revenue ₹318cr (YoY +54%) ஆனா இன்னும் EBITDA-negative (-₹62cr)", "Hyperpure (B2B food & grocery supplies to restaurants) — revenue fell sequentially in Q1 FY27": "Hyperpure (restaurants-க்கு B2B food மற்றும் grocery supplies) &mdash; Q1 FY27-ல revenue sequentially குறைஞ்சது", "Nugget by Zomato business transferred to subsidiary Carthero Technologies for ₹350cr during the quarter": "Nugget by Zomato business, quarter-ல subsidiary Carthero Technologies-க்கு ₹350cr-க்கு மாத்தப்பட்டது", "Blinkit's quick-commerce model is built on a dense network of dark stores (unlisted-to-public exact Q1 FY27 count; last broadly disclosed scale was in the low thousands of dark stores across India as of FY26 — flagged n/a for the precise Q1 FY27 number, to be updated from the investor deck). Hyperpure operates warehousing/fulfilment infrastructure for B2B supply. Food delivery and District remain largely asset-light/marketplace models.": "Blinkit-ஓட quick-commerce model <b>dark stores</b> நெருக்கமான network மேல கட்டப்பட்டது (Q1 FY27 exact count public-ஆ இல்ல; FY26 நிலவரம் இந்தியா முழுக்க சில ஆயிரம் dark stores-னு சொல்லப்பட்டது &mdash; துல்லியமான Q1 FY27 number-க்கு n/a-னு flag; investor deck-ல இருந்து update பண்ணணும்). Hyperpure B2B supply-க்கு warehousing/fulfilment infrastructure இயக்குது. Food delivery மற்றும் District பெரும்பாலும் asset-light/marketplace models.", "India's largest integrated food-tech + quick-commerce platform by scale": "India-ல scale-ல மிகப்பெரிய integrated food-tech + quick-commerce platform", "Blinkit turned EBITDA-positive — a major inflection point after years of cash burn": "Blinkit EBITDA-positive ஆச்சு &mdash; பல வருஷ cash burn-க்கு அப்புறம் பெரிய inflection point", "Diversified across delivery, quick commerce, dining-out/events and B2B supplies": "Delivery, quick commerce, dining-out/events, B2B supplies-ல diversified", "Strong brand recall (Zomato/Blinkit) and deep logistics network": "வலுவான brand recall (Zomato/Blinkit) மற்றும் ஆழமான logistics network", "PAT of just ₹92cr on ₹20,211cr of revenue — wafer-thin ~0.45% net margin": "₹20,211cr revenue-ல PAT ₹92cr தான் &mdash; ~0.45% net margin, ரொம்ப thin", "Meaningful reliance on other income to show even a modest headline profit; core-business PAT ex-other-income likely negative": "சின்ன headline profit காட்டவே other income மேல கணிசமான சார்பு; core-business PAT ex-other-income negative-ஆ இருக்க வாய்ப்பு", "District (going-out) still loss-making; Hyperpure revenue volatile": "District (going-out) இன்னும் loss-ல; Hyperpure revenue volatile", "Extremely high P/E (572.5x on FY26 basis per press data) prices in years of future profit growth": "ரொம்ப அதிக P/E (FY26 basis-ல 572.5x, press data) &mdash; பல வருஷ future profit growth-ஐ இப்பவே விலையில வெச்சிருக்கு", "Continued Blinkit EBITDA scale-up as dark-store network matures": "Dark-store network mature ஆகுறப்போ Blinkit EBITDA தொடர்ந்து scale ஆகும்", "Cross-sell across Zomato/Blinkit/District ecosystem (bundled memberships, ads)": "Zomato/Blinkit/District ecosystem முழுக்க cross-sell (bundled memberships, ads)", "Quick-commerce category still growing rapidly in urban India": "நகர்ப்புற இந்தியாவுல quick-commerce category இன்னும் வேகமா வளருது", "Intense quick-commerce competition (Swiggy Instamart, Zepto, Amazon Now, BigBasket)": "கடும் quick-commerce போட்டி (Swiggy Instamart, Zepto, Amazon Now, BigBasket)", "Heavy capex/opex to sustain dark-store expansion could pressure cash generation": "Dark-store expansion-ஐ தாங்க அதிக capex/opex, cash generation-ஐ அழுத்தலாம்", "Regulatory/gig-worker cost risk across food delivery and quick commerce": "Food delivery மற்றும் quick commerce முழுக்க regulatory/gig-worker cost risk", "Street PAT estimate for Q1 FY27 was ~₹258cr; actual ₹92cr was seen as a miss despite strong topline — flagged as a market-reaction data point, not a CB Research view": "Q1 FY27-க்கு Street PAT estimate ~₹258cr; actual ₹92cr, strong topline இருந்தும் miss-ஆ பார்க்கப்பட்டது &mdash; market-reaction data point, CB Research view இல்ல", "CarTrade Tech — CarWale, BikeWale, CarTrade.com, Shriram Automall, OLX India": "CarTrade Tech &mdash; CarWale, BikeWale, CarTrade.com, Shriram Automall, OLX India", "NSE: CARTRADE | BSE: 544059 · IPO: Aug 2021 at ₹1618 · No known split/bonus since listing": "NSE: CARTRADE | BSE: 544059 · IPO: 2021 ஆகஸ்ட்ல ₹1618 · Listing-க்கு அப்புறம் split/bonus எதுவும் இல்ல", "YoY: Total income +16% YoY; EBITDA +45% YoY (16th consecutive quarter of >45% EBITDA growth per company disclosure); PAT +21% YoY but -21% QoQ on higher tax/labour-law provision · CMP as of late Jul 2026 (~₹2,800-2,860 range post-results); check live quote": "<b>YoY:</b> Total income YoY +16%; EBITDA YoY +45% (தொடர்ந்து 16-வது quarter >45% EBITDA growth, company disclosure); PAT YoY +21% ஆனா QoQ -21% (அதிக tax/labour-law provision-னால) · CMP 2026 ஜூலை பிற்பகுதி (results-க்கு அப்புறம் ~₹2,800-2,860 range); live quote பாருங்க", "Approximate working: PBT is roughly ₹75-76cr on a PAT of ₹56.75cr; stripping the ₹28.6cr of other income (largely treasury interest on its ₹1,321cr cash pile) leaves an operating PBT of roughly ₹47cr, and a post-tax 'real' operating profit of approximately ₹35cr — meaning close to 35-40% of reported PAT in Q1 FY27 came from other income rather than the core auto-marketplace business. Still comfortably profitable on a like-for-like basis, just less so than the headline suggests. Figures approximate; flagged as CB Research estimate.": "Approximate working: PAT ₹56.75cr-க்கு PBT ~₹75-76cr; ₹28.6cr other income-ஐ (பெரும்பாலும் ₹1,321cr cash pile-ல treasury interest) எடுத்தா operating PBT ~₹47cr, post-tax 'real' operating profit கிட்டத்தட்ட ₹35cr &mdash; அதாவது Q1 FY27 reported PAT-ல 35-40% core auto-marketplace business-ல இல்லாம other income-ல இருந்து வந்தது. Like-for-like-ஆ பார்த்தாலும் நல்ல லாபம்தான், headline காட்டுறதை விட கொஞ்சம் குறைவு. Figures approximate; CB Research estimate-னு flag பண்ணது.", "Consumer Group — CarWale, BikeWale, CarTrade.com (revenue ₹78.11cr, +18% YoY, EBITDA margin 33%)": "Consumer Group &mdash; CarWale, BikeWale, CarTrade.com (revenue ₹78.11cr, YoY +18%, EBITDA margin 33%) &mdash; consumer பக்கம்", "Remarketing Group — Shriram Automall & Adroit Auto (vehicle auctions; revenue ₹67.23cr, +13% YoY, EBITDA +38%)": "Remarketing Group &mdash; Shriram Automall மற்றும் Adroit Auto (vehicle auctions; revenue ₹67.23cr, YoY +13%, EBITDA +38%)", "OLX India (classifieds; strongest growth — revenue +29%, EBITDA +76% YoY)": "OLX India (classifieds; வலுவான வளர்ச்சி &mdash; revenue +29%, EBITDA YoY +76%)", "New Spinny partnership for certified used-car listings on CarWale/OLX (commission-based, no balance-sheet inventory risk)": "CarWale/OLX-ல certified used-car listings-க்கு புது Spinny partnership (commission-based, balance-sheet inventory risk இல்ல)", "VAYA AI — proprietary AI tool for buyer-listing matching, pricing and condition checks": "VAYA AI &mdash; buyer-listing matching, pricing, condition checks-க்கு சொந்த AI tool", "Genuinely 'phygital' — over 500 physical touchpoints nationally: Shriram Automall vehicle-auction yards, CarWale abSure & Signature used-car dealership/inspection centres (expanding to 550+ locations with the Spinny tie-up), and OLX India franchise outlets. This physical network differentiates CarTrade from purely online marketplaces and is a genuine asset base, not a series of loss-making dark stores.": "உண்மையிலயே 'phygital' &mdash; நாடு முழுக்க 500-க்கு மேல physical touchpoints: Shriram Automall vehicle-auction yards, CarWale abSure மற்றும் Signature used-car dealership/inspection centres (Spinny tie-up-ஓட 550+ locations-க்கு விரிவு), OLX India franchise outlets. இந்த physical network, CarTrade-ஐ முழுக்க online marketplaces-ல இருந்து வேறுபடுத்துது; இது உண்மையான asset base, loss-making dark stores இல்ல.", "Debt-free with ₹1,321cr cash reserves — a rare fortress balance sheet in this peer set": "₹1,321cr cash reserves-ஓட debt-free &mdash; இந்த peer set-ல அபூர்வமான fortress balance sheet", "16 consecutive quarters of >45% EBITDA growth per management disclosure": "Management disclosure-படி தொடர்ந்து 16 quarters >45% EBITDA growth", "Diversified across consumer (CarWale/BikeWale), remarketing (Automall) and classifieds (OLX)": "Consumer (CarWale/BikeWale), remarketing (Automall), classifieds (OLX)-ல diversified", "500+ physical touchpoints give a defensible, hard-to-replicate moat versus app-only rivals": "500+ physical touchpoints, app-only போட்டியாளர்களை விட நகல் எடுக்க கடினமான moat", "Sequential PAT decline (-21% QoQ) on tax/labour-code provisions shows some earnings lumpiness": "Tax/labour-code provisions-னால sequential PAT சரிவு (QoQ -21%) &mdash; earnings lumpiness", "~35-40% of Q1 FY27 PAT is other-income-driven rather than core-operations-driven": "Q1 FY27 PAT-ல ~35-40% other-income-driven, core-operations-driven இல்ல", "Seasonally the weakest quarter for the core auto business per management commentary": "Management சொல்றபடி, core auto business-க்கு பருவ ரீதியா பலவீனமான quarter", "Spinny partnership to scale certified used-car volumes without inventory risk": "Inventory risk இல்லாம certified used-car volumes-ஐ scale பண்ண Spinny partnership", "OLX India's 76% EBITDA growth suggests continued monetisation headroom in classifieds": "OLX India-ஓட 76% EBITDA growth, classifieds-ல இன்னும் monetisation headroom இருக்குன்னு காட்டுது", "VAYA AI rollout to improve conversion and reduce customer-acquisition cost": "Conversion உயர்த்தி customer-acquisition cost குறைக்க VAYA AI rollout", "Elevated valuation (EV/EBITDA ~46.9x, EV/Sales ~16x per press commentary) leaves little margin of safety": "அதிக valuation (EV/EBITDA ~46.9x, EV/Sales ~16x, press commentary) margin of safety-ஐ குறைக்குது", "Highly cyclical exposure to India's auto/used-vehicle demand": "இந்தியாவோட auto/used-vehicle demand மேல அதிக cyclical exposure", "Competitive intensity from Spinny (as both partner and potential competitor), CARS24, Droom": "Spinny (partner-ஆவும், போட்டியாளரா வரக்கூடியவரா), CARS24, Droom-ஓட போட்டி", "UBS: Buy, target ₹4,000 (cites strong operating leverage & margin expansion); Nomura: Buy, target ₹3,286": "UBS: Buy, target ₹4,000 (வலுவான operating leverage மற்றும் margin expansion); Nomura: Buy, target ₹3,286", "FSN E-Commerce Ventures (Nykaa) — Nykaa Beauty & Nykaa Fashion": "FSN E-Commerce Ventures (Nykaa) &mdash; Nykaa Beauty மற்றும் Nykaa Fashion", "NSE: NYKAA | BSE: 543384 · IPO: Nov 2021 at ₹1125 · 5:1 bonus issue (Nov 2022) → 6x share count; split/bonus-adjusted IPO reference ≈ ₹187.5": "NSE: NYKAA | BSE: 543384 · IPO: 2021 நவம்பர்ல ₹1125 · 5:1 bonus issue (2022 நவ) &rarr; 6x share count; split/bonus-adjusted IPO reference ≈ ₹187.5", "YoY: Revenue +29% YoY (highest in 13 quarters); EBITDA +68% YoY; PAT +226% YoY · CMP as of 17 Sep 2026": "<b>YoY:</b> Revenue YoY +29% (13 quarters-ல அதிகம்); EBITDA YoY +68%; PAT YoY +226% · CMP 2026 செப் 17", "Nykaa's Q1 FY27 profit looks predominantly operations-led: EBITDA growth (+68% YoY to ₹236cr) has comfortably outpaced revenue growth (+29% YoY), and both EBITDA and PAT margins hit 12-13 quarter highs. Unlike Eternal/Paytm, there is no evidence in reported disclosures of a large other-income prop to PAT this quarter — and other income is small (about ₹9.3 crore: total income ₹2,791.31 crore vs revenue ₹2,782 crore), so excluding it leaves PAT of roughly ₹71 crore (simple subtraction).": "Nykaa-ஓட Q1 FY27 profit பெரும்பாலும் operations-led: EBITDA வளர்ச்சி (YoY +68%, ₹236cr) revenue வளர்ச்சியை (YoY +29%) விட வேகம், EBITDA மற்றும் PAT margins ரெண்டும் 12-13 quarter உச்சம். Eternal/Paytm மாதிரி இல்லாம, PAT-ஐ தூக்கிப்பிடிக்கிற பெரிய other-income இந்த quarter-ல இல்ல &mdash; other income சின்னது (~₹9.3 crore: total income ₹2,791.31 crore vs revenue ₹2,782 crore), அதை எடுத்தா PAT ~₹71 crore (simple கழித்தல்).", "Beauty (BPC) — largest segment; GMV +28% YoY to ₹4,105cr; new brand launches (Rare Beauty, SK-II, Judydoll)": "Beauty (BPC) &mdash; மிகப்பெரிய segment; GMV YoY +28%, ₹4,105cr; புது brand launches (Rare Beauty, SK-II, Judydoll)", "Fashion — outpacing overall growth, nearing/at breakeven per management commentary": "Fashion &mdash; ஒட்டுமொத்த growth-ஐ விட வேகம், management சொல்றபடி breakeven-க்கு பக்கத்துல/அடைஞ்சாச்சு", "eB2B distribution (Nykaa SuperStore/Nykaa Prof) supplying retailers/salons": "eB2B distribution (Nykaa SuperStore/Nykaa Prof), retailers/salons-க்கு supply", "House-of-brands (owned labels incl. Dot & Key, Nykaa Cosmetics)": "House-of-brands (சொந்த labels: Dot மற்றும் Key, Nykaa Cosmetics)", "Omnichannel — approximately 324 physical Beauty retail stores across India as of the Q1 FY27 business update (up from ~140 stores in FY23), alongside e-commerce, giving Nykaa one of the largest organised beauty-retail store networks among new-age listed companies. No dark stores in the Blinkit/quick-commerce sense; stores are full-format retail/experience outlets.": "Omnichannel &mdash; Q1 FY27 business update-படி இந்தியா முழுக்க ~324 physical Beauty retail stores (FY23-ல ~140), e-commerce-ஓட சேர்ந்து; new-age listed நிறுவனங்கள்ல organised beauty-retail store network-ல ஒண்ணு. Blinkit/quick-commerce அர்த்தத்துல dark stores இல்ல; stores full-format retail/experience outlets.", "Best EBITDA margin (8.5%) and margin trajectory in 12-13 quarters — genuine operating leverage showing through": "சிறந்த EBITDA margin (8.5%) மற்றும் 12-13 quarters-ல margin trajectory &mdash; உண்மையான operating leverage", "Store network (~324 outlets) plus content-led online platform gives an omnichannel moat": "~324 outlets store network + content-led online platform சேர்ந்து omnichannel moat தருது", "Brand-partnership pipeline (Rare Beauty, SK-II) strengthens premium positioning": "Brand-partnership pipeline (Rare Beauty, SK-II) premium positioning-ஐ வலுப்படுத்துது", "Fashion vertical nearing breakeven reduces group-level drag": "Fashion vertical breakeven-க்கு பக்கத்துல, group-level drag குறையுது", "Governance concerns linger from the controversial 5:1 bonus-share issue in Nov 2022, timed to the pre-IPO lock-in expiry": "2022 நவம்பர்ல pre-IPO lock-in முடியுற நேரத்துல வந்த சர்ச்சைக்குரிய 5:1 bonus-share issue-ஓட governance concerns தொடருது", "Net margin still low (2.9%) versus a very high P/E (335.7x on FY26 basis per press data)": "Net margin இன்னும் குறைவு (2.9%), ஆனா P/E ரொம்ப அதிகம் (FY26 basis-ல 335.7x, press data)", "Fashion vertical historically loss-making, though improving": "Fashion vertical வரலாற்றுல loss-ல, ஆனா improve ஆகுது", "Continued store expansion and category extension (wellness, e-B2B)": "Store expansion மற்றும் category extension தொடர்ச்சி (wellness, e-B2B)", "Premiumisation trend in Indian beauty & personal care": "இந்திய beauty மற்றும் personal care-ல premiumisation trend", "Superstore/eB2B channel to unlock offline retailer/salon demand": "Offline retailer/salon demand-ஐ திறக்க Superstore/eB2B channel", "Intense competition from Amazon, Purplle, Myntra Beauty, quick-commerce players entering beauty (Blinkit/Zepto beauty verticals)": "Amazon, Purplle, Myntra Beauty, beauty-ல நுழையுற quick-commerce players (Blinkit/Zepto beauty verticals)-ஓட கடும் போட்டி", "High valuation multiple leaves limited room for execution missteps": "அதிக valuation multiple, execution தவறுகளுக்கு இடம் குறைவு", "Working-capital intensity of physical retail expansion": "Physical retail expansion-ஓட working-capital intensity", "Jefferies: Buy, target ₹400; Nomura: Buy, target ₹411; CLSA: Outperform (raised focus on margin expansion)": "Jefferies: Buy, target ₹400; Nomura: Buy, target ₹411; CLSA: Outperform (margin expansion மேல focus)", "PB Fintech — Policybazaar & Paisabazaar": "PB Fintech &mdash; Policybazaar மற்றும் Paisabazaar", "NSE: POLICYBZR | BSE: 543390 · IPO: Nov 2021 at ₹980 · No known split/bonus since listing": "NSE: POLICYBZR | BSE: 543390 · IPO: 2021 நவம்பர்ல ₹980 · Listing-க்கு அப்புறம் split/bonus எதுவும் இல்ல", "YoY: Revenue +40% YoY; Adjusted EBITDA +109% YoY; PAT +92% YoY (₹85cr → ₹163cr) · CMP as of 17 Sep 2026": "<b>YoY:</b> Revenue YoY +40%; Adjusted EBITDA YoY +109%; PAT YoY +92% (₹85cr &rarr; ₹163cr) · CMP 2026 செப் 17", "Other income was about ₹93 crore (total income ₹1,981.3 crore vs revenue ₹1,888.3 crore), largely treasury income on IPO cash. Reported EBITDA excluding other income is ₹139 crore (7.4%); the company’s Adjusted EBITDA is ₹186 crore. Reported PAT of ₹163 crore is higher than reported EBITDA because of that other income: excluding it (simple subtraction) PAT would be roughly ₹70 crore, i.e. about 57% of PAT is other-income-linked. Core online business growth is genuine (Adjusted EBITDA +109% YoY).": "Other income ~₹93 crore (total income ₹1,981.3 crore vs revenue ₹1,888.3 crore), பெரும்பாலும் IPO cash-ல treasury income. Other income தவிர்த்து reported EBITDA ₹139 crore (7.4%); company-ஓட Adjusted EBITDA ₹186 crore. Reported PAT ₹163 crore, reported EBITDA-வை விட அதிகம், ஏன்னா அந்த other income: அதை எடுத்தா (simple கழித்தல்) PAT ~₹70 crore, அதாவது PAT-ல ~57% other-income-linked. Core online business வளர்ச்சி உண்மையானது (Adjusted EBITDA YoY +109%).", "Insurance marketplace (Policybazaar) — core online business; total insurance premium ₹8,372cr in Q1 FY27, +41% YoY; new protection business +53% YoY, new health +59% YoY": "Insurance marketplace (Policybazaar) &mdash; core online business; Q1 FY27-ல total insurance premium ₹8,372cr, YoY +41%; new protection business +53% YoY, new health +59% YoY", "Credit marketplace (Paisabazaar) — core credit revenue ₹127cr (+25% YoY); disbursals ₹2,776cr (+33% YoY)": "Credit marketplace (Paisabazaar) &mdash; கடன் சந்தை; core credit revenue ₹127cr (YoY +25%); disbursals ₹2,776cr (YoY +33%)", "PB Partners — offline/agent-led insurance distribution channel; 1.13 lakh active partners, +55% YoY": "PB Partners &mdash; offline/agent வழியா insurance விற்பனை channel; 1.13 lakh active partners, YoY +55%", "New initiatives — Policybazaar for Business, PB Health, PB Connect, Policybazaar UAE (profitable in FY26 and Q1 FY27)": "புது முயற்சிகள் &mdash; Policybazaar for Business, PB Health, PB Connect, Policybazaar UAE (FY26 மற்றும் Q1 FY27-ல லாபம்)", "Primarily a digital marketplace; PB Partners channel uses 500,000+ advisors (largely home/field-based, not branded retail stores). The company had earlier flagged plans for ~100 physical outlets; no updated large-format store count was found for Q1 FY27 (flagged n/a). No dark-store or warehouse-style physical footprint, given the intangible nature of insurance/credit distribution.": "முக்கியமா digital marketplace; PB Partners channel 500,000+ advisors பயன்படுத்துது (பெரும்பாலும் home/field-based, branded retail stores இல்ல). ~100 physical outlets plan முன்னாடி சொன்னாங்க; Q1 FY27-க்கு updated large-format store count கிடைக்கல (n/a). Insurance/credit distribution intangible-ங்கறதால dark-store அல்லது warehouse-style physical footprint இல்ல.", "India's largest online insurance marketplace with a five-year revenue CAGR of ~51%": "India-வோட மிகப்பெரிய online insurance marketplace, five-year revenue CAGR ~51%", "PAT margin turned from -47% to +9% over five years — a genuine structural improvement": "PAT margin ஐந்து வருஷத்துல -47%-ல இருந்து +9%-க்கு மாறினது &mdash; உண்மையான structural improvement", "Renewal revenue (a high-margin, near-pass-through-to-EBITDA stream) reached ₹935cr on a rolling 12-month basis": "Renewal revenue (high-margin, கிட்டத்தட்ட நேரடியா EBITDA-க்கு போகும் stream) rolling 12 மாசத்துல ₹935cr", "Profitable UAE overseas expansion": "லாபகரமான UAE overseas expansion", "Adjusted EBITDA still modest relative to revenue (~10% margin) despite scale": "Scale இருந்தும் Adjusted EBITDA revenue-க்கு ஒப்பிட இன்னும் மிதமா (~10% margin)", "A meaningful share of reported PAT is not yet clearly separated from treasury/other income in disclosures reviewed": "Reported PAT-ல meaningful பங்கு treasury/other income-ல இருந்து இன்னும் தெளிவா பிரிக்கப்படல (disclosures-ல)", "Renewals-vs-fresh-business mix shifts can create margin volatility as management itself has flagged": "Renewals vs fresh-business mix மாற்றங்கள் margin volatility உருவாக்கலாம் (management-ஏ சொன்னது)", "Targeting ₹1,000cr group PAT for FY27 as a stated milestone": "FY27-க்கு ₹1,000cr group PAT milestone target", "Renewals growing faster than fresh premium — a structurally higher-margin tailwind": "Fresh premium-ஐ விட renewals வேகமா வளருது &mdash; structural higher-margin tailwind", "Under-penetrated insurance/credit markets in Tier 2/3 India": "Tier 2/3 இந்தியாவுல insurance/credit markets இன்னும் குறைவான penetration", "Regulatory changes in insurance distribution/commission structures (IRDAI)": "Insurance distribution/commission structures-ல regulatory மாற்றங்கள் (IRDAI)", "Competitive intensity from bank-led and other digital insurance distributors": "Bank-led மற்றும் மத்த digital insurance distributors-ஓட போட்டி", "Credit-cycle sensitivity in the Paisabazaar lending-distribution business": "Paisabazaar lending-distribution business-ல credit-cycle sensitivity", "n/a specific fresh target reported in the Q1 FY27 window reviewed": "Q1 FY27 window-ல specific புது target report ஆகல", "One 97 Communications (Paytm)": "One 97 Communications (Paytm)", "NSE: PAYTM | BSE: 543396 · IPO: Nov 2021 at ₹2150 · No known split/bonus since listing": "NSE: PAYTM | BSE: 543396 · IPO: 2021 நவம்பர்ல ₹2150 · Listing-க்கு அப்புறம் split/bonus எதுவும் இல்ல", "YoY: Revenue +28% YoY; EBITDA +182% YoY (highest ever, margin 8.29% vs 3.73% a year ago); PAT +79% YoY, +20% QoQ · CMP as of early Sep 2026 (~₹1,650-1,700 range); check live quote": "<b>YoY:</b> Revenue YoY +28%; EBITDA YoY +182% (எப்பவும் இல்லாத அதிகம், margin 8.29% vs ஒரு வருஷம் முன்னாடி 3.73%); PAT YoY +79%, QoQ +20% · CMP 2026 செப் ஆரம்பம் (~₹1,650-1,700 range); live quote பாருங்க", "This is the clearest example of the 'other income' effect in the set: Paytm carries large accumulated losses, so its effective cash tax rate is low, meaning PAT (₹220cr) tracks close to PBT. Of the ₹220cr PAT, ₹182cr — roughly 83% — is other income (largely treasury interest on IPO-proceeds cash reserves). Stripping this out implies a 'real' operating profit of only around ₹35-40cr for the quarter, versus an EBITDA of ₹203cr — i.e., core-business profitability, while improving, is still a small fraction of the headline profit number.": "இந்த set-ல 'other income' effect-க்கு மிக தெளிவான உதாரணம்: Paytm-க்கு பெரிய accumulated losses இருக்குறதால effective cash tax rate குறைவு, அதனால PAT (₹220cr) PBT-க்கு கிட்டத்தட்ட சமம். ₹220cr PAT-ல ₹182cr &mdash; ~83% &mdash; other income (பெரும்பாலும் IPO-proceeds cash reserves-ல treasury interest). இதை எடுத்தா quarter-க்கு 'real' operating profit ~₹35-40cr தான், EBITDA ₹203cr-க்கு எதிரா &mdash; core-business profitability improve ஆனாலும், headline profit-ல ஒரு சின்ன பகுதிதான்.", "Payment services (largest — revenue ₹1,384cr, +33% YoY): UPI, wallet, Soundbox/device-led merchant payments": "Payment services (மிகப்பெரிய &mdash; revenue ₹1,384cr, YoY +33%): UPI, wallet, Soundbox/device-led merchant payments", "Distribution of financial services (revenue ₹814cr, +45% YoY): loans, insurance, wealth via Paytm Money (₹100cr planned additional investment)": "Financial services distribution (revenue ₹814cr, YoY +45%): loans, insurance, Paytm Money வழியா wealth (₹100cr கூடுதல் முதலீடு plan)", "Marketing services (revenue ₹239cr, -3% YoY): ad/aggregator/ticketing and other businesses": "Marketing services (revenue ₹239cr, YoY -3%): ad/aggregator/ticketing மற்றும் மத்த businesses", "Not a retail-store business, but has a very large physical device network — 1.30 crore+ subscription merchants using Soundbox/EDC devices as of recent disclosures, which functions as Paytm's 'physical footprint' and a recurring-revenue anchor for the payments business; no dark stores or warehouses.": "Retail-store business இல்ல, ஆனா ரொம்ப பெரிய <b>physical device network</b> &mdash; சமீபத்திய disclosures-படி 1.30 crore+ subscription merchants Soundbox/EDC devices பயன்படுத்துறாங்க; இது Paytm-ஓட 'physical footprint' மற்றும் payments business-க்கு recurring-revenue anchor; dark stores அல்லது warehouses இல்ல.", "Record quarterly EBITDA (₹203cr, all-time high) signalling genuine AI-led operating-leverage gains": "Record quarterly EBITDA (₹203cr, all-time high) &mdash; உண்மையான AI-led operating-leverage gains", "Diversified into financial-services distribution and marketing, reducing pure-payments dependence": "Financial-services distribution மற்றும் marketing-ல diversify ஆனதால pure-payments சார்பு குறைஞ்சது", "Largest device-led merchant network in Indian fintech (subscription merchants at an all-time high)": "Indian fintech-ல மிகப்பெரிய device-led merchant network (subscription merchants all-time high)", "Management guiding to 15-20% EBITDA margins over the next 2-3 years": "அடுத்த 2-3 வருஷத்துல 15-20% EBITDA margins-க்கு management guidance", "~83% of Q1 FY27 PAT traced to other/treasury income rather than core operations on CB Research's approximate working": "CB Research approximate working-படி Q1 FY27 PAT-ல ~83% core operations-ல இல்லாம other/treasury income-ல இருந்து", "Marketing-services revenue declining YoY": "Marketing-services revenue YoY குறையுது", "History of large losses (FY25 net loss ₹789cr) still weighs on investor memory and valuation multiples": "பெரிய நஷ்டங்களின் வரலாறு (FY25 net loss ₹789cr) இன்னும் investor memory மற்றும் valuation multiples-ஐ பாதிக்குது", "Financial-services distribution (loans/insurance) offers higher-margin cross-sell into an existing large user base": "Financial-services distribution (loans/insurance), இருக்குற பெரிய user base-க்கு higher-margin cross-sell தருது", "Continued AI-led cost efficiency could narrow the gap between EBITDA and 'real' operating PAT": "தொடர்ந்து AI-led cost efficiency, EBITDA மற்றும் 'real' operating PAT-க்கு நடுவுல இருக்குற இடைவெளியை குறைக்கலாம்", "Potential re-rating if core-business (ex-other-income) profitability scales as guided": "Core-business (ex-other-income) profitability guidance-படி scale ஆனா re-rating வாய்ப்பு", "Regulatory/compliance overhangs (e.g., SEBI notice to CEO/CFO on 2023 loan-disclosure timing, reported Aug 2026)": "Regulatory/compliance overhangs (உ.தா. 2023 loan-disclosure timing பத்தி CEO/CFO-க்கு SEBI notice, 2026 ஆகஸ்ட்ல report ஆனது)", "Proposed digital-payments fee changes flagged as a sentiment risk by the market": "முன்மொழியப்பட்ட digital-payments fee மாற்றங்கள் market-ல sentiment risk-ஆ flag பண்ணப்பட்டது", "Intense UPI/payments competition from PhonePe, Google Pay and bank-led apps compressing take-rates": "PhonePe, Google Pay மற்றும் bank-led apps-ஓட கடும் UPI/payments போட்டி, take-rates-ஐ அழுத்துது", "CLSA: Underperform, trimmed FY27-29 EBITDA estimates, target ₹1,050; Citi: raised target after strong Q1 FY27 print; Goldman Sachs: retained rating (detail n/a)": "CLSA: Underperform, FY27-29 EBITDA estimates குறைச்சது, target ₹1,050; Citi: வலுவான Q1 FY27 print-க்கு அப்புறம் target உயர்த்தியது; Goldman Sachs: rating தக்க வெச்சது (detail n/a)", "CE Info Systems (MapmyIndia / MAPPLS)": "CE Info Systems (MapmyIndia / MAPPLS)", "NSE: MAPMYINDIA | BSE: 543425 · IPO: Dec 2021 at ₹1033 · No known split/bonus since listing": "NSE: MAPMYINDIA | BSE: 543425 · IPO: 2021 டிசம்பர்ல ₹1033 · Listing-க்கு அப்புறம் split/bonus எதுவும் இல்ல", "YoY: Revenue +15% YoY; EBITDA broadly flat in absolute terms with a lower margin (40.2% vs prior year) due to product mix shift and a one-time ~₹4cr write-off; PAT +6-8% YoY · CMP as of 4 Aug 2026 (results day close); check live quote": "<b>YoY:</b> Revenue YoY +15%; EBITDA absolute-ல கிட்டத்தட்ட flat, margin குறைவு (40.2% vs முன்னாடி) &mdash; product mix shift மற்றும் ~₹4cr one-time write-off-னால; PAT YoY +6-8% · CMP 2026 ஆக 4 (results நாள் close); live quote பாருங்க", "Approximate working: with total income ₹159.4cr vs. revenue from operations ₹139.7cr (~₹19.7cr of other income) and PAT of ₹49.7cr, back-solving for an operating PBT and applying a ~25% effective tax rate suggests a 'real' operating net profit of roughly ₹34-35cr — meaning about 30% of PAT is other-income-linked (largely interest on ₹745cr+ of cash/financial-instrument reserves) and roughly 70% is genuinely core-business profit. This is among the healthiest 'real profit' mixes in the peer set, alongside RateGain.": "Approximate working: total income ₹159.4cr vs revenue from operations ₹139.7cr (~₹19.7cr other income), PAT ₹49.7cr; operating PBT-க்கு back-solve பண்ணி ~25% effective tax போட்டா 'real' operating net profit ~₹34-35cr &mdash; அதாவது PAT-ல ~30% other-income-linked (பெரும்பாலும் ₹745cr+ cash/financial-instrument reserves மேல interest), ~70% உண்மையான core-business profit. RateGain-ஓட சேர்ந்து, இந்த peer set-ல மிகவும் ஆரோக்கியமான 'real profit' mix-ல ஒண்ணு.", "Map-led: digital map data, geospatial software, APIs, royalties/subscriptions — largest revenue stream at ₹114cr, roughly flat YoY": "Map-led: digital map data, geospatial software, APIs, royalties/subscriptions &mdash; மிகப்பெரிய revenue stream ₹114cr, கிட்டத்தட்ட YoY flat", "IoT-led: location-based IoT/connected-mobility & logistics hardware+software — revenue ₹41.1cr, +75% YoY, IoT segment EBITDA margin improved to 13.1% from 8.7%": "IoT-led: location-based IoT/connected-mobility மற்றும் logistics hardware+software &mdash; revenue ₹41.1cr, YoY +75%, IoT segment EBITDA margin 8.7%-ல இருந்து 13.1%-க்கு improve", "New market-wise reporting: Automotive ₹58.8cr (42.1% mix), Enterprise ₹64.2cr (46.0% mix), Government ₹16.7cr (11.9% mix)": "புது market-wise reporting: Automotive ₹58.8cr (42.1% mix), Enterprise ₹64.2cr (46.0% mix), Government ₹16.7cr (11.9% mix)", "B2B/B2G deep-tech company — no consumer stores or dark stores. Physical presence is limited to IoT hardware (fleet-tracking/connected-mobility devices) supplied to automotive OEMs, enterprises and government/logistics customers; the 'footprint' is embedded devices rather than retail locations.": "B2B/B2G deep-tech நிறுவனம் &mdash; consumer stores அல்லது dark stores இல்ல. Physical presence, automotive OEMs, enterprises, government/logistics customers-க்கு supply பண்ற IoT hardware (fleet-tracking/connected-mobility devices) மட்டும்; 'footprint' embedded devices, retail locations இல்ல.", "Highest EBITDA margin in the peer set (40.2%) — a genuinely high-margin, IP-led business model": "Peer set-ல மிக அதிக EBITDA margin (40.2%) &mdash; உண்மையான high-margin, IP-led business model", "Strong balance sheet with ₹745cr+ cash/financial instruments and no material debt concerns flagged": "₹745cr+ cash/financial instruments-ஓட வலுவான balance sheet, material debt concerns இல்ல", "Rare-in-India strategic asset in digital mapping with automotive-OEM and government relationships": "Digital mapping-ல இந்தியாவுல அபூர்வமான strategic asset, automotive-OEM மற்றும் government உறவுகளோட", "New Joint MD (Rohan Verma, eff. Jul 2026) continuity in a founder-led leadership structure": "புது Joint MD (Rohan Verma, 2026 ஜூலை முதல்), founder-led leadership structure-ல தொடர்ச்சி", "Margin compression YoY (product mix shifting toward lower-margin IoT hardware) even as revenue grows": "Revenue வளர்ந்தாலும் YoY margin compression (lower-margin IoT hardware பக்கம் product mix நகர்வு)", "Stock down ~36-38% over the past year despite continued profitability — re-rating risk from growth-rate concerns": "தொடர்ந்து லாபம் இருந்தும் கடந்த ஒரு வருஷத்துல stock ~36-38% இறங்கியிருக்கு &mdash; growth-rate concerns-னால re-rating risk", "Government segment (11.9% of revenue) carries payment-cycle and one-off write-off risk (as seen this quarter)": "Government segment (revenue-ல 11.9%) payment-cycle மற்றும் one-off write-off risk (இந்த quarter பார்த்தோம்)", "IoT-led business scaling fast (+75% YoY) with improving margins as it matures": "IoT-led business வேகமா scale (YoY +75%), mature ஆகுறப்போ margins improve", "AI-native mapping/geospatial roadmap flagged by management as a next leg of growth": "AI-native mapping/geospatial roadmap, management சொல்ற அடுத்த growth leg", "Growing demand for connected-mobility and fleet-management solutions in India": "இந்தியாவுல connected-mobility மற்றும் fleet-management solutions-க்கு வளரும் demand", "Competitive and geopolitical dependency risk around alternatives to global mapping providers (Google Maps, etc.) in India": "இந்தியாவுல global mapping providers (Google Maps, etc.)-க்கு மாற்று பத்தின competitive மற்றும் geopolitical dependency risk", "Customer concentration risk in automotive/enterprise segments": "Automotive/enterprise segments-ல customer concentration risk", "IoT hardware business is inherently lower-margin than the core map-data license business, diluting blended margins over time": "IoT hardware business core map-data license business-ஐ விட இயல்பா lower-margin, காலப்போக்குல blended margins-ஐ நீர்த்துப்போக வைக்கும்", "n/a specific fresh target reported in the Q1 FY27 window reviewed; shares fell ~4-6% on results day despite a profitable beat, reflecting growth-rate concerns rather than a profitability issue": "Q1 FY27 window-ல specific புது target report ஆகல; profitable beat இருந்தும் results நாள்ல shares ~4-6% இறங்கியது &mdash; profitability issue இல்ல, growth-rate concerns", "Broker": "Broker", "Rating": "Rating", "Target Price": "Target Price", "n/a (margin-expansion focus)": "n/a (margin-expansion focus)", "Raised target (level n/a)": "Target உயர்த்தியது (level n/a)", "Rating retained (detail n/a)": "Rating தக்க வெச்சது (detail n/a)", "Ratings are third-party views attributed to named brokerages, as reported around the time of Q1 FY27 results (Jul–Aug 2026). Not all 9 companies had a publicly reported fresh broker call in the window researched; those are marked \"n/a\" rather than estimated, per CB Research's data-integrity policy.": "Ratings எல்லாம் named brokerages சொன்ன third-party views, Q1 FY27 results சமயம் (2026 ஜூலை&ndash;ஆக) report ஆனவை. 9 நிறுவனங்கள்ல எல்லாத்துக்கும் ஆராய்ஞ்ச window-ல புது broker call பகிரங்கமா வரல; அவை CB Research-ஓட data-integrity policy-படி estimate பண்ணாம \"n/a\"-னு mark பண்ணிருக்கு.", "Management & Board (Key Leadership)": "Management மற்றும் Board (முக்கிய leadership)", "Co-founder & Group CEO": "Co-founder மற்றும் Group CEO", "Co-founder & Executive Director": "Co-founder மற்றும் Executive Director", "Co-founder & Whole-time Director": "Co-founder மற்றும் Whole-time Director", "Founder & Joint MD": "Founder மற்றும் Joint MD", "Incoming Group CEO (eff. Sep 2026)": "வரவிருக்கும் Group CEO (2026 செப் முதல்)", "Joint MD": "Joint MD", "Founder, Chairman & CEO": "Founder, Chairman மற்றும் CEO", "Founder, MD & CEO": "Founder, MD மற்றும் CEO", "Group CEO, Eternal (new appointment, Jan 2026)": "Group CEO, Eternal (புது நியமனம், 2026 ஜன)", "Non-Executive Nominee Director": "Non-Executive Nominee Director", "Co-founder, Chairman & Group CEO": "Co-founder, Chairman மற்றும் Group CEO", "Founder, Executive Chairperson & CEO": "Founder, Executive Chairperson மற்றும் CEO", "Co-founder": "Co-founder", "Chairman & Managing Director": "Chairman மற்றும் Managing Director", "Joint Managing Director (eff. Jul 2026)": "Joint Managing Director (2026 ஜூலை முதல்)", "A Socratic self-test: answer the multiple-choice question, then reflect in your own words. This is a learning tool, not investment advice.": "Socratic self-test: multiple-choice கேள்விக்கு பதில் சொல்லுங்க, அப்புறம் உங்க சொந்த வார்த்தைகள்ல யோசிங்க. இது கற்றல் tool, investment advice இல்ல.", "Now explain it in your own words:": "இப்போ உங்க சொந்த வார்த்தைகள்ல விளக்குங்க:", "Get a Socratic follow-up": "Socratic follow-up வேணும்", "Next question →": "அடுத்த கேள்வி &rarr;", "CB Research | Cauvery Business — New-Age Tech Companies Q1 FY27 Dashboard": "CB Research | Cauvery Business &mdash; New-Age Tech நிறுவனங்க Q1 FY27 Dashboard"};
+var TA_N={"Q": "கேள்வி ", "Hi! I'm CB Assist. Ask me about any of the 9 companies' revenue, EBITDA, other income, IPO vs CMP, or SWOT — e.g. \"What is Eternal's other income?\" or \"Compare Nazara and RateGain\".": "வணக்கம்! நான் CB Assist. 9 நிறுவனங்கள்ல எதோட revenue, EBITDA, other income, IPO vs CMP, SWOT பத்தியும் கேளுங்க — உ.தா. \"Eternal-ஓட other income என்ன?\" அல்லது \"Nazara மற்றும் RateGain-ஐ compare பண்ணு\".", "Voice input isn't supported in this browser. Please type your question instead.": "இந்த browser-ல voice input support இல்ல. உங்க கேள்வியை type பண்ணுங்க.","If a company reports a net profit but most of it comes from 'other income' rather than its core operations, what does that suggest?": "ஒரு நிறுவனம் net profit report பண்ணுது, ஆனா அதுல பெரும்பகுதி core operations-ல இல்லாம 'other income'-ல இருந்து வருது; இது என்ன காட்டுது?", "The company's core business is genuinely thriving.": "நிறுவனத்தோட core business உண்மையிலயே நல்லா போகுது.", "The reported profit may overstate the health of the core operating business.": "Reported profit, core operating business-ஓட ஆரோக்கியத்தை அதிகமா காட்டலாம்.", "Other income is illegal and should be excluded from all filings.": "Other income சட்டவிரோதம், எல்லா filings-லயும் விலக்கணும்.", "It has no bearing on how to read the results.": "Results-ஐ படிக்க இதுக்கு எந்த சம்பந்தமும் இல்ல.", "Correct thinking: other income (like treasury interest on IPO cash) is real cash, but it's not repeatable core-business earnings power. Investors often look at 'core PAT' or 'PAT ex-other-income' to judge whether the underlying business is truly improving.": "சரியான சிந்தனை: other income (IPO cash மேல treasury interest மாதிரி) உண்மையான cash தான், ஆனா repeat ஆகுற core-business earnings power இல்ல. Underlying business உண்மையிலயே improve ஆகுதான்னு பார்க்க investors 'core PAT' அல்லது 'PAT ex-other-income' பார்ப்பாங்க.", "Why might a company like CarTrade Tech, with a debt-free balance sheet and large cash reserves, show meaningful 'other income'?": "Debt-free balance sheet மற்றும் பெரிய cash reserves இருக்குற CarTrade Tech மாதிரி நிறுவனம் ஏன் கணிசமான 'other income' காட்டுது?", "Because it invests idle cash and earns treasury/interest income on it.": "ஏன்னா idle cash-ஐ invest பண்ணி treasury/interest income சம்பாதிக்குது.", "Because it undercharges its customers.": "ஏன்னா customers-கிட்ட குறைவா charge பண்ணுது.", "Because other income is a regulatory requirement.": "ஏன்னா other income regulatory requirement.", "Because it is a subsidiary of a bank.": "ஏன்னா அது ஒரு bank-ஓட subsidiary.", "Right — a large cash pile (from IPO proceeds or accumulated profits) parked in deposits/investments earns interest, which shows up as 'other income', separate from operating EBITDA.": "சரி — IPO proceeds அல்லது சேர்த்த profits-ல இருந்து வந்த பெரிய cash deposits/investments-ல போட்டா interest கிடைக்கும்; அது operating EBITDA-ல இருந்து தனியா 'other income'-ஆ தெரியும்.", "Eternal's Blinkit turned EBITDA-positive in Q1 FY27 after years of losses. What does 'dark store' mean in this context?": "பல வருஷ losses-க்கு அப்புறம் Eternal-ஓட Blinkit, Q1 FY27-ல EBITDA-positive ஆச்சு. இங்க 'dark store'னா என்ன?", "A retail store that is temporarily closed.": "தற்காலிகமா மூடின retail store.", "A small, unlisted local warehouse used only for fulfilling online quick-commerce orders, not for walk-in customers.": "Online quick-commerce orders-ஐ fulfil பண்ண மட்டும் பயன்படுற சின்ன local warehouse; நேரடியா வர்ற customers-க்கு இல்ல.", "A store that only operates at night.": "ராத்திரி மட்டும் இயங்குற store.", "A physical Zomato restaurant location.": "Zomato-வோட physical restaurant இடம்.", "Exactly — dark stores are mini fulfilment centres (not customer-facing) that let quick-commerce players like Blinkit promise 10-20 minute deliveries. They are capital- and opex-intensive, which is why Blinkit's path to EBITDA breakeven took years.": "சரியா சொன்னீங்க — dark stores customers வர முடியாத mini fulfilment centres; Blinkit மாதிரி quick-commerce நிறுவனங்க 10-20 நிமிஷ delivery promise பண்ண இவை உதவுது. இவை capital மற்றும் opex அதிகம் எடுக்கும், அதனாலதான் Blinkit EBITDA breakeven-க்கு வர வருஷங்கள் ஆச்சு.", "Why is a company's P/E ratio, like Eternal's ~572x on an FY26 basis, potentially misleading here?": "FY26 basis-ல Eternal-ஓட ~572x மாதிரி P/E ratio இங்க ஏன் தவறா வழிநடத்தலாம்?", "P/E ratios cannot be calculated for loss-making or thin-margin companies.": "Loss-ல அல்லது thin-margin நிறுவனங்களுக்கு P/E கணக்கிட முடியாது.", "A very high P/E on a wafer-thin current profit base means the market is pricing in years of future profit growth, not today's earnings.": "ரொம்ப thin இப்போதைய profit மேல ரொம்ப அதிக P/E-னா, market இன்னைய earnings-ஐ இல்ல, பல வருஷ future profit growth-ஐ விலையில வெச்சிருக்குன்னு அர்த்தம்.", "Both of the above are partially true — the ratio is mathematically valid but reflects extreme growth expectations rather than current fundamentals.": "மேல இருக்கிற ரெண்டும் பகுதி உண்மை — ratio கணிதப்படி சரி, ஆனா இப்போதைய fundamentals இல்ல, அதீத growth எதிர்பார்ப்பை காட்டுது.", "High P/E always means the stock is undervalued.": "அதிக P/E-னா stock எப்பவும் undervalued.", "A very high P/E on a small current profit base is mathematically correct, but it signals that the stock price already assumes substantial future profit growth — any disappointment in that growth path can pressure the stock sharply.": "சின்ன இப்போதைய profit மேல ரொம்ப அதிக P/E கணிதப்படி சரி, ஆனா stock price ஏற்கனவே கணிசமான future profit growth-ஐ எதிர்பார்க்குதுன்னு காட்டுது — அந்த growth path-ல ஏமாற்றம் வந்தா stock கடுமையா அழுத்தத்துக்கு உள்ளாகும்.", "Good reflection. A Socratic follow-up: if two companies report the same PAT, but one earns it almost entirely from operations (like RateGain or MapMyIndia) and the other mostly from treasury/other income (like Paytm this quarter), which one would you expect to compound its profit faster over the next 3 years, and why? Think about what happens to 'other income' once the cash pile is spent on growth or acquisitions.": "நல்ல reflection. Socratic follow-up: ரெண்டு நிறுவனங்க ஒரே PAT report பண்றாங்க; ஒண்ணு கிட்டத்தட்ட முழுசா operations-ல இருந்து (RateGain அல்லது MapMyIndia மாதிரி), இன்னொண்ணு பெரும்பாலும் treasury/other income-ல இருந்து (இந்த quarter Paytm மாதிரி). அடுத்த 3 வருஷத்துல எது வேகமா profit compound பண்ணும், ஏன்? Cash pile growth அல்லது acquisitions-ல செலவாச்சுன்னா 'other income'-க்கு என்ன ஆகும்னு யோசிங்க.", "Try writing a sentence or two first — even a rough guess helps you learn faster than reading the answer directly.": "முதல்ல ஒரு வரி ரெண்டு வரி எழுதுங்க — ஒரு rough guess கூட நேரடியா answer படிக்கிறதை விட வேகமா கத்துக்க உதவும்.", "Correct. ": "சரி. ", "Not quite. ": "கிட்டத்தட்ட, ஆனா இல்ல. ", "Revenue (₹ cr)": "Revenue (₹ cr)", "Reported EBITDA (₹ cr)": "Reported EBITDA (₹ cr)", "Consolidated PAT (₹ cr)": "Consolidated PAT (₹ cr)", "Share of Q1 FY27 segment revenue (%), with ₹ crore in brackets": "Q1 FY27 segment revenue பங்கு (%), ₹ crore அடைப்புக்குள்ள", "EBITDA as % of revenue (comparable across sizes); absolute EBITDA in brackets": "Revenue-ல EBITDA % (எந்த size-லயும் compare பண்ணலாம்); absolute EBITDA அடைப்புக்குள்ள", "PAT as % of revenue (comparable across sizes); absolute PAT in brackets": "Revenue-ல PAT % (எந்த size-லயும் compare பண்ணலாம்); absolute PAT அடைப்புக்குள்ள", "PAT excluding other income as % of revenue (comparable across sizes); absolute figure in brackets": "Other income தவிர்த்து PAT, revenue-ல % (எந்த size-லயும் compare பண்ணலாம்); absolute figure அடைப்புக்குள்ள", "Q1 FY27 EBITDA as % of revenue (absolute EBITDA ₹ crore in brackets)": "Q1 FY27 revenue-ல EBITDA % (absolute EBITDA ₹ crore அடைப்புக்குள்ள)", "Q1 FY27 PAT as % of revenue (absolute PAT ₹ crore in brackets)": "Q1 FY27 revenue-ல PAT % (absolute PAT ₹ crore அடைப்புக்குள்ள)", "Click any box to see what it means.": "எந்த box-ஐயாவது click பண்ணுங்க, அதோட அர்த்தம் தெரியும்.", "Ask about FirstCry or peers...": "FirstCry அல்லது peers பத்தி கேளுங்க...", "Ask about revenue, EBITDA, SWOT...": "Revenue, EBITDA, SWOT பத்தி கேளுங்க...", "Why can a company be EBITDA-positive but still report a net loss?": "ஒரு நிறுவனம் EBITDA-positive-ஆ இருந்தும் net loss ஏன் report பண்ணுது?", "Why do you think 'other income' can distort the picture of a company's real operating health?": "ஒரு நிறுவனத்தோட உண்மையான operating health-ஐ 'other income' ஏன் திசை திருப்பலாம்னு நினைக்கிறீங்க?", "CB Assist (voice-enabled)": "CB Assist (voice-enabled)", "CB Assist (Voice-enabled)": "CB Assist (voice-enabled)", "Who it serves": "யாருக்கு சேவை", "How it earns": "எப்படி சம்பாதிக்குது", "Physical footprint": "Physical footprint", "Q1 FY27 profit reality": "Q1 FY27 profit நிலைமை", "1. What it sells": "1. என்ன விக்குது", "2. How it reaches parents": "2. Parents-ஐ எப்படி சேருது", "3. Who buys": "3. யார் வாங்குறாங்க", "4. What comes out (Q1 FY27)": "4. விளைவு (Q1 FY27)"};
+var TA_NODE={"Consumers (B2C)||Travellers booking flights, hotels and holidays on the app/site; zero-convenience-fee positioning built a 14 million+ user base.": ["Consumers (B2C)", "App/site-ல flights, hotels, holidays book பண்றவங்க; zero-convenience-fee positioning 14 million+ user base உருவாக்கிச்சு."], "Corporates (B2B/B2E)||Corporate and business-travel bookings.": ["Corporates (B2B/B2E)", "Corporate மற்றும் business-travel bookings."], "Partners (B2B2C)||Distribution through partner channels.": ["Partners (B2B2C)", "Partner channels வழியா distribution."], "Air ticketing||Largest historic line but shrinking in importance; thin commissions and meta-search competition.": ["Air ticketing", "வரலாற்றுல பெரிய line, ஆனா முக்கியத்துவம் குறையுது; thin commissions மற்றும் meta-search போட்டி."], "Hotels and holidays||Fastest-growing line; room nights up 95% YoY in Q1 FY27.": ["Hotels மற்றும் holidays", "வேகமா வளர்ற line; Q1 FY27-ல room nights YoY +95%."], "Rail, bus, ancillary||Down 45.8% YoY in Q1 FY27: a soft spot.": ["Rail, bus, ancillary", "Q1 FY27-ல YoY -45.8%: பலவீனமான பகுதி."], "Online only||No retail stores or dark stores; in-house call centre.": ["Online மட்டும்", "Retail stores அல்லது dark stores இல்ல; சொந்த call centre."], "International offices||Subsidiaries/offices across UAE, UK, USA, Singapore and others; Dubai/international GBR ₹462 cr in Q1 FY27 (+45% YoY).": ["International offices", "UAE, UK, USA, Singapore உள்ளிட்ட இடங்கள்ல subsidiaries/offices; Q1 FY27-ல Dubai/international GBR ₹462 cr (+45% YoY)."], "EBITDA -₹12.88 cr||Negative EBITDA (about -9.6% margin).": ["EBITDA -₹12.88 cr", "Negative EBITDA (~-9.6% margin)."], "PAT -₹11.69 cr||Loss-making at every level; little cushion from other income.": ["PAT -₹11.69 cr", "எல்லா level-லயும் loss; other income cushion கிட்டத்தட்ட இல்ல."], "Mobile gamers worldwide||Players of PAC-MAN, Kiddopia, World Cricket Championship.": ["உலகம் முழுக்க mobile gamers", "PAC-MAN, Kiddopia, World Cricket Championship players."], "Sports fans and advertisers||Sportskeeda audience; ad-tech (Halaplay) and media buyers.": ["Sports fans மற்றும் advertisers", "Sportskeeda audience; ad-tech (Halaplay) மற்றும் media buyers."], "Gaming (core)||Revenue ₹275 cr (+14% YoY), EBITDA margin 19.5%: the profit engine.": ["Gaming (core)", "Revenue ₹275 cr (YoY +14%), EBITDA margin 19.5%: profit engine."], "eSports and ad-tech/media||Sportskeeda is exposed to Google search-algorithm changes; post real-money-gaming-ban restructuring.": ["eSports மற்றும் ad-tech/media", "Sportskeeda, Google search-algorithm மாற்றங்களுக்கு ஆளாகும்; real-money-gaming ban-க்கு அப்புறம் restructuring."], "Bluetile + BestPlay (pending)||~$303 mn all-cash acquisition; consolidation from Q2 FY27.": ["Bluetile + BestPlay (pending)", "~$303 mn all-cash acquisition; Q2 FY27-ல இருந்து consolidation."], "Digital first||No dark stores or retail in the core business.": ["Digital first", "Core business-ல dark stores அல்லது retail இல்ல."], "Funky Monkeys play centres||Indoor kids play centres; stake ~68.1%: a small, non-core physical bet.": ["Funky Monkeys play centres", "Indoor kids play centres; stake ~68.1%: சின்ன, non-core physical முயற்சி."], "EBITDA +₹46 cr (10.8%)||Core business EBITDA is positive.": ["EBITDA +₹46 cr (10.8%)", "Core business EBITDA positive."], "PAT -₹82 cr||Dragged by share of associate losses and an impairment (Moonshine/PokerBaazi-linked), not by other income.": ["PAT -₹82 cr", "Associate losses மற்றும் impairment (Moonshine/PokerBaazi தொடர்பு)-னால இழுக்கப்படுது, other income-னால இல்ல."], "Travel and hospitality clients||Hotels, OTAs and other travel companies buying SaaS and data products globally.": ["Travel மற்றும் hospitality clients", "Hotels, OTAs, மத்த travel நிறுவனங்க, உலகம் முழுக்க SaaS மற்றும் data products வாங்குறாங்க."], "Advertisers (via Sojern)||Travel ad-tech / data-as-a-service after the Sojern acquisition (Nov 2025).": ["Advertisers (Sojern வழியா)", "Sojern acquisition-க்கு (2025 நவ) அப்புறம் travel ad-tech / data-as-a-service."], "Distribution||Connectivity and distribution SaaS for travel and hospitality.": ["Distribution", "Travel மற்றும் hospitality-க்கு connectivity மற்றும் distribution SaaS."], "Data and ad-tech (Sojern)||Drove revenue up 188% YoY; gross margin diluted to 69.2%.": ["Data மற்றும் ad-tech (Sojern)", "Revenue YoY +188% உயர காரணம்; gross margin 69.2%-க்கு குறைஞ்சது."], "Hospitality and rate intelligence||AI-powered pricing and demand tools for hotels.": ["Hospitality மற்றும் rate intelligence", "Hotels-க்கு AI-powered pricing மற்றும் demand tools."], "B2B SaaS, no stores||Global offices only; record new business in Asia-Pacific.": ["B2B SaaS, stores இல்ல", "Global offices மட்டும்; Asia-Pacific-ல record new business."], "Adj. EBITDA +₹193.4 cr (24.6%)||Highest ever quarterly margin.": ["Adj. EBITDA +₹193.4 cr (24.6%)", "எப்பவும் இல்லாத அதிகபட்ச quarterly margin."], "PAT +₹94.9 cr||Adjusted PAT ₹116.8 cr; free cash flow ₹135.2 cr (78.8% conversion). Operations-led profit.": ["PAT +₹94.9 cr", "Adjusted PAT ₹116.8 cr; free cash flow ₹135.2 cr (78.8% conversion). Operations-led profit."], "Diners and delivery users||Zomato food-delivery app.": ["Diners மற்றும் delivery users", "Zomato food-delivery app."], "Quick-commerce shoppers||Blinkit.": ["Quick-commerce shoppers", "Blinkit."], "Restaurants and going-out users||Hyperpure B2B supplies; District events and ticketing.": ["Restaurants மற்றும் going-out users", "Hyperpure B2B supplies; District events மற்றும் ticketing."], "Food delivery||EBITDA ₹621 cr (+33% YoY): most mature and profitable line.": ["Food delivery", "EBITDA ₹621 cr (YoY +33%): மிகவும் mature, லாபமான line."], "Blinkit||77.5% of revenue (₹15,664 cr); EBITDA ₹365 cr vs a loss of ₹42 cr a year ago.": ["Blinkit", "Revenue-ல 77.5% (₹15,664 cr); EBITDA ₹365 cr, ஒரு வருஷம் முன்னாடி ₹42 cr loss."], "District and Hyperpure||District revenue ₹318 cr with EBITDA -₹62 cr; Hyperpure revenue fell sequentially.": ["District மற்றும் Hyperpure", "District revenue ₹318 cr, EBITDA -₹62 cr; Hyperpure revenue sequentially குறைஞ்சது."], "Blinkit dark stores||Dense network of dark stores; exact Q1 FY27 count not disclosed in sources reviewed (n/a).": ["Blinkit dark stores", "Dark stores-ஓட நெருக்கமான network; Q1 FY27 exact count disclose ஆகல (n/a)."], "Hyperpure warehouses||B2B fulfilment infrastructure.": ["Hyperpure warehouses", "B2B fulfilment infrastructure."], "EBITDA +₹594 cr (2.94%)||Operating EBITDA is positive.": ["EBITDA +₹594 cr (2.94%)", "Operating EBITDA positive."], "Other income ₹375 cr||Total income ₹20,586 cr vs revenue ₹20,211 cr.": ["Other income ₹375 cr", "Total income ₹20,586 cr vs revenue ₹20,211 cr."], "PAT +₹92 cr (0.45%)||Excluding other income, likely a loss (approximate).": ["PAT +₹92 cr (0.45%)", "Other income எடுத்தா loss-ஆ இருக்க வாய்ப்பு (approximate)."], "Car and bike buyers, sellers||CarWale, BikeWale, CarTrade.com and OLX India classifieds.": ["Car மற்றும் bike buyers, sellers", "CarWale, BikeWale, CarTrade.com மற்றும் OLX India classifieds."], "Dealers and OEMs||Listings, advertising and auctions.": ["Dealers மற்றும் OEMs", "Listings, advertising மற்றும் auctions."], "Consumer group||₹78.11 cr revenue (+18%), 33% EBITDA margin.": ["Consumer group", "₹78.11 cr revenue (+18%), 33% EBITDA margin."], "Remarketing (Automall)||₹67.23 cr (+13%); vehicle auctions.": ["Remarketing (Automall)", "₹67.23 cr (+13%); vehicle auctions."], "OLX India||Revenue +29%, EBITDA +76% YoY.": ["OLX India", "Revenue +29%, EBITDA YoY +76%."], "500+ physical touchpoints||Automall yards, abSure/Signature dealership and inspection centres, OLX franchise outlets.": ["500+ physical touchpoints", "Automall yards, abSure/Signature dealership மற்றும் inspection centres, OLX franchise outlets."], "Spinny partnership||Commission-based certified used-car listings with no inventory risk.": ["Spinny partnership", "Commission-based certified used-car listings, inventory risk இல்ல."], "EBITDA +₹63 cr (31%)||Operating EBITDA.": ["EBITDA +₹63 cr (31%)", "Operating EBITDA."], "Other income ₹28.6 cr||Treasury interest on ~₹1,321 cr cash.": ["Other income ₹28.6 cr", "~₹1,321 cr cash மேல treasury interest."], "PAT +₹56.75 cr||Roughly 35-40% of PAT comes from other income (approximate).": ["PAT +₹56.75 cr", "PAT-ல ~35-40% other income-ல இருந்து (approximate)."], "Beauty and fashion shoppers||Nykaa app, site and stores.": ["Beauty மற்றும் fashion shoppers", "Nykaa app, site மற்றும் stores."], "Retailers and salons||eB2B distribution (Nykaa SuperStore, Nykaa Prof).": ["Retailers மற்றும் salons", "eB2B distribution (Nykaa SuperStore, Nykaa Prof)."], "Beauty||GMV ₹4,105 cr (+28% YoY); Rare Beauty, SK-II, Judydoll launches.": ["Beauty", "GMV ₹4,105 cr (YoY +28%); Rare Beauty, SK-II, Judydoll launches."], "Fashion||Nykaa Fashion; nearing breakeven per management.": ["Fashion", "Nykaa Fashion; management சொல்றபடி breakeven-க்கு பக்கத்துல."], "Own brands (Dot and Key)||House of brands.": ["Own brands (Dot and Key)", "House of brands."], "~324 beauty stores||Omnichannel, up from ~140 in FY23. Full-format stores, not dark stores.": ["~324 beauty stores", "Omnichannel, FY23-ல ~140-ல இருந்து உயர்வு. Full-format stores, dark stores இல்ல."], "EBITDA +₹236 cr (8.5%)||Up 68% YoY; best margin trajectory in 12-13 quarters.": ["EBITDA +₹236 cr (8.5%)", "YoY +68%; 12-13 quarters-ல சிறந்த margin trajectory."], "PAT +₹80 cr (2.9%)||Up 226% YoY; operations-led. Other income not separately disclosed in sources reviewed (n/a).": ["PAT +₹80 cr (2.9%)", "YoY +226%; operations-led. Other income தனியா disclose ஆகல (n/a)."], "Insurance and loan seekers||Policybazaar and Paisabazaar users.": ["Insurance மற்றும் loan seekers", "Policybazaar மற்றும் Paisabazaar users."], "Insurers, lenders, partners||PB Partners: 1.13 lakh active partners (+55% YoY).": ["Insurers, lenders, partners", "PB Partners: 1.13 lakh active partners (+55% YoY)."], "Insurance marketplace||Premium ₹8,372 cr (+41%); renewals ₹935 cr on a rolling 12-month basis.": ["Insurance marketplace", "Premium ₹8,372 cr (+41%); rolling 12 மாசத்துல renewals ₹935 cr."], "Credit marketplace||Core credit revenue ₹127 cr (+25%); disbursals ₹2,776 cr.": ["Credit marketplace", "Core credit revenue ₹127 cr (+25%); disbursals ₹2,776 cr."], "New initiatives and UAE||Policybazaar for Business, PB Health; UAE profitable.": ["புது முயற்சிகள் மற்றும் UAE", "Policybazaar for Business, PB Health; UAE லாபம்."], "Digital, no dark stores||PB Partners agent/field channel; no updated store count (n/a).": ["Digital, dark stores இல்ல", "PB Partners agent/field channel; updated store count இல்ல (n/a)."], "Adj. EBITDA +₹186 cr (~10%)||Up 109% YoY.": ["Adj. EBITDA +₹186 cr (~10%)", "YoY +109%."], "PAT +₹163 cr||Up 92% YoY; likely helped by treasury income on IPO cash. Split not disclosed (n/a).": ["PAT +₹163 cr", "YoY +92%; IPO cash மேல treasury income உதவியிருக்கலாம். Split disclose ஆகல (n/a)."], "Consumers||UPI and wallet users.": ["Consumers", "UPI மற்றும் wallet users."], "Merchants||1.30 crore+ subscription merchants using Soundbox/EDC devices.": ["Merchants", "1.30 crore+ subscription merchants, Soundbox/EDC devices பயன்படுத்துறாங்க."], "Payments||₹1,384 cr (+33% YoY).": ["Payments", "₹1,384 cr (YoY +33%)."], "Financial services distribution||₹814 cr (+45%): loans, insurance, wealth.": ["Financial services distribution", "₹814 cr (+45%): loans, insurance, wealth."], "Marketing services||₹239 cr (-3% YoY).": ["Marketing services", "₹239 cr (YoY -3%)."], "Device network||Soundbox/EDC devices at merchants: a recurring subscription anchor. No stores or dark stores.": ["Device network", "Merchants-கிட்ட Soundbox/EDC devices: recurring subscription anchor. Stores அல்லது dark stores இல்ல."], "EBITDA +₹203 cr (8.29%)||Record EBITDA.": ["EBITDA +₹203 cr (8.29%)", "Record EBITDA."], "Other income ₹182 cr||Treasury interest on cash reserves.": ["Other income ₹182 cr", "Cash reserves மேல treasury interest."], "PAT +₹220 cr||About 83% from other income; core profit ~₹35-40 cr (approximate).": ["PAT +₹220 cr", "~83% other income-ல இருந்து; core profit ~₹35-40 cr (approximate)."], "Automotive OEMs||₹58.8 cr (42.1% of revenue).": ["Automotive OEMs", "₹58.8 cr (revenue-ல 42.1%)."], "Enterprises||₹64.2 cr (46.0%).": ["Enterprises", "₹64.2 cr (46.0%)."], "Government||₹16.7 cr (11.9%).": ["Government", "₹16.7 cr (11.9%)."], "Map-led||Data, software, APIs, royalties and subscriptions: ₹114 cr, flat YoY.": ["Map-led", "Data, software, APIs, royalties மற்றும் subscriptions: ₹114 cr, YoY flat."], "IoT-led||₹41.1 cr (+75% YoY); segment EBITDA margin 13.1% vs 8.7%.": ["IoT-led", "₹41.1 cr (YoY +75%); segment EBITDA margin 13.1% vs 8.7%."], "Embedded devices||IoT hardware (fleet tracking, connected mobility); no stores or dark stores.": ["Embedded devices", "IoT hardware (fleet tracking, connected mobility); stores அல்லது dark stores இல்ல."], "EBITDA +₹56.1 cr (40.2%)||Highest margin in the set.": ["EBITDA +₹56.1 cr (40.2%)", "இந்த set-ல அதிகபட்ச margin."], "Other income ₹19.7 cr||Interest on ₹745 cr+ reserves.": ["Other income ₹19.7 cr", "₹745 cr+ reserves மேல interest."], "PAT +₹49.7 cr||About 70% core (approximate).": ["PAT +₹49.7 cr", "~70% core (approximate)."]};
+function trn(s){return (LANG==='ta'&&TA_N.hasOwnProperty(s))?TA_N[s]:s;}
+function nzs(s){return s.replace(/\s+/g,' ').trim();}
+function taSkip(el){
+  if(!el||el.nodeType!==1)return true;
+  var t=el.tagName.toUpperCase();
+  if(/^(SCRIPT|STYLE|CANVAS|TEXTAREA|INPUT|SVG|BUTTON_X)$/.test(t))return true;
+  if(el.namespaceURI&&el.namespaceURI.indexOf('svg')>-1)return true;
+  if(el.classList.contains('ta')||el.classList.contains('en'))return true;
+  if(el.id==='assistPanel'||el.id==='cbPopup'||el.id==='cbBadge'||el.classList.contains('langtoggle'))return true;
+  return false;
+}
+function taWalk(el){
+  if(taSkip(el))return;
+  if(el.__orig===undefined){
+    var k=nzs(el.textContent);
+    if(k&&TA_MAP.hasOwnProperty(k)){
+      var tg=el;
+      while(tg.children.length===1&&nzs(tg.children[0].textContent)===k&&!tg.children[0].classList.contains('ta')&&!tg.children[0].classList.contains('en')){tg=tg.children[0];}
+      tg.__orig=tg.innerHTML;tg.setAttribute('data-tr','1');tg.innerHTML=TA_MAP[k];return;}
+  } else return;
+  Array.prototype.slice.call(el.children).forEach(taWalk);
+}
+function taRestore(){
+  document.querySelectorAll('[data-tr]').forEach(function(e){if(e.__orig!==undefined){e.innerHTML=e.__orig;}delete e.__orig;e.removeAttribute('data-tr');});
+}
+window.LANG_HOOKS=window.LANG_HOOKS||[];
+function setLang(l){
+  LANG=l;
+  document.body.classList.toggle('langTA',l==='ta');
+  document.getElementById('btnEN').classList.toggle('active',l==='en');
+  document.getElementById('btnTA').classList.toggle('active',l==='ta');
+  taRestore();
+  if(l==='ta'){taWalk(document.body);}
+  var ph=[['assistInput'],['socFreeText']];
+  ph.forEach(function(p){var e=document.getElementById(p[0]);if(!e)return;if(!e.getAttribute('data-ph'))e.setAttribute('data-ph',e.placeholder);e.placeholder=trn(e.getAttribute('data-ph'));});
+  window.LANG_HOOKS.forEach(function(f){try{f();}catch(e){console.warn(e);}});
+}
+LANG_HOOKS.push(function(){
+  if(typeof Chart==='undefined'||!Chart.getChart)return;
+  document.querySelectorAll('canvas').forEach(function(c){
+    var ch=Chart.getChart(c);if(!ch)return;var t=ch.options.plugins&&ch.options.plugins.title;if(!t)return;
+    if(ch.__t0===undefined)ch.__t0=t.text;
+    t.text=trn(ch.__t0);ch.update();
+  });
+});
+
+/* ===== Business-model graphics (shared) ===== */
+var BMCFG={};
+function bmWrap(s,n){var w=s.split(' '),l=[],c='';w.forEach(function(x){if((c+' '+x).trim().length>n&&c){l.push(c);c=x;}else c=(c+' '+x).trim();});if(c)l.push(c);return l.slice(0,3);}
+function bmT(n){var v=TA_NODE[n.t+'||'+n.d]||TA_NODE[n.t];if(LANG==='ta'&&v)return {t:v[0],d:v[1]};return {t:n.t,d:n.d};}
+function bmMap(id,cfg){BMCFG[id]=cfg;bmDraw(id);}
+function bmDraw(id){
+  var el=document.getElementById(id),cfg=BMCFG[id];if(!el||!cfg)return;
+  var cols=cfg.cols,W=960,nc=cols.length,cw=200,gap=(W-nc*cw)/(nc-1),nh=64,vg=14,top=46,mx=0,wr=(LANG==='ta'?18:24);
+  cols.forEach(function(c){mx=Math.max(mx,c.nodes.length);});
+  var H=top+mx*(nh+vg)+6;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:720px;font-family:Segoe UI,Roboto,Arial,sans-serif"><defs><marker id="'+id+'-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa5b8"/></marker></defs>';
+  cols.forEach(function(c,ci){
+    var x=ci*(cw+gap);
+    s+='<rect x="'+x+'" y="4" width="'+cw+'" height="30" rx="15" fill="'+c.color+'"/><text x="'+(x+cw/2)+'" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">'+trn(c.title)+'</text>';
+    var off=(mx-c.nodes.length)*(nh+vg)/2;
+    c.nodes.forEach(function(n,ni){
+      var y=top+off+ni*(nh+vg),tt=bmT(n),lines=bmWrap(tt.t,wr),bg=n.bg||c.bg,st=n.color||c.color;
+      s+='<g class="bmnode" data-c="'+ci+'" data-n="'+ni+'" style="cursor:pointer"><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+nh+'" rx="10" fill="'+bg+'" stroke="'+st+'" stroke-width="1.5"/>';
+      var ty=y+nh/2-(lines.length-1)*8+4;
+      lines.forEach(function(l,li){s+='<text x="'+(x+cw/2)+'" y="'+(ty+li*16)+'" text-anchor="middle" font-size="12.5" fill="#1a2233">'+l+'</text>';});
+      s+='</g>';
+    });
+    if(ci<nc-1){var ax=x+cw+6,ay=top+(mx*(nh+vg))/2-vg/2;s+='<line x1="'+ax+'" y1="'+ay+'" x2="'+(ax+gap-16)+'" y2="'+ay+'" stroke="#9aa5b8" stroke-width="2.5" marker-end="url(#'+id+'-ar)"/>';}
+  });
+  s+='</svg>';
+  el.innerHTML='<div style="overflow-x:auto">'+s+'</div><div class="bm-detail" id="'+id+'-d">'+trn('Click any box to see what it means.')+'</div>';
+  el.querySelectorAll('.bmnode').forEach(function(g){g.addEventListener('click',function(){
+    var n=cols[+g.getAttribute('data-c')].nodes[+g.getAttribute('data-n')],tt=bmT(n);
+    el.querySelectorAll('.bmnode rect').forEach(function(r){r.setAttribute('stroke-width','1.5');});
+    g.querySelector('rect').setAttribute('stroke-width','3.5');
+    document.getElementById(id+'-d').innerHTML='<b>'+tt.t+':</b> '+tt.d;});});
+}
+LANG_HOOKS.push(function(){Object.keys(BMCFG).forEach(bmDraw);});
+var BM_STY={p:{bg:'#e8f8ee',color:'#127a3d'},n:{bg:'#fdecea',color:'#b3261e'},w:{bg:'#fdf1de',color:'#a9660b'}};
+function bmNodes(arr){return arr.map(function(a){var o={t:a[0],d:a[1]};if(a[2]&&BM_STY[a[2]]){o.bg=BM_STY[a[2]].bg;o.color=BM_STY[a[2]].color;}return o;});}
+
+var BMD={
+easytrip:[
+ [['Consumers (B2C)','Travellers booking flights, hotels and holidays on the app/site; zero-convenience-fee positioning built a 14 million+ user base.'],['Corporates (B2B/B2E)','Corporate and business-travel bookings.'],['Partners (B2B2C)','Distribution through partner channels.']],
+ [['Air ticketing','Largest historic line but shrinking in importance; thin commissions and meta-search competition.'],['Hotels and holidays','Fastest-growing line; room nights up 95% YoY in Q1 FY27.'],['Rail, bus, ancillary','Down 45.8% YoY in Q1 FY27: a soft spot.']],
+ [['Online only','No retail stores or dark stores; in-house call centre.'],['International offices','Subsidiaries/offices across UAE, UK, USA, Singapore and others; Dubai/international GBR \u20b9462 cr in Q1 FY27 (+45% YoY).']],
+ [['EBITDA -\u20b912.88 cr','Negative EBITDA (about -9.6% margin).','n'],['PAT -\u20b911.69 cr','Loss-making at every level; little cushion from other income.','n']]],
+nazara:[
+ [['Mobile gamers worldwide','Players of PAC-MAN, Kiddopia, World Cricket Championship.'],['Sports fans and advertisers','Sportskeeda audience; ad-tech (Halaplay) and media buyers.']],
+ [['Gaming (core)','Revenue \u20b9275 cr (+14% YoY), EBITDA margin 19.5%: the profit engine.'],['eSports and ad-tech/media','Sportskeeda is exposed to Google search-algorithm changes; post real-money-gaming-ban restructuring.'],['Bluetile + BestPlay (pending)','~$303 mn all-cash acquisition; consolidation from Q2 FY27.']],
+ [['Digital first','No dark stores or retail in the core business.'],['Funky Monkeys play centres','Indoor kids play centres; stake ~68.1%: a small, non-core physical bet.']],
+ [['EBITDA +\u20b946 cr (10.8%)','Core business EBITDA is positive.','p'],['PAT -\u20b982 cr','Dragged by share of associate losses and an impairment (Moonshine/PokerBaazi-linked), not by other income.','n']]],
+rategain:[
+ [['Travel and hospitality clients','Hotels, OTAs and other travel companies buying SaaS and data products globally.'],['Advertisers (via Sojern)','Travel ad-tech / data-as-a-service after the Sojern acquisition (Nov 2025).']],
+ [['Distribution','Connectivity and distribution SaaS for travel and hospitality.'],['Data and ad-tech (Sojern)','Drove revenue up 188% YoY; gross margin diluted to 69.2%.'],['Hospitality and rate intelligence','AI-powered pricing and demand tools for hotels.']],
+ [['B2B SaaS, no stores','Global offices only; record new business in Asia-Pacific.']],
+ [['Adj. EBITDA +\u20b9193.4 cr (24.6%)','Highest ever quarterly margin.','p'],['PAT +\u20b994.9 cr','Adjusted PAT \u20b9116.8 cr; free cash flow \u20b9135.2 cr (78.8% conversion). Operations-led profit.','p']]],
+eternal:[
+ [['Diners and delivery users','Zomato food-delivery app.'],['Quick-commerce shoppers','Blinkit.'],['Restaurants and going-out users','Hyperpure B2B supplies; District events and ticketing.']],
+ [['Food delivery','EBITDA \u20b9621 cr (+33% YoY): most mature and profitable line.'],['Blinkit','77.5% of revenue (\u20b915,664 cr); EBITDA \u20b9365 cr vs a loss of \u20b942 cr a year ago.'],['District and Hyperpure','District revenue \u20b9318 cr with EBITDA -\u20b962 cr; Hyperpure revenue fell sequentially.']],
+ [['Blinkit dark stores','Dense network of dark stores; exact Q1 FY27 count not disclosed (n/a).'],['Hyperpure warehouses','B2B fulfilment infrastructure.']],
+ [['EBITDA +\u20b9594 cr (2.94%)','Operating EBITDA is positive.','p'],['Other income \u20b9375 cr','Total income \u20b920,586 cr vs revenue \u20b920,211 cr.','w'],['PAT +\u20b992 cr (0.45%)','Excluding other income, likely a loss (approximate).','w']]],
+cartrade:[
+ [['Car and bike buyers, sellers','CarWale, BikeWale, CarTrade.com and OLX India classifieds.'],['Dealers and OEMs','Listings, advertising and auctions.']],
+ [['Consumer group','\u20b978.11 cr revenue (+18%), 33% EBITDA margin.'],['Remarketing (Automall)','\u20b967.23 cr (+13%); vehicle auctions.'],['OLX India','Revenue +29%, EBITDA +76% YoY.']],
+ [['500+ physical touchpoints','Automall yards, abSure/Signature dealership and inspection centres, OLX franchise outlets.'],['Spinny partnership','Commission-based certified used-car listings with no inventory risk.']],
+ [['EBITDA +\u20b963 cr (31%)','Operating EBITDA.','p'],['Other income \u20b928.6 cr','Treasury interest on ~\u20b91,321 cr cash.','w'],['PAT +\u20b956.75 cr','Roughly 35-40% of PAT comes from other income (approximate).','p']]],
+nykaa:[
+ [['Beauty and fashion shoppers','Nykaa app, site and stores.'],['Retailers and salons','eB2B distribution (Nykaa SuperStore, Nykaa Prof).']],
+ [['Beauty','GMV \u20b94,105 cr (+28% YoY); Rare Beauty, SK-II, Judydoll launches.'],['Fashion','Nykaa Fashion; nearing breakeven per management.'],['Own brands (Dot and Key)','House of brands.']],
+ [['~324 beauty stores','Omnichannel, up from ~140 in FY23. Full-format stores, not dark stores.']],
+ [['EBITDA +\u20b9236 cr (8.5%)','Up 68% YoY; best margin trajectory in 12-13 quarters.','p'],['PAT +\u20b980 cr (2.9%)','Up 226% YoY; operations-led. Other income not separately disclosed (n/a).','p']]],
+pbfintech:[
+ [['Insurance and loan seekers','Policybazaar and Paisabazaar users.'],['Insurers, lenders, partners','PB Partners: 1.13 lakh active partners (+55% YoY).']],
+ [['Insurance marketplace','Premium \u20b98,372 cr (+41%); renewals \u20b9935 cr on a rolling 12-month basis.'],['Credit marketplace','Core credit revenue \u20b9127 cr (+25%); disbursals \u20b92,776 cr.'],['New initiatives and UAE','Policybazaar for Business, PB Health; UAE profitable.']],
+ [['Digital, no dark stores','PB Partners agent/field channel; no updated store count (n/a).']],
+ [['Adj. EBITDA +\u20b9186 cr (~10%)','Up 109% YoY.','p'],['PAT +\u20b9163 cr','Up 92% YoY; likely helped by treasury income on IPO cash. Split not disclosed (n/a).','w']]],
+paytm:[
+ [['Consumers','UPI and wallet users.'],['Merchants','1.30 crore+ subscription merchants using Soundbox/EDC devices.']],
+ [['Payments','\u20b91,384 cr (+33% YoY).'],['Financial services distribution','\u20b9814 cr (+45%): loans, insurance, wealth.'],['Marketing services','\u20b9239 cr (-3% YoY).']],
+ [['Device network','Soundbox/EDC devices at merchants: a recurring subscription anchor. No stores or dark stores.']],
+ [['EBITDA +\u20b9203 cr (8.29%)','Record EBITDA.','p'],['Other income \u20b9182 cr','Treasury interest on cash reserves.','w'],['PAT +\u20b9220 cr','About 83% from other income; core profit ~\u20b935-40 cr (approximate).','w']]],
+mapmyindia:[
+ [['Automotive OEMs','\u20b958.8 cr (42.1% of revenue).'],['Enterprises','\u20b964.2 cr (46.0%).'],['Government','\u20b916.7 cr (11.9%).']],
+ [['Map-led','Data, software, APIs, royalties and subscriptions: \u20b9114 cr, flat YoY.'],['IoT-led','\u20b941.1 cr (+75% YoY); segment EBITDA margin 13.1% vs 8.7%.']],
+ [['Embedded devices','IoT hardware (fleet tracking, connected mobility); no stores or dark stores.']],
+ [['EBITDA +\u20b956.1 cr (40.2%)','Highest margin in the set.','p'],['Other income \u20b919.7 cr','Interest on \u20b9745 cr+ reserves.','w'],['PAT +\u20b949.7 cr','About 70% core (approximate).','p']]]
+};
+function mkBM(k){var d=BMD[k];return {cols:[
+ {title:'Who it serves',color:'#5b3b9e',bg:'#f1ecfb',nodes:bmNodes(d[0])},
+ {title:'How it earns',color:'#1a56b0',bg:'#eaf1fb',nodes:bmNodes(d[1])},
+ {title:'Physical footprint',color:'#0d7d7d',bg:'#e6f6f6',nodes:bmNodes(d[2])},
+ {title:'Q1 FY27 profit reality',color:'#a9660b',bg:'#fdf1de',nodes:bmNodes(d[3])}]};}
+
+/* ============ build company pills + panels ============ */
+(function(){
+  var pillbar = document.getElementById('companyPills');
+  var panelsWrap = document.getElementById('companyPanels');
+  COMPANY_ORDER.forEach(function(key,idx){
+    var c = CO[key];
+    var pill = document.createElement('button');
+    pill.textContent = c.name.split('(')[0].trim().split(' — ')[0];
+    pill.className = idx===0 ? 'active':'';
+    pill.onclick = function(){
+      document.querySelectorAll('#companyPills button').forEach(function(b){b.classList.remove('active');});
+      pill.classList.add('active');
+      document.querySelectorAll('.company-panel').forEach(function(p){p.classList.remove('active');});
+      document.getElementById('panel-'+key).classList.add('active');
+    };
+    pillbar.appendChild(pill);
+
+    var chg = (typeof c.cmp.price==='number' && typeof c.ipo.adjPrice==='number') ?
+      (((c.cmp.price - c.ipo.adjPrice)/c.ipo.adjPrice)*100).toFixed(1) : null;
+    var chgTag = chg===null? '<span class="tag warn">n/a</span>' :
+      (chg>=0 ? '<span class="tag pos">+'+chg+'%</span>' : '<span class="tag neg">'+chg+'%</span>');
+
+    var panel = document.createElement('div');
+    panel.className = 'company-panel' + (idx===0?' active':'');
+    panel.id = 'panel-'+key;
+    panel.innerHTML =
+      '<div class="card">'+
+        '<h3 class="sub-title" style="margin-top:0;">'+c.name+'</h3>'+
+        '<div style="font-size:12px;color:var(--sub);margin-bottom:10px;">'+c.ticker+' &middot; IPO: '+c.ipo.date+' at &#8377;'+c.ipo.price+
+          ' &middot; <span class="flag">'+c.ipo.adjNote+'</span></div>'+
+        '<div class="kpi-grid">'+
+          '<div class="kpi"><div class="lbl">Revenue (Q1 FY27)</div><div class="val">&#8377;'+fmtINR(c.q1fy27.revenue)+' cr</div></div>'+
+          '<div class="kpi warn"><div class="lbl">Other Income</div><div class="val">'+(typeof c.q1fy27.otherIncome==='number'?'&#8377;'+fmtINR(c.q1fy27.otherIncome)+' cr':c.q1fy27.otherIncome)+'</div></div>'+
+          '<div class="kpi '+(c.q1fy27.ebitda>=0?'pos':'neg')+'"><div class="lbl">Reported EBITDA</div><div class="val">&#8377;'+fmtINR(c.q1fy27.ebitda)+' cr</div></div>'+
+          '<div class="kpi"><div class="lbl">EBITDA Margin</div><div class="val">'+c.q1fy27.ebitdaMargin+'%</div></div>'+
+          '<div class="kpi '+(c.q1fy27.pat>=0?'pos':'neg')+'"><div class="lbl">Reported PAT</div><div class="val">&#8377;'+fmtINR(c.q1fy27.pat)+' cr</div></div>'+
+          '<div class="kpi"><div class="lbl">IPO &#8377;'+c.ipo.price+' &rarr; CMP &#8377;'+c.cmp.price+'</div><div class="val">'+chgTag+'</div></div>'+
+        '</div>'+
+        '<div class="note"><b>YoY:</b> '+c.q1fy27.yoy+' &middot; CMP as of '+c.cmp.asOf+'</div>'+
+        '<h4 style="margin:14px 0 6px;color:var(--amber);font-size:13px;">Real Operating Profit Check (excl. Other Income) <span class="flag">CB Research approximate working — flagged, not an audited figure</span></h4>'+
+        '<p style="font-size:13px;line-height:1.6;">'+c.q1fy27.realProfitNote+'</p>'+
+      '</div>'+
+      '<div class="card"><h4 style="margin-top:0;color:var(--blue);font-size:14px;">Business Model Map <span class="flag">(click any box for detail)</span></h4><div id="bm-'+key+'"></div></div>'+
+      '<div class="twocol">'+
+        '<div class="card"><h4 style="margin-top:0;color:var(--blue);font-size:14px;">Business Segments &amp; Model</h4><ul class="clean">'+
+          c.segments.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul></div>'+
+        '<div class="card"><h4 style="margin-top:0;color:var(--teal);font-size:14px;">Stores / Dark Stores / Physical Footprint</h4><p style="font-size:13px;line-height:1.6;">'+c.stores+'</p></div>'+
+      '</div>'+
+      '<h4 style="margin:16px 0 8px;color:var(--purple);font-size:14px;">SWOT Analysis</h4>'+
+      '<div class="swot-grid">'+
+        '<div class="swot-box swot-s"><h4>Strengths</h4><ul class="clean">'+c.swot.s.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'+
+        '<div class="swot-box swot-w"><h4>Weaknesses</h4><ul class="clean">'+c.swot.w.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'+
+        '<div class="swot-box swot-o"><h4>Opportunities</h4><ul class="clean">'+c.swot.o.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'+
+        '<div class="swot-box swot-t"><h4>Threats</h4><ul class="clean">'+c.swot.t.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'+
+      '</div>'+
+      '<div class="card"><h4 style="margin-top:0;font-size:13px;color:var(--sub);">Analysts\' Rating (third-party)</h4><p style="font-size:13px;">'+c.analyst+'</p></div>';
+    panelsWrap.appendChild(panel);
+    bmMap('bm-'+key, mkBM(key));
+  });
+})();
+
+/* ============ Analysts table ============ */
+(function(){
+  var t = document.getElementById('analystsTable');
+  var rows = '<tr><th>Company</th><th>Broker</th><th>Rating</th><th>Target Price</th></tr>';
+  var data = [
+    ["CarTrade Tech","UBS","Buy","₹4,000"],
+    ["CarTrade Tech","Nomura","Buy","₹3,286"],
+    ["FSN E-commerce (Nykaa)","Jefferies","Buy","₹400"],
+    ["FSN E-commerce (Nykaa)","Nomura","Buy","₹411"],
+    ["FSN E-commerce (Nykaa)","CLSA","Outperform","n/a (margin-expansion focus)"],
+    ["One 97 (Paytm)","CLSA","Underperform","₹1,050"],
+    ["One 97 (Paytm)","Citi","Raised target (level n/a)","n/a"],
+    ["One 97 (Paytm)","Goldman Sachs","Rating retained (detail n/a)","n/a"],
+    ["Easy Trip Planners","n/a","n/a","n/a"],
+    ["Nazara Technologies","n/a","n/a","n/a"],
+    ["RateGain Travel Tech.","n/a","n/a","n/a"],
+    ["Eternal (Zomato)","n/a","n/a","n/a"],
+    ["PB Fintech","n/a","n/a","n/a"],
+    ["CE Info Systems (MapMyIndia)","n/a","n/a","n/a"]
+  ];
+  data.forEach(function(r){
+    rows += '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';
+  });
+  t.innerHTML = rows;
+})();
+
+/* ============ Management grid ============ */
+(function(){
+  var grid = document.getElementById('mgmtGrid');
+  COMPANY_ORDER.forEach(function(key){
+    var c = CO[key];
+    var wrap = document.createElement('div');
+    wrap.innerHTML = '<h4 style="font-size:13px;color:var(--sub);margin:14px 0 6px;">'+c.name.split('(')[0].trim().split(' — ')[0]+'</h4>';
+    grid.appendChild(wrap);
+    c.mgmt.forEach(function(m){
+      var card = document.createElement('div');
+      card.className='mgmt-card';
+      card.innerHTML = '<div class="role">'+m.role+'</div><div class="name">'+m.name+'</div>';
+      grid.appendChild(card);
+    });
+  });
+})();
+
+/* ============ Charts ============ */
+var valuePlugin={id:'vals',afterDatasetsDraw:function(ch){var c=ch.ctx;ch.data.datasets.forEach(function(ds,i){var m=ch.getDatasetMeta(i);m.data.forEach(function(b,j){var v=ds.data[j];c.save();c.fillStyle='#1a2233';c.font='11px sans-serif';c.textAlign='left';c.fillText(ds.customLabels[j],v>=0?b.x+4:b.base+4,b.y+4);c.restore();});});}};
+window.addEventListener('load', function(){
+  try{
+    if(typeof Chart === 'undefined'){ throw new Error('Chart.js not loaded'); }
+    ['chartRevenue','chartMargin'].forEach(function(id){var c=document.getElementById(id);if(c){c.parentNode.style.height='420px';c.style.maxHeight='none';c.style.minWidth='0';}});
+    var byEbitda = COMPANY_ORDER.slice().sort(function(a,b){return CO[b].q1fy27.ebitdaMargin-CO[a].q1fy27.ebitdaMargin;});
+    new Chart(document.getElementById('chartRevenue').getContext('2d'), {
+      type:'bar', plugins:[valuePlugin],
+      data:{labels:byEbitda.map(function(k){return CO[k].name.split('(')[0].trim().split(' \u2014 ')[0];}),
+        datasets:[{data:byEbitda.map(function(k){return CO[k].q1fy27.ebitdaMargin;}),
+          customLabels:byEbitda.map(function(k){var c=CO[k].q1fy27;return c.ebitdaMargin+'%  (EBITDA \u20b9'+fmtINR(c.ebitda)+' cr)';}),
+          backgroundColor:'#0d7d7d'}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:160,left:120}},plugins:{legend:{display:false},title:{display:true,text:'Q1 FY27 EBITDA as % of revenue (absolute EBITDA \u20b9 crore in brackets)'}},scales:{x:{display:false}}}
+    });
+    var byPat = COMPANY_ORDER.slice().sort(function(a,b){return CO[b].q1fy27.pat/CO[b].q1fy27.revenue-CO[a].q1fy27.pat/CO[a].q1fy27.revenue;});
+    new Chart(document.getElementById('chartMargin').getContext('2d'), {
+      type:'bar', plugins:[valuePlugin],
+      data:{labels:byPat.map(function(k){return CO[k].name.split('(')[0].trim().split(' \u2014 ')[0];}),
+        datasets:[{data:byPat.map(function(k){var c=CO[k].q1fy27;return +(c.pat/c.revenue*100).toFixed(1);}),
+          customLabels:byPat.map(function(k){var c=CO[k].q1fy27;return (c.pat/c.revenue*100).toFixed(1)+'%  (PAT \u20b9'+fmtINR(c.pat)+' cr)';}),
+          backgroundColor:'#a9660b'}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:160,left:120}},plugins:{legend:{display:false},title:{display:true,text:'Q1 FY27 PAT as % of revenue (absolute PAT \u20b9 crore in brackets)'}},scales:{x:{display:false}}}
+    });
+  }catch(e){
+    console.warn('Chart rendering skipped:', e);
+    document.querySelectorAll('.chart-wrap').forEach(function(w){
+      w.innerHTML = '<div class="note">Chart could not load (offline or CDN blocked). Figures are available in the Sector Snapshot table and Financials tab.</div>';
+    });
+  }
+});
+
+/* ============ CB badge popup ============ */
+function toggleCB(){document.getElementById('cbPopup').classList.toggle('show');}
+
+/* ============ CB Assist (offline keyword matching + voice) ============ */
+var assistLogEl;
+function toggleAssist(){
+  var p = document.getElementById('assistPanel');
+  p.classList.toggle('show');
+  if(p.classList.contains('show') && !assistLogEl){
+    assistLogEl = document.getElementById('assistLog');
+    botSay("Hi! I'm CB Assist. Ask me about any of the 9 companies' revenue, EBITDA, other income, IPO vs CMP, or SWOT — e.g. \"What is Eternal's other income?\" or \"Compare Nazara and RateGain\".");
+  }
+}
+function botSay(text){
+  text=trn(text);
+  var d=document.createElement('div'); d.className='msg bot'; d.textContent=text;
+  assistLogEl.appendChild(d); assistLogEl.scrollTop=assistLogEl.scrollHeight;
+  speak(text);
+}
+function userSay(text){
+  var d=document.createElement('div'); d.className='msg user'; d.textContent=text;
+  assistLogEl.appendChild(d); assistLogEl.scrollTop=assistLogEl.scrollHeight;
+}
+function findCompany(q){
+  q=q.toLowerCase();
+  var aliases={
+    easytrip:["easy trip","easemytrip","ease my trip"],
+    nazara:["nazara"],
+    rategain:["rategain","rate gain"],
+    eternal:["eternal","zomato","blinkit"],
+    cartrade:["cartrade","car trade","carwale","olx"],
+    nykaa:["nykaa","fsn"],
+    pbfintech:["pb fintech","policybazaar","policy bazaar","paisabazaar"],
+    paytm:["paytm","one97","one 97"],
+    mapmyindia:["mapmyindia","map my india","ce info","mappls"]
+  };
+  for(var k in aliases){for(var i=0;i<aliases[k].length;i++){if(q.indexOf(aliases[k][i])>-1)return k;}}
+  return null;
+}
+function sendAssist(){
+  var inp=document.getElementById('assistInput');
+  var q=inp.value.trim();
+  if(!q)return;
+  userSay(q); inp.value='';
+  setTimeout(function(){answerAssist(q);},250);
+}
+function L(en,ta){return LANG==='ta'?ta:en;}
+function plain(s){return String(s).replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&mdash;/g,'\u2014').replace(/&ndash;/g,'\u2013');}
+function taFor(s){var k=nzs(plain(s));if(LANG==='ta'&&TA_MAP.hasOwnProperty(k))return plain(TA_MAP[k]);return plain(s);}
+function answerAssist(q){
+  var ql=q.toLowerCase();
+  var key=findCompany(ql);
+  if(!key){
+    botSay(L("I couldn't identify a company in your question. Try naming one: Easy Trip, Nazara, RateGain, Eternal, CarTrade, Nykaa, PB Fintech, Paytm or MapMyIndia.","கேள்வில எந்த நிறுவனம்னு புரியல. ஒரு நிறுவனத்தோட பேரை சொல்லுங்க: Easy Trip, Nazara, RateGain, Eternal, CarTrade, Nykaa, PB Fintech, Paytm, MapMyIndia."));
+    return;
+  }
+  var c=CO[key],r=c.q1fy27;
+  function has(a){return a.some(function(w){return ql.indexOf(w)>-1;});}
+  if(has(['other income','மற்ற வருமான'])){
+    botSay(c.name+L("'s Q1 FY27 other income: ","-ஓட Q1 FY27 other income: ")+(typeof r.otherIncome==='number'?'\u20b9'+fmtINR(r.otherIncome)+' crore.':plain(r.otherIncome)+'.')+' '+taFor(r.realProfitNote));
+  } else if(has(['ebitda'])){
+    botSay(c.name+L("'s Q1 FY27 EBITDA: \u20b9","-ஓட Q1 FY27 EBITDA: \u20b9")+fmtINR(r.ebitda)+" crore, margin "+r.ebitdaMargin+"%.");
+  } else if(has(['revenue','sales','வருவாய்','விற்பனை'])){
+    botSay(c.name+L("'s Q1 FY27 revenue: \u20b9","-ஓட Q1 FY27 revenue: \u20b9")+fmtINR(r.revenue)+" crore. "+plain(r.yoy));
+  } else if(has(['pat','profit','loss','லாபம்','நஷ்டம்'])){
+    botSay(c.name+L("'s Q1 FY27 PAT: \u20b9","-ஓட Q1 FY27 PAT: \u20b9")+fmtINR(r.pat)+" crore (margin "+r.patMargin+"%). "+taFor(r.realProfitNote));
+  } else if(has(['ipo','cmp','price','stock','விலை'])){
+    botSay(L(c.name+" IPO'd in "+c.ipo.date+" at \u20b9"+c.ipo.price+" ("+c.ipo.adjNote+"). CMP as of "+c.cmp.asOf+" is \u20b9"+c.cmp.price+".",c.name+" IPO "+c.ipo.date+"-ல \u20b9"+c.ipo.price+" ("+c.ipo.adjNote+"). CMP ("+c.cmp.asOf+") \u20b9"+c.cmp.price+"."));
+  } else if(has(['swot','strength','பலம்'])){
+    botSay(c.name+L(" strengths: "," பலங்கள்: ")+c.swot.s.map(taFor).join('; '));
+  } else if(has(['weak','பலவீன'])){
+    botSay(c.name+L(" weaknesses: "," பலவீனங்கள்: ")+c.swot.w.map(taFor).join('; '));
+  } else if(has(['store','dark','ஸ்டோர்','கடை'])){
+    botSay(c.name+" \u2014 stores/physical footprint: "+taFor(c.stores));
+  } else if(has(['segment','business model'])){
+    botSay(c.name+" segments: "+c.segments.map(taFor).join(' | '));
+  } else if(has(['management','ceo','board'])){
+    botSay(c.name+L(" key leadership: "," முக்கிய leadership: ")+c.mgmt.map(function(m){return plain(m.name)+' ('+taFor(m.role)+')';}).join(', '));
+  } else {
+    botSay(c.name+L(" \u2014 Q1 FY27 snapshot: Revenue \u20b9"," \u2014 Q1 FY27 snapshot: Revenue \u20b9")+fmtINR(r.revenue)+"cr, EBITDA \u20b9"+fmtINR(r.ebitda)+"cr, PAT \u20b9"+fmtINR(r.pat)+"cr. "+L("Ask about 'other income', 'SWOT', 'stores', 'segments' or 'management' for more.","'other income', 'SWOT', 'stores', 'segments', 'management' பத்தி கேட்டா இன்னும் சொல்வேன்."));
+  }
+}
+/* voice input (Web Speech API) + voice output */
+var recog=null, listening=false;
+function toggleMic(){
+  var micBtn=document.getElementById('assistMic');
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ botSay("Voice input isn't supported in this browser. Please type your question instead."); return; }
+  if(listening){ recog.stop(); return; }
+  recog = new SR();
+  recog.lang=(LANG==='ta'?'ta-IN':'en-IN'); recog.interimResults=false; recog.maxAlternatives=1;
+  recog.onstart=function(){ listening=true; micBtn.classList.add('listening'); };
+  recog.onend=function(){ listening=false; micBtn.classList.remove('listening'); };
+  recog.onresult=function(e){
+    var text=e.results[0][0].transcript;
+    document.getElementById('assistInput').value=text;
+    sendAssist();
+  };
+  recog.start();
+}
+function speak(text){
+  if(!('speechSynthesis' in window))return;
+  try{
+    var u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,''));
+    u.lang=(LANG==='ta'?'ta-IN':'en-IN'); u.rate=1.02;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ============ Cauvery Socrates ============ */
+var socQuestions = [
+  {q:"If a company reports a net profit but most of it comes from 'other income' rather than its core operations, what does that suggest?",
+   opts:[
+     {t:"The company's core business is genuinely thriving.", correct:false},
+     {t:"The reported profit may overstate the health of the core operating business.", correct:true},
+     {t:"Other income is illegal and should be excluded from all filings.", correct:false},
+     {t:"It has no bearing on how to read the results.", correct:false}
+   ],
+   fb:"Correct thinking: other income (like treasury interest on IPO cash) is real cash, but it's not repeatable core-business earnings power. Investors often look at 'core PAT' or 'PAT ex-other-income' to judge whether the underlying business is truly improving."},
+  {q:"Why might a company like CarTrade Tech, with a debt-free balance sheet and large cash reserves, show meaningful 'other income'?",
+   opts:[
+     {t:"Because it invests idle cash and earns treasury/interest income on it.", correct:true},
+     {t:"Because it undercharges its customers.", correct:false},
+     {t:"Because other income is a regulatory requirement.", correct:false},
+     {t:"Because it is a subsidiary of a bank.", correct:false}
+   ],
+   fb:"Right — a large cash pile (from IPO proceeds or accumulated profits) parked in deposits/investments earns interest, which shows up as 'other income', separate from operating EBITDA."},
+  {q:"Eternal's Blinkit turned EBITDA-positive in Q1 FY27 after years of losses. What does 'dark store' mean in this context?",
+   opts:[
+     {t:"A retail store that is temporarily closed.", correct:false},
+     {t:"A small, unlisted local warehouse used only for fulfilling online quick-commerce orders, not for walk-in customers.", correct:true},
+     {t:"A store that only operates at night.", correct:false},
+     {t:"A physical Zomato restaurant location.", correct:false}
+   ],
+   fb:"Exactly — dark stores are mini fulfilment centres (not customer-facing) that let quick-commerce players like Blinkit promise 10-20 minute deliveries. They are capital- and opex-intensive, which is why Blinkit's path to EBITDA breakeven took years."},
+  {q:"Why is a company's P/E ratio, like Eternal's ~572x on an FY26 basis, potentially misleading here?",
+   opts:[
+     {t:"P/E ratios cannot be calculated for loss-making or thin-margin companies.", correct:false},
+     {t:"A very high P/E on a wafer-thin current profit base means the market is pricing in years of future profit growth, not today's earnings.", correct:false},
+     {t:"Both of the above are partially true — the ratio is mathematically valid but reflects extreme growth expectations rather than current fundamentals.", correct:true},
+     {t:"High P/E always means the stock is undervalued.", correct:false}
+   ],
+   fb:"A very high P/E on a small current profit base is mathematically correct, but it signals that the stock price already assumes substantial future profit growth — any disappointment in that growth path can pressure the stock sharply."}
+];
+var socIdx = 0;
+function renderSocQ(){
+  var q = socQuestions[socIdx];
+  var card = document.getElementById('socCard');
+  var html = '<div class="socrates-q">'+trn('Q')+(socIdx+1)+'. '+trn(q.q)+'</div>';
+  q.opts.forEach(function(o,i){
+    html += '<button class="socrates-opt" data-i="'+i+'" onclick="socAnswer('+i+')">'+trn(o.t)+'</button>';
+  });
+  html += '<div class="socrates-feedback" id="socFb" style="display:none;"></div>';
+  card.innerHTML = html;
+  document.getElementById('socFollowup').style.display='none';
+  document.getElementById('socFreeText').value='';
+}
+function socAnswer(i){
+  var q = socQuestions[socIdx];
+  document.querySelectorAll('.socrates-opt').forEach(function(btn,idx){
+    btn.classList.add(q.opts[idx].correct?'correct':(idx===i&&!q.opts[idx].correct?'wrong':''));
+    btn.disabled=true;
+  });
+  var fb=document.getElementById('socFb');
+  fb.style.display='block';
+  fb.textContent=trn(q.opts[i].correct?"Correct. ":"Not quite. ")+trn(q.fb);
+}
+function nextSocQ(){ socIdx=(socIdx+1)%socQuestions.length; renderSocQ(); }
+function socReflect(){
+  var txt=document.getElementById('socFreeText').value.trim();
+  var fu=document.getElementById('socFollowup');
+  fu.style.display='block';
+  if(!txt){ fu.textContent=trn("Try writing a sentence or two first — even a rough guess helps you learn faster than reading the answer directly."); return; }
+  fu.textContent=trn("Good reflection. A Socratic follow-up: if two companies report the same PAT, but one earns it almost entirely from operations (like RateGain or MapMyIndia) and the other mostly from treasury/other income (like Paytm this quarter), which one would you expect to compound its profit faster over the next 3 years, and why? Think about what happens to 'other income' once the cash pile is spent on growth or acquisitions.");
+}
+renderSocQ();
+LANG_HOOKS.push(function(){renderSocQ();});
+</script>
+</body>
+</html>

@@ -13,34 +13,34 @@ sector file was written belongs in an analysis too — the skill sources the con
 live rather than reading it from here. A name's absence is not a statement that the company
 is out of scope.
 
-**18 sectors · 161 classified reports in the published collection.**
+**18 sectors · 178 classified reports in the published collection.**
 
 | Sector | Categories | Reports |
 |---|---:|---:|
-| [`auto`](#auto) | 6 | 12 |
-| [`banking`](#banking) | 3 | 16 |
-| [`capital-goods`](#capital-goods) | 8 | 16 |
+| [`auto`](#auto) | 6 | 13 |
+| [`banking`](#banking) | 3 | 17 |
+| [`capital-goods`](#capital-goods) | 9 | 19 |
 | [`capital-markets`](#capital-markets) | 7 | 13 |
 | [`cement`](#cement) | 2 | 2 |
 | [`chemicals`](#chemicals) | 6 | 7 |
-| [`consumer`](#consumer) | 11 | 22 |
+| [`consumer`](#consumer) | 11 | 26 |
 | [`infra-realty`](#infra-realty) | 3 | 2 |
 | [`insurance`](#insurance) | 4 | 4 |
 | [`it-services`](#it-services) | 5 | 7 |
 | [`logistics`](#logistics) | 6 | 1 |
-| [`metals`](#metals) | 4 | 7 |
-| [`nbfc-hfc`](#nbfc-hfc) | 8 | 8 |
-| [`new-age`](#new-age) | 6 | 4 |
-| [`pharma-health`](#pharma-health) | 9 | 19 |
+| [`metals`](#metals) | 6 | 8 |
+| [`nbfc-hfc`](#nbfc-hfc) | 8 | 10 |
+| [`new-age`](#new-age) | 6 | 6 |
+| [`pharma-health`](#pharma-health) | 9 | 20 |
 | [`power-energy`](#power-energy) | 9 | 15 |
-| [`reit-invit`](#reit-invit) | 9 | 4 |
+| [`reit-invit`](#reit-invit) | 9 | 6 |
 | [`telecom`](#telecom) | 3 | 2 |
 
 ---
 
 ## auto
 
-*12 reports in the collection.*
+*13 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -53,7 +53,7 @@ is out of scope.
 
 ## banking
 
-*16 reports in the collection.*
+*17 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -63,7 +63,7 @@ is out of scope.
 
 ## capital-goods
 
-*16 reports in the collection.*
+*19 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -75,6 +75,7 @@ is out of scope.
 | **Cables & Wires** | Polycab, Bajel, Sterlite Technologies |
 | **Power T&D Equipment** | Hitachi Energy India, ABB India, Siemens Energy India, Voltamp, CG Power |
 | **Industrial Equipment** | MTAR Technologies, INOX India, Shakti Pumps, Shaily Engineering, VA Tech Wabag (water), Aeroflex Industries |
+| **Precision Engineering** | Indo-MIM, Millworks Technologies, Aequs, Unimech Aerospace |
 
 ## capital-markets
 
@@ -114,7 +115,7 @@ is out of scope.
 
 ## consumer
 
-*22 reports in the collection.*
+*26 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -178,18 +179,20 @@ is out of scope.
 
 ## metals
 
-*7 reports in the collection.*
+*8 reports in the collection.*
 
 | Category | Companies |
 |---|---|
 | **Integrated steel** | Tata Steel, SAIL, JSW Steel (partially integrated) |
 | **Secondary / EAF steel** | Shyam Metallics, Jindal Steel & Power |
 | **Aluminium — integrated** | NALCO, Hindalco (with Novelis downstream) |
+| **Copper — mining** | Hindustan Copper |
+| **Copper — custom smelting/refining** | Hindalco (copper division), Vedanta (copper), Adani Enterprises (Kutch Copper) |
 | **Diversified resources** | Vedanta |
 
 ## nbfc-hfc
 
-*8 reports in the collection.*
+*10 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -204,20 +207,20 @@ is out of scope.
 
 ## new-age
 
-*4 reports in the collection.*
+*6 reports in the collection.*
 
 | Category | Companies |
 |---|---|
 | **Quick commerce** | Blinkit (Eternal), Instamart (Swiggy) |
 | **Food delivery** | Zomato (Eternal), Swiggy |
-| **E-commerce marketplace** | Meesho, Nykaa |
+| **E-commerce marketplace** | Meesho, Nykaa, FirstCry (Brainbees Solutions) |
 | **Services marketplace** | Urban Company |
 | **Fintech platform** | PB Fintech, One 97 Communications (Paytm) |
 | **Omni-channel retail** | Trent, Lenskart Solutions |
 
 ## pharma-health
 
-*19 reports in the collection.*
+*20 reports in the collection.*
 
 | Category | Companies |
 |---|---|
@@ -249,7 +252,7 @@ is out of scope.
 
 ## reit-invit
 
-*4 reports in the collection.*
+*6 reports in the collection.*
 
 | Category | Companies |
 |---|---|

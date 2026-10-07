@@ -30,6 +30,13 @@ This is why a bank is analysed on four axes, and why profit alone tells you very
 A bank can report record profit while quietly accumulating stress. Asset quality is the axis that
 matters most and the one that lags.
 
+**UPI was fee income's zero-revenue line for years** — the government mandated no merchant discount rate
+(MDR) on UPI transactions to drive adoption, so a payment rail now carrying a large share of India's
+retail transaction volume earned banks nothing directly. A government decision to introduce or lift an
+MDR band on UPI reopens that line; state the threshold (MDR has historically been proposed above a
+transaction-value cut-off, not on every transaction), the effective date, and each bank's estimated share
+of the resulting pool rather than treating "UPI monetised" as a single fact.
+
 ### The analogy
 
 A bank buys money wholesale and sells it retail. Deposits are the raw material, loans the product, and the spread between them is the gross margin — except that some of the product goes bad after it is sold, which is why provisioning sits where cost of goods would.
@@ -194,6 +201,7 @@ leadership transition**. By the time the issue is public, much of the multiple h
 | ECL provisioning | Forward-looking, staged; applies from 1 April 2027 with transition to March 2031; day-one impact against opening reserves *(confirm at source)* |
 | NSFR | ≥100%; structural one-year funding stability |
 | LCR run-off for digital deposits | Higher run-off factors for internet/mobile-accessible retail deposits, effective 1 April 2026 |
+| UPI merchant discount rate (MDR) | Zero-MDR mandate historically; a reintroduced MDR above a per-transaction value threshold has been proposed *(confirm current threshold, rate and effective date at source)* |
 | Leverage ratio | Tier 1 ÷ total exposure, unweighted backstop *(confirm current minimum at source)* |
 
 Regulatory levels change with RBI policy. Verify against the current circular rather than carrying a

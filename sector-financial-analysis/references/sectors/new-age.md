@@ -16,7 +16,7 @@ Judge them on contribution margin per order and runway, not on reported profit.
 |---|---|---|
 | **Quick commerce** | 10–30 minute delivery from dark stores. Capital-hungry, density-driven | Blinkit (Eternal), Instamart (Swiggy) |
 | **Food delivery** | Restaurant aggregation and delivery; the more mature model | Zomato (Eternal), Swiggy |
-| **E-commerce marketplace** | Third-party sellers, platform takes a cut | Meesho, Nykaa |
+| **E-commerce marketplace** | Third-party sellers, platform takes a cut | Meesho, Nykaa, FirstCry (Brainbees Solutions) |
 | **Services marketplace** | Matches consumers with service professionals | Urban Company |
 | **Fintech platform** | Insurance-broking and payments marketplaces; a take rate on premiums or transaction value, under a financial regulator's licence | PB Fintech, One 97 Communications (Paytm) |
 | **Omni-channel retail** | Store-led retail with a digital layer — **profitable and arguably `consumer`** | Trent, Lenskart Solutions |

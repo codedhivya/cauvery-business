@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mazagon Dock Q1 FY27</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#ffffff;--panel:#f7f9fc;--ink:#14213d;--muted:#5b6475;--line:#dfe4ec;--navy:#0b3d91;--sea:#0a7ea4;--teal:#0f9d8a;--amber:#d98a00;--red:#c0392b;--green:#1e8e3e;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.5}
+header{background:linear-gradient(90deg,#eaf2ff,#f4fbff);border-bottom:1px solid var(--line);padding:18px 20px}
+header h1{margin:0;font-size:22px;color:var(--navy)}
+header .sub{color:var(--muted);font-size:13px}
+.langbtn{float:right;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:18px;padding:5px 14px;cursor:pointer;font-weight:600}
+nav{display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:var(--panel);padding:7px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--ink)}
+nav button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+main{padding:16px 20px 90px;max-width:1280px;margin:0 auto}
+section.tab{display:none}section.tab.active{display:block}
+h2{color:var(--navy);font-size:19px;margin:18px 0 8px;border-left:4px solid var(--sea);padding-left:8px}
+h3{font-size:16px;margin:14px 0 6px;color:#233}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.kpi .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.kpi .v{font-size:22px;font-weight:700;color:var(--navy)}
+.kpi .d{font-size:12px}
+.up{color:var(--green)}.dn{color:var(--red)}.fl{color:var(--amber)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0}
+.note{background:#fff8e6;border:1px solid #f1d38a;border-radius:8px;padding:10px 12px;font-size:13px}
+.good{background:#eefaf1;border:1px solid #b9e3c5;border-radius:8px;padding:10px 12px}
+.bad{background:#fdf0ee;border:1px solid #f0c2bb;border-radius:8px;padding:10px 12px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:right;white-space:nowrap}
+th{background:#eef3fb;color:var(--navy)}
+td:first-child,th:first-child{text-align:left}
+td.l,th.l{text-align:left;white-space:normal}
+tr.hl td{background:#f3f8ff;font-weight:600}
+.cw{overflow-x:auto}.cw>div{min-width:900px;height:340px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+.ta{display:none}body.tamil .ta{display:block}body.tamil span.ta{display:inline}body.tamil .en{display:none}
+.pill{display:inline-block;padding:2px 9px;border-radius:12px;font-size:12px;font-weight:600}
+.p-buy{background:#e6f6ea;color:var(--green)}.p-add{background:#fff4dc;color:#a56a00}
+.bar{height:10px;background:#e8edf5;border-radius:6px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--sea)}
+ul{margin:6px 0 6px 18px;padding:0}
+.src{font-size:12.5px;color:var(--muted)}.src a{color:var(--sea)}
+/* CB badge */
+#cbBadge{position:fixed;right:16px;bottom:16px;width:54px;height:54px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:20;animation:blink 1.8s infinite;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(11,61,145,.55)}50%{box-shadow:0 0 0 10px rgba(11,61,145,0)}}
+#cbPop{display:none;position:fixed;right:16px;bottom:80px;width:300px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12.5px;z-index:21;box-shadow:0 6px 20px rgba(0,0,0,.15)}
+#cbBadge:hover+#cbPop,#cbPop.show{display:block}
+/* CB Assist */
+#asBtn{position:fixed;right:80px;bottom:22px;background:var(--teal);color:#fff;border:none;border-radius:22px;padding:10px 16px;font-weight:700;cursor:pointer;z-index:20}
+#asBox{display:none;position:fixed;right:16px;bottom:84px;width:360px;max-width:92vw;height:430px;background:#fff;border:1px solid var(--line);border-radius:12px;z-index:22;flex-direction:column;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#asLog{flex:1;overflow-y:auto;padding:10px;font-size:13px}
+#asLog .q{background:#eef3fb;padding:6px 9px;border-radius:8px;margin:6px 0 2px;text-align:right}
+#asLog .a{background:#f3fbf8;padding:6px 9px;border-radius:8px;margin:2px 0 6px}
+#asIn{display:flex;border-top:1px solid var(--line)}#asIn input{flex:1;border:none;padding:10px;font-size:13px;outline:none}#asIn button{border:none;background:var(--navy);color:#fff;padding:0 12px;cursor:pointer}
+.wm{position:fixed;left:50%;top:55%;transform:translate(-50%,-50%) rotate(-24deg);font-size:80px;font-weight:800;color:rgba(11,61,145,.035);pointer-events:none;z-index:0;white-space:nowrap}
+.mcq button{display:block;width:100%;text-align:left;margin:4px 0;padding:8px;border:1px solid var(--line);background:var(--panel);border-radius:6px;cursor:pointer}
+.mcq button.ok{background:#e6f6ea;border-color:#9fd6ae}.mcq button.no{background:#fdecea;border-color:#f0b4ab}
+svg text{font-family:"Segoe UI",Arial,sans-serif}
+</style>
+</head>
+<body>
+<div class="wm">CB RESEARCH</div>
+<header>
+<button class="langbtn" onclick="toggleLang()">தமிழ் / English</button>
+<h1>Mazagon Dock Shipbuilders Ltd (MDL) — Q1 FY27 Business &amp; Investment Analysis</h1>
+<div class="sub">NSE: MAZDOCK · BSE: 543237 · Quarter ended 30 June 2026 (Q1 FY27) · Consolidated unless stated · ₹ crore · Price reference ₹2,087.10 (29 Sep 2026) · Prepared 30 Sep 2026</div>
+</header>
+<nav id="nav"></nav>
+<main>
+
+<!-- ===================== OVERVIEW ===================== -->
+<section class="tab active" id="t-overview" data-title="Overview">
+<h2>Snapshot</h2>
+<div class="grid">
+<div class="kpi"><div class="l">Revenue from ops</div><div class="v">₹2,942.70 cr</div><div class="d up">+12.1% YoY</div><div class="d dn">−23.6% QoQ</div></div>
+<div class="kpi"><div class="l">EBITDA (ex-other income)</div><div class="v">₹446.58 cr</div><div class="d up">+48.0% YoY · margin 15.18% (+369 bps)</div></div>
+<div class="kpi"><div class="l">Other income</div><div class="v">₹313.18 cr</div><div class="d fl">41% of EBITDA incl. OI</div></div>
+<div class="kpi"><div class="l">PAT</div><div class="v">₹549.41 cr</div><div class="d up">+21.5% YoY</div><div class="d dn">−19.1% QoQ</div></div>
+<div class="kpi"><div class="l">Order book (30 Jun 26)</div><div class="v">₹18,218 cr</div><div class="d dn">~1.4x FY26 revenue</div></div>
+<div class="kpi"><div class="l">Cash + FDs (31 Mar 26)</div><div class="v">₹13,097 cr</div><div class="d">Zero debt</div></div>
+<div class="kpi"><div class="l">Market cap</div><div class="v">₹86,243 cr</div><div class="d">P/E (TTM) ~30.2x · P/B ~8.6x</div></div>
+<div class="kpi"><div class="l">From 52-wk high</div><div class="v dn">−28% to −30%</div><div class="d">High ₹2,930–2,993 (Oct 2025)</div></div>
+</div>
+
+<div class="card en">
+<h3>The one-paragraph story</h3>
+MDL delivered a <b>margin-led quarter</b>: revenue grew a modest 12% but operating EBITDA jumped 48% as P17A frigate work, submarine refits and ONGC jobs were executed at better margins. The problem is not the quarter — it is the <b>shrinking backlog</b>. With the last P17A frigate and all four P15B destroyers delivered, the order book has fallen to ₹18,218 cr, of which a good part is residual work and spares on delivered ships. The stock's 28–30% correction is the market pricing an <b>order-book air-pocket</b> until the ₹70,000–90,000 cr P75(I) submarine contract is signed. Management's ₹1 lakh crore FY27 target is achievable only if P75(I) (plus possibly three more Kalvari-class boats) is signed within this fiscal year.
+</div>
+<div class="card ta">
+<h3>ஒரே பத்தியில் கதை</h3>
+MDL இந்த quarter-ல <b>margin நல்லா improve</b> பண்ணிருக்கு: revenue 12% தான் ஏறுச்சு, ஆனா operating EBITDA 48% jump. P17A frigate, submarine refit, ONGC வேலை எல்லாம் நல்ல margin-ல execute ஆச்சு. பிரச்சனை quarter இல்ல — <b>order book குறைஞ்சுட்டே போகுது</b>. கடைசி P17A frigate-உம் நாலு P15B destroyer-உம் deliver ஆயிடுச்சு, அதனால order book ₹18,218 cr-க்கு இறங்கிடுச்சு. Stock 28–30% விழுந்ததுக்கு காரணம் — P75(I) submarine deal (₹70,000–90,000 cr) sign ஆகுற வரைக்கும் ஒரு "order gap" இருக்கும்னு market நினைக்குது. ₹1 lakh crore target வரணும்னா P75(I) இந்த வருஷமே sign ஆகணும்.
+</div>
+
+<h2>CBF26 Score</h2>
+<div class="card">
+<div class="tw"><table>
+<tr><th>Factor</th><th>Score /10</th><th class="l">Visual</th><th class="l">Why</th></tr>
+<tr><td>g — Growth</td><td>6</td><td class="l"><div class="bar"><i style="width:60%"></i></div></td><td class="l">15–17% FY27 guide; FY28 visibility weak without P75(I)</td></tr>
+<tr><td>m — Margin</td><td>7</td><td class="l"><div class="bar"><i style="width:70%"></i></div></td><td class="l">15.2% EBITDA, up 369 bps; quarterly margins lumpy</td></tr>
+<tr><td>d — Debt / balance sheet</td><td>9</td><td class="l"><div class="bar"><i style="width:90%"></i></div></td><td class="l">Zero debt, ₹13,097 cr cash + FDs</td></tr>
+<tr><td>v — Valuation</td><td>4</td><td class="l"><div class="bar"><i style="width:40%"></i></div></td><td class="l">~30x TTM, ~25x FY28E, 8.6x book — still rich for a PSU yard</td></tr>
+<tr><td>t — Tailwind</td><td>9</td><td class="l"><div class="bar"><i style="width:90%"></i></div></td><td class="l">Navy modernisation, ₹3 lakh cr+ pipeline, sole Indian conventional-sub yard</td></tr>
+<tr><td>r — Risk (higher = safer)</td><td>5</td><td class="l"><div class="bar"><i style="width:50%"></i></div></td><td class="l">Single-customer, contract-timing risk, other-income dependence</td></tr>
+<tr class="hl"><td>Composite</td><td>6.7</td><td class="l"><div class="bar"><i style="width:67%"></i></div></td><td class="l">Strong franchise, timing-dependent stock</td></tr>
+</table></div>
+</div>
+</section>
+
+<!-- ===================== BUSINESS MODEL ===================== -->
+<section class="tab" id="t-business" data-title="Business Model">
+<h2>How MDL makes money — business-model map</h2>
+<div class="card cw"><div style="height:auto">
+<svg viewBox="0 0 1000 520" width="100%" style="min-width:900px">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 z" fill="#5b6475"/></marker></defs>
+<!-- customers -->
+<text x="20" y="28" font-size="14" font-weight="700" fill="#0b3d91">CUSTOMERS (who pays)</text>
+<rect x="20" y="40" width="200" height="54" rx="8" fill="#eaf2ff" stroke="#0b3d91"/><text x="120" y="63" text-anchor="middle" font-size="13" font-weight="700">Indian Navy / MoD</text><text x="120" y="81" text-anchor="middle" font-size="11" fill="#5b6475">Submarines, destroyers, frigates</text>
+<rect x="20" y="104" width="200" height="54" rx="8" fill="#eaf2ff" stroke="#0b3d91"/><text x="120" y="127" text-anchor="middle" font-size="13" font-weight="700">Indian Coast Guard</text><text x="120" y="145" text-anchor="middle" font-size="11" fill="#5b6475">21-ship order (₹2,649 cr left)</text>
+<rect x="20" y="168" width="200" height="54" rx="8" fill="#eaf2ff" stroke="#0b3d91"/><text x="120" y="191" text-anchor="middle" font-size="13" font-weight="700">ONGC / Offshore</text><text x="120" y="209" text-anchor="middle" font-size="11" fill="#5b6475">Platforms, pipelines (₹2,774 cr)</text>
+<rect x="20" y="232" width="200" height="54" rx="8" fill="#eaf2ff" stroke="#0b3d91"/><text x="120" y="255" text-anchor="middle" font-size="13" font-weight="700">Commercial (SCI etc.)</text><text x="120" y="273" text-anchor="middle" font-size="11" fill="#5b6475">Methanol dual-fuel, MPVs</text>
+<!-- MDL core -->
+<rect x="300" y="40" width="380" height="250" rx="12" fill="#f3fbf8" stroke="#0f9d8a" stroke-width="2"/>
+<text x="490" y="66" text-anchor="middle" font-size="15" font-weight="800" fill="#0f9d8a">MDL — Mumbai yard (Govt 81.22%)</text>
+<rect x="320" y="80" width="170" height="92" rx="8" fill="#fff" stroke="#0a7ea4"/><text x="405" y="102" text-anchor="middle" font-size="13" font-weight="700">Submarine &amp;</text><text x="405" y="118" text-anchor="middle" font-size="13" font-weight="700">Heavy Engg.</text><text x="405" y="138" text-anchor="middle" font-size="11" fill="#5b6475">Kalvari (Scorpene), AIP plug,</text><text x="405" y="153" text-anchor="middle" font-size="11" fill="#5b6475">refits · 11 subs concurrently</text>
+<rect x="495" y="80" width="170" height="92" rx="8" fill="#fff" stroke="#0a7ea4"/><text x="580" y="102" text-anchor="middle" font-size="13" font-weight="700">Shipbuilding</text><text x="580" y="120" text-anchor="middle" font-size="11" fill="#5b6475">Destroyers (P15B), frigates</text><text x="580" y="135" text-anchor="middle" font-size="11" fill="#5b6475">(P17A), CG, offshore, merchant</text><text x="580" y="153" text-anchor="middle" font-size="11" fill="#5b6475">10 warships concurrently</text>
+<rect x="320" y="184" width="345" height="44" rx="8" fill="#fff8e6" stroke="#d98a00"/><text x="492" y="203" text-anchor="middle" font-size="12" font-weight="700">Revenue recognised on % completion</text><text x="492" y="219" text-anchor="middle" font-size="11" fill="#5b6475">Cost-plus / fixed-price nomination &amp; competitive contracts</text>
+<rect x="320" y="236" width="165" height="44" rx="8" fill="#fff" stroke="#5b6475"/><text x="402" y="255" text-anchor="middle" font-size="12" font-weight="700">Colombo Dockyard</text><text x="402" y="271" text-anchor="middle" font-size="11" fill="#5b6475">51% subsidiary, Sri Lanka</text>
+<rect x="500" y="236" width="165" height="44" rx="8" fill="#fff" stroke="#5b6475"/><text x="582" y="255" text-anchor="middle" font-size="12" font-weight="700">Goa Shipyard</text><text x="582" y="271" text-anchor="middle" font-size="11" fill="#5b6475">Equity-accounted stake</text>
+<!-- cash engine -->
+<text x="760" y="28" font-size="14" font-weight="700" fill="#0b3d91">CASH ENGINE</text>
+<rect x="740" y="40" width="240" height="60" rx="8" fill="#eefaf1" stroke="#1e8e3e"/><text x="860" y="63" text-anchor="middle" font-size="13" font-weight="700">Customer advances</text><text x="860" y="81" text-anchor="middle" font-size="11" fill="#5b6475">Contract liabilities ₹10,303 cr</text>
+<rect x="740" y="120" width="240" height="60" rx="8" fill="#eefaf1" stroke="#1e8e3e"/><text x="860" y="143" text-anchor="middle" font-size="13" font-weight="700">Cash + FDs ₹13,097 cr</text><text x="860" y="161" text-anchor="middle" font-size="11" fill="#5b6475">Parked in bank deposits</text>
+<rect x="740" y="200" width="240" height="60" rx="8" fill="#fff8e6" stroke="#d98a00"/><text x="860" y="223" text-anchor="middle" font-size="13" font-weight="700">Other income ₹313 cr/qtr</text><text x="860" y="241" text-anchor="middle" font-size="11" fill="#5b6475">~40% of pre-tax earnings</text>
+<!-- arrows -->
+<line x1="220" y1="67" x2="297" y2="95" stroke="#5b6475" marker-end="url(#ar)"/>
+<line x1="220" y1="131" x2="297" y2="135" stroke="#5b6475" marker-end="url(#ar)"/>
+<line x1="220" y1="195" x2="297" y2="175" stroke="#5b6475" marker-end="url(#ar)"/>
+<line x1="220" y1="259" x2="297" y2="215" stroke="#5b6475" marker-end="url(#ar)"/>
+<line x1="680" y1="90" x2="738" y2="70" stroke="#1e8e3e" marker-end="url(#ar)"/>
+<line x1="860" y1="100" x2="860" y2="118" stroke="#1e8e3e" marker-end="url(#ar)"/>
+<line x1="860" y1="180" x2="860" y2="198" stroke="#d98a00" marker-end="url(#ar)"/>
+<!-- future -->
+<text x="20" y="330" font-size="14" font-weight="700" fill="#0b3d91">GROWTH LEVERS (FY27–FY33)</text>
+<rect x="20" y="342" width="230" height="74" rx="8" fill="#eaf2ff" stroke="#0b3d91"/><text x="135" y="365" text-anchor="middle" font-size="13" font-weight="700">P75(I) — 6 AIP subs</text><text x="135" y="383" text-anchor="middle" font-size="11" fill="#5b6475">with TKMS · ₹70,000–90,000 cr</text><text x="135" y="400" text-anchor="middle" font-size="11" fill="#5b6475">Negotiations near complete</text>
+<rect x="265" y="342" width="230" height="74" rx="8" fill="#eaf2ff" stroke="#0b3d91"/><text x="380" y="365" text-anchor="middle" font-size="13" font-weight="700">Surface combatants</text><text x="380" y="383" text-anchor="middle" font-size="11" fill="#5b6475">P17B (~₹70,000 cr), P15C (~₹48,000 cr)</text><text x="380" y="400" text-anchor="middle" font-size="11" fill="#5b6475">LPD (~₹40,000 cr), MCMV (~₹40,000 cr)</text>
+<rect x="510" y="342" width="230" height="74" rx="8" fill="#eaf2ff" stroke="#0b3d91"/><text x="625" y="365" text-anchor="middle" font-size="13" font-weight="700">3 more Kalvari subs</text><text x="625" y="383" text-anchor="middle" font-size="11" fill="#5b6475">Repeat order, in discussion</text><text x="625" y="400" text-anchor="middle" font-size="11" fill="#5b6475">Faster to execute (known design)</text>
+<rect x="755" y="342" width="225" height="74" rx="8" fill="#fff8e6" stroke="#d98a00"/><text x="867" y="365" text-anchor="middle" font-size="13" font-weight="700">Greenfield yards</text><text x="867" y="383" text-anchor="middle" font-size="11" fill="#5b6475">Dighi (MH) + Dugarajapatnam (AP)</text><text x="867" y="400" text-anchor="middle" font-size="11" fill="#5b6475">₹30,000–42,000 cr · Thoothukudi dropped</text>
+<line x1="135" y1="342" x2="400" y2="292" stroke="#0b3d91" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+<line x1="380" y1="342" x2="560" y2="292" stroke="#0b3d91" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+<line x1="625" y1="342" x2="440" y2="292" stroke="#0b3d91" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+<text x="500" y="455" text-anchor="middle" font-size="13" fill="#14213d"><tspan font-weight="700">Flywheel:</tspan> big nomination order → 10–15% advance → cash parked in FDs → other income + working-capital-light execution → dividends to Govt</text>
+<text x="500" y="480" text-anchor="middle" font-size="12" fill="#c0392b">Weak link today: backlog run-off means advances are being consumed faster than they are replenished.</text>
+</svg></div></div>
+
+<h2>Segments</h2>
+<div class="tw"><table>
+<tr><th>Segment</th><th class="l">What it builds</th><th class="l">Key programmes</th><th class="l">Capacity</th></tr>
+<tr><td>Submarine &amp; Heavy Engineering</td><td class="l">Conventional submarines, refits, AIP integration</td><td class="l">P75 Kalvari (6 delivered), AIP plug (₹1,542 cr), refits (₹492 cr), P75(I) next</td><td class="l">11 submarines at a time</td></tr>
+<tr><td>Shipbuilding</td><td class="l">Destroyers, frigates, CG vessels, offshore, merchant</td><td class="l">P15B (all 4 delivered), P17A (4 delivered), CG 21 ships, ONGC, SCI methanol vessel</td><td class="l">10 warships at a time</td></tr>
+<tr><td>Subsidiary — Colombo Dockyard (51%)</td><td class="l">Ship repair &amp; building in Sri Lanka</td><td class="l">Adds ~₹170 cr/qtr revenue (consolidated minus standalone)</td><td class="l">Regional foothold</td></tr>
+</table></div>
+<p class="note">Segment-wise revenue and EBIT for Q1 FY27 were not available in the sources reviewed — shown as n/a rather than estimated. Colombo Dockyard contribution is derived as consolidated revenue (₹2,942.70 cr) less standalone revenue (₹2,771 cr).</p>
+
+<h2>Unique position (USP)</h2>
+<ul>
+<li>India's only yard that has built conventional submarines (Kalvari/Scorpene) — the natural choice for P75(I).</li>
+<li>Track record: 809 vessels since 1960, including 34 warships and 8 submarines.</li>
+<li>Zero-debt, advance-funded model; a Navratna-style dividend payer (₹18.12/share for FY26).</li>
+</ul>
+</section>
+
+<!-- ===================== FINANCIALS ===================== -->
+<section class="tab" id="t-fin" data-title="Results">
+<h2>Quarterly results — consolidated (₹ crore)</h2>
+<div class="tw"><table id="qtbl"></table></div>
+<p class="note">† Q2 and Q3 FY26 are media-reported figures and do not fully reconcile with the FY26 consolidated total (sum of quarters ≈ ₹2,760 cr vs reported FY26 PAT ₹2,578.36 cr). EBITDA for Q2 FY26 was reported on inconsistent definitions and is marked n/a. Q3 FY26 EBITDA of ₹887 cr (24.6%) is shown as reported.</p>
+
+<h2>Q1 FY27 — consolidated vs standalone (₹ crore)</h2>
+<div class="tw"><table>
+<tr><th>Metric</th><th>Consolidated</th><th>Standalone</th><th>Difference</th><th class="l">Read-across</th></tr>
+<tr><td>Revenue from ops</td><td>2,942.70</td><td>2,771.00</td><td>171.70</td><td class="l">Colombo Dockyard contribution</td></tr>
+<tr><td>EBITDA incl. other income</td><td>759.76</td><td>743.00</td><td>16.76</td><td class="l">Subsidiary margins thin</td></tr>
+<tr><td>PAT</td><td>549.41</td><td>510.00</td><td>39.41</td><td class="l">Goa Shipyard share + subsidiary</td></tr>
+<tr><td>Net worth</td><td>10,504</td><td>n/a</td><td>–</td><td class="l">Up from ₹9,984 cr in Mar-26</td></tr>
+</table></div>
+
+<h2>Charts</h2>
+<div class="two">
+<div class="card cw"><div><canvas id="cRev"></canvas></div></div>
+<div class="card cw"><div><canvas id="cEb"></canvas></div></div>
+</div>
+
+<h2>FY26 full year (₹ crore)</h2>
+<div class="tw"><table>
+<tr><th>Metric</th><th>FY26</th><th>YoY</th><th class="l">Comment</th></tr>
+<tr><td>Standalone revenue from ops</td><td>12,839.64</td><td class="up">+12.3%</td><td class="l">Fifth straight record year</td></tr>
+<tr><td>Standalone PBT</td><td>3,250.48</td><td class="up">+4.5%</td><td class="l">Material cost rose to 56.4% of revenue from 49.7%</td></tr>
+<tr><td>Standalone PAT</td><td>2,435.77</td><td class="up">+4.8%</td><td class="l">Profit growth lagged revenue</td></tr>
+<tr><td>Consolidated total income</td><td>14,145.71</td><td class="up">+12.8%</td><td class="l">Includes other income</td></tr>
+<tr><td>Consolidated PAT</td><td>2,578.36</td><td>–</td><td class="l">EPS ₹64.04</td></tr>
+<tr><td>Dividend per share (₹)</td><td>18.12</td><td>–</td><td class="l">Final ₹4.62; payout ~28%</td></tr>
+</table></div>
+</section>
+
+<!-- ===================== OTHER INCOME ===================== -->
+<section class="tab" id="t-oi" data-title="Other Income">
+<h2>Other income — the hidden second engine</h2>
+<div class="tw"><table>
+<tr><th>Quarter</th><th>Revenue</th><th>Other income</th><th>EBITDA (ex-OI)</th><th>EBITDA + OI</th><th>OI share of EBITDA+OI</th><th>OI as % of revenue</th></tr>
+<tr><td>Q1 FY26</td><td>2,625.59</td><td>323.58</td><td>301.69</td><td>625.27</td><td class="fl">51.8%</td><td>12.3%</td></tr>
+<tr><td>Q4 FY26</td><td>3,850.39</td><td>283.38</td><td>542.89</td><td>826.27</td><td class="fl">34.3%</td><td>7.4%</td></tr>
+<tr class="hl"><td>Q1 FY27</td><td>2,942.70</td><td>313.18</td><td>446.58</td><td>759.76</td><td class="fl">41.2%</td><td>10.6%</td></tr>
+</table></div>
+<div class="card cw"><div><canvas id="cOi"></canvas></div></div>
+<div class="card en">
+<h3>What it means</h3>
+<ul>
+<li>Other income (mainly interest on ₹13,097 cr of cash and FDs) was <b>₹313.18 cr — down 3.2% YoY</b>, even as the deposit base shrank from customer-advance run-off.</li>
+<li>Roughly <b>40% of pre-tax earnings come from treasury</b>, not shipbuilding. A lower interest-rate cycle or further cash drawdown directly cuts EPS.</li>
+<li>The reverse is the upside: a P75(I) contract typically carries a sizeable mobilisation advance. Even a 10% advance on ₹70,000 cr is ~₹7,000 cr of fresh cash — at ~7% yield that is ~₹490 cr a year of extra other income, before any ship is built.</li>
+</ul>
+</div>
+<div class="card ta">
+<h3>இதோட அர்த்தம்</h3>
+<ul>
+<li>Other income ₹313 cr — இது பெரும்பாலும் bank FD-ல வச்சிருக்குற ₹13,097 cr cash-க்கு வர்ற வட்டி.</li>
+<li>Profit-ல கிட்டத்தட்ட 40% இந்த வட்டி வருமானம் தான், கப்பல் கட்டுறதுல இல்ல. Interest rate குறைஞ்சா EPS-உம் குறையும்.</li>
+<li>P75(I) sign ஆனா advance பணம் வரும் — 10% advance-னாலே ~₹7,000 cr; அதுல வருஷத்துக்கு ~₹490 cr வட்டி வருமானம் extra.</li>
+</ul>
+</div>
+<p class="note">The ₹490 cr figure is an illustrative sensitivity (10% advance × 7% yield), not a company disclosure.</p>
+</section>
+
+<!-- ===================== CASH & WC ===================== -->
+<section class="tab" id="t-cash" data-title="Cash &amp; Working Capital">
+<h2>Balance-sheet liquidity (₹ crore, consolidated)</h2>
+<div class="tw"><table>
+<tr><th>Item</th><th>31 Mar 2024</th><th>31 Mar 2025</th><th>31 Mar 2026</th><th>Change FY26</th></tr>
+<tr><td>Cash &amp; cash equivalents</td><td>3,523</td><td>5,285</td><td>2,731</td><td class="dn">−48.3%</td></tr>
+<tr class="hl"><td>Cash + fixed deposits (total)</td><td>n/a</td><td>n/a</td><td>13,097</td><td>–</td></tr>
+<tr><td>Trade receivables</td><td>1,847</td><td>1,067</td><td>2,606</td><td class="dn">+144%</td></tr>
+<tr><td>Inventories</td><td>5,713</td><td>4,537</td><td>2,517</td><td class="up">−44.5%</td></tr>
+<tr><td>Trade payables</td><td>4,466</td><td>3,738</td><td>4,513</td><td>+20.7%</td></tr>
+<tr><td>Contract liabilities (customer advances)</td><td>n/a</td><td>15,494</td><td>10,303</td><td class="dn">−33.5%</td></tr>
+<tr><td>Total equity</td><td>6,243</td><td>7,940</td><td>9,984</td><td class="up">+25.7%</td></tr>
+<tr><td>Total assets</td><td>29,449</td><td>28,708</td><td>27,458</td><td>−4.4%</td></tr>
+<tr><td>Borrowings</td><td>0</td><td>0</td><td>0</td><td>Debt-free</td></tr>
+</table></div>
+<p class="note">Balance sheets are published half-yearly; no 30 Jun 2026 balance sheet exists. Q1 FY27 net worth was ₹10,504 cr.</p>
+
+<h2>Cash flow (₹ crore)</h2>
+<div class="tw"><table>
+<tr><th>Cash flow</th><th>FY24</th><th>FY25</th><th>FY26</th><th class="l">Driver in FY26</th></tr>
+<tr><td>Operating (CFO)</td><td>684</td><td>2,102</td><td class="dn">−2,891</td><td class="l">Advance run-off: contract liabilities fell ₹5,191 cr</td></tr>
+<tr><td>Investing (CFI)</td><td>1,420</td><td>−1,299</td><td>1,209</td><td class="l">FD maturities &amp; interest, less capex</td></tr>
+<tr><td>Financing (CFF)</td><td>−449</td><td>−712</td><td>−738</td><td class="l">Dividends ₹775 cr</td></tr>
+<tr><td>Capex</td><td>−103</td><td>−743</td><td>−474†</td><td class="l">Colombo stake &amp; yard upgrades</td></tr>
+</table></div>
+<div class="card cw"><div><canvas id="cCf"></canvas></div></div>
+<p class="note">† FY26 capex differs across sources (₹64 cr vs ₹474 cr); the higher figure, from the filing-based summary, is shown.</p>
+
+<h2>Working-capital days (on standalone revenue)</h2>
+<div class="tw"><table id="wcTbl"></table></div>
+<div class="bad en"><b>Key concern:</b> Customer-advance cover fell from ~495 days to ~293 days of revenue in one year, and receivable days more than doubled. MDL is moving from a "customer-funded" to a "self-funded" position on old programmes. Without a new big-ticket advance (P75(I)), cash and other income will keep drifting lower in FY27.</div>
+<div class="bad ta"><b>முக்கிய கவலை:</b> Customer advance ஒரு வருஷத்துல ~495 நாள் revenue-ல இருந்து ~293 நாளுக்கு குறைஞ்சுடுச்சு. Receivable days double ஆயிடுச்சு. புது advance (P75(I)) வரலைனா cash-உம் other income-உம் இன்னும் குறையும்.</div>
+</section>
+
+<!-- ===================== ORDER BOOK ===================== -->
+<section class="tab" id="t-ob" data-title="Order Book">
+<h2>Order book at 30 June 2026 — ₹18,218 crore</h2>
+<div class="two">
+<div class="card"><div style="height:330px"><canvas id="cOb"></canvas></div></div>
+<div class="tw"><table>
+<tr><th>Programme</th><th>₹ crore</th><th>Share</th><th class="l">Status</th></tr>
+<tr><td>P17A stealth frigates</td><td>7,587</td><td>41.6%</td><td class="l">All 4 MDL ships delivered — balance is pending work/spares</td></tr>
+<tr><td>ONGC projects</td><td>2,774</td><td>15.2%</td><td class="l">Executing</td></tr>
+<tr><td>Coast Guard (21 ships)</td><td>2,649</td><td>14.5%</td><td class="l">Executing</td></tr>
+<tr><td>AIP submarine work</td><td>1,542</td><td>8.5%</td><td class="l">Executing</td></tr>
+<tr><td>Multi-purpose vessels</td><td>695</td><td>3.8%</td><td class="l">Executing</td></tr>
+<tr><td>Submarine refit / life-cycle</td><td>492</td><td>2.7%</td><td class="l">Recurring</td></tr>
+<tr><td>P15B destroyers</td><td>283</td><td>1.6%</td><td class="l">All delivered — residual</td></tr>
+<tr><td>Others / balance</td><td>2,196</td><td>12.1%</td><td class="l">Incl. SCI methanol vessel (₹365 cr)</td></tr>
+<tr class="hl"><td>Total</td><td>18,218</td><td>100%</td><td></td></tr>
+</table></div>
+</div>
+
+<h2>Order-book trend</h2>
+<div class="tw"><table>
+<tr><th>Date</th><th>Order book (₹ cr)</th><th class="l">Comment</th></tr>
+<tr><td>31 Mar 2024</td><td>38,561</td><td class="l">Peak of P15B/P17A execution</td></tr>
+<tr><td>30 Sep 2025</td><td>27,415</td><td class="l">Run-off continues</td></tr>
+<tr class="hl"><td>30 Jun 2026</td><td>18,218</td><td class="l">~1.4x FY26 revenue; ~1.2x FY27E revenue</td></tr>
+<tr><td>FY27 target</td><td>1,00,000</td><td class="l">Needs ~₹82,000 cr of inflows this year</td></tr>
+</table></div>
+
+<h2>Pipeline — ₹3 lakh crore+ of opportunities</h2>
+<div class="tw"><table>
+<tr><th>Opportunity</th><th>Value (₹ cr)</th><th class="l">Nature</th><th class="l">Timing</th><th>Win probability</th></tr>
+<tr><td>P75(I) — 6 AIP submarines with TKMS</td><td>70,000–90,000</td><td class="l">Nomination-style, negotiations near complete</td><td class="l">CCS approval awaited; FY27</td><td class="up">High</td></tr>
+<tr><td>3 additional Kalvari-class subs</td><td>~36,000†</td><td class="l">Repeat order</td><td class="l">Discussions continue</td><td class="fl">Medium</td></tr>
+<tr><td>P17B frigates (17 ships, split)</td><td>~70,000</td><td class="l">Competitive bid (vs GRSE and others)</td><td class="l">Bidding</td><td class="fl">Medium (share)</td></tr>
+<tr><td>Landing Platform Docks (with Swan Defence)</td><td>~40,000</td><td class="l">Competitive, joint bid</td><td class="l">Bidding</td><td class="fl">Medium–Low</td></tr>
+<tr><td>Mine Counter Measure Vessels</td><td>~40,000</td><td class="l">Competitive</td><td class="l">Bidding</td><td class="fl">Medium–Low</td></tr>
+<tr><td>P15C destroyers</td><td>~48,000</td><td class="l">MDL is the incumbent destroyer yard</td><td class="l">FY27–28</td><td class="up">Medium–High</td></tr>
+</table></div>
+<p class="note">† Value of three additional Kalvari boats is a media estimate; one report puts P75(I) plus the three boats at ₹1.3–1.4 lakh crore combined.</p>
+
+<div class="card cw"><div><canvas id="cPipe"></canvas></div></div>
+
+<h2>Revenue visibility math</h2>
+<div class="tw"><table>
+<tr><th>Item</th><th>₹ crore</th></tr>
+<tr><td>FY26 consolidated revenue (sum of quarters)</td><td>~13,006</td></tr>
+<tr><td>FY27E revenue at 16% guided growth</td><td>~15,090</td></tr>
+<tr><td>Order book, 30 Jun 2026</td><td>18,218</td></tr>
+<tr><td>Less: Q2–Q4 FY27E revenue from backlog (~12,150)</td><td>≈ 6,070 left for FY28</td></tr>
+<tr class="hl"><td>FY28 revenue need at ~15% growth</td><td>~17,350</td></tr>
+</table></div>
+<div class="note">Without new orders, FY28 revenue would fall sharply. P75(I) early years are design/ToT-heavy, so the order fills the book immediately but converts to revenue slowly (first boat typically ~6–7 years after contract). The quicker revenue fillers are the repeat Kalvari boats and surface ships.</div>
+</section>
+
+<!-- ===================== VALUATION & MARKET ===================== -->
+<section class="tab" id="t-val" data-title="Valuation &amp; Market">
+<h2>Valuation</h2>
+<div class="tw"><table>
+<tr><th>Metric</th><th>Value</th><th class="l">Basis</th></tr>
+<tr><td>Share price</td><td>₹2,087.10</td><td class="l">29 Sep 2026</td></tr>
+<tr><td>52-week high / low</td><td>₹2,993.30 / ₹2,057.40</td><td class="l">Exchange data; notes cite ₹2,930 (Oct 2025)</td></tr>
+<tr><td>Fall from high</td><td>−28.8% to −30.3%</td><td class="l">vs ₹2,930 / ₹2,993</td></tr>
+<tr><td>Market cap</td><td>₹86,243 cr</td><td class="l"></td></tr>
+<tr><td>Enterprise value</td><td>~₹73,146 cr</td><td class="l">Mcap less ₹13,097 cr cash + FDs</td></tr>
+<tr><td>P/E (TTM)</td><td>~30.2x</td><td class="l">TTM EPS ~₹66–69</td></tr>
+<tr><td>P/E (FY28E)</td><td>~25x</td><td class="l">Implies FY28E EPS ≈ ₹83.5 (14% CAGR from FY26 ₹64.04)</td></tr>
+<tr><td>P/B</td><td>~8.2x–8.6x</td><td class="l">On ₹10,504 cr (Q1) / ₹9,984 cr (Mar-26) net worth</td></tr>
+<tr><td>Dividend yield</td><td>~0.9%</td><td class="l">FY26 DPS ₹18.12</td></tr>
+<tr><td>Mcap / order book</td><td>4.7x</td><td class="l">High; falls to ~0.9x if book reaches ₹1 lakh cr</td></tr>
+</table></div>
+
+<h2>Shareholding (June 2026)</h2>
+<div class="two">
+<div class="card"><div style="height:280px"><canvas id="cSh"></canvas></div></div>
+<div class="card"><ul>
+<li>Government of India (promoter): 81.22%</li><li>Public/retail: 12.04%</li><li>DIIs: 5.01%</li><li>FIIs: 1.72%</li></ul>
+<p>Very low free float (~19%) makes the stock volatile both ways. The Government still needs to bring holding toward 75% over time — future OFS is a supply overhang.</p></div>
+</div>
+
+<h2>Why the stock fell 28–30%</h2>
+<div class="tw"><table>
+<tr><th class="l">Reason</th><th class="l">Evidence</th><th>Impact</th></tr>
+<tr><td class="l">Backlog run-off</td><td class="l">Order book ₹38,561 cr (Mar-24) → ₹27,415 cr (Sep-25) → ₹18,218 cr (Jun-26)</td><td class="dn">High</td></tr>
+<tr><td class="l">P75(I) signing delays</td><td class="l">Negotiations began Sep 2025; CCS approval still awaited</td><td class="dn">High</td></tr>
+<tr><td class="l">Profits falling sequentially</td><td class="l">Three straight quarters of decline, average −21%</td><td class="dn">Medium</td></tr>
+<tr><td class="l">Estimate cuts</td><td class="l">HDFC Securities cut target to ₹2,625; PAT CAGR FY26–29E cut to 7%</td><td class="dn">Medium</td></tr>
+<tr><td class="l">Negative operating cash flow</td><td class="l">FY26 CFO −₹2,891 cr</td><td class="fl">Medium</td></tr>
+<tr><td class="l">Defence-theme de-rating</td><td class="l">Sector valuations cooled from 2025 peaks</td><td class="fl">Medium</td></tr>
+<tr><td class="l">Thoothukudi exit</td><td class="l">29 Sep 2026: TN yard dropped over land conflict with HD Hyundai; capex plan now ₹30,000–42,000 cr</td><td class="fl">Low–Medium</td></tr>
+<tr><td class="l">Short-lived relief</td><td class="l">+1.9% to ₹2,251.90 on 18 Sep 2026 on the ₹15,000 cr shipyard plan; gave back to ₹2,087</td><td>Low</td></tr>
+</table></div>
+</section>
+
+<!-- ===================== SHIPYARD EXPANSION ===================== -->
+<section class="tab" id="t-yard" data-title="Shipyard Expansion">
+<h2>Greenfield shipyards — the Thoothukudi exit and the pivot</h2>
+<div class="bad en"><b>Headline:</b> On 29 Sep 2026 MDL formally dropped its planned Thoothukudi (Tamil Nadu) shipyard after the land parcel near V.O. Chidambaranar Port was given priority for South Korea's HD Hyundai. MDL declined the alternative sites Tamil Nadu offered and has redirected its commercial-shipbuilding plans to Dugarajapatnam (Andhra Pradesh) and Dighi (Maharashtra).</div>
+<div class="bad ta"><b>முக்கிய செய்தி:</b> 29 Sep 2026-ல MDL தூத்துக்குடி shipyard project-ஐ கைவிட்டுடுச்சு. V.O.C Port பக்கத்துல இருந்த land-ஐ Tamil Nadu அரசு HD Hyundai-க்கு priority கொடுத்துச்சு. வேற இடம் offer பண்ணாங்க, ஆனா MDL வேண்டாம்னு சொல்லிட்டு Andhra (Dugarajapatnam), Maharashtra (Dighi) பக்கம் திரும்பிடுச்சு.</div>
+
+<h3>Timeline</h3>
+<div class="tw"><table>
+<tr><th>When</th><th class="l">Event</th></tr>
+<tr><td>Sep 2025</td><td class="l">MoU with Tamil Nadu for a ₹15,000–18,000 cr greenfield yard at Thoothukudi (large crude carriers, commercial vessels) under Maritime Amrit Kaal Vision 2047</td></tr>
+<tr><td>Late 2025 – 2026</td><td class="l">Tamil Nadu signs a separate, larger shipyard deal with HD Hyundai; the same land parcel is prioritised for it</td></tr>
+<tr><td>2026</td><td class="l">New central shipbuilding-cluster guidelines require competitive bidding through an SPV — the nomination-style MoU route no longer works as planned</td></tr>
+<tr><td>Jun 2026</td><td class="l">Project reported stalled; Andhra Pradesh offers Dugarajapatnam with MDL as anchor investor (cluster ~₹29,000 cr)</td></tr>
+<tr><td>18 Sep 2026</td><td class="l">Director (Finance) confirms up to ₹15,000 cr for the Maharashtra yard; stock +1.9%</td></tr>
+<tr class="hl"><td>29 Sep 2026</td><td class="l">MDL formally exits Thoothukudi; ₹15,000 cr AP agreement finalised; Dighi cluster ~₹27,000 cr under development</td></tr>
+</table></div>
+
+<h3>What went wrong in Tamil Nadu</h3>
+<div class="tw"><table>
+<tr><th class="l">Problem</th><th class="l">Detail</th><th>Impact on MDL</th></tr>
+<tr><td class="l">Land conflict</td><td class="l">Waterfront parcel near VOC Port allotted in priority to HD Hyundai's bigger project</td><td class="dn">Project unviable at that site</td></tr>
+<tr><td class="l">Competing anchor</td><td class="l">State chose a global commercial shipbuilder over a defence PSU for its flagship cluster</td><td class="fl">Lost first-mover slot in TN</td></tr>
+<tr><td class="l">Policy change</td><td class="l">SPV-based competitive bidding under new cluster guidelines</td><td class="fl">Slower, more uncertain allotment</td></tr>
+<tr><td class="l">Alternative sites</td><td class="l">Tamil Nadu offered other locations in the state; MDL did not pursue them</td><td class="fl">MDL chose to exit</td></tr>
+<tr><td class="l">Time lost</td><td class="l">~12 months from MoU to exit</td><td class="fl">Commercial-shipbuilding entry pushed back</td></tr>
+</table></div>
+
+<h3>New plan — numbers to reconcile</h3>
+<div class="tw"><table>
+<tr><th>Site</th><th>Investment reported (₹ cr)</th><th class="l">Status</th><th class="l">Note</th></tr>
+<tr><td>Dugarajapatnam, AP (Tirupati dist.)</td><td>15,000 (MDL agreement) / ~29,000 (full cluster)</td><td class="l">Agreement finalised</td><td class="l">Cluster funding: MDL ~₹23,964 cr, State + Visakhapatnam Port ~₹5,289 cr; 1.2 million tonnes/yr target; ~45,000 jobs</td></tr>
+<tr><td>Dighi, Maharashtra</td><td>15,000 (FD statement) / ~27,000 (cluster)</td><td class="l">Pre-DPR; board &amp; Govt approvals pending</td><td class="l">5–7 year build-out; external investors expected</td></tr>
+<tr class="hl"><td>Total</td><td>30,000 – 42,000+</td><td class="l"></td><td class="l">≈ 2.3x–3.2x MDL's ₹13,097 cr cash + FDs</td></tr>
+</table></div>
+<p class="note">Reported figures differ depending on whether they refer to MDL's own share or the whole cluster. Treat the MDL-share number as unconfirmed until board-approved DPRs are filed.</p>
+
+<h3>Investor implications</h3>
+<div class="card en"><ul>
+<li><b>Capital allocation risk rises.</b> ₹30,000–42,000 cr of yard capex against ₹13,097 cr of cash means either external partners, debt (MDL is debt-free today) or lower dividends. Any cash moved to capex also cuts other income (~40% of pre-tax earnings).</li>
+<li><b>Returns are lower and slower.</b> Commercial shipbuilding is a low-margin, globally competitive business (Korea, China, Japan). The guided 15–17% project return is a target, not a track record; payback is beyond FY32.</li>
+<li><b>Execution credibility.</b> Losing the Tamil Nadu site to a private rival shows that state land and policy, not MDL, set the pace. The same risk (land, environment clearances, SPV bidding) applies in AP and Maharashtra.</li>
+<li><b>Not a near-term earnings driver.</b> None of this changes FY27–FY29 numbers; the stock still hinges on P75(I) and Navy orders.</li>
+<li><b>Small positive:</b> exiting early avoided sinking money into a contested site, and AP offers state co-funding and a deep-water port.</li>
+</ul></div>
+<div class="card ta"><ul>
+<li><b>Capital risk அதிகம்:</b> ₹30,000–42,000 cr capex, ஆனா cash ₹13,097 cr தான். Partner, கடன், இல்லைன்னா dividend குறைப்பு — ஏதாவது ஒன்னு தேவைப்படும். Cash capex-க்கு போனா other income-உம் குறையும்.</li>
+<li><b>Commercial ship margin கம்மி:</b> Korea, China கூட போட்டி. 15–17% return target தான், இன்னும் நிரூபிக்கல.</li>
+<li><b>Execution:</b> தமிழ்நாட்டுல land-ஐ private company-கிட்ட இழந்தது — AP, Maharashtra-லயும் இதே மாதிரி land, clearance risk இருக்கு.</li>
+<li><b>இப்போதைக்கு earnings-ஐ பாதிக்காது:</b> stock இன்னும் P75(I) மேல தான் depend பண்ணுது.</li>
+</ul></div>
+</section>
+
+<!-- ===================== SWOT & RISKS ===================== -->
+<section class="tab" id="t-risk" data-title="SWOT &amp; Risks">
+<h2>SWOT</h2>
+<div class="two">
+<div class="good"><b>Strengths</b><ul><li>Only Indian yard with conventional submarine build record</li><li>Zero debt, ₹13,097 cr cash + FDs</li><li>Margin expansion: 15.2% EBITDA</li><li>Capacity for 11 subs + 10 warships concurrently</li></ul></div>
+<div class="bad"><b>Weaknesses</b><ul><li>Order book down to ₹18,218 cr, ~1.2x FY27E revenue</li><li>~40% of pre-tax earnings from other income</li><li>Single customer (MoD) concentration</li><li>Lumpy quarterly margins; FY26 negative CFO</li></ul></div>
+<div class="good"><b>Opportunities</b><ul><li>P75(I) ₹70,000–90,000 cr + 3 Kalvari boats</li><li>P15C, P17B, LPD, MCMV — ₹2 lakh cr+ surface pipeline</li><li>Commercial shipbuilding via Dighi/Dugarajapatnam</li><li>Exports and Colombo Dockyard regional play</li></ul></div>
+<div class="bad"><b>Threats</b><ul><li>Contract timing slippage (CCS approvals)</li><li>Competition from GRSE, Cochin Shipyard, L&amp;T, private yards</li><li>ToT execution risk with TKMS; cost overruns on fixed-price work</li><li>Government OFS supply; falling interest rates</li><li>State land/policy risk — Thoothukudi site lost to HD Hyundai</li></ul></div>
+</div>
+
+<h2>Risk factors</h2>
+<div class="tw"><table>
+<tr><th class="l">Risk</th><th class="l">Description</th><th>Severity</th><th>Probability</th></tr>
+<tr><td class="l">Order-inflow timing</td><td class="l">If P75(I) slips to FY28, the ₹1 lakh cr target is missed and FY28 revenue falls</td><td class="dn">High</td><td class="fl">Medium</td></tr>
+<tr><td class="l">Revenue air-pocket</td><td class="l">Only ~₹6,000 cr of backlog left for FY28 on current book</td><td class="dn">High</td><td class="fl">Medium</td></tr>
+<tr><td class="l">Other-income erosion</td><td class="l">Cash drawdown + rate cuts reduce treasury income (~40% of pre-tax)</td><td class="fl">Medium</td><td class="dn">High</td></tr>
+<tr><td class="l">Slow P75(I) revenue ramp</td><td class="l">Design/ToT phase yields low revenue in years 1–3</td><td class="fl">Medium</td><td class="dn">High</td></tr>
+<tr><td class="l">Competitive-bid losses</td><td class="l">P17B, LPD, MCMV are open tenders — margins lower than nomination</td><td class="fl">Medium</td><td class="fl">Medium</td></tr>
+<tr><td class="l">Greenfield capex</td><td class="l">₹30,000–42,000 cr across AP &amp; Maharashtra yards after the Thoothukudi exit (land lost to HD Hyundai); low-margin commercial shipbuilding, 5–7 yr gestation</td><td class="fl">Medium</td><td class="fl">Medium</td></tr>
+<tr><td class="l">Valuation</td><td class="l">~25x FY28E already bakes in order wins</td><td class="fl">Medium</td><td class="fl">Medium</td></tr>
+<tr><td class="l">Disinvestment</td><td class="l">Government OFS at a discount caps rallies</td><td>Low</td><td class="fl">Medium</td></tr>
+</table></div>
+</section>
+
+<!-- ===================== ANALYSTS ===================== -->
+<section class="tab" id="t-an" data-title="Analysts' Rating">
+<h2>Third-party brokerage views (post Q1 FY27, early Aug 2026)</h2>
+<div class="tw"><table>
+<tr><th>Brokerage</th><th>Rating</th><th>Target (₹)</th><th>Upside vs ₹2,087</th><th class="l">Key argument</th></tr>
+<tr><td>Antique Stock Broking</td><td><span class="pill p-buy">BUY</span></td><td>3,275</td><td class="up">+56.9%</td><td class="l">In-line quarter; margins to expand with large contracts; P75(I) finalisation</td></tr>
+<tr><td>Choice Institutional Equities</td><td><span class="pill p-buy">BUY</span></td><td>3,100</td><td class="up">+48.5%</td><td class="l">"Mixed but margin-accretive"; revenue below estimate, margin beat</td></tr>
+<tr><td>HDFC Securities</td><td><span class="pill p-add">ADD</span></td><td>2,625 (from 3,000)</td><td class="up">+25.8%</td><td class="l">PAT CAGR FY26–29E cut to 7%; compressed revenue-recognition cycle</td></tr>
+</table></div>
+<div class="card cw"><div><canvas id="cTp"></canvas></div></div>
+<p class="note">Aggregated consensus: ~60% Buy, ~30% Sell. Upsides are recomputed on the 29 Sep 2026 price; brokers set targets when the stock was ₹2,087–2,204. CB Research does not issue buy/sell/hold calls — these are third-party views only.</p>
+</section>
+
+<!-- ===================== MANAGEMENT ===================== -->
+<section class="tab" id="t-mgmt" data-title="Management &amp; Board">
+<h2>Board &amp; key management</h2>
+<div class="tw"><table>
+<tr><th>Name</th><th class="l">Role</th><th class="l">Background</th></tr>
+<tr><td>Capt. Jagmohan, IN (Retd.)</td><td class="l">Chairman &amp; Managing Director (since 21 Apr 2025)</td><td class="l">Naval architect; 25 years in Navy warship design &amp; construction; earlier at Goa Shipyard and GRSE</td></tr>
+<tr><td>Shri Biju George</td><td class="l">Director (Operations)</td><td class="l">IIT Kharagpur naval architect; three decades at MDL; leads all project execution</td></tr>
+<tr><td>Cdr. Vasudev Puranik, IN (Retd.)</td><td class="l">Director (Corporate Planning &amp; Personnel)</td><td class="l">22+ years Navy; former Project Superintendent for P75 Scorpene</td></tr>
+<tr><td>Shri Ruchir Agrawal</td><td class="l">Director (Finance)</td><td class="l">Cost accountant; 31+ years oil &amp; gas; former ED (Finance), Indian Oil</td></tr>
+<tr><td>Cmde S B Jamgaonkar (Retd.)</td><td class="l">Director (Technical)</td><td class="l">29 years in Navy submarine service; heads design, R&amp;D, indigenisation</td></tr>
+<tr><td>Shri Dinesh Mahur</td><td class="l">Govt Nominee Director</td><td class="l">Additional Secretary (Defence Production), MoD</td></tr>
+<tr><td>Shri Kedar Nath Gupta</td><td class="l">Independent Director</td><td class="l">Public service since 1989</td></tr>
+<tr><td>Shri K M Ravikumar</td><td class="l">Independent Director</td><td class="l">38 years in structural fabrication</td></tr>
+</table></div>
+<div class="card"><b>Governance read:</b> A strongly technical, Navy-heavy board with deep submarine experience — well suited to P75(I) execution. The board has only two independent directors listed, which is thin for a listed company. Guidance (15–17% growth, ₹1 lakh cr book) comes largely from the Finance Director and is explicitly conditional on order wins.</div>
+</section>
+
+<!-- ===================== VERDICT ===================== -->
+<section class="tab" id="t-verdict" data-title="Verdict">
+<h2>Will the order position make this stock strong?</h2>
+<div class="card en">
+<p><b>Short answer: the current order book will not; the next one can.</b> At ₹18,218 cr, with a large slice being residual work on already-delivered frigates, today's book is a weakness — it is the main reason for the 28–30% fall. What can re-rate the stock is <b>conversion of the pipeline</b>, specifically P75(I).</p>
+<ul>
+<li><b>Signing P75(I) alone lifts the book to ~₹88,000–1,08,000 cr</b> — close to or above the ₹1 lakh cr target — and brings a large advance that rebuilds cash and other income.</li>
+<li><b>But revenue follows slowly.</b> P75(I) mainly supports FY29–FY33 revenue. FY28 earnings depend on quicker orders: the 3 Kalvari repeats, P15C and a share of P17B.</li>
+<li><b>Valuation already assumes wins.</b> At ~25x FY28E, the stock prices in P75(I). The upside case needs P75(I) plus at least one surface order; a delay beyond FY27 would likely keep the stock range-bound.</li>
+</ul>
+</div>
+<div class="card ta">
+<p><b>சுருக்கமா: இப்போ இருக்குற order book stock-ஐ strong ஆக்காது; அடுத்து வர்ற order தான் ஆக்கும்.</b> ₹18,218 cr book-ல பெரும்பகுதி ஏற்கனவே deliver ஆன frigate-களோட மீதி வேலை. Stock விழுந்ததுக்கு இதுதான் முக்கிய காரணம்.</p>
+<ul>
+<li>P75(I) sign ஆனாலே book ~₹88,000–1,08,000 cr ஆயிடும் — advance பணமும் வரும்.</li>
+<li>ஆனா revenue மெதுவா தான் வரும் — P75(I) FY29–FY33 வருமானத்துக்கு. FY28-க்கு Kalvari repeat, P15C மாதிரி orders தேவை.</li>
+<li>25x FY28E valuation-ல P75(I) already price ஆயிருக்கு. Delay ஆனா stock range-bound-ஆ இருக்க வாய்ப்பு அதிகம்.</li>
+</ul>
+</div>
+
+<h2>Scenarios (to 31 Mar 2027)</h2>
+<div class="tw"><table>
+<tr><th>Scenario</th><th class="l">What happens</th><th>Order book FY27-end</th><th class="l">Likely stock behaviour</th></tr>
+<tr><td class="up">Bull</td><td class="l">P75(I) + 3 Kalvari signed, plus P15C/P17B share</td><td>₹1.3–1.6 lakh cr</td><td class="l">Re-rating as FY28–30 earnings visibility returns and cash rebuilds</td></tr>
+<tr><td>Base</td><td class="l">P75(I) signed by Q4 FY27; others slip to FY28</td><td>~₹0.9–1.05 lakh cr</td><td class="l">Relief rally; upside capped by ~25x FY28E already priced</td></tr>
+<tr><td class="dn">Bear</td><td class="l">CCS approval slips into FY28</td><td>&lt; ₹15,000 cr</td><td class="l">FY28 revenue decline, OI erosion; further de-rating possible</td></tr>
+</table></div>
+
+<h2>What to track</h2>
+<div class="tw"><table>
+<tr><th class="l">Trigger</th><th class="l">Why it matters</th><th class="l">Watch in</th></tr>
+<tr><td class="l">CCS approval &amp; P75(I) contract signing</td><td class="l">Single biggest re-rating event</td><td class="l">Q2–Q4 FY27</td></tr>
+<tr><td class="l">Advance received on P75(I)</td><td class="l">Rebuilds cash, other income</td><td class="l">Following quarter</td></tr>
+<tr><td class="l">Q2 FY27 order book &amp; margin</td><td class="l">Tests whether 15% margin holds on a thinner book</td><td class="l">Oct–Nov 2026 results</td></tr>
+<tr><td class="l">P17B / P15C RFP outcomes</td><td class="l">Near-term revenue fillers</td><td class="l">FY27–28</td></tr>
+<tr><td class="l">Greenfield yard DPR &amp; funding</td><td class="l">Capital allocation vs dividends</td><td class="l">Board approvals</td></tr>
+</table></div>
+<p class="note">This is an analytical view for education. CB Research does not issue buy/sell/hold recommendations and is not SEBI-registered.</p>
+</section>
+
+<!-- ===================== SOCRATES ===================== -->
+<section class="tab" id="t-soc" data-title="Cauvery Socrates">
+<h2>Cauvery Socrates — test your understanding</h2>
+<div id="socBox"></div>
+<div class="card"><b>Think it through (free text):</b><p>If P75(I) is signed but first-year revenue from it is only a few hundred crore, why might the stock still rise? What would you check in the next balance sheet?</p>
+<textarea id="socTxt" style="width:100%;height:80px;border:1px solid var(--line);border-radius:6px;padding:8px"></textarea>
+<button onclick="socReply()" style="margin-top:6px;border:none;background:var(--navy);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer">Get a Socratic nudge</button>
+<div id="socOut" class="note" style="display:none;margin-top:8px"></div></div>
+</section>
+
+
+</main>
+
+<div id="cbBadge" onclick="document.getElementById('cbPop').classList.toggle('show')">CB</div>
+<div id="cbPop"><b>Prepared by CB Research (Cauvery Business Research).</b><br>For education and information only. Not investment advice; CB Research is not a SEBI-registered research analyst and issues no buy/sell/hold recommendations. Figures from exchange filings and published reports; items marked n/a or † are unverified or unreconciled. Please consult a registered adviser before investing.</div>
+
+<button id="asBtn" onclick="asToggle()">CB Assist 💬</button>
+<div id="asBox"><div style="padding:8px 10px;background:var(--navy);color:#fff;border-radius:12px 12px 0 0;font-weight:700">CB Assist <span style="float:right;cursor:pointer" onclick="asToggle()">✕</span></div>
+<div id="asLog"><div class="a">Ask me about MDL — e.g. "order book", "other income", "cash", "P75I", "risks", "valuation", "targets", "verdict". 🎤 for voice.</div></div>
+<div id="asIn"><input id="asQ" placeholder="Type a question…" onkeydown="if(event.key==='Enter')asAsk()"><button onclick="asMic()" title="Voice">🎤</button><button onclick="asAsk()">Ask</button></div></div>
+
+<script>
+var CO = {
+  name:"Mazagon Dock Shipbuilders Ltd", nse:"MAZDOCK", bse:"543237", quarter:"Q1 FY27",
+  price:2087.10, priceDate:"2026-09-29", mcap:86243, high52:2993.30, low52:2057.40,
+  q:{labels:["Q1 FY26","Q2 FY26","Q3 FY26","Q4 FY26","Q1 FY27"],
+     rev:[2625.59,2929,3601,3850.39,2942.70], oi:[323.58,270,null,283.38,313.18],
+     ebitda:[301.69,null,887,542.89,446.58], pat:[452.15,749,879.8,679.07,549.41], eps:[11.21,18.58,null,16.83,13.62]},
+  orderBook:{total:18218, items:{"P17A frigates":7587,"ONGC":2774,"Coast Guard":2649,"AIP":1542,"MPV":695,"Refit/lifecycle":492,"P15B":283,"Others":2196}},
+  cash:{cashFD:13097, cce:[3523,5285,2731], cfo:[684,2102,-2891], cfi:[1420,-1299,1209], cff:[-449,-712,-738]},
+  wc:{years:["FY25","FY26"], rev:[11432,12840], rec:[1067,2606], inv:[4537,2517], pay:[3738,4513], cl:[15494,10303]},
+  targets:[{b:"Antique",r:"BUY",t:3275},{b:"Choice",r:"BUY",t:3100},{b:"HDFC Securities",r:"ADD",t:2625}],
+  cbf26:{g:6,m:7,d:9,v:4,t:9,r:5}
+};
+var fmt=function(v,d){if(v===null||v===undefined)return "n/a";return Number(v).toLocaleString('en-IN',{minimumFractionDigits:d===undefined?2:d,maximumFractionDigits:d===undefined?2:d});};
+
+/* nav */
+(function(){var nav=document.getElementById('nav');document.querySelectorAll('section.tab').forEach(function(s,i){var b=document.createElement('button');b.innerHTML=s.getAttribute('data-title');if(i===0)b.className='active';b.onclick=function(){document.querySelectorAll('section.tab').forEach(function(x){x.classList.remove('active')});document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active')});s.classList.add('active');b.classList.add('active');window.scrollTo(0,0);};nav.appendChild(b);});})();
+function toggleLang(){document.body.classList.toggle('tamil');}
+
+/* quarterly table */
+(function(){var q=CO.q,h='<tr><th>₹ crore</th>'+q.labels.map(function(l,i){return '<th>'+l+(i===1||i===2?' †':'')+'</th>'}).join('')+'<th>YoY</th><th>QoQ</th></tr>';
+function yoy(a){var c=a[4],p=a[0];return (c!=null&&p!=null)?((c/p-1)*100):null}
+function qoq(a){var c=a[4],p=a[3];return (c!=null&&p!=null)?((c/p-1)*100):null}
+function pc(v){if(v==null)return '<td>–</td>';return '<td class="'+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(1)+'%</td>'}
+function row(n,a,hl){return '<tr'+(hl?' class="hl"':'')+'><td>'+n+'</td>'+a.map(function(v){return '<td>'+fmt(v)+'</td>'}).join('')+pc(yoy(a))+pc(qoq(a))+'</tr>'}
+var m=q.ebitda.map(function(e,i){return e==null?null:e/q.rev[i]*100});
+var mr='<tr><td>EBITDA margin %</td>'+m.map(function(v){return '<td>'+(v==null?'n/a':v.toFixed(2)+'%')+'</td>'}).join('')+'<td class="up">+369 bps</td><td class="up">+108 bps</td></tr>';
+var ti=q.rev.map(function(r,i){return q.oi[i]==null?null:r+q.oi[i]});
+h+=row('Revenue from operations',q.rev,true)+row('Other income',q.oi)+row('Total income',ti)+row('EBITDA (ex-other income)',q.ebitda,true)+mr+row('PAT',q.pat,true)+row('EPS (₹)',q.eps);
+document.getElementById('qtbl').innerHTML=h;})();
+
+/* WC table */
+(function(){var w=CO.wc,h='<tr><th>Days</th><th>FY25</th><th>FY26</th><th class="l">Signal</th></tr>';
+function d(a,i){return Math.round(a[i]/w.rev[i]*365)}
+var rows=[['Receivable days',w.rec,'Worse — Navy paying slower on delivered ships'],['Inventory days',w.inv,'Better — completed ships handed over'],['Payable days',w.pay,'Stretched suppliers'],['Customer-advance days (contract liabilities)',w.cl,'Sharp fall — advance cushion shrinking']];
+rows.forEach(function(r){h+='<tr><td>'+r[0]+'</td><td>'+d(r[1],0)+'</td><td>'+d(r[1],1)+'</td><td class="l">'+r[2]+'</td></tr>'});
+var n0=d(w.rec,0)+d(w.inv,0)-d(w.pay,0)-d(w.cl,0),n1=d(w.rec,1)+d(w.inv,1)-d(w.pay,1)-d(w.cl,1);
+h+='<tr class="hl"><td>Net working-capital days</td><td>'+n0+'</td><td>'+n1+'</td><td class="l">Still negative (customer-funded) but moving toward zero</td></tr>';
+document.getElementById('wcTbl').innerHTML=h;})();
+
+/* charts */
+function initCharts(){if(typeof Chart==='undefined')return;
+Chart.defaults.font.family='"Segoe UI",Arial,sans-serif';
+var lbl={id:'lbl',afterDatasetsDraw:function(c){var x=c.ctx;x.save();x.font='600 11px Segoe UI,Arial';x.fillStyle='#14213d';x.textAlign='center';c.data.datasets.forEach(function(ds,i){if(ds.type==='line'&&!ds.showLbl)return;var m=c.getDatasetMeta(i);if(m.hidden)return;m.data.forEach(function(el,j){var v=ds.data[j];if(v==null)return;x.fillText(ds.pct?v.toFixed(1)+'%':fmt(v,0),el.x,el.y-(v<0?-14:6));});});x.restore();}};
+var q=CO.q;
+new Chart(cRev,{type:'bar',data:{labels:q.labels,datasets:[{label:'Revenue (₹ cr)',data:q.rev,backgroundColor:'#0a7ea4'},{label:'PAT (₹ cr)',data:q.pat,backgroundColor:'#0f9d8a'}]},options:{maintainAspectRatio:false,plugins:{title:{display:true,text:'Revenue & PAT — last 5 quarters'}},scales:{y:{ticks:{callback:function(v){return fmt(v,0)}}}}},plugins:[lbl]});
+var mg=q.ebitda.map(function(e,i){return e==null?null:+(e/q.rev[i]*100).toFixed(2)});
+new Chart(cEb,{data:{labels:q.labels,datasets:[{type:'bar',label:'EBITDA ex-OI (₹ cr)',data:q.ebitda,backgroundColor:'#0b3d91',yAxisID:'y'},{type:'line',label:'EBITDA margin %',data:mg,borderColor:'#d98a00',backgroundColor:'#d98a00',yAxisID:'y1',spanGaps:true,showLbl:true,pct:true}]},options:{maintainAspectRatio:false,plugins:{title:{display:true,text:'EBITDA (absolute) & margin'}},scales:{y:{ticks:{callback:function(v){return fmt(v,0)}}},y1:{position:'right',grid:{display:false},ticks:{callback:function(v){return v+'%'}}}}},plugins:[lbl]});
+new Chart(cOi,{type:'bar',data:{labels:['Q1 FY26','Q4 FY26','Q1 FY27'],datasets:[{label:'EBITDA ex-OI',data:[301.69,542.89,446.58],backgroundColor:'#0b3d91'},{label:'Other income',data:[323.58,283.38,313.18],backgroundColor:'#d98a00'}]},options:{maintainAspectRatio:false,plugins:{title:{display:true,text:'Operating EBITDA vs other income (₹ cr)'}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fmt(v,0)}}}}},plugins:[lbl]});
+new Chart(cCf,{type:'bar',data:{labels:['FY24','FY25','FY26'],datasets:[{label:'Operating CF',data:CO.cash.cfo,backgroundColor:'#0f9d8a'},{label:'Investing CF',data:CO.cash.cfi,backgroundColor:'#0a7ea4'},{label:'Financing CF',data:CO.cash.cff,backgroundColor:'#c0392b'}]},options:{maintainAspectRatio:false,plugins:{title:{display:true,text:'Cash flows (₹ cr)'}},scales:{y:{ticks:{callback:function(v){return fmt(v,0)}}}}},plugins:[lbl]});
+var ob=CO.orderBook.items;
+new Chart(cOb,{type:'doughnut',data:{labels:Object.keys(ob),datasets:[{data:Object.values(ob),backgroundColor:['#0b3d91','#0a7ea4','#0f9d8a','#1e8e3e','#d98a00','#8e44ad','#7f8c8d','#bdc3c7']}]},options:{maintainAspectRatio:false,plugins:{title:{display:true,text:'Order book mix (₹ cr)'},legend:{position:'right'},tooltip:{callbacks:{label:function(c){return c.label+': ₹'+fmt(c.raw,0)+' cr'}}}}}});
+new Chart(cPipe,{type:'bar',data:{labels:['Current book','P75(I)','3 Kalvari†','P17B','P15C','LPD','MCMV'],datasets:[{label:'₹ crore',data:[18218,70000,36000,70000,48000,40000,40000],backgroundColor:['#7f8c8d','#0b3d91','#0a7ea4','#0f9d8a','#1e8e3e','#d98a00','#d98a00']}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Current order book vs pipeline opportunities (₹ cr, P75(I) at lower end)'}},scales:{y:{ticks:{callback:function(v){return fmt(v,0)}}}}},plugins:[lbl]});
+new Chart(cSh,{type:'pie',data:{labels:['Government of India','Public','DIIs','FIIs'],datasets:[{data:[81.22,12.04,5.01,1.72],backgroundColor:['#0b3d91','#0a7ea4','#0f9d8a','#d98a00']}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'right'},tooltip:{callbacks:{label:function(c){return c.label+': '+c.raw+'%'}}}}}});
+new Chart(cTp,{type:'bar',data:{labels:['CMP (29 Sep 26)','HDFC Sec (ADD)','Choice (BUY)','Antique (BUY)','52-wk high'],datasets:[{label:'₹ per share',data:[2087,2625,3100,3275,2993],backgroundColor:['#7f8c8d','#d98a00','#1e8e3e','#1e8e3e','#0b3d91']}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Target prices vs current price (₹)'}},scales:{y:{min:0,ticks:{callback:function(v){return fmt(v,0)}}}}},plugins:[lbl]});
+}
+window.addEventListener('load',initCharts);
+
+/* CB Assist */
+function asToggle(){var b=document.getElementById('asBox');b.style.display=b.style.display==='flex'?'none':'flex';}
+var KB=[
+[['order','book','backlog'],'Order book was ₹18,218 cr at 30 Jun 2026 — about 1.4x FY26 revenue. P17A (₹7,587 cr) is the largest item, but all four MDL frigates are delivered, so much of it is residual work. Management targets ₹1 lakh cr by FY27-end.'],
+[['p75','p75i','submarine','tkms'],'P75(I): six AIP conventional submarines with Germany\'s TKMS, valued ₹70,000–90,000 cr. Negotiations are near complete; CCS approval awaited. It would take the book to ~₹88,000–1,08,000 cr, but revenue ramps slowly (first boat ~6–7 years).'],
+[['other income','treasury','interest'],'Other income was ₹313.18 cr in Q1 FY27 — ~41% of EBITDA including other income. It comes mainly from interest on ₹13,097 cr cash + FDs.'],
+[['cash','fd','liquidity','debt'],'Cash + FDs ₹13,097 cr at 31 Mar 2026; zero debt. Cash & equivalents fell 48% to ₹2,731 cr as customer advances (contract liabilities) dropped from ₹15,494 cr to ₹10,303 cr. FY26 operating cash flow was −₹2,891 cr.'],
+[['working capital','receivable','inventory','days'],'Receivable days rose from ~34 to ~74; inventory days fell from ~145 to ~72; customer-advance days fell from ~495 to ~293. Net working capital is still negative (customer-funded) but moving toward zero.'],
+[['revenue','ebitda','margin','profit','pat','result'],'Q1 FY27: revenue ₹2,942.70 cr (+12.1% YoY), EBITDA ₹446.58 cr (+48%, 15.18% margin), PAT ₹549.41 cr (+21.5%). QoQ, revenue fell 23.6% and PAT 19.1%.'],
+[['valuation','pe','p/e','expensive','price'],'At ₹2,087 the stock trades ~30x TTM, ~25x FY28E earnings and ~8.6x book. Market cap ₹86,243 cr; EV ~₹73,146 cr after cash.'],
+[['target','broker','analyst','rating'],'Antique BUY ₹3,275; Choice BUY ₹3,100; HDFC Securities ADD ₹2,625 (cut from ₹3,000). These are third-party views, not CB Research calls.'],
+[['risk','threat','concern'],'Main risks: P75(I) slipping into FY28, a revenue air-pocket in FY28, other-income erosion, competitive-bid losses on P17B/LPD/MCMV, greenfield capex, and government OFS supply.'],
+[['verdict','strong','buy','should'],'The current ₹18,218 cr book will not make the stock strong; conversion of P75(I) (and ideally a surface order) can. The ~25x FY28E valuation already assumes wins, so timing matters. CB Research gives no buy/sell calls.'],
+[['fall','correct','down','why'],'The 28–30% fall reflects backlog run-off (₹38,561 cr → ₹18,218 cr), P75(I) delays, three quarters of sequential profit declines, estimate cuts, and negative FY26 operating cash flow.'],
+[['shipyard','dighi','capex','greenfield','commercial','thoothukudi','tuticorin','tamil nadu','hyundai','andhra'],'MDL dropped its ₹15,000–18,000 cr Thoothukudi yard on 29 Sep 2026 after the land near VOC Port was prioritised for HD Hyundai. It has pivoted to Dugarajapatnam, AP (₹15,000 cr agreement; ~₹29,000 cr cluster) and Dighi, Maharashtra (~₹27,000 cr cluster) — ₹30,000–42,000 cr in total, targeting 15–17% returns over 5–7 years.'],
+[['management','board','cmd','director'],'CMD: Capt. Jagmohan (Retd.), naval architect, since Apr 2025. Director (Finance): Ruchir Agrawal. Director (Operations): Biju George. Director (Technical): Cmde S B Jamgaonkar (Retd.).'],
+[['colombo','subsidiary','goa'],'MDL holds 51% in Colombo Dockyard (Sri Lanka) — adds ~₹170 cr quarterly revenue. It also holds an equity-accounted stake in Goa Shipyard.'],
+[['pipeline','p17b','p15c','lpd','mcmv','kalvari'],'Pipeline: P75(I) ₹70,000–90,000 cr; 3 more Kalvari ~₹36,000 cr†; P17B ~₹70,000 cr; P15C ~₹48,000 cr; LPD ~₹40,000 cr (with Swan Defence); MCMV ~₹40,000 cr.']];
+function asAnswer(q){q=q.toLowerCase();var best=null,sc=0;KB.forEach(function(k){var s=0;k[0].forEach(function(w){if(q.indexOf(w)>-1)s++});if(s>sc){sc=s;best=k[1]}});
+if(/rank|compare|largest|biggest/.test(q)&&/order|pipeline/.test(q))best='Ranking by value: P75(I) (₹70,000–90,000 cr) ≈ P17B (~₹70,000 cr) > P15C (~₹48,000 cr) > LPD ≈ MCMV (~₹40,000 cr) > 3 Kalvari (~₹36,000 cr†) > current book (₹18,218 cr).';
+return best||'Try: order book, P75I, other income, cash, working capital, valuation, targets, risks, verdict, pipeline.';}
+function asAsk(){var i=document.getElementById('asQ'),q=i.value.trim();if(!q)return;var l=document.getElementById('asLog'),a=asAnswer(q);l.innerHTML+='<div class="q">'+q.replace(/</g,'&lt;')+'</div><div class="a">'+a+'</div>';l.scrollTop=l.scrollHeight;i.value='';try{if(window.speechSynthesis){var u=new SpeechSynthesisUtterance(a.replace(/₹/g,'rupees ').replace(/†/g,''));u.lang='en-IN';speechSynthesis.cancel();speechSynthesis.speak(u);}}catch(e){}}
+function asMic(){var R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert('Voice input not supported in this browser.');return;}var r=new R();r.lang='en-IN';r.onresult=function(e){document.getElementById('asQ').value=e.results[0][0].transcript;asAsk();};r.start();}
+
+/* Socrates */
+var SQ=[
+{q:'Q1 FY27 operating EBITDA grew 48% but PAT grew only ~22%. What best explains the gap?',o:['Higher interest cost','Other income was flat/lower, so it diluted growth at the PAT level','A big one-off tax refund','Share buyback'],a:1,e:'MDL has no debt. Other income (₹313 cr) was down 3% YoY; since it is ~40% of pre-tax earnings, flat OI dilutes the EBITDA surge.'},
+{q:'Why did MDL report negative operating cash flow in FY26 despite record profits?',o:['Losses on P17A','Customer advances (contract liabilities) were consumed as old programmes neared completion','Huge debt repayment','Dividend payout'],a:1,e:'Contract liabilities fell ₹5,191 cr — the advance-funded model reverses when backlog runs off. Dividends sit in financing, not operating, cash flow.'},
+{q:'If P75(I) is signed this year, which line is likely to benefit FIRST?',o:['Revenue from P75(I) submarines','Order book and other income (via advance)','Depreciation','Employee cost'],a:1,e:'Signing lifts the order book immediately and the mobilisation advance boosts cash and interest income; build revenue comes later.'},
+{q:'The order book is ₹18,218 cr, of which ₹7,587 cr is P17A. Why is this a quality concern?',o:['P17A is cancelled','All MDL P17A ships are delivered, so the balance is residual work/spares with limited revenue','P17A has no margin','It is a foreign order'],a:1,e:'Delivered-ship balances convert slowly and are not a "fresh" backlog; effective visibility is lower than the headline.'}];
+(function(){var b=document.getElementById('socBox');SQ.forEach(function(s,i){var d=document.createElement('div');d.className='card mcq';d.innerHTML='<b>Q'+(i+1)+'. '+s.q+'</b>';s.o.forEach(function(o,j){var bt=document.createElement('button');bt.textContent=o;bt.onclick=function(){bt.className=j===s.a?'ok':'no';var e=d.querySelector('.ex');if(!e){e=document.createElement('div');e.className='note ex';e.style.marginTop='6px';d.appendChild(e);}e.innerHTML=(j===s.a?'✅ Correct. ':'❌ Think again. ')+s.e;};d.appendChild(bt);});b.appendChild(d);});})();
+function socReply(){var t=document.getElementById('socTxt').value.toLowerCase(),o=document.getElementById('socOut');var msg='';
+if(t.indexOf('advance')>-1||t.indexOf('cash')>-1)msg='Good — you spotted the advance. Now ask: how much of the ₹13,097 cr cash is "owed" back as future work, and would a new advance change that ratio?';
+else if(t.indexOf('visib')>-1||t.indexOf('order')>-1)msg='Visibility is the key word. But markets pay for earnings — which years\' EPS does P75(I) really move, and is that already inside a 25x FY28 multiple?';
+else msg='Hint: think about three places the contract shows up before revenue — the order book, contract liabilities on the balance sheet, and other income. Which one would you check first?';
+o.style.display='block';o.textContent=msg;}
+</script>
+</body>
+</html>

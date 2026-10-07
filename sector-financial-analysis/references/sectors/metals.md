@@ -18,6 +18,8 @@ sense; the levers are cost, volume and mix.
 | **Integrated steel** | Owns iron ore and/or coking coal, converts to finished steel. Best margin through the cycle | Tata Steel, SAIL, JSW Steel (partially integrated) |
 | **Secondary / EAF steel** | Buys scrap or sponge iron, melts and rolls. Lower capex, lower margin, more price-exposed | Shyam Metallics, Jindal Steel & Power |
 | **Aluminium — integrated** | Bauxite → alumina → aluminium, often with captive power | NALCO, Hindalco (with Novelis downstream) |
+| **Copper — mining** | Owns the ore body; sells concentrate or integrates forward to refined metal | Hindustan Copper |
+| **Copper — custom smelting/refining** | Buys concentrate from miners, smelts and refines to metal, rod and tubes. No ore of its own | Hindalco (copper division), Vedanta (copper), Adani Enterprises (Kutch Copper) |
 | **Diversified resources** | Multiple metals and often oil & gas under one holding | Vedanta |
 
 Compare within a category. An integrated producer's 20% EBITDA margin and a secondary producer's 10% are
@@ -39,6 +41,15 @@ iron ore is more domestically available, which is why iron-ore integration is th
 **For aluminium**, the chain runs bauxite → alumina → aluminium metal, and it is enormously
 power-intensive — power is typically the largest single cost after alumina, which is why captive power
 plants matter as much as captive mines. Realisation tracks the **LME** price plus a regional premium.
+
+**For copper**, the integration axis runs through the smelter rather than the mine gate. A custom smelter
+buys concentrate and earns **TC/RC (treatment and refining charge)** — a fee the smelter is paid, per
+tonne, for converting someone else's ore into metal. That fee is set globally and can turn **negative**
+when concentrate is scarce relative to global smelting capacity — smelters then pay miners for the right
+to process their ore, inverting the usual direction of the fee. In that state the profit pool sits with
+whoever owns the ore body, not whoever runs the smelter, however large the smelter's revenue: a miner can
+out-earn a much bigger smelter on margin alone. State whether TC/RC is positive or negative for the
+period before reading a copper company's margin as management performance.
 
 **Downstream and value-added mix** is the other lever. Auto-grade, coated, and specialty products earn
 better and more stable realisations than commodity long products, so a rising value-added share
@@ -66,7 +77,9 @@ A converter. It buys ore, coal and power, sells metal, and lives on the gap. Bec
   **The most important structural disclosure in this sector.** State it as a percentage per input.
 - **Conversion cost / cost of production per tonne** — what the company controls.
 - **Capacity and capacity utilisation (%)** — installed tonnage and how hard it runs.
-- **LME price and regional premium** — the aluminium realisation driver.
+- **LME price and regional premium** — the aluminium and copper realisation driver.
+- **TC/RC (treatment and refining charge, US$/t)** — the copper smelter's fee for processing concentrate
+  it does not own. Can go negative; sign and direction matter more than the absolute level.
 - **Coking coal and iron ore prices** — the steel cost drivers; state the benchmark used.
 - **Value-added / downstream share (%)** — auto-grade, coated, specialty as a share of volume.
 - **Net debt and net debt / EBITDA** — the cycle-risk metric. Read against mid-cycle EBITDA, not peak.

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milky Mist Q1 FY27 Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#ffffff;--panel:#f7f9fc;--line:#e3e8ef;--ink:#1d2433;--mute:#5b6577;--accent:#0b6bcb;--green:#12805c;--red:#c0392b;--amber:#b7791f;--milk:#eef5ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,"Noto Sans Tamil",Arial,sans-serif;font-size:15px;line-height:1.5}
+header{padding:18px 16px 10px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#f3f8ff,#fff)}
+header h1{margin:0;font-size:22px}
+header .sub{color:var(--mute);font-size:13px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.btn{border:1px solid var(--line);background:#fff;padding:5px 12px;border-radius:16px;cursor:pointer;font-size:13px}
+.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:5}
+nav button{white-space:nowrap;border:none;background:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--mute);font-size:14px}
+nav button.active{background:var(--milk);color:var(--accent);font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:16px}
+.tab{display:none}.tab.active{display:block}
+.grid{display:grid;gap:12px}
+.k4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.k2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .l{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.kpi .v{font-size:24px;font-weight:700;margin-top:2px}
+.kpi .d{font-size:12px}
+.up{color:var(--green)}.dn{color:var(--red)}.am{color:var(--amber)}
+h2{font-size:18px;margin:6px 0 10px}
+h3{font-size:15px;margin:4px 0 8px}
+.ta{display:none;color:#3b4a63;font-size:14px;background:#fffbea;border-left:3px solid #e0b400;padding:6px 10px;border-radius:4px;margin:6px 0}
+body.tamil .ta{display:block}
+.note{font-size:12px;color:var(--mute)}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:right;white-space:nowrap}
+th{background:var(--panel);font-weight:600}
+td:first-child,th:first-child{text-align:left}
+.mono{font-family:Consolas,Menlo,monospace}
+.chartbox{position:relative;height:300px}
+.callout{background:var(--milk);border:1px solid #cfe2fb;border-radius:10px;padding:12px 14px}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600}
+.pill.g{background:#e3f6ee;color:var(--green)}.pill.r{background:#fdeceb;color:var(--red)}.pill.a{background:#fff4dd;color:var(--amber)}.pill.b{background:#e6f0fc;color:var(--accent)}
+.swot{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.swot .card h3{margin-top:0}
+.swot ul{margin:0;padding-left:18px}
+/* business model map */
+#bm svg{width:100%;height:auto;min-width:860px}
+#bm .node{cursor:pointer}
+#bm .node rect{transition:all .2s}
+#bm .node:hover rect,#bm .node.sel rect{stroke:#0b6bcb;stroke-width:3}
+#bmInfo{min-height:70px}
+/* CB badge */
+#cbBadge{position:fixed;right:18px;bottom:18px;width:52px;height:52px;border-radius:50%;background:#0b6bcb;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 4px 14px rgba(11,107,203,.35);animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.55}}
+#cbPop{position:fixed;right:18px;bottom:80px;max-width:330px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12px;color:var(--mute);display:none;z-index:51;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+#cbBadge:hover+#cbPop,#cbPop.show{display:block}
+/* CB Assist */
+#asBtn{position:fixed;right:80px;bottom:24px;background:#12805c;color:#fff;border:none;border-radius:20px;padding:9px 14px;cursor:pointer;z-index:50;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+#asBox{position:fixed;right:18px;bottom:84px;width:400px;max-width:calc(100vw - 32px);height:520px;max-height:calc(100vh - 110px);background:#fff;border:1px solid var(--line);border-radius:12px;display:none;flex-direction:column;z-index:52;box-shadow:0 8px 26px rgba(0,0,0,.15)}
+#asBox.show{display:flex}
+#asLog{flex:1;overflow-y:auto;position:relative;padding:10px;font-size:13px}
+#asLog .q{background:#e6f0fc;padding:6px 9px;border-radius:8px;margin:6px 0 6px 30px}
+#asLog .a{background:var(--panel);padding:6px 9px;border-radius:8px;margin:6px 30px 6px 0}
+#asIn{display:flex;border-top:1px solid var(--line)}
+#asIn input{flex:1;border:none;padding:10px;font-size:13px;outline:none}
+#asIn button{border:none;background:#12805c;color:#fff;padding:0 14px;cursor:pointer}
+.wm{position:fixed;left:50%;top:55%;transform:translate(-50%,-50%) rotate(-24deg);font-size:90px;font-weight:800;color:rgba(11,107,203,.035);pointer-events:none;z-index:0;white-space:nowrap}
+.score{display:flex;align-items:center;gap:8px;margin:5px 0}
+.score .bar{flex:1;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.score .bar i{display:block;height:100%;background:var(--accent)}
+.score b{width:34px;text-align:right}
+.mcq{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:10px}
+.mcq button{display:block;width:100%;text-align:left;margin:4px 0;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.mcq button.ok{background:#e3f6ee;border-color:var(--green)}.mcq button.no{background:#fdeceb;border-color:var(--red)}
+.fb{font-size:13px;margin-top:6px}
+@media(max-width:600px){header h1{font-size:18px}.kpi .v{font-size:20px}main{padding:12px}}
+</style>
+</head>
+<body>
+<div class="wm">CB Research</div>
+<header>
+  <h1>Milky Mist Dairy Food Ltd — Q1 FY27 Business &amp; Investment Analysis</h1>
+  <div class="sub">NSE: MILKYMIST · BSE &amp; NSE listed 18 Aug 2026 · Quarter ended 30 Jun 2026 · Results declared 31 Aug 2026 · Price data as of 01 Oct 2026 · All amounts ₹ Cr unless stated</div>
+  <div class="toolbar">
+    <button class="btn on" id="bEn" onclick="setLang('en')">English</button>
+    <button class="btn" id="bTa" onclick="setLang('ta')">+ தமிழ்</button>
+    <span class="note">† = derived from reported QoQ % change; n/a = not disclosed in available filings</span>
+  </div>
+</header>
+<nav id="nav"></nav>
+<main>
+
+<!-- OVERVIEW -->
+<section class="tab active" id="t-overview" data-name="Overview">
+  <div class="grid k4">
+    <div class="card kpi"><div class="l">Revenue Q1 FY27</div><div class="v">₹973.45 Cr</div><div class="d up">▲ 43.6% YoY · ▲ 14.6% QoQ</div></div>
+    <div class="card kpi"><div class="l">EBITDA Q1 FY27</div><div class="v">₹144.89 Cr</div><div class="d up">▲ 74.5% YoY · margin 14.88%</div></div>
+    <div class="card kpi"><div class="l">PAT Q1 FY27</div><div class="v">₹64.68 Cr</div><div class="d up">▲ 890% YoY (base ₹6.53 Cr)</div></div>
+    <div class="card kpi"><div class="l">Gross Margin</div><div class="v">34.21%</div><div class="d up">▲ 275 bps YoY</div></div>
+    <div class="card kpi"><div class="l">Share Price (01 Oct 2026)</div><div class="v">₹307.80</div><div class="d up">▲ 119.9% vs IPO ₹140</div></div>
+    <div class="card kpi"><div class="l">Market Cap</div><div class="v">₹24,196 Cr</div><div class="d">vs ₹10,778 Cr at IPO upper band</div></div>
+    <div class="card kpi"><div class="l">P/E (TTM, CB computed)</div><div class="v">130.7x</div><div class="d am">TTM PAT ₹185.16 Cr</div></div>
+    <div class="card kpi"><div class="l">DAM Capital Target</div><div class="v">₹285</div><div class="d dn">Stock now 8.0% above target</div></div>
+  </div>
+  <div class="callout" style="margin-top:14px">
+    <h3>The 30-second story</h3>
+    <p style="margin:0">Erode-based Milky Mist — India's largest private packaged-paneer brand — listed on <b>18 Aug 2026</b> at ₹165 (18% premium to the ₹140 issue price) after a 41.5x-subscribed ₹1,553 Cr IPO. Its first quarterly report as a listed company (Q1 FY27) was strong on every line: revenue +43.6%, gross margin +275 bps, EBITDA +74.5% and PAT ~10x. The stock hit consecutive upper circuits after results and has more than doubled from the issue price. The business story is now well understood by the market; the key question is valuation — at ~131x trailing earnings the stock already trades above the only published broker target.</p>
+    <div class="ta">Erode-la irundhu vandha Milky Mist — India-voda periya private paneer brand. 18 Aug 2026-la listing aachu, ₹140 IPO price-ku ₹165-la open aachu. First quarter result-e semma strong: revenue 43.6% up, profit kitta-thatta 10 madangu. Share price IPO price-ai vida double-ku mela pochu. Business nalla irukku — aana ippo valuation romba costly-a irukku, broker target ₹285-ai thaandi stock trade aagudhu.</div>
+  </div>
+  <div class="grid k2" style="margin-top:14px">
+    <div class="card"><h3>Post-listing price journey (₹)</h3><div class="chartbox"><canvas id="cPriceMini"></canvas></div></div>
+    <div class="card"><h3>CBF26 Score (CB Research framework)</h3>
+      <div id="cbf"></div>
+      <p class="note">Six-factor score: g = growth, m = margins, d = debt/balance sheet, v = valuation comfort, t = track record/governance, r = risk profile. Each out of 10. This is an analytical framework, not a buy/sell/hold recommendation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS MODEL -->
+<section class="tab" id="t-business" data-name="Business Model">
+  <h2>How Milky Mist makes money — interactive business model map</h2>
+  <p class="note">Click any box to see the details. Flow: farmer milk → collection network → single plant at Perundurai → value-added products → six sales channels → consumer.</p>
+  <div class="card tblwrap" id="bm"></div>
+  <div class="card callout" id="bmInfo" style="margin-top:10px"><b>Tip:</b> click a box above.</div>
+  <div class="ta">Simple-a sonna: 74,654 vivasaayigal kitta direct-a paal vaangi, Perundurai factory-la paneer, cheese, curd, yogurt, ice cream maadhiri value-added product-a maathi, 3.94 lakh kadai-gal, supermarket, hotel, online moolama vikkuranga. Paal vikkuradhu illa — paal-ai premium product-a maathuradhu dhaan profit-ku key.</div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>Why value-added dairy (VADP) beats liquid milk</h3>
+      <ul style="margin:0;padding-left:18px">
+        <li>Milk realisation of <b>₹77.79/litre</b> in FY26 — highest among listed dairy peers.</li>
+        <li>Paneer and curd priced 10–30% above large Indian brands.</li>
+        <li>No commoditised liquid-milk business dragging margins; FY26 EBITDA margin 13.87% vs single-digit for many milk-led peers.</li>
+        <li>Own cold-chain fleet saves roughly 18–20% vs third-party logistics (management, Q1 concall).</li>
+        <li>~1 million litres/day of cheese whey → planned whey-protein project (15–18 months away).</li>
+      </ul></div>
+    <div class="card"><h3>Market position</h3>
+      <div class="tblwrap"><table>
+        <tr><th>Category</th><th>Position</th><th>Share</th></tr>
+        <tr><td>Paneer</td><td>Largest private packaged brand, India</td><td>~19%</td></tr>
+        <tr><td>Yogurt</td><td>Top-two nationally</td><td>~13%</td></tr>
+        <tr><td>Greek yogurt</td><td>Leader</td><td>35–40%</td></tr>
+        <tr><td>Cheese</td><td>Leader in South; #3 India</td><td>~12% / ~5%</td></tr>
+        <tr><td>Curd</td><td>South India organised</td><td>~7%</td></tr>
+      </table></div>
+      <p class="note">Market-share figures come from an industry report commissioned by the company for its IPO.</p></div>
+  </div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>Q1 FY27 category sales (₹ Cr) &amp; YoY growth</h3><div class="chartbox"><canvas id="cCat"></canvas></div></div>
+    <div class="card"><h3>Q1 FY27 channel mix (%)</h3><div class="chartbox"><canvas id="cChan"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>FY26 revenue by product (₹ Cr) — FY24 → FY26</h3>
+    <div class="tblwrap"><table id="segTbl"></table></div></div>
+  <div class="card" style="margin-top:12px"><h3>Installed capacity — Perundurai plant (31 Mar 2026)</h3>
+    <div class="tblwrap"><table>
+      <tr><th>Product</th><th>Capacity / year</th><th>Product</th><th>Capacity / year</th></tr>
+      <tr><td>Paneer</td><td>70,080 MT</td><td>Set curd</td><td>1,75,200 MT</td></tr>
+      <tr><td>Mozzarella cheese</td><td>17,520 MT</td><td>Pouch curd</td><td>87,600 MT</td></tr>
+      <tr><td>Cheddar cheese</td><td>5,694 MT (+120 MT/day new line, Q1 FY27)</td><td>Ice cream</td><td>65,700 KL (29% utilised FY26)</td></tr>
+      <tr><td>Butter</td><td>21,900 MT</td><td>Ghee</td><td>17,520 MT</td></tr>
+      <tr><td>Skyr &amp; Greek yogurt</td><td>150 T/day — commissioned 11 Sep 2026 (₹40 Cr)</td><td>Yogurt</td><td>62% utilised FY26</td></tr>
+    </table></div></div>
+</section>
+
+<!-- Q1 RESULTS -->
+<section class="tab" id="t-q1" data-name="Q1 FY27 Results">
+  <h2>Q1 FY27 — quarter ended 30 June 2026</h2>
+  <div class="card tblwrap">
+    <table class="mono">
+      <tr><th>Particulars (₹ Cr)</th><th>Q1 FY27</th><th>Q4 FY26</th><th>Q1 FY26</th><th>YoY</th><th>QoQ</th></tr>
+      <tr><td>Revenue from operations</td><td>973.45</td><td>849.42†</td><td>678.09</td><td class="up">+43.6%</td><td class="up">+14.6%</td></tr>
+      <tr><td>Gross profit</td><td>333.02</td><td>n/a</td><td>213.34</td><td class="up">+56.1%</td><td>n/a</td></tr>
+      <tr><td>Gross margin</td><td>34.21%</td><td>n/a</td><td>31.46%</td><td class="up">+275 bps</td><td>n/a</td></tr>
+      <tr><td>EBITDA (incl. other income)</td><td>144.89</td><td>134.28†</td><td>83.02</td><td class="up">+74.5%</td><td class="up">+7.9%†</td></tr>
+      <tr><td>EBITDA margin</td><td>14.88%</td><td>15.81%†</td><td>12.24%</td><td class="up">+264 bps</td><td class="dn">−93 bps†</td></tr>
+      <tr><td>D&amp;A + finance cost</td><td>71.38</td><td>n/a</td><td>72.61</td><td>−1.7%</td><td>n/a</td></tr>
+      <tr><td>Profit before tax</td><td>73.51</td><td>n/a</td><td>10.41</td><td class="up">+606%</td><td>n/a</td></tr>
+      <tr><td>Tax</td><td>8.83</td><td>n/a</td><td>3.88</td><td></td><td></td></tr>
+      <tr><td>PAT</td><td>64.68</td><td>92.41†</td><td>6.53</td><td class="up">+890%</td><td class="dn">−30.0%</td></tr>
+      <tr><td>PAT margin</td><td>6.64%</td><td>10.88%†</td><td>0.96%</td><td class="up">+568 bps</td><td class="dn">−424 bps</td></tr>
+      <tr><td>EPS (₹)</td><td>1.01</td><td>n/a</td><td>0.10</td><td class="up">~10x</td><td></td></tr>
+    </table>
+    <p class="note">D&amp;A + finance cost = EBITDA − PBT (separate split not available). Q4 FY26 columns marked † are back-calculated from reported QoQ % changes, not taken from a published Q4 statement. Q4 FY26 PAT appears elevated vs. the run-rate (likely tax/one-off effects) — so the QoQ PAT decline is not a red flag on its own.</p>
+  </div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>Revenue, EBITDA &amp; PAT — absolute (₹ Cr)</h3><div class="chartbox"><canvas id="cQtr"></canvas></div></div>
+    <div class="card"><h3>Margin walk (%)</h3><div class="chartbox"><canvas id="cMarg"></canvas></div></div>
+  </div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>What drove the quarter</h3><ul style="margin:0;padding-left:18px">
+      <li><b>Volume + price:</b> ~10.5% blended price hike plus strong volumes across all categories.</li>
+      <li><b>Mix:</b> high-margin yogurt (+153%) and ice cream (+60%) grew far faster than the base — gross margin up 275 bps.</li>
+      <li><b>Operating leverage:</b> EBITDA grew 1.7x faster than revenue.</li>
+      <li><b>Below EBITDA:</b> interest + depreciation flat YoY, so almost all EBITDA gains flowed to PBT (₹10 Cr → ₹74 Cr).</li>
+      <li><b>Season:</b> Q1 (Apr–Jun) is peak season for curd, yogurt and ice cream — some of the margin is seasonal.</li>
+    </ul></div>
+    <div class="card"><h3>Management guidance &amp; commentary</h3><ul style="margin:0;padding-left:18px">
+      <li>H2 FY27 revenue expected ₹150–200 Cr higher than H1.</li>
+      <li>₹400–500 Cr investment plan to expand capacity and enter new markets.</li>
+      <li>50,000+ visi coolers/freezers over three years (41,000+ deployed).</li>
+      <li>Milk = 50–55% of input cost; pricing taken to protect margin.</li>
+      <li>IPO debt repayment (₹496.86 Cr) should cut interest cost from Q2/Q3 FY27.</li>
+    </ul></div>
+  </div>
+  <div class="ta">Indha quarter-la margin yen jaasthi aachu? Moonu kaaranam: (1) 10.5% vilai yetram, (2) yogurt, ice cream maadhiri high-margin product romba vegama valarndhuchu, (3) interest, depreciation maaradha naala EBITDA-la vandha laabam muzhusum profit-ku pochu. Aana Q1 summer season — curd, ice cream season, adhanaala oru konjam seasonal boost-um irukku.</div>
+</section>
+
+<!-- FINANCIALS -->
+<section class="tab" id="t-fin" data-name="Financials">
+  <h2>Annual financials — FY24 to FY26 (pre-IPO, audited, from RHP)</h2>
+  <div class="card tblwrap"><table class="mono" id="finTbl"></table></div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>Revenue, EBITDA &amp; PAT (₹ Cr)</h3><div class="chartbox"><canvas id="cAnn"></canvas></div></div>
+    <div class="card"><h3>Return ratios (%)</h3><div class="chartbox"><canvas id="cRet"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>Key ratio read-out</h3>
+    <div class="tblwrap"><table>
+      <tr><th>Ratio</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Read</th></tr>
+      <tr><td>Gross margin</td><td>31.21%</td><td>33.89%</td><td>32.97%</td><td style="text-align:left">Premium pricing holding; Q1 FY27 at 34.21%</td></tr>
+      <tr><td>EBITDA margin</td><td>12.21%</td><td>13.21%</td><td>13.87%</td><td style="text-align:left">Steady +80 bps a year</td></tr>
+      <tr><td>PAT margin</td><td>1.07%</td><td>1.96%</td><td>4.05%</td><td style="text-align:left">Interest was eating profits pre-IPO</td></tr>
+      <tr><td>ROE</td><td>7.14%</td><td>15.11%</td><td>32.12%</td><td style="text-align:left">Flattered by thin equity base; will dilute post-IPO</td></tr>
+      <tr><td>ROCE</td><td>8.14%</td><td>9.54%</td><td>11.73%</td><td style="text-align:left">The truer measure — still modest</td></tr>
+      <tr><td>Debt / Equity</td><td>3.68x</td><td>4.20x</td><td>3.61x</td><td style="text-align:left">High pre-IPO; falls sharply after fresh issue</td></tr>
+      <tr><td>Net debt / EBITDA</td><td>4.59x</td><td>4.37x</td><td>3.81x</td><td style="text-align:left">Improving</td></tr>
+    </table></div>
+    <p class="note">ROE of 32% sits on a pre-IPO net worth of only ₹378 Cr. With ~₹1,428 Cr of fresh equity added, ROE will reset much lower in FY27 even as profits rise — investors should track ROCE instead.</p>
+  </div>
+</section>
+
+<!-- CASH FLOW -->
+<section class="tab" id="t-cf" data-name="Cash Flow &amp; WC">
+  <h2>Cash flow &amp; working capital</h2>
+  <div class="grid k2">
+    <div class="card"><h3>Operating, investing &amp; financing cash flow (₹ Cr)</h3><div class="chartbox"><canvas id="cCF"></canvas></div></div>
+    <div class="card"><h3>Working capital days &amp; CFO/EBITDA</h3><div class="chartbox"><canvas id="cWC"></canvas></div></div>
+  </div>
+  <div class="card tblwrap" style="margin-top:12px"><table class="mono">
+    <tr><th>₹ Cr</th><th>FY24</th><th>FY25</th><th>FY26</th></tr>
+    <tr><td>Cash from operations (CFO)</td><td>140.29</td><td>314.86</td><td>301.79</td></tr>
+    <tr><td>Cash from investing (CFI)</td><td>(289.97)</td><td>(545.33)</td><td>(469.69)</td></tr>
+    <tr><td>Cash from financing (CFF)</td><td>151.98</td><td>233.13</td><td>164.48</td></tr>
+    <tr><td>Free cash flow (CFO + CFI)</td><td class="dn">(149.68)</td><td class="dn">(230.47)</td><td class="dn">(167.90)</td></tr>
+    <tr><td>CFO / EBITDA</td><td>63.1%</td><td>101.5%</td><td>69.3%</td></tr>
+    <tr><td>Working capital days</td><td>49</td><td>42</td><td>48</td></tr>
+    <tr><td>Total borrowings</td><td>1,036.72</td><td>1,376.38</td><td>1,671.85</td></tr>
+  </table></div>
+  <div class="callout" style="margin-top:12px"><b>Read:</b> Milky Mist generates healthy operating cash (~₹300 Cr a year) but has spent more than that on capacity, coolers and fleet every year, so free cash flow has been negative and the gap was funded by debt. The IPO breaks this loop: ₹496.86 Cr goes to repay debt and ₹469.24 Cr + ₹155.31 Cr fund the Perundurai expansion and coolers — so FY27–FY28 capex no longer needs fresh borrowing. Working capital of 42–49 days is reasonable for a chilled-dairy business with weekly farmer payments. Q1 FY27 cash-flow statement is not published (quarterly cash flow is only mandatory half-yearly).</div>
+  <div class="ta">Business-la operating cash nalla varudhu (varushathukku ~₹300 Cr). Aana adhai vida adhigama factory, cooler, lorry-ku selavu panninaanga — adhanaala kadan yeriduchu. IPO paNathula ₹497 Cr kadan adaikiraanga, matha paNam expansion-ku. Ini kadan vaangaama valara mudiyum.</div>
+  <div class="card" style="margin-top:12px"><h3>Use of IPO fresh issue (₹1,428 Cr)</h3><div class="chartbox" style="height:260px"><canvas id="cIPO"></canvas></div></div>
+</section>
+
+<!-- VALUATIONS -->
+<section class="tab" id="t-val" data-name="Valuations">
+  <h2>Valuation — how expensive is the stock?</h2>
+  <div class="grid k4">
+    <div class="card kpi"><div class="l">P/E on FY26 EPS</div><div class="v">190.5x</div><div class="d">₹24,196 Cr ÷ ₹127.01 Cr</div></div>
+    <div class="card kpi"><div class="l">P/E on TTM (Jul25–Jun26)</div><div class="v">130.7x</div><div class="d">TTM PAT ₹185.16 Cr</div></div>
+    <div class="card kpi"><div class="l">EV / TTM EBITDA (approx.)</div><div class="v">~51x</div><div class="d">TTM EBITDA ₹497.09 Cr</div></div>
+    <div class="card kpi"><div class="l">P/B</div><div class="v">11.1x</div><div class="d">post-IPO book</div></div>
+  </div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>P/E vs listed peers (x)</h3><div class="chartbox"><canvas id="cPeer"></canvas></div><p class="note">Peer P/E as printed in the IPO documents (Aug 2026). Milky Mist at TTM P/E using 01 Oct 2026 price.</p></div>
+    <div class="card"><h3>Peer table (FY26)</h3><div class="tblwrap"><table>
+      <tr><th>Company</th><th>Revenue ₹ Cr</th><th>P/E</th><th>ROE</th></tr>
+      <tr><td><b>Milky Mist</b></td><td>3,138.36</td><td>130.7x (TTM)</td><td>32.12%</td></tr>
+      <tr><td>Nestlé India</td><td>23,154.60</td><td>79.76x</td><td>67.85%</td></tr>
+      <tr><td>Bikaji Foods</td><td>2,993.86</td><td>62.33x</td><td>16.07%</td></tr>
+      <tr><td>Hatsun Agro</td><td>9,959.22</td><td>58.20x</td><td>18.32%</td></tr>
+      <tr><td>Britannia</td><td>19,151.59</td><td>51.98x</td><td>49.61%</td></tr>
+      <tr><td>Dodla Dairy</td><td>4,125.20</td><td>24.26x</td><td>15.95%</td></tr>
+      <tr><td>Parag Milk Foods</td><td>3,817.50</td><td>21.28x</td><td>10.73%</td></tr>
+      <tr><td>Peer average</td><td></td><td>52.56x</td><td></td></tr>
+    </table></div></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>Earnings-growth scenario — what the price already assumes</h3>
+    <p class="note">Move the sliders to test how fast PAT must grow for today's price to look reasonable at a chosen exit P/E. Starting point: FY26 PAT ₹127.01 Cr; equity ~78.6 Cr shares (from market cap ÷ price).</p>
+    <div class="grid k2">
+      <div>
+        <label>PAT CAGR FY26→FY29: <b id="gV">40</b>%</label><input type="range" id="gR" min="10" max="70" value="40" style="width:100%">
+        <label>Exit P/E on FY29 EPS: <b id="pV">50</b>x</label><input type="range" id="pR" min="25" max="90" value="50" style="width:100%">
+      </div>
+      <div class="callout" id="scOut"></div>
+    </div>
+  </div>
+  <div class="ta">Ippo stock 131 madangu earnings-la trade aagudhu — peers average 53 madangu dhaan. Adhaavadhu, adutha 3-4 varushathukku profit varushathukku 40%-ku mela valarndhaa dhaan indha vilai justify aagum. Slider-a move panni neengale test pannunga.</div>
+</section>
+
+<!-- PEER COMPARISON -->
+<section class="tab" id="t-peer" data-name="Peer Comparison">
+  <h2>Peer comparison — Milky Mist vs Dodla Dairy vs Heritage Foods</h2>
+  <div class="callout"><b>Headline:</b> on FY28 estimates, Milky Mist earns <b>74% more EBITDA than Dodla</b> (₹769 Cr vs ₹442 Cr) and more than <b>2x Heritage's</b> (₹355 Cr) on <b>slightly smaller revenue</b> — yet it trades at <b>~3.9x their P/E</b> (77.7x vs ~20x). The margin gap explains part of the premium, and the faster growth is expected to cover the rest.</div>
+  <div class="ta">FY28 estimate-la paatha, Milky Mist-oda revenue Dodla, Heritage-ai vida konjam kammi dhaan. Aana EBITDA margin 15.3% — Dodla 8.4%, Heritage 6.4% dhaan. Adhanaala profit adhigam. Aana P/E 77.7x — peers 20x. Margin 2 madangu adhigam, aana vilai 4 madangu adhigam — andha extra premium future growth-ku dhaan kodukkuraanga.</div>
+
+  <div class="card tblwrap" style="margin-top:12px"><h3>FY28E — valuation premium persists</h3>
+    <table class="mono">
+      <tr><th>FY28E</th><th>Milky Mist</th><th>Dodla Dairy</th><th>Heritage Foods</th></tr>
+      <tr><td>Revenue (₹ Cr)</td><td>5,021</td><td>5,266</td><td>5,540</td></tr>
+      <tr><td>EBITDA (₹ Cr)</td><td>769</td><td>442</td><td>355</td></tr>
+      <tr><td>EBITDA margin</td><td class="up">15.3%</td><td>8.4%</td><td>6.4%</td></tr>
+      <tr><td>PAT (₹ Cr)</td><td>315</td><td>310</td><td>185</td></tr>
+      <tr><td>PAT margin (CB computed)</td><td>6.3%</td><td>5.9%</td><td>3.3%</td></tr>
+      <tr><td>P/E (x)</td><td class="dn">77.7</td><td>19.7</td><td>20.1</td></tr>
+      <tr><td>Implied market cap (PAT × P/E, ₹ Cr)</td><td>24,476</td><td>6,107</td><td>3,719</td></tr>
+      <tr><td>Market cap per ₹1 of FY28E EBITDA (₹)</td><td>31.8</td><td>13.8</td><td>10.5</td></tr>
+      <tr><td>P/E premium vs peer avg (19.9x)</td><td class="dn">+290%</td><td>—</td><td>—</td></tr>
+    </table>
+    <p class="note">Revenue, EBITDA, margin, PAT and P/E rows are FY28 estimates from the third-party comparison table shared with this analysis. Rows marked "CB computed" or "implied" are derived from those figures. Net debt is excluded, so market cap per ₹1 of EBITDA is not a true EV/EBITDA.</p>
+  </div>
+
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>FY28E Revenue, EBITDA &amp; PAT — absolute (₹ Cr)</h3><div class="chartbox"><canvas id="cPeerAbs"></canvas></div></div>
+    <div class="card"><h3>FY28E EBITDA margin (%) vs P/E (x)</h3><div class="chartbox"><canvas id="cPeerMP"></canvas></div></div>
+  </div>
+
+  <div class="card tblwrap" style="margin-top:12px"><h3>Q1 FY27 actuals — same quarter, very different outcomes</h3>
+    <table class="mono">
+      <tr><th>Q1 FY27 (₹ Cr)</th><th>Milky Mist</th><th>Dodla Dairy</th><th>Heritage Foods</th></tr>
+      <tr><td>Revenue</td><td>973.45</td><td>1,197.90</td><td>1,338.10</td></tr>
+      <tr><td>Revenue YoY</td><td class="up">+43.6%</td><td class="up">+19.0%</td><td class="up">+17.7%</td></tr>
+      <tr><td>EBITDA</td><td>144.89</td><td>64.90</td><td>61.90</td></tr>
+      <tr><td>EBITDA YoY</td><td class="up">+74.5%</td><td class="dn">−21.3%</td><td>n/a</td></tr>
+      <tr><td>EBITDA margin</td><td class="up">14.88%</td><td>5.4%</td><td>4.6%</td></tr>
+      <tr><td>EBITDA margin change YoY</td><td class="up">+264 bps</td><td class="dn">−280 bps</td><td>n/a</td></tr>
+      <tr><td>PAT</td><td>64.68</td><td>40.60</td><td>25.20‡</td></tr>
+      <tr><td>PAT YoY</td><td class="up">+890%</td><td class="dn">−35.4%</td><td class="dn">−40%</td></tr>
+      <tr><td>Value-added share of sales</td><td>~100% (VADP-only)</td><td>~33%</td><td>44%</td></tr>
+      <tr><td>Milk procurement</td><td>~8.1 LLPD (FY26 avg)</td><td>21.1 LLPD</td><td>18.1 LLPD</td></tr>
+    </table>
+    <p class="note">‡ Heritage PAT reported as ₹25.2 Cr consolidated in one release and ₹15.0 Cr in another summary; consolidated figure used. Milky Mist procurement = 294.48 million litres in FY26 ÷ 365 (direct procurement only). Heritage EBITDA YoY was not disclosed in available summaries.</p>
+  </div>
+
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>Q1 FY27 EBITDA margin (%)</h3><div class="chartbox" style="height:260px"><canvas id="cPeerQ1"></canvas></div></div>
+    <div class="card"><h3>Why the premium — and the risk inside it</h3><ul style="margin:0;padding-left:18px">
+      <li><b>Business mix:</b> Dodla and Heritage are mainly liquid-milk sellers, while Milky Mist is almost entirely paneer, cheese, curd, yogurt and ice cream.</li>
+      <li><b>Pass-through:</b> in Q1 FY27 high milk prices squeezed Dodla (−280 bps) and Heritage, but Milky Mist widened margins (+264 bps). That is evidence of pricing power.</li>
+      <li><b>Growth gap:</b> FY26→FY28E implies a 26.5% revenue CAGR and 57.5% PAT CAGR for Milky Mist, against Dodla's 15% revenue-growth guidance.</li>
+      <li><b>PEG:</b> 77.7x ÷ 57.5% PAT CAGR ≈ <b>1.35</b>. That is reasonable only if the growth is delivered.</li>
+      <li><b>Risk:</b> at 3.9x the peer P/E, a single quarter of margin slippage could trigger a sharp de-rating. Peers are already priced for cyclical milk-cost pain.</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- MARKET ACTIVITY -->
+<section class="tab" id="t-mkt" data-name="Market Activity">
+  <h2>After listing — how the stock has moved</h2>
+  <div class="card"><h3>Price path since IPO (₹)</h3><div class="chartbox" style="height:340px"><canvas id="cPrice"></canvas></div></div>
+  <div class="card tblwrap" style="margin-top:12px"><table>
+    <tr><th>Date</th><th>Event</th><th>Price ₹</th><th>vs IPO ₹140</th><th style="text-align:left">Why it moved</th></tr>
+    <tr><td>11–13 Aug 2026</td><td>IPO</td><td>140</td><td>—</td><td style="text-align:left">Subscribed 41.52x; GMP ~₹25</td></tr>
+    <tr><td>18 Aug 2026</td><td>Listing open</td><td>165.00</td><td class="up">+17.9%</td><td style="text-align:left">Strong subscription, scarcity of listed VADP plays</td></tr>
+    <tr><td>18 Aug 2026</td><td>Listing-day close</td><td>181.50</td><td class="up">+29.6%</td><td style="text-align:left">10% upper circuit on debut</td></tr>
+    <tr><td>01 Sep 2026</td><td>Post-results</td><td>231.95</td><td class="up">+65.7%</td><td style="text-align:left">5% upper circuit on Q1 FY27 (PAT ~10x)</td></tr>
+    <tr><td>02 Sep 2026</td><td>Broker call</td><td>252.04</td><td class="up">+80.0%</td><td style="text-align:left">+8.6%; DAM Capital Buy, TP ₹285</td></tr>
+    <tr><td>03 Sep 2026</td><td>Then record high</td><td>268.75</td><td class="up">+92.0%</td><td style="text-align:left">27% gain in three sessions</td></tr>
+    <tr><td>11 Sep 2026</td><td>Skyr plant</td><td>n/a</td><td></td><td style="text-align:left">₹40 Cr Skyr/Greek yogurt line commissioned</td></tr>
+    <tr><td>25 Sep 2026</td><td>Rally</td><td>319.97</td><td class="up">+128.6%</td><td style="text-align:left">Momentum, low free float</td></tr>
+    <tr><td>Late Sep 2026</td><td>52-week high</td><td>333.15</td><td class="up">+138.0%</td><td style="text-align:left">Peak so far</td></tr>
+    <tr><td>01 Oct 2026</td><td>Latest</td><td>307.80</td><td class="up">+119.9%</td><td style="text-align:left">−7.6% off high; −2.07% on the day</td></tr>
+  </table></div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>Shareholding (Aug 2026)</h3><div class="chartbox" style="height:260px"><canvas id="cShp"></canvas></div></div>
+    <div class="card"><h3>Why the rally has been so sharp</h3><ul style="margin:0;padding-left:18px">
+      <li><b>Tiny free float:</b> promoters hold 79.51%; FIIs only 0.81% and mutual funds 2.35% — small buying moves price a lot.</li>
+      <li><b>Earnings surprise:</b> first listed quarter delivered PAT ~10x YoY.</li>
+      <li><b>Scarcity:</b> few listed pure-play value-added dairy brands.</li>
+      <li><b>Index/fund entry potential:</b> institutional holding is still low and could rise.</li>
+      <li><b>Watch:</b> pre-IPO investor and anchor lock-in expiries (30/90 days from allotment) may add supply.</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- SWOT -->
+<section class="tab" id="t-swot" data-name="SWOT">
+  <h2>SWOT</h2>
+  <div class="swot">
+    <div class="card" style="border-top:4px solid var(--green)"><h3>Strengths</h3><ul>
+      <li>#1 private packaged paneer brand (~19%), Greek yogurt leader</li>
+      <li>Pure value-added portfolio — highest milk realisation (₹77.79/L)</li>
+      <li>74,654 direct farmers, 74% direct procurement</li>
+      <li>Own cold-chain fleet (282 reefer trucks) — 18–20% logistics saving</li>
+      <li>Fastest-growing packaged food peer: 31% revenue CAGR FY24–26</li></ul></div>
+    <div class="card" style="border-top:4px solid var(--red)"><h3>Weaknesses</h3><ul>
+      <li>Single manufacturing site at Perundurai — no backup</li>
+      <li>69% of revenue from South India; 94.5% of milk from Tamil Nadu</li>
+      <li>Negative free cash flow every year FY24–26</li>
+      <li>Audit flags: inventory mismatch ₹26.45 Cr, incomplete internal audit</li>
+      <li>High attrition (29%) and falling headcount</li></ul></div>
+    <div class="card" style="border-top:4px solid var(--accent)"><h3>Opportunities</h3><ul>
+      <li>Whey protein from ~1 million L/day cheese whey</li>
+      <li>High-protein trend: Skyr, Greek yogurt, cheese</li>
+      <li>Under-used ice cream (29%) and chocolate (4%) capacity — operating leverage</li>
+      <li>Expansion into North/West India; quick-commerce channel (19% e-com)</li>
+      <li>Interest saving from ₹497 Cr debt repayment</li></ul></div>
+    <div class="card" style="border-top:4px solid var(--amber)"><h3>Threats</h3><ul>
+      <li>Milk price spikes (milk = 50–55% of costs); heat stress on cattle</li>
+      <li>Amul, Hatsun, Nestlé, Britannia pushing into premium dairy</li>
+      <li>FSSAI / food-safety incidents; adulteration risk</li>
+      <li>Contingent liabilities ₹229 Cr incl. ₹194.87 Cr EPCG exposure; GST disputes</li>
+      <li>Valuation de-rating if growth slows</li></ul></div>
+  </div>
+</section>
+
+<!-- ANALYSTS -->
+<section class="tab" id="t-ana" data-name="Analysts' Rating">
+  <h2>Analysts' Rating</h2>
+  <p class="note">Third-party broker views only, attributed to each broker. CB Research does not issue buy/sell/hold recommendations.</p>
+  <div class="card tblwrap"><table>
+    <tr><th>Broker</th><th>Date</th><th>Rating</th><th>Target ₹</th><th>vs ₹307.80</th><th style="text-align:left">Basis / rationale</th></tr>
+    <tr><td>DAM Capital</td><td>02 Sep 2026</td><td><span class="pill g">Buy</span></td><td>285</td><td class="dn">−7.4%</td><td style="text-align:left">40x FY29E EPS; 26.5% revenue CAGR FY26–29E; +226 bps EBITDA margin; raised FY27–29E EBITDA 9–16%</td></tr>
+    <tr><td>SBI Securities</td><td>Aug 2026 (IPO)</td><td><span class="pill b">Subscribe</span></td><td>—</td><td>—</td><td style="text-align:left">VADP focus = higher margin than liquid-milk peers; 84.9x FY26 P/E at upper band</td></tr>
+    <tr><td>SMIFS</td><td>Aug 2026 (IPO)</td><td><span class="pill b">Subscribe (long term)</span></td><td>—</td><td>—</td><td style="text-align:left">19% paneer share; fastest-growing packaged food peer; premium pricing</td></tr>
+    <tr><td>Consensus (MarketScreener)</td><td>Sep 2026</td><td><span class="pill g">Buy</span></td><td>285</td><td class="dn">−7.4%</td><td style="text-align:left">Only one covering analyst so far</td></tr>
+  </table></div>
+  <div class="callout" style="margin-top:12px"><b>Read:</b> coverage is thin — one formal target, now overtaken by the price. The IPO book-runners (JM Financial, Axis Capital, IIFL Capital) usually initiate coverage after the research quiet period ends; their targets will be the next sentiment trigger.</div>
+  <div class="card" style="margin-top:12px"><h3>Price vs target</h3><div class="chartbox" style="height:220px"><canvas id="cTgt"></canvas></div></div>
+</section>
+
+<!-- MANAGEMENT -->
+<section class="tab" id="t-mgmt" data-name="Management &amp; Board">
+  <h2>Management &amp; Board</h2>
+  <div class="grid k2">
+    <div class="card"><h3>Key managerial personnel</h3><div class="tblwrap"><table>
+      <tr><th>Name</th><th>Role</th><th style="text-align:left">Background</th></tr>
+      <tr><td>Sathishkumar T</td><td>Promoter, Chairman &amp; MD</td><td style="text-align:left">Founder (1998, Erode); 27 years in dairy</td></tr>
+      <tr><td>Anitha S</td><td>Promoter, Whole-time Director</td><td style="text-align:left">24 years in dairy &amp; food</td></tr>
+      <tr><td>Dr. K Rathnam</td><td>Whole-time Director &amp; CEO</td><td style="text-align:left">34 years; ex-Heinz India, Kaira District Co-op (Amul)</td></tr>
+      <tr><td>Biswajit Mishra</td><td>CFO</td><td style="text-align:left">Joined Feb 2025; 22 years finance/audit</td></tr>
+    </table></div></div>
+    <div class="card"><h3>Independent directors</h3><div class="tblwrap"><table>
+      <tr><th>Name</th><th style="text-align:left">Experience</th></tr>
+      <tr><td>Radha Venkatakrishnan</td><td style="text-align:left">35 years, banking</td></tr>
+      <tr><td>Mallika Janakiraman</td><td style="text-align:left">30 years, nutrition &amp; wellness</td></tr>
+      <tr><td>S.V. Arumugam</td><td style="text-align:left">44 years, manufacturing</td></tr>
+    </table></div></div>
+  </div>
+  <div class="grid k2" style="margin-top:12px">
+    <div class="card"><h3>Governance positives</h3><ul style="margin:0;padding-left:18px">
+      <li>Promoters sold only ₹125 Cr in OFS — 92% of IPO was fresh capital into the company.</li>
+      <li>Professional CEO with co-operative + MNC experience.</li>
+      <li>Single, US-FDA-approved, automated plant.</li></ul></div>
+    <div class="card"><h3>Governance watch-points</h3><ul style="margin:0;padding-left:18px">
+      <li>Founder-family board control (79.51% promoter holding).</li>
+      <li>CFO relatively new (Feb 2025).</li>
+      <li>Statutory audit remarks on fixed-asset reconciliation and inventory mismatches.</li>
+      <li>Market-share data from a company-commissioned report.</li></ul></div>
+  </div>
+</section>
+
+<!-- RISKS & VERDICT -->
+<section class="tab" id="t-risk" data-name="Risks &amp; Monitorables">
+  <h2>Risks &amp; what to watch next</h2>
+  <div class="card tblwrap"><table>
+    <tr><th>Risk</th><th>Severity</th><th style="text-align:left">Monitor</th></tr>
+    <tr><td>Valuation (131x TTM P/E)</td><td><span class="pill r">High</span></td><td style="text-align:left">Q2 FY27 growth vs 40%+ implied; broker initiations</td></tr>
+    <tr><td>Single plant</td><td><span class="pill r">High</span></td><td style="text-align:left">Progress on second site / expansion capex</td></tr>
+    <tr><td>Milk price inflation</td><td><span class="pill a">Medium</span></td><td style="text-align:left">Gross margin holding above 33%</td></tr>
+    <tr><td>Regional concentration</td><td><span class="pill a">Medium</span></td><td style="text-align:left">Share of non-South revenue</td></tr>
+    <tr><td>Lock-in expiry / low float</td><td><span class="pill a">Medium</span></td><td style="text-align:left">Anchor &amp; pre-IPO lock-in dates; MF holding</td></tr>
+    <tr><td>Contingent liabilities ₹229 Cr</td><td><span class="pill a">Medium</span></td><td style="text-align:left">EPCG export obligation; GST appeals</td></tr>
+    <tr><td>Seasonality</td><td><span class="pill b">Low</span></td><td style="text-align:left">Q2/Q3 margins vs Q1 summer peak</td></tr>
+  </table></div>
+  <div class="callout" style="margin-top:12px"><h3 style="margin-top:0">CB Research verdict (analytical, not advice)</h3>
+    <p style="margin:0"><b>Business:</b> high quality and accelerating — leadership in paneer and yogurt, rising gross margin, operating leverage now visible, and the IPO fixes the over-levered balance sheet. <b>Investment case:</b> the market has priced in much of this already; at ~131x trailing and ~190x FY26 earnings, the stock needs sustained 40%+ profit growth and successful expansion beyond the South to hold its rating. The next two quarters (Q2 off-season margins, interest savings, H2 guidance of +₹150–200 Cr revenue) are the proof points.</p>
+    <div class="ta">Business-a paatha: first-class, vegama valarudhu, IPO-ku apram kadan problem-um theerndhuchu. Investment-a paatha: indha nalla vishayam ellaam already share price-la serndhuduchu. Adutha 2 quarter result-la growth 40%-ku mela continue aagudha nu paakanum.</div>
+  </div>
+</section>
+
+<!-- SOCRATES -->
+<section class="tab" id="t-soc" data-name="Cauvery Socrates">
+  <h2>Cauvery Socrates — test your understanding</h2>
+  <div id="socQ"></div>
+  <div class="card" style="margin-top:12px"><h3>Think deeper (free-text)</h3>
+    <p>Milky Mist's ROE fell from 32% (FY26) to an expected lower level in FY27 even though profit is rising. Explain why in your own words.</p>
+    <textarea id="socTxt" rows="3" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:8px"></textarea>
+    <button class="btn" onclick="socCheck()">Check my reasoning</button>
+    <div class="fb" id="socFb"></div></div>
+</section>
+
+</main>
+
+<!-- CB badge & assist -->
+<div id="cbBadge" onclick="document.getElementById('cbPop').classList.toggle('show')">CB</div>
+<div id="cbPop"><b>Prepared by CB Research (Cauvery Business Research)</b> for education and information only. Not a SEBI-registered research analyst; nothing here is a recommendation to buy, sell or hold. Broker views are attributed to the respective brokers. Figures from company disclosures, RHP and exchange filings; † items are derived. Verify before investing.</div>
+<button id="asBtn" onclick="document.getElementById('asBox').classList.toggle('show')">🎤 CB Assist</button>
+<div id="asBox"><div style="padding:9px 12px;border-bottom:1px solid var(--line);font-weight:600;display:flex;justify-content:space-between;align-items:center">CB Assist — ask about Milky Mist <span><button id="asSpk" class="btn" style="padding:2px 8px" title="Spoken replies on/off" onclick="toggleSpeak()">🔊</button> <button class="btn" style="padding:2px 8px" onclick="document.getElementById('asBox').classList.remove('show')">✕</button></span></div>
+<div id="asLog"></div>
+<div id="asIn"><button id="asMic" title="Speak your question" onclick="mic()" style="background:#fff;color:#12805c;font-size:18px">🎤</button><input id="asQ" placeholder="Ask e.g. why are margins higher?" onkeydown="if(event.key==='Enter')ask()"><button onclick="ask()">Ask</button></div></div>
+
+<script>
+var CO = {
+  name:"Milky Mist Dairy Food Ltd", nse:"MILKYMIST", hq:"Perundurai, Erode, Tamil Nadu", listed:"2026-08-18", ipoPrice:140,
+  price:307.80, priceDate:"2026-10-01", mcapCr:24196, high52:333.15, low52:165.00,
+  q1fy27:{rev:973.45, gp:333.02, ebitda:144.89, pbt:73.51, pat:64.68, eps:1.01, gm:34.21, em:14.88, pm:6.64},
+  q1fy26:{rev:678.09, gp:213.34, ebitda:83.02, pbt:10.41, pat:6.53, em:12.24},
+  q4fy26_derived:{rev:849.42, ebitda:134.28, pat:92.41},
+  annual:{yrs:["FY24","FY25","FY26"], rev:[1821.61,2349.50,3138.36], gp:[568.50,796.19,1034.72], ebitda:[222.33,310.35,435.22], pat:[19.44,46.07,127.01],
+    nw:[197.05,242.77,377.99], debt:[1036.72,1376.38,1671.85], cfo:[140.29,314.86,301.79], cfi:[-289.97,-545.33,-469.69], cff:[151.98,233.13,164.48],
+    roe:[7.14,15.11,32.12], roce:[8.14,9.54,11.73], de:[3.68,4.20,3.61], ndebitda:[4.59,4.37,3.81], wcd:[49,42,48]},
+  seg:{names:["Paneer","Cheese","Curd","Ghee","Ice Cream","Yogurt","Butter","Powder","Others","UHT Products"],
+    fy24:[558.89,347.26,299.10,163.66,34.52,49.64,134.65,86.94,47.58,99.97],
+    fy25:[693.61,407.83,370.10,217.47,137.68,96.70,157.30,84.25,69.45,115.11],
+    fy26:[923.17,513.67,416.14,308.18,211.09,194.49,190.87,167.57,122.37,90.82]},
+  q1cat:{names:["Paneer","Cheese","Curd","Ice Cream","Yogurt","Others"], val:[248.29,137.12,123.79,102.25,84.52,277.48], yoy:[34,38,27,60,153,null]},
+  channel:{names:["General Trade","Modern Trade","E-commerce","HoReCa","B2B","Exports/B2C"], pct:[33,21,19,15,7,5]},
+  cbf26:{g:9, m:7, d:5, v:2, t:6, r:5}
+};
+var f = function(n,d){return Number(n).toLocaleString('en-IN',{minimumFractionDigits:d===undefined?2:d,maximumFractionDigits:d===undefined?2:d});};
+
+// tabs
+var nav=document.getElementById('nav');
+document.querySelectorAll('.tab').forEach(function(s,i){var b=document.createElement('button');b.innerHTML=s.dataset.name;if(i===0)b.className='active';
+ b.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active')});s.classList.add('active');b.classList.add('active');window.scrollTo(0,0);};nav.appendChild(b);});
+function setLang(l){document.body.classList.toggle('tamil',l==='ta');document.getElementById('bTa').classList.toggle('on',l==='ta');}
+
+// CBF26
+(function(){var lab={g:'Growth',m:'Margins',d:'Debt / balance sheet',v:'Valuation comfort',t:'Track record / governance',r:'Risk profile'},h='',tot=0;
+for(var k in CO.cbf26){tot+=CO.cbf26[k];h+='<div class="score"><span style="width:190px">'+k+' · '+lab[k]+'</span><div class="bar"><i style="width:'+CO.cbf26[k]*10+'%"></i></div><b>'+CO.cbf26[k]+'</b></div>';}
+h+='<div style="margin-top:8px;font-weight:700">Composite: '+tot+' / 60 ('+Math.round(tot/60*100)+'%)</div>';document.getElementById('cbf').innerHTML=h;})();
+
+// tables
+(function(){var a=CO.annual,h='<tr><th>₹ Cr</th>'+a.yrs.map(function(y){return '<th>'+y+'</th>'}).join('')+'<th>CAGR FY24–26</th></tr>';
+function row(n,arr,c){return '<tr><td>'+n+'</td>'+arr.map(function(v){return '<td>'+f(v)+'</td>'}).join('')+'<td>'+(c?f((Math.pow(arr[2]/arr[0],0.5)-1)*100,1)+'%':'')+'</td></tr>';}
+h+=row('Revenue from operations',a.rev,1)+row('Gross profit',a.gp,1)+row('EBITDA',a.ebitda,1)+row('PAT',a.pat,1)+row('Net worth',a.nw,1)+row('Total borrowings',a.debt,1);
+h+='<tr><td>EPS (₹)</td><td>0.30</td><td>0.72</td><td>1.98</td><td></td></tr>';document.getElementById('finTbl').innerHTML=h;
+var s=CO.seg,t='<tr><th>Product</th><th>FY24</th><th>FY25</th><th>FY26</th><th>FY26 share</th><th>CAGR</th></tr>',tot=s.fy26.reduce(function(x,y){return x+y},0);
+s.names.forEach(function(n,i){t+='<tr><td>'+n+'</td><td>'+f(s.fy24[i])+'</td><td>'+f(s.fy25[i])+'</td><td>'+f(s.fy26[i])+'</td><td>'+f(s.fy26[i]/tot*100,1)+'%</td><td>'+f((Math.pow(s.fy26[i]/s.fy24[i],0.5)-1)*100,1)+'%</td></tr>';});
+t+='<tr><th>Total</th><th>'+f(s.fy24.reduce(function(x,y){return x+y},0))+'</th><th>'+f(s.fy25.reduce(function(x,y){return x+y},0))+'</th><th>'+f(tot)+'</th><th>100%</th><th></th></tr>';document.getElementById('segTbl').innerHTML=t;})();
+
+// business model SVG
+(function(){
+var N=[
+ {id:'farm',x:10,y:150,w:140,h:70,c:'#e3f6ee',t:['74,654 farmers','25 districts · TN/AP/KA'],d:'<b>Milk sourcing.</b> 74,654 farmers within ~400 km; 74.34% direct procurement (294.48 million litres in FY26); weekly payments; vet, AI, fodder and cattle-finance support. Tamil Nadu supplies 94.51% of milk. Milk is 50–55% of input cost.'},
+ {id:'coll',x:180,y:150,w:140,h:70,c:'#e3f6ee',t:['3,907 AMCUs','29 chilling centres'],d:'<b>Collection network.</b> Automated milk collection units test fat/SNF at the village; milk is chilled at 29 centres and moved by 63 milk vans. Three-tier quality testing.'},
+ {id:'plant',x:350,y:130,w:160,h:110,c:'#e6f0fc',t:['Perundurai plant','US-FDA approved','robotic paneer lines'],d:'<b>Single integrated plant.</b> Paneer 70,080 MT, set curd 1,75,200 MT, mozzarella 17,520 MT, ice cream 65,700 KL, butter 21,900 MT, ghee 17,520 MT. New 120 MT/day cheddar line (Q1 FY27) and 150 T/day Skyr/Greek yogurt plant (Sep 2026). IPO funds ₹469.24 Cr expansion here.'},
+ {id:'prod',x:540,y:40,w:150,h:70,c:'#fff4dd',t:['Fresh: paneer, curd','yogurt, Skyr'],d:'<b>Fresh &amp; high-protein.</b> Paneer ₹248.29 Cr (+34%), curd ₹123.79 Cr (+27%), yogurt ₹84.52 Cr (+153%) in Q1 FY27. Short shelf life = cold-chain moat.'},
+ {id:'prod2',x:540,y:150,w:150,h:70,c:'#fff4dd',t:['Cheese, butter, ghee','ice cream'],d:'<b>Longer-life &amp; indulgence.</b> Cheese ₹137.12 Cr (+38%), ice cream ₹102.25 Cr (+60%) in Q1 FY27. Ice-cream capacity only 29% used in FY26 — big operating-leverage headroom.'},
+ {id:'whey',x:540,y:260,w:150,h:70,c:'#fdeceb',t:['By-product: whey','~1 million L/day'],d:'<b>Next leg: whey protein.</b> Cheese-making leaves ~1 million litres/day of whey. A whey-protein unit is expected in 15–18 months — converting waste into a premium nutrition product.'},
+ {id:'ch',x:720,y:100,w:150,h:180,c:'#f3ecfb',t:['Channels','GT 33% · MT 21%','E-com 19% · HoReCa 15%','B2B 7% · Exp/B2C 5%'],d:'<b>Distribution.</b> 4,200+ distributors, 3,94,000+ retail touch-points, 41,000+ visi-coolers (50,000+ more planned; IPO funds ₹155.31 Cr). Own fleet of 282 reefer trucks across 22 states + 5 UTs. E-commerce/quick-commerce at 19% is unusually high for dairy.<br><br><b>Glossary:</b> <b>GT</b> (General Trade) = neighbourhood kirana, bakery &amp; dairy shops via distributors · <b>MT</b> (Modern Trade) = organised supermarket chains like DMart, Reliance Smart, More · <b>E-com</b> = Blinkit, Zepto, Swiggy Instamart, BigBasket, Amazon · <b>HoReCa</b> = Hotels, Restaurants &amp; Caterers (bulk packs) · <b>B2B</b> = bulk sales to food companies/institutions (QSR chains, cloud kitchens, processors) · <b>Exp/B2C</b> = exports plus direct-to-consumer sales (own outlets/app).'},
+ {id:'cons',x:900,y:150,w:110,h:70,c:'#e3f6ee',t:['Consumer','premium price'],d:'<b>Pricing power.</b> Paneer and curd priced 10–30% above large Indian brands. Result: ₹77.79 realisation per litre of milk — highest among listed dairy peers — and 34.21% gross margin in Q1 FY27.'}
+];
+var E=[['farm','coll'],['coll','plant'],['plant','prod'],['plant','prod2'],['plant','whey'],['prod','ch'],['prod2','ch'],['ch','cons']];
+var by={};N.forEach(function(n){by[n.id]=n});
+var s='<svg viewBox="0 0 1020 350" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7a8699"/></marker></defs>';
+E.forEach(function(e){var a=by[e[0]],b=by[e[1]];s+='<line x1="'+(a.x+a.w)+'" y1="'+(a.y+a.h/2)+'" x2="'+b.x+'" y2="'+(b.y+b.h/2)+'" stroke="#7a8699" stroke-width="2" marker-end="url(#ar)"/>';});
+N.forEach(function(n){s+='<g class="node" data-id="'+n.id+'"><rect x="'+n.x+'" y="'+n.y+'" width="'+n.w+'" height="'+n.h+'" rx="10" fill="'+n.c+'" stroke="#b9c4d4"/>';
+ var y0=n.y+n.h/2-(n.t.length-1)*9;n.t.forEach(function(t,i){s+='<text x="'+(n.x+n.w/2)+'" y="'+(y0+i*18+4)+'" text-anchor="middle" font-size="'+(i===0?13:11.5)+'" font-weight="'+(i===0?700:400)+'" fill="#1d2433">'+t+'</text>';});s+='</g>';});
+s+='<text x="10" y="30" font-size="12" fill="#5b6577">Cold-chain moat: farm → plant → shelf, all chilled, all owned</text></svg>';
+document.getElementById('bm').innerHTML=s;
+document.querySelectorAll('#bm .node').forEach(function(g){g.addEventListener('click',function(){document.querySelectorAll('#bm .node').forEach(function(x){x.classList.remove('sel')});g.classList.add('sel');document.getElementById('bmInfo').innerHTML=by[g.dataset.id].d;});});
+})();
+
+// charts
+Chart.defaults.font.family='Segoe UI, Roboto, Arial';Chart.defaults.color='#5b6577';
+var C={b:'#0b6bcb',g:'#12805c',a:'#e08e0b',r:'#c0392b',p:'#7b4fc9',t:'#1aa3a3',gr:'#9aa5b5'};
+var lbl={id:'lbl',afterDatasetsDraw:function(ch){if(!ch.options.plugins.showVals)return;var x=ch.ctx;x.save();x.font='11px Segoe UI';x.fillStyle='#1d2433';x.textAlign='center';
+ ch.data.datasets.forEach(function(ds,i){if(ds.noLbl)return;if(ds.type==='line'&&!ch.options.plugins.lineVals)return;var m=ch.getDatasetMeta(i);if(m.hidden)return;m.data.forEach(function(el,j){var v=ds.data[j];if(v===null||v===undefined)return;x.fillText(f(v,ch.options.plugins.dec===undefined?2:ch.options.plugins.dec)+(ch.options.plugins.suf||''),el.x,v<0?el.y+13:el.y-5);});});x.restore();}};
+Chart.register(lbl);
+function mk(id,cfg){var el=document.getElementById(id);if(!el)return;cfg.options=cfg.options||{};cfg.options.responsive=true;cfg.options.maintainAspectRatio=false;new Chart(el,cfg);}
+var priceL=['IPO 13 Aug','List open 18 Aug','List close 18 Aug','01 Sep','02 Sep','03 Sep (high)','25 Sep','52W high','01 Oct'];
+var priceV=[140,165,181.5,231.95,252.04,268.75,319.97,333.15,307.80];
+var pcfg=function(){return{type:'line',data:{labels:priceL,datasets:[{label:'Price ₹',data:priceV,borderColor:C.b,backgroundColor:'rgba(11,107,203,.08)',fill:true,tension:.25,pointRadius:4},{label:'IPO price ₹140',data:priceV.map(function(){return 140}),borderColor:C.gr,borderDash:[5,5],pointRadius:0,noLbl:true},{label:'DAM Capital TP ₹285',data:priceV.map(function(){return 285}),borderColor:C.a,borderDash:[5,5],pointRadius:0,noLbl:true}]},options:{plugins:{showVals:true,lineVals:true}}}};
+mk('cPriceMini',pcfg());
+var big=pcfg();mk('cPrice',big);
+mk('cCat',{type:'bar',data:{labels:CO.q1cat.names,datasets:[{label:'Q1 FY27 sales ₹ Cr',data:CO.q1cat.val,backgroundColor:[C.b,C.a,C.t,C.p,C.g,C.gr]}]},options:{plugins:{showVals:true,legend:{display:false},tooltip:{callbacks:{afterLabel:function(c){var y=CO.q1cat.yoy[c.dataIndex];return y?'YoY: +'+y+'%':''}}}}}});
+mk('cChan',{type:'doughnut',data:{labels:CO.channel.names,datasets:[{data:CO.channel.pct,backgroundColor:[C.b,C.a,C.t,C.p,C.g,C.gr]}]},options:{plugins:{legend:{position:'right'}}}});
+mk('cQtr',{type:'bar',data:{labels:['Q1 FY26','Q4 FY26†','Q1 FY27'],datasets:[{label:'Revenue',data:[678.09,849.42,973.45],backgroundColor:C.b},{label:'EBITDA',data:[83.02,134.28,144.89],backgroundColor:C.g},{label:'PAT',data:[6.53,92.41,64.68],backgroundColor:C.a}]},options:{plugins:{showVals:true}}});
+mk('cMarg',{type:'bar',data:{labels:['Gross margin','EBITDA margin','PAT margin'],datasets:[{label:'Q1 FY26',data:[31.46,12.24,0.96],backgroundColor:C.gr},{label:'Q1 FY27',data:[34.21,14.88,6.64],backgroundColor:C.b}]},options:{plugins:{showVals:true,suf:'%'}}});
+var A=CO.annual;
+mk('cAnn',{type:'bar',data:{labels:A.yrs,datasets:[{label:'Revenue',data:A.rev,backgroundColor:C.b},{label:'EBITDA',data:A.ebitda,backgroundColor:C.g},{label:'PAT',data:A.pat,backgroundColor:C.a}]},options:{plugins:{showVals:true}}});
+mk('cRet',{type:'bar',data:{labels:A.yrs,datasets:[{label:'ROE %',data:A.roe,backgroundColor:C.p},{label:'ROCE %',data:A.roce,backgroundColor:C.t}]},options:{plugins:{showVals:true,suf:'%'}}});
+mk('cCF',{type:'bar',data:{labels:A.yrs,datasets:[{label:'CFO',data:A.cfo,backgroundColor:C.g},{label:'CFI',data:A.cfi,backgroundColor:C.r},{label:'CFF',data:A.cff,backgroundColor:C.b},{label:'FCF',data:A.cfo.map(function(v,i){return +(v+A.cfi[i]).toFixed(2)}),backgroundColor:C.a}]},options:{plugins:{showVals:true,dec:0}}});
+mk('cWC',{type:'bar',data:{labels:A.yrs,datasets:[{label:'Working capital days',data:A.wcd,backgroundColor:C.b,yAxisID:'y'},{type:'line',label:'CFO / EBITDA %',data:A.cfo.map(function(v,i){return +(v/A.ebitda[i]*100).toFixed(1)}),borderColor:C.a,yAxisID:'y1'}]},options:{plugins:{showVals:true,lineVals:true,dec:1},scales:{y:{position:'left',title:{display:true,text:'days'}},y1:{position:'right',grid:{display:false},title:{display:true,text:'%'}}}}});
+mk('cIPO',{type:'bar',data:{labels:['Debt repayment','Perundurai expansion','Visi-coolers/freezers','General corporate*','Issue expenses*'],datasets:[{label:'₹ Cr',data:[496.86,469.24,155.31,206.62,108.72],backgroundColor:[C.r,C.b,C.t,C.gr,C.gr]}]},options:{indexAxis:'y',plugins:{showVals:true,legend:{display:false}}}});
+mk('cPeer',{type:'bar',data:{labels:['Milky Mist (TTM)','Nestlé India','Bikaji','Hatsun Agro','Britannia','Dodla','Parag Milk','Peer avg'],datasets:[{label:'P/E x',data:[130.7,79.76,62.33,58.2,51.98,24.26,21.28,52.56],backgroundColor:[C.r,C.gr,C.gr,C.gr,C.gr,C.gr,C.gr,C.a]}]},options:{plugins:{showVals:true,legend:{display:false}}}});
+mk('cShp',{type:'doughnut',data:{labels:['Promoters','DIIs','Mutual funds','FIIs','Public','Others'],datasets:[{data:[79.51,4.76,2.35,0.81,6.97,5.59],backgroundColor:[C.b,C.t,C.g,C.p,C.a,C.gr]}]},options:{plugins:{legend:{position:'right'}}}});
+mk('cTgt',{type:'bar',data:{labels:['IPO price','DAM Capital TP','52W high','Current'],datasets:[{data:[140,285,333.15,307.80],backgroundColor:[C.gr,C.a,C.p,C.b]}]},options:{indexAxis:'y',plugins:{showVals:true,legend:{display:false}}}});
+
+mk('cPeerAbs',{type:'bar',data:{labels:['Milky Mist','Dodla Dairy','Heritage Foods'],datasets:[{label:'Revenue',data:[5021,5266,5540],backgroundColor:C.b},{label:'EBITDA',data:[769,442,355],backgroundColor:C.g},{label:'PAT',data:[315,310,185],backgroundColor:C.a}]},options:{plugins:{showVals:true,dec:0}}});
+mk('cPeerMP',{type:'bar',data:{labels:['Milky Mist','Dodla Dairy','Heritage Foods'],datasets:[{label:'EBITDA margin %',data:[15.3,8.4,6.4],backgroundColor:C.g,yAxisID:'y'},{label:'P/E x',data:[77.7,19.7,20.1],backgroundColor:C.r,yAxisID:'y1'}]},options:{plugins:{showVals:true,dec:1},scales:{y:{position:'left',max:18,title:{display:true,text:'margin %'}},y1:{position:'right',max:90,grid:{display:false},title:{display:true,text:'P/E x'}}}}});
+mk('cPeerQ1',{type:'bar',data:{labels:['Milky Mist','Dodla Dairy','Heritage Foods'],datasets:[{label:'Q1 FY27 EBITDA margin %',data:[14.88,5.4,4.6],backgroundColor:[C.b,C.gr,C.gr]}]},options:{plugins:{showVals:true,suf:'%',legend:{display:false}}}});
+
+// scenario
+function sc(){var g=+document.getElementById('gR').value,p=+document.getElementById('pR').value;document.getElementById('gV').textContent=g;document.getElementById('pV').textContent=p;
+ var shares=CO.mcapCr/CO.price;var pat29=127.01*Math.pow(1+g/100,3);var eps29=pat29/shares;var val=eps29*p;var irr=(Math.pow(val/CO.price,1/2.5)-1)*100;
+ document.getElementById('scOut').innerHTML='FY29E PAT: <b>₹'+f(pat29)+' Cr</b><br>FY29E EPS: <b>₹'+f(eps29)+'</b><br>Implied value at '+p+'x: <b>₹'+f(val)+'</b> vs price ₹'+f(CO.price)+'<br>Implied annual return to mid-2029: <b class="'+(irr>=0?'up':'dn')+'">'+f(irr,1)+'%</b>';}
+document.getElementById('gR').oninput=sc;document.getElementById('pR').oninput=sc;sc();
+
+// CB Assist v2 — offline intent + keyword engine with voice
+var KB=[
+ {id:'why_margin',why:1,k:{margin:3,better:2,higher:2,superior:2,premium:1,profitab:2,ebitda:1,edge:1,'more profit':2,'why':0},
+  a:'<b>Why Milky Mist earns far better margins than peers</b> (Q1 FY27 EBITDA margin 14.88% vs Dodla 5.4% and Heritage 4.6%):<ol style="margin:4px 0;padding-left:18px">'+
+  '<li><b>Value-added-only portfolio.</b> Almost no low-margin liquid milk. Each litre becomes paneer, cheese, curd, yogurt or ice cream, which earns ₹77.79 per litre of milk (FY26), the highest among listed dairy peers. Dodla gets only ~33% and Heritage ~44% of sales from value-added products.</li>'+
+  '<li><b>Brand-led premium pricing.</b> Paneer and curd sell 10–30% above large national brands. In Q1 FY27 it pushed through a ~10.5% price hike without losing volume, while peers could not pass on higher milk costs.</li>'+
+  '<li><b>Direct farmer procurement.</b> 74,654 farmers and 74% direct buying means fewer middlemen, better control of quality and fat content, and lower sourcing cost.</li>'+
+  '<li><b>Own cold-chain fleet.</b> 282 refrigerated trucks save about 18–20% compared with third-party logistics.</li>'+
+  '<li><b>One large automated plant.</b> Robotic paneer lines at Perundurai give scale and lower labour cost per kg. Fixed costs are spread over rising volumes (operating leverage).</li>'+
+  '<li><b>Mix shift to high-margin products.</b> Yogurt (+153%), Greek yogurt/Skyr and ice cream (+60%) are growing fastest, which lifted gross margin by 275 bps to 34.21%.</li></ol>'+
+  '<b>Watch-outs:</b> milk is 50–55% of cost, Q1 is the summer peak for curd and ice cream, and Amul, Hatsun and Nestlé are moving into premium dairy.'},
+ {id:'margin_num',k:{margin:2,ebitda:2,'gross margin':2,'operating profit':2},
+  a:'Q1 FY27: gross margin <b>34.21%</b> (+275 bps YoY), EBITDA <b>₹144.89 Cr</b> at <b>14.88%</b> margin (+264 bps), PAT margin <b>6.64%</b> (vs 0.96%). FY24→FY26 EBITDA margin: 12.21% → 13.21% → 13.87%. <i>Ask "why is the margin better?" for the reasons.</i>'},
+ {id:'margin_sustain',k:{sustain:3,last:1,continue:2,future:1,'margin':1,maintain:2,durable:2,seasonal:2},
+  a:'<b>Can the margin last?</b> The structural part (value-added mix, brand pricing, own logistics) should hold. Some of Q1 is seasonal (summer demand for curd, yogurt and ice cream), so expect Q2/Q3 margins to be a bit lower. The key swing factors are milk prices (50–55% of cost) and competitive discounting. Interest savings from the ₹496.86 Cr debt repayment will help PAT margin regardless.'},
+ {id:'why_profit',why:1,k:{profit:2,pat:2,jump:2,'10x':3,surge:2,'890':3,increase:1,grow:1},
+  a:'<b>Why PAT jumped ~10x (₹6.53 Cr → ₹64.68 Cr):</b> revenue rose 43.6% and gross margin improved 275 bps, so EBITDA rose ₹61.87 Cr. Interest plus depreciation stayed flat (~₹71–73 Cr), so almost the whole EBITDA gain dropped to PBT (₹10.41 Cr → ₹73.51 Cr). A low base in Q1 FY26 magnifies the percentage.'},
+ {id:'why_qoq',why:1,k:{qoq:3,'fell':2,decline:2,down:1,'q4':2,sequential:2,drop:2},
+  a:'<b>Why PAT fell ~30% QoQ:</b> derived Q4 FY26 PAT (~₹92.41 Cr, 10.9% margin) looks inflated, probably by tax or one-off items, because it is far above the FY26 run-rate. Revenue still grew 14.6% QoQ and EBITDA ~8% QoQ, so the operating trend is up.'},
+ {id:'why_stock',why:1,k:{stock:1,share:1,price:1,rally:3,rise:2,rose:2,up:1,doubled:3,'listing':1,surge:1,run:1},
+  a:'<b>Why the stock more than doubled from ₹140:</b> (1) strong IPO demand (41.5x subscribed); (2) first listed quarter delivered PAT ~10x; (3) scarcity, with few listed pure value-added dairy brands; (4) tiny free float, with promoters holding 79.51% and FIIs just 0.81%, so modest buying moves the price a lot; (5) DAM Capital initiated with a Buy. Now ₹307.80, up 119.9% vs IPO and 7.6% below the ₹333.15 high.'},
+ {id:'listing',k:{listing:3,listed:3,ipo:2,debut:3,june:2,subscri:2,gmp:2,allot:2},
+  a:'Listed on BSE & NSE on <b>18 Aug 2026</b>. IPO ₹1,553 Cr (fresh ₹1,428 Cr + OFS ₹125 Cr) at ₹140, subscribed 41.52x. Opened ₹165 (+17.9%), closed day one ₹181.50 (10% upper circuit).'},
+ {id:'valuation',why:0,k:{valuation:3,expensive:3,overvalued:3,cheap:2,'p/e':3,pe:2,multiple:2,costly:3,justify:2},
+  a:'At ₹307.80: <b>~131x TTM P/E</b>, ~190x FY26 P/E, P/B ~11.1x, EV/EBITDA ~51x. On FY28E it is 77.7x vs ~20x for Dodla and Heritage, a ~290% premium. PEG ≈ 1.35 (77.7x ÷ 57.5% expected PAT CAGR FY26–28E). The price assumes 40%+ profit growth for several years, so any slip could cause a de-rating.'},
+ {id:'buy',k:{buy:2,sell:2,hold:2,invest:2,'should i':3,recommend:3,accumulate:2,enter:1},
+  a:'CB Research does not give buy/sell/hold calls. Broker view: <b>DAM Capital Buy, TP ₹285</b> (now ~7% below the price). Points to weigh: business quality and growth are strong; valuation is ~3.9x the peer P/E; free float is low; lock-in expiries may add supply. Please consult a SEBI-registered adviser.'},
+ {id:'target',k:{target:3,broker:3,rating:2,analyst:3,dam:3,coverage:2,consensus:2},
+  a:'<b>DAM Capital:</b> Buy, TP ₹285 (02 Sep 2026; 40x FY29E EPS; 26.5% revenue CAGR FY26–29E). At the IPO, SBI Securities and SMIFS said Subscribe. Only one formal target so far. Book-runner initiations (JM Financial, Axis Capital, IIFL) are the next trigger.'},
+ {id:'revenue',k:{revenue:3,sales:2,topline:3,turnover:2,growth:1},
+  a:'Q1 FY27 revenue <b>₹973.45 Cr</b>, +43.6% YoY, +14.6% QoQ. FY24→FY26: ₹1,821.61 → ₹2,349.50 → ₹3,138.36 Cr (31.3% CAGR). Guidance: H2 FY27 ₹150–200 Cr above H1. FY28E ₹5,021 Cr.'},
+ {id:'growth',k:{driver:3,future:2,outlook:3,guidance:3,expansion:2,plan:2,next:1,growth:2,capex:2},
+  a:'<b>Growth drivers:</b> (1) ₹469.24 Cr Perundurai expansion from IPO money; (2) 50,000+ new visi-coolers over three years; (3) high-protein products (new 150 T/day Skyr/Greek yogurt plant from Sep 2026; new 120 MT/day cheddar line); (4) whey protein from ~1 million L/day of whey (15–18 months away); (5) expansion beyond South India (now 69% of sales); (6) quick commerce (19% of sales). Management plans ₹400–500 Cr further investment.'},
+ {id:'whey',k:{whey:4,protein:3,'by-product':3,byproduct:3},
+  a:'Cheese-making leaves ~<b>1 million litres/day of whey</b>, which today is mostly a low-value by-product. A whey-protein project expected in 15–18 months would turn it into high-value nutrition powder. That is a potential margin and revenue kicker not yet in the base numbers.'},
+ {id:'model',k:{'business model':4,'make money':4,'how does':2,earn:2,'what does':2,company:1,about:1,business:2},
+  a:'<b>Business model:</b> buy raw milk directly from 74,654 farmers → collect via 3,907 automated units and 29 chilling centres → convert at one US-FDA-approved plant in Perundurai into paneer, cheese, curd, yogurt, ice cream, butter and ghee → sell through GT 33%, MT 21%, E-com 19%, HoReCa 15%, B2B 7%, Exports/B2C 5% → at premium prices. Profit comes from turning milk into branded, value-added products, not from selling milk.'},
+ {id:'channels',k:{gt:4,mt:4,horeca:4,'general trade':4,'modern trade':4,channel:3,b2b:3,b2c:3,'e-com':3,ecommerce:3,distribution:2},
+  a:'<b>Channels:</b> <b>GT</b> (General Trade) = kirana, bakery and milk shops via distributors, 33% · <b>MT</b> (Modern Trade) = supermarket chains like DMart and Reliance Smart, 21% · <b>E-com</b> = Blinkit, Zepto, Instamart, BigBasket, Amazon, 19% · <b>HoReCa</b> = Hotels, Restaurants and Caterers, 15% · <b>B2B</b> = bulk sales to QSR chains and food companies, 7% · <b>Exp/B2C</b> = exports and direct-to-consumer, 5%. Reach: 4,200+ distributors, 3.94 lakh outlets, 41,000+ coolers.'},
+ {id:'moat',k:{moat:4,advantage:3,competitive:3,usp:3,strength:2,differ:2,unique:2},
+  a:'<b>Moat:</b> a farm-to-shelf chilled supply chain it owns end to end (farmers → own fleet → own coolers in shops). Fresh dairy cannot be shipped long distances or stored long, so this network is hard to copy quickly. Add the #1 private paneer brand (~19% share), the Greek yogurt leadership (35–40%), and a brand people pay more for.'},
+ {id:'products',k:{paneer:3,cheese:3,curd:3,yogurt:3,'ice cream':3,product:2,category:2,ghee:2,butter:2,skyr:3},
+  a:'Q1 FY27 sales: paneer ₹248.29 Cr (+34%), cheese ₹137.12 Cr (+38%), curd ₹123.79 Cr (+27%), ice cream ₹102.25 Cr (+60%), yogurt ₹84.52 Cr (+153%). FY26: paneer 29.4% of revenue, cheese 16.4%, curd 13.3%, ghee 9.8%. 640+ SKUs across 22 categories.'},
+ {id:'debt',k:{debt:3,borrow:3,leverage:3,loan:2,interest:2,'d/e':3},
+  a:'Borrowings ₹1,671.85 Cr at Mar 2026 (D/E 3.61x, net debt/EBITDA 3.81x). The IPO repays ₹496.86 Cr, which cuts debt to roughly ₹1,175 Cr and lowers interest cost from Q2/Q3 FY27. With ~₹1,428 Cr of new equity, D/E falls below 1x.'},
+ {id:'ipo_use',k:{proceeds:3,'use of':3,objects:3,fund:1,raised:2},
+  a:'Fresh issue ₹1,428 Cr is used for: debt repayment ₹496.86 Cr, Perundurai expansion ₹469.24 Cr, visi-coolers/freezers ₹155.31 Cr, general corporate purposes ₹206.62 Cr and issue expenses ₹108.72 Cr. OFS was only ₹125 Cr, so 92% of the money went into the company.'},
+ {id:'why_fcf',why:1,k:{fcf:3,'free cash':3,'cash flow':3,cfo:3,cash:2,'working capital':3,negative:1},
+  a:'<b>Cash flow:</b> CFO FY24/25/26 = ₹140.29 / ₹314.86 / ₹301.79 Cr. Capex was larger (₹290–545 Cr a year), so FCF was negative: −₹149.68 / −₹230.47 / −₹167.90 Cr, funded by debt. Working capital: 49 / 42 / 48 days. The IPO now funds capex, so the borrowing need falls.'},
+ {id:'why_roe',why:1,k:{roe:4,roce:3,return:2,'return on':3},
+  a:'ROE was 32.12% in FY26 only because equity was tiny (₹378 Cr). Adding ~₹1,428 Cr of IPO equity makes the denominator grow ~4–5x, so FY27 ROE will drop sharply even as profit rises. ROCE (11.73% FY26) is the better measure to track.'},
+ {id:'risk',k:{risk:3,concern:3,weak:2,threat:2,negative:1,worry:3,red:2,flag:2},
+  a:'<b>Key risks:</b> single plant (no backup) · 69% of sales in South India, 94.5% of milk from Tamil Nadu · milk price spikes · rich valuation (131x TTM) · low free float and lock-in expiries · ₹229 Cr contingent liabilities (₹194.87 Cr EPCG) · audit remarks on inventory mismatch (₹26.45 Cr) · 29% staff attrition · market-share data from a company-paid report.'},
+ {id:'mgmt',k:{management:3,ceo:3,promoter:3,board:3,founder:3,md:2,cfo:3,sathish:4,rathnam:4},
+  a:'Founder <b>Sathishkumar T</b> (Chairman & MD, started 1998 in Erode); <b>Anitha S</b> (Whole-time Director); <b>Dr K Rathnam</b> (CEO, ex-Heinz India and Kaira Co-op/Amul); <b>Biswajit Mishra</b> (CFO since Feb 2025). Independent directors: Radha Venkatakrishnan, Mallika Janakiraman, S.V. Arumugam.'},
+ {id:'shp',k:{shareholding:4,fii:3,dii:3,mutual:3,float:3,holding:2,institution:2},
+  a:'Aug 2026: promoters 79.51%, DIIs 4.76%, MFs 2.35%, FIIs 0.81%, public 6.97%, others 5.59%. The low institutional and free-float share amplifies price moves both ways.'},
+ {id:'peers',k:{peer:3,dodla:4,heritage:4,hatsun:4,amul:3,compare:3,competitor:3,fy28:3,parag:3},
+  a:'<b>FY28E:</b> Milky Mist revenue ₹5,021 Cr / EBITDA ₹769 Cr (15.3%) / PAT ₹315 Cr / P/E 77.7x · Dodla ₹5,266 / ₹442 (8.4%) / ₹310 / 19.7x · Heritage ₹5,540 / ₹355 (6.4%) / ₹185 / 20.1x. <b>Q1 FY27:</b> Milky Mist margin +264 bps while Dodla fell −280 bps (high milk prices). Other P/Es: Nestlé 79.8x, Hatsun 58.2x, Britannia 52.0x, Parag 21.3x.'},
+ {id:'plant',k:{plant:3,capacity:3,factory:3,perundurai:4,utilis:3,manufactur:2},
+  a:'One plant at <b>Perundurai, Erode</b> (US-FDA approved). Capacity: paneer 70,080 MT, set curd 1,75,200 MT, mozzarella 17,520 MT, ice cream 65,700 KL (29% utilised), butter 21,900 MT, ghee 17,520 MT; yogurt 62% utilised. New: 120 MT/day cheddar (Q1 FY27), 150 T/day Skyr/Greek yogurt (Sep 2026).'},
+ {id:'procure',k:{farmer:3,procure:3,milk:2,sourcing:3,collection:2,amcu:3},
+  a:'Milk comes from <b>74,654 farmers</b> in 25 districts (TN/AP/KA), 74.34% bought directly (294.48 million litres in FY26, ~8.1 lakh litres/day). 3,907 automated collection units, 29 chilling centres, weekly payments, plus vet, fodder and cattle-finance support for farmers. Milk is 50–55% of input cost.'}
+];
+var STOP=['is','the','a','an','to','of','and','in','on','for','able','milky','mist','its','it','do','does','what','are','be','than','enjoy','so','this'];
+function cbScore(q){var lq=' '+q.toLowerCase().replace(/[?!.,]/g,' ')+' ',isWhy=/\bwhy\b|\breason|\bhow come\b|\bhow (is|are|can|does)\b/.test(lq),res=[];
+ KB.forEach(function(e){var s=0;for(var w in e.k){if(w==='why')continue;if(lq.indexOf(w)>-1)s+=e.k[w];}
+  if(s>0&&isWhy&&e.why)s+=3;if(s>0&&!isWhy&&e.why&&e.id==='why_margin'&&!/better|higher|superior|edge|peer/.test(lq))s-=2;res.push({e:e,s:s});});
+ res.sort(function(a,b){return b.s-a.s});return res;}
+var SUG=['Why does Milky Mist earn better margins?','Why did profit jump 10x?','Is the stock overvalued?','What are the key risks?','What are GT, MT, HoReCa?','What are the growth drivers?','How does it compare with Dodla and Heritage?','Why has the stock doubled since listing?'];
+function chips(list){return '<div style="margin:4px 0">'+list.map(function(t){return '<button class="btn" style="margin:2px;font-size:12px" onclick="ask(\''+t.replace(/'/g,"\\'")+'\')">'+t+'</button>'}).join('')+'</div>';}
+var speakOn=true;
+function speak(html){if(!speakOn||!window.speechSynthesis)return;try{speechSynthesis.cancel();var t=html.replace(/<[^>]+>/g,' ').replace(/₹/g,' rupees ').replace(/Cr\b/g,'crore').replace(/\s+/g,' ');var u=new SpeechSynthesisUtterance(t);u.lang='en-IN';u.rate=1.02;speechSynthesis.speak(u);}catch(e){}}
+function ask(qq){var i=document.getElementById('asQ'),q=(qq||i.value).trim();if(!q)return;var r=cbScore(q),log=document.getElementById('asLog'),ans;
+ if(r[0].s<2){ans='I could not match that to the Milky Mist data I hold. Try one of these:'+chips(SUG.slice(0,5));}
+ else{ans=r[0].e.a;var rel=r.slice(1).filter(function(x){return x.s>=3}).slice(0,1);if(rel.length)ans+='<div class="note" style="margin-top:6px">Related:</div>'+rel.map(function(x){return '<div style="margin-top:4px;border-top:1px dashed #d6dbe3;padding-top:4px">'+x.e.a+'</div>'}).join('');}
+ var qd=document.createElement('div');qd.className='q';qd.textContent=q;log.appendChild(qd);var ad=document.createElement('div');ad.className='a';ad.innerHTML=ans;log.appendChild(ad);log.scrollTop=qd.offsetTop-log.offsetTop-6;i.value='';if(r[0].s>=2)speak(r[0].e.a);}
+function mic(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition,b=document.getElementById('asMic');if(!SR){alert('Voice input works in Chrome/Edge. Please type your question.');return;}
+ var rec=new SR();rec.lang='en-IN';rec.interimResults=false;b.textContent='🔴';rec.onresult=function(e){var t=e.results[0][0].transcript;document.getElementById('asQ').value=t;ask(t);};rec.onend=function(){b.textContent='🎤';};rec.onerror=function(){b.textContent='🎤';};rec.start();}
+function toggleSpeak(){speakOn=!speakOn;document.getElementById('asSpk').textContent=speakOn?'🔊':'🔇';if(!speakOn&&window.speechSynthesis)speechSynthesis.cancel();}
+document.getElementById('asLog').innerHTML='<div class="a">Vanakkam! Ask me anything about Milky Mist: <b>why</b> margins are higher, why profit jumped, valuation, peers, risks, channels and more. Type or tap 🎤 to speak.'+chips(SUG)+'</div>';
+
+// Socrates
+var SQ=[
+ {q:'Q1 FY27 EBITDA grew 74.5% while revenue grew 43.6%. What best explains the gap?',o:['Higher other income only','Operating leverage plus better product mix and pricing','Lower tax rate','Share buyback'],a:1,e:'Gross margin rose 275 bps (price + mix) and fixed costs were spread over more volume — classic operating leverage. Tax sits below EBITDA.'},
+ {q:'Why has free cash flow been negative in FY24–FY26 despite positive operating cash flow?',o:['Losses','Capex (plant, coolers, fleet) exceeded operating cash','Dividend payouts','Working capital exploded to 200 days'],a:1,e:'CFO was ₹140–315 Cr but investing outflows were ₹290–545 Cr each year.'},
+ {q:'The stock trades at ~131x TTM earnings vs a peer average of ~53x. What must happen to justify it?',o:['Nothing — P/E does not matter','Sustained high profit growth (40%+) for several years','A dividend increase','A stock split'],a:1,e:'A high multiple is a bet on future earnings; growth has to compound quickly to bring the multiple down to peer levels.'},
+ {q:'Which is the biggest operational concentration risk?',o:['Too many plants','All production at one plant in Perundurai','Too many export markets','Over-reliance on liquid milk'],a:1,e:'There is no backup plant — any disruption at Perundurai hits the whole business.'}
+];
+(function(){var h='';SQ.forEach(function(s,i){h+='<div class="mcq"><b>Q'+(i+1)+'. '+s.q+'</b>';s.o.forEach(function(o,j){h+='<button onclick="ans('+i+','+j+',this)">'+o+'</button>'});h+='<div class="fb" id="fb'+i+'"></div></div>'});document.getElementById('socQ').innerHTML=h;})();
+function ans(i,j,b){var s=SQ[i];b.parentNode.querySelectorAll('button').forEach(function(x,k){x.classList.remove('ok','no');if(k===s.a)x.classList.add('ok')});if(j!==s.a)b.classList.add('no');document.getElementById('fb'+i).innerHTML=(j===s.a?'✅ Correct. ':'❌ Not quite. ')+s.e;}
+function socCheck(){var t=document.getElementById('socTxt').value.toLowerCase(),hit=['equity','net worth','ipo','fresh','denominator','capital','book'].filter(function(w){return t.indexOf(w)>-1}).length;
+ document.getElementById('socFb').innerHTML=hit>=2?'✅ Good reasoning. ROE = PAT ÷ equity. The IPO adds ~₹1,428 Cr of fresh equity to a ₹378 Cr base, so the denominator grows ~4–5x while profit grows far less — ROE falls even as the business improves. That is why ROCE is the better yardstick here.':'🤔 Hint: ROE = PAT ÷ shareholders\' equity. What happened to equity after the IPO? Compare the size of the fresh issue with FY26 net worth.';}
+</script>
+</body>
+</html>

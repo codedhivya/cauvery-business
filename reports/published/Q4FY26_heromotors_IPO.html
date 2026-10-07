@@ -1,0 +1,790 @@
+<title>Hero Motors IPO Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+Tamil:wght@400;600;700&display=swap">
+<style>
+/* Layout: sticky masthead + scrollable tab strip; one panel per tab, cards only where a block is a separate object */
+:root{
+  --bg:#ffffff; --ink:#1b1f2a; --muted:#5a6070; --line:#ece6de; --soft:#fff6ec;
+  --accent:#F28C28; --accent-dk:#c4620a; --good:#1f8a4c; --bad:#c23b2f; --warn:#b7791f; --blue:#2f5fa7;
+  --f-display:"Playfair Display",Georgia,serif;
+  --f-body:"Inter","Noto Sans Tamil",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;font-weight:500}
+body.ta{font-family:"Noto Sans Tamil","Inter",system-ui,sans-serif}
+body:not(.ta) .ta{display:none!important}
+body.ta .en{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 120px}
+header.mast{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:2px solid var(--accent)}
+.mast-in{max-width:1180px;margin:0 auto;padding:12px 16px 0;display:flex;flex-direction:column;gap:8px}
+.mrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;justify-content:space-between}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0}
+.brand h1{font-family:var(--f-display);font-size:clamp(22px,3.4vw,30px);margin:0;font-weight:800;letter-spacing:-.01em}
+.brand .tick{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:600}
+.ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;font-size:13px;border:1.5px solid var(--accent);background:#fff;color:var(--accent-dk);border-radius:999px;padding:6px 14px;cursor:pointer}
+.btn.on,.btn:hover{background:var(--accent);color:#fff}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;padding-bottom:0}
+.tab{font:inherit;font-size:13.5px;font-weight:700;white-space:nowrap;background:none;border:0;border-bottom:3px solid transparent;padding:8px 10px;color:var(--muted);cursor:pointer}
+.tab.on{color:var(--ink);border-bottom-color:var(--accent)}
+.greet{font-size:13px;color:var(--muted);font-weight:600}
+section.panel{padding-block:22px 10px}
+h2{font-family:var(--f-display);font-size:clamp(22px,3vw,28px);margin:0 0 4px;text-wrap:balance}
+h3{font-size:16px;margin:22px 0 8px;font-weight:800;text-wrap:balance}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-dk);font-weight:600}
+.sub{color:var(--muted);margin:0 0 14px;font-weight:600}
+ul.pts{margin:6px 0 0;padding-left:20px;display:grid;gap:5px;max-width:78ch}
+ul.pts li::marker{color:var(--accent)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:10px;margin:8px 0 6px}
+.kpi{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.kpi .v{font-family:var(--f-mono);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .d{font-size:12.5px;font-weight:700}
+.up{color:var(--good)} .dn{color:var(--bad)} .wa{color:var(--warn)}
+.card{border:1.5px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff;min-width:0}
+.note{background:var(--soft);border-left:4px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-weight:600;max-width:90ch}
+.tw{overflow-x:auto;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+thead th{background:var(--soft);font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+td{font-weight:600} tr.hl td{background:#fffaf3;font-weight:800}
+.mono{font-family:var(--f-mono)}
+.chart{width:100%;overflow-x:auto}
+.chart svg{display:block;max-width:100%;height:auto}
+.chart text{font-family:var(--f-body);font-weight:600}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;font-weight:700;margin-top:4px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.pill{display:inline-block;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 9px;border:1.5px solid}
+.p-g{color:var(--good);border-color:var(--good)} .p-r{color:var(--bad);border-color:var(--bad)} .p-y{color:var(--warn);border-color:var(--warn)}
+.swot{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.swot .card h3{margin-top:0}
+.take{display:grid;gap:12px;counter-reset:t}
+.take .card{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}
+.take .num{font-family:var(--f-display);font-size:34px;font-weight:800;color:var(--accent);line-height:1}
+.readbar{display:flex;justify-content:flex-end;margin-bottom:-6px}
+/* calculator */
+.calc{display:grid;gap:10px}
+.calc label{font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;gap:10px}
+.calc input[type=range]{width:100%;accent-color:var(--accent)}
+.big{font-family:var(--f-mono);font-size:26px;font-weight:600}
+/* assist */
+.assist{display:grid;gap:12px}
+.askrow{display:flex;gap:8px;flex-wrap:wrap}
+.askrow input{flex:1 1 240px;min-width:0;font:inherit;font-weight:600;padding:10px 14px;border:2px solid var(--accent);border-radius:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:12.5px;font-weight:700;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;color:var(--ink)}
+.chat{display:grid;gap:10px;max-height:460px;overflow-y:auto;padding:4px}
+.msg{padding:10px 14px;border-radius:10px;max-width:90%;font-weight:600}
+.msg.q{justify-self:end;background:#eef3fb;border:1px solid #d6e0f0}
+.msg.a{justify-self:start;background:#fff;border:1.5px solid var(--accent)}
+.msg details{margin-top:6px;font-size:13.5px} .msg summary{cursor:pointer;color:var(--accent-dk);font-weight:800}
+.vbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700}
+.vbar input[type=range]{width:120px;accent-color:var(--accent)}
+.listen{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.listen i{display:block;height:100%;width:0;background:var(--accent);transition:width .1s linear}
+/* quiz */
+.qz{display:grid;gap:10px;max-width:760px}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-weight:700;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;color:var(--ink)}
+.opt.ok{border-color:var(--good);background:#eefaf2} .opt.no{border-color:var(--bad);background:#fdf0ee}
+.expl{font-weight:600}
+/* floating */
+#cbBadge{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--f-display);font-weight:800;font-size:18px;display:grid;place-items:center;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.18);cursor:pointer;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.45}}
+#cbTip{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:41;max-width:min(340px,calc(100vw - 32px));background:#fff;border:2px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:12.5px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.14)}
+#vaBubble{position:fixed;right:12px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:39;font:inherit;font-weight:800;font-size:13px;background:#fff;color:var(--accent-dk);border:2px solid var(--accent);border-radius:999px;padding:8px 14px;box-shadow:0 2px 10px rgba(0,0,0,.12);cursor:pointer}
+@media (prefers-reduced-motion:reduce){#cbBadge{animation:none}}
+.src{font-size:12.5px;color:var(--muted);font-weight:600}
+.src a{color:var(--blue)}
+</style>
+
+<header class="mast">
+ <div class="mast-in">
+  <div class="mrow">
+   <div class="brand">
+    <h1>Hero Motors Ltd</h1>
+    <span class="tick">NSE: HEROMOTORS · BSE: 544936 · FY26 + IPO</span>
+   </div>
+   <div class="ctrls">
+    <span class="greet"><span class="en">Vanakam, Cauverians</span><span class="ta">வணக்கம் காவேரியன்ஸ்</span></span>
+    <button class="btn on" id="bEN" type="button">English</button>
+    <button class="btn" id="bTA" type="button">தமிழ்</button>
+   </div>
+  </div>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+ </div>
+</header>
+
+<main class="wrap" id="main">
+
+<!-- DASHBOARD -->
+<section class="panel" id="t-dash" data-name="Dashboard|டாஷ்போர்டு">
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">CB Research · <span class="en">at a glance · data as of 1 Oct 2026</span><span class="ta">ஒரே பார்வையில் · 1 Oct 2026 வரை data</span></p>
+ <h2><span class="en">Hero Motors: a gearbox maker that just listed</span><span class="ta">Hero Motors: இப்போ list ஆன gearbox company</span></h2>
+ <p class="sub"><span class="en">Powertrain parts for BMW, Ducati, e-bikes and Hero MotoCorp. Not Hero MotoCorp itself.</span><span class="ta">BMW, Ducati, e-bike-க்கு powertrain parts பண்றாங்க. இது Hero MotoCorp இல்லைங்க.</span></p>
+ <div class="kpis">
+  <div class="kpi"><div class="l"><span class="en">Share price</span><span class="ta">Share விலை</span></div><div class="v">₹164.9</div><div class="d up">+96% <span class="en">vs IPO ₹84</span><span class="ta">IPO ₹84-ஐ விட</span></div></div>
+  <div class="kpi"><div class="l">Market cap</div><div class="v">₹7,490 cr</div><div class="d wa"><span class="en">₹3,815 cr at IPO</span><span class="ta">IPO-ல ₹3,815 cr</span></div></div>
+  <div class="kpi"><div class="l">FY26 Revenue</div><div class="v">₹1,188 cr</div><div class="d up">+9.1% YoY</div></div>
+  <div class="kpi"><div class="l">FY26 EBITDA</div><div class="v">₹148 cr</div><div class="d up">12.4% margin</div></div>
+  <div class="kpi"><div class="l">FY26 PAT</div><div class="v">₹41.2 cr</div><div class="d up">+26% · 3.5% margin</div></div>
+  <div class="kpi"><div class="l">P/E (FY26)</div><div class="v">~172x</div><div class="d dn"><span class="en">peer avg ~50x</span><span class="ta">peers சராசரி ~50x</span></div></div>
+ </div>
+ <div class="grid g2" style="margin-top:12px">
+  <div class="card">
+   <h3 style="margin-top:0"><span class="en">Share price since listing (₹)</span><span class="ta">Listing-க்கு அப்புறம் share விலை (₹)</span></h3>
+   <div class="chart" id="chPrice"></div>
+   <p class="src"><span class="en">IPO ₹84 → listed ₹82 → ₹164.9 in 7 sessions</span><span class="ta">IPO ₹84 → ₹82-ல list → 7 session-ல ₹164.9</span></p>
+  </div>
+  <div class="card">
+   <h3 style="margin-top:0"><span class="en">Quick read</span><span class="ta">சுருக்கமா</span></h3>
+   <ul class="pts en">
+    <li>Latest results: FY26 (year to Mar 2026), from the RHP. First listed-company quarter (Q2 FY27) is due in the coming weeks.</li>
+    <li>Revenue growth is slow (5.7% CAGR), but margins jumped: EBITDA 8.1% → 12.4% in two years.</li>
+    <li>EV-linked revenue is now 23% of sales, up from 12%.</li>
+    <li>Top customer = 35.6% of revenue. That is the biggest single risk.</li>
+    <li>Stock doubled after a weak listing. Valuation is now far above peers.</li>
+   </ul>
+   <ul class="pts ta">
+    <li>Latest results: FY26 (Mar 2026 வரை), RHP-ல இருந்து. List ஆன பிறகு முதல் quarter (Q2 FY27) இன்னும் சில வாரத்துல வரும்.</li>
+    <li>Revenue growth மெதுவா (5.7% CAGR), ஆனா margin நல்லா ஏறிருக்கு: EBITDA 8.1% → 12.4%.</li>
+    <li>EV சம்பந்தமான revenue இப்போ 23%, முன்னாடி 12% தான்.</li>
+    <li>ஒரே customer-கிட்ட இருந்து 35.6% revenue. இது தான் பெரிய risk.</li>
+    <li>Weak listing-க்கு அப்புறம் share double ஆயிடுச்சு. Valuation peers-ஐ விட ரொம்ப அதிகம்.</li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<!-- HISTORY -->
+<section class="panel" id="t-hist" data-name="History & Separation|வரலாறு & பிரிவு" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow"><span class="en">From bicycle parts to powertrains</span><span class="ta">Cycle parts-ல இருந்து powertrain வரை</span></p>
+ <h2><span class="en">How Hero Motors separated from the Hero Group</span><span class="ta">Hero Group-ல இருந்து Hero Motors எப்படி பிரிஞ்சது</span></h2>
+ <div class="note"><span class="en">Hero Motors has no parent in Hero MotoCorp. Both came out of the same Munjal family. The family split the businesses in 2010. Hero MotoCorp is now just one of Hero Motors' customers.</span><span class="ta">Hero MotoCorp, Hero Motors-க்கு parent company இல்லைங்க. ரெண்டும் ஒரே Munjal family-ல இருந்து வந்தது. 2010-ல family business-ஐ பிரிச்சுக்கிட்டாங்க. இப்போ Hero MotoCorp, Hero Motors-க்கு ஒரு customer மட்டும் தான்.</span></div>
+ <h3><span class="en">Picture it: the family tree after the 2010 split</span><span class="ta">படமா பாருங்க: 2010 பிரிவுக்கு அப்புறம் family tree</span></h3>
+ <div class="chart card">
+ <svg viewBox="0 0 900 330" role="img" aria-label="Hero Group family split diagram">
+  <rect x="320" y="14" width="260" height="62" rx="8" fill="#fff6ec" stroke="#F28C28" stroke-width="2"/>
+  <text x="450" y="40" text-anchor="middle" font-size="17" font-weight="800" fill="#1b1f2a">Hero Group (Munjal brothers)</text>
+  <text x="450" y="62" text-anchor="middle" font-size="13" fill="#5a6070">Hero Cycles, Ludhiana · 1956</text>
+  <line x1="450" y1="76" x2="450" y2="112" stroke="#1b1f2a" stroke-width="2"/>
+  <rect x="345" y="112" width="210" height="34" rx="17" fill="#F28C28"/>
+  <text x="450" y="134" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">2010 family realignment</text>
+  <path d="M450 146 V170 M130 170 H770 M130 170 V196 M450 170 V196 M770 170 V196" stroke="#1b1f2a" stroke-width="2" fill="none"/>
+  <rect x="20" y="196" width="220" height="118" rx="8" fill="#ffffff" stroke="#2f5fa7" stroke-width="2"/>
+  <text x="130" y="222" text-anchor="middle" font-size="14" font-weight="800" fill="#2f5fa7">Brijmohan Lall branch</text>
+  <text x="130" y="246" text-anchor="middle" font-size="13" fill="#1b1f2a">Hero Honda → Hero MotoCorp</text>
+  <text x="130" y="268" text-anchor="middle" font-size="13" fill="#1b1f2a">(Pawan Munjal)</text>
+  <text x="130" y="294" text-anchor="middle" font-size="12" fill="#5a6070">Honda JV ended Dec 2010</text>
+  <rect x="330" y="196" width="240" height="118" rx="8" fill="#fff6ec" stroke="#F28C28" stroke-width="3"/>
+  <text x="450" y="222" text-anchor="middle" font-size="14" font-weight="800" fill="#c4620a">O P Munjal branch → HMC</text>
+  <text x="450" y="246" text-anchor="middle" font-size="13" font-weight="800" fill="#1b1f2a">Hero Motors Ltd ★</text>
+  <text x="450" y="268" text-anchor="middle" font-size="13" fill="#1b1f2a">Hero Cycles · Munjal Kiriu · ZF Hero</text>
+  <text x="450" y="294" text-anchor="middle" font-size="12" fill="#5a6070">Led by Pankaj Munjal</text>
+  <rect x="660" y="196" width="220" height="118" rx="8" fill="#ffffff" stroke="#5a6070" stroke-width="2"/>
+  <text x="770" y="222" text-anchor="middle" font-size="14" font-weight="800" fill="#5a6070">Other branches</text>
+  <text x="770" y="246" text-anchor="middle" font-size="13" fill="#1b1f2a">Other family businesses</text>
+  <text x="770" y="268" text-anchor="middle" font-size="13" fill="#1b1f2a">(four branches in all)</text>
+  <path d="M240 255 C 280 255, 290 255, 330 255" stroke="#1f8a4c" stroke-width="2" stroke-dasharray="5 4" fill="none"/>
+  <text x="285" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="#1f8a4c">customer</text>
+ </svg>
+ </div>
+ <h3><span class="en">Timeline</span><span class="ta">காலவரிசை</span></h3>
+ <div class="tw"><table>
+  <thead><tr><th><span class="en">Event</span><span class="ta">நிகழ்வு</span></th><th><span class="en">Year</span><span class="ta">வருடம்</span></th></tr></thead>
+  <tbody>
+   <tr><td><span class="en">O P Munjal and brothers move to Amritsar, trade cycle parts</span><span class="ta">O P Munjal & சகோதரர்கள் Amritsar வந்து cycle parts வியாபாரம்</span></td><td class="mono">1944</td></tr>
+   <tr><td><span class="en">Hero Cycles set up in Ludhiana</span><span class="ta">Ludhiana-ல Hero Cycles ஆரம்பம்</span></td><td class="mono">1956</td></tr>
+   <tr><td><span class="en">Hero Honda JV formed (motorcycles)</span><span class="ta">Hero Honda JV ஆரம்பம் (bikes)</span></td><td class="mono">1984</td></tr>
+   <tr><td><span class="en">Hero Motors Ltd incorporated</span><span class="ta">Hero Motors Ltd பதிவு</span></td><td class="mono">1998</td></tr>
+   <tr><td><span class="en">Alloys & Metallics business starts</span><span class="ta">Alloys & Metallics business ஆரம்பம்</span></td><td class="mono">2001</td></tr>
+   <tr><td><span class="en">Family realigns: O P Munjal branch takes Hero Cycles, Hero Motors; Honda JV ends</span><span class="ta">Family பிரிவு: Hero Cycles, Hero Motors O P Munjal branch-க்கு; Honda JV முடிவு</span></td><td class="mono">2010</td></tr>
+   <tr><td><span class="en">Pankaj Munjal becomes CMD; O P Munjal passes away</span><span class="ta">Pankaj Munjal CMD ஆனார்; O P Munjal மறைவு</span></td><td class="mono">2015</td></tr>
+   <tr><td><span class="en">Scheme of arrangement; UK's Hewland Engineering acquired in stages</span><span class="ta">Scheme of arrangement; UK Hewland Engineering கொஞ்சம் கொஞ்சமா வாங்கினாங்க</span></td><td class="mono">2022–23</td></tr>
+   <tr><td><span class="en">₹900 cr DRHP filed (Aug), withdrawn (Oct)</span><span class="ta">₹900 cr DRHP file (Aug), withdraw (Oct)</span></td><td class="mono">2024</td></tr>
+   <tr><td><span class="en">Refiled DRHP for ₹1,200 cr</span><span class="ta">₹1,200 cr-க்கு மறுபடி DRHP</span></td><td class="mono">2025</td></tr>
+   <tr class="hl"><td><span class="en">₹1,000 cr IPO; listed 23 Sep 2026</span><span class="ta">₹1,000 cr IPO; 23 Sep 2026 listing</span></td><td class="mono">2026</td></tr>
+  </tbody></table></div>
+ <h3><span class="en">What the separation means today</span><span class="ta">இந்த பிரிவு இன்னைக்கு என்ன அர்த்தம்</span></h3>
+ <ul class="pts en">
+  <li>Promoters are Pankaj Munjal, Charu Munjal, Abhishek Munjal and O P Munjal Holdings.</li>
+  <li>The "Hero" name is used under a trademark arrangement. Pankaj Munjal's family must keep at least 26% of Hero Motors.</li>
+  <li>Trademark and monogram disputes over "Hero" are still pending in court (RHP risk factor).</li>
+  <li>Hero Cycles (same group) sold ₹5 cr of shares in the IPO and has small related-party dealings (&lt;2% of revenue).</li>
+ </ul>
+ <ul class="pts ta">
+  <li>Promoters: Pankaj Munjal, Charu Munjal, Abhishek Munjal, O P Munjal Holdings.</li>
+  <li>"Hero" பேரை trademark arrangement மூலமா use பண்றாங்க. Pankaj Munjal family-கிட்ட குறைஞ்சது 26% stake இருக்கணும்.</li>
+  <li>"Hero" trademark, monogram சம்பந்தமான வழக்குகள் court-ல இன்னும் pending (RHP risk).</li>
+  <li>Hero Cycles (அதே group) IPO-ல ₹5 cr share வித்தது; related-party deals 2%-க்கு கீழ தான்.</li>
+ </ul>
+</section>
+
+<!-- IPO -->
+<section class="panel" id="t-ipo" data-name="IPO|ஐபிஓ" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">16–18 Sep 2026 · ICICI Securities, DAM Capital, JM Financial · KFin</p>
+ <h2><span class="en">The ₹1,000 crore IPO</span><span class="ta">₹1,000 கோடி IPO</span></h2>
+ <div class="grid g2">
+  <div class="tw"><table>
+   <thead><tr><th><span class="en">Item</span><span class="ta">விவரம்</span></th><th><span class="en">Detail</span><span class="ta">மதிப்பு</span></th></tr></thead>
+   <tbody>
+    <tr><td>Price band / Issue price</td><td>₹79–84 / ₹84</td></tr>
+    <tr><td>Fresh issue</td><td>₹600 cr (7.14 cr sh)</td></tr>
+    <tr><td>Offer for sale</td><td>₹400 cr (4.76 cr sh)</td></tr>
+    <tr><td><span class="en">OFS sellers</span><span class="ta">OFS விற்றவர்கள்</span></td><td>OPM Holdings ₹395 cr · Hero Cycles ₹5 cr</td></tr>
+    <tr><td>Lot size</td><td>178 sh = ₹14,952</td></tr>
+    <tr><td>Anchor (15 Sep)</td><td>₹300 cr</td></tr>
+    <tr><td><span class="en">Subscription (overall)</span><span class="ta">Subscription (மொத்தம்)</span></td><td>~6.7x</td></tr>
+    <tr><td>Retail / NII / QIB</td><td>~8.2x / ~10.5x / ~1.5x</td></tr>
+    <tr><td>Shares post-issue</td><td>45.42 cr</td></tr>
+    <tr><td>Promoter holding</td><td>84.67% → 61.63%</td></tr>
+    <tr class="hl"><td>Listing (23 Sep)</td><td>₹82 open · ₹98.5 close</td></tr>
+    <tr><td>Anchor lock-in ends</td><td>20 Oct (50%) · 19 Dec</td></tr>
+   </tbody></table></div>
+  <div class="card">
+   <h3 style="margin-top:0"><span class="en">Where the ₹600 cr fresh money goes (₹ cr)</span><span class="ta">₹600 cr fresh பணம் எங்க போகுது (₹ cr)</span></h3>
+   <div class="chart" id="chObj"></div>
+   <ul class="pts en"><li>Debt repayment cuts interest (₹40.8 cr in FY26).</li><li>Capex goes to the Noida-area plant running at 88% capacity.</li><li>₹172 cr is for unidentified acquisitions + general purposes.</li><li>OFS ₹400 cr goes to sellers, not the company. OPM Holdings' cost is ~₹0.03/share.</li></ul>
+   <ul class="pts ta"><li>கடன் திருப்பி கட்டினா interest குறையும் (FY26-ல ₹40.8 cr).</li><li>Capex, 88% capacity-ல ஓடுற Gautam Buddha Nagar plant-க்கு.</li><li>₹172 cr இன்னும் identify பண்ணாத acquisitions + general purpose-க்கு.</li><li>OFS ₹400 cr விற்றவங்களுக்கு போகும், company-க்கு இல்ல. OPM Holdings cost ~₹0.03/share.</li></ul>
+  </div>
+ </div>
+</section>
+
+<!-- BUSINESS MODEL -->
+<section class="panel" id="t-biz" data-name="Business Model|பிசினஸ் மாடல்" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">Business model</p>
+ <h2><span class="en">They make the part between the motor and the wheel</span><span class="ta">Motor-க்கும் wheel-க்கும் நடுவுல இருக்குற part-ஐ இவங்க பண்றாங்க</span></h2>
+ <h3><span class="en">Picture it: where Hero Motors sits in a vehicle</span><span class="ta">படமா பாருங்க: வண்டியில Hero Motors எங்க இருக்கு</span></h3>
+ <div class="chart card">
+ <svg viewBox="0 0 900 190" role="img" aria-label="Powertrain flow diagram">
+  <defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1b1f2a"/></marker></defs>
+  <rect x="20" y="50" width="190" height="80" rx="10" fill="#ffffff" stroke="#5a6070" stroke-width="2"/>
+  <text x="115" y="84" text-anchor="middle" font-size="15" font-weight="800" fill="#1b1f2a">Engine / e-Motor</text>
+  <text x="115" y="106" text-anchor="middle" font-size="12" fill="#5a6070">makes power</text>
+  <line x1="212" y1="90" x2="330" y2="90" stroke="#1b1f2a" stroke-width="2.5" marker-end="url(#ar)"/>
+  <rect x="335" y="30" width="230" height="120" rx="10" fill="#fff6ec" stroke="#F28C28" stroke-width="3"/>
+  <text x="450" y="64" text-anchor="middle" font-size="16" font-weight="800" fill="#c4620a">Gears · Gearbox · CVT</text>
+  <text x="450" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#1b1f2a">e-drive units, motors</text>
+  <text x="450" y="112" text-anchor="middle" font-size="13" font-weight="800" fill="#1b1f2a">← HERO MOTORS</text>
+  <text x="450" y="134" text-anchor="middle" font-size="11.5" fill="#5a6070">turns power into usable speed</text>
+  <line x1="567" y1="90" x2="685" y2="90" stroke="#1b1f2a" stroke-width="2.5" marker-end="url(#ar)"/>
+  <rect x="690" y="50" width="190" height="80" rx="10" fill="#ffffff" stroke="#5a6070" stroke-width="2"/>
+  <text x="785" y="84" text-anchor="middle" font-size="15" font-weight="800" fill="#1b1f2a">Wheel</text>
+  <text x="785" y="106" text-anchor="middle" font-size="12" fill="#5a6070">bike · e-bike · race car</text>
+  <text x="450" y="178" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5a6070">+ Alloys & Metallics: frames, swing arms, chain cases, handlebars (sheet metal &amp; tubes)</text>
+ </svg>
+ </div>
+ <div class="grid g2" style="margin-top:12px">
+  <div class="card"><h3 style="margin-top:0"><span class="en">How it makes money</span><span class="ta">எப்படி சம்பாதிக்கிறாங்க</span></h3>
+   <ul class="pts en"><li>Sells engineered parts to vehicle makers (OEMs), not to retail buyers.</li><li>Co-designs, prototypes and tests; then mass-produces for years.</li><li>OEM qualification takes 14–33 months, so customers rarely switch.</li><li>R&amp;D ~7.5% of revenue; UK unit Hewland brings motorsport design skill.</li><li>Only Indian maker exporting CVT hubs for e-bikes.</li></ul>
+   <ul class="pts ta"><li>வண்டி தயாரிக்கிற company-களுக்கு (OEM) parts விக்கிறாங்க, நம்ம மாதிரி retail-க்கு இல்ல.</li><li>Design, prototype, testing பண்ணி, அப்புறம் பல வருஷம் mass production.</li><li>OEM approval-க்கு 14–33 மாசம் ஆகும், அதனால customer சீக்கிரம் மாற மாட்டாங்க.</li><li>R&amp;D revenue-ல ~7.5%; UK Hewland unit motorsport design skill குடுக்குது.</li><li>e-bike CVT hub export பண்ற ஒரே Indian company.</li></ul>
+  </div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">Footprint &amp; customers</span><span class="ta">Plants &amp; customers</span></h3>
+   <ul class="pts en"><li>6 plants: 4 India (Gautam Buddha Nagar, Ludhiana, Yamaha JV motor plant…), 1 UK, 1 Thailand.</li><li>Tech centres: Southam (UK), Gautam Buddha Nagar.</li><li>Customers: BMW, Ducati, enviolo, Hero MotoCorp, HWA, River, Formula Motorsport.</li><li>Customers in 23 countries; 41% of revenue from abroad.</li><li>1,388 employees + 707 contract staff (Mar 2026).</li><li>51:49 JV with STP Group for forged parts.</li></ul>
+   <ul class="pts ta"><li>6 plants: India-ல 4, UK-ல 1, Thailand-ல 1.</li><li>Tech centres: Southam (UK), Gautam Buddha Nagar.</li><li>Customers: BMW, Ducati, enviolo, Hero MotoCorp, HWA, River, Formula Motorsport.</li><li>23 நாடுகள்ல customers; 41% revenue வெளிநாட்டுல இருந்து.</li><li>1,388 ஊழியர்கள் + 707 contract (Mar 2026).</li><li>Forging-க்கு STP Group கூட 51:49 JV.</li></ul>
+  </div>
+ </div>
+</section>
+
+<!-- SEGMENTS -->
+<section class="panel" id="t-seg" data-name="Segments|பிரிவுகள்" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">Segment performance · ₹ crore</p>
+ <h2><span class="en">Powertrain overtook Alloys &amp; Metallics in FY26</span><span class="ta">FY26-ல Powertrain, A&amp;M-ஐ முந்திடுச்சு</span></h2>
+ <div class="tw"><table>
+  <thead><tr><th>Segment</th><th>FY24</th><th>FY25</th><th>FY26</th><th>FY26 share</th><th>YoY</th></tr></thead>
+  <tbody>
+   <tr><td>Gears &amp; Transmissions (G&amp;T)</td><td>418.0</td><td>452.7</td><td>488.9</td><td>41.1%</td><td class="up">+8.0%</td></tr>
+   <tr><td>Bike Powertrain (BPT, e-bike)</td><td>102.2</td><td>81.5</td><td>148.9</td><td>12.5%</td><td class="up">+83%</td></tr>
+   <tr class="hl"><td>Powertrain Solutions</td><td>520.2</td><td>534.2</td><td>637.8</td><td>53.7%</td><td class="up">+19.4%</td></tr>
+   <tr><td>Alloys &amp; Metallics (A&amp;M)</td><td>544.2</td><td>555.4</td><td>550.6</td><td>46.3%</td><td class="dn">−0.9%</td></tr>
+   <tr class="hl"><td>Total revenue</td><td>1,064.4</td><td>1,089.6</td><td>1,188.4</td><td>100%</td><td class="up">+9.1%</td></tr>
+  </tbody></table></div>
+ <div class="grid g2" style="margin-top:14px">
+  <div class="card"><h3 style="margin-top:0"><span class="en">Segment revenue (₹ cr)</span><span class="ta">பிரிவு வாரியா revenue (₹ cr)</span></h3><div class="chart" id="chSeg"></div></div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">EV-linked revenue share</span><span class="ta">EV சம்பந்தமான revenue பங்கு</span></h3><div class="chart" id="chEV"></div>
+   <p class="src"><span class="en">FY26 EV revenue ₹273 cr: BPT ₹149 cr, G&amp;T ₹120 cr, A&amp;M ₹5 cr.</span><span class="ta">FY26 EV revenue ₹273 cr: BPT ₹149, G&amp;T ₹120, A&amp;M ₹5 cr.</span></p></div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">Revenue by geography, FY26</span><span class="ta">நாடு வாரியா revenue, FY26</span></h3><div class="chart" id="chGeo"></div>
+   <p class="src"><span class="en">Europe rose from 28.5%; US share halved from 7.8%.</span><span class="ta">Europe 28.5%-ல இருந்து ஏறுச்சு; US பங்கு 7.8%-ல இருந்து பாதி ஆச்சு.</span></p></div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">Plant capacity used, FY26</span><span class="ta">Plant capacity பயன்பாடு, FY26</span></h3><div class="chart" id="chCap"></div>
+   <p class="src"><span class="en">Home plant is nearly full; new overseas plants are mostly idle.</span><span class="ta">Main plant கிட்டத்தட்ட full; புது வெளிநாட்டு plants பெரும்பாலும் சும்மா இருக்கு.</span></p></div>
+ </div>
+ <ul class="pts en" style="margin-top:12px"><li>Segment profit in Powertrain rose 54% on 19% revenue growth: mix is lifting margins.</li><li>Hewland (UK, motorsport): revenue ₹160.5 → ₹134.9 cr, swung to a ₹3.7 cr loss.</li><li>End markets FY26: two-wheelers ~41%, motorsport/performance 21%, e-bikes ~13%.</li></ul>
+ <ul class="pts ta" style="margin-top:12px"><li>Powertrain revenue 19% ஏறுச்சு, segment profit 54% ஏறுச்சு: mix மாற்றம் margin-ஐ தூக்குது.</li><li>Hewland (UK, motorsport): revenue ₹160.5 → ₹134.9 cr, ₹3.7 cr loss-க்கு போச்சு.</li><li>FY26 end markets: two-wheeler ~41%, motorsport 21%, e-bike ~13%.</li></ul>
+</section>
+
+<!-- FINANCIALS -->
+<section class="panel" id="t-fin" data-name="Financials|நிதிநிலை" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">Restated consolidated · ₹ crore · source: RHP (9 Sep 2026)</p>
+ <h2><span class="en">Latest results: FY26 (year ended March 2026)</span><span class="ta">Latest results: FY26 (March 2026 வரை)</span></h2>
+ <div class="tw"><table>
+  <thead><tr><th>₹ crore</th><th>FY24</th><th>FY25</th><th>FY26</th><th>FY26 YoY</th></tr></thead>
+  <tbody>
+   <tr><td>Revenue from operations</td><td>1,064.4</td><td>1,089.6</td><td>1,188.4</td><td class="up">+9.1%</td></tr>
+   <tr><td>Total income</td><td>1,083.4</td><td>1,111.2</td><td>1,216.7</td><td class="up">+9.5%</td></tr>
+   <tr><td>EBITDA</td><td>86.3</td><td>114.0</td><td>147.8</td><td class="up">+29.6%</td></tr>
+   <tr><td>EBITDA margin</td><td>8.1%</td><td>10.5%</td><td>12.4%</td><td class="up">+198 bps</td></tr>
+   <tr><td>Adjusted EBITDA (ex-ESOP etc.)</td><td>125.7</td><td>–</td><td>160.2</td><td></td></tr>
+   <tr class="hl"><td>PAT</td><td>17.0</td><td>32.8</td><td>41.2</td><td class="up">+25.5%</td></tr>
+   <tr><td>PAT margin</td><td>1.6%</td><td>3.0%</td><td>3.5%</td><td></td></tr>
+   <tr><td>Net worth</td><td>385.4</td><td>424.0</td><td>482.5</td><td></td></tr>
+   <tr><td>Total borrowings</td><td>304.0</td><td>407.6</td><td>400.8</td><td class="up">−1.7%</td></tr>
+   <tr><td>Total assets</td><td>1,059.9</td><td>1,164.6</td><td>1,371.8</td><td></td></tr>
+  </tbody></table></div>
+ <div class="grid g2" style="margin-top:14px">
+  <div class="card"><h3 style="margin-top:0"><span class="en">Revenue vs EBITDA vs PAT (₹ cr)</span><span class="ta">Revenue, EBITDA, PAT (₹ cr)</span></h3><div class="chart" id="chFin"></div></div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">What moved profit</span><span class="ta">Profit எதனால மாறுச்சு</span></h3>
+   <ul class="pts en"><li>Gross margin 39.4% → 41.7% on better mix.</li><li>Employee cost fell ₹177 → ₹165 cr.</li><li>ESOP charge shrank ₹39.5 → ₹10.5 cr: a big part of the PAT jump.</li><li>FY26 had a ₹15.6 cr unrealised forex gain.</li><li>Finance cost ₹40.8 cr ≈ two-thirds of pre-tax profit.</li><li>Q1 FY27 numbers are not yet public; Q2 FY27 will be the first listed quarter.</li></ul>
+   <ul class="pts ta"><li>Gross margin 39.4% → 41.7%, mix நல்லா ஆனதால.</li><li>Employee cost ₹177 → ₹165 cr குறைஞ்சது.</li><li>ESOP charge ₹39.5 → ₹10.5 cr: PAT ஏற்றத்துல பெரிய பங்கு இது தான்.</li><li>FY26-ல ₹15.6 cr forex gain இருக்கு.</li><li>Finance cost ₹40.8 cr ≈ pre-tax profit-ல மூணுல ரெண்டு பங்கு.</li><li>Q1 FY27 numbers இன்னும் வெளியிடல; Q2 FY27 தான் முதல் listed quarter.</li></ul>
+  </div>
+ </div>
+</section>
+
+<!-- CASH FLOW & RATIOS -->
+<section class="panel" id="t-cf" data-name="Cash Flow & Ratios|கேஷ் ஃப்ளோ & ரேஷியோ" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">Cash flow · working capital · ratios</p>
+ <h2><span class="en">Profit is turning into less cash than it looks</span><span class="ta">Profit பார்க்குற அளவுக்கு cash-ஆ மாறல</span></h2>
+ <div class="grid g2">
+  <div class="tw"><table>
+   <thead><tr><th>₹ crore</th><th>FY24</th><th>FY25</th><th>FY26</th></tr></thead>
+   <tbody>
+    <tr><td>Operating cash flow (reported)</td><td>131.7</td><td>48.3</td><td>144.0</td></tr>
+    <tr><td>of which: rise in factoring/bill discounting</td><td>–</td><td class="dn">−37.6</td><td class="wa">+95.7</td></tr>
+    <tr class="hl"><td>OCF excluding factoring swing</td><td>–</td><td>~86</td><td>~48</td></tr>
+    <tr><td>PAT</td><td>17.0</td><td>32.8</td><td>41.2</td></tr>
+    <tr><td>3-year OCF / 3-year PAT</td><td colspan="3">₹324 cr / ₹91 cr = 3.6x</td></tr>
+    <tr><td>3-year free cash flow (OCF − capex)</td><td colspan="3" class="dn">−₹53 cr (funded by debt)</td></tr>
+   </tbody></table></div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">Picture it: FY26 operating cash</span><span class="ta">படமா: FY26 operating cash</span></h3><div class="chart" id="chOCF"></div>
+   <p class="src"><span class="en">Two-thirds of FY26 OCF came from more invoices being financed by banks.</span><span class="ta">FY26 OCF-ல மூணுல ரெண்டு பங்கு, bank factoring அதிகமானதால வந்தது.</span></p></div>
+ </div>
+ <h3><span class="en">Working capital days</span><span class="ta">Working capital நாட்கள்</span></h3>
+ <div class="grid g2">
+  <div class="tw"><table>
+   <thead><tr><th>Days</th><th>FY24</th><th>FY25</th><th>FY26</th></tr></thead>
+   <tbody>
+    <tr><td>Receivable days</td><td>67</td><td>68</td><td class="dn">78</td></tr>
+    <tr><td>Inventory days</td><td>64</td><td>64</td><td>64</td></tr>
+    <tr><td>Payable days</td><td>47</td><td>–</td><td class="dn">43</td></tr>
+    <tr class="hl"><td>Cash conversion cycle</td><td>84</td><td>–</td><td class="dn">99</td></tr>
+   </tbody></table></div>
+  <div class="card"><div class="chart" id="chWC"></div>
+   <p class="src"><span class="en">Collecting later, paying sooner: cash gets tied up for ~99 days.</span><span class="ta">பணம் வசூல் லேட், கொடுக்கறது சீக்கிரம்: ~99 நாள் cash மாட்டிக்குது.</span></p></div>
+ </div>
+ <h3><span class="en">Key ratios, FY26</span><span class="ta">முக்கிய ratios, FY26</span></h3>
+ <div class="tw"><table>
+  <thead><tr><th>Ratio</th><th>FY26</th><th><span class="en">Read</span><span class="ta">அர்த்தம்</span></th></tr></thead>
+  <tbody>
+   <tr><td>ROE / RoNW</td><td>8.56% / 8.53%</td><td><span class="pill p-r">Low</span></td></tr>
+   <tr><td>ROCE (company, EBITDA-based)</td><td>19.8%</td><td><span class="pill p-y">Flattering</span></td></tr>
+   <tr><td>ROCE (EBIT-based, analyst calc)</td><td>~12.6%</td><td><span class="pill p-y">Moderate</span></td></tr>
+   <tr><td>Debt / Equity (pre-IPO)</td><td>0.83x</td><td><span class="pill p-y">Falls after repayment</span></td></tr>
+   <tr><td>Net debt / EBITDA</td><td>~2.4x</td><td><span class="pill p-r">Highest vs peers</span></td></tr>
+   <tr><td>Interest cover (EBITDA / finance cost)</td><td>~3.6x</td><td><span class="pill p-y">OK</span></td></tr>
+   <tr><td>Asset turnover</td><td>0.87x</td><td><span class="pill p-r">Below peers</span></td></tr>
+   <tr><td>R&amp;D / revenue</td><td>~7.5%</td><td><span class="pill p-g">High</span></td></tr>
+  </tbody></table></div>
+</section>
+
+<!-- VALUATIONS -->
+<section class="panel" id="t-val" data-name="Valuations|மதிப்பீடு" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">Valuation · on FY26 numbers</p>
+ <h2><span class="en">The price has run far ahead of profit</span><span class="ta">Profit-ஐ விட விலை ரொம்ப முன்னாடி ஓடிடுச்சு</span></h2>
+ <div class="tw"><table>
+  <thead><tr><th>Metric</th><th>At IPO ₹84</th><th>At ₹164.9 (1 Oct)</th></tr></thead>
+  <tbody>
+   <tr><td>Market cap (45.42 cr shares)</td><td>₹3,815 cr</td><td>₹7,490 cr</td></tr>
+   <tr><td>P/E on FY26 owners' PAT ₹43.6 cr</td><td>~88x</td><td>~172x</td></tr>
+   <tr><td>EV / EBITDA (after ₹190 cr debt repaid)</td><td>~27x</td><td>~52x</td></tr>
+   <tr><td>Price / post-issue book (~₹22.5)</td><td>~3.7x</td><td>~7.3x</td></tr>
+   <tr><td>Earnings yield</td><td>~1.1%</td><td>~0.6%</td></tr>
+  </tbody></table></div>
+ <div class="grid g2" style="margin-top:14px">
+  <div class="card"><h3 style="margin-top:0"><span class="en">Peers (RHP set, 7 Sep 2026)</span><span class="ta">Peers (RHP list, 7 Sep 2026)</span></h3>
+   <ul class="pts en"><li>Peers: Sona BLW, Endurance, UNO Minda, CIE Automotive, Varroc.</li><li>Peer average P/E ~50x; Sona BLW ~76.5x (the closest EV-driveline peer).</li><li>Hero Motors ranks last or second-last on margins, RoNW, asset turnover and receivable days.</li><li>It is also the smallest: ₹1,188 cr revenue vs peers ₹4,449–19,658 cr.</li></ul>
+   <ul class="pts ta"><li>Peers: Sona BLW, Endurance, UNO Minda, CIE Automotive, Varroc.</li><li>Peers சராசரி P/E ~50x; Sona BLW ~76.5x (EV driveline-ல நெருக்கமான peer).</li><li>Margin, RoNW, asset turnover, receivable days-ல Hero Motors கடைசி அல்லது கடைசிக்கு முந்தைய இடம்.</li><li>Size-லயும் சின்னது: ₹1,188 cr revenue, peers ₹4,449–19,658 cr.</li></ul>
+  </div>
+  <div class="card calc">
+   <h3 style="margin-top:0"><span class="en">What profit does the price need?</span><span class="ta">இந்த விலைக்கு எவ்வளவு profit வேணும்?</span></h3>
+   <label for="cPrice"><span><span class="en">Share price</span><span class="ta">Share விலை</span></span><span class="mono" id="oPrice">₹165</span></label>
+   <input type="range" id="cPrice" min="80" max="250" step="1" value="165">
+   <label for="cPE"><span><span class="en">P/E you think is fair</span><span class="ta">நியாயமான P/E</span></span><span class="mono" id="oPE">40x</span></label>
+   <input type="range" id="cPE" min="15" max="100" step="1" value="40">
+   <div><span class="en">Annual PAT needed:</span><span class="ta">வேண்டிய வருட PAT:</span> <span class="big" id="oNeed">₹187 cr</span></div>
+   <div class="src" id="oX"></div>
+  </div>
+ </div>
+</section>
+
+<!-- TAKEAWAYS -->
+<section class="panel" id="t-take" data-name="5 Key Takeaways|5 முக்கிய பாடங்கள்" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">5 key takeaways</p>
+ <h2><span class="en">What to remember</span><span class="ta">நினைவுல வச்சுக்கணும்</span></h2>
+ <div class="take">
+  <div class="card"><div class="num">1</div><div><b class="en">Not Hero MotoCorp.</b><b class="ta">இது Hero MotoCorp இல்ல.</b> <span class="en">A separate Munjal-family company since the 2010 split; MotoCorp is a customer.</span><span class="ta">2010 பிரிவுக்கு அப்புறம் தனி Munjal family company; MotoCorp ஒரு customer தான்.</span></div></div>
+  <div class="card"><div class="num">2</div><div><b class="en">Margins, not sales, are the story.</b><b class="ta">Sales இல்ல, margin தான் கதை.</b> <span class="en">Revenue +5.7% a year; EBITDA margin 8.1% → 12.4%.</span><span class="ta">Revenue வருஷத்துக்கு +5.7%; EBITDA margin 8.1% → 12.4%.</span></div></div>
+  <div class="card"><div class="num">3</div><div><b class="en">EV share is real and rising.</b><b class="ta">EV பங்கு உண்மையா ஏறுது.</b> <span class="en">23% of revenue in FY26 vs 12% in FY24; e-bike unit +83%.</span><span class="ta">FY26-ல 23%, FY24-ல 12%; e-bike unit +83%.</span></div></div>
+  <div class="card"><div class="num">4</div><div><b class="en">Cash and customers need watching.</b><b class="ta">Cash, customer ரெண்டையும் கவனிக்கணும்.</b> <span class="en">3-year FCF −₹53 cr; one customer = 35.6% of sales.</span><span class="ta">3 வருட FCF −₹53 cr; ஒரே customer = 35.6% sales.</span></div></div>
+  <div class="card"><div class="num">5</div><div><b class="en">Price doubled in a week.</b><b class="ta">ஒரு வாரத்துல விலை double.</b> <span class="en">~172x FY26 earnings now vs ~88x at IPO; anchor lock-in ends 20 Oct.</span><span class="ta">இப்போ ~172x FY26 earnings, IPO-ல ~88x; anchor lock-in 20 Oct முடியுது.</span></div></div>
+ </div>
+</section>
+
+<!-- MARKET ACTIVITY -->
+<section class="panel" id="t-mkt" data-name="Share Market Activity|ஷேர் சந்தை நகர்வு" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">Reasons for share market activity</p>
+ <h2><span class="en">Weak debut, then a near-vertical rally</span><span class="ta">Weak debut, அப்புறம் செங்குத்தா ஏற்றம்</span></h2>
+ <div class="tw"><table>
+  <thead><tr><th>Date</th><th>Price (₹)</th><th><span class="en">What happened</span><span class="ta">என்ன நடந்தது</span></th></tr></thead>
+  <tbody>
+   <tr><td>18 Sep</td><td>84 (issue)</td><td style="white-space:normal;text-align:left"><span class="en">IPO closes ~6.7x; QIB demand thin at ~1.5x; GMP fades to ₹0</span><span class="ta">IPO ~6.7x-ல முடிவு; QIB ~1.5x மட்டும்; GMP ₹0-க்கு இறங்குச்சு</span></td></tr>
+   <tr><td>23 Sep</td><td>82 → 98.5</td><td style="white-space:normal;text-align:left"><span class="en">Lists 2.4% below issue, recovers to close +17%</span><span class="ta">Issue விலைக்கு 2.4% கீழ list, அப்புறம் +17%-ல close</span></td></tr>
+   <tr><td>24 Sep</td><td>116.8 high</td><td style="white-space:normal;text-align:left"><span class="en">+19% intraday on heavy volume</span><span class="ta">அதிக volume-ல intraday +19%</span></td></tr>
+   <tr><td>25 Sep</td><td>141.9 high</td><td style="white-space:normal;text-align:left"><span class="en">+20% again; block deal</span><span class="ta">மறுபடி +20%; block deal</span></td></tr>
+   <tr><td>28–30 Sep</td><td>152.6</td><td style="white-space:normal;text-align:left"><span class="en">Bulk deal by Irage Broking (bought 34 lakh, sold 12 lakh shares); AGM on 30 Sep</span><span class="ta">Irage Broking bulk deal (34 லட்சம் வாங்கி 12 லட்சம் வித்தாங்க); 30 Sep AGM</span></td></tr>
+   <tr class="hl"><td>1 Oct</td><td>167.45 high · 164.9 close</td><td style="white-space:normal;text-align:left"><span class="en">Hits 10% upper band; ~6.7 crore shares traded</span><span class="ta">10% upper band; ~6.7 கோடி shares trade</span></td></tr>
+  </tbody></table></div>
+ <div class="grid g2" style="margin-top:14px">
+  <div class="card"><h3 style="margin-top:0"><span class="en">Why it rallied</span><span class="ta">ஏன் ஏறுச்சு</span></h3>
+   <ul class="pts en"><li>Small free float: promoters hold 61.6%, anchors are locked in.</li><li>EV-powertrain story attracts momentum buyers.</li><li>Bulk/block deals and very high delivery + trading volumes.</li><li>Cheap entry after the discount listing pulled in buyers.</li></ul>
+   <ul class="pts ta"><li>Free float கம்மி: promoters 61.6%, anchors lock-in-ல இருக்காங்க.</li><li>EV-powertrain கதை momentum buyers-ஐ இழுக்குது.</li><li>Bulk/block deals, ரொம்ப அதிக volume.</li><li>Discount listing-ல மலிவா கிடைச்சதால buyers வந்தாங்க.</li></ul></div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">What could change the mood</span><span class="ta">Mood-ஐ மாத்தக்கூடியவை</span></h3>
+   <ul class="pts en"><li>20 Oct: 50% of anchor shares free to sell; 19 Dec: the rest.</li><li>Q2 FY27 results: first test of the listed company.</li><li>Possible exchange surveillance (ASM) on sharp moves.</li><li>Any update on the top customer or Hewland.</li></ul>
+   <ul class="pts ta"><li>20 Oct: anchor shares-ல 50% விக்கலாம்; 19 Dec: மீதி.</li><li>Q2 FY27 results: listed company-க்கு முதல் test.</li><li>வேகமான நகர்வுக்கு exchange surveillance (ASM) வரலாம்.</li><li>Top customer அல்லது Hewland பத்தின update.</li></ul></div>
+ </div>
+</section>
+
+<!-- SWOT -->
+<section class="panel" id="t-swot" data-name="SWOT|SWOT" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">SWOT</p>
+ <h2><span class="en">Strengths, weaknesses, opportunities, threats</span><span class="ta">பலம், பலவீனம், வாய்ப்பு, ஆபத்து</span></h2>
+ <div class="swot">
+  <div class="card" style="border-color:var(--good)"><h3 class="up"><span class="en">Strengths</span><span class="ta">பலம்</span></h3>
+   <ul class="pts en"><li>Global premium OEM customers, 12+ year ties</li><li>Unique e-bike CVT niche</li><li>In-house R&amp;D + Hewland design skill</li><li>Powertrain-neutral products</li></ul>
+   <ul class="pts ta"><li>Global premium OEM customers, 12+ வருட உறவு</li><li>e-bike CVT-ல தனி இடம்</li><li>சொந்த R&amp;D + Hewland design</li><li>Petrol, EV ரெண்டுக்கும் பொருந்தும் products</li></ul></div>
+  <div class="card" style="border-color:var(--bad)"><h3 class="dn"><span class="en">Weaknesses</span><span class="ta">பலவீனம்</span></h3>
+   <ul class="pts en"><li>Top customer 35.6% of revenue</li><li>Thin 3.5% net margin, 8.6% ROE</li><li>Negative 3-yr free cash flow</li><li>Slow 5.7% revenue CAGR</li></ul>
+   <ul class="pts ta"><li>ஒரே customer 35.6% revenue</li><li>Net margin 3.5%, ROE 8.6% மட்டும்</li><li>3 வருட FCF negative</li><li>Revenue CAGR 5.7% தான்</li></ul></div>
+  <div class="card" style="border-color:var(--blue)"><h3 style="color:var(--blue)"><span class="en">Opportunities</span><span class="ta">வாய்ப்புகள்</span></h3>
+   <ul class="pts en"><li>E-bike, EV car, off-road, eVTOL drives</li><li>Thailand gearbox contract for a European premium brand</li><li>Debt cut boosts profit directly</li><li>Acquisitions in Europe/US</li></ul>
+   <ul class="pts ta"><li>e-bike, EV car, off-road, eVTOL drives</li><li>European premium brand-க்கு Thailand gearbox contract</li><li>கடன் குறைஞ்சா profit நேரடியா ஏறும்</li><li>Europe/US acquisitions</li></ul></div>
+  <div class="card" style="border-color:var(--warn)"><h3 class="wa"><span class="en">Threats</span><span class="ta">ஆபத்துகள்</span></h3>
+   <ul class="pts en"><li>Soft European auto demand; motorsport slowdown</li><li>Steel prices and currency swings</li><li>"Hero" trademark disputes</li><li>Pollution complaint; promoter-group insolvency (Nipman)</li></ul>
+   <ul class="pts ta"><li>Europe auto demand மந்தம்; motorsport slowdown</li><li>Steel விலை, currency ஏற்ற இறக்கம்</li><li>"Hero" trademark வழக்குகள்</li><li>Pollution complaint; promoter-group insolvency (Nipman)</li></ul></div>
+ </div>
+</section>
+
+<!-- CAUVERY ASSIST -->
+<section class="panel" id="t-assist" data-name="Cauvery Assist|காவேரி அசிஸ்ட்" hidden>
+ <p class="eyebrow">Cauvery Assist · investor Q&amp;A</p>
+ <h2><span class="en">Ask about Hero Motors</span><span class="ta">Hero Motors பத்தி கேளுங்க</span></h2>
+ <div class="assist" id="assist">
+  <div class="vbar">
+   <span class="en">Voice speed</span><span class="ta">பேச்சு வேகம்</span>
+   <button class="btn sp" data-r="0.7" type="button">Slow</button>
+   <button class="btn sp on" data-r="0.8" type="button">Relaxed</button>
+   <button class="btn sp" data-r="1" type="button">Normal</button>
+   <button class="btn sp" data-r="1.2" type="button">Fast</button>
+   <input type="range" id="vRate" min="0.5" max="1.5" step="0.05" value="0.8" aria-label="Voice speed">
+   <span class="mono" id="vRateO">0.80×</span>
+   <button class="btn" id="vPause" type="button">⏸ Pause</button>
+   <button class="btn" id="vStop" type="button">⏹ Stop</button>
+  </div>
+  <div class="vbar">
+   <label for="vWait"><span class="en">Mic waits after you stop</span><span class="ta">பேசி முடிச்ச பிறகு காத்திருப்பு</span></label>
+   <select id="vWait"><option value="2000">2 s</option><option value="3000" selected>3 s</option><option value="5000">5 s</option><option value="0">Tap Done</option></select>
+   <span class="src" id="vNote"></span>
+  </div>
+  <div class="askrow">
+   <input id="aq" type="text" autocomplete="off" placeholder="Ask: Is Hero Motors part of Hero MotoCorp?">
+   <button class="btn on" id="aGo" type="button"><span class="en">Ask</span><span class="ta">கேள்</span></button>
+   <button class="btn" id="aMic" type="button">🎤 <span class="en">Speak</span><span class="ta">பேசு</span></button>
+  </div>
+  <div class="listen" id="aBar"><i></i></div>
+  <div class="chips" id="aChips"></div>
+  <div class="chat" id="aChat" aria-live="polite"></div>
+ </div>
+</section>
+
+<!-- SOCRATES -->
+<section class="panel" id="t-quiz" data-name="Cauvery Socrates|காவேரி சாக்ரடீஸ்" hidden>
+ <p class="eyebrow">Cauvery Socrates · test yourself</p>
+ <h2><span class="en">Six questions on Hero Motors</span><span class="ta">Hero Motors பத்தி 6 கேள்விகள்</span></h2>
+ <div class="qz" id="qz"></div>
+</section>
+
+<!-- ANALYST VIEW -->
+<section class="panel" id="t-view" data-name="Analyst View|ஆய்வாளர் பார்வை" hidden>
+ <div class="readbar"><button class="btn rd" type="button"><span class="en">🔊 Read this tab</span><span class="ta">🔊 இந்த tab-ஐ படி</span></button></div>
+ <p class="eyebrow">Analyst view · education only, not a recommendation</p>
+ <h2><span class="en">A better business, priced for perfection</span><span class="ta">நல்லா மாறிட்டு வர்ற business, ஆனா விலை perfection-க்கு</span></h2>
+ <div class="grid g2">
+  <div class="card"><h3 style="margin-top:0"><span class="en">What the numbers support</span><span class="ta">Numbers எதை உறுதிப்படுத்துது</span></h3>
+   <ul class="pts en"><li>Mix shift to powertrain and EV is real and margin-accretive.</li><li>Customer list is hard to win and slow to lose.</li><li>IPO money fixes the balance sheet: ~₹190 cr less debt.</li></ul>
+   <ul class="pts ta"><li>Powertrain, EV-க்கு mix மாறுறது உண்மை, margin-ஐ ஏத்துது.</li><li>இந்த customers கிடைக்கறது கஷ்டம், சீக்கிரம் போகவும் மாட்டாங்க.</li><li>IPO பணம் balance sheet-ஐ சரி பண்ணும்: ~₹190 cr கடன் குறையும்.</li></ul></div>
+  <div class="card"><h3 style="margin-top:0"><span class="en">What still needs proof</span><span class="ta">இன்னும் நிரூபிக்க வேண்டியவை</span></h3>
+   <ul class="pts en"><li>Cash flow without factoring growth.</li><li>Thailand (3.9%) and UK (24%) plants filling up.</li><li>Hewland back to profit.</li><li>Profit growth after the ESOP-charge tailwind ends.</li></ul>
+   <ul class="pts ta"><li>Factoring இல்லாம cash flow வருதா.</li><li>Thailand (3.9%), UK (24%) plants நிரம்புதா.</li><li>Hewland மறுபடி profit-க்கு வருதா.</li><li>ESOP charge உதவி முடிஞ்ச பிறகும் profit growth இருக்குதா.</li></ul></div>
+ </div>
+ <h3><span class="en">Watch list for the next 3 months</span><span class="ta">அடுத்த 3 மாசம் கவனிக்க வேண்டியவை</span></h3>
+ <ul class="pts en"><li>Q2 FY27 results: revenue growth, EBITDA margin above 12%, OCF.</li><li>Use of IPO money: debt actually repaid?</li><li>Anchor unlock on 20 Oct and 19 Dec.</li><li>Receivable days: do they fall from 78?</li></ul>
+ <ul class="pts ta"><li>Q2 FY27 results: revenue growth, EBITDA margin 12%-க்கு மேல, OCF.</li><li>IPO பணம்: கடன் உண்மையா கட்டினாங்களா?</li><li>20 Oct, 19 Dec anchor unlock.</li><li>Receivable days 78-ல இருந்து குறையுதா?</li></ul>
+ <p class="note" style="margin-top:14px"><span class="en">CB Research is not SEBI-registered and gives no buy, sell or hold view. This page is for learning only.</span><span class="ta">CB Research SEBI-registered இல்லைங்க; buy, sell, hold எதுவும் சொல்ல மாட்டோம். இது கத்துக்கறதுக்கு மட்டும் தான்.</span></p>
+ <h3><span class="en">Sources</span><span class="ta">ஆதாரங்கள்</span></h3>
+ <p class="src">Hero Motors RHP (9 Sep 2026) via SEBI; <a href="https://www.chittorgarh.com/ipo/hero-motors-ipo/2225/" target="_blank" rel="noopener">Chittorgarh</a>; <a href="https://mpulseindia.substack.com/p/hero-motors-ipo-what-the-rhp-really" target="_blank" rel="noopener">Market Pulse India</a>; <a href="https://www.autocarpro.in/news/hero-motors-explores-non-auto-ma-for-next-leg-of-growth-134636" target="_blank" rel="noopener">Autocar Pro</a>; <a href="https://www.business-standard.com/markets/news/hero-motors-hits-new-high-stock-up-99-against-issue-price-in-7-days-126100100345_1.html" target="_blank" rel="noopener">Business Standard</a>; <a href="https://21stcenturyabe.org/hero-motors-ipo-launch-family-separation.html" target="_blank" rel="noopener">21st Century ABE</a>; Wikipedia (Hero Motors Company, O P Munjal).</p>
+</section>
+
+</main>
+
+<button id="vaBubble" type="button">🎙 <span class="en">Voice Assist</span><span class="ta">Voice Assist</span></button>
+<div id="cbBadge" tabindex="0" role="button" aria-label="Disclaimer">CB</div>
+<div id="cbTip" hidden><b>Disclaimer · <span class="en">CB Research</span><span class="ta">CB Research</span></b><br><span class="en">For education only. CB Research is not SEBI-registered and does not give buy/sell/hold recommendations. Figures from the RHP and public sources as of 1 Oct 2026; verify before acting.</span><span class="ta">கல்விக்காக மட்டும். CB Research SEBI-registered இல்ல; buy/sell/hold சொல்ல மாட்டோம். RHP மற்றும் public sources-ல இருந்து 1 Oct 2026 வரை data; முடிவுக்கு முன்னாடி சரிபாருங்க.</span></div>
+
+<script>
+(function(){
+var LANG="en";
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function A(en,ta){return {en:en,ta:ta}}
+function L(o){return typeof o==="string"?o:(o[LANG]||o.en)}
+
+/* ---------- tabs ---------- */
+var panels=$$("section.panel"), tabs=$("#tabs");
+panels.forEach(function(p){
+  var n=p.getAttribute("data-name").split("|");
+  var b=document.createElement("button");b.type="button";b.className="tab";b.dataset.t=p.id;
+  b.innerHTML='<span class="en">'+n[0]+'</span><span class="ta">'+n[1]+'</span>';
+  b.onclick=function(){show(p.id)};tabs.appendChild(b);
+});
+function show(id){
+  panels.forEach(function(p){p.hidden=p.id!==id});
+  $$(".tab").forEach(function(b){b.classList.toggle("on",b.dataset.t===id)});
+  try{localStorage.setItem("cb_hm_tab",id)}catch(e){}
+  window.scrollTo({top:0});
+}
+var start="t-dash"; try{var s=localStorage.getItem("cb_hm_tab");if(s&&$("#"+s))start=s}catch(e){}
+if(location.hash&&$(location.hash))start=location.hash.slice(1);
+show(start);
+
+/* ---------- language ---------- */
+function setLang(l){
+  LANG=l;document.body.classList.toggle("ta",l==="ta");document.documentElement.lang=l==="ta"?"ta":"en";
+  $("#bEN").classList.toggle("on",l==="en");$("#bTA").classList.toggle("on",l==="ta");
+  $("#aq").placeholder=L(A("Ask: Is Hero Motors part of Hero MotoCorp?","கேளுங்க: Hero Motors, Hero MotoCorp-ஓட பகுதியா?"));
+  renderChips();renderQuiz();drawAll();calc();
+  try{localStorage.setItem("cb_hm_lang",l)}catch(e){}
+}
+$("#bEN").onclick=function(){setLang("en")};$("#bTA").onclick=function(){setLang("ta")};
+
+/* ---------- charts ---------- */
+var C={ink:"#1b1f2a",mut:"#5a6070",line:"#ece6de",acc:"#F28C28",acc2:"#f7c08a",blue:"#2f5fa7",good:"#1f8a4c",bad:"#c23b2f",grey:"#b8bcc6"};
+function nice(m){var p=Math.pow(10,Math.floor(Math.log10(m))),f=m/p;var st=[1,1.2,1.5,2,2.5,3,4,5,6,8,10];for(var i=0;i<st.length;i++)if(f<=st[i])return st[i]*p;return 10*p}
+function bars(el,labels,series,opt){
+  opt=opt||{};var W=560,H=opt.h||260,pl=46,pr=12,pt=14,pb=34,iw=W-pl-pr,ih=H-pt-pb;
+  var max=opt.max||nice(Math.max.apply(null,series.reduce(function(a,s){return a.concat(s.v)},[]))*1.05);
+  var gw=iw/labels.length,bw=Math.min(46,(gw*0.72)/series.length);
+  var o='<svg viewBox="0 0 '+W+' '+H+'" role="img">';
+  for(var i=0;i<=4;i++){var v=max*i/4,y=pt+ih-ih*v/max;o+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y+'" y2="'+y+'" stroke="'+C.line+'"/><text x="'+(pl-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="'+C.mut+'">'+(opt.fmt?opt.fmt(v):Math.round(v))+'</text>'}
+  labels.forEach(function(lb,i){
+    var x0=pl+gw*i+(gw-bw*series.length)/2;
+    series.forEach(function(s,j){var v=s.v[i];if(v==null)return;var h=ih*v/max,x=x0+bw*j,y=pt+ih-h;
+      o+='<rect x="'+x+'" y="'+y+'" width="'+(bw-3)+'" height="'+h+'" rx="2" fill="'+s.c+'"/>';
+      o+='<text x="'+(x+(bw-3)/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+C.ink+'">'+(opt.lab?opt.lab(v):v)+'</text>'});
+    o+='<text x="'+(pl+gw*i+gw/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="12" fill="'+C.ink+'">'+lb+'</text>';
+  });
+  o+='</svg>';
+  if(series.length>1||opt.legend)o+='<div class="legend">'+series.map(function(s){return '<span><i style="background:'+s.c+'"></i>'+L(s.n)+'</span>'}).join("")+'</div>';
+  el.innerHTML=o;
+}
+function hbars(el,rows,opt){
+  opt=opt||{};var W=560,rh=34,pl=170,pr=60,H=rows.length*rh+10,max=opt.max||Math.max.apply(null,rows.map(function(r){return r.v}));
+  var o='<svg viewBox="0 0 '+W+' '+H+'" role="img">';
+  rows.forEach(function(r,i){var y=6+i*rh,w=(W-pl-pr)*r.v/max;
+    o+='<text x="'+(pl-8)+'" y="'+(y+18)+'" text-anchor="end" font-size="12.5" fill="'+C.ink+'">'+L(r.l)+'</text>';
+    o+='<rect x="'+pl+'" y="'+(y+4)+'" width="'+(W-pl-pr)+'" height="20" rx="3" fill="#f6f2ec"/>';
+    o+='<rect x="'+pl+'" y="'+(y+4)+'" width="'+Math.max(2,w)+'" height="20" rx="3" fill="'+(r.c||C.acc)+'"/>';
+    o+='<text x="'+(pl+w+6)+'" y="'+(y+18)+'" font-size="12" font-weight="700" fill="'+C.ink+'">'+(opt.fmt?opt.fmt(r.v):r.v)+'</text>'});
+  el.innerHTML=o+'</svg>';
+}
+function line(el,pts){
+  var W=560,H=250,pl=40,pr=16,pt=18,pb=36,iw=W-pl-pr,ih=H-pt-pb,min=60,max=180;
+  function X(i){return pl+iw*i/(pts.length-1)} function Y(v){return pt+ih-ih*(v-min)/(max-min)}
+  var o='<svg viewBox="0 0 '+W+' '+H+'" role="img">';
+  [60,90,120,150,180].forEach(function(v){o+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="'+C.line+'"/><text x="'+(pl-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="'+C.mut+'">'+v+'</text>'});
+  o+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(84)+'" y2="'+Y(84)+'" stroke="'+C.blue+'" stroke-dasharray="5 4"/><text x="'+(W-pr)+'" y="'+(Y(84)-5)+'" text-anchor="end" font-size="11" font-weight="700" fill="'+C.blue+'">IPO ₹84</text>';
+  var d=pts.map(function(p,i){return (i?"L":"M")+X(i)+" "+Y(p[1])}).join(" ");
+  o+='<path d="'+d+' L'+X(pts.length-1)+' '+(pt+ih)+' L'+X(0)+' '+(pt+ih)+' Z" fill="'+C.acc+'" opacity=".12"/>';
+  o+='<path d="'+d+'" fill="none" stroke="'+C.acc+'" stroke-width="3"/>';
+  pts.forEach(function(p,i){var last=i===pts.length-1;o+='<circle cx="'+X(i)+'" cy="'+Y(p[1])+'" r="'+(last?6:4)+'" fill="'+(last?C.acc:"#fff")+'" stroke="'+C.acc+'" stroke-width="2"/><text x="'+X(i)+'" y="'+(Y(p[1])-10)+'" text-anchor="'+(i===0?"start":last?"end":"middle")+'" font-size="11" font-weight="700" fill="'+C.ink+'">'+p[1]+'</text><text x="'+X(i)+'" y="'+(H-14)+'" text-anchor="middle" font-size="11" fill="'+C.mut+'">'+p[0]+'</text>'});
+  el.innerHTML=o+'</svg>';
+}
+function drawAll(){
+  line($("#chPrice"),[["IPO",84],["23 Sep",98.5],["24 Sep",116.8],["25 Sep",141.7],["30 Sep",152.6],["1 Oct",164.9]]);
+  hbars($("#chObj"),[{l:A("Repay debt","கடன் திருப்பி கட்ட"),v:190},{l:A("Capex: GB Nagar plant","Capex: GB Nagar plant"),v:200},{l:A("Acquisitions + GCP","Acquisitions + GCP"),v:172,c:C.grey},{l:A("Issue expenses","Issue செலவு"),v:60,c:C.grey}],{max:220,fmt:function(v){return "₹"+v}});
+  bars($("#chSeg"),["FY24","FY25","FY26"],[{n:A("G&T","G&T"),v:[418.0,452.7,488.9],c:C.acc},{n:A("Bike Powertrain","Bike Powertrain"),v:[102.2,81.5,148.9],c:C.blue},{n:A("Alloys & Metallics","Alloys & Metallics"),v:[544.2,555.4,550.6],c:C.grey}],{lab:function(v){return Math.round(v)}});
+  bars($("#chEV"),["FY24","FY25","FY26"],[{n:A("EV share of revenue %","EV பங்கு %"),v:[12.0,16.1,23.0],c:C.good}],{max:24,fmt:function(v){return v+"%"},lab:function(v){return v+"%"}});
+  hbars($("#chGeo"),[{l:A("India","இந்தியா"),v:58.6},{l:A("Europe","Europe"),v:33.6,c:C.blue},{l:A("USA","USA"),v:3.9,c:C.grey},{l:A("Rest of world","மற்றவை"),v:3.9,c:C.grey}],{max:70,fmt:function(v){return v+"%"}});
+  hbars($("#chCap"),[{l:A("GB Nagar powertrain","GB Nagar powertrain"),v:88.3,c:C.good},{l:A("UK (Hewland)","UK (Hewland)"),v:24.2,c:C.bad},{l:A("Yamaha JV motors","Yamaha JV motors"),v:14.6,c:C.bad},{l:A("Thailand","Thailand"),v:3.9,c:C.bad}],{max:100,fmt:function(v){return v+"%"}});
+  bars($("#chFin"),["FY24","FY25","FY26"],[{n:A("Revenue","Revenue"),v:[1064.4,1089.6,1188.4],c:C.grey},{n:A("EBITDA","EBITDA"),v:[86.3,114.0,147.8],c:C.acc},{n:A("PAT","PAT"),v:[17.0,32.8,41.2],c:C.blue}],{lab:function(v){return Math.round(v)}});
+  hbars($("#chOCF"),[{l:A("Reported OCF","Reported OCF"),v:144.0},{l:A("Factoring swing","Factoring swing"),v:95.7,c:C.bad},{l:A("OCF ex-factoring","Factoring இல்லாம OCF"),v:48.3,c:C.blue},{l:A("PAT","PAT"),v:41.2,c:C.grey}],{max:160,fmt:function(v){return "₹"+v+" cr"}});
+  bars($("#chWC"),["FY24","FY26"],[{n:A("Receivable","Receivable"),v:[67,78],c:C.bad},{n:A("Inventory","Inventory"),v:[64,64],c:C.grey},{n:A("Payable","Payable"),v:[47,43],c:C.blue},{n:A("Cash cycle","Cash cycle"),v:[84,99],c:C.acc}],{max:100});
+}
+
+/* ---------- valuation calculator ---------- */
+function calc(){
+  var p=+$("#cPrice").value,pe=+$("#cPE").value,mc=p*45.42,need=mc/pe;
+  $("#oPrice").textContent="₹"+p;$("#oPE").textContent=pe+"x";
+  $("#oNeed").textContent="₹"+Math.round(need).toLocaleString("en-IN")+" cr";
+  $("#oX").textContent=L(A("Market cap ₹"+Math.round(mc).toLocaleString("en-IN")+" cr · that is "+(need/41.2).toFixed(1)+"x FY26 PAT of ₹41.2 cr","Market cap ₹"+Math.round(mc).toLocaleString("en-IN")+" cr · இது FY26 PAT ₹41.2 cr-ஐ விட "+(need/41.2).toFixed(1)+" மடங்கு"));
+}
+$("#cPrice").oninput=calc;$("#cPE").oninput=calc;
+
+/* ---------- speech ---------- */
+var SS=window.speechSynthesis, rate=0.8, queue=[], paused=false;
+try{var r=parseFloat(localStorage.getItem("cb_hm_rate"));if(r)rate=r}catch(e){}
+function setRate(r){rate=Math.max(0.5,Math.min(1.5,r));$("#vRate").value=rate;$("#vRateO").textContent=rate.toFixed(2)+"×";
+  $$(".sp").forEach(function(b){b.classList.toggle("on",Math.abs(+b.dataset.r-rate)<0.01)});try{localStorage.setItem("cb_hm_rate",rate)}catch(e){}}
+$$(".sp").forEach(function(b){b.onclick=function(){setRate(+b.dataset.r)}});
+$("#vRate").oninput=function(){setRate(+this.value)};
+function pickVoice(){if(!SS)return null;var vs=SS.getVoices(),want=LANG==="ta"?"ta":"en-IN";
+  return vs.filter(function(v){return v.lang&&v.lang.replace("_","-").indexOf(want)===0})[0]||(LANG==="ta"?null:vs.filter(function(v){return /^en/.test(v.lang)})[0])||null}
+function speak(text){
+  if(!SS){return}
+  stop();var v=pickVoice();
+  if(LANG==="ta"&&!v)$("#vNote").textContent="No Tamil voice on this device; reading with default voice.";
+  queue=text.replace(/\s+/g," ").split(/(?<=[.!?।])\s+/).filter(function(s){return s.trim().length>1});
+  (function next(){if(!queue.length){if(convo)listen();return}var u=new SpeechSynthesisUtterance(queue.shift());u.rate=rate;u.lang=LANG==="ta"?"ta-IN":"en-IN";if(v)u.voice=v;u.onend=function(){setTimeout(next,280)};SS.speak(u)})();
+}
+function stop(){queue=[];paused=false;if(SS)SS.cancel();$("#vPause").textContent="⏸ Pause"}
+$("#vStop").onclick=function(){convo=false;stop()};
+$("#vPause").onclick=function(){if(!SS)return;if(paused){SS.resume();paused=false;this.textContent="⏸ Pause"}else{SS.pause();paused=true;this.textContent="▶ Resume"}};
+function plain(el){var c=el.cloneNode(true);$$(LANG==="ta"?".en":".ta",c).forEach(function(n){n.remove()});$$("svg,.readbar,script",c).forEach(function(n){n.remove()});
+  $$("li,h2,h3,p,tr,td,th",c).forEach(function(n){n.append(". ")});return c.textContent.replace(/\s*\.\s*\.(\s*\.)*/g,". ").replace(/\s+/g," ").trim()}
+$$(".rd").forEach(function(b){b.onclick=function(){var p=b.closest("section");if(SS&&SS.speaking){stop();return}speak(plain(p))}});
+
+/* ---------- Cauvery Assist CONFIG ---------- */
+var NOADV=A("I can't say buy, sell or hold. CB Research is not SEBI-registered; please use the numbers here to decide for yourself.","Buy, sell, hold-னு நான் சொல்ல முடியாதுங்க. CB Research SEBI-registered இல்ல; இங்க இருக்குற numbers வச்சு நீங்களே முடிவு பண்ணுங்க.");
+var KB=[
+ {k:["what does","business","make","do","products","என்ன பண்ற","பிசினஸ்","தயாரி","என்ன செய்"],tab:"t-biz",a:A("Hero Motors makes gears, gearboxes, e-bike drives and sheet-metal parts for vehicle makers like BMW, Ducati and Hero MotoCorp.","Hero Motors, BMW, Ducati, Hero MotoCorp மாதிரி company-களுக்கு gears, gearbox, e-bike drive, sheet-metal parts பண்றாங்க."),d:A("<ul><li>Powertrain Solutions 53.7% of FY26 revenue</li><li>Alloys &amp; Metallics 46.3%</li><li>6 plants in India, UK, Thailand</li></ul>","<ul><li>Powertrain 53.7%</li><li>A&amp;M 46.3%</li><li>India, UK, Thailand-ல 6 plants</li></ul>")},
+ {k:["motocorp","parent","same","subsidiary","separat","split","மோட்டோகார்ப்","பிரி","parent company","ஒண்ணா"],tab:"t-hist",a:A("No. Hero Motors is not part of Hero MotoCorp; the Munjal family split the businesses in 2010, and Hero Motors went to the O P Munjal branch.","இல்லைங்க. Hero Motors, Hero MotoCorp-ஓட பகுதி இல்ல; 2010-ல Munjal family பிரிச்சப்போ Hero Motors, O P Munjal branch-க்கு போச்சு."),d:A("<ul><li>Hero MotoCorp went to the Brijmohan Lall branch</li><li>Hero MotoCorp is now a customer</li><li>Family must hold 26%+ to keep the Hero name</li></ul>","<ul><li>Hero MotoCorp, Brijmohan Lall branch-க்கு</li><li>இப்போ Hero MotoCorp ஒரு customer</li><li>Hero பேருக்கு family 26%+ வச்சிருக்கணும்</li></ul>")},
+ {k:["history","founded","started","when","origin","வரலாறு","ஆரம்ப","எப்போ"],tab:"t-hist",a:A("The group began as a cycle-parts business in 1944; Hero Motors Ltd was incorporated in 1998.","1944-ல cycle parts வியாபாரமா ஆரம்பிச்சது; Hero Motors Ltd 1998-ல பதிவு ஆச்சு.")},
+ {k:["promoter","pankaj","munjal","owner","holding","ப்ரமோட்டர்","உரிமை","பங்கஜ்"],tab:"t-ipo",a:A("Promoters led by Pankaj Munjal now hold 61.63%, down from 84.67% before the IPO.","Pankaj Munjal தலைமையிலான promoters இப்போ 61.63% வச்சிருக்காங்க, IPO-க்கு முன்னாடி 84.67%.")},
+ {k:["ipo","price band","issue size","lot","ஐபிஓ","இஷ்யூ","ப்ரைஸ் பேண்ட்"],tab:"t-ipo",a:A("The IPO raised ₹1,000 crore at ₹84 a share: ₹600 crore fresh issue and ₹400 crore offer for sale.","IPO ₹84-க்கு ₹1,000 கோடி திரட்டிச்சு: ₹600 கோடி fresh issue, ₹400 கோடி OFS."),d:A("<ul><li>Band ₹79–84, lot 178</li><li>Anchors ₹300 cr</li><li>Lead managers: ICICI Sec, DAM, JM</li></ul>","<ul><li>Band ₹79–84, lot 178</li><li>Anchors ₹300 cr</li></ul>")},
+ {k:["subscri","oversubscri","demand","சப்ஸ்கிரிப்ஷன்","சப்ஸ்க்ரைப்"],tab:"t-ipo",a:A("The IPO was subscribed about 6.7 times; retail about 8.2x but QIBs only about 1.5x.","IPO சுமார் 6.7 மடங்கு subscribe ஆச்சு; retail ~8.2x, ஆனா QIB ~1.5x மட்டும்.")},
+ {k:["listing","debut","listed","லிஸ்டிங்","லிஸ்ட்"],tab:"t-mkt",a:A("It listed at ₹82 on 23 September, 2.4% below the ₹84 issue price, then closed the day at ₹98.5.","23 September-ல ₹82-க்கு list ஆச்சு, issue விலைக்கு 2.4% கீழ; அன்னைக்கே ₹98.5-ல close ஆச்சு.")},
+ {k:["rally","rising","up","why","jump","price","share price","ஏன்","ஏறு","விலை","ஷேர்"],tab:"t-mkt",a:A("The share is ₹164.9 (1 Oct close), up 96% from the IPO price on a small free float, bulk deals and EV-story buying.","Share ₹164.9 (1 Oct close), IPO விலையை விட 96% அதிகம்; free float கம்மி, bulk deals, EV கதை தான் காரணம்."),d:A("<ul><li>Anchor lock-in ends 20 Oct (50%) and 19 Dec</li></ul>","<ul><li>Anchor lock-in 20 Oct (50%), 19 Dec</li></ul>")},
+ {k:["revenue","sales","turnover","ரெவின்யூ","விற்பனை","வருமானம்"],tab:"t-fin",a:A("FY26 revenue from operations was ₹1,188 crore, up 9.1%.","FY26 revenue ₹1,188 கோடி, 9.1% ஏற்றம்.")},
+ {k:["profit","pat","net profit","earning","ப்ராஃபிட்","லாபம்","நிகர"],tab:"t-fin",a:A("FY26 profit after tax was ₹41.2 crore, up 26%, a 3.5% net margin.","FY26 PAT ₹41.2 கோடி, 26% ஏற்றம்; net margin 3.5%."),d:A("<ul><li>Part of the jump came from a smaller ESOP charge (₹39.5 → ₹10.5 cr)</li></ul>","<ul><li>ESOP charge குறைஞ்சதும் ஒரு காரணம் (₹39.5 → ₹10.5 cr)</li></ul>")},
+ {k:["ebitda","margin","operating","மார்ஜின்","இபிட்டா"],tab:"t-fin",a:A("FY26 EBITDA was ₹148 crore at a 12.4% margin, up from 8.1% two years ago.","FY26 EBITDA ₹148 கோடி, margin 12.4%; ரெண்டு வருஷம் முன்னாடி 8.1%.")},
+ {k:["segment","powertrain","alloys","metallics","gears","செக்மென்ட்","பிரிவு","பவர்ட்ரெயின்"],tab:"t-seg",a:A("Powertrain Solutions brought ₹638 crore (53.7%) in FY26 and grew 19%; Alloys & Metallics brought ₹551 crore and was flat.","FY26-ல Powertrain ₹638 கோடி (53.7%), 19% growth; A&M ₹551 கோடி, flat.")},
+ {k:["ev","electric","e-bike","ebike","இவி","எலக்ட்ரிக்","இ-பைக்"],tab:"t-seg",a:A("EV-linked revenue was 23% of FY26 sales (₹273 crore), up from 12% in FY24.","FY26-ல EV revenue 23% (₹273 கோடி); FY24-ல 12% தான்.")},
+ {k:["customer","concentration","bmw","ducati","client","கஸ்டமர்","வாடிக்கையாளர்"],tab:"t-seg",a:A("The top customer gave 35.6% of FY26 revenue; the top ten gave 72.9%.","Top customer-கிட்ட இருந்து 35.6% revenue; top 10 பேர்கிட்ட இருந்து 72.9%.")},
+ {k:["debt","borrowing","loan","கடன்","டெப்ட்","லோன்"],tab:"t-cf",a:A("Borrowings were ₹401 crore in FY26 (debt-equity 0.83); ₹190 crore of IPO money will repay debt.","FY26-ல கடன் ₹401 கோடி (D/E 0.83); IPO பணத்துல ₹190 கோடி கடன் கட்ட போகுது.")},
+ {k:["cash flow","ocf","free cash","fcf","கேஷ் ஃப்ளோ","பணப்புழக்கம்","கேஷ்"],tab:"t-cf",a:A("FY26 operating cash flow was ₹144 crore, but about ₹96 crore came from higher factoring; three-year free cash flow was minus ₹53 crore.","FY26 OCF ₹144 கோடி, ஆனா ~₹96 கோடி factoring அதிகமானதால வந்தது; 3 வருட FCF −₹53 கோடி.")},
+ {k:["working capital","receivable","debtor","inventory","days","வொர்க்கிங் கேப்பிட்டல்","ரிசீவபிள்","நாட்கள்"],tab:"t-cf",a:A("Receivable days rose to 78 in FY26 from 67; the cash conversion cycle is about 99 days.","Receivable days 67-ல இருந்து 78-க்கு ஏறுச்சு; cash cycle ~99 நாள்.")},
+ {k:["roe","roce","return","ரிட்டர்ன்","ஆர்ஓஇ"],tab:"t-cf",a:A("FY26 ROE was 8.56%; ROCE is 19.8% on the company's EBITDA basis, about 12.6% on an EBIT basis.","FY26 ROE 8.56%; ROCE company கணக்குல 19.8%, EBIT கணக்குல ~12.6%.")},
+ {k:["valuation","pe","p/e","expensive","cheap","multiple","வேல்யூவேஷன்","மதிப்பீடு","பிஇ","விலை அதிகமா"],tab:"t-val",a:A("At ₹164.9 the stock trades at about 172 times FY26 earnings, versus about 88 times at the IPO and a peer average near 50.","₹164.9-ல FY26 earnings-ஐ விட ~172 மடங்கு; IPO-ல ~88x, peers சராசரி ~50x.")},
+ {k:["risk","danger","concern","weak","ரிஸ்க்","ஆபத்து","கவலை"],tab:"t-swot",a:A("The biggest risks are one customer at 35.6% of sales, weak free cash flow and a very high valuation.","பெரிய risks: ஒரே customer 35.6% sales, weak free cash flow, ரொம்ப அதிக valuation.")},
+ {k:["use of","objects","proceeds","money go","ipo money","பணம் எங்க","பயன்பாடு"],tab:"t-ipo",a:A("The ₹600 crore fresh issue goes to ₹190 crore debt repayment, ₹200 crore capex and ₹172 crore for acquisitions and general use.","₹600 கோடி fresh பணம்: ₹190 கோடி கடன், ₹200 கோடி capex, ₹172 கோடி acquisitions + general.")},
+ {k:["lock","anchor","unlock","லாக்","ஆங்கர்"],tab:"t-mkt",a:A("Half the anchor shares unlock on 20 October 2026 and the rest on 19 December 2026.","Anchor shares-ல பாதி 20 October 2026-ல unlock, மீதி 19 December 2026-ல.")},
+ {k:["hewland","uk","motorsport","ஹியூலாண்ட்"],tab:"t-seg",a:A("Hewland, the UK motorsport unit, saw revenue fall to ₹134.9 crore and posted a ₹3.7 crore loss in FY26.","UK motorsport unit Hewland, FY26-ல revenue ₹134.9 கோடிக்கு இறங்கி ₹3.7 கோடி loss.")},
+ {k:["capacity","utilisation","utilization","plant","thailand","கேப்பாசிட்டி","ப்ளான்ட்"],tab:"t-seg",a:A("The main Gautam Buddha Nagar plant ran at 88% in FY26, but Thailand was at 3.9% and the UK at 24%.","FY26-ல main GB Nagar plant 88%; Thailand 3.9%, UK 24% தான்.")},
+ {k:["result","quarter","q1","q2","latest","next","ரிசல்ட்","காலாண்டு","அடுத்த"],tab:"t-fin",a:A("The latest results are FY26 from the RHP; Q2 FY27 will be the first quarter reported as a listed company.","Latest results FY26 (RHP); Q2 FY27 தான் list ஆன பிறகு முதல் quarter results.")},
+ {k:["swot","strength","weakness","opportunit","பலம்","பலவீனம்","வாய்ப்பு"],tab:"t-swot",a:A("Strength: hard-to-win global customers; weakness: thin margins and customer concentration.","பலம்: global premium customers; பலவீனம்: குறைந்த margin, customer concentration.")},
+ {k:["trademark","hero name","brand","ட்ரேட்மார்க்","பிராண்ட்"],tab:"t-hist",a:A("The Hero brand is used under an arrangement that needs Pankaj Munjal's family to keep at least 26%, and trademark disputes are pending.","Hero brand-க்கு Pankaj Munjal family குறைஞ்சது 26% வச்சிருக்கணும்; trademark வழக்குகள் pending.")}
+];
+var BUY=/\b(buy|sell|hold|invest|should i|target|accumulate|exit)\b|வாங்கலாமா|விக்கலாமா|வாங்க|விக்க|இன்வெஸ்ட்|டார்கெட்/i;
+var SUG=[["Is Hero Motors part of Hero MotoCorp?","Hero Motors, Hero MotoCorp-ஓட பகுதியா?"],["What was FY26 profit?","FY26 profit எவ்வளவு?"],["Why is the share rising?","Share ஏன் ஏறுது?"],["How much is EV revenue?","EV revenue எவ்வளவு?"],["What is the valuation?","Valuation எவ்வளவு?"],["Who is the top customer risk?","Customer concentration risk என்ன?"],["When does anchor lock-in end?","Anchor lock-in எப்போ முடியும்?"],["Should I buy?","வாங்கலாமா?"]];
+function renderChips(){$("#aChips").innerHTML="";SUG.forEach(function(s){var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=LANG==="ta"?s[1]:s[0];b.onclick=function(){ask(b.textContent)};$("#aChips").appendChild(b)})}
+function answer(q){
+  var t=q.toLowerCase();
+  if(BUY.test(t))return {a:NOADV};
+  var best=null,bs=0;KB.forEach(function(e){var s=0;e.k.forEach(function(k){if(t.indexOf(k)>-1)s+=k.length>3?2:1});if(s>bs){bs=s;best=e}});
+  if(best)return best;
+  return {a:A("I don't have that on this dashboard. Try asking about revenue, profit, EV share, IPO, debt or valuation.","அது இந்த dashboard-ல இல்லைங்க. Revenue, profit, EV, IPO, கடன், valuation பத்தி கேளுங்க.")};
+}
+function ask(q){
+  q=(q||"").trim();if(!q)return;var r=answer(q),chat=$("#aChat");
+  var m=document.createElement("div");m.className="msg q";m.textContent=q;chat.appendChild(m);
+  var a=document.createElement("div");a.className="msg a";var h='<div>'+L(r.a)+'</div>';
+  if(r.d)h+='<details><summary>'+L(A("More details","மேலும் விவரம்"))+'</summary>'+L(r.d)+'</details>';
+  if(r.tab)h+='<div style="margin-top:6px"><button class="chip" type="button" data-go="'+r.tab+'">'+L(A("Open related tab →","தொடர்புடைய tab →"))+'</button></div>';
+  a.innerHTML=h;chat.appendChild(a);chat.scrollTop=chat.scrollHeight;
+  var g=a.querySelector("[data-go]");if(g)g.onclick=function(){show(g.dataset.go)};
+  speak(L(r.a));$("#aq").value="";
+}
+$("#aGo").onclick=function(){ask($("#aq").value)};
+$("#aq").onkeydown=function(e){if(e.key==="Enter")ask(this.value)};
+
+/* mic: waits for silence before sending */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,convo=false,silT=null,barT=null,heard="",listening=false;
+try{var w=localStorage.getItem("cb_hm_wait");if(w!=null)$("#vWait").value=w}catch(e){}
+$("#vWait").onchange=function(){try{localStorage.setItem("cb_hm_wait",this.value)}catch(e){}};
+function listen(){
+  if(!SR){$("#vNote").textContent=L(A("Voice input works in Chrome/Edge on the GitHub Pages copy; here, type your question.","Voice input GitHub Pages copy-ல Chrome/Edge-ல வேலை செய்யும்; இங்க type பண்ணுங்க."));return}
+  stop();heard="";rec=new SR();rec.lang=LANG==="ta"?"ta-IN":"en-IN";rec.continuous=true;rec.interimResults=true;listening=true;
+  $("#aMic").classList.add("on");
+  rec.onresult=function(e){var s="";for(var i=0;i<e.results.length;i++)s+=e.results[i][0].transcript;heard=s;$("#aq").value=s;arm()};
+  rec.onerror=function(e){if(e.error==="not-allowed"||e.error==="service-not-allowed"){listening=false;$("#vNote").textContent=L(A("Microphone is blocked here. Open the downloaded copy in Chrome to speak.","இங்க mic block ஆயிருக்கு. Download copy-ஐ Chrome-ல திறந்து பேசுங்க."));done()}};
+  rec.onend=function(){if(listening){try{rec.start()}catch(x){}}};
+  try{rec.start()}catch(x){}
+}
+function arm(){var w=+$("#vWait").value;clearTimeout(silT);clearInterval(barT);if(!w)return;var t0=Date.now(),bar=$("#aBar i");
+  barT=setInterval(function(){bar.style.width=Math.min(100,(Date.now()-t0)/w*100)+"%"},100);
+  silT=setTimeout(function(){finish()},w)}
+function done(){listening=false;clearTimeout(silT);clearInterval(barT);$("#aBar i").style.width="0";$("#aMic").classList.remove("on");try{rec&&rec.stop()}catch(x){}}
+function finish(){var q=heard;done();if(q.trim())ask(q)}
+$("#aMic").onclick=function(){if(listening){finish()}else{convo=true;listen()}};
+
+/* ---------- Socrates quiz ---------- */
+var QZ=[
+ {q:A("What is Hero Motors' relationship with Hero MotoCorp?","Hero Motors-க்கும் Hero MotoCorp-க்கும் என்ன உறவு?"),o:[A("Subsidiary","Subsidiary"),A("Parent company","Parent company"),A("Separate company; MotoCorp is a customer","தனி company; MotoCorp ஒரு customer"),A("Merged in 2026","2026-ல merge ஆச்சு")],c:2,e:A("The Munjal family split the group in 2010. Hero Motors went to the O P Munjal branch.","2010-ல family பிரிஞ்சப்போ Hero Motors, O P Munjal branch-க்கு போச்சு.")},
+ {q:A("Which segment grew fastest in FY26?","FY26-ல எந்த segment வேகமா வளர்ந்தது?"),o:[A("Alloys & Metallics","Alloys & Metallics"),A("Bike Powertrain (e-bike)","Bike Powertrain (e-bike)"),A("Gears & Transmissions","Gears & Transmissions")],c:1,e:A("Bike Powertrain jumped 83% to ₹149 cr after a weak FY25.","Bike Powertrain 83% ஏறி ₹149 cr ஆச்சு.")},
+ {q:A("Why does FY26 operating cash flow need a second look?","FY26 OCF-ஐ ஏன் மறுபடி பார்க்கணும்?"),o:[A("It includes a ₹96 cr rise in factoring","₹96 cr factoring ஏற்றம் அதுல இருக்கு"),A("It was negative","அது negative"),A("It excludes interest","Interest சேர்க்கல")],c:0,e:A("Without that swing, FY26 OCF is about ₹48 cr, close to PAT.","அது இல்லாம OCF ~₹48 cr, PAT கிட்ட தான்.")},
+ {q:A("How much of FY26 revenue came from the top customer?","Top customer-கிட்ட இருந்து எவ்வளவு revenue?"),o:[A("12%","12%"),A("23%","23%"),A("35.6%","35.6%"),A("61%","61%")],c:2,e:A("35.6% from one customer; top five 61.4%.","ஒரே customer 35.6%; top 5 = 61.4%.")},
+ {q:A("Where does the OFS money go?","OFS பணம் யாருக்கு போகும்?"),o:[A("To the company","Company-க்கு"),A("To selling shareholders","விற்ற shareholders-க்கு"),A("To pay debt","கடனுக்கு")],c:1,e:A("₹395 cr to O P Munjal Holdings and ₹5 cr to Hero Cycles.","₹395 cr OPM Holdings-க்கு, ₹5 cr Hero Cycles-க்கு.")},
+ {q:A("What must the Munjal family keep to use the Hero name?","Hero பேரை use பண்ண family என்ன வச்சிருக்கணும்?"),o:[A("At least 26% stake","குறைஞ்சது 26% stake"),A("51% stake","51% stake"),A("A board seat at MotoCorp","MotoCorp board seat")],c:0,e:A("The trademark arrangement needs at least 26%; post-IPO they hold 61.6%.","Trademark arrangement-க்கு 26%+ வேணும்; IPO-க்கு அப்புறம் 61.6%.")}
+];
+var score=0,answered={};
+function renderQuiz(){
+  var el=$("#qz");el.innerHTML="";score=0;answered={};
+  QZ.forEach(function(it,i){var c=document.createElement("div");c.className="card";
+    c.innerHTML='<b>'+(i+1)+'. '+L(it.q)+'</b><div style="display:grid;gap:6px;margin-top:8px"></div><p class="expl" hidden></p>';
+    var box=c.querySelector("div");
+    it.o.forEach(function(o,j){var b=document.createElement("button");b.type="button";b.className="opt";b.textContent=L(o);
+      b.onclick=function(){if(answered[i])return;answered[i]=1;$$(".opt",box).forEach(function(x,k){if(k===it.c)x.classList.add("ok")});if(j!==it.c)b.classList.add("no");else score++;
+        var p=c.querySelector(".expl");p.hidden=false;p.innerHTML=(j===it.c?'<span class="up">'+L(A("Correct. ","சரி! "))+'</span>':'<span class="dn">'+L(A("Not quite. ","சரியில்லைங்க. "))+'</span>')+L(it.e);
+        if(Object.keys(answered).length===QZ.length){var s=$("#qzScore");s.hidden=false;s.textContent=L(A("Score: ","மதிப்பெண்: "))+score+" / "+QZ.length}};
+      box.appendChild(b)});
+    el.appendChild(c)});
+  var s=document.createElement("p");s.id="qzScore";s.className="note";s.hidden=true;el.appendChild(s);
+}
+
+/* ---------- floating ---------- */
+var badge=$("#cbBadge"),tip=$("#cbTip");
+badge.onmouseenter=function(){tip.hidden=false};badge.onmouseleave=function(){tip.hidden=true};
+badge.onclick=function(){tip.hidden=!tip.hidden};badge.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();tip.hidden=!tip.hidden}};
+$("#vaBubble").onclick=function(){show("t-assist");setTimeout(function(){$("#aq").focus()},50)};
+
+/* ---------- init ---------- */
+setRate(rate);
+var l0="en";try{l0=localStorage.getItem("cb_hm_lang")||"en"}catch(e){}
+setLang(l0);
+var g0=document.createElement("div");g0.className="msg a";g0.innerHTML=L(A("Vanakam! Ask me anything about Hero Motors: results, IPO, history or risks.","வணக்கம்! Hero Motors results, IPO, வரலாறு, risks பத்தி எதுனாலும் கேளுங்க."));$("#aChat").appendChild(g0);
+if(SS&&SS.onvoiceschanged!==undefined)SS.onvoiceschanged=function(){};
+})();
+</script>

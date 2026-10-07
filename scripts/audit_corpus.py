@@ -41,42 +41,47 @@ SECTOR_KEYWORDS = {
     # Multi-sector pieces first: otherwise a single company name in the filename
     # ('azad', 'sbi') claims a dashboard that covers four unrelated sectors.
     "_cross-sector": ["multisector", "multico", "ranker", "cross_sector", "sector_analysis", "tatacomm_netweb",
-                      "powerproxy", "india_pv", "grasim", "recentipos", "top8", "sterlite_wabag", "three_stock"],
+                      "powerproxy", "india_pv", "grasim", "recentipos", "top8", "sterlite_wabag", "three_stock",
+                      "businessmodelpivot"],
     "capital-markets": ["bse", "mcx", "cdsl", "broking", "angelone", "groww", "amc", "edelweiss",
                         "ipo_fund", "uti_nippon", "kfintech", "cams", "_nse", "sectoraletf", "etf_"],
     "banking": ["bank", "sbi", "psu", "sfb", "idbi", "bom_ib", "fcnr"],
     # note: "rec" alone would match "Recycling"; use the paired filename form instead
-    "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jiofinancial", "jio_financial", "mfi", "microfin", "muthoot"],
+    "nbfc-hfc": ["nbfc", "hfc", "pfc_rec", "ireda", "jiofinancial", "jio_financial", "mfi", "microfin", "muthoot",
+                 "moneyview"],
     "insurance": ["insurance", "lic", "life_insurance", "hdfc_icici", "irdai"],
     # note: bare "ipo" over-matches — a hospital IPO is pharma-health and a solar IPO is
     # power-energy. Only IPO *funds* and IPO-market reports belong here.
-    "it-services": ["it_services", "tcs", "hcl", "infoedge", "fractal", "itservices"],
+    # note: bare "hcl" over-matches IHCL (Indian Hotels) — use the paired filename form instead
+    "it-services": ["it_services", "tcs", "hcl_tcs", "infoedge", "fractal", "itservices"],
     "pharma-health": ["pharma", "drreddys", "medtech", "hospital", "gland", "generic",
                       "laurus", "neuland", "divislabs", "lupin", "cipla", "torrent", "cupid", "symbiotec"],
     "auto": ["2w", "tvsmotor", "bajajauto", "auto_spares", "tyre", "battery", "pv_sector",
              "heromoto", "eichermotors", "maruti", "mahindra", "sansera", "ather", "motherson", "auto_sector", "shardamotor", "sharda_motor"],
-    "metals": ["steel", "aluminium", "vedanta", "nalco", "hindalco", "tatasteel"],
+    "metals": ["steel", "aluminium", "vedanta", "nalco", "hindalco", "tatasteel", "copper"],
     "cement": ["cement", "ultratech"],
     "chemicals": ["chemical", "himadri", "pvc", "paint", "fertilizer", "recycling", "cropchem"],
     "power-energy": ["power", "solar", "acme", "emmvee", "oilgas", "omc", "ril", "adani_power",
                      "iex", "ongc", "coalindia", "ntpc", "waaree", "junipergreen", "thermal"],
     "capital-goods": ["bhel", "defence", "railway", "mtar", "inox", "ems", "cables", "polycab",
                       "shaily", "shaktipumps", "pacedigitek", "syrma", "dixon", "kaynes",
-                      "_lt_", "larsen", "gevernova", "apar", "siemens", "abb", "hitachi", "rvnl", "aeroflex"],
+                      "_lt_", "larsen", "gevernova", "apar", "siemens", "abb", "hitachi", "rvnl", "aeroflex",
+                      "indomim", "millworks", "mazagon", "mazdock", "aequs", "unimech"],
     "consumer": ["dmart", "fmcg", "alcobev", "sugar", "dairy", "textile", "nitinspinners",
                  "v2retail", "abfashion", "gold", "amusement", "hotel", "india-hotels",
-                 "itc_hul", "balrampur", "jewellery", "augmont"],
+                 "itc_hul", "balrampur", "jewellery", "augmont", "jyothylabs", "jyothy", "milkymist"],
     # REIT/InvIT is an asset class, not an industry — matched before infra-realty,
     # since dict order decides and an InvIT often holds transmission or roads.
-    "reit-invit": ["reit", "invit"],
+    "reit-invit": ["reit", "invit", "infratrust"],
     "infra-realty": ["realestate", "ports", "realty", "developer"],
     "logistics": ["shadowfax", "delhivery", "bluedart", "blue_dart", "vrl", "tci_express",
                   "concor", "logistic", "courier", "3pl", "last_mile"],
     "telecom": ["telecom", "airtel"],
-    "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage"],
+    "new-age": ["eternal", "zomato", "blinkit", "swiggy", "meesho", "nykaa", "urban_co", "newage",
+                "firstcry", "brainbees"],
     # Not company evaluation: news digests, macro/thematic pieces, and site furniture.
     "_excluded": ["market_breaking", "carrytrade", "macro_analysis", "glossary", "usdebt", "aibubble",
-                  "yield_shock"],
+                  "yield_shock", "nifty50", "young_investors", "wealth_habits", "working_capital_lab"],
 }
 
 # Finance terms worth noticing if a sector file doesn't define them.

@@ -20,6 +20,7 @@ how fast it turns into revenue, and at what margin. Nearly every metric here ser
 | **Cables & Wires** | Wires, cables, and increasingly FMEG products | Polycab, Bajel, Sterlite Technologies |
 | **Power T&D Equipment** | Transformers, switchgear, grid equipment — sells *to* the power sector, not part of it | Hitachi Energy India, ABB India, Siemens Energy India, Voltamp, CG Power |
 | **Industrial Equipment** | Pumps, cryogenic and process equipment, specialised engineering | MTAR Technologies, INOX India, Shakti Pumps, Shaily Engineering, VA Tech Wabag (water), Aeroflex Industries |
+| **Precision Engineering** | Build-to-print machining, forging, metal injection moulding (MIM) and assembly for aerospace, defence, semiconductor and auto, to a customer's drawing | Indo-MIM, Millworks Technologies, Aequs, Unimech Aerospace |
 
 **Boundary note**: companies that *make equipment for* the power sector belong here; companies that
 *generate or sell* power belong in `power-energy.md`. A transformer maker is an order-book business with
@@ -45,6 +46,12 @@ The four axes:
 | **Visibility** | How much future revenue is contracted? | Order book, order book / revenue |
 | **Execution** | Is booked work converting to revenue? | Execution rate, revenue growth vs order book growth |
 | **Cash** | Is recognised profit becoming cash? | Debtor days, working capital, receivables from government customers |
+
+**For aerospace build-to-print suppliers**, the order book is not an independent backlog figure — it is
+**long-term agreements × the OEM's build rate**. A Boeing or Airbus production-rate change moves the
+supplier's forward revenue even with zero change in the supplier's own execution or pricing. State the
+programme's current build rate alongside the order book value, and treat a build-rate cut as a demand
+shock the supplier did not cause and cannot offset.
 
 ### The analogy
 

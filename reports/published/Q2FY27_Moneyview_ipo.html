@@ -1,0 +1,902 @@
+<title>Moneyview IPO Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#FFFFFF; --ink:#141A22; --ink2:#3A4450; --mute:#5F6873;
+  --line:#E7E2DA; --soft:#FFF6EC; --soft2:#FFFBF6;
+  --acc:#F28C28; --acc-d:#C8650A; --acc-l:#FFE3C4;
+  --mv:#1F7A5C; --mv-l:#E2F3EC;          /* Moneyview entity green */
+  --good:#1E8449; --warn:#B9770E; --bad:#B03A2E;
+  --fd:"Playfair Display", Georgia, serif;
+  --fb:"Inter","Noto Sans Tamil",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --fm:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:15px;line-height:1.55;font-weight:500}
+body.ta{font-family:"Noto Sans Tamil","Inter",system-ui,sans-serif}
+body:not(.ta) .ta{display:none!important}
+body.ta .en{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:18px;padding-block:0 90px}
+header.top{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;padding-block:22px 14px;border-bottom:3px solid var(--acc)}
+.brand{font-family:var(--fm);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc-d);font-weight:700}
+h1{font-family:var(--fd);font-size:clamp(28px,4.6vw,44px);line-height:1.08;margin:4px 0 6px;text-wrap:balance;font-weight:800}
+.sub{color:var(--ink2);font-weight:600;font-size:14px}
+.hd-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--fm);font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;border:1.5px solid var(--line);background:#fff;white-space:nowrap}
+.pill.live{border-color:var(--acc);background:var(--soft)}
+.pill.live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.lang{display:inline-flex;border:2px solid var(--acc);border-radius:999px;overflow:hidden}
+.lang button{border:0;background:#fff;font:700 13px var(--fb);padding:7px 14px;cursor:pointer;color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--acc);color:#fff}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:#fff;border-bottom:1px solid var(--line);margin-inline:-18px;padding-inline:18px}
+.tabrow{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;padding-block:8px}
+.tabrow button{flex:0 0 auto;border:1.5px solid transparent;background:transparent;font:700 13.5px var(--fb);color:var(--ink2);padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.tabrow button:hover{background:var(--soft2);color:var(--ink)}
+.tabrow button[aria-selected="true"]{background:var(--soft);border-color:var(--acc);color:var(--ink)}
+.tabrow button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+section.tab{padding-block:22px 10px}
+h2{font-family:var(--fd);font-size:clamp(22px,3vw,30px);margin:0 0 4px;text-wrap:balance}
+h3{font-size:16px;margin:0 0 8px;font-weight:800}
+.lede{color:var(--ink2);margin:0 0 18px;font-weight:600}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));margin-bottom:18px}
+.kpi{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+.kpi .k{font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+.kpi .v{font-family:var(--fm);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .d{font-size:12.5px;font-weight:700;color:var(--ink2)}
+.up{color:var(--good)}.dn{color:var(--bad)}.wa{color:var(--warn)}
+.card{border:1.5px solid var(--line);border-radius:10px;padding:16px;background:#fff}
+.card.hi{border-color:var(--acc);background:var(--soft2)}
+ul.b{margin:0;padding-left:20px;display:grid;gap:6px}
+ul.b li{font-weight:600}
+ul.b li b{font-weight:800}
+.tw{overflow-x:auto;border:1.5px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+thead th{background:var(--soft);font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink)}
+tbody td{font-variant-numeric:tabular-nums;font-weight:600}
+tbody td:not(:first-child){font-family:var(--fm);font-size:13.5px}
+tr.me td{background:var(--mv-l);font-weight:800}
+.note{font-size:12.5px;color:var(--mute);font-weight:600;margin-top:8px}
+.chart svg{width:100%;height:auto;display:block}
+.chart .cap{font-weight:800;margin-bottom:6px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;font-weight:700;margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.bar{height:12px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar>span{display:block;height:100%;background:var(--acc)}
+.flow{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));align-items:stretch}
+.step{border:1.5px solid var(--line);border-radius:10px;padding:12px;position:relative;background:#fff}
+.step .t{font-family:var(--fm);font-size:11.5px;font-weight:700;color:var(--acc-d);text-transform:uppercase;letter-spacing:.08em}
+.swot{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.swot .card h3{display:flex;align-items:center;gap:8px}
+.tag{font-family:var(--fm);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px}
+.tS{background:#E2F3EC;color:#145A3E}.tW{background:#FBE6E3;color:#8E2A20}.tO{background:#E6EEFB;color:#1F4E9A}.tT{background:#FFF1D6;color:#8A5A00}
+.num{font-family:var(--fm);font-weight:800;font-size:28px;color:var(--acc-d);line-height:1}
+.take{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+.score{display:grid;grid-template-columns:minmax(120px,190px) 1fr 44px;gap:10px;align-items:center;font-weight:700}
+.score .bar{height:14px}
+.verdict{border:2.5px solid var(--acc);border-radius:12px;padding:18px;background:var(--soft2)}
+.verdict .big{font-family:var(--fd);font-size:clamp(22px,3vw,28px);font-weight:800;margin:4px 0 8px}
+/* Calculator */
+.calc{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));align-items:end}
+.calc label{display:block;font-weight:800;font-size:13px;margin-bottom:4px}
+.calc input[type=range]{width:100%;accent-color:var(--acc)}
+.calc output{font-family:var(--fm);font-weight:700}
+.res{font-family:var(--fm);font-size:22px;font-weight:800}
+/* Assist */
+.chat{border:1.5px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:420px;max-height:640px}
+.chat-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--soft2);border-radius:12px 12px 0 0}
+.chat-log{flex:1;overflow-y:auto;padding:14px;display:grid;gap:10px;align-content:start}
+.msg{max-width:88%;padding:10px 12px;border-radius:12px;font-weight:600}
+.msg.u{justify-self:end;background:var(--acc);color:#fff;border-bottom-right-radius:4px}
+.msg.a{justify-self:start;background:#fff;border:1.5px solid var(--line);border-bottom-left-radius:4px}
+.msg.a details{margin-top:6px;font-size:13.5px}
+.msg.a summary{cursor:pointer;color:var(--acc-d);font-weight:800}
+.chat-in{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.chat-in input{flex:1;min-width:0;font:600 15px var(--fb);padding:10px 12px;border:1.5px solid var(--line);border-radius:8px}
+.btn{font:800 13.5px var(--fb);border:1.5px solid var(--acc);background:#fff;color:var(--ink);padding:9px 13px;border-radius:8px;cursor:pointer}
+.btn.p{background:var(--acc);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.sugs{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px}
+.sugs button{font:700 12.5px var(--fb);border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;cursor:pointer}
+.sugs button:hover{border-color:var(--acc)}
+.ctrl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12.5px;font-weight:700}
+.ctrl input[type=range]{width:90px;accent-color:var(--acc)}
+.micbar{height:4px;background:var(--acc);width:0;transition:width .1s linear}
+/* Quiz */
+.q{border:1.5px solid var(--line);border-radius:12px;padding:16px}
+.q .opts{display:grid;gap:8px;margin-top:10px}
+.q .opts button{text-align:left;font:600 14.5px var(--fb);border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:10px 12px;cursor:pointer;color:var(--ink)}
+.q .opts button:hover:not(:disabled){border-color:var(--acc)}
+.q .opts button.ok{border-color:var(--good);background:#E6F4EA}
+.q .opts button.no{border-color:var(--bad);background:#FBE6E3}
+.q .fb{margin-top:10px;font-weight:700}
+.qbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+/* CB badge */
+.cb{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:50}
+.cb button{width:46px;height:46px;border-radius:50%;border:2.5px solid var(--acc);background:#fff;font:800 15px var(--fm);color:var(--acc-d);cursor:pointer;animation:blink 2.2s infinite;box-shadow:0 2px 10px rgba(242,140,40,.35)}
+@keyframes blink{50%{background:var(--acc);color:#fff}}
+.cb .tip{position:absolute;right:0;bottom:56px;width:min(320px,calc(100vw - 32px));background:#fff;border:2px solid var(--acc);border-radius:10px;padding:12px;font-size:12.5px;font-weight:600;color:var(--ink);display:none;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+.cb:hover .tip,.cb.open .tip{display:block}
+@media (prefers-reduced-motion:reduce){.cb button,.pill.live::before{animation:none}}
+@media (max-width:520px){.score{grid-template-columns:1fr 44px}.score .bar{grid-column:1/-1;grid-row:2}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div>
+    <div class="brand">CB Research · IPO Desk · Q2 FY27</div>
+    <h1>Moneyview Ltd <span style="color:var(--acc-d)">IPO</span></h1>
+    <div class="sub"><span class="en">Digital personal-loan platform + own NBFC (Whizdm Finance) · ₹32–34 band · ₹1,091.68 cr issue</span><span class="ta">Digital personal loan platform + சொந்த NBFC (Whizdm Finance) · ₹32–34 band · ₹1,091.68 கோடி issue</span></div>
+  </div>
+  <div class="hd-right">
+    <span class="pill live"><span class="en">Bidding closes today · 28 Sep</span><span class="ta">இன்னைக்கு close · 28 Sep</span></span>
+    <span class="pill"><span class="en">Listing 1 Oct 2026</span><span class="ta">Listing 1 Oct 2026</span></span>
+    <div class="lang" role="group" aria-label="Language">
+      <button id="bEN" aria-pressed="true">English</button><button id="bTA" aria-pressed="false">தமிழ்</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sections"><div class="tabrow" role="tablist" id="tabrow"></div></nav>
+
+<!-- 1 DASHBOARD -->
+<section class="tab" id="t-dash" role="tabpanel">
+  <h2><span class="en">At a glance</span><span class="ta">ஒரே பார்வையில்</span></h2>
+  <p class="lede"><span class="en">Vanakam! Moneyview is a fast-growing digital lender priced below its 2024 private valuation. The swing factor is credit quality.</span><span class="ta">வணக்கம்! Moneyview வேகமா grow ஆகுற digital lender. 2024 private valuation-ஐ விட கம்மியான விலைல வருது. முக்கியமா பாக்க வேண்டியது credit quality தான்.</span></p>
+  <div class="kpis">
+    <div class="kpi"><div class="k"><span class="en">Market cap @₹34</span><span class="ta">Market cap @₹34</span></div><div class="v">₹5,985 cr</div><div class="d"><span class="en">Post-issue</span><span class="ta">Issue-க்கு அப்புறம்</span></div></div>
+    <div class="kpi"><div class="k">Managed AUM</div><div class="v">₹22,520 cr</div><div class="d up">+27% YoY · Jun-26</div></div>
+    <div class="kpi"><div class="k"><span class="en">Q1 FY27 PAT</span><span class="ta">Q1 FY27 லாபம்</span></div><div class="v">₹173.8 cr</div><div class="d up">+159% YoY</div></div>
+    <div class="kpi"><div class="k"><span class="en">FY26 total income</span><span class="ta">FY26 total income</span></div><div class="v">₹3,404 cr</div><div class="d up">+43% YoY</div></div>
+    <div class="kpi"><div class="k">P/B (post-issue)</div><div class="v">1.89x</div><div class="d"><span class="en">OnEMI ~2.6x</span><span class="ta">OnEMI ~2.6x</span></div></div>
+    <div class="kpi"><div class="k"><span class="en">P/E Q1 annualised</span><span class="ta">P/E Q1 annualised</span></div><div class="v">8.6x</div><div class="d wa"><span class="en">FY26 reported: 24.7x</span><span class="ta">FY26 reported: 24.7x</span></div></div>
+    <div class="kpi"><div class="k">Gross Stage 3 (WFPL)</div><div class="v">2.72%</div><div class="d dn"><span class="en">0.94% in FY24</span><span class="ta">FY24-ல 0.94%</span></div></div>
+    <div class="kpi"><div class="k"><span class="en">Subscription</span><span class="ta">Subscription</span></div><div class="v">~18.7x</div><div class="d"><span class="en">Day 3, 12:33 PM · QIB weak</span><span class="ta">Day 3, 12:33 PM · QIB கம்மி</span></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card chart"><div class="cap"><span class="en">Total income vs PAT (₹ cr)</span><span class="ta">Total income vs PAT (₹ கோடி)</span></div><div id="chDash"></div></div>
+    <div class="card hi">
+      <h3><span class="en">The story in five lines</span><span class="ta">ஐந்து வரில கதை</span></h3>
+      <ul class="b">
+        <li><span class="en"><b>What it does:</b> app-based personal loans for India's mass middle class; 14.03 cr registered users.</span><span class="ta"><b>என்ன பண்றாங்க:</b> middle-class மக்களுக்கு app மூலமா personal loan; 14.03 கோடி registered users.</span></li>
+        <li><span class="en"><b>How it earns:</b> 57% fees from partner banks/NBFCs, 39% interest from its own NBFC.</span><span class="ta"><b>எப்படி சம்பாதிக்கிறாங்க:</b> 57% partner bank/NBFC fees, 39% சொந்த NBFC interest.</span></li>
+        <li><span class="en"><b>Growth:</b> income CAGR ~57% (FY24–26); Q1 FY27 income +52%.</span><span class="ta"><b>Growth:</b> income CAGR ~57% (FY24–26); Q1 FY27 income +52%.</span></li>
+        <li><span class="en"><b>Risk:</b> unsecured loans; GS3 tripled since FY24; DLG exposure = 44% of net worth.</span><span class="ta"><b>Risk:</b> unsecured loans; FY24-ல இருந்து GS3 மூணு மடங்கு; DLG exposure = net worth-ல 44%.</span></li>
+        <li><span class="en"><b>Price:</b> ~₹6,000 cr vs ~$1.2 bn (≈₹10,000 cr) in its 2024 private round.</span><span class="ta"><b>விலை:</b> ~₹6,000 கோடி; 2024 private round-ல ~$1.2 bn (≈₹10,000 கோடி).</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 2 IPO DETAILS -->
+<section class="tab" id="t-ipo" role="tabpanel" hidden>
+  <h2><span class="en">IPO details</span><span class="ta">IPO விவரங்கள்</span></h2>
+  <p class="lede"><span class="en">Book-built mainboard issue. Fresh issue funds lending growth; OFS goes to existing investors.</span><span class="ta">Book-built mainboard issue. Fresh issue பணம் lending growth-க்கு; OFS பணம் பழைய investors-க்கு.</span></p>
+  <div class="grid g2">
+    <div class="tw"><table>
+      <thead><tr><th><span class="en">Item</span><span class="ta">விவரம்</span></th><th><span class="en">Detail</span><span class="ta">மதிப்பு</span></th></tr></thead>
+      <tbody>
+        <tr><td>Price band</td><td>₹32 – ₹34</td></tr>
+        <tr><td><span class="en">Issue size</span><span class="ta">Issue size</span></td><td>₹1,091.68 cr</td></tr>
+        <tr><td>Fresh issue</td><td>₹750.00 cr (22.06 cr sh)</td></tr>
+        <tr><td>Offer for sale</td><td>₹341.68 cr (10.05 cr sh)</td></tr>
+        <tr><td>Face value</td><td>₹1</td></tr>
+        <tr><td><span class="en">Lot size</span><span class="ta">Lot size</span></td><td>441 sh · ₹14,994</td></tr>
+        <tr><td><span class="en">Retail max</span><span class="ta">Retail max</span></td><td>13 lots · ₹1,94,922</td></tr>
+        <tr><td>Anchor (23 Sep)</td><td>₹327.5 cr @ ₹34</td></tr>
+        <tr><td><span class="en">Promoter holding</span><span class="ta">Promoter holding</span></td><td>23.96% → 20.33%</td></tr>
+        <tr><td>Lead managers</td><td style="white-space:normal">Axis, BofA, IIFL, Kotak</td></tr>
+        <tr><td>Registrar</td><td>MUFG Intime</td></tr>
+      </tbody></table></div>
+    <div class="grid" style="gap:14px">
+      <div class="card">
+        <h3><span class="en">Timeline</span><span class="ta">Timeline</span></h3>
+        <div class="tw" style="border:0"><table style="min-width:0">
+          <tbody>
+            <tr><td>Anchor</td><td>23 Sep</td></tr>
+            <tr><td><span class="en">Open → Close</span><span class="ta">Open → Close</span></td><td>24 – 28 Sep</td></tr>
+            <tr><td>Allotment</td><td>29 Sep</td></tr>
+            <tr><td><span class="en">Refund & demat credit</span><span class="ta">Refund & demat credit</span></td><td>30 Sep</td></tr>
+            <tr><td>Listing (BSE, NSE)</td><td>1 Oct</td></tr>
+          </tbody></table></div>
+      </div>
+      <div class="card">
+        <h3><span class="en">Use of fresh issue (₹750 cr)</span><span class="ta">Fresh issue பணம் எங்கே போகுது (₹750 கோடி)</span></h3>
+        <div class="grid" style="gap:10px">
+          <div><div class="ctrl" style="justify-content:space-between"><span><span class="en">DLG-backed disbursal growth</span><span class="ta">DLG loan disbursal growth</span></span><span class="res" style="font-size:14px">₹325 cr · 43%</span></div><div class="bar"><span style="width:43.3%"></span></div></div>
+          <div><div class="ctrl" style="justify-content:space-between"><span><span class="en">Capital for Whizdm Finance (NBFC)</span><span class="ta">Whizdm Finance-க்கு capital</span></span><span class="res" style="font-size:14px">₹250 cr · 33%</span></div><div class="bar"><span style="width:33.3%"></span></div></div>
+          <div><div class="ctrl" style="justify-content:space-between"><span><span class="en">General corporate + issue costs</span><span class="ta">General corporate + issue செலவு</span></span><span class="res" style="font-size:14px">₹175 cr · 23%</span></div><div class="bar"><span style="width:23.3%;background:#C9CED6"></span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <h3 style="margin-top:18px"><span class="en">Reservation</span><span class="ta">Reservation</span></h3>
+  <div class="tw"><table>
+    <thead><tr><th><span class="en">Category</span><span class="ta">Category</span></th><th>Shares</th><th>% issue</th></tr></thead>
+    <tbody>
+      <tr><td>QIB (incl. anchor)</td><td>16,05,41,218</td><td>50%</td></tr>
+      <tr><td>&nbsp;&nbsp;– Anchor</td><td>9,63,24,729</td><td>30%</td></tr>
+      <tr><td>NII (HNI)</td><td>4,81,62,365</td><td>15%</td></tr>
+      <tr><td>Retail</td><td>11,23,78,852</td><td>35%</td></tr>
+      <tr><td><b>Total</b></td><td><b>32,10,82,435</b></td><td><b>100%</b></td></tr>
+    </tbody></table></div>
+  <p class="note"><span class="en">Key pre-IPO holders: Accel 21.89%, Tiger Global (Internet Fund III) 13.79%, Sanjay Aggarwal 10.33%, Ribbit 10.2%, Puneet Agarwal 8.66%. Source: RHP (21 Sep 2026) via public summaries.</span><span class="ta">முக்கிய pre-IPO holders: Accel 21.89%, Tiger Global 13.79%, Sanjay Aggarwal 10.33%, Ribbit 10.2%, Puneet Agarwal 8.66%. Source: RHP (21 Sep 2026).</span></p>
+</section>
+
+<!-- 3 BUSINESS MODEL -->
+<section class="tab" id="t-biz" role="tabpanel" hidden>
+  <h2><span class="en">Business model</span><span class="ta">Business model</span></h2>
+  <p class="lede"><span class="en">Follow the arrows: how a loan is made, who funds it, who carries the risk and how Moneyview gets paid.</span><span class="ta">Arrows-ஐ follow பண்ணுங்க: loan எப்படி போகுது, யாரு பணம் போடுறாங்க, risk யாருக்கு, Moneyview-க்கு பணம் எப்படி வருது.</span></p>
+
+  <figure class="card dg" style="margin:0">
+    <div class="cap" style="font-weight:800;margin-bottom:6px"><span class="en">How the money and the risk flow</span><span class="ta">பணமும் risk-உம் எப்படி போகுது</span></div>
+    <div style="overflow-x:auto">
+    <svg viewBox="0 0 900 575" role="img" aria-label="Borrowers apply through the Moneyview app, which routes 75% of loans to partner banks that pay fees and 25% to its own NBFC Whizdm Finance that earns interest; Moneyview carries the first 5% of partner losses and 100% of its NBFC's losses." font-family="Inter, 'Noto Sans Tamil', sans-serif" style="min-width:640px">
+      <defs>
+        <marker id="aK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#141A22"/></marker>
+        <marker id="aO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#C8650A"/></marker>
+        <marker id="aG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1F7A5C"/></marker>
+      </defs>
+
+      <!-- Borrowers -->
+      <rect x="330" y="20" width="240" height="90" rx="10" fill="#FFFFFF" stroke="#141A22" stroke-width="1.5"/>
+      <text x="450" y="50" text-anchor="middle" font-size="15" font-weight="800" fill="#141A22" class="en">Borrowers</text>
+      <text x="450" y="50" text-anchor="middle" font-size="15" font-weight="800" fill="#141A22" class="ta">கடன் வாங்குறவங்க</text>
+      <text x="450" y="74" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="en">14.03 cr users · 1.19 cr borrowing</text>
+      <text x="450" y="74" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="ta">14.03 கோடி users · 1.19 கோடி loan</text>
+      <text x="450" y="96" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="en">79.5% live in Tier 2+ towns</text>
+      <text x="450" y="96" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="ta">79.5% Tier 2+ ஊர்கள்ல</text>
+
+      <!-- Moneyview app -->
+      <rect x="300" y="180" width="300" height="110" rx="12" fill="#FFF6EC" stroke="#F28C28" stroke-width="2.5"/>
+      <text x="450" y="212" text-anchor="middle" font-size="17" font-weight="800" fill="#141A22">Moneyview app</text>
+      <text x="450" y="238" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="en">AI credit scoring · ~2 lakh applications a day</text>
+      <text x="450" y="238" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="ta">AI credit scoring · தினம் ~2 lakh applications</text>
+      <text x="450" y="262" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="en">No branches · 99.55% of pin codes</text>
+      <text x="450" y="262" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="ta">Branch இல்ல · 99.55% pin codes</text>
+
+      <!-- Route A: partners -->
+      <rect x="40" y="370" width="300" height="120" rx="10" fill="#FFFFFF" stroke="#141A22" stroke-width="1.5"/>
+      <text x="190" y="398" text-anchor="middle" font-size="14.5" font-weight="800" fill="#141A22">Partner banks &amp; NBFCs (48)</text>
+      <text x="190" y="422" text-anchor="middle" font-size="12.5" font-weight="700" fill="#141A22" class="en">Route A · 75% of AUM · ₹16,863 cr</text>
+      <text x="190" y="422" text-anchor="middle" font-size="12.5" font-weight="700" fill="#141A22" class="ta">Route A · AUM-ல 75% · ₹16,863 கோடி</text>
+      <text x="190" y="444" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="en">Lends its own money</text>
+      <text x="190" y="444" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="ta">அவங்க பணத்துல loan</text>
+      <text x="190" y="470" text-anchor="middle" font-size="12.5" font-weight="800" fill="#B03A2E" class="en">Risk: Moneyview covers first 5% (DLG)</text>
+      <text x="190" y="470" text-anchor="middle" font-size="12.5" font-weight="800" fill="#B03A2E" class="ta">Risk: முதல் 5% loss Moneyview-க்கு (DLG)</text>
+
+      <!-- Route B: own NBFC -->
+      <rect x="560" y="370" width="300" height="120" rx="10" fill="#E2F3EC" stroke="#1F7A5C" stroke-width="2"/>
+      <text x="710" y="398" text-anchor="middle" font-size="14.5" font-weight="800" fill="#141A22" class="en">Whizdm Finance (own NBFC)</text>
+      <text x="710" y="398" text-anchor="middle" font-size="14.5" font-weight="800" fill="#141A22" class="ta">Whizdm Finance (சொந்த NBFC)</text>
+      <text x="710" y="422" text-anchor="middle" font-size="12.5" font-weight="700" fill="#141A22" class="en">Route B · 25% of AUM · ₹5,657 cr</text>
+      <text x="710" y="422" text-anchor="middle" font-size="12.5" font-weight="700" fill="#141A22" class="ta">Route B · AUM-ல 25% · ₹5,657 கோடி</text>
+      <text x="710" y="444" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="en">Lends from its balance sheet</text>
+      <text x="710" y="444" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3A4450" class="ta">சொந்த balance sheet-ல loan</text>
+      <text x="710" y="470" text-anchor="middle" font-size="12.5" font-weight="800" fill="#B03A2E" class="en">Risk: 100% with Moneyview</text>
+      <text x="710" y="470" text-anchor="middle" font-size="12.5" font-weight="800" fill="#B03A2E" class="ta">Risk: 100% Moneyview-க்கு</text>
+
+      <!-- Funders of NBFC -->
+      <rect x="560" y="522" width="300" height="42" rx="8" fill="#FFFFFF" stroke="#5F6873" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <text x="710" y="548" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A4450" class="en">Banks &amp; bond investors lend ₹5,485 cr</text>
+      <text x="710" y="548" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A4450" class="ta">Banks, bond investors ₹5,485 கோடி கடன்</text>
+      <line x1="710" y1="522" x2="710" y2="494" stroke="#141A22" stroke-width="1.8" marker-end="url(#aK)"/>
+
+      <!-- Borrower applies -->
+      <line x1="450" y1="110" x2="450" y2="176" stroke="#141A22" stroke-width="1.8" marker-end="url(#aK)"/>
+      <text x="462" y="150" font-size="12.5" font-weight="700" fill="#141A22" class="en">applies for loan</text>
+      <text x="462" y="150" font-size="12.5" font-weight="700" fill="#141A22" class="ta">loan-க்கு apply</text>
+
+      <!-- Disbursal paths -->
+      <path d="M190 370 V65 H326" fill="none" stroke="#141A22" stroke-width="1.8" marker-end="url(#aK)"/>
+      <text x="182" y="226" text-anchor="end" font-size="12.5" font-weight="700" fill="#141A22" class="en">disburses</text>
+      <text x="182" y="242" text-anchor="end" font-size="12.5" font-weight="700" fill="#141A22" class="en">loan</text>
+      <text x="182" y="226" text-anchor="end" font-size="12.5" font-weight="700" fill="#141A22" class="ta">loan பணம்</text>
+      <text x="182" y="242" text-anchor="end" font-size="12.5" font-weight="700" fill="#141A22" class="ta">அனுப்புது</text>
+      <path d="M710 370 V65 H574" fill="none" stroke="#141A22" stroke-width="1.8" marker-end="url(#aK)"/>
+      <text x="718" y="226" font-size="12.5" font-weight="700" fill="#141A22" class="en">disburses</text>
+      <text x="718" y="242" font-size="12.5" font-weight="700" fill="#141A22" class="en">loan</text>
+      <text x="718" y="226" font-size="12.5" font-weight="700" fill="#141A22" class="ta">loan பணம்</text>
+      <text x="718" y="242" font-size="12.5" font-weight="700" fill="#141A22" class="ta">அனுப்புது</text>
+
+      <!-- App to partners, fees back -->
+      <line x1="340" y1="290" x2="264" y2="366" stroke="#141A22" stroke-width="1.8" marker-end="url(#aK)"/>
+      <text x="294" y="322" text-anchor="end" font-size="12.5" font-weight="700" fill="#141A22" class="en">sends borrower</text>
+      <text x="294" y="322" text-anchor="end" font-size="12.5" font-weight="700" fill="#141A22" class="ta">அனுப்புது</text>
+      <line x1="300" y1="368" x2="376" y2="294" stroke="#C8650A" stroke-width="2.2" marker-end="url(#aO)"/>
+      <text x="368" y="318" font-size="12.5" font-weight="800" fill="#C8650A" class="en">pays fees</text>
+      <text x="368" y="318" font-size="12.5" font-weight="800" fill="#C8650A" class="ta">fees கொடுக்குது</text>
+      <text x="368" y="334" font-size="12.5" font-weight="800" fill="#C8650A" class="en">57% of revenue</text>
+      <text x="368" y="334" font-size="12.5" font-weight="800" fill="#C8650A" class="ta">revenue-ல 57%</text>
+
+      <!-- App to own NBFC, interest back -->
+      <line x1="560" y1="290" x2="636" y2="366" stroke="#141A22" stroke-width="1.8" marker-end="url(#aK)"/>
+      <text x="606" y="322" font-size="12.5" font-weight="700" fill="#141A22" class="en">books loan</text>
+      <text x="606" y="322" font-size="12.5" font-weight="700" fill="#141A22" class="ta">loan book</text>
+      <line x1="600" y1="368" x2="524" y2="294" stroke="#1F7A5C" stroke-width="2.2" marker-end="url(#aG)"/>
+      <text x="550" y="352" text-anchor="end" font-size="12.5" font-weight="800" fill="#1F7A5C" class="en">interest spread</text>
+      <text x="550" y="352" text-anchor="end" font-size="12.5" font-weight="800" fill="#1F7A5C" class="ta">interest spread</text>
+      <text x="550" y="368" text-anchor="end" font-size="12.5" font-weight="800" fill="#1F7A5C" class="en">39% of revenue</text>
+      <text x="550" y="368" text-anchor="end" font-size="12.5" font-weight="800" fill="#1F7A5C" class="ta">revenue-ல 39%</text>
+    </svg>
+    </div>
+    <figcaption class="note"><span class="en">Borrowers repay EMIs to whichever lender funded them. Orange = fee income, green = interest income, red = credit risk Moneyview keeps. AUM split as of 30 Jun 2026.</span><span class="ta">Borrowers EMI-ஐ loan கொடுத்தவங்களுக்கே கட்டுவாங்க. Orange = fee income, green = interest income, red = Moneyview வெச்சிருக்கிற credit risk. AUM split 30 Jun 2026 படி.</span></figcaption>
+  </figure>
+
+  <div class="grid g2" style="margin-top:14px">
+    <figure class="card dg" style="margin:0">
+      <div class="cap" style="font-weight:800;margin-bottom:6px"><span class="en">Users vs borrowers</span><span class="ta">Users vs borrowers</span></div>
+      <svg viewBox="0 0 440 150" role="img" aria-label="Of 14.03 crore registered users, only 1.19 crore, or 8.5%, have borrowed." font-family="Inter, 'Noto Sans Tamil', sans-serif">
+        <rect x="10" y="20" width="420" height="36" rx="6" fill="#FFE3C4"/>
+        <text x="20" y="43" font-size="13" font-weight="800" fill="#141A22" class="en">Registered users · 14.03 cr</text>
+        <text x="20" y="43" font-size="13" font-weight="800" fill="#141A22" class="ta">Registered users · 14.03 கோடி</text>
+        <rect x="10" y="80" width="36" height="36" rx="6" fill="#F28C28"/>
+        <text x="56" y="96" font-size="13" font-weight="800" fill="#141A22" class="en">Borrowers (monetised) · 1.19 cr</text>
+        <text x="56" y="96" font-size="13" font-weight="800" fill="#141A22" class="ta">Loan வாங்குனவங்க · 1.19 கோடி</text>
+        <text x="56" y="113" font-size="12" font-weight="600" fill="#3A4450" class="en">only 8.5% — the rest is room to cross-sell</text>
+        <text x="56" y="113" font-size="12" font-weight="600" fill="#3A4450" class="ta">8.5% தான் — மீதி cross-sell வாய்ப்பு</text>
+        <text x="10" y="142" font-size="11.5" font-weight="600" fill="#5F6873" class="en">Bar widths to scale</text>
+        <text x="10" y="142" font-size="11.5" font-weight="600" fill="#5F6873" class="ta">Bar அளவு சரியான விகிதத்துல</text>
+      </svg>
+      <figcaption class="note"><span class="en">Repeat borrowers now make up 61% of AUM (42% in FY24), so new loans cost less to win.</span><span class="ta">Repeat borrowers இப்போ AUM-ல 61% (FY24-ல 42%) — புது loan வாங்க செலவு குறைவு.</span></figcaption>
+    </figure>
+
+    <figure class="card dg" style="margin:0">
+      <div class="cap" style="font-weight:800;margin-bottom:6px"><span class="en">What Moneyview keeps from every ₹100 lent</span><span class="ta">₹100 loan-ல Moneyview-க்கு எவ்வளவு மிஞ்சுது</span></div>
+      <svg viewBox="0 0 440 170" role="img" aria-label="Per 100 rupees disbursed, net loan revenue rose from 7.48 in FY24 to 8.55 in FY26, and operating profit from 2.08 to 3.42." font-family="Inter, 'Noto Sans Tamil', sans-serif">
+        <!-- scale: ₹1 = 36px, origin x=60 -->
+        <text x="52" y="44" text-anchor="end" font-size="13" font-weight="800" fill="#141A22">FY24</text>
+        <rect x="60" y="24" width="194.4" height="30" fill="#C9CED6"/>
+        <rect x="254.4" y="24" width="74.9" height="30" fill="#1F7A5C"/>
+        <text x="157" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#141A22" class="en">Costs ₹5.40</text>
+        <text x="157" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#141A22" class="ta">செலவு ₹5.40</text>
+        <text x="292" y="44" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">₹2.08</text>
+        <text x="336" y="44" font-size="12" font-weight="700" fill="#3A4450">= ₹7.48</text>
+
+        <text x="52" y="94" text-anchor="end" font-size="13" font-weight="800" fill="#141A22">FY26</text>
+        <rect x="60" y="74" width="184.7" height="30" fill="#C9CED6"/>
+        <rect x="244.7" y="74" width="123.1" height="30" fill="#1F7A5C"/>
+        <text x="152" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#141A22" class="en">Costs ₹5.13</text>
+        <text x="152" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#141A22" class="ta">செலவு ₹5.13</text>
+        <text x="306" y="94" text-anchor="middle" font-size="12" font-weight="800" fill="#FFFFFF">₹3.42</text>
+        <text x="374" y="94" font-size="12" font-weight="700" fill="#3A4450">= ₹8.55</text>
+
+        <line x1="60" y1="116" x2="384" y2="116" stroke="#E7E2DA"/>
+        <text x="60" y="132" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5F6873">₹0</text>
+        <text x="132" y="132" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5F6873">₹2</text>
+        <text x="204" y="132" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5F6873">₹4</text>
+        <text x="276" y="132" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5F6873">₹6</text>
+        <text x="348" y="132" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5F6873">₹8</text>
+        <rect x="60" y="148" width="12" height="12" fill="#C9CED6"/><text x="78" y="158" font-size="11.5" font-weight="700" fill="#141A22" class="en">operating costs</text><text x="78" y="158" font-size="11.5" font-weight="700" fill="#141A22" class="ta">operating செலவு</text>
+        <rect x="190" y="148" width="12" height="12" fill="#1F7A5C"/><text x="208" y="158" font-size="11.5" font-weight="700" fill="#141A22" class="en">operating profit kept</text><text x="208" y="158" font-size="11.5" font-weight="700" fill="#141A22" class="ta">மிஞ்சுற operating profit</text>
+      </svg>
+      <figcaption class="note"><span class="en">Bar length = net loan revenue per ₹100 disbursed, after funding cost and credit losses. Profit kept rose 64% in two years.</span><span class="ta">Bar நீளம் = ₹100 loan-க்கு net loan revenue (funding cost, credit loss கழிச்சு). 2 வருஷத்துல மிஞ்சுற லாபம் 64% ஏறுச்சு.</span></figcaption>
+    </figure>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card">
+      <h3><span class="en">Route A · Partner-funded (off-book)</span><span class="ta">Route A · Partner funding (off-book)</span></h3>
+      <ul class="b">
+        <li><span class="en">Bank/NBFC lends; Moneyview earns origination + servicing fees.</span><span class="ta">Bank/NBFC loan கொடுக்குது; Moneyview-க்கு origination + servicing fees.</span></li>
+        <li><span class="en">Moneyview absorbs losses up to 5% via Default Loss Guarantee (DLG).</span><span class="ta">DLG மூலமா 5% வரை loss Moneyview ஏத்துக்கணும்.</span></li>
+        <li><span class="en">Capital-light, but DLG exposure = ₹1,060.8 cr (43.9% of net worth).</span><span class="ta">Capital-light தான், ஆனா DLG exposure ₹1,060.8 கோடி (net worth-ல 43.9%).</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="en">Route B · Own NBFC (Whizdm Finance)</span><span class="ta">Route B · சொந்த NBFC (Whizdm Finance)</span></h3>
+      <ul class="b">
+        <li><span class="en">WFPL lends from its balance sheet: on-book AUM ₹5,657 cr.</span><span class="ta">WFPL சொந்த balance sheet-ல loan: on-book AUM ₹5,657 கோடி.</span></li>
+        <li><span class="en">Earns full interest spread, carries 100% credit risk.</span><span class="ta">Full interest spread கிடைக்கும், 100% credit risk-உம் அவங்களோடது.</span></li>
+        <li><span class="en">₹250 cr of IPO money goes here; the mix is shifting on-book.</span><span class="ta">IPO-ல ₹250 கோடி இங்க போகுது; mix on-book பக்கம் நகருது.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3><span class="en">Who borrows</span><span class="ta">யாரு loan வாங்குறாங்க</span></h3>
+    <ul class="b">
+      <li><span class="en">79.5% of personal-loan users live in Tier 2 and smaller towns.</span><span class="ta">79.5% users Tier 2 மற்றும் சின்ன ஊர்கள்ல.</span></li>
+      <li><span class="en">67.9% earn ₹3–11 lakh a year; 1.19 cr monetised users (8.5% of registered).</span><span class="ta">67.9% பேருக்கு வருஷ income ₹3–11 lakh; 1.19 கோடி monetised users (registered-ல 8.5%).</span></li>
+      <li><span class="en">Repeat borrowers now 61% of managed AUM (42% in FY24), cutting acquisition cost.</span><span class="ta">Repeat borrowers இப்போ AUM-ல 61% (FY24-ல 42%) — acquisition cost குறையுது.</span></li>
+      <li><span class="en">~10.5% share of FY26 digital unsecured personal-loan sanctions.</span><span class="ta">FY26 digital unsecured personal loan sanctions-ல ~10.5% share.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4 SEGMENTS -->
+<section class="tab" id="t-seg" role="tabpanel" hidden>
+  <h2><span class="en">Segments</span><span class="ta">Segments</span></h2>
+  <p class="lede"><span class="en">Moneyview reports one business. Below: its revenue streams and AUM mix, which work as segments.</span><span class="ta">Moneyview ஒரே segment தான் report பண்றாங்க. கீழ revenue streams, AUM mix — இதுதான் segments மாதிரி.</span></p>
+  <div class="grid g2">
+    <div class="card chart"><div class="cap"><span class="en">FY26 revenue mix</span><span class="ta">FY26 revenue mix</span></div><div id="chMix"></div></div>
+    <div class="card chart"><div class="cap"><span class="en">Managed AUM mix · Jun-26 (₹ cr)</span><span class="ta">Managed AUM mix · Jun-26 (₹ கோடி)</span></div><div id="chAum2"></div></div>
+  </div>
+  <div class="tw" style="margin-top:14px"><table>
+    <thead><tr><th><span class="en">Stream</span><span class="ta">Stream</span></th><th><span class="en">Share / size</span><span class="ta">Share / அளவு</span></th><th><span class="en">What drives it</span><span class="ta">எது drive பண்ணுது</span></th><th><span class="en">Risk borne</span><span class="ta">Risk</span></th></tr></thead>
+    <tbody>
+      <tr><td>Fees & commission</td><td>56.7% of op. revenue</td><td style="text-align:left;white-space:normal">Partner disbursals</td><td style="text-align:left;white-space:normal">DLG ≤5%</td></tr>
+      <tr><td>Interest income (WFPL)</td><td>~39%</td><td style="text-align:left;white-space:normal">On-book AUM ₹5,657 cr</td><td style="text-align:left;white-space:normal">100%</td></tr>
+      <tr><td>DLG deposit interest + loan sale gains</td><td>~4%</td><td style="text-align:left;white-space:normal">Lien-marked deposits</td><td style="text-align:left;white-space:normal">—</td></tr>
+      <tr><td>Cross-sell (cards, insurance, gold)</td><td><span class="en">Small, growing</span><span class="ta">சின்னது, grow ஆகுது</span></td><td style="text-align:left;white-space:normal">14 cr user base</td><td style="text-align:left;white-space:normal">Low</td></tr>
+    </tbody></table></div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card"><h3>Disbursals</h3><ul class="b"><li>FY26: ₹23,099 cr (+31%)</li><li>Q1 FY27: ₹7,152 cr (+40%)</li></ul></div>
+    <div class="card"><h3>Loan margin</h3><ul class="b"><li>FY24 7.48% → FY26 8.55%</li><li>Q1 FY27 8.96% (8.58% a year ago)</li></ul></div>
+    <div class="card"><h3><span class="en">Partner concentration</span><span class="ta">Partner concentration</span></h3><ul class="b"><li><span class="en">Top 10 partners = 37.4% of FY26 revenue</span><span class="ta">Top 10 partners = FY26 revenue-ல 37.4%</span></li><li><span class="en">48 partners, 22 regulated lenders</span><span class="ta">48 partners, 22 regulated lenders</span></li></ul></div>
+  </div>
+</section>
+
+<!-- 5 FINANCIALS -->
+<section class="tab" id="t-fin" role="tabpanel" hidden>
+  <h2><span class="en">Financials</span><span class="ta">Financials</span></h2>
+  <p class="lede"><span class="en">Restated consolidated, ₹ crore. FY26 profit was held back by ₹207 cr of one-offs.</span><span class="ta">Restated consolidated, ₹ கோடி. FY26 லாபத்தை ₹207 கோடி one-off செலவு இழுத்துச்சு.</span></p>
+  <div class="tw"><table>
+    <thead><tr><th>₹ cr</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q1 FY26</th><th>Q1 FY27</th></tr></thead>
+    <tbody>
+      <tr><td>Total income</td><td>1,389.2</td><td>2,378.5</td><td>3,404.3</td><td>702.9</td><td>1,065.1</td></tr>
+      <tr><td><span class="en">Growth YoY</span><span class="ta">Growth YoY</span></td><td>—</td><td class="up">71.2%</td><td class="up">43.1%</td><td>—</td><td class="up">51.5%</td></tr>
+      <tr><td>Loan disbursals</td><td>—</td><td>~17,633</td><td>23,099</td><td>~5,109</td><td>7,152</td></tr>
+      <tr><td>Net loan revenue*</td><td>—</td><td>~1,448</td><td>~1,975</td><td>~438</td><td>~641</td></tr>
+      <tr><td>Loan margin (NLR / disbursals)</td><td>7.48%</td><td>8.21%</td><td>8.55%</td><td>8.58%</td><td>8.96%</td></tr>
+      <tr><td>Credit cost (impairment / avg AUM)</td><td>—</td><td>—</td><td>5.16%</td><td>—</td><td>—</td></tr>
+      <tr><td>Cost-to-income (opex / income)</td><td>~56%</td><td>—</td><td>34.8%</td><td>—</td><td>—</td></tr>
+      <tr><td>PAT</td><td>171.2</td><td>240.3</td><td>242.7</td><td>67.2</td><td>173.8</td></tr>
+      <tr><td>PAT margin</td><td>12.3%</td><td>10.1%</td><td>7.1%</td><td>9.6%</td><td>16.3%</td></tr>
+      <tr><td>RoAUM (PAT / avg managed AUM)</td><td>—</td><td>1.6%</td><td>1.3%</td><td>—</td><td>3.2% ann.</td></tr>
+      <tr><td>Net worth</td><td>1,606.6</td><td>1,918.7</td><td>2,225.4</td><td>1,991.0</td><td>2,415.2</td></tr>
+      <tr><td>Total borrowings</td><td>1,708.9</td><td>3,413.4</td><td>5,157.0</td><td>4,070.1</td><td>5,484.8</td></tr>
+      <tr><td>Total assets</td><td>3,519.5</td><td>5,632.4</td><td>8,104.9</td><td>6,404.8</td><td>8,641.9</td></tr>
+      <tr><td>Managed AUM</td><td>12,884.8</td><td>16,715.1</td><td>21,380.1</td><td>~17,730</td><td>22,520</td></tr>
+    </tbody></table></div>
+  <p class="note"><span class="en">*Net loan revenue = loan margin × disbursals (CB estimate; RHP defines loan margin as NLR ÷ disbursals). FY25 and Q1 FY26 disbursals derived from reported growth (+31%, +40%). Q1 FY26 AUM derived from +27% YoY. Some summaries show FY25/FY26 borrowings at ₹3,204/₹4,885 cr; the table uses RHP restated figures quoted by Chittorgarh/InvestorGain.</span><span class="ta">*Net loan revenue = loan margin × disbursals (CB கணக்கு). FY25, Q1 FY26 disbursals growth (+31%, +40%)-ல இருந்து கணக்கு. Q1 FY26 AUM +27% YoY-ல இருந்து. சில summaries borrowings ₹3,204/₹4,885 கோடி-னு காட்டுது; இங்க RHP restated figures.</span></p>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card chart"><div class="cap"><span class="en">Managed AUM (₹ cr)</span><span class="ta">Managed AUM (₹ கோடி)</span></div><div id="chAum"></div></div>
+    <div class="card">
+      <h3><span class="en">Cost lines that matter (FY24 → FY26)</span><span class="ta">முக்கிய செலவுகள் (FY24 → FY26)</span></h3>
+      <ul class="b">
+        <li><span class="en"><b>Impairment:</b> ₹253 cr → ₹983.5 cr (5.16% of avg AUM).</span><span class="ta"><b>Impairment:</b> ₹253 → ₹983.5 கோடி (avg AUM-ல 5.16%).</span></li>
+        <li><span class="en"><b>Finance cost:</b> ₹125 cr → ₹632 cr as WFPL borrows more.</span><span class="ta"><b>Finance cost:</b> ₹125 → ₹632 கோடி — WFPL அதிகம் கடன் வாங்குது.</span></li>
+        <li><span class="en"><b>Opex / income:</b> ~56% → 34.8%; operating leverage is real.</span><span class="ta"><b>Opex / income:</b> ~56% → 34.8%; operating leverage உண்மையா வருது.</span></li>
+        <li><span class="en"><b>One-offs FY26:</b> ₹160 cr CEO incentive + ₹47 cr cyber-fraud loss = ₹207 cr.</span><span class="ta"><b>FY26 one-offs:</b> ₹160 கோடி CEO incentive + ₹47 கோடி cyber fraud = ₹207 கோடி.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 6 CASH FLOW & RATIOS -->
+<section class="tab" id="t-cf" role="tabpanel" hidden>
+  <h2><span class="en">Cash flow & ratios</span><span class="ta">Cash flow & ratios</span></h2>
+  <p class="lede"><span class="en">For a lender, loan growth is the working capital. So we track funding, returns and credit instead of debtor days.</span><span class="ta">Lender-க்கு loan growth தான் working capital. அதனால debtor days பதிலா funding, returns, credit பாக்குறோம்.</span></p>
+  <div class="grid g2">
+    <div class="card">
+      <h3><span class="en">Cash-flow lens</span><span class="ta">Cash-flow பார்வை</span></h3>
+      <ul class="b">
+        <li><span class="en">Operating cash flow of a growing lender is usually negative: new loans are cash out.</span><span class="ta">Grow ஆகுற lender-க்கு operating cash flow பொதுவா negative — புது loan = cash வெளியே.</span></li>
+        <li><span class="en">Growth is debt-funded: ~85% of FY25 and FY26 balance-sheet growth came from new borrowings.</span><span class="ta">Growth-க்கு கடன் தான்: FY25, FY26 balance-sheet growth-ல ~85% புது borrowings.</span></li>
+        <li><span class="en">Q1 FY27 was more self-funded: 37% of the funding increase came from retained profit.</span><span class="ta">Q1 FY27-ல funding increase-ல 37% லாபத்துல இருந்தே வந்துச்சு.</span></li>
+        <li><span class="en">RHP line-item cash flows were not in public summaries; figures here are CB calculations.</span><span class="ta">RHP cash flow line items public summaries-ல இல்ல; இவை CB கணக்கு.</span></li>
+      </ul>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>₹ cr</th><th>FY25</th><th>FY26</th><th>Q1 FY27</th></tr></thead>
+      <tbody>
+        <tr><td><span class="en">Δ Borrowings</span><span class="ta">Δ Borrowings</span></td><td>+1,704</td><td>+1,744</td><td>+328</td></tr>
+        <tr><td><span class="en">Δ Net worth</span><span class="ta">Δ Net worth</span></td><td>+312</td><td>+307</td><td>+190</td></tr>
+        <tr><td><span class="en">Debt share of new funding</span><span class="ta">புது funding-ல கடன் share</span></td><td>84.5%</td><td>85.0%</td><td>63.3%</td></tr>
+        <tr><td><span class="en">Δ Managed AUM</span><span class="ta">Δ Managed AUM</span></td><td>+3,830</td><td>+4,665</td><td>+1,140</td></tr>
+      </tbody></table></div>
+  </div>
+  <h3 style="margin-top:18px"><span class="en">Key ratios (CB calculated)</span><span class="ta">முக்கிய ratios (CB கணக்கு)</span></h3>
+  <div class="tw"><table>
+    <thead><tr><th>Ratio</th><th>FY24</th><th>FY25</th><th>FY26</th><th>Q1 FY27</th></tr></thead>
+    <tbody>
+      <tr><td>RoE (avg equity)</td><td>—</td><td>13.6%</td><td>11.7%</td><td>30.0% ann.</td></tr>
+      <tr><td>RoA (avg assets)</td><td>—</td><td>5.3%</td><td>3.5%</td><td>8.3% ann.</td></tr>
+      <tr><td>RoAUM (avg managed AUM)</td><td>—</td><td>1.6%</td><td>1.3%</td><td>3.2% ann.</td></tr>
+      <tr><td>Credit cost (impairment / avg AUM)</td><td>—</td><td>—</td><td>5.16%</td><td>—</td></tr>
+      <tr><td>Cost-to-income</td><td>~56%</td><td>—</td><td>34.8%</td><td>—</td></tr>
+      <tr><td>Debt / equity</td><td>1.06x</td><td>1.78x</td><td>2.32x</td><td>2.27x</td></tr>
+      <tr><td>Assets / equity</td><td>2.19x</td><td>2.94x</td><td>3.64x</td><td>3.58x</td></tr>
+      <tr><td>Impairment / income</td><td>18.2%</td><td>—</td><td>28.9%</td><td>—</td></tr>
+      <tr><td>Finance cost / income</td><td>9.0%</td><td>—</td><td>18.6%</td><td>—</td></tr>
+      <tr><td>Gross Stage 3 (WFPL)</td><td>0.94%</td><td>—</td><td>2.74%</td><td>2.72%</td></tr>
+      <tr><td><span class="en">Annualised loss rate</span><span class="ta">Annualised loss rate</span></td><td>7.93%</td><td>—</td><td>—</td><td>6.90%</td></tr>
+      <tr><td>DLG exposure / net worth</td><td>—</td><td>—</td><td>—</td><td>43.9%</td></tr>
+    </tbody></table></div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3><span class="en">Unit economics per ₹100 disbursed</span><span class="ta">₹100 loan-க்கு unit economics</span></h3>
+      <div class="tw" style="border:0"><table style="min-width:0"><thead><tr><th></th><th>FY24</th><th>FY26</th></tr></thead><tbody>
+        <tr><td>Net loan revenue</td><td>₹7.48</td><td>₹8.55</td></tr>
+        <tr><td>Finance cost</td><td>₹0.86</td><td>₹2.73</td></tr>
+        <tr><td>Operating profit</td><td>₹2.08</td><td>₹3.42</td></tr>
+      </tbody></table></div></div>
+    <div class="card"><h3><span class="en">Working capital days</span><span class="ta">Working capital days</span></h3>
+      <ul class="b">
+        <li><span class="en">Not meaningful for a lender: receivables are the loan book itself.</span><span class="ta">Lender-க்கு பொருந்தாது — receivables-ஏ loan book தான்.</span></li>
+        <li><span class="en">Better proxy: AUM turns. Disbursals ₹23,099 cr on avg AUM ₹19,048 cr = 1.2x a year.</span><span class="ta">நல்ல proxy: AUM turns. ₹23,099 கோடி disbursal / avg AUM ₹19,048 கோடி = வருஷத்துக்கு 1.2x.</span></li>
+        <li><span class="en">Short tenure loans turn fast, so credit stress shows up within 2–3 quarters.</span><span class="ta">Short tenure loans — credit stress 2–3 quarters-லயே தெரிஞ்சிடும்.</span></li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- 7 PEERS -->
+<section class="tab" id="t-peer" role="tabpanel" hidden>
+  <h2><span class="en">Peer comparison</span><span class="ta">Peer comparison</span></h2>
+  <p class="lede"><span class="en">RHP peer set mixes lenders and platforms. OnEMI (Kissht) is the closest model match.</span><span class="ta">RHP peers-ல lenders, platforms கலந்திருக்கு. OnEMI (Kissht) தான் நெருக்கமான model.</span></p>
+  <div class="tw"><table>
+    <thead><tr><th>Company</th><th>Model</th><th>P/E (x)</th><th>RoNW</th><th>EPS (₹)</th><th>NAV (₹)</th></tr></thead>
+    <tbody>
+      <tr class="me"><td>Moneyview (@₹34)</td><td style="text-align:left">Platform + NBFC</td><td>21.7</td><td>11.7%*</td><td>1.57</td><td>14.57</td></tr>
+      <tr><td>OnEMI Technology (Kissht)</td><td style="text-align:left">Platform + NBFC</td><td>16.6</td><td>21.0%</td><td>21.39</td><td>113.05</td></tr>
+      <tr><td>Bajaj Finance</td><td style="text-align:left">Diversified NBFC</td><td>33.7</td><td>17.2%</td><td>30.51</td><td>183.21</td></tr>
+      <tr><td>SBI Cards</td><td style="text-align:left">Card lender</td><td>28.0</td><td>13.7%</td><td>22.77</td><td>166.00</td></tr>
+      <tr><td>PB Fintech</td><td style="text-align:left">Marketplace</td><td>120.3</td><td>9.2%</td><td>14.46</td><td>158.03</td></tr>
+      <tr><td>One97 (Paytm)</td><td style="text-align:left">Payments + lending</td><td>213.5</td><td>4.6%</td><td>8.55</td><td>250.39</td></tr>
+    </tbody></table></div>
+  <p class="note"><span class="en">Peer P/E and RoNW as shown in RHP-based summaries (diluted EPS); *Moneyview RoNW is CB's FY26 average-equity figure. Market prices move; verify before use.</span><span class="ta">Peer P/E, RoNW — RHP summaries படி; *Moneyview RoNW CB-யோட FY26 கணக்கு. விலை மாறும்; பயன்படுத்தும் முன் check பண்ணுங்க.</span></p>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card chart"><div class="cap">P/E (x) — <span class="en">axis capped at 60x</span><span class="ta">axis 60x-ல cap</span></div><div id="chPe"></div></div>
+    <div class="card">
+      <h3><span class="en">Moneyview vs OnEMI</span><span class="ta">Moneyview vs OnEMI</span></h3>
+      <ul class="b">
+        <li><span class="en">Same playbook: app-led unsecured loans, DLG partners + own NBFC.</span><span class="ta">ஒரே playbook: app loans, DLG partners + சொந்த NBFC.</span></li>
+        <li><span class="en">OnEMI trades ~2.6x book after doubling from its IPO price; Moneyview comes at ~1.9x.</span><span class="ta">OnEMI IPO விலையில இருந்து double ஆகி ~2.6x book; Moneyview ~1.9x-ல வருது.</span></li>
+        <li><span class="en">OnEMI's return on AUM is higher, which explains part of the discount.</span><span class="ta">OnEMI-யோட return on AUM அதிகம் — discount-க்கு இதுவும் காரணம்.</span></li>
+        <li><span class="en">Unlisted rival KreditBee saw credit cost rise to 7.7% in FY25.</span><span class="ta">Unlisted rival KreditBee-க்கு FY25 credit cost 7.7%.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 8 VALUATIONS -->
+<section class="tab" id="t-val" role="tabpanel" hidden>
+  <h2><span class="en">Valuations</span><span class="ta">Valuations</span></h2>
+  <p class="lede"><span class="en">Cheap on current run-rate and book; less so on reported FY26 earnings.</span><span class="ta">இப்போதைய run-rate, book வெச்சு பாத்தா மலிவு; FY26 reported லாபம் வெச்சு பாத்தா அவ்வளவு இல்ல.</span></p>
+  <div class="tw"><table>
+    <thead><tr><th>Metric @ ₹34</th><th>Value</th><th>Basis</th></tr></thead>
+    <tbody>
+      <tr><td>Market cap</td><td>₹5,985 cr</td><td style="text-align:left">176.0 cr shares post-issue</td></tr>
+      <tr><td>Market cap @ ₹32</td><td>~₹5,677 cr</td><td style="text-align:left">CB calc</td></tr>
+      <tr><td>P/E FY26 reported</td><td>24.7x</td><td style="text-align:left">PAT ₹242.7 cr, post-issue</td></tr>
+      <tr><td>P/E FY26 diluted EPS</td><td>21.7x</td><td style="text-align:left">EPS ₹1.57 (RHP)</td></tr>
+      <tr><td>P/E FY26 ex one-offs</td><td>~13–15x</td><td style="text-align:left">Adds back ₹207 cr; tax effect est.</td></tr>
+      <tr><td>P/E Q1 FY27 annualised</td><td>8.6x</td><td style="text-align:left">₹173.8 cr × 4</td></tr>
+      <tr><td>P/B post-issue</td><td>1.89x</td><td style="text-align:left">NW ₹2,415 cr + ₹750 cr</td></tr>
+      <tr><td>Market cap / managed AUM</td><td>26.6%</td><td style="text-align:left">AUM ₹22,520 cr</td></tr>
+      <tr><td>vs 2024 private round</td><td>~40% lower</td><td style="text-align:left">~$1.2 bn then</td></tr>
+    </tbody></table></div>
+
+  <div class="card hi" style="margin-top:16px">
+    <h3><span class="en">What-if calculator</span><span class="ta">What-if கணக்கு</span></h3>
+    <p class="note" style="margin:0 0 10px"><span class="en">Pick an FY27 profit and a P/E. This is arithmetic, not a forecast.</span><span class="ta">FY27 லாபம், P/E தேர்ந்தெடுங்க. இது கணக்கு தான், forecast இல்ல.</span></p>
+    <div class="calc">
+      <div><label for="pat"><span class="en">FY27 PAT (₹ cr)</span><span class="ta">FY27 PAT (₹ கோடி)</span>: <output id="patO">600</output></label><input type="range" id="pat" min="300" max="900" step="10" value="600"></div>
+      <div><label for="pe">P/E (x): <output id="peO">14</output></label><input type="range" id="pe" min="6" max="30" step="1" value="14"></div>
+      <div><div class="note" style="margin:0"><span class="en">Implied value / share</span><span class="ta">ஒரு share மதிப்பு</span></div><div class="res" id="ivs">₹47.7</div></div>
+      <div><div class="note" style="margin:0"><span class="en">vs ₹34 issue price</span><span class="ta">₹34 issue விலையோட</span></div><div class="res" id="ivd">+40%</div></div>
+    </div>
+  </div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card"><h3><span class="en">Bull case</span><span class="ta">Bull case</span></h3><ul class="b"><li><span class="en">Q1 run-rate holds; RoE 20%+</span><span class="ta">Q1 run-rate தொடர்ந்தா; RoE 20%+</span></li><li><span class="en">Re-rates toward OnEMI's ~2.6x book</span><span class="ta">OnEMI ~2.6x book பக்கம் re-rate</span></li></ul></div>
+    <div class="card"><h3><span class="en">Base case</span><span class="ta">Base case</span></h3><ul class="b"><li><span class="en">Growth 25–30%, credit cost steady</span><span class="ta">Growth 25–30%, credit cost நிலையா</span></li><li><span class="en">Trades near 1.8–2.2x book</span><span class="ta">1.8–2.2x book அருகில்</span></li></ul></div>
+    <div class="card"><h3><span class="en">Bear case</span><span class="ta">Bear case</span></h3><ul class="b"><li><span class="en">Unsecured-loan cycle turns; DLG payouts rise</span><span class="ta">Unsecured loan cycle திரும்புனா; DLG payouts ஏறும்</span></li><li><span class="en">Book multiple compresses toward 1.2–1.4x</span><span class="ta">1.2–1.4x book வரை இறங்கலாம்</span></li></ul></div>
+  </div>
+</section>
+
+<!-- 9 TAKEAWAYS -->
+<section class="tab" id="t-take" role="tabpanel" hidden>
+  <h2><span class="en">5 key takeaways</span><span class="ta">5 முக்கிய takeaways</span></h2>
+  <p class="lede"><span class="en">What matters most, in order of weight.</span><span class="ta">முக்கியத்துவப்படி.</span></p>
+  <div class="grid" style="gap:12px" id="takeList"></div>
+</section>
+
+<!-- 10 MARKET ACTIVITY -->
+<section class="tab" id="t-mkt" role="tabpanel" hidden>
+  <h2><span class="en">Reasons for market activity</span><span class="ta">Market activity-க்கு காரணங்கள்</span></h2>
+  <p class="lede"><span class="en">Subscription and grey-market mood during bidding. Live numbers change through the day.</span><span class="ta">Bidding நாட்கள்ல subscription, grey market mood. Live numbers நாள் முழுக்க மாறும்.</span></p>
+  <div class="tw"><table>
+    <thead><tr><th><span class="en">Snapshot</span><span class="ta">Snapshot</span></th><th>QIB</th><th>NII</th><th>Retail</th><th>Total</th></tr></thead>
+    <tbody>
+      <tr><td>Day 1 · 24 Sep</td><td>0.05x</td><td>2.53x</td><td>1.87x</td><td>1.49x</td></tr>
+      <tr><td>Day 2 · 25 Sep</td><td>0.25x</td><td>15.41x</td><td>5.18x</td><td>6.01x</td></tr>
+      <tr><td>Day 3 · 11:15 AM</td><td class="dn">0.27x</td><td class="up">~31–35x</td><td>8.24x</td><td>11.44x</td></tr>
+      <tr><td>Day 3 · 12:33 PM</td><td colspan="3" style="text-align:center">—</td><td class="up"><b>18.73x</b></td></tr>
+    </tbody></table></div>
+  <p class="note"><span class="en">Day 3 NII split: small HNI 34.76x, big HNI 30.63x. Final numbers come after 5 PM on 28 Sep. GMP quoted at ₹11–14 (32–41%) across trackers; GMP is unofficial and unregulated.</span><span class="ta">Day 3 NII: small HNI 34.76x, big HNI 30.63x. Final numbers 28 Sep 5 PM-க்கு அப்புறம். GMP ₹11–14 (32–41%); GMP official இல்ல.</span></p>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3><span class="en">Why demand is strong</span><span class="ta">Demand ஏன் அதிகம்</span></h3><ul class="b">
+      <li><span class="en">Priced ~40% below the 2024 private valuation.</span><span class="ta">2024 private valuation-ஐ விட ~40% கம்மி விலை.</span></li>
+      <li><span class="en">Q1 FY27 PAT jumped 159%; the run-rate P/E looks low.</span><span class="ta">Q1 FY27 PAT 159% ஏறுச்சு; run-rate P/E கம்மியா தெரியுது.</span></li>
+      <li><span class="en">OnEMI's 100%+ post-listing gain lifted fintech lender sentiment.</span><span class="ta">OnEMI listing-க்கு அப்புறம் 100%+ ஏறுனது fintech sentiment-ஐ தூக்குச்சு.</span></li>
+      <li><span class="en">Anchor book of 20 funds incl. SBI, HDFC, ICICI Pru MFs and Goldman Sachs.</span><span class="ta">Anchor-ல SBI, HDFC, ICICI Pru MF, Goldman Sachs உட்பட 20 funds.</span></li>
+      <li><span class="en">Small issue (₹1,092 cr) and low ₹34 price attract retail.</span><span class="ta">சின்ன issue (₹1,092 கோடி), ₹34 விலை — retail-க்கு ஈர்ப்பு.</span></li>
+    </ul></div>
+    <div class="card"><h3><span class="en">What tempers it</span><span class="ta">எது யோசிக்க வைக்குது</span></h3><ul class="b">
+      <li><span class="en">QIB (ex-anchor) at 0.27x by midday; institutions usually bid late, so watch the close.</span><span class="ta">மதியம் வரை QIB 0.27x தான்; பொதுவா கடைசில bid பண்ணுவாங்க — close-ஐ பாருங்க.</span></li>
+      <li><span class="en">Unsecured lending is under RBI watch; rate hikes are being talked about.</span><span class="ta">Unsecured lending RBI கண்காணிப்புல; rate hike பேச்சு இருக்கு.</span></li>
+      <li><span class="en">31% of the issue is OFS; early investors are cashing out part.</span><span class="ta">Issue-ல 31% OFS; பழைய investors கொஞ்சம் cash out பண்றாங்க.</span></li>
+      <li><span class="en">Heavy HNI demand often means leveraged bids that exit on listing day.</span><span class="ta">அதிக HNI demand-ல leverage bids இருக்கும்; listing நாள்லயே exit ஆகலாம்.</span></li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- 11 SWOT -->
+<section class="tab" id="t-swot" role="tabpanel" hidden>
+  <h2>SWOT</h2>
+  <p class="lede"><span class="en">Strengths are scale and tech; the weak spot is credit risk it keeps on its own books.</span><span class="ta">பலம் — scale, tech; பலவீனம் — தன்னிடமே வெச்சிருக்கிற credit risk.</span></p>
+  <div class="swot">
+    <div class="card"><h3><span class="tag tS">S</span><span class="en">Strengths</span><span class="ta">பலங்கள்</span></h3><ul class="b">
+      <li><span class="en">14 cr users; 99.55% pin-code reach with zero branches</span><span class="ta">14 கோடி users; branch இல்லாம 99.55% pin codes</span></li>
+      <li><span class="en">Profitable every year shown; opex/income down to 35%</span><span class="ta">காட்டுன எல்லா வருஷமும் லாபம்; opex/income 35%-க்கு இறங்குச்சு</span></li>
+      <li><span class="en">61% of AUM from repeat borrowers</span><span class="ta">AUM-ல 61% repeat borrowers</span></li>
+      <li><span class="en">Loan margin rising: 7.48% → 8.96%</span><span class="ta">Loan margin ஏறுது: 7.48% → 8.96%</span></li></ul></div>
+    <div class="card"><h3><span class="tag tW">W</span><span class="en">Weaknesses</span><span class="ta">பலவீனங்கள்</span></h3><ul class="b">
+      <li><span class="en">GS3 up from 0.94% to 2.72%; loans are unsecured</span><span class="ta">GS3 0.94% → 2.72%; loans unsecured</span></li>
+      <li><span class="en">DLG exposure 44% of net worth</span><span class="ta">DLG exposure net worth-ல 44%</span></li>
+      <li><span class="en">Top 10 partners = 37% of revenue</span><span class="ta">Top 10 partners = revenue-ல 37%</span></li>
+      <li><span class="en">₹160 cr CEO payout and ₹47 cr cyber fraud in FY26</span><span class="ta">FY26-ல ₹160 கோடி CEO payout, ₹47 கோடி cyber fraud</span></li></ul></div>
+    <div class="card"><h3><span class="tag tO">O</span><span class="en">Opportunities</span><span class="ta">வாய்ப்புகள்</span></h3><ul class="b">
+      <li><span class="en">Digital personal loans seen growing 26–27% CAGR to FY31</span><span class="ta">Digital personal loans FY31 வரை 26–27% CAGR எதிர்பார்ப்பு</span></li>
+      <li><span class="en">Only 8.5% of users monetised so far</span><span class="ta">இதுவரை 8.5% users தான் monetise ஆகியிருக்காங்க</span></li>
+      <li><span class="en">Cross-sell cards, insurance, gold, home loans</span><span class="ta">Cards, insurance, gold, home loans cross-sell</span></li>
+      <li><span class="en">Fresh capital lets WFPL scale on-book NIM</span><span class="ta">புது capital-ல WFPL on-book NIM scale பண்ணலாம்</span></li></ul></div>
+    <div class="card"><h3><span class="tag tT">T</span><span class="en">Threats</span><span class="ta">அச்சுறுத்தல்கள்</span></h3><ul class="b">
+      <li><span class="en">RBI tightening on unsecured credit or DLG rules</span><span class="ta">Unsecured credit, DLG rules-ல RBI கடுமையாக்கலாம்</span></li>
+      <li><span class="en">Borrower over-leverage in a downturn</span><span class="ta">Downturn-ல borrowers அதிக கடன்ல மாட்டலாம்</span></li>
+      <li><span class="en">Rising rates squeeze WFPL's spread</span><span class="ta">Rate ஏறுனா WFPL spread குறையும்</span></li>
+      <li><span class="en">Competition: KreditBee, OnEMI, banks' own apps</span><span class="ta">போட்டி: KreditBee, OnEMI, banks-ஓட சொந்த apps</span></li></ul></div>
+  </div>
+</section>
+
+<!-- 12 ASSIST -->
+<section class="tab" id="t-assist" role="tabpanel" hidden>
+  <h2>Cauvery Assist</h2>
+  <p class="lede"><span class="en">Ask about Moneyview's IPO. Direct answers, read aloud at your speed.</span><span class="ta">Moneyview IPO பத்தி கேளுங்க. நேரடி பதில், உங்க speed-ல படிச்சு சொல்லும்.</span></p>
+  <div id="assist">
+    <div class="chat">
+      <div class="chat-head">
+        <b>Cauvery Assist</b>
+        <div class="ctrl">
+          <label for="spd"><span class="en">Speed</span><span class="ta">வேகம்</span></label>
+          <button class="btn" id="spdDn" aria-label="Slower" style="padding:4px 9px">−</button>
+          <input type="range" id="spd" min="0.5" max="1.5" step="0.05" value="0.8">
+          <button class="btn" id="spdUp" aria-label="Faster" style="padding:4px 9px">+</button>
+          <output id="spdO">0.80×</output>
+          <label for="wait"><span class="en">Wait</span><span class="ta">காத்திரு</span></label>
+          <select id="wait" style="font:700 12.5px var(--fb);padding:4px;border-radius:6px;border:1.5px solid var(--line)"><option value="2">2s</option><option value="3" selected>3s</option><option value="5">5s</option><option value="0">Done</option></select>
+          <button class="btn" id="pauseB">⏸</button><button class="btn" id="stopB">⏹</button>
+        </div>
+      </div>
+      <div class="micbar" id="micbar"></div>
+      <div class="chat-log" id="log" aria-live="polite"></div>
+      <div class="sugs" id="sugs"></div>
+      <form class="chat-in" id="askF">
+        <input id="askI" autocomplete="off" aria-label="Question">
+        <button type="button" class="btn" id="micB" aria-label="Speak">🎤</button>
+        <button type="button" class="btn" id="doneB" hidden>Done</button>
+        <button type="submit" class="btn p"><span class="en">Ask</span><span class="ta">கேள்</span></button>
+      </form>
+    </div>
+  </div>
+  <p class="note"><span class="en">Voice input needs Chrome/Edge on GitHub Pages; claude.ai pages block the microphone. Read-aloud works everywhere.</span><span class="ta">Voice input GitHub Pages-ல Chrome/Edge-ல வேலை செய்யும்; claude.ai-ல mic block. Read-aloud எல்லா இடத்திலும் வேலை செய்யும்.</span></p>
+</section>
+
+<!-- 13 SOCRATES -->
+<section class="tab" id="t-quiz" role="tabpanel" hidden>
+  <h2>Cauvery Socrates</h2>
+  <p class="lede"><span class="en">Test what you learned about the Moneyview IPO.</span><span class="ta">Moneyview IPO பத்தி நீங்க கத்துக்கிட்டதை test பண்ணுங்க.</span></p>
+  <div class="q" id="quiz"></div>
+</section>
+
+<!-- 14 ANALYST VIEW -->
+<section class="tab" id="t-view" role="tabpanel" hidden>
+  <h2><span class="en">Analyst view</span><span class="ta">Analyst பார்வை</span></h2>
+  <p class="lede"><span class="en">CB scorecard. This is an assessment, not a buy/sell/hold call.</span><span class="ta">CB scorecard. இது மதிப்பீடு மட்டும் — buy/sell/hold பரிந்துரை இல்ல.</span></p>
+  <div class="grid g2">
+    <div class="card"><h3>CB Scorecard (0–10)</h3><div class="grid" style="gap:10px" id="scores"></div></div>
+    <div class="verdict">
+      <div class="brand">CB Verdict</div>
+      <div class="big"><span class="en">Reasonably priced growth, with credit-cycle risk</span><span class="ta">நியாயமான விலையில growth — ஆனா credit-cycle risk இருக்கு</span></div>
+      <ul class="b">
+        <li><span class="en"><b>Listing view:</b> strong retail/HNI demand and GMP point to positive sentiment; weak QIB bids until midday are a caution.</span><span class="ta"><b>Listing பார்வை:</b> retail/HNI demand, GMP நல்ல sentiment காட்டுது; மதியம் வரை QIB கம்மி — கவனம்.</span></li>
+        <li><span class="en"><b>Long-term view:</b> valuation already assumes little; the result depends on GS3 and DLG losses staying contained.</span><span class="ta"><b>நீண்டகால பார்வை:</b> valuation அதிகம் எதிர்பார்க்கல; GS3, DLG losses கட்டுக்குள்ள இருக்கணும்.</span></li>
+        <li><span class="en"><b>Suits:</b> investors who accept volatility in unsecured lending and can track quarterly credit data.</span><span class="ta"><b>யாருக்கு பொருந்தும்:</b> unsecured lending volatility-ஐ ஏத்துக்கிட்டு, quarterly credit data பாக்க முடிஞ்சவங்களுக்கு.</span></li>
+        <li><span class="en"><b>Watch next:</b> Q2 FY27 GS3, credit cost vs 5.16%, on-book share, any RBI DLG changes.</span><span class="ta"><b>அடுத்து பாக்க:</b> Q2 FY27 GS3, credit cost 5.16% vs, on-book share, RBI DLG மாற்றங்கள்.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3><span class="en">Sources</span><span class="ta">Sources</span></h3>
+    <ul class="b" style="font-size:13px">
+      <li>Moneyview RHP (21 Sep 2026) via Chittorgarh / InvestorGain, Novelty Wealth, Upstox summaries</li>
+      <li>Subscription: 5paisa, ScanX, IPOji (28 Sep 2026, 12:33 PM) · Anchor: Entrackr, CXO Digitalpulse</li>
+      <li>Analysis inputs: m.Stock, InCred Money, BusinessLine via TradingView, Multibagg, SP Tulsian</li>
+    </ul>
+  </div>
+</section>
+</div>
+
+<div class="cb" id="cb">
+  <button id="cbB" aria-label="Disclaimer" aria-expanded="false">CB</button>
+  <div class="tip" role="note"><span class="en"><b>Disclaimer:</b> CB Research (Cauvery Business Research) is not SEBI-registered. This dashboard is for education only and is not a buy, sell or hold recommendation. IPO investing carries market risk; read the RHP and consult a SEBI-registered adviser. GMP is unofficial. Data as of 28 Sep 2026.</span><span class="ta"><b>Disclaimer:</b> CB Research SEBI-registered இல்ல. இது கல்விக்காக மட்டும்; buy/sell/hold பரிந்துரை இல்ல. IPO-ல market risk இருக்கு; RHP படிங்க, SEBI-registered adviser-ஐ கேளுங்க. GMP official இல்ல. Data 28 Sep 2026 வரை.</span></div>
+</div>
+
+<script>
+(function(){
+var LANG="en";
+function L(en,ta){return '<span class="en">'+en+'</span><span class="ta">'+ta+'</span>';}
+function A(en,ta){return {en:en,ta:ta};}
+function lt(o){return typeof o==="string"?o:o[LANG];}
+
+/* ---------- Tabs ---------- */
+var TABS=[["t-dash","Dashboard","டாஷ்போர்டு"],["t-ipo","IPO Details","IPO விவரம்"],["t-biz","Business Model","Business Model"],["t-seg","Segments","Segments"],["t-fin","Financials","Financials"],["t-cf","Cash Flow & Ratios","Cash Flow & Ratios"],["t-peer","Peers","Peers"],["t-val","Valuations","Valuations"],["t-take","5 Key Takeaways","5 Takeaways"],["t-mkt","Market Activity","Market Activity"],["t-swot","SWOT","SWOT"],["t-assist","Cauvery Assist","Cauvery Assist"],["t-quiz","Cauvery Socrates","Cauvery Socrates"],["t-view","Analyst View","Analyst View"]];
+var row=document.getElementById("tabrow");
+TABS.forEach(function(t,i){var b=document.createElement("button");b.role="tab";b.id="b-"+t[0];b.setAttribute("aria-controls",t[0]);b.setAttribute("aria-selected",i===0?"true":"false");b.innerHTML=L(t[1],t[2]);b.onclick=function(){showTab(t[0]);};row.appendChild(b);});
+function showTab(id){TABS.forEach(function(t){var on=t[0]===id;document.getElementById(t[0]).hidden=!on;var b=document.getElementById("b-"+t[0]);b.setAttribute("aria-selected",on?"true":"false");if(on)b.scrollIntoView({block:"nearest",inline:"nearest"});});try{localStorage.setItem("mv_tab",id);}catch(e){}}
+window.showTab=showTab;
+var h=(location.hash||"").slice(1);var saved=null;try{saved=localStorage.getItem("mv_tab");}catch(e){}
+if(h&&document.getElementById(h))showTab(h);else if(saved&&document.getElementById(saved))showTab(saved);
+
+/* ---------- Language ---------- */
+function setLang(l){LANG=l;document.body.classList.toggle("ta",l==="ta");document.getElementById("bEN").setAttribute("aria-pressed",l==="en");document.getElementById("bTA").setAttribute("aria-pressed",l==="ta");document.documentElement.lang=l==="ta"?"ta":"en";try{localStorage.setItem("mv_lang",l);}catch(e){}renderSugs();if(window.__fullAssist)window.__fullAssist.setLang(l);document.getElementById("askI").placeholder=l==="ta"?"கேளுங்க: Moneyview valuation எப்படி?":"Ask: Is Moneyview cheap vs peers?";}
+document.getElementById("bEN").onclick=function(){setLang("en");};
+document.getElementById("bTA").onclick=function(){setLang("ta");};
+
+/* ---------- Charts (SVG) ---------- */
+var C={acc:"#F28C28",mv:"#1F7A5C",ink:"#141A22",mute:"#5F6873",line:"#E7E2DA",grey:"#C9CED6"};
+function bars(el,labels,series,opt){
+  opt=opt||{};var W=600,H=opt.h||270,pl=46,pr=12,pt=26,pb=34,iw=W-pl-pr,ih=H-pt-pb;
+  var max=opt.max||Math.max.apply(null,series.reduce(function(a,s){return a.concat(s.values);},[]))*1.12;
+  var nice=Math.pow(10,Math.floor(Math.log10(max)));var step=Math.ceil(max/nice/4)*nice/ (max/nice>6?1:2);if(max/step>6)step*=2;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(opt.aria||"chart")+'">';
+  for(var y=0;y<=max;y+=step){var yy=pt+ih-ih*y/max;s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+yy+'" y2="'+yy+'" stroke="'+C.line+'"/><text x="'+(pl-6)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" font-family="IBM Plex Mono" fill="'+C.mute+'">'+(opt.yf?opt.yf(y):y.toLocaleString("en-IN"))+'</text>';}
+  var gw=iw/labels.length,n=series.length,bw=Math.min(46,(gw*0.7)/n);
+  labels.forEach(function(lb,i){var gx=pl+gw*i+(gw-bw*n)/2;
+    series.forEach(function(se,j){var v=se.values[i];if(v==null)return;var vv=Math.min(v,max);var bh=ih*vv/max;var x=gx+j*bw,yy=pt+ih-bh;
+      s+='<rect x="'+x+'" y="'+yy+'" width="'+(bw-3)+'" height="'+bh+'" rx="3" fill="'+(se.colors?se.colors[i]:se.color)+'"/>';
+      s+='<text x="'+(x+(bw-3)/2)+'" y="'+(yy-5)+'" text-anchor="middle" font-size="11" font-weight="700" font-family="IBM Plex Mono" fill="'+C.ink+'">'+(opt.vf?opt.vf(v):v.toLocaleString("en-IN"))+'</text>';});
+    s+='<text x="'+(pl+gw*i+gw/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="12" font-weight="700" font-family="Inter" fill="'+C.ink+'">'+lb+'</text>';});
+  s+='</svg>';
+  if(n>1)s+='<div class="legend">'+series.map(function(se){return '<span><i style="background:'+se.color+'"></i>'+se.name+'</span>';}).join("")+'</div>';
+  el.innerHTML=s;
+}
+bars(document.getElementById("chDash"),["FY24","FY25","FY26","Q1 FY26","Q1 FY27"],[{name:L("Total income","Total income"),color:C.acc,values:[1389,2379,3404,703,1065]},{name:"PAT",color:C.mv,values:[171,240,243,67,174]}],{aria:"Total income and PAT"});
+bars(document.getElementById("chAum"),["FY24","FY25","FY26","Jun-26"],[{name:"AUM",color:C.acc,colors:[C.acc,C.acc,C.acc,C.mv],values:[12885,16715,21380,22520]}],{aria:"Managed AUM"});
+bars(document.getElementById("chPe"),["Moneyview","OnEMI","Bajaj Fin","SBI Cards","PB Fintech","Paytm"],[{name:"P/E",color:C.acc,colors:[C.mv,C.acc,C.acc,C.acc,C.grey,C.grey],values:[21.7,16.6,33.7,28.0,120.3,213.5]}],{max:60,vf:function(v){return v>60?v.toFixed(0)+"x ↑":v.toFixed(1)+"x";},yf:function(y){return y+"x";},aria:"Peer P/E"});
+function hbars(el,items,fmt){var s='<div class="grid" style="gap:12px">';items.forEach(function(it){s+='<div><div class="ctrl" style="justify-content:space-between;font-size:13.5px"><span>'+it.l+'</span><span style="font-family:var(--fm)">'+fmt(it)+'</span></div><div class="bar" style="height:16px"><span style="width:'+it.p+'%;background:'+it.c+'"></span></div></div>';});el.innerHTML=s+'</div>';}
+hbars(document.getElementById("chMix"),[{l:L("Fees & commission","Fees & commission"),p:56.7,c:C.acc},{l:L("Interest income (WFPL)","Interest income (WFPL)"),p:39,c:C.mv},{l:L("DLG deposit interest, loan sale gains","DLG deposit interest, loan sale gains"),p:4.3,c:C.grey}],function(it){return it.p+"%";});
+hbars(document.getElementById("chAum2"),[{l:L("Partner-funded (off-book, DLG)","Partner funding (off-book, DLG)"),p:74.9,v:"16,863",c:C.acc},{l:L("Whizdm Finance (on-book)","Whizdm Finance (on-book)"),p:25.1,v:"5,657",c:C.mv}],function(it){return "₹"+it.v+" · "+it.p+"%";});
+
+/* ---------- Takeaways ---------- */
+var TK=[
+ [A("Priced for caution, not hype","Hype விலை இல்ல, கவனமான விலை"),A("1.89x post-issue book and 8.6x annualised Q1 earnings; ~40% below the 2024 private round and below OnEMI's ~2.6x book.","Post-issue book-ல 1.89x, Q1 annualised லாபத்துல 8.6x; 2024 private round-ஐ விட ~40% கம்மி, OnEMI ~2.6x book-ஐ விட கீழ.")],
+ [A("Q1 FY27 is an earnings inflection","Q1 FY27 — லாபத்துல திருப்புமுனை"),A("PAT +159% to ₹173.8 cr; loan margin up to 8.96% and annualised RoAUM ~3.2%. One strong quarter; needs Q2 to confirm.","PAT +159%, ₹173.8 கோடி; loan margin 8.96%, annualised RoAUM ~3.2%. ஒரு quarter தான் — Q2-ல confirm ஆகணும்.")],
+ [A("FY26's flat profit hides one-offs","FY26 flat லாபத்துக்குள்ள one-offs"),A("₹207 cr of exceptional costs (CEO incentive ₹160 cr, cyber fraud ₹47 cr). Ex these, P/E is ~13–15x.","₹207 கோடி exceptional (CEO incentive ₹160, cyber fraud ₹47). இதை நீக்கினா P/E ~13–15x.")],
+ [A("Credit quality is the swing factor","Credit quality தான் முடிவை மாத்தும்"),A("GS3 0.94% → 2.72%, impairment 5.16% of AUM, DLG exposure 44% of net worth. Loss rate did ease to 6.90%.","GS3 0.94% → 2.72%, impairment AUM-ல 5.16%, DLG net worth-ல 44%. Loss rate 6.90%-க்கு குறைஞ்சது நல்லது.")],
+ [A("Demand is retail and HNI-led","Demand retail, HNI பக்கம்"),A("~18.7x overall by 12:33 PM on day 3, but QIB ex-anchor was 0.27x at 11:15 AM. Watch the final QIB number.","Day 3 12:33 PM வரை ~18.7x; ஆனா 11:15 AM-ல QIB 0.27x தான். Final QIB number-ஐ பாருங்க.")]
+];
+document.getElementById("takeList").innerHTML=TK.map(function(t,i){return '<div class="card take"><div class="num">'+(i+1)+'</div><div><h3>'+L(t[0].en,t[0].ta)+'</h3><div style="font-weight:600">'+L(t[1].en,t[1].ta)+'</div></div></div>';}).join("");
+
+/* ---------- Scorecard ---------- */
+var SC=[[A("Growth","Growth"),8],[A("Profitability trend","லாப trend"),7],[A("Asset quality","Asset quality"),5],[A("Valuation comfort","Valuation comfort"),7],[A("Funding & leverage","Funding & leverage"),5],[A("Regulatory risk (higher = safer)","Regulatory risk (அதிகம் = safe)"),4],[A("Governance & promoter stake","Governance & promoter stake"),5]];
+document.getElementById("scores").innerHTML=SC.map(function(s){var c=s[1]>=7?"var(--good)":s[1]>=5?"var(--acc)":"var(--bad)";return '<div class="score"><span>'+L(s[0].en,s[0].ta)+'</span><div class="bar"><span style="width:'+s[1]*10+'%;background:'+c+'"></span></div><span style="font-family:var(--fm);text-align:right">'+s[1]+'/10</span></div>';}).join("")+'<div class="score" style="border-top:1.5px solid var(--line);padding-top:8px"><span><b>'+L("Overall","மொத்தம்")+'</b></span><div class="bar"><span style="width:59%"></span></div><span style="font-family:var(--fm);text-align:right"><b>5.9</b></span></div>';
+
+/* ---------- Calculator ---------- */
+var SH=176.02;
+function calc(){var p=+document.getElementById("pat").value,e=+document.getElementById("pe").value;document.getElementById("patO").textContent=p;document.getElementById("peO").textContent=e;var v=p*e/SH;document.getElementById("ivs").textContent="₹"+v.toFixed(1);var d=(v/34-1)*100;var el=document.getElementById("ivd");el.textContent=(d>=0?"+":"")+d.toFixed(0)+"%";el.className="res "+(d>=0?"up":"dn");}
+["pat","pe"].forEach(function(id){document.getElementById(id).addEventListener("input",calc);});calc();
+
+/* ---------- Quiz ---------- */
+var QZ=[
+ {q:A("What share of Moneyview's managed AUM sits on its own NBFC's books?","Moneyview managed AUM-ல எவ்வளவு சொந்த NBFC books-ல இருக்கு?"),o:[A("About 25%","சுமார் 25%"),A("About 50%","சுமார் 50%"),A("About 75%","சுமார் 75%"),A("100%","100%")],c:0,e:A("On-book AUM is ₹5,657 cr of ₹22,520 cr, about 25%.","₹22,520 கோடி-ல ₹5,657 கோடி on-book — சுமார் 25%.")},
+ {q:A("What does a Default Loss Guarantee (DLG) mean here?","இங்க DLG-னா என்ன?"),o:[A("Moneyview covers partner losses up to 5%","Partner losses-ஐ 5% வரை Moneyview ஏத்துக்கும்"),A("RBI guarantees the loans","RBI loans-க்கு guarantee"),A("Borrowers pledge gold","Borrowers gold அடகு வைப்பாங்க"),A("Insurance covers all defaults","எல்லா default-ஐயும் insurance cover பண்ணும்")],c:0,e:A("Under DLG, Moneyview absorbs partner-loan losses up to a 5% cap.","DLG-ல partner loan loss-ஐ 5% cap வரை Moneyview ஏத்துக்கும்.")},
+ {q:A("Why was FY26 PAT nearly flat despite 43% income growth?","43% income growth இருந்தும் FY26 PAT ஏன் flat?"),o:[A("₹207 cr of one-off costs","₹207 கோடி one-off செலவு"),A("A tax refund","Tax refund"),A("Lower disbursals","Disbursals குறைஞ்சது"),A("Loss of users","Users குறைஞ்சாங்க")],c:0,e:A("A ₹160 cr CEO incentive and ₹47 cr cyber-fraud loss hit FY26.","₹160 கோடி CEO incentive, ₹47 கோடி cyber fraud FY26-ஐ பாதிச்சது.")},
+ {q:A("What was WFPL's Gross Stage 3 ratio in June 2026?","June 2026-ல WFPL Gross Stage 3 எவ்வளவு?"),o:[A("0.94%","0.94%"),A("1.5%","1.5%"),A("2.72%","2.72%"),A("5.16%","5.16%")],c:2,e:A("2.72%, up from 0.94% in FY24. 5.16% is impairment as % of AUM.","2.72%; FY24-ல 0.94%. 5.16% impairment/AUM.")},
+ {q:A("Post-issue price-to-book at ₹34 is about:","₹34-ல post-issue P/B சுமார்:"),o:[A("1.2x","1.2x"),A("1.9x","1.9x"),A("2.6x","2.6x"),A("4.0x","4.0x")],c:1,e:A("₹5,985 cr ÷ (₹2,415 cr + ₹750 cr) ≈ 1.89x.","₹5,985 ÷ (₹2,415 + ₹750) ≈ 1.89x.")},
+ {q:A("Which investor category was weakest by midday on day 3?","Day 3 மதியம் வரை எந்த category கம்மி?"),o:[A("Retail","Retail"),A("Small HNI","Small HNI"),A("QIB (ex-anchor)","QIB (anchor தவிர)"),A("Big HNI","Big HNI")],c:2,e:A("QIB ex-anchor was 0.27x at 11:15 AM, while HNIs were above 30x.","11:15 AM-ல QIB 0.27x; HNIs 30x-க்கு மேல.")},
+ {q:A("Where does most of Moneyview's revenue come from?","Moneyview revenue அதிகம் எங்கிருந்து?"),o:[A("Fees & commission","Fees & commission"),A("Insurance premiums","Insurance premiums"),A("Gold sales","Gold விற்பனை"),A("Advertising","Advertising")],c:0,e:A("Fees & commission were 56.7% of FY26 operating revenue.","FY26 operating revenue-ல 56.7% fees & commission.")},
+ {q:A("How much of the fresh issue goes to Whizdm Finance?","Fresh issue-ல Whizdm Finance-க்கு எவ்வளவு?"),o:[A("₹150 cr","₹150 கோடி"),A("₹250 cr","₹250 கோடி"),A("₹325 cr","₹325 கோடி"),A("₹750 cr","₹750 கோடி")],c:1,e:A("₹250 cr to WFPL's capital base; ₹325 cr for DLG-backed disbursals.","WFPL capital-க்கு ₹250 கோடி; DLG disbursals-க்கு ₹325 கோடி.")}
+];
+var qi=0,qs=0,ans=false;
+function renderQ(){var el=document.getElementById("quiz");if(qi>=QZ.length){el.innerHTML='<h3>'+L("Score: ","Score: ")+qs+"/"+QZ.length+'</h3><p style="font-weight:600">'+L(qs>=6?"Well done. You know this IPO.":"Good try. Review the Business Model and Cash Flow tabs.",qs>=6?"சூப்பர்! இந்த IPO உங்களுக்கு நல்லா தெரியும்.":"நல்ல முயற்சி. Business Model, Cash Flow tabs மறுபடி பாருங்க.")+'</p><button class="btn p" id="qR">'+L("Restart","மறுபடி")+'</button>';document.getElementById("qR").onclick=function(){qi=0;qs=0;renderQ();};return;}
+ var q=QZ[qi];ans=false;el.innerHTML='<div class="qbar"><span class="pill">'+(qi+1)+" / "+QZ.length+'</span><span class="pill">'+L("Score","Score")+": "+qs+'</span></div><h3>'+L(q.q.en,q.q.ta)+'</h3><div class="opts">'+q.o.map(function(o,i){return '<button data-i="'+i+'">'+L(o.en,o.ta)+'</button>';}).join("")+'</div><div class="fb" id="qfb"></div>';
+ el.querySelectorAll(".opts button").forEach(function(b){b.onclick=function(){if(ans)return;ans=true;var i=+b.dataset.i;var bs=el.querySelectorAll(".opts button");bs.forEach(function(x){x.disabled=true;});bs[q.c].classList.add("ok");if(i===q.c)qs++;else b.classList.add("no");document.getElementById("qfb").innerHTML=(i===q.c?L("Correct. ","சரி! "):L("Not quite. ","இல்ல. "))+L(q.e.en,q.e.ta)+' <button class="btn p" id="qN" style="margin-left:8px">'+L("Next","அடுத்து")+'</button>';document.getElementById("qN").onclick=function(){qi++;renderQ();};};});}
+renderQ();
+
+/* ---------- Cauvery Assist CONFIG (schema-compatible with cauvery-assist.js) ---------- */
+var CONFIG={
+ title:"Cauvery Assist",storageKey:"cba_moneyview_ipo",lang:"en",
+ placeholder:A("Ask: Is Moneyview cheap vs peers?","கேளுங்க: Moneyview valuation எப்படி?"),
+ greeting:A("Vanakam! Ask me anything about the Moneyview IPO: price, valuation, credit risk or subscription.","வணக்கம்! Moneyview IPO பத்தி எது வேணாலும் கேளுங்க — விலை, valuation, credit risk, subscription."),
+ noAdvice:A("I can't say whether to apply, buy or sell. CB Research is not SEBI-registered. The Analyst View tab lists the positives and risks.","Apply பண்ணலாமா, வாங்கலாமா-னு சொல்ல முடியாது. CB Research SEBI-registered இல்ல. Analyst View tab-ல plus, risk ரெண்டும் இருக்கு."),
+ fallback:A("I don't have that on this dashboard. Try price band, valuation, GS3, DLG, subscription or peers.","அது இந்த dashboard-ல இல்ல. Price band, valuation, GS3, DLG, subscription, peers பத்தி கேளுங்க."),
+ onOpenTab:function(id){showTab(id);},
+ metrics:[],entities:[],
+ kb:[
+  {k:["price band","price","விலை","ப்ரைஸ்","band","lot","லாட்"],a:A("The price band is ₹32–34; one lot is 441 shares, or ₹14,994 at the top.","Price band ₹32–34; ஒரு lot 441 shares, top price-ல ₹14,994."),d:A("<ul><li>Retail max 13 lots (₹1,94,922)</li><li>Face value ₹1</li></ul>","<ul><li>Retail max 13 lots (₹1,94,922)</li><li>Face value ₹1</li></ul>"),tab:"t-ipo"},
+  {k:["issue size","size","fresh","ofs","offer for sale","எவ்வளவு issue","சைஸ்"],a:A("It's a ₹1,091.68 cr issue: ₹750 cr fresh and ₹341.68 cr OFS.","மொத்தம் ₹1,091.68 கோடி issue: ₹750 கோடி fresh, ₹341.68 கோடி OFS."),tab:"t-ipo"},
+  {k:["listing","list","allotment","date","எப்போ","லிஸ்டிங்","அலாட்மென்ட்","close","தேதி"],a:A("Bidding closes 28 Sep, allotment is 29 Sep and listing is 1 Oct 2026 on BSE and NSE.","Bidding 28 Sep close, allotment 29 Sep, listing 1 Oct 2026 BSE, NSE-ல."),tab:"t-ipo"},
+  {k:["use of","proceeds","money used","objects","பணம் எங்கே","எதுக்கு"],a:A("₹325 cr goes to DLG-backed loan growth and ₹250 cr to Whizdm Finance's capital; the rest is general purposes.","₹325 கோடி DLG loan growth-க்கு, ₹250 கோடி Whizdm Finance capital-க்கு; மீதி general purposes."),tab:"t-ipo"},
+  {k:["what does","business","model","do","என்ன பண்றாங்க","பிசினஸ்","மாடல்"],a:A("Moneyview is an app-based personal-loan platform that also lends through its own NBFC, Whizdm Finance.","Moneyview ஒரு app-based personal loan platform; சொந்த NBFC Whizdm Finance மூலமாவும் loan கொடுக்குறாங்க."),d:A("<ul><li>14.03 cr registered users</li><li>48 financial partners</li><li>75% of AUM partner-funded</li></ul>","<ul><li>14.03 கோடி users</li><li>48 partners</li><li>AUM-ல 75% partner funding</li></ul>"),tab:"t-biz"},
+  {k:["dlg","default loss","guarantee","டிஎல்ஜி","கேரண்டி"],a:A("Under DLG, Moneyview covers partner-loan losses up to 5%; its DLG exposure is ₹1,060.8 cr, 43.9% of net worth.","DLG-ல partner loan loss-ஐ 5% வரை Moneyview ஏத்துக்கும்; exposure ₹1,060.8 கோடி, net worth-ல 43.9%."),tab:"t-biz"},
+  {k:["gnpa","npa","stage 3","gs3","asset quality","credit","bad loan","வாராக்கடன்","என்பிஏ","கிரெடிட்"],a:A("WFPL's Gross Stage 3 is 2.72% (June 2026), up from 0.94% in FY24.","WFPL Gross Stage 3 2.72% (June 2026); FY24-ல 0.94%."),d:A("<ul><li>Impairment 5.16% of avg AUM in FY26</li><li>Annualised loss rate eased to 6.90%</li></ul>","<ul><li>FY26 impairment avg AUM-ல 5.16%</li><li>Loss rate 6.90%-க்கு குறைஞ்சது</li></ul>"),tab:"t-cf"},
+  {k:["revenue","income","sales","ரெவின்யூ","வருமானம்","வருவாய்"],a:A("FY26 total income was ₹3,404 cr, up 43%; Q1 FY27 was ₹1,065 cr, up 52%.","FY26 total income ₹3,404 கோடி, +43%; Q1 FY27 ₹1,065 கோடி, +52%."),tab:"t-fin"},
+  {k:["profit","pat","earnings","லாபம்","ப்ராபிட்"],a:A("FY26 PAT was ₹242.7 cr, flat due to ₹207 cr one-offs; Q1 FY27 PAT jumped 159% to ₹173.8 cr.","FY26 PAT ₹242.7 கோடி — ₹207 கோடி one-offs-ஆல flat; Q1 FY27 PAT 159% ஏறி ₹173.8 கோடி."),tab:"t-fin"},
+  {k:["margin","loan margin","net loan revenue","nlr","ebitda","roaum","credit cost","cost to income","மார்ஜின்"],a:A("Loan margin (net loan revenue ÷ disbursals) rose to 8.96% in Q1 FY27; credit cost was 5.16% of AUM in FY26.","Loan margin (net loan revenue ÷ disbursals) Q1 FY27-ல 8.96%; FY26 credit cost AUM-ல 5.16%."),d:A("<ul><li>Lenders are judged on loan margin, credit cost, cost-to-income and RoAUM, not EBITDA</li><li>RoAUM: FY26 1.3%, Q1 FY27 ~3.2% annualised</li></ul>","<ul><li>Lender-க்கு EBITDA இல்ல — loan margin, credit cost, cost-to-income, RoAUM தான்</li><li>RoAUM: FY26 1.3%, Q1 FY27 ~3.2% ann.</li></ul>"),tab:"t-fin"},
+  {k:["one-off","exceptional","ceo","fraud","cyber","மோசடி"],a:A("FY26 had ₹207 cr of one-offs: a ₹160 cr CEO incentive and a ₹47 cr cyber-fraud loss.","FY26-ல ₹207 கோடி one-offs: ₹160 கோடி CEO incentive, ₹47 கோடி cyber fraud."),tab:"t-fin"},
+  {k:["aum","loan book","assets under","ஏயுஎம்","லோன் புக்"],a:A("Managed AUM is ₹22,520 cr (June 2026), up 27% YoY; ₹5,657 cr is on-book.","Managed AUM ₹22,520 கோடி (June 2026), +27% YoY; ₹5,657 கோடி on-book."),tab:"t-fin"},
+  {k:["valuation","cheap","expensive","p/e","pe","p/b","book","மலிவு","வேல்யுவேஷன்","விலை அதிகமா"],a:A("At ₹34 it's 1.89x post-issue book and 8.6x annualised Q1 earnings, but 24.7x reported FY26 profit.","₹34-ல post-issue book 1.89x, Q1 annualised 8.6x; ஆனா FY26 reported லாபத்துல 24.7x."),d:A("<ul><li>Ex one-offs FY26 P/E ~13–15x</li><li>~40% below 2024 private valuation</li></ul>","<ul><li>One-offs நீக்கினா FY26 P/E ~13–15x</li><li>2024 private valuation-ஐ விட ~40% கம்மி</li></ul>"),tab:"t-val"},
+  {k:["market cap","mcap","மார்க்கெட் கேப்"],a:A("Post-issue market cap is ₹5,985 cr at ₹34.","₹34-ல post-issue market cap ₹5,985 கோடி."),tab:"t-val"},
+  {k:["peer","onemi","kissht","bajaj","paytm","compare","போட்டி","ஒப்பிடு","பியர்"],a:A("Closest peer OnEMI trades near 2.6x book and 16.6x P/E; Moneyview comes at ~1.9x book.","நெருக்கமான peer OnEMI ~2.6x book, 16.6x P/E; Moneyview ~1.9x book-ல வருது."),tab:"t-peer"},
+  {k:["subscription","subscribed","demand","qib","retail","hni","nii","சப்ஸ்க்ரிப்ஷன்","டிமாண்ட்"],a:A("By 12:33 PM on day 3 it was ~18.7x subscribed; QIB ex-anchor was only 0.27x at 11:15 AM.","Day 3 12:33 PM வரை ~18.7x; 11:15 AM-ல QIB 0.27x தான்."),d:A("<ul><li>Retail 8.24x, NII ~31–35x at 11:15 AM</li></ul>","<ul><li>11:15 AM: Retail 8.24x, NII ~31–35x</li></ul>"),tab:"t-mkt"},
+  {k:["gmp","grey","premium","listing gain","ஜிஎம்பி","கிரே"],a:A("GMP is quoted at ₹11–14 (32–41%), but it's unofficial and can change fast.","GMP ₹11–14 (32–41%) — ஆனா official இல்ல, சீக்கிரம் மாறும்."),tab:"t-mkt"},
+  {k:["anchor","ஆங்கர்"],a:A("Anchors put in ₹327.5 cr at ₹34, led by SBI, HDFC and ICICI Pru MFs.","Anchors ₹34-ல ₹327.5 கோடி போட்டாங்க; SBI, HDFC, ICICI Pru MF முன்னணி."),tab:"t-mkt"},
+  {k:["risk","risks","danger","ரிஸ்க்","ஆபத்து"],a:A("The biggest risk is credit: unsecured loans, rising GS3 and DLG exposure at 44% of net worth.","பெரிய risk credit தான்: unsecured loans, ஏறுற GS3, net worth-ல 44% DLG exposure."),tab:"t-swot"},
+  {k:["promoter","founder","holding","ப்ரமோட்டர்","பங்கு"],a:A("Promoter holding falls from 23.96% to 20.33%; Accel is the largest holder at 21.89%.","Promoter holding 23.96% → 20.33%; பெரிய holder Accel, 21.89%."),tab:"t-ipo"},
+  {k:["roe","return on equity","ஆர்ஓஇ"],a:A("FY26 RoE was 11.7%; Q1 FY27 annualised RoE is about 30%.","FY26 RoE 11.7%; Q1 FY27 annualised RoE சுமார் 30%."),tab:"t-cf"},
+  {k:["debt","borrowing","leverage","கடன்"],a:A("Borrowings are ₹5,485 cr, 2.27x net worth, up from 1.06x in FY24.","Borrowings ₹5,485 கோடி, net worth-ல 2.27x; FY24-ல 1.06x."),tab:"t-cf"},
+  {k:["verdict","view","opinion","good ipo","நல்ல ipo","பார்வை"],preferOverMetric:true,a:A("CB sees reasonably priced growth with credit-cycle risk; it's an assessment, not a buy/sell call.","CB பார்வை: நியாயமான விலை growth, credit-cycle risk-ஓட; இது மதிப்பீடு மட்டும், buy/sell இல்ல."),tab:"t-view"}
+ ],
+ suggestions:[["Is Moneyview cheap vs peers?","Peers-ஓட ஒப்பிட்டா மலிவா?"],["What is DLG?","DLG-னா என்ன?"],["What is the GNPA?","GNPA எவ்வளவு?"],["Subscription status?","Subscription எவ்வளவு?"],["Should I apply?","Apply பண்ணலாமா?"]]
+};
+
+/* Full widget if cauvery-assist.js is included; otherwise the lite engine below. */
+if(window.CauveryAssist&&window.CauveryAssist.mount){document.getElementById("assist").innerHTML="";window.__fullAssist=window.CauveryAssist.mount(document.getElementById("assist"),CONFIG);}
+else{
+ var log=document.getElementById("log"),rate=0.8,wait=3;
+ try{var sr=localStorage.getItem(CONFIG.storageKey+"_rate");if(sr)rate=+sr;var sw=localStorage.getItem(CONFIG.storageKey+"_wait");if(sw!=null)wait=+sw;}catch(e){}
+ var spd=document.getElementById("spd"),spdO=document.getElementById("spdO"),ws=document.getElementById("wait");
+ function setRate(r){rate=Math.max(.5,Math.min(1.5,r));spd.value=rate;spdO.textContent=rate.toFixed(2)+"×";try{localStorage.setItem(CONFIG.storageKey+"_rate",rate);}catch(e){}}
+ setRate(rate);ws.value=String(wait);
+ spd.oninput=function(){setRate(+spd.value);};
+ document.getElementById("spdDn").onclick=function(){setRate(rate-.1);};document.getElementById("spdUp").onclick=function(){setRate(rate+.1);};
+ ws.onchange=function(){wait=+ws.value;try{localStorage.setItem(CONFIG.storageKey+"_wait",wait);}catch(e){}};
+ var synth=window.speechSynthesis;
+ function voice(){if(!synth)return null;var vs=synth.getVoices(),want=LANG==="ta"?"ta":"en-IN";return vs.find(function(v){return v.lang&&v.lang.replace("_","-").indexOf(want)===0;})||(LANG==="en"?vs.find(function(v){return /^en/.test(v.lang);}):null);}
+ function speak(text){if(!synth)return;synth.cancel();var v=voice();if(LANG==="ta"&&!v){add("a",LANG==="ta"?"இந்த device-ல Tamil voice இல்ல; பதிலை படிச்சுக்கோங்க.":"No Tamil voice on this device.");return;}
+  text.split(/(?<=[.!?।])\s+/).forEach(function(s){var u=new SpeechSynthesisUtterance(s);u.rate=rate;u.lang=LANG==="ta"?"ta-IN":"en-IN";if(v)u.voice=v;synth.speak(u);});}
+ var paused=false;document.getElementById("pauseB").onclick=function(){if(!synth)return;if(paused){synth.resume();paused=false;this.textContent="⏸";}else{synth.pause();paused=true;this.textContent="▶";}};
+ document.getElementById("stopB").onclick=function(){if(synth)synth.cancel();};
+ function add(who,html,det,tab){var d=document.createElement("div");d.className="msg "+who;d.innerHTML=html+(det?'<details><summary>'+(LANG==="ta"?"மேலும் விவரம்":"More details")+'</summary>'+det+'</details>':"")+(tab?'<div style="margin-top:6px"><button class="btn" style="padding:4px 9px;font-size:12px">'+(LANG==="ta"?"தொடர்புடைய tab திற":"Open related tab")+'</button></div>':"");if(tab)d.querySelector("button.btn").onclick=function(){showTab(tab);};log.appendChild(d);log.scrollTop=log.scrollHeight;}
+ function norm(s){return (s||"").toLowerCase();}
+ function answer(q){var n=norm(q);
+  if(/\b(buy|sell|hold|apply|invest|subscribe or|should i)\b/.test(n)||/வாங்கலாமா|விக்கலாமா|apply பண்ணலாமா|முதலீடு பண்ணலாமா/.test(q))return {a:CONFIG.noAdvice};
+  var best=null,bs=0;CONFIG.kb.forEach(function(e){var sc=0;e.k.forEach(function(k){if(n.indexOf(norm(k))>-1)sc+=k.length;});if(sc>bs){bs=sc;best=e;}});
+  return best?best:{a:CONFIG.fallback};}
+ function ask(q){if(!q.trim())return;add("u",q.replace(/</g,"&lt;"));var r=answer(q);var a=lt(r.a);add("a",a,r.d?lt(r.d):null,r.tab);speak(a);}
+ window.__liteAsk=ask;
+ document.getElementById("askF").addEventListener("submit",function(e){e.preventDefault();var i=document.getElementById("askI");ask(i.value);i.value="";});
+ /* voice input with silence wait */
+ var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,buf="",timer=null,t0=0,iv=null,listening=false;
+ var micB=document.getElementById("micB"),doneB=document.getElementById("doneB"),bar=document.getElementById("micbar");
+ function finish(){listening=false;clearTimeout(timer);clearInterval(iv);bar.style.width="0";doneB.hidden=true;micB.textContent="🎤";try{rec&&rec.stop();}catch(e){}var q=buf.trim();buf="";if(q)ask(q);}
+ function arm(){clearTimeout(timer);clearInterval(iv);if(!wait){bar.style.width="100%";return;}t0=Date.now();iv=setInterval(function(){var p=Math.min(1,(Date.now()-t0)/(wait*1000));bar.style.width=(100-p*100)+"%";},100);timer=setTimeout(finish,wait*1000);}
+ micB.onclick=function(){if(!SR){add("a",LANG==="ta"?"இந்த browser-ல voice input இல்ல. Type பண்ணுங்க.":"Voice input isn't available here. Please type your question.");return;}
+  if(listening){finish();return;}
+  try{rec=new SR();rec.lang=LANG==="ta"?"ta-IN":"en-IN";rec.continuous=true;rec.interimResults=true;
+   rec.onresult=function(ev){var fin="",inter="";for(var i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)fin+=ev.results[i][0].transcript+" ";else inter+=ev.results[i][0].transcript;}buf+=fin;document.getElementById("askI").value=(buf+inter).trim();arm();};
+   rec.onend=function(){if(listening){try{rec.start();}catch(e){}}};
+   rec.onerror=function(ev){if(ev.error==="not-allowed"||ev.error==="service-not-allowed"){listening=false;micB.textContent="🎤";add("a",LANG==="ta"?"Mic block ஆகியிருக்கு. Type பண்ணுங்க.":"The microphone is blocked here. Please type your question.");}};
+   buf="";listening=true;micB.textContent="⏺";doneB.hidden=false;rec.start();if(!wait)bar.style.width="100%";}catch(e){add("a","Voice input could not start.");}};
+ doneB.onclick=finish;
+ add("a",lt(CONFIG.greeting));
+}
+function renderSugs(){var s=document.getElementById("sugs");if(!s)return;s.innerHTML="";CONFIG.suggestions.forEach(function(p){var b=document.createElement("button");b.textContent=LANG==="ta"?p[1]:p[0];b.onclick=function(){window.__liteAsk&&window.__liteAsk(b.textContent);};s.appendChild(b);});}
+
+/* ---------- CB badge ---------- */
+var cb=document.getElementById("cb"),cbB=document.getElementById("cbB");
+cbB.onclick=function(e){e.stopPropagation();var o=cb.classList.toggle("open");cbB.setAttribute("aria-expanded",o);};
+document.addEventListener("click",function(){cb.classList.remove("open");cbB.setAttribute("aria-expanded","false");});
+
+var sl="en";try{sl=localStorage.getItem("mv_lang")||"en";}catch(e){}
+setLang(sl);
+})();
+</script>

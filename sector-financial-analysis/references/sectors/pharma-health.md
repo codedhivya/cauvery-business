@@ -56,6 +56,14 @@ drops through to profit sharply. Maturity matters enormously: a new hospital los
 years before breaking even, so a chain in expansion mode reports depressed blended margins that say
 nothing about the mature estate.
 
+**In-house pharmacy is a distinct, higher-margin line inside that blended ARPOB.** A hospital buys
+medicines at the price-to-retailer (PTR) and bills the patient at the drug maker's printed MRP — a gap
+that is commonly many multiples of PTR and is legal on its own, but attracts regulatory and legal
+scrutiny because admitted patients are effectively a captive buyer with no pharmacy choice. State
+pharmacy/drug revenue as a share of total hospital revenue separately from bed-and-care revenue; it
+usually runs in the low teens of revenue but carries materially better margin, so a regulatory cap on the
+PTR–MRP gap hits EBITDA more than its revenue share would suggest.
+
 ### The analogy
 
 A pipeline business. Money goes out for years — research, trials, filings, plant approvals — before any of it comes back, and a single regulator's letter can close the tap on a product that was already paying.
@@ -320,6 +328,7 @@ site's revenue outright — no other forward indicator matters as much.
 | Key raw material (KSM) price or China supply change | gross margin | import dependence for that input |
 | Ayushman Bharat / scheme rate revision | hospital realisation | government-scheme share of revenue |
 | New hospital commissioning | near-term margin dilution, medium-term growth | beds added vs existing estate |
+| Regulatory/legal action on in-house pharmacy markup (PTR–MRP gap) | pharmacy revenue and EBITDA, disproportionate to its revenue share | pharmacy/drug revenue as % of hospital revenue; margin on that slice vs blended ARPOB |
 
 ## 7. Where to look (sourcing)
 
