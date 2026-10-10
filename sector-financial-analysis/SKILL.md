@@ -90,6 +90,14 @@ insurance benchmarks.
 
 If the sector genuinely can't be identified, **ask — don't guess.**
 
+**A jargon question may not belong to any sector.** House analytical vocabulary (a "Trojan Horse" thesis,
+a "Proxy Play", a "Re-rating candidate") and universal P&L/structural terms (Adjusted EBITDA, Minority
+Interest, JV share of profit, Negative Working Capital) cut across every sector file, so there is no
+sector table row to route to. Check the published glossary first — see `references/output-conventions.md`
+— **before** answering from general or textbook knowledge. It is the house's own definition of what these
+terms mean in a CB Research report, and a generic explanation that drifts from it is wrong for this
+skill's purposes even if it is correct in general.
+
 **Multiple sectors**: load every relevant sector file. Cross-sector work is supported but constrained —
 see Step 3.
 

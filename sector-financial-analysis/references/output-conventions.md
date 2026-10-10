@@ -72,6 +72,25 @@ Keep the accompanying chat message short — one to four sentences of the headli
 carries the detail; restating it in chat duplicates work the reader has to do twice. Don't drop a file
 silently either: a sentence of framing tells them what they're about to look at.
 
+## The house glossary — for jargon no sector file owns
+
+**`reports/published/glossary.html` is the house dictionary.** It defines cross-sector analytical
+vocabulary (Trojan Horse, Proxy Play, Re-rating Candidate, Margin of Safety) and universal P&L/structural
+terms (Adjusted EBITDA, Minority Interest, JV Share of Profit, Negative Working Capital) that belong to no
+single sector, plus a handful of terms a sector file already covers in more depth (GRM, GMM, PLF, Float,
+Para IV, ANDA, Hatch-Waxman) — where both exist, they should agree, and a mismatch is worth flagging
+rather than silently picking one.
+
+The report's own header states its purpose plainly: **"Terms we use. Explained our way... No textbook
+definitions; just how we actually use them."** Treat that literally — when a client asks what a term
+means in a CB Research report, this is the source, not general knowledge, even when the general and
+house definitions happen to agree.
+
+The definitions are not in the page's visible text — they sit in a `const TERMS = [...]` JSON array
+inside a `<script>` tag, each entry carrying `term`, `aka`, `cat`, a bilingual `def`, and a bilingual `cb`
+field (CB Research's own worked example, usually the more useful half). Load the file and read that
+array directly rather than rendering the page; grepping the stripped text will miss it.
+
 ## Check for an existing report first
 
 **Before analysing any company or sector, look in `reports/published/` for a report that already covers

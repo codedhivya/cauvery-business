@@ -98,7 +98,9 @@ Two different businesses wearing the same clothes. A contracted asset is a toll 
 - **GRM (Gross Refining Margin, $/bbl)** — the refining spread. Compare against the **benchmark
   (Singapore) GRM**; the premium or discount to benchmark is the real performance signal.
 - **Throughput / refinery utilisation (%)**.
-- **Marketing margin (₹/litre)** — fuel retail profitability.
+- **Marketing margin / GMM (Gross Marketing Margin, ₹/litre)** — fuel retail profitability. GRM is a
+  refiner's economics; GMM is the retailer's — a company can be strong on one and weak on the other, so
+  name which one moved.
 - **Crude price and its lag** — inventory gains or losses arise because crude is bought before it is
   processed; a quarter's reported profit can swing on inventory revaluation with no operational change.
   **Always separate inventory gain/loss from core GRM** — this is the most common way an oil result is

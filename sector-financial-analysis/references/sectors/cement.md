@@ -36,6 +36,14 @@ between them explain almost all margin variance:
 profit sharply in both directions. A ₹10 per bag price change can move EBITDA per tonne materially, which
 is why regional price tracking matters more here than in most sectors.
 
+**Capacity overhang is the mechanism behind a weak-pricing cycle that utilisation alone won't explain.**
+When several players expand into the same region chasing the same demand forecast, installed capacity
+can outrun demand for years. With that much capacity chasing the same tonnes, no single producer needs
+to protect share by cutting price — so realisation stays weak industry-wide until demand catches up or
+capacity is idled. Read a low realisation alongside **regional** utilisation, not alongside one
+company's own numbers: overhang is an industry condition and it clears for everyone at roughly the same
+time, not company by company.
+
 **EBITDA per tonne is the sector's currency.** Everyone — companies, analysts, this repo — compares on
 it, because it strips out differences in realisation and shows the actual unit economics.
 

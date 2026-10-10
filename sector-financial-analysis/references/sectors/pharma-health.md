@@ -37,6 +37,13 @@ The exceptions that break the treadmill are **complex generics, injectables, and
 opportunities, which carry limited competition and real margin — sometimes 180 days of exclusivity. A
 single Para IV launch can distort a year's earnings, which is why one-offs must be separated.
 
+Para IV and the 180-day exclusivity both trace to one law: the **Hatch-Waxman Act (1984)**, which struck
+the bargain underpinning the entire US generics industry — innovators get patent-term extensions to
+recover years lost to trials and FDA review, and generic makers get a fast, cheap ANDA pathway plus the
+right to challenge a weak or invalid patent before its stated expiry. A first-to-file Para IV challenger
+who wins earns 180 days without another generic competitor, which is the source of the "distorted
+earnings" above — it is a legal outcome, not an operating one.
+
 **Domestic formulations (IPM)** work completely differently: branded generics, prescriber loyalty, and
 field-force reach. No meaningful price erosion, but price control on scheduled drugs via NPPA. Growth is
 volume, new introductions, and price within the permitted band. It is a steadier and generally

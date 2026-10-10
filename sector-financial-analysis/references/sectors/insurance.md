@@ -38,6 +38,16 @@ quality (Combined Ratio). Use this analogy table in any explanatory output:
 
 A manufacturer that books its costs today and earns its profit over decades. Premium is not revenue in any ordinary sense — much of it is a liability for claims not yet made — which is why current profit says so little and the value of business written says so much.
 
+### Float — the second engine, alongside underwriting
+
+**Float is the premium an insurer holds and invests between collecting it and paying the eventual
+claim** — money it did not have to raise from shareholders, earning investment income in the meantime.
+A life insurer's float is large and long-duration because policies run for decades; a general or health
+insurer's float is smaller and shorter-dated, tied to the claims cycle. When Combined Ratio (or CISR) is
+below 100%, the insurer earns an underwriting profit **and** investment income on float at the same
+time — the two compound together, which is why float size and its investment yield belong alongside
+Combined Ratio in any profitability read, not as a footnote to it.
+
 ## 3. Metric definitions
 
 ### Life
