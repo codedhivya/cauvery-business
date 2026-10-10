@@ -73,6 +73,18 @@ A business that sells a promise and delivers it years later. Revenue is yesterda
   input costs moved after the bid, not that the company suddenly ran the business worse.
 - **Debtor days / receivables** — critical here. Government and PSU customers pay slowly, and a company
   can report strong profit while cash sits in receivables for quarters.
+- **Unbilled revenue (contract assets)** — work done and recognised as revenue but not yet invoiced,
+  because this sector bills on milestones. It will not show up in debtor days, so a book that looks fine
+  on receivables alone can still have a large, growing pile of cash waiting on the next invoice trigger.
+  Track it alongside debtor days, not instead of it.
+- **Retention money** — the 5–10% a client withholds from each bill until the project closes and the
+  defect-liability period ends. It is earned revenue the company cannot yet collect by design, which is
+  why EPC and infrastructure names structurally carry more working capital than a comparable order-book
+  business without retention clauses.
+- **Customer advances** — payment received before delivery; it offsets working capital rather than adding
+  to it, and a defence or EPC company's cash position can depend heavily on advances keeping pace with
+  the order book. When advances shrink relative to revenue, working capital and operating cash flow can
+  deteriorate sharply even with an unchanged order book and stable receivables.
 - **Working capital / revenue** — the structural cash need of the business model.
 - **Capacity utilisation** — for manufacturing-led players (cables, EMS).
 - **Customer concentration** — an EMS business may derive most revenue from two or three brands. State
